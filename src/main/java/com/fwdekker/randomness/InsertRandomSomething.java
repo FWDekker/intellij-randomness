@@ -23,6 +23,9 @@ public abstract class InsertRandomSomething extends AnAction {
     public void actionPerformed(final AnActionEvent event) {
         final Project project = event.getData(CommonDataKeys.PROJECT);
         final Editor editor = event.getData(CommonDataKeys.EDITOR);
+        if (editor == null) {
+            return;
+        }
         final Document document = editor.getDocument();
         final SelectionModel selectionModel = editor.getSelectionModel();
 
@@ -39,5 +42,5 @@ public abstract class InsertRandomSomething extends AnAction {
      *
      * @return a random string
      */
-    public abstract String generateString();
+    protected abstract String generateString();
 }

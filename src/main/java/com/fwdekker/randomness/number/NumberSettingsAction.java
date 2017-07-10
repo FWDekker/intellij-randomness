@@ -1,8 +1,6 @@
 package com.fwdekker.randomness.number;
 
 import com.fwdekker.randomness.SettingsAction;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 
 import javax.swing.*;
 
