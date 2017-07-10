@@ -77,7 +77,13 @@ final class NumberSettingsDialog extends JDialog {
         minValue.commitEdit();
         maxValue.commitEdit();
 
-        NumberSettings.setMinValue((Integer) minValue.getValue());
-        NumberSettings.setMaxValue((Integer) maxValue.getValue());
+        int newMinValue = (Integer) minValue.getValue();
+        int newMaxValue = (Integer) maxValue.getValue();
+        if (newMaxValue < newMinValue) {
+            newMaxValue = newMinValue;
+        }
+
+        NumberSettings.setMinValue(newMinValue);
+        NumberSettings.setMaxValue(newMaxValue);
     }
 }
