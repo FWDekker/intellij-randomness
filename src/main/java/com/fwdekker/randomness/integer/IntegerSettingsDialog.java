@@ -1,4 +1,4 @@
-package com.fwdekker.randomness.number;
+package com.fwdekker.randomness.integer;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -8,9 +8,9 @@ import java.text.ParseException;
 
 
 /**
- * Dialog for settings of random number generation.
+ * Dialog for settings of random integer generation.
  */
-final class NumberSettingsDialog extends JDialog {
+final class IntegerSettingsDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -19,9 +19,9 @@ final class NumberSettingsDialog extends JDialog {
 
 
     /**
-     * Constructs a new {@code NumberSettingsDialog}.
+     * Constructs a new {@code IntegerSettingsDialog}.
      */
-    NumberSettingsDialog() {
+    IntegerSettingsDialog() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -42,8 +42,8 @@ final class NumberSettingsDialog extends JDialog {
                 event -> onCancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        minValue.setValue(NumberSettings.getMinValue());
-        maxValue.setValue(NumberSettings.getMaxValue());
+        minValue.setValue(IntegerSettings.getMinValue());
+        maxValue.setValue(IntegerSettings.getMaxValue());
     }
 
 
@@ -82,7 +82,7 @@ final class NumberSettingsDialog extends JDialog {
             newMaxValue = newMinValue;
         }
 
-        NumberSettings.setMinValue(newMinValue);
-        NumberSettings.setMaxValue(newMaxValue);
+        IntegerSettings.setMinValue(newMinValue);
+        IntegerSettings.setMaxValue(newMaxValue);
     }
 }

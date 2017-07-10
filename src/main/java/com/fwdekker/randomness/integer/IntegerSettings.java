@@ -1,10 +1,10 @@
-package com.fwdekker.randomness.number;
+package com.fwdekker.randomness.integer;
 
 
 /**
- * Contains settings for generating random numbers.
+ * Contains settings for generating random integers.
  */
-final class NumberSettings {
+final class IntegerSettings {
     private static final int DEFAULT_MIN_VALUE = 0;
     private static final int DEFAULT_MAX_VALUE = 1000;
 
@@ -21,7 +21,7 @@ final class NumberSettings {
     /**
      * Private to prevent instantiation.
      */
-    private NumberSettings() {
+    private IntegerSettings() {
     }
 
 
@@ -40,7 +40,7 @@ final class NumberSettings {
      * @param minValue the minimum value to be generated, inclusive
      */
     static void setMinValue(final int minValue) {
-        NumberSettings.minValue = minValue;
+        IntegerSettings.minValue = minValue;
     }
 
     /**
@@ -58,6 +58,6 @@ final class NumberSettings {
      * @param maxValue the maximum value to be generated, inclusive
      */
     static void setMaxValue(final int maxValue) {
-        NumberSettings.maxValue = maxValue;
+        IntegerSettings.maxValue = maxValue;
     }
 }

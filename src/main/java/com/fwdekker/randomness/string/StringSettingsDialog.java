@@ -8,7 +8,7 @@ import java.text.ParseException;
 
 
 /**
- * Dialog for settings of random number generation.
+ * Dialog for settings of random integer generation.
  */
 final class StringSettingsDialog extends JDialog {
     private JPanel contentPane;

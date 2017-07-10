@@ -18,10 +18,10 @@
     <idea-version since-build="145.0"/>
 
     <actions>
-        <action id="randomness.InsertNumber" class="com.fwdekker.randomness.number.InsertRandomNumber"
-                text="Insert Random Number" description="Inserts a random number at the caret."/>
-        <action id="randomness.NumberSettings" class="com.fwdekker.randomness.number.NumberSettingsAction"
-                text="Insert Random Number Settings" description="Settings for Insert Random Number."/>
+        <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.InsertRandomInteger"
+                text="Insert Random Integer" description="Inserts a random integer at the caret."/>
+        <action id="randomness.IntegerSettings" class="com.fwdekker.randomness.integer.IntegerSettingsAction"
+                text="Insert Random Integer Settings" description="Settings for Insert Random Integer."/>
 
         <action id="randomness.InsertString" class="com.fwdekker.randomness.string.InsertRandomString"
                 text="Insert Random String" description="Inserts a random string at the caret."/>
