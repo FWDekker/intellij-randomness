@@ -16,6 +16,7 @@ final class StringSettingsDialog extends JDialog {
     private JButton buttonCancel;
     private JSpinner minLength;
     private JSpinner maxLength;
+    private JCheckBox quotationMarksCheckbox;
 
 
     /**
@@ -42,8 +43,10 @@ final class StringSettingsDialog extends JDialog {
                 event -> onCancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
+        // Load settings
         minLength.setValue(StringSettings.getMinLength());
         maxLength.setValue(StringSettings.getMaxLength());
+        quotationMarksCheckbox.setSelected(StringSettings.isQuotationMarksEnabled());
     }
 
 
@@ -84,5 +87,6 @@ final class StringSettingsDialog extends JDialog {
 
         StringSettings.setMinLength(newMinLength);
         StringSettings.setMaxLength(newMaxLength);
+        StringSettings.setQuotationMarksEnabled(quotationMarksCheckbox.isSelected());
     }
 }

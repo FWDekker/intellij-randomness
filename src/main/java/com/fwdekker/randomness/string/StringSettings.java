@@ -9,10 +9,6 @@ final class StringSettings {
      * The characters that may be used for generated strings.
      */
     public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    /**
-     * The string that encloses the generated string on both sides.
-     */
-    public static final String ENCLOSURE = "\"";
 
     private static final int DEFAULT_MIN_LENGTH = 10;
     private static final int DEFAULT_MAX_LENGTH = 10;
@@ -25,6 +21,14 @@ final class StringSettings {
      * The maximum length of a generated string, inclusive.
      */
     private static int maxLength = DEFAULT_MAX_LENGTH;
+    /**
+     * The string that encloses the generated string on both sides.
+     */
+    public static String enclosure = "\"";
+    /**
+     * True if generated strings should be enclosed with quotation marks.
+     */
+    private static boolean quotationMarksEnabled = true;
 
 
     /**
@@ -68,5 +72,24 @@ final class StringSettings {
      */
     public static void setMaxLength(final int maxLength) {
         StringSettings.maxLength = maxLength;
+    }
+
+    /**
+     * Returns true if generated strings should be enclosed with quotation marks.
+     *
+     * @return true if generated strings should be enclosed with quotation marks
+     */
+    public static boolean isQuotationMarksEnabled() {
+        return quotationMarksEnabled;
+    }
+
+    /**
+     * Sets the quotation marks property.
+     *
+     * @param quotationMarksEnabled true if generated strings should be enclosed with quotation marks
+     */
+    public static void setQuotationMarksEnabled(final boolean quotationMarksEnabled) {
+        StringSettings.quotationMarksEnabled = quotationMarksEnabled;
+        StringSettings.enclosure = quotationMarksEnabled ? "\"" : "";
     }
 }
