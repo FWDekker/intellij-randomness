@@ -14,14 +14,17 @@ final class StringSettings {
      */
     public static final String ENCLOSURE = "\"";
 
+    private static final int DEFAULT_MIN_LENGTH = 10;
+    private static final int DEFAULT_MAX_LENGTH = 10;
+
     /**
      * The minimum length of a generated string, inclusive.
      */
-    private static int minLength = 10;
+    private static int minLength = DEFAULT_MIN_LENGTH;
     /**
      * The maximum length of a generated string, inclusive.
      */
-    private static int maxLength = 10;
+    private static int maxLength = DEFAULT_MAX_LENGTH;
 
 
     /**
