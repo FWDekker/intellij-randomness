@@ -10,7 +10,7 @@ import java.text.ParseException;
 /**
  * Dialog for settings of random number generation.
  */
-public class NumberSettingsDialog extends JDialog {
+final class NumberSettingsDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;

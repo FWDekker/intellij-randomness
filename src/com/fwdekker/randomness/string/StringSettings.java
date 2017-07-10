@@ -4,7 +4,7 @@ package com.fwdekker.randomness.string;
 /**
  * Contains settings for generating random strings.
  */
-public class StringSettings {
+final class StringSettings {
     /**
      * The characters that may be used for generated strings.
      */

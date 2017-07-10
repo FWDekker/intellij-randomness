@@ -8,7 +8,7 @@ import java.util.Random;
 /**
  * Generates a random number based on the settings in {@link NumberSettings}.
  */
-public class InsertRandomNumber extends InsertRandomSomething {
+final class InsertRandomNumber extends InsertRandomSomething {
     private static final Random RANDOM = new Random();
 
 

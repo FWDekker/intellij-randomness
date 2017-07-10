@@ -8,7 +8,7 @@ import java.util.Random;
 /**
  * Generates random alphanumerical strings based on the settings in {@link StringSettings}.
  */
-public final class InsertRandomString extends InsertRandomSomething {
+final class InsertRandomString extends InsertRandomSomething {
     private static final Random RANDOM = new Random();
 
 

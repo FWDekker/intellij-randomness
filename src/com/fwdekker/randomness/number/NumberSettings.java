@@ -4,7 +4,7 @@ package com.fwdekker.randomness.number;
 /**
  * Contains settings for generating random numbers.
  */
-public class NumberSettings {
+final class NumberSettings {
     private static final int DEFAULT_MIN_VALUE = 0;
     private static final int DEFAULT_MAX_VALUE = 1000;
 
