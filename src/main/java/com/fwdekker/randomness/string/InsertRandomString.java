@@ -27,7 +27,7 @@ final class InsertRandomString extends InsertRandomSomething {
             text[i] = generateCharacter();
         }
 
-        return StringSettings.enclosure + new String(text) + StringSettings.enclosure;
+        return StringSettings.getEnclosure() + new String(text) + StringSettings.getEnclosure();
     }
 
 

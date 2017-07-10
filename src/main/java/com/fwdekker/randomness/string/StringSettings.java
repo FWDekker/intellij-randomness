@@ -24,7 +24,7 @@ final class StringSettings {
     /**
      * The string that encloses the generated string on both sides.
      */
-    public static String enclosure = "\"";
+    private static String enclosure = "\"";
     /**
      * True if generated strings should be enclosed with quotation marks.
      */
@@ -43,7 +43,7 @@ final class StringSettings {
      *
      * @return the minimum length of a generated string, inclusive
      */
-    public static int getMinLength() {
+    static int getMinLength() {
         return minLength;
     }
 
@@ -52,7 +52,7 @@ final class StringSettings {
      *
      * @param minLength the minimum length of a generated string, inclusive
      */
-    public static void setMinLength(final int minLength) {
+    static void setMinLength(final int minLength) {
         StringSettings.minLength = minLength;
     }
 
@@ -61,7 +61,7 @@ final class StringSettings {
      *
      * @return the maximum length of a generated string, inclusive
      */
-    public static int getMaxLength() {
+    static int getMaxLength() {
         return maxLength;
     }
 
@@ -70,8 +70,17 @@ final class StringSettings {
      *
      * @param maxLength the maximum length of a generated string, inclusive
      */
-    public static void setMaxLength(final int maxLength) {
+    static void setMaxLength(final int maxLength) {
         StringSettings.maxLength = maxLength;
+    }
+
+    /**
+     * Returns the string that encloses the generated string on both sides.
+     *
+     * @return the string that encloses the generated string on both sides
+     */
+    static String getEnclosure() {
+        return enclosure;
     }
 
     /**
@@ -79,7 +88,7 @@ final class StringSettings {
      *
      * @return true if generated strings should be enclosed with quotation marks
      */
-    public static boolean isQuotationMarksEnabled() {
+    static boolean isQuotationMarksEnabled() {
         return quotationMarksEnabled;
     }
 
@@ -88,7 +97,7 @@ final class StringSettings {
      *
      * @param quotationMarksEnabled true if generated strings should be enclosed with quotation marks
      */
-    public static void setQuotationMarksEnabled(final boolean quotationMarksEnabled) {
+    static void setQuotationMarksEnabled(final boolean quotationMarksEnabled) {
         StringSettings.quotationMarksEnabled = quotationMarksEnabled;
         StringSettings.enclosure = quotationMarksEnabled ? "\"" : "";
     }

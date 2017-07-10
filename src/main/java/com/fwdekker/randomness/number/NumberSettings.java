@@ -30,7 +30,7 @@ final class NumberSettings {
      *
      * @return the minimum value to be generated, inclusive
      */
-    public static int getMinValue() {
+    static int getMinValue() {
         return minValue;
     }
 
@@ -39,7 +39,7 @@ final class NumberSettings {
      *
      * @param minValue the minimum value to be generated, inclusive
      */
-    public static void setMinValue(final int minValue) {
+    static void setMinValue(final int minValue) {
         NumberSettings.minValue = minValue;
     }
 
@@ -48,7 +48,7 @@ final class NumberSettings {
      *
      * @return the maximum value to be generated, inclusive
      */
-    public static int getMaxValue() {
+    static int getMaxValue() {
         return maxValue;
     }
 
@@ -57,7 +57,7 @@ final class NumberSettings {
      *
      * @param maxValue the maximum value to be generated, inclusive
      */
-    public static void setMaxValue(final int maxValue) {
+    static void setMaxValue(final int maxValue) {
         NumberSettings.maxValue = maxValue;
     }
 }
