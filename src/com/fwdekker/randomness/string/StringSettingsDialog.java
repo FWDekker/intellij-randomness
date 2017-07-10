@@ -42,8 +42,8 @@ public class StringSettingsDialog extends JDialog {
                 e -> onCancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        minLength.setValue(InsertRandomString.getMinLength());
-        maxLength.setValue(InsertRandomString.getMaxLength());
+        minLength.setValue(StringSettings.getMinLength());
+        maxLength.setValue(StringSettings.getMaxLength());
     }
 
 
@@ -77,7 +77,7 @@ public class StringSettingsDialog extends JDialog {
         minLength.commitEdit();
         maxLength.commitEdit();
 
-        InsertRandomString.setMinLength((Integer) minLength.getValue());
-        InsertRandomString.setMaxLength((Integer) maxLength.getValue());
+        StringSettings.setMinLength((Integer) minLength.getValue());
+        StringSettings.setMaxLength((Integer) maxLength.getValue());
     }
 }
