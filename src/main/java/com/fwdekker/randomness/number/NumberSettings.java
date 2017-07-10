@@ -19,6 +19,13 @@ final class NumberSettings {
 
 
     /**
+     * Private to prevent instantiation.
+     */
+    private NumberSettings() {
+    }
+
+
+    /**
      * Returns the minimum value to be generated, inclusive.
      *
      * @return the minimum value to be generated, inclusive

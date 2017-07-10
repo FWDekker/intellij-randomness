@@ -28,6 +28,13 @@ final class StringSettings {
 
 
     /**
+     * Private to prevent instantiation.
+     */
+    private StringSettings() {
+    }
+
+
+    /**
      * Returns the minimum length of a generated string, inclusive.
      *
      * @return the minimum length of a generated string, inclusive
