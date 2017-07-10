@@ -1,7 +1,5 @@
 package com.fwdekker.randomness.number;
 
-import com.fwdekker.randomness.number.InsertRandomNumber;
-
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -44,8 +42,8 @@ public class NumberSettingsDialog extends JDialog {
                 e -> onCancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        minValue.setValue(InsertRandomNumber.getMinValue());
-        maxValue.setValue(InsertRandomNumber.getMaxValue());
+        minValue.setValue(NumberSettings.getMinValue());
+        maxValue.setValue(NumberSettings.getMaxValue());
     }
 
 
@@ -79,7 +77,7 @@ public class NumberSettingsDialog extends JDialog {
         minValue.commitEdit();
         maxValue.commitEdit();
 
-        InsertRandomNumber.setMinValue((Integer) minValue.getValue());
-        InsertRandomNumber.setMaxValue((Integer) maxValue.getValue());
+        NumberSettings.setMinValue((Integer) minValue.getValue());
+        NumberSettings.setMaxValue((Integer) maxValue.getValue());
     }
 }
