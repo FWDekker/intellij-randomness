@@ -1,21 +1,26 @@
 package com.fwdekker.randomness.number;
 
+import com.fwdekker.randomness.SettingsAction;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+
+import javax.swing.*;
 
 
 /**
  * Controller for random number generation settings.
  */
-public final class NumberSettingsAction extends AnAction {
-    /**
-     * Shows a {@link NumberSettingsDialog}.
-     */
+public final class NumberSettingsAction extends SettingsAction {
+    private static final String TITLE = "Insert Random Number Settings";
+
+
     @Override
-    public void actionPerformed(final AnActionEvent e) {
-        final NumberSettingsDialog dialog = new NumberSettingsDialog();
-        dialog.setTitle("Insert Random Number Settings");
-        dialog.pack();
-        dialog.setVisible(true);
+    public JDialog createDialog() {
+        return new NumberSettingsDialog();
+    }
+
+    @Override
+    public String getTitle() {
+        return TITLE;
     }
 }

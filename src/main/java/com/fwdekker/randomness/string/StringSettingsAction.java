@@ -1,21 +1,26 @@
 package com.fwdekker.randomness.string;
 
+import com.fwdekker.randomness.SettingsAction;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+
+import javax.swing.*;
 
 
 /**
  * Controller for random string generation settings.
  */
-public final class StringSettingsAction extends AnAction {
-    /**
-     * Shows a {@link StringSettingsDialog}.
-     */
+public final class StringSettingsAction extends SettingsAction {
+    private static final String TITLE = "Insert Random String Settings";
+
+
     @Override
-    public void actionPerformed(final AnActionEvent e) {
-        final StringSettingsDialog dialog = new StringSettingsDialog();
-        dialog.setTitle("Insert Random String Settings");
-        dialog.pack();
-        dialog.setVisible(true);
+    public JDialog createDialog() {
+        return new StringSettingsDialog();
+    }
+
+    @Override
+    public String getTitle() {
+        return TITLE;
     }
 }
