@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.fwdekker.randomness</id>
     <name>Randomness</name>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <vendor email="felix@fwdekker.com" url="https://fwdekker.com/">FWDekker</vendor>
 
     <description><![CDATA[
