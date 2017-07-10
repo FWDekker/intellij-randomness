@@ -1,6 +1,4 @@
-package com.fwdekker.randomness.settings;
-
-import com.fwdekker.randomness.insertion.InsertRandomNumber;
+package com.fwdekker.randomness.string;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -12,18 +10,18 @@ import java.text.ParseException;
 /**
  * Dialog for settings of random number generation.
  */
-public class NumberSettingsDialog extends JDialog {
+public class StringSettingsDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    private JSpinner minValue;
-    private JSpinner maxValue;
+    private JSpinner minLength;
+    private JSpinner maxLength;
 
 
     /**
-     * Constructs a new {@code NumberSettingsDialog}.
+     * Constructs a new {@code StringSettingsDialog}.
      */
-    public NumberSettingsDialog() {
+    public StringSettingsDialog() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -44,8 +42,8 @@ public class NumberSettingsDialog extends JDialog {
                 e -> onCancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        minValue.setValue(InsertRandomNumber.getMinValue());
-        maxValue.setValue(InsertRandomNumber.getMaxValue());
+        minLength.setValue(InsertRandomString.getMinLength());
+        maxLength.setValue(InsertRandomString.getMaxLength());
     }
 
 
@@ -76,10 +74,10 @@ public class NumberSettingsDialog extends JDialog {
      * @throws ParseException if the values entered by the user could not be parsed
      */
     private void commitSettings() throws ParseException {
-        minValue.commitEdit();
-        maxValue.commitEdit();
+        minLength.commitEdit();
+        maxLength.commitEdit();
 
-        InsertRandomNumber.setMinValue((Integer) minValue.getValue());
-        InsertRandomNumber.setMaxValue((Integer) maxValue.getValue());
+        InsertRandomString.setMinLength((Integer) minLength.getValue());
+        InsertRandomString.setMaxLength((Integer) maxLength.getValue());
     }
 }

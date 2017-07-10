@@ -1,4 +1,4 @@
-package com.fwdekker.randomness.settings;
+package com.fwdekker.randomness.string;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;

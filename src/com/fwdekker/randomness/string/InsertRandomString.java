@@ -1,4 +1,6 @@
-package com.fwdekker.randomness.insertion;
+package com.fwdekker.randomness.string;
+
+import com.fwdekker.randomness.InsertRandomSomething;
 
 import java.util.Random;
 
@@ -29,7 +31,7 @@ public final class InsertRandomString extends InsertRandomSomething {
      * @return a random string of alphanumerical characters
      */
     @Override
-    String generateString() {
+    public String generateString() {
         final int length = minLength + RANDOM.nextInt(maxLength - minLength + 1);
 
         final char[] text = new char[length];

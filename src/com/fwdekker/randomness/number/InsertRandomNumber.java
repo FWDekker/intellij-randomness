@@ -1,4 +1,6 @@
-package com.fwdekker.randomness.insertion;
+package com.fwdekker.randomness.number;
+
+import com.fwdekker.randomness.InsertRandomSomething;
 
 import java.util.Random;
 
@@ -25,7 +27,7 @@ public class InsertRandomNumber extends InsertRandomSomething {
      * @return a random number between the minimum and maximum value, inclusive
      */
     @Override
-    String generateString() {
+    public String generateString() {
         final int range = maxValue - minValue;
         return Integer.toString(minValue + RANDOM.nextInt(range + 1));
     }

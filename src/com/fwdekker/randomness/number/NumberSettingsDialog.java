@@ -1,6 +1,6 @@
-package com.fwdekker.randomness.settings;
+package com.fwdekker.randomness.number;
 
-import com.fwdekker.randomness.insertion.InsertRandomString;
+import com.fwdekker.randomness.number.InsertRandomNumber;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -12,18 +12,18 @@ import java.text.ParseException;
 /**
  * Dialog for settings of random number generation.
  */
-public class StringSettingsDialog extends JDialog {
+public class NumberSettingsDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    private JSpinner minLength;
-    private JSpinner maxLength;
+    private JSpinner minValue;
+    private JSpinner maxValue;
 
 
     /**
-     * Constructs a new {@code StringSettingsDialog}.
+     * Constructs a new {@code NumberSettingsDialog}.
      */
-    public StringSettingsDialog() {
+    public NumberSettingsDialog() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -44,8 +44,8 @@ public class StringSettingsDialog extends JDialog {
                 e -> onCancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        minLength.setValue(InsertRandomString.getMinLength());
-        maxLength.setValue(InsertRandomString.getMaxLength());
+        minValue.setValue(InsertRandomNumber.getMinValue());
+        maxValue.setValue(InsertRandomNumber.getMaxValue());
     }
 
 
@@ -76,10 +76,10 @@ public class StringSettingsDialog extends JDialog {
      * @throws ParseException if the values entered by the user could not be parsed
      */
     private void commitSettings() throws ParseException {
-        minLength.commitEdit();
-        maxLength.commitEdit();
+        minValue.commitEdit();
+        maxValue.commitEdit();
 
-        InsertRandomString.setMinLength((Integer) minLength.getValue());
-        InsertRandomString.setMaxLength((Integer) maxLength.getValue());
+        InsertRandomNumber.setMinValue((Integer) minValue.getValue());
+        InsertRandomNumber.setMaxValue((Integer) maxValue.getValue());
     }
 }
