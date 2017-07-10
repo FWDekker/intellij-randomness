@@ -1,0 +1,23 @@
+<idea-plugin>
+    <id>com.fwdekker.randomness</id>
+    <name>Randomness</name>
+    <version>0.1.0</version>
+    <vendor email="felix@fwdekker.com" url="https://fwdekker.com/">FWDekker</vendor>
+
+    <description><![CDATA[
+        Insert random strings and numbers with the press of a single key.<br><br>
+
+        Adds actions to insert random data into your editor, which can be useful when writing tests.
+    ]]></description>
+
+    <change-notes><![CDATA[
+        Initial release.
+    ]]>
+    </change-notes>
+
+    <idea-version since-build="145.0"/>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
