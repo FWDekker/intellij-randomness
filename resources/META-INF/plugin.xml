@@ -18,6 +18,14 @@
     <idea-version since-build="145.0"/>
 
     <actions>
-        <!-- Add your actions here -->
+        <action id="randomness.InsertNumber" class="com.fwdekker.randomness.insertion.InsertRandomNumber"
+                text="Insert Random Number" description="Inserts a random number at the caret."/>
+        <action id="randomness.NumberSettings" class="com.fwdekker.randomness.settings.NumberSettingsAction"
+                text="Insert Random Number Settings" description="Settings for Insert Random Number."/>
+
+        <action id="randomness.InsertString" class="com.fwdekker.randomness.insertion.InsertRandomString"
+                text="Insert Random String" description="Inserts a random string at the caret."/>
+        <action id="randomness.StringSettings" class="com.fwdekker.randomness.settings.StringSettingsAction"
+                text="Insert Random String Settings" description="Settings for Insert Random String."/>
     </actions>
 </idea-plugin>
