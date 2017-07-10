@@ -6,23 +6,10 @@ import java.util.Random;
 
 
 /**
- * Generates random alphanumerical strings based on adjustable parameters.
+ * Generates random alphanumerical strings based on the settings in {@link StringSettings}.
  */
-public final class InsertRandomString extends InsertRandomSomething {
+final class InsertRandomString extends InsertRandomSomething {
     private static final Random RANDOM = new Random();
-    /**
-     * The characters that may be used in generated strings.
-     */
-    private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-    /**
-     * The minimum length of a generated string, inclusive.
-     */
-    private static int minLength = 10;
-    /**
-     * The maximum length of a generated string, inclusive.
-     */
-    private static int maxLength = 10;
 
 
     /**
@@ -32,49 +19,24 @@ public final class InsertRandomString extends InsertRandomSomething {
      */
     @Override
     public String generateString() {
-        final int length = minLength + RANDOM.nextInt(maxLength - minLength + 1);
+        final int lengthRange = StringSettings.getMaxLength() - StringSettings.getMinLength();
+        final int length = StringSettings.getMinLength() + RANDOM.nextInt(lengthRange + 1);
 
         final char[] text = new char[length];
         for (int i = 0; i < length; i++) {
-            text[i] = ALPHABET.charAt(RANDOM.nextInt(ALPHABET.length()));
+            text[i] = generateCharacter();
         }
-        return "\"" + new String(text) + "\"";
+
+        return StringSettings.ENCLOSURE + new String(text) + StringSettings.ENCLOSURE;
     }
 
 
     /**
-     * Returns the minimum length of a generated string, inclusive.
+     * Returns a random character from the alphabet.
      *
-     * @return the minimum length of a generated string, inclusive
+     * @return a random character from the alphabet
      */
-    public static int getMinLength() {
-        return minLength;
-    }
-
-    /**
-     * Sets the minimum length of a generated string, inclusive.
-     *
-     * @param minLength the minimum length of a generated string, inclusive
-     */
-    public static void setMinLength(final int minLength) {
-        InsertRandomString.minLength = minLength;
-    }
-
-    /**
-     * Returns the maximum length of a generated string, inclusive.
-     *
-     * @return the maximum length of a generated string, inclusive
-     */
-    public static int getMaxLength() {
-        return maxLength;
-    }
-
-    /**
-     * Sets the maximum length of a generated string, inclusive.
-     *
-     * @param maxLength the maximum length of a generated string, inclusive
-     */
-    public static void setMaxLength(final int maxLength) {
-        InsertRandomString.maxLength = maxLength;
+    private char generateCharacter() {
+        return StringSettings.ALPHABET.charAt(RANDOM.nextInt(StringSettings.ALPHABET.length()));
     }
 }

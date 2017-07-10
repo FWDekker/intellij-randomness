@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 /**
  * Controller for random number generation settings.
  */
-public class NumberSettingsAction extends AnAction {
+public final class NumberSettingsAction extends AnAction {
     /**
      * Shows a {@link NumberSettingsDialog}.
      */

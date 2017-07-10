@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 /**
  * Controller for random string generation settings.
  */
-public class StringSettingsAction extends AnAction {
+public final class StringSettingsAction extends AnAction {
     /**
      * Shows a {@link StringSettingsDialog}.
      */
