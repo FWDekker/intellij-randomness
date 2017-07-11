@@ -10,11 +10,6 @@
         Adds actions to insert random data into your editor, which can be useful when writing tests.
     ]]></description>
 
-    <change-notes><![CDATA[
-        Initial release.
-    ]]>
-    </change-notes>
-
     <idea-version since-build="145.0"/>
 
     <extensions defaultExtensionNs="com.intellij">
