@@ -11,6 +11,8 @@ import java.util.Random;
 final class InsertRandomString extends InsertRandomSomething {
     private static final Random RANDOM = new Random();
 
+    private final StringSettings stringSettings = StringSettings.getInstance();
+
 
     /**
      * Returns a random string of alphanumerical characters.
@@ -19,15 +21,15 @@ final class InsertRandomString extends InsertRandomSomething {
      */
     @Override
     public String generateString() {
-        final int lengthRange = StringSettings.getMaxLength() - StringSettings.getMinLength();
-        final int length = StringSettings.getMinLength() + RANDOM.nextInt(lengthRange + 1);
+        final int lengthRange = stringSettings.getMaxLength() - stringSettings.getMinLength();
+        final int length = stringSettings.getMinLength() + RANDOM.nextInt(lengthRange + 1);
 
         final char[] text = new char[length];
         for (int i = 0; i < length; i++) {
             text[i] = generateCharacter();
         }
 
-        return StringSettings.getEnclosure() + new String(text) + StringSettings.getEnclosure();
+        return stringSettings.getEnclosure() + new String(text) + stringSettings.getEnclosure();
     }
 
 
@@ -37,6 +39,6 @@ final class InsertRandomString extends InsertRandomSomething {
      * @return a random character from the alphabet
      */
     private char generateCharacter() {
-        return StringSettings.ALPHABET.charAt(RANDOM.nextInt(StringSettings.ALPHABET.length()));
+        return stringSettings.ALPHABET.charAt(RANDOM.nextInt(stringSettings.ALPHABET.length()));
     }
 }

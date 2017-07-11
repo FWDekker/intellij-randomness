@@ -1,10 +1,21 @@
 package com.fwdekker.randomness.string;
 
+import com.fwdekker.randomness.Settings;
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
+import com.intellij.util.xmlb.XmlSerializerUtil;
+
 
 /**
  * Contains settings for generating random strings.
  */
-final class StringSettings {
+@State(
+        name = "StringSettings",
+        storages = @Storage(file = "$APP_CONFIG$/randomness.xml")
+)
+public final class StringSettings extends Settings implements PersistentStateComponent<StringSettings> {
     /**
      * The characters that may be used for generated strings.
      */
@@ -16,19 +27,19 @@ final class StringSettings {
     /**
      * The minimum length of a generated string, inclusive.
      */
-    private static int minLength = DEFAULT_MIN_LENGTH;
+    public int minLength = DEFAULT_MIN_LENGTH;
     /**
      * The maximum length of a generated string, inclusive.
      */
-    private static int maxLength = DEFAULT_MAX_LENGTH;
+    public int maxLength = DEFAULT_MAX_LENGTH;
     /**
      * The string that encloses the generated string on both sides.
      */
-    private static String enclosure = "\"";
+    public String enclosure = "\"";
     /**
      * True if generated strings should be enclosed with quotation marks.
      */
-    private static boolean quotationMarksEnabled = true;
+    public boolean quotationMarksEnabled = true;
 
 
     /**
@@ -39,11 +50,31 @@ final class StringSettings {
 
 
     /**
+     * Returns the singleton {@code StringSettings} instance.
+     *
+     * @return the singleton {@code StringSettings} instance
+     */
+    public static StringSettings getInstance() {
+        return ServiceManager.getService(StringSettings.class);
+    }
+
+    @Override
+    public StringSettings getState() {
+        return this;
+    }
+
+    @Override
+    public void loadState(final StringSettings state) {
+        XmlSerializerUtil.copyBean(state, this);
+    }
+
+
+    /**
      * Returns the minimum length of a generated string, inclusive.
      *
      * @return the minimum length of a generated string, inclusive
      */
-    static int getMinLength() {
+    public int getMinLength() {
         return minLength;
     }
 
@@ -52,8 +83,8 @@ final class StringSettings {
      *
      * @param minLength the minimum length of a generated string, inclusive
      */
-    static void setMinLength(final int minLength) {
-        StringSettings.minLength = minLength;
+    public void setMinLength(final int minLength) {
+        this.minLength = minLength;
     }
 
     /**
@@ -61,7 +92,7 @@ final class StringSettings {
      *
      * @return the maximum length of a generated string, inclusive
      */
-    static int getMaxLength() {
+    public int getMaxLength() {
         return maxLength;
     }
 
@@ -70,8 +101,8 @@ final class StringSettings {
      *
      * @param maxLength the maximum length of a generated string, inclusive
      */
-    static void setMaxLength(final int maxLength) {
-        StringSettings.maxLength = maxLength;
+    public void setMaxLength(final int maxLength) {
+        this.maxLength = maxLength;
     }
 
     /**
@@ -79,7 +110,7 @@ final class StringSettings {
      *
      * @return the string that encloses the generated string on both sides
      */
-    static String getEnclosure() {
+    public String getEnclosure() {
         return enclosure;
     }
 
@@ -88,7 +119,7 @@ final class StringSettings {
      *
      * @return true if generated strings should be enclosed with quotation marks
      */
-    static boolean isQuotationMarksEnabled() {
+    public boolean isQuotationMarksEnabled() {
         return quotationMarksEnabled;
     }
 
@@ -97,8 +128,8 @@ final class StringSettings {
      *
      * @param quotationMarksEnabled true if generated strings should be enclosed with quotation marks
      */
-    static void setQuotationMarksEnabled(final boolean quotationMarksEnabled) {
-        StringSettings.quotationMarksEnabled = quotationMarksEnabled;
-        StringSettings.enclosure = quotationMarksEnabled ? "\"" : "";
+    public void setQuotationMarksEnabled(final boolean quotationMarksEnabled) {
+        this.quotationMarksEnabled = quotationMarksEnabled;
+        this.enclosure = quotationMarksEnabled ? "\"" : "";
     }
 }
