@@ -78,7 +78,7 @@ public final class DecimalSettings {
     /**
      * Sets the number of decimals to display.
      *
-     * @param decimals the number of decimals to display
+     * @param decimalCount the number of decimals to display
      */
     static void setDecimalCount(final int decimalCount) {
         DecimalSettings.decimalCount = decimalCount;
