@@ -18,7 +18,11 @@ final class StringSettingsDialog extends JDialog {
     private JButton buttonCancel;
     private JSpinner minLength;
     private JSpinner maxLength;
-    private JCheckBox quotationMarksCheckbox;
+    private ButtonGroup enclosureGroup;
+    private JRadioButton enclosureNoneButton;
+    private JRadioButton enclosureSingleButton;
+    private JRadioButton enclosureDoubleButton;
+    private JRadioButton enclosureBacktickButton;
 
 
     /**
@@ -48,7 +52,7 @@ final class StringSettingsDialog extends JDialog {
         // Load settings
         minLength.setValue(stringSettings.getMinLength());
         maxLength.setValue(stringSettings.getMaxLength());
-        quotationMarksCheckbox.setSelected(stringSettings.isQuotationMarksEnabled());
+        setSelectedEnclosure(stringSettings.getEnclosure());
     }
 
 
@@ -89,6 +93,52 @@ final class StringSettingsDialog extends JDialog {
 
         stringSettings.setMinLength(newMinLength);
         stringSettings.setMaxLength(newMaxLength);
-        stringSettings.setQuotationMarksEnabled(quotationMarksCheckbox.isSelected());
+        stringSettings.setEnclosure(getSelectedEnclosure());
+    }
+
+
+    /**
+     * Returns the text of the currently selected {@code JRadioButton} in the {@code enclosureGroup} group.
+     *
+     * @return the text of the currently selected {@code JRadioButton} in the {@code enclosureGroup} group
+     */
+    private String getSelectedEnclosure() {
+        if (enclosureNoneButton.isSelected()) {
+            return "";
+        } else if (enclosureSingleButton.isSelected()) {
+            return "'";
+        } else if (enclosureDoubleButton.isSelected()) {
+            return "\"";
+        } else if (enclosureBacktickButton.isSelected()) {
+            return "`";
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * Selects the {@code JRadioButton} in the {@code enclosureGroup} group with the given text, and deselects all
+     * other {@code JRadioButton}s in that group.
+     *
+     * @param enclosure the text of the {@code JRadioButton} to select
+     */
+    private void setSelectedEnclosure(final String enclosure) {
+        switch (enclosure) {
+            case "":
+                enclosureGroup.setSelected(enclosureNoneButton.getModel(), true);
+                break;
+            case "'":
+                enclosureGroup.setSelected(enclosureSingleButton.getModel(), true);
+                break;
+            case "\"":
+                enclosureGroup.setSelected(enclosureDoubleButton.getModel(), true);
+                break;
+            case "`":
+                enclosureGroup.setSelected(enclosureBacktickButton.getModel(), true);
+                break;
+            default:
+                enclosureGroup.setSelected(enclosureNoneButton.getModel(), true);
+                break;
+        }
     }
 }

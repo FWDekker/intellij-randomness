@@ -36,10 +36,6 @@ public final class StringSettings extends Settings implements PersistentStateCom
      * The string that encloses the generated string on both sides.
      */
     public String enclosure = "\"";
-    /**
-     * True if generated strings should be enclosed with quotation marks.
-     */
-    public boolean quotationMarksEnabled = true;
 
 
     /**
@@ -115,21 +111,11 @@ public final class StringSettings extends Settings implements PersistentStateCom
     }
 
     /**
-     * Returns true if generated strings should be enclosed with quotation marks.
+     * Sets the string that encloses the generated string on both sides.
      *
-     * @return true if generated strings should be enclosed with quotation marks
+     * @param enclosure the string that encloses the generated string on both sides
      */
-    public boolean isQuotationMarksEnabled() {
-        return quotationMarksEnabled;
-    }
-
-    /**
-     * Sets the quotation marks property.
-     *
-     * @param quotationMarksEnabled true if generated strings should be enclosed with quotation marks
-     */
-    public void setQuotationMarksEnabled(final boolean quotationMarksEnabled) {
-        this.quotationMarksEnabled = quotationMarksEnabled;
-        this.enclosure = quotationMarksEnabled ? "\"" : "";
+    public void setEnclosure(final String enclosure) {
+        this.enclosure = enclosure;
     }
 }
