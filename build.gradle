@@ -1,20 +1,7 @@
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        maven {
-            url "http://dl.bintray.com/jetbrains/intellij-plugin-service"
-        }
-
-    }
-    dependencies {
-        classpath "gradle.plugin.org.jetbrains:gradle-intellij-plugin:0.1.10"
-    }
+plugins {
+    id "org.jetbrains.intellij" version "0.2.14"
 }
 
-apply plugin: "org.jetbrains.intellij"
-
 intellij {
-    version "2016.1"
+    version = "2016.1"
 }
