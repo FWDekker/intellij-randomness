@@ -20,7 +20,7 @@ public abstract class InsertRandomSomething extends AnAction {
      * @param event the performed action
      */
     @Override
-    public void actionPerformed(final AnActionEvent event) {
+    public final void actionPerformed(final AnActionEvent event) {
         final Editor editor = event.getData(CommonDataKeys.EDITOR);
         if (editor == null) {
             return;

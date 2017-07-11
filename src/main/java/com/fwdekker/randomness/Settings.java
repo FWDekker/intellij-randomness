@@ -16,7 +16,7 @@ public abstract class Settings implements ApplicationComponent {
     }
 
     @Override
-    public String getComponentName() {
+    public final String getComponentName() {
         return getClass().getSimpleName();
     }
 }

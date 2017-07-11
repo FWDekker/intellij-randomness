@@ -1,8 +1,7 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.SettingsAction;
-
-import javax.swing.*;
+import javax.swing.JDialog;
 
 
 /**

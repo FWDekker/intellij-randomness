@@ -1,16 +1,24 @@
 package com.fwdekker.randomness.decimal;
 
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.ParseException;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.KeyStroke;
+import javax.swing.SpinnerNumberModel;
 
 
 /**
  * Dialog for settings of random decimal generation.
  */
 final class DecimalSettingsDialog extends JDialog {
+    private static final double SPINNER_STEP_SIZE = 0.1;
+
     private final DecimalSettings decimalSettings = DecimalSettings.getInstance();
 
     private JPanel contentPane;
@@ -102,7 +110,9 @@ final class DecimalSettingsDialog extends JDialog {
      * This method is called by the scene builder at the start of the constructor.
      */
     private void createUIComponents() {
-        minValue = new JSpinner(new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0.1));
-        maxValue = new JSpinner(new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0.1));
+        minValue = new JSpinner(
+                new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPINNER_STEP_SIZE));
+        maxValue = new JSpinner(
+                new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPINNER_STEP_SIZE));
     }
 }

@@ -27,15 +27,15 @@ public final class StringSettings extends Settings implements PersistentStateCom
     /**
      * The minimum length of a generated string, inclusive.
      */
-    public int minLength = DEFAULT_MIN_LENGTH;
+    private int minLength = DEFAULT_MIN_LENGTH;
     /**
      * The maximum length of a generated string, inclusive.
      */
-    public int maxLength = DEFAULT_MAX_LENGTH;
+    private int maxLength = DEFAULT_MAX_LENGTH;
     /**
      * The string that encloses the generated string on both sides.
      */
-    public String enclosure = "\"";
+    private String enclosure = "\"";
 
 
     /**

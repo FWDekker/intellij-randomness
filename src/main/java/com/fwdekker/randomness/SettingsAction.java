@@ -2,8 +2,7 @@ package com.fwdekker.randomness;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-
-import javax.swing.*;
+import javax.swing.JDialog;
 
 
 /**
