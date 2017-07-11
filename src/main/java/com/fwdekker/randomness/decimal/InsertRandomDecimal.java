@@ -12,6 +12,8 @@ import java.util.Random;
 final class InsertRandomDecimal extends InsertRandomSomething {
     private static final Random RANDOM = new Random();
 
+    private final DecimalSettings decimalSettings = DecimalSettings.getInstance();
+
 
     /**
      * Returns a random integer between the minimum and maximum value, inclusive.
@@ -20,8 +22,8 @@ final class InsertRandomDecimal extends InsertRandomSomething {
      */
     @Override
     public String generateString() {
-        final double range = DecimalSettings.getMaxValue() - DecimalSettings.getMinValue();
-        final double randomValue = DecimalSettings.getMinValue() + RANDOM.nextDouble() * range;
+        final double range = decimalSettings.getMaxValue() - decimalSettings.getMinValue();
+        final double randomValue = decimalSettings.getMinValue() + RANDOM.nextDouble() * range;
 
         return convertToString(randomValue);
     }
@@ -36,6 +38,6 @@ final class InsertRandomDecimal extends InsertRandomSomething {
      */
     private String convertToString(final double d) {
         return new BigDecimal(String.valueOf(d))
-                .setScale(DecimalSettings.getDecimalCount(), BigDecimal.ROUND_HALF_UP).toString();
+                .setScale(decimalSettings.getDecimalCount(), BigDecimal.ROUND_HALF_UP).toString();
     }
 }
