@@ -32,12 +32,12 @@ final class InsertRandomDecimal extends InsertRandomSomething {
     /**
      * Returns the string nicely formatted representation of a double.
      *
-     * @param d a double
+     * @param decimal a double
      * @return the string nicely formatted representation of a double
      * @see <a href="https://stackoverflow.com/a/154354/">StackOverflow answer</a>
      */
-    private String convertToString(final double d) {
-        return new BigDecimal(String.valueOf(d))
+    private String convertToString(final double decimal) {
+        return new BigDecimal(String.valueOf(decimal))
                 .setScale(decimalSettings.getDecimalCount(), BigDecimal.ROUND_HALF_UP).toString();
     }
 }

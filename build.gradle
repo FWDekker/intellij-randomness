@@ -2,6 +2,7 @@ plugins {
     id "idea"
     id "checkstyle"
     id "findbugs"
+    id "pmd"
 
     id "org.jetbrains.intellij" version "0.2.14"
 }
@@ -22,4 +23,9 @@ checkstyle {
 findbugs {
     ignoreFailures = true
     includeFilter = file("$rootProject.projectDir/config/findbugs/includeFilter.xml")
+}
+
+pmd {
+    ignoreFailures = true
+    ruleSetFiles = files("$rootProject.projectDir/config/pmd/pmd-rules.xml")
 }

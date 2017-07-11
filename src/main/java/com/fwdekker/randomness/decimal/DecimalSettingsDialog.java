@@ -88,19 +88,12 @@ final class DecimalSettingsDialog extends JDialog {
         minValue.commitEdit();
         maxValue.commitEdit();
 
-        double newMinValue = (Double) minValue.getValue();
-        double newMaxValue = (Double) maxValue.getValue();
-        int newDecimalCount = (Integer) decimalCount.getValue();
-
-        if (newMaxValue < newMinValue) {
-            newMaxValue = newMinValue;
-        }
-        if (newDecimalCount < 0) {
-            newDecimalCount = 0;
-        }
+        final double newMinValue = (Double) minValue.getValue();
+        final double newMaxValue = (Double) maxValue.getValue();
+        final int newDecimalCount = Math.max(0, (Integer) decimalCount.getValue());
 
         decimalSettings.setMinValue(newMinValue);
-        decimalSettings.setMaxValue(newMaxValue);
+        decimalSettings.setMaxValue(newMaxValue < newMinValue ? newMinValue : newMaxValue);
         decimalSettings.setDecimalCount(newDecimalCount);
     }
 
@@ -109,6 +102,7 @@ final class DecimalSettingsDialog extends JDialog {
      * <p>
      * This method is called by the scene builder at the start of the constructor.
      */
+    @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
         minValue = new JSpinner(
                 new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPINNER_STEP_SIZE));

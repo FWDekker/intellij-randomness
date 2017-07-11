@@ -83,13 +83,10 @@ final class IntegerSettingsDialog extends JDialog {
         minValue.commitEdit();
         maxValue.commitEdit();
 
-        int newMinValue = (Integer) minValue.getValue();
-        int newMaxValue = (Integer) maxValue.getValue();
-        if (newMaxValue < newMinValue) {
-            newMaxValue = newMinValue;
-        }
+        final int newMinValue = (Integer) minValue.getValue();
+        final int newMaxValue = (Integer) maxValue.getValue();
 
         integerSettings.setMinValue(newMinValue);
-        integerSettings.setMaxValue(newMaxValue);
+        integerSettings.setMaxValue(newMaxValue < newMinValue ? newMinValue : newMaxValue);
     }
 }

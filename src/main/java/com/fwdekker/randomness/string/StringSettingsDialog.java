@@ -92,14 +92,11 @@ final class StringSettingsDialog extends JDialog {
         minLength.commitEdit();
         maxLength.commitEdit();
 
-        int newMinLength = (Integer) minLength.getValue();
-        int newMaxLength = (Integer) maxLength.getValue();
-        if (newMaxLength < newMinLength) {
-            newMaxLength = newMinLength;
-        }
+        final int newMinLength = (Integer) minLength.getValue();
+        final int newMaxLength = (Integer) maxLength.getValue();
 
         stringSettings.setMinLength(newMinLength);
-        stringSettings.setMaxLength(newMaxLength);
+        stringSettings.setMaxLength(newMaxLength < newMinLength ? newMinLength : newMaxLength);
         stringSettings.setEnclosure(getSelectedEnclosure());
     }
 
