@@ -4,7 +4,7 @@ package com.fwdekker.randomness.decimal;
 /**
  * Contains settings for generating random decimals.
  */
-public final class DecimalSettings {
+final class DecimalSettings {
     private static final double DEFAULT_MIN_VALUE = 0.0;
     private static final double DEFAULT_MAX_VALUE = 1000.0;
     private static final int DEFAULT_DECIMAL_COUNT = 2;
