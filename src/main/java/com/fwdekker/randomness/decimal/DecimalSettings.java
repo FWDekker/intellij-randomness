@@ -1,10 +1,21 @@
 package com.fwdekker.randomness.decimal;
 
+import com.fwdekker.randomness.Settings;
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
+import com.intellij.util.xmlb.XmlSerializerUtil;
+
 
 /**
  * Contains settings for generating random decimals.
  */
-final class DecimalSettings {
+@State(
+        name = "DecimalSettings",
+        storages = @Storage(file = "$APP_CONFIG$/randomness.xml")
+)
+public final class DecimalSettings extends Settings implements PersistentStateComponent<DecimalSettings> {
     private static final double DEFAULT_MIN_VALUE = 0.0;
     private static final double DEFAULT_MAX_VALUE = 1000.0;
     private static final int DEFAULT_DECIMAL_COUNT = 2;
@@ -12,15 +23,15 @@ final class DecimalSettings {
     /**
      * The minimum value to be generated, inclusive.
      */
-    private static double minValue = DEFAULT_MIN_VALUE;
+    private double minValue = DEFAULT_MIN_VALUE;
     /**
      * The maximum value to be generated, inclusive.
      */
-    private static double maxValue = DEFAULT_MAX_VALUE;
+    private double maxValue = DEFAULT_MAX_VALUE;
     /**
      * The number of decimals to display.
      */
-    private static int decimalCount = DEFAULT_DECIMAL_COUNT;
+    private int decimalCount = DEFAULT_DECIMAL_COUNT;
 
 
     /**
@@ -31,21 +42,41 @@ final class DecimalSettings {
 
 
     /**
+     * Returns the singleton {@code DecimalSettings} instance.
+     *
+     * @return the singleton {@code DecimalSettings} instance
+     */
+    public static DecimalSettings getInstance() {
+        return ServiceManager.getService(DecimalSettings.class);
+    }
+
+    @Override
+    public DecimalSettings getState() {
+        return this;
+    }
+
+    @Override
+    public void loadState(final DecimalSettings state) {
+        XmlSerializerUtil.copyBean(state, this);
+    }
+
+
+    /**
      * Returns the minimum value to be generated, inclusive.
      *
      * @return the minimum value to be generated, inclusive
      */
-    static double getMinValue() {
+    public double getMinValue() {
         return minValue;
     }
 
     /**
-     * Sets the minimum value to be generated.
+     * Sets the minimum value to be generated, inclusive.
      *
      * @param minValue the minimum value to be generated, inclusive
      */
-    static void setMinValue(final double minValue) {
-        DecimalSettings.minValue = minValue;
+    public void setMinValue(final double minValue) {
+        this.minValue = minValue;
     }
 
     /**
@@ -53,17 +84,17 @@ final class DecimalSettings {
      *
      * @return the maximum value to be generated, inclusive
      */
-    static double getMaxValue() {
+    public double getMaxValue() {
         return maxValue;
     }
 
     /**
-     * Sets the maximum value to be generated.
+     * Sets the maximum value to be generated, inclusive.
      *
      * @param maxValue the maximum value to be generated, inclusive
      */
-    static void setMaxValue(final double maxValue) {
-        DecimalSettings.maxValue = maxValue;
+    public void setMaxValue(final double maxValue) {
+        this.maxValue = maxValue;
     }
 
     /**
@@ -71,7 +102,7 @@ final class DecimalSettings {
      *
      * @return the number of decimals to display
      */
-    static int getDecimalCount() {
+    public int getDecimalCount() {
         return decimalCount;
     }
 
@@ -80,7 +111,7 @@ final class DecimalSettings {
      *
      * @param decimalCount the number of decimals to display
      */
-    static void setDecimalCount(final int decimalCount) {
-        DecimalSettings.decimalCount = decimalCount;
+    public void setDecimalCount(final int decimalCount) {
+        this.decimalCount = decimalCount;
     }
 }

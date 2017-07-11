@@ -11,6 +11,8 @@ import java.text.ParseException;
  * Dialog for settings of random integer generation.
  */
 final class IntegerSettingsDialog extends JDialog {
+    private final IntegerSettings integerSettings = IntegerSettings.getInstance();
+
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -42,8 +44,8 @@ final class IntegerSettingsDialog extends JDialog {
                 event -> onCancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        minValue.setValue(IntegerSettings.getMinValue());
-        maxValue.setValue(IntegerSettings.getMaxValue());
+        minValue.setValue(integerSettings.getMinValue());
+        maxValue.setValue(integerSettings.getMaxValue());
     }
 
 
@@ -82,7 +84,7 @@ final class IntegerSettingsDialog extends JDialog {
             newMaxValue = newMinValue;
         }
 
-        IntegerSettings.setMinValue(newMinValue);
-        IntegerSettings.setMaxValue(newMaxValue);
+        integerSettings.setMinValue(newMinValue);
+        integerSettings.setMaxValue(newMaxValue);
     }
 }

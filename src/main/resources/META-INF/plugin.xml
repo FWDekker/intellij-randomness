@@ -17,6 +17,18 @@
 
     <idea-version since-build="145.0"/>
 
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService
+                serviceImplementation="com.fwdekker.randomness.decimal.DecimalSettings"
+                serviceInterface="com.fwdekker.randomness.decimal.DecimalSettings"/>
+        <applicationService
+                serviceImplementation="com.fwdekker.randomness.integer.IntegerSettings"
+                serviceInterface="com.fwdekker.randomness.integer.IntegerSettings"/>
+        <applicationService
+                serviceImplementation="com.fwdekker.randomness.string.StringSettings"
+                serviceInterface="com.fwdekker.randomness.string.StringSettings"/>
+    </extensions>
+
     <actions>
         <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.InsertRandomInteger"
                 text="Insert Random Integer" description="Inserts a random integer at the caret."/>

@@ -11,6 +11,8 @@ import java.text.ParseException;
  * Dialog for settings of random integer generation.
  */
 final class StringSettingsDialog extends JDialog {
+    private final StringSettings stringSettings = StringSettings.getInstance();
+
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -44,9 +46,9 @@ final class StringSettingsDialog extends JDialog {
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         // Load settings
-        minLength.setValue(StringSettings.getMinLength());
-        maxLength.setValue(StringSettings.getMaxLength());
-        quotationMarksCheckbox.setSelected(StringSettings.isQuotationMarksEnabled());
+        minLength.setValue(stringSettings.getMinLength());
+        maxLength.setValue(stringSettings.getMaxLength());
+        quotationMarksCheckbox.setSelected(stringSettings.isQuotationMarksEnabled());
     }
 
 
@@ -85,8 +87,8 @@ final class StringSettingsDialog extends JDialog {
             newMaxLength = newMinLength;
         }
 
-        StringSettings.setMinLength(newMinLength);
-        StringSettings.setMaxLength(newMaxLength);
-        StringSettings.setQuotationMarksEnabled(quotationMarksCheckbox.isSelected());
+        stringSettings.setMinLength(newMinLength);
+        stringSettings.setMaxLength(newMaxLength);
+        stringSettings.setQuotationMarksEnabled(quotationMarksCheckbox.isSelected());
     }
 }

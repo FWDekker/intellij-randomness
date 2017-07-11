@@ -11,6 +11,8 @@ import java.text.ParseException;
  * Dialog for settings of random decimal generation.
  */
 final class DecimalSettingsDialog extends JDialog {
+    private final DecimalSettings decimalSettings = DecimalSettings.getInstance();
+
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -43,9 +45,9 @@ final class DecimalSettingsDialog extends JDialog {
                 event -> onCancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        minValue.setValue(DecimalSettings.getMinValue());
-        maxValue.setValue(DecimalSettings.getMaxValue());
-        decimalCount.setValue(DecimalSettings.getDecimalCount());
+        minValue.setValue(decimalSettings.getMinValue());
+        maxValue.setValue(decimalSettings.getMaxValue());
+        decimalCount.setValue(decimalSettings.getDecimalCount());
     }
 
 
@@ -89,9 +91,9 @@ final class DecimalSettingsDialog extends JDialog {
             newDecimalCount = 0;
         }
 
-        DecimalSettings.setMinValue(newMinValue);
-        DecimalSettings.setMaxValue(newMaxValue);
-        DecimalSettings.setDecimalCount(newDecimalCount);
+        decimalSettings.setMinValue(newMinValue);
+        decimalSettings.setMaxValue(newMaxValue);
+        decimalSettings.setDecimalCount(newDecimalCount);
     }
 
     /**

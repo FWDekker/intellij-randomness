@@ -11,6 +11,8 @@ import java.util.Random;
 final class InsertRandomInteger extends InsertRandomSomething {
     private static final Random RANDOM = new Random();
 
+    private final IntegerSettings integerSettings = IntegerSettings.getInstance();
+
 
     /**
      * Returns a random integer between the minimum and maximum value, inclusive.
@@ -19,8 +21,8 @@ final class InsertRandomInteger extends InsertRandomSomething {
      */
     @Override
     public String generateString() {
-        final int range = IntegerSettings.getMaxValue() - IntegerSettings.getMinValue();
-        final int randomValue = IntegerSettings.getMinValue() + RANDOM.nextInt(range + 1);
+        final int range = integerSettings.getMaxValue() - integerSettings.getMinValue();
+        final int randomValue = integerSettings.getMinValue() + RANDOM.nextInt(range + 1);
 
         return Integer.toString(randomValue);
     }
