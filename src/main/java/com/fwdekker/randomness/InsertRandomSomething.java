@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
@@ -21,19 +22,21 @@ public abstract class InsertRandomSomething extends AnAction {
      */
     @Override
     public void actionPerformed(final AnActionEvent event) {
-        final Project project = event.getData(CommonDataKeys.PROJECT);
         final Editor editor = event.getData(CommonDataKeys.EDITOR);
         if (editor == null) {
             return;
         }
+        final Project project = event.getData(CommonDataKeys.PROJECT);
         final Document document = editor.getDocument();
-        final SelectionModel selectionModel = editor.getSelectionModel();
+        final CaretModel caretModel = editor.getCaretModel();
 
-        final int start = selectionModel.getSelectionStart();
-        final int end = selectionModel.getSelectionEnd();
+        caretModel.getAllCarets().forEach(caret -> {
+            final int start = caret.getSelectionStart();
+            final int end = caret.getSelectionEnd();
 
-        final Runnable runnable = () -> document.replaceString(start, end, generateString());
-        WriteCommandAction.runWriteCommandAction(project, runnable);
+            final Runnable runnable = () -> document.replaceString(start, end, generateString());
+            WriteCommandAction.runWriteCommandAction(project, runnable);
+        });
     }
 
 
