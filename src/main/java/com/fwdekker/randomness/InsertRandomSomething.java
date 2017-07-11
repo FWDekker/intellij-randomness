@@ -33,7 +33,13 @@ public abstract class InsertRandomSomething extends AnAction {
             final int start = caret.getSelectionStart();
             final int end = caret.getSelectionEnd();
 
-            final Runnable runnable = () -> document.replaceString(start, end, generateString());
+            final String string = generateString();
+            final int newEnd = start + string.length();
+
+            final Runnable runnable = () -> {
+                document.replaceString(start, end, string);
+                caret.setSelection(start, newEnd);
+            };
             WriteCommandAction.runWriteCommandAction(project, runnable);
         });
     }
