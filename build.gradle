@@ -1,8 +1,19 @@
 plugins {
+    id "idea"
+    id "checkstyle"
+
     id "org.jetbrains.intellij" version "0.2.14"
+}
+
+repositories {
+    mavenCentral()
 }
 
 intellij {
     version = intellijVersion
     updateSinceUntilBuild = false
+}
+
+checkstyle {
+    ignoreFailures = true
 }
