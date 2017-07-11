@@ -3,5 +3,6 @@ plugins {
 }
 
 intellij {
-    version = "2016.1"
+    version = intellijVersion
+    updateSinceUntilBuild = false
 }
