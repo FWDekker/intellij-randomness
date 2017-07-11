@@ -1,21 +1,32 @@
 package com.fwdekker.randomness.integer;
 
+import com.fwdekker.randomness.Settings;
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
+import com.intellij.util.xmlb.XmlSerializerUtil;
+
 
 /**
  * Contains settings for generating random integers.
  */
-final class IntegerSettings {
+@State(
+        name = "IntegerSettings",
+        storages = @Storage(file = "$APP_CONFIG$/randomness.xml")
+)
+public final class IntegerSettings extends Settings implements PersistentStateComponent<IntegerSettings> {
     private static final int DEFAULT_MIN_VALUE = 0;
     private static final int DEFAULT_MAX_VALUE = 1000;
 
     /**
      * The minimum value to be generated, inclusive.
      */
-    private static int minValue = DEFAULT_MIN_VALUE;
+    private int minValue = DEFAULT_MIN_VALUE;
     /**
      * The maximum value to be generated, inclusive.
      */
-    private static int maxValue = DEFAULT_MAX_VALUE;
+    private int maxValue = DEFAULT_MAX_VALUE;
 
 
     /**
@@ -26,21 +37,41 @@ final class IntegerSettings {
 
 
     /**
+     * Returns the singleton {@code IntegerSettings} instance.
+     *
+     * @return the singleton {@code IntegerSettings} instance
+     */
+    public static IntegerSettings getInstance() {
+        return ServiceManager.getService(IntegerSettings.class);
+    }
+
+    @Override
+    public IntegerSettings getState() {
+        return this;
+    }
+
+    @Override
+    public void loadState(final IntegerSettings state) {
+        XmlSerializerUtil.copyBean(state, this);
+    }
+
+
+    /**
      * Returns the minimum value to be generated, inclusive.
      *
      * @return the minimum value to be generated, inclusive
      */
-    static int getMinValue() {
+    public int getMinValue() {
         return minValue;
     }
 
     /**
-     * Sets the minimum value to be generated.
+     * Sets the minimum value to be generated, inclusive.
      *
      * @param minValue the minimum value to be generated, inclusive
      */
-    static void setMinValue(final int minValue) {
-        IntegerSettings.minValue = minValue;
+    public void setMinValue(final int minValue) {
+        this.minValue = minValue;
     }
 
     /**
@@ -48,16 +79,16 @@ final class IntegerSettings {
      *
      * @return the maximum value to be generated, inclusive
      */
-    static int getMaxValue() {
+    public int getMaxValue() {
         return maxValue;
     }
 
     /**
-     * Sets the maximum value to be generated.
+     * Sets the maximum value to be generated, inclusive.
      *
      * @param maxValue the maximum value to be generated, inclusive
      */
-    static void setMaxValue(final int maxValue) {
-        IntegerSettings.maxValue = maxValue;
+    public void setMaxValue(final int maxValue) {
+        this.maxValue = maxValue;
     }
 }

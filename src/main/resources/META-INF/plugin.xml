@@ -21,6 +21,9 @@
         <applicationService
                 serviceImplementation="com.fwdekker.randomness.decimal.DecimalSettings"
                 serviceInterface="com.fwdekker.randomness.decimal.DecimalSettings"/>
+        <applicationService
+                serviceImplementation="com.fwdekker.randomness.integer.IntegerSettings"
+                serviceInterface="com.fwdekker.randomness.integer.IntegerSettings"/>
     </extensions>
 
     <actions>
