@@ -1,28 +1,22 @@
 package com.fwdekker.randomness.string;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.ValidationInfo;
 import java.text.ParseException;
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
-import javax.swing.KeyStroke;
 
 
 /**
  * Dialog for settings of random integer generation.
  */
-final class StringSettingsDialog extends JDialog {
+final class StringSettingsDialog extends DialogWrapper {
     private final StringSettings stringSettings = StringSettings.getInstance();
 
     private JPanel contentPane;
-    private JButton buttonOK;
-    private JButton buttonCancel;
     private JSpinner minLength;
     private JSpinner maxLength;
     private ButtonGroup enclosureGroup;
@@ -36,51 +30,42 @@ final class StringSettingsDialog extends JDialog {
      * Constructs a new {@code StringSettingsDialog}.
      */
     StringSettingsDialog() {
-        setContentPane(contentPane);
-        setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
+        super(null);
 
-        buttonOK.addActionListener(event -> onOK());
-        buttonCancel.addActionListener(event -> onCancel());
+        init();
+        loadSettings();
+    }
 
-        // Call onCancel() when cross is clicked
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(final WindowEvent event) {
-                onCancel();
-            }
-        });
 
-        // Call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(
-                event -> onCancel(),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    /**
+     * Returns the center panel containing all input fields.
+     *
+     * @return the center panel containing all input fields
+     */
+    @Override
+    protected JComponent createCenterPanel() {
+        return contentPane;
+    }
 
-        // Load settings
+
+    @Override
+    protected void doOKAction() {
+        processDoNotAskOnOk(OK_EXIT_CODE);
+
+        if (getOKAction().isEnabled()) {
+            saveSettings();
+            close(OK_EXIT_CODE);
+        }
+    }
+
+
+    /**
+     * Loads settings from the model into the UI.
+     */
+    private void loadSettings() {
         minLength.setValue(stringSettings.getMinLength());
         maxLength.setValue(stringSettings.getMaxLength());
         setSelectedEnclosure(stringSettings.getEnclosure());
-    }
-
-
-    /**
-     * Commits settings and, if committing was successful, closes the dialog.
-     */
-    private void onOK() {
-        try {
-            commitSettings();
-        } catch (final ParseException e) {
-            return;
-        }
-
-        dispose();
-    }
-
-    /**
-     * Closes the dialog without committing settings.
-     */
-    private void onCancel() {
-        dispose();
     }
 
     /**
@@ -88,16 +73,40 @@ final class StringSettingsDialog extends JDialog {
      *
      * @throws ParseException if the values entered by the user could not be parsed
      */
-    private void commitSettings() throws ParseException {
-        minLength.commitEdit();
-        maxLength.commitEdit();
+    private void saveSettings() {
+        try {
+            minLength.commitEdit();
+            maxLength.commitEdit();
+        } catch (final ParseException e) {
+            throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
+        }
 
-        final int newMinLength = (Integer) minLength.getValue();
-        final int newMaxLength = (Integer) maxLength.getValue();
-
-        stringSettings.setMinLength(newMinLength);
-        stringSettings.setMaxLength(newMaxLength < newMinLength ? newMinLength : newMaxLength);
+        stringSettings.setMinLength((Integer) minLength.getValue());
+        stringSettings.setMaxLength((Integer) maxLength.getValue());
         stringSettings.setEnclosure(getSelectedEnclosure());
+    }
+
+    /**
+     * Validates all input fields.
+     *
+     * @return {@code null} if the input is valid, or {@code ValidationInfo} indicating the error if input is not valid
+     */
+    @Override
+    protected ValidationInfo doValidate() {
+        if (!(minLength.getValue() instanceof Integer)) {
+            return new ValidationInfo("Minimum value must be an integer.", minLength);
+        }
+        if (!(maxLength.getValue() instanceof Integer)) {
+            return new ValidationInfo("Maximum value must be an integer.", maxLength);
+        }
+
+        final double newMinLength = (Integer) minLength.getValue();
+        final double newMaxLength = (Integer) maxLength.getValue();
+        if (newMaxLength < newMinLength) {
+            return new ValidationInfo("Maximum value cannot be smaller than minimum value.", maxLength);
+        }
+
+        return null;
     }
 
 

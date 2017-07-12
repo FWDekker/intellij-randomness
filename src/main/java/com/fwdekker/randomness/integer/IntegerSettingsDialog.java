@@ -1,92 +1,100 @@
 package com.fwdekker.randomness.integer;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.ValidationInfo;
 import java.text.ParseException;
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.KeyStroke;
 
 
 /**
  * Dialog for settings of random integer generation.
  */
-final class IntegerSettingsDialog extends JDialog {
+final class IntegerSettingsDialog extends DialogWrapper {
     private final IntegerSettings integerSettings = IntegerSettings.getInstance();
 
     private JPanel contentPane;
-    private JButton buttonOK;
-    private JButton buttonCancel;
     private JSpinner minValue;
     private JSpinner maxValue;
 
 
     /**
-     * Constructs a new {@code IntegerSettingsDialog}.
+     * Constructs a new {@code DecimalSettingsDialog}.
      */
     IntegerSettingsDialog() {
-        setContentPane(contentPane);
-        setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
+        super(null);
 
-        buttonOK.addActionListener(event -> onOK());
-        buttonCancel.addActionListener(event -> onCancel());
+        init();
+        loadSettings();
+    }
 
-        // Call onCancel() when cross is clicked
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(final WindowEvent event) {
-                onCancel();
-            }
-        });
 
-        // Call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(
-                event -> onCancel(),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    /**
+     * Returns the center panel containing all input fields.
+     *
+     * @return the center panel containing all input fields
+     */
+    @Override
+    protected JComponent createCenterPanel() {
+        return contentPane;
+    }
 
+
+    @Override
+    protected void doOKAction() {
+        processDoNotAskOnOk(OK_EXIT_CODE);
+
+        if (getOKAction().isEnabled()) {
+            saveSettings();
+            close(OK_EXIT_CODE);
+        }
+    }
+
+
+    /**
+     * Loads settings from the model into the UI.
+     */
+    private void loadSettings() {
         minValue.setValue(integerSettings.getMinValue());
         maxValue.setValue(integerSettings.getMaxValue());
     }
 
-
     /**
-     * Commits settings and, if committing was successful, closes the dialog.
+     * Saves settings from the UI into the model.
      */
-    private void onOK() {
+    private void saveSettings() {
         try {
-            commitSettings();
+            minValue.commitEdit();
+            maxValue.commitEdit();
         } catch (final ParseException e) {
-            return;
+            throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
         }
 
-        dispose();
+        integerSettings.setMinValue((Integer) minValue.getValue());
+        integerSettings.setMaxValue((Integer) maxValue.getValue());
     }
 
     /**
-     * Closes the dialog without committing settings.
-     */
-    private void onCancel() {
-        dispose();
-    }
-
-    /**
-     * Commits the values entered by the user to the model.
+     * Validates all input fields.
      *
-     * @throws ParseException if the values entered by the user could not be parsed
+     * @return {@code null} if the input is valid, or {@code ValidationInfo} indicating the error if input is not valid
      */
-    private void commitSettings() throws ParseException {
-        minValue.commitEdit();
-        maxValue.commitEdit();
+    @Override
+    protected ValidationInfo doValidate() {
+        if (!(minValue.getValue() instanceof Integer)) {
+            return new ValidationInfo("Minimum value must be an integer.", minValue);
+        }
+        if (!(maxValue.getValue() instanceof Integer)) {
+            return new ValidationInfo("Maximum value must be an integer.", maxValue);
+        }
 
         final int newMinValue = (Integer) minValue.getValue();
         final int newMaxValue = (Integer) maxValue.getValue();
+        if (newMaxValue < newMinValue) {
+            return new ValidationInfo("Maximum value cannot be smaller than minimum value.", maxValue);
+        }
 
-        integerSettings.setMinValue(newMinValue);
-        integerSettings.setMaxValue(newMaxValue < newMinValue ? newMinValue : newMaxValue);
+        return null;
     }
 }

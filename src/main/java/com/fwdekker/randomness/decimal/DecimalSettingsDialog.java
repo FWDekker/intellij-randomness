@@ -68,6 +68,33 @@ final class DecimalSettingsDialog extends DialogWrapper {
         }
     }
 
+
+    /**
+     * Loads settings from the model into the UI.
+     */
+    private void loadSettings() {
+        minValue.setValue(decimalSettings.getMinValue());
+        maxValue.setValue(decimalSettings.getMaxValue());
+        decimalCount.setValue(decimalSettings.getDecimalCount());
+    }
+
+    /**
+     * Saves settings from the UI into the model.
+     */
+    private void saveSettings() {
+        try {
+            minValue.commitEdit();
+            maxValue.commitEdit();
+            decimalCount.commitEdit();
+        } catch (final ParseException e) {
+            throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
+        }
+
+        decimalSettings.setMinValue((Double) minValue.getValue());
+        decimalSettings.setMaxValue((Double) maxValue.getValue());
+        decimalSettings.setDecimalCount((Integer) decimalCount.getValue());
+    }
+
     /**
      * Validates all input fields.
      *
@@ -97,32 +124,5 @@ final class DecimalSettingsDialog extends DialogWrapper {
         }
 
         return null;
-    }
-
-
-    /**
-     * Loads settings from the model into the UI.
-     */
-    private void loadSettings() {
-        minValue.setValue(decimalSettings.getMinValue());
-        maxValue.setValue(decimalSettings.getMaxValue());
-        decimalCount.setValue(decimalSettings.getDecimalCount());
-    }
-
-    /**
-     * Saves settings from the UI into the model.
-     */
-    private void saveSettings() {
-        try {
-            minValue.commitEdit();
-            maxValue.commitEdit();
-            decimalCount.commitEdit();
-        } catch (final ParseException e) {
-            throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
-        }
-
-        decimalSettings.setMinValue((Double) minValue.getValue());
-        decimalSettings.setMaxValue((Double) maxValue.getValue());
-        decimalSettings.setDecimalCount((Integer) decimalCount.getValue());
     }
 }

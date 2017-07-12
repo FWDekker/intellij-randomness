@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.SettingsAction;
+import com.intellij.openapi.ui.DialogWrapper;
 import javax.swing.JDialog;
 
 
@@ -12,7 +13,7 @@ public final class StringSettingsAction extends SettingsAction {
 
 
     @Override
-    public JDialog createDialog() {
+    public DialogWrapper createDialog() {
         return new StringSettingsDialog();
     }
 
