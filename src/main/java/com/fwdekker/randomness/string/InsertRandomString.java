@@ -39,6 +39,8 @@ final class InsertRandomString extends InsertRandomSomething {
      * @return a random character from the alphabet
      */
     private char generateCharacter() {
-        return stringSettings.ALPHABET.charAt(RANDOM.nextInt(stringSettings.ALPHABET.length()));
+        final String alphabet = stringSettings.getAlphabet();
+
+        return alphabet.charAt(RANDOM.nextInt(alphabet.length()));
     }
 }

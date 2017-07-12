@@ -16,11 +16,6 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
         storages = @Storage(file = "$APP_CONFIG$/randomness.xml")
 )
 public final class StringSettings extends Settings implements PersistentStateComponent<StringSettings> {
-    /**
-     * The characters that may be used for generated strings.
-     */
-    public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
     private static final int DEFAULT_MIN_LENGTH = 10;
     private static final int DEFAULT_MAX_LENGTH = 10;
 
@@ -36,6 +31,10 @@ public final class StringSettings extends Settings implements PersistentStateCom
      * The string that encloses the generated string on both sides.
      */
     private String enclosure = "\"";
+    /**
+     * The characters that may be used for generated strings.
+     */
+    private String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 
     /**
@@ -117,5 +116,23 @@ public final class StringSettings extends Settings implements PersistentStateCom
      */
     public void setEnclosure(final String enclosure) {
         this.enclosure = enclosure;
+    }
+
+    /**
+     * Returns the characters that may be used for generated strings.
+     *
+     * @return the characters that may be used for generated strings
+     */
+    public String getAlphabet() {
+        return alphabet;
+    }
+
+    /**
+     * Sets the characters that may be used for generated strings.
+     *
+     * @param alphabet the characters that may be used for generated strings
+     */
+    public void setAlphabet(final String alphabet) {
+        this.alphabet = alphabet;
     }
 }
