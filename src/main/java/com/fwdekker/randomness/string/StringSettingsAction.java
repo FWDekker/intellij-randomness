@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.SettingsAction;
-import com.intellij.openapi.ui.DialogWrapper;
+import com.fwdekker.randomness.SettingsDialog;
 
 
 /**
@@ -12,7 +12,7 @@ public final class StringSettingsAction extends SettingsAction {
 
 
     @Override
-    public DialogWrapper createDialog() {
+    public SettingsDialog createDialog() {
         return new StringSettingsDialog();
     }
 

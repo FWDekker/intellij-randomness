@@ -2,7 +2,6 @@ package com.fwdekker.randomness;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.ui.DialogWrapper;
 
 
 /**
@@ -16,7 +15,7 @@ public abstract class SettingsAction extends AnAction {
      */
     @Override
     public final void actionPerformed(final AnActionEvent event) {
-        final DialogWrapper dialog = createDialog();
+        final SettingsDialog dialog = createDialog();
         dialog.setTitle(getTitle());
         dialog.show();
         dialog.getExitCode();
@@ -28,7 +27,7 @@ public abstract class SettingsAction extends AnAction {
      *
      * @return the dialog to display
      */
-    protected abstract DialogWrapper createDialog();
+    protected abstract SettingsDialog createDialog();
 
     /**
      * Returns the title of the dialog to display.
