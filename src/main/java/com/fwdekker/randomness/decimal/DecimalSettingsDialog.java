@@ -34,14 +34,14 @@ final class DecimalSettingsDialog extends DialogWrapper {
     }
 
 
-    /**
-     * Returns the center panel containing all input fields.
-     *
-     * @return the center panel containing all input fields
-     */
     @Override
     protected JComponent createCenterPanel() {
         return contentPane;
+    }
+
+    @Override
+    protected String getDimensionServiceKey() {
+        return getClass().getSimpleName();
     }
 
     /**
