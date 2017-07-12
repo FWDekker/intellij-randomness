@@ -8,6 +8,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 
 
 /**
@@ -24,6 +25,7 @@ final class StringSettingsDialog extends SettingsDialog {
     private JRadioButton enclosureSingleButton;
     private JRadioButton enclosureDoubleButton;
     private JRadioButton enclosureBacktickButton;
+    private JTextField alphabet;
 
 
     /**
@@ -48,6 +50,7 @@ final class StringSettingsDialog extends SettingsDialog {
         minLength.setValue(stringSettings.getMinLength());
         maxLength.setValue(stringSettings.getMaxLength());
         setSelectedEnclosure(stringSettings.getEnclosure());
+        alphabet.setText(stringSettings.getAlphabet());
     }
 
     @Override
@@ -62,6 +65,7 @@ final class StringSettingsDialog extends SettingsDialog {
         stringSettings.setMinLength((Integer) minLength.getValue());
         stringSettings.setMaxLength((Integer) maxLength.getValue());
         stringSettings.setEnclosure(getSelectedEnclosure());
+        stringSettings.setAlphabet(alphabet.getText());
     }
 
     @Override
@@ -77,6 +81,11 @@ final class StringSettingsDialog extends SettingsDialog {
         final double newMaxLength = (Integer) maxLength.getValue();
         if (newMaxLength < newMinLength) {
             return new ValidationInfo("Maximum value cannot be smaller than minimum value.", maxLength);
+        }
+
+        final String newAlphabet = alphabet.getText();
+        if (newAlphabet.length() == 0) {
+            return new ValidationInfo("Enter at least one symbol.", alphabet);
         }
 
         return null;
