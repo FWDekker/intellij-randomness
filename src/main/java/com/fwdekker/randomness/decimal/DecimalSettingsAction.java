@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.SettingsAction;
-import javax.swing.JDialog;
+import com.intellij.openapi.ui.DialogWrapper;
 
 
 /**
@@ -12,7 +12,7 @@ public final class DecimalSettingsAction extends SettingsAction {
 
 
     @Override
-    public JDialog createDialog() {
+    public DialogWrapper createDialog() {
         return new DecimalSettingsDialog();
     }
 
