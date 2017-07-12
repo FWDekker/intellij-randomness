@@ -53,7 +53,7 @@ final class StringSettingsDialog extends SettingsDialog {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
-        alphabetList = new JList(Alphabet.values());
+        alphabetList = new JList<>(Alphabet.values());
         alphabetList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         alphabetList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     }
