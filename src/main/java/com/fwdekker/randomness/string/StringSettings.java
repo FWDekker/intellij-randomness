@@ -6,6 +6,9 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -32,16 +35,10 @@ public final class StringSettings extends Settings implements PersistentStateCom
      */
     private String enclosure = "\"";
     /**
-     * The characters that may be used for generated strings.
+     * The alphabet to be used for generating strings.
      */
-    private String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-
-    /**
-     * Private to prevent instantiation.
-     */
-    private StringSettings() {
-    }
+    private Set<Alphabet> alphabets
+            = new HashSet<>(Arrays.asList(Alphabet.UPPERCASE, Alphabet.LOWERCASE, Alphabet.DIGITS));
 
 
     /**
@@ -119,20 +116,20 @@ public final class StringSettings extends Settings implements PersistentStateCom
     }
 
     /**
-     * Returns the characters that may be used for generated strings.
+     * Returns the alphabet to be used for generating strings.
      *
-     * @return the characters that may be used for generated strings
+     * @return the alphabet to be used for generating strings
      */
-    public String getAlphabet() {
-        return alphabet;
+    public Set<Alphabet> getAlphabets() {
+        return alphabets;
     }
 
     /**
-     * Sets the characters that may be used for generated strings.
+     * Sets the alphabet to be used for generating strings.
      *
-     * @param alphabet the characters that may be used for generated strings
+     * @param alphabets the alphabet to be used for generating strings
      */
-    public void setAlphabet(final String alphabet) {
-        this.alphabet = alphabet;
+    public void setAlphabets(final Set<Alphabet> alphabets) {
+        this.alphabets = alphabets;
     }
 }

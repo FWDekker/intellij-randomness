@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.InsertRandomSomething;
-
 import java.util.Random;
 
 
@@ -39,7 +38,7 @@ final class InsertRandomString extends InsertRandomSomething {
      * @return a random character from the alphabet
      */
     private char generateCharacter() {
-        final String alphabet = stringSettings.getAlphabet();
+        final String alphabet = Alphabet.concatenate(stringSettings.getAlphabets());
 
         return alphabet.charAt(RANDOM.nextInt(alphabet.length()));
     }

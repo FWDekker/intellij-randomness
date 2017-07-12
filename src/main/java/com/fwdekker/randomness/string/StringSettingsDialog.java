@@ -3,11 +3,14 @@ package com.fwdekker.randomness.string;
 import com.fwdekker.randomness.SettingsDialog;
 import com.intellij.openapi.ui.ValidationInfo;
 import java.text.ParseException;
+import java.util.HashSet;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
+import javax.swing.ListSelectionModel;
 
 
 /**
@@ -24,6 +27,7 @@ final class StringSettingsDialog extends SettingsDialog {
     private JRadioButton enclosureSingleButton;
     private JRadioButton enclosureDoubleButton;
     private JRadioButton enclosureBacktickButton;
+    private JList<Alphabet> alphabetList;
 
 
     /**
@@ -42,12 +46,30 @@ final class StringSettingsDialog extends SettingsDialog {
         return contentPane;
     }
 
+    /**
+     * Initialises custom UI components.
+     * <p>
+     * This method is called by the scene builder at the start of the constructor.
+     */
+    @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
+    private void createUIComponents() {
+        alphabetList = new JList(Alphabet.values());
+        alphabetList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        alphabetList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+    }
+
 
     @Override
     protected void loadSettings() {
         minLength.setValue(stringSettings.getMinLength());
         maxLength.setValue(stringSettings.getMaxLength());
         setSelectedEnclosure(stringSettings.getEnclosure());
+
+        for (int i = 0; i < Alphabet.values().length; i++) {
+            if (stringSettings.getAlphabets().contains(Alphabet.values()[i])) {
+                alphabetList.addSelectionInterval(i, i);
+            }
+        }
     }
 
     @Override
@@ -62,6 +84,7 @@ final class StringSettingsDialog extends SettingsDialog {
         stringSettings.setMinLength((Integer) minLength.getValue());
         stringSettings.setMaxLength((Integer) maxLength.getValue());
         stringSettings.setEnclosure(getSelectedEnclosure());
+        stringSettings.setAlphabets(new HashSet<>(alphabetList.getSelectedValuesList()));
     }
 
     @Override
@@ -77,6 +100,10 @@ final class StringSettingsDialog extends SettingsDialog {
         final double newMaxLength = (Integer) maxLength.getValue();
         if (newMaxLength < newMinLength) {
             return new ValidationInfo("Maximum value cannot be smaller than minimum value.", maxLength);
+        }
+
+        if (alphabetList.getSelectedValuesList().isEmpty()) {
+            return new ValidationInfo("Select at least one set of symbols.", alphabetList);
         }
 
         return null;
