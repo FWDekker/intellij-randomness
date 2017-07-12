@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.decimal;
 
-import com.intellij.openapi.ui.DialogWrapper;
+import com.fwdekker.randomness.SettingsDialog;
 import com.intellij.openapi.ui.ValidationInfo;
 import java.text.ParseException;
 import javax.swing.JComponent;
@@ -12,7 +12,7 @@ import javax.swing.SpinnerNumberModel;
 /**
  * Dialog for settings of random decimal generation.
  */
-final class DecimalSettingsDialog extends DialogWrapper {
+final class DecimalSettingsDialog extends SettingsDialog {
     private static final double SPINNER_STEP_SIZE = 0.1;
 
     private final DecimalSettings decimalSettings = DecimalSettings.getInstance();
@@ -27,7 +27,7 @@ final class DecimalSettingsDialog extends DialogWrapper {
      * Constructs a new {@code DecimalSettingsDialog}.
      */
     DecimalSettingsDialog() {
-        super(null);
+        super();
 
         init();
         loadSettings();
@@ -37,11 +37,6 @@ final class DecimalSettingsDialog extends DialogWrapper {
     @Override
     protected JComponent createCenterPanel() {
         return contentPane;
-    }
-
-    @Override
-    protected String getDimensionServiceKey() {
-        return getClass().getSimpleName();
     }
 
     /**
@@ -59,29 +54,14 @@ final class DecimalSettingsDialog extends DialogWrapper {
 
 
     @Override
-    protected void doOKAction() {
-        processDoNotAskOnOk(OK_EXIT_CODE);
-
-        if (getOKAction().isEnabled()) {
-            saveSettings();
-            close(OK_EXIT_CODE);
-        }
-    }
-
-
-    /**
-     * Loads settings from the model into the UI.
-     */
-    private void loadSettings() {
+    protected void loadSettings() {
         minValue.setValue(decimalSettings.getMinValue());
         maxValue.setValue(decimalSettings.getMaxValue());
         decimalCount.setValue(decimalSettings.getDecimalCount());
     }
 
-    /**
-     * Saves settings from the UI into the model.
-     */
-    private void saveSettings() {
+    @Override
+    protected void saveSettings() {
         try {
             minValue.commitEdit();
             maxValue.commitEdit();
@@ -95,11 +75,6 @@ final class DecimalSettingsDialog extends DialogWrapper {
         decimalSettings.setDecimalCount((Integer) decimalCount.getValue());
     }
 
-    /**
-     * Validates all input fields.
-     *
-     * @return {@code null} if the input is valid, or {@code ValidationInfo} indicating the error if input is not valid
-     */
     @Override
     protected ValidationInfo doValidate() {
         if (!(minValue.getValue() instanceof Double)) {

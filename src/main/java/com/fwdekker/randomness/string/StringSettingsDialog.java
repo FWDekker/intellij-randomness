@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.string;
 
-import com.intellij.openapi.ui.DialogWrapper;
+import com.fwdekker.randomness.SettingsDialog;
 import com.intellij.openapi.ui.ValidationInfo;
 import java.text.ParseException;
 import javax.swing.ButtonGroup;
@@ -13,7 +13,7 @@ import javax.swing.JSpinner;
 /**
  * Dialog for settings of random integer generation.
  */
-final class StringSettingsDialog extends DialogWrapper {
+final class StringSettingsDialog extends SettingsDialog {
     private final StringSettings stringSettings = StringSettings.getInstance();
 
     private JPanel contentPane;
@@ -30,7 +30,7 @@ final class StringSettingsDialog extends DialogWrapper {
      * Constructs a new {@code StringSettingsDialog}.
      */
     StringSettingsDialog() {
-        super(null);
+        super();
 
         init();
         loadSettings();
@@ -42,38 +42,16 @@ final class StringSettingsDialog extends DialogWrapper {
         return contentPane;
     }
 
-    @Override
-    protected String getDimensionServiceKey() {
-        return getClass().getSimpleName();
-    }
-
 
     @Override
-    protected void doOKAction() {
-        processDoNotAskOnOk(OK_EXIT_CODE);
-
-        if (getOKAction().isEnabled()) {
-            saveSettings();
-            close(OK_EXIT_CODE);
-        }
-    }
-
-
-    /**
-     * Loads settings from the model into the UI.
-     */
-    private void loadSettings() {
+    protected void loadSettings() {
         minLength.setValue(stringSettings.getMinLength());
         maxLength.setValue(stringSettings.getMaxLength());
         setSelectedEnclosure(stringSettings.getEnclosure());
     }
 
-    /**
-     * Commits the values entered by the user to the model.
-     *
-     * @throws ParseException if the values entered by the user could not be parsed
-     */
-    private void saveSettings() {
+    @Override
+    protected void saveSettings() {
         try {
             minLength.commitEdit();
             maxLength.commitEdit();
@@ -86,11 +64,6 @@ final class StringSettingsDialog extends DialogWrapper {
         stringSettings.setEnclosure(getSelectedEnclosure());
     }
 
-    /**
-     * Validates all input fields.
-     *
-     * @return {@code null} if the input is valid, or {@code ValidationInfo} indicating the error if input is not valid
-     */
     @Override
     protected ValidationInfo doValidate() {
         if (!(minLength.getValue() instanceof Integer)) {
