@@ -2,7 +2,6 @@ package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.SettingsAction;
 import com.intellij.openapi.ui.DialogWrapper;
-import javax.swing.JDialog;
 
 
 /**
