@@ -36,11 +36,11 @@
             <separator/>
 
             <action id="randomness.IntegerSettings" class="com.fwdekker.randomness.integer.IntegerSettingsAction"
-                    text="Insert Random Integer Settings" description="Settings for Insert Random Integer."/>
+                    text="Random Integer Settings" description="Settings for Insert Random Integer."/>
             <action id="randomness.DecimalSettings" class="com.fwdekker.randomness.decimal.DecimalSettingsAction"
-                    text="Insert Random Decimal Settings" description="Settings for Insert Decimal String."/>
+                    text="Random Decimal Settings" description="Settings for Insert Decimal String."/>
             <action id="randomness.StringSettings" class="com.fwdekker.randomness.string.StringSettingsAction"
-                    text="Insert Random String Settings" description="Settings for Insert Random String."/>
+                    text="Random String Settings" description="Settings for Insert Random String."/>
         </group>
 
         <action id="randomness.ShowGroup" class="com.fwdekker.randomness.InsertDataAction"

@@ -8,7 +8,7 @@ import com.fwdekker.randomness.SettingsDialog;
  * Controller for random integer generation settings.
  */
 public final class IntegerSettingsAction extends SettingsAction {
-    private static final String TITLE = "Insert Random Integer Settings";
+    private static final String TITLE = "Random Integer Settings";
 
 
     @Override
