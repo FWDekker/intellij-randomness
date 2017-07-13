@@ -1,5 +1,6 @@
 # Randomness
 [![GitHub release](https://img.shields.io/github/release/FWDekker/intellij-randomness.svg)](https://github.com/FWDekker/intellij-randomness/releases/latest)
+[![Travis build status](https://img.shields.io/travis/FWDekker/intellij-randomness.svg)](https://travis-ci.org/FWDekker/intellij-randomness)
 <br />
 Rather than going to [random.org](https://www.random.org/) or making up your own random data, you can now insert random data using an IntelliJ action!
 
