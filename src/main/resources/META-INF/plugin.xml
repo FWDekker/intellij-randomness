@@ -25,13 +25,16 @@
     </extensions>
 
     <actions>
-        <group id="randomness.Insert" text="Insert Random Data" popup="true">
+        <group id="randomness.Insert" popup="true"
+               text="Insert Random Data" description="Inserts random data at the caret.">
             <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.InsertRandomInteger"
                     text="Insert Random Integer" description="Inserts a random integer at the caret."/>
-            <action id="randomness.InsertString" class="com.fwdekker.randomness.string.InsertRandomString"
-                    text="Insert Random String" description="Inserts a random string at the caret."/>
             <action id="randomness.InsertDecimal" class="com.fwdekker.randomness.decimal.InsertRandomDecimal"
                     text="Insert Random Decimal" description="Inserts a random decimal at the caret."/>
+            <action id="randomness.InsertString" class="com.fwdekker.randomness.string.InsertRandomString"
+                    text="Insert Random String" description="Inserts a random string at the caret."/>
+
+            <separator/>
 
             <action id="randomness.IntegerSettings" class="com.fwdekker.randomness.integer.IntegerSettingsAction"
                     text="Insert Random Integer Settings" description="Settings for Insert Random Integer."/>
