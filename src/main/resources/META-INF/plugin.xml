@@ -25,8 +25,7 @@
     </extensions>
 
     <actions>
-        <group id="randomness.Insert" popup="true"
-               text="Insert Random Data" description="Inserts random data at the caret.">
+        <group id="randomness.Group">
             <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.InsertRandomInteger"
                     text="Insert Random Integer" description="Inserts a random integer at the caret."/>
             <action id="randomness.InsertDecimal" class="com.fwdekker.randomness.decimal.InsertRandomDecimal"
@@ -43,5 +42,10 @@
             <action id="randomness.StringSettings" class="com.fwdekker.randomness.string.StringSettingsAction"
                     text="Insert Random String Settings" description="Settings for Insert Random String."/>
         </group>
+
+        <action id="randomness.ShowGroup" class="com.fwdekker.randomness.InsertDataAction"
+                text="Insert Random Data" description="Inserts random data at the caret.">
+            <keyboard-shortcut first-keystroke="control alt R" keymap="$default"/>
+        </action>
     </actions>
 </idea-plugin>
