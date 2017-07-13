@@ -25,19 +25,20 @@
     </extensions>
 
     <actions>
-        <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.InsertRandomInteger"
-                text="Insert Random Integer" description="Inserts a random integer at the caret."/>
-        <action id="randomness.IntegerSettings" class="com.fwdekker.randomness.integer.IntegerSettingsAction"
-                text="Insert Random Integer Settings" description="Settings for Insert Random Integer."/>
+        <group id="randomness.Insert" text="Insert Random Data" popup="true">
+            <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.InsertRandomInteger"
+                    text="Insert Random Integer" description="Inserts a random integer at the caret."/>
+            <action id="randomness.InsertString" class="com.fwdekker.randomness.string.InsertRandomString"
+                    text="Insert Random String" description="Inserts a random string at the caret."/>
+            <action id="randomness.InsertDecimal" class="com.fwdekker.randomness.decimal.InsertRandomDecimal"
+                    text="Insert Random Decimal" description="Inserts a random decimal at the caret."/>
 
-        <action id="randomness.InsertDecimal" class="com.fwdekker.randomness.decimal.InsertRandomDecimal"
-                text="Insert Random Decimal" description="Inserts a random decimal at the caret."/>
-        <action id="randomness.DecimalSettings" class="com.fwdekker.randomness.decimal.DecimalSettingsAction"
-                text="Insert Random Decimal Settings" description="Settings for Insert Decimal String."/>
-
-        <action id="randomness.InsertString" class="com.fwdekker.randomness.string.InsertRandomString"
-                text="Insert Random String" description="Inserts a random string at the caret."/>
-        <action id="randomness.StringSettings" class="com.fwdekker.randomness.string.StringSettingsAction"
-                text="Insert Random String Settings" description="Settings for Insert Random String."/>
+            <action id="randomness.IntegerSettings" class="com.fwdekker.randomness.integer.IntegerSettingsAction"
+                    text="Insert Random Integer Settings" description="Settings for Insert Random Integer."/>
+            <action id="randomness.DecimalSettings" class="com.fwdekker.randomness.decimal.DecimalSettingsAction"
+                    text="Insert Random Decimal Settings" description="Settings for Insert Decimal String."/>
+            <action id="randomness.StringSettings" class="com.fwdekker.randomness.string.StringSettingsAction"
+                    text="Insert Random String Settings" description="Settings for Insert Random String."/>
+        </group>
     </actions>
 </idea-plugin>
