@@ -70,6 +70,11 @@
         <property name="message" value="Line has trailing spaces."/>
     </module>
 
+    <!-- Suppress some checks. -->
+    <module name="SuppressionFilter">
+        <property name="file" value="config/checkstyle/suppressions.xml"/>
+    </module>
+
     <!-- Checks for Headers                                -->
     <!-- See http://checkstyle.sf.net/config_header.html   -->
     <!-- <module name="Header"> -->
