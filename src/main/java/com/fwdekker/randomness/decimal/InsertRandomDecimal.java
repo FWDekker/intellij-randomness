@@ -30,10 +30,10 @@ final class InsertRandomDecimal extends InsertRandomSomething {
 
 
     /**
-     * Returns the string nicely formatted representation of a double.
+     * Returns a nicely formatted representation of a double.
      *
      * @param decimal a double
-     * @return the string nicely formatted representation of a double
+     * @return a nicely formatted representation of a double
      * @see <a href="https://stackoverflow.com/a/154354/">StackOverflow answer</a>
      */
     private String convertToString(final double decimal) {
