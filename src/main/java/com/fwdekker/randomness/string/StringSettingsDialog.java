@@ -10,7 +10,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
 
@@ -25,10 +24,6 @@ final class StringSettingsDialog extends SettingsDialog {
     private JSpinner minLength;
     private JSpinner maxLength;
     private ButtonGroup enclosureGroup;
-    private JRadioButton enclosureNoneButton;
-    private JRadioButton enclosureSingleButton;
-    private JRadioButton enclosureDoubleButton;
-    private JRadioButton enclosureBacktickButton;
     private JList<Alphabet> alphabetList;
 
 
