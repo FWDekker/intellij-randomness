@@ -5,12 +5,16 @@ plugins {
     id "pmd"
 
     id "jacoco"
+    id "io.github.ddimtirov.codacy" version "0.1.0"
 
     id "org.jetbrains.intellij" version "0.2.14"
 }
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
 }
 
 dependencies {
@@ -51,35 +55,5 @@ jacocoTestReport {
         csv.enabled = false
         html.enabled = true
         xml.enabled = true
-    }
-}
-
-/// Codacy
-task uploadCoverageToCodacy(type: JavaExec, dependsOn: jacocoTestReport) {
-    main = "com.codacy.CodacyCoverageReporter"
-    classpath = configurations.codacy
-    args = [
-            "-l",
-            "Java",
-            "-r",
-            "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-    ]
-}
-
-task(codacyDepsize) << {
-    def size = 0
-    configurations.codacy.collect { it.length() / (1024 * 1024) }.each { size += it }
-    println "Total dependencies size: ${Math.round(size * 100) / 100} Mb"
-
-    configurations
-            .codacy
-            .sort { -it.length() }
-            .each { println "${it.name} : ${Math.round(it.length() / (1024) * 100) / 100} kb" }
-}
-
-task(codacyLocs) << {
-    configurations.codacy.each {
-        String jarName = it
-        println jarName
     }
 }

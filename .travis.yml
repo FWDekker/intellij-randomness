@@ -11,7 +11,10 @@ addons:
 
 # Display Gradle version instead of letting Travis execute './gradlew assemble' by default
 install:
-   - ./gradlew -version
+  - ./gradlew -version
+
+script:
+  - ./gradlew check codacyUpload
 
 # Caching
 before_cache:
