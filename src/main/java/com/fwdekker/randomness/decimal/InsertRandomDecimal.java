@@ -12,7 +12,24 @@ import java.util.Random;
 final class InsertRandomDecimal extends InsertRandomSomething {
     private static final Random RANDOM = new SecureRandom();
 
-    private final DecimalSettings decimalSettings = DecimalSettings.getInstance();
+    private final DecimalSettings decimalSettings;
+
+
+    /**
+     * Constructs a new {@code InsertRandomDecimal} that uses the singleton {@code DecimalSettings} instance.
+     */
+    InsertRandomDecimal() {
+        decimalSettings = DecimalSettings.getInstance();
+    }
+
+    /**
+     * Constructs a new {@code InsertRandomDecimal} that uses the given {@code DecimalSettings} instance.
+     *
+     * @param decimalSettings the settings to use for generating decimals
+     */
+    InsertRandomDecimal(final DecimalSettings decimalSettings) {
+        this.decimalSettings = decimalSettings;
+    }
 
 
     /**

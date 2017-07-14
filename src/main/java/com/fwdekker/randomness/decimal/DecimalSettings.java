@@ -37,7 +37,7 @@ public final class DecimalSettings extends Settings implements PersistentStateCo
     /**
      * Private to prevent instantiation.
      */
-    private DecimalSettings() {
+    DecimalSettings() {
     }
 
 
