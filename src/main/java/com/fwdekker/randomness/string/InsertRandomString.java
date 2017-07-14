@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.InsertRandomSomething;
+import java.security.SecureRandom;
 import java.util.Random;
 
 
@@ -8,7 +9,7 @@ import java.util.Random;
  * Generates random alphanumerical strings based on the settings in {@link StringSettings}.
  */
 final class InsertRandomString extends InsertRandomSomething {
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
     private final StringSettings stringSettings = StringSettings.getInstance();
 

@@ -1,8 +1,8 @@
 package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.InsertRandomSomething;
-
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.util.Random;
 
 
@@ -10,7 +10,7 @@ import java.util.Random;
  * Generates a random integer based on the settings in {@link DecimalSettings}.
  */
 final class InsertRandomDecimal extends InsertRandomSomething {
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
     private final DecimalSettings decimalSettings = DecimalSettings.getInstance();
 
