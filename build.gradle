@@ -4,11 +4,17 @@ plugins {
     id "findbugs"
     id "pmd"
 
+    id "jacoco"
+    id "io.github.ddimtirov.codacy" version "0.1.0"
+
     id "org.jetbrains.intellij" version "0.2.14"
 }
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
 }
 
 dependencies {
@@ -16,6 +22,9 @@ dependencies {
     testCompile group: "org.assertj", name: "assertj-core", version: assertjVersion
 }
 
+configurations {
+    codacy
+}
 
 // Change the output directory for the main source set back to the old path
 sourceSets.main.output.classesDir = new File(buildDir, "classes/main")
@@ -39,4 +48,12 @@ findbugs {
 pmd {
     ignoreFailures = true
     ruleSetFiles = files("$rootProject.projectDir/config/pmd/pmd-rules.xml")
+}
+
+jacocoTestReport {
+    reports {
+        csv.enabled = false
+        html.enabled = true
+        xml.enabled = true
+    }
 }
