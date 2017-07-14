@@ -11,6 +11,11 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    testCompile group: "junit", name: "junit", version: junitVersion
+    testCompile group: "org.assertj", name: "assertj-core", version: assertjVersion
+}
+
 
 // Change the output directory for the main source set back to the old path
 sourceSets.main.output.classesDir = new File(buildDir, "classes/main")
