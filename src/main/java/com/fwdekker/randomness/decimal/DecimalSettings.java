@@ -35,13 +35,6 @@ public final class DecimalSettings extends Settings implements PersistentStateCo
 
 
     /**
-     * Private to prevent instantiation.
-     */
-    private DecimalSettings() {
-    }
-
-
-    /**
      * Returns the singleton {@code DecimalSettings} instance.
      *
      * @return the singleton {@code DecimalSettings} instance
