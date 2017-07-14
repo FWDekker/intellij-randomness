@@ -12,7 +12,24 @@ import java.util.Random;
 final class InsertRandomInteger extends InsertRandomSomething {
     private static final Random RANDOM = new SecureRandom();
 
-    private final IntegerSettings integerSettings = IntegerSettings.getInstance();
+    private final IntegerSettings integerSettings;
+
+
+    /**
+     * Constructs a new {@code InsertRandomInteger} that uses the singleton {@code IntegerSettings} instance.
+     */
+    InsertRandomInteger() {
+        this.integerSettings = IntegerSettings.getInstance();
+    }
+
+    /**
+     * Constructs a new {@code InsertRandomInteger} that uses the given {@code IntegerSettings} instance.
+     *
+     * @param integerSettings the settings to use for generating integers
+     */
+    InsertRandomInteger(final IntegerSettings integerSettings) {
+        this.integerSettings = integerSettings;
+    }
 
 
     /**

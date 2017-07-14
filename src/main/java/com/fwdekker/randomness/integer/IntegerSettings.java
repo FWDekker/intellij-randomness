@@ -30,13 +30,6 @@ public final class IntegerSettings extends Settings implements PersistentStateCo
 
 
     /**
-     * Private to prevent instantiation.
-     */
-    private IntegerSettings() {
-    }
-
-
-    /**
      * Returns the singleton {@code IntegerSettings} instance.
      *
      * @return the singleton {@code IntegerSettings} instance
