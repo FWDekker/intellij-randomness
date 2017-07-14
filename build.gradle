@@ -11,6 +11,12 @@ repositories {
     mavenCentral()
 }
 
+
+// Change the output directory for the main source set back to the old path
+sourceSets.main.output.classesDir = new File(buildDir, "classes/main")
+sourceSets.test.output.classesDir = new File(buildDir, "classes/test")
+
+
 intellij {
     version = intellijVersion
     updateSinceUntilBuild = false
