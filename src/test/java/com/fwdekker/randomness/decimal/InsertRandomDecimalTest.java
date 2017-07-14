@@ -9,6 +9,9 @@ import org.junit.runners.Parameterized;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
+/**
+ * Parameterized unit tests for {@link InsertRandomDecimal}.
+ */
 @RunWith(Parameterized.class)
 public final class InsertRandomDecimalTest {
     private final double minValue;
@@ -47,6 +50,12 @@ public final class InsertRandomDecimalTest {
                 {98.602, 98.602, 2, "98.60"},
                 {32.675, 32.675, 3, "32.675"},
                 {52.800, 52.800, 4, "52.8000"},
+
+                {-22.252, -22.252, 0, "-22"},
+                {-85.703, -85.703, 1, "-85.7"},
+                {-52.686, -52.686, 2, "-52.69"},
+                {-94.202, -94.202, 3, "-94.202"},
+                {-60.152, -60.152, 4, "-60.1520"},
         });
     }
 

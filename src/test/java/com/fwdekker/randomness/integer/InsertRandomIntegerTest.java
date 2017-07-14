@@ -9,6 +9,9 @@ import org.junit.runners.Parameterized;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
+/**
+ * Parameterized unit tests for {@link InsertRandomInteger}.
+ */
 @RunWith(Parameterized.class)
 public final class InsertRandomIntegerTest {
     private final int minValue;

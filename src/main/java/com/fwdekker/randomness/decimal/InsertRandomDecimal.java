@@ -19,7 +19,7 @@ final class InsertRandomDecimal extends InsertRandomSomething {
      * Constructs a new {@code InsertRandomDecimal} that uses the singleton {@code DecimalSettings} instance.
      */
     InsertRandomDecimal() {
-        decimalSettings = DecimalSettings.getInstance();
+        this.decimalSettings = DecimalSettings.getInstance();
     }
 
     /**
