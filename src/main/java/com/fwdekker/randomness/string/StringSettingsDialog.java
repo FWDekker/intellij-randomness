@@ -3,12 +3,13 @@ package com.fwdekker.randomness.string;
 import com.fwdekker.randomness.SettingsDialog;
 import com.intellij.openapi.ui.ValidationInfo;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.HashSet;
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
 
@@ -23,10 +24,6 @@ final class StringSettingsDialog extends SettingsDialog {
     private JSpinner minLength;
     private JSpinner maxLength;
     private ButtonGroup enclosureGroup;
-    private JRadioButton enclosureNoneButton;
-    private JRadioButton enclosureSingleButton;
-    private JRadioButton enclosureDoubleButton;
-    private JRadioButton enclosureBacktickButton;
     private JList<Alphabet> alphabetList;
 
 
@@ -116,17 +113,11 @@ final class StringSettingsDialog extends SettingsDialog {
      * @return the text of the currently selected {@code JRadioButton} in the {@code enclosureGroup} group
      */
     private String getSelectedEnclosure() {
-        if (enclosureNoneButton.isSelected()) {
-            return "";
-        } else if (enclosureSingleButton.isSelected()) {
-            return "'";
-        } else if (enclosureDoubleButton.isSelected()) {
-            return "\"";
-        } else if (enclosureBacktickButton.isSelected()) {
-            return "`";
-        } else {
-            return "";
-        }
+        return Collections.list(enclosureGroup.getElements()).stream()
+                .filter(AbstractButton::isSelected)
+                .map(AbstractButton::getActionCommand)
+                .findFirst()
+                .orElse("");
     }
 
     /**
@@ -136,22 +127,9 @@ final class StringSettingsDialog extends SettingsDialog {
      * @param enclosure the text of the {@code JRadioButton} to select
      */
     private void setSelectedEnclosure(final String enclosure) {
-        switch (enclosure) {
-            case "":
-                enclosureGroup.setSelected(enclosureNoneButton.getModel(), true);
-                break;
-            case "'":
-                enclosureGroup.setSelected(enclosureSingleButton.getModel(), true);
-                break;
-            case "\"":
-                enclosureGroup.setSelected(enclosureDoubleButton.getModel(), true);
-                break;
-            case "`":
-                enclosureGroup.setSelected(enclosureBacktickButton.getModel(), true);
-                break;
-            default:
-                enclosureGroup.setSelected(enclosureNoneButton.getModel(), true);
-                break;
-        }
+        Collections.list(enclosureGroup.getElements()).stream()
+                .filter(button -> button.getActionCommand().equals(enclosure))
+                .findFirst()
+                .ifPresent(button -> button.setSelected(true));
     }
 }
