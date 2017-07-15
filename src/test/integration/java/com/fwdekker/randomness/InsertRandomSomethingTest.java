@@ -19,7 +19,7 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
     /**
      * The recognizable string that is inserted by the insertion action.
      */
-    static final String RANDOM_STRING = "random_string";
+    private static final String RANDOM_STRING = "random_string";
 
     private InsertRandomSimple insertRandomSimple;
     private Document document;
