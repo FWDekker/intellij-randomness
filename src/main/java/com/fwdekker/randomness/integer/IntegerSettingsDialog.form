@@ -32,7 +32,9 @@
             <minimum-size width="75" height="-1"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <name value="minValue"/>
+        </properties>
       </component>
       <component id="b9000" class="javax.swing.JSpinner" binding="maxValue">
         <constraints>
@@ -40,7 +42,9 @@
             <minimum-size width="75" height="-1"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <name value="maxValue"/>
+        </properties>
       </component>
     </children>
   </grid>

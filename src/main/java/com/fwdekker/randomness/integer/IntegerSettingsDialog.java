@@ -12,7 +12,7 @@ import javax.swing.JSpinner;
  * Dialog for settings of random integer generation.
  */
 final class IntegerSettingsDialog extends SettingsDialog {
-    private final IntegerSettings integerSettings = IntegerSettings.getInstance();
+    private final IntegerSettings integerSettings;
 
     private JPanel contentPane;
     private JSpinner minValue;
@@ -20,12 +20,23 @@ final class IntegerSettingsDialog extends SettingsDialog {
 
 
     /**
-     * Constructs a new {@code DecimalSettingsDialog}.
+     * Constructs a new {@code IntegerSettingsDialog} that uses the singleton {@code IntegerSettings} instance.
      */
     IntegerSettingsDialog() {
+        this(IntegerSettings.getInstance());
+    }
+
+    /**
+     * Constructs a new {@code IntegerSettingsDialog} that uses the given {@code IntegerSettings} instance.
+     *
+     * @param integerSettings the settings to manipulate with this dialog
+     */
+    IntegerSettingsDialog(final IntegerSettings integerSettings) {
         super();
 
         init();
+
+        this.integerSettings = integerSettings;
         loadSettings();
     }
 
