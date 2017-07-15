@@ -1,6 +1,6 @@
 # Randomness
 [![GitHub release](https://img.shields.io/github/release/FWDekker/intellij-randomness.svg)](https://github.com/FWDekker/intellij-randomness/releases/latest)
-[![Travis build status](https://img.shields.io/travis/FWDekker/intellij-randomness.svg)](https://travis-ci.org/FWDekker/intellij-randomness)
+[![Travis build status](https://img.shields.io/travis/FWDekker/intellij-randomness/master.svg)](https://travis-ci.org/FWDekker/intellij-randomness)
 [![Codacy grade](https://img.shields.io/codacy/grade/bc99104953f64f7da2db9e8ff6e557f5.svg)](https://www.codacy.com/app/FWDekker/intellij-randomness)
 <br />
 Rather than going to [random.org](https://www.random.org/) or making up your own random data, you can now insert random data using an IntelliJ action!
