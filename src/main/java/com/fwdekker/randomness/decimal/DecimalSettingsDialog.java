@@ -15,7 +15,7 @@ import javax.swing.SpinnerNumberModel;
 final class DecimalSettingsDialog extends SettingsDialog {
     private static final double SPINNER_STEP_SIZE = 0.1;
 
-    private final DecimalSettings decimalSettings = DecimalSettings.getInstance();
+    private final DecimalSettings decimalSettings;
 
     private JPanel contentPane;
     private JSpinner minValue;
@@ -24,12 +24,23 @@ final class DecimalSettingsDialog extends SettingsDialog {
 
 
     /**
-     * Constructs a new {@code DecimalSettingsDialog}.
+     * Constructs a new {@code DecimalSettingsDialog} that uses the singleton {@code DecimalSettings} instance.
      */
     DecimalSettingsDialog() {
+        this(DecimalSettings.getInstance());
+    }
+
+    /**
+     * Constructs a new {@code DecimalSettingsDialog} that uses the given {@code DecimalSettings} instance.
+     *
+     * @param decimalSettings the settings to manipulate with this dialog
+     */
+    DecimalSettingsDialog(final DecimalSettings decimalSettings) {
         super();
 
         init();
+
+        this.decimalSettings = decimalSettings;
         loadSettings();
     }
 

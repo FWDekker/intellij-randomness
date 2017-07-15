@@ -2,6 +2,7 @@ package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.SettingsDialog;
 import com.intellij.openapi.ui.ValidationInfo;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -17,6 +18,10 @@ import javax.swing.ListSelectionModel;
 /**
  * Dialog for settings of random integer generation.
  */
+@SuppressFBWarnings(
+        value = {"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"},
+        justification = "Initialized by UI framework"
+)
 final class StringSettingsDialog extends SettingsDialog {
     private final StringSettings stringSettings = StringSettings.getInstance();
 
