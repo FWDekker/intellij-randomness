@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.decimal;
 
 import com.intellij.openapi.ui.ValidationInfo;
+import java.text.NumberFormat;
+import java.util.Locale;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
@@ -101,7 +103,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void testNegativeDecimalCount() {
-        frame.spinner("decimalCount").enterTextAndCommit(Double.toString(-851));
+        frame.spinner("decimalCount").enterTextAndCommit(Integer.toString(-851));
 
         final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
 
@@ -112,8 +114,8 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void testSaveSettings() {
-        frame.spinner("minValue").enterText("418.63");
-        frame.spinner("maxValue").enterText("858.59");
+        frame.spinner("minValue").enterText(doubleToString(418.63));
+        frame.spinner("maxValue").enterText(doubleToString(858.59));
         frame.spinner("decimalCount").enterText("99");
 
         GuiActionRunner.execute(() -> decimalSettingsDialog.saveSettings());
@@ -121,5 +123,19 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(decimalSettings.getMinValue()).isEqualTo(418.63);
         assertThat(decimalSettings.getMaxValue()).isEqualTo(858.59);
         assertThat(decimalSettings.getDecimalCount()).isEqualTo(99);
+    }
+
+
+    /**
+     * Locale-dependently converts a double into a string.
+     *
+     * @param decimal a double
+     * @return the user's locale's representation of the given double
+     */
+    private static String doubleToString(final double decimal) {
+        final Locale locale = Locale.getDefault(Locale.Category.FORMAT);
+        final NumberFormat formatter = NumberFormat.getInstance(locale);
+
+        return formatter.format(decimal);
     }
 }
