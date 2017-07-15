@@ -18,6 +18,9 @@ repositories {
 }
 
 dependencies {
+    compile group: "com.google.code.findbugs", name: "jsr305", version: findbugsVersion
+    compile group: "com.google.code.findbugs", name: "annotations", version: findbugsVersion
+
     testCompile group: "junit", name: "junit", version: junitVersion
     testCompile group: "org.assertj", name: "assertj-core", version: assertjVersion
     testCompile group: "org.assertj", name: "assertj-swing-junit", version: assertjSwingVersion

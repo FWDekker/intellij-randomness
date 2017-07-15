@@ -11,7 +11,7 @@ import static org.assertj.swing.fixture.Containers.showInFrame;
 
 
 /**
- * Created by Felix on 2017-07-15.
+ * GUI tests for {@link DecimalSettingsDialog}.
  */
 public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
     private static final double DEFAULT_MIN_VALUE = 157.61;
@@ -61,6 +61,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
 
+        assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minValue").target());
         assertThat(validationInfo.message).isEqualTo("Minimum value must be a decimal.");
     }
@@ -71,6 +72,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
 
+        assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
         assertThat(validationInfo.message).isEqualTo("Maximum value must be a decimal.");
     }
@@ -81,6 +83,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
 
+        assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("decimalCount").target());
         assertThat(validationInfo.message).isEqualTo("Decimal count must be an integer.");
     }
@@ -91,6 +94,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
 
+        assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
         assertThat(validationInfo.message).isEqualTo("Maximum value cannot be smaller than minimum value.");
     }
@@ -101,6 +105,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
 
+        assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("decimalCount").target());
         assertThat(validationInfo.message).isEqualTo("Decimal count must be at least 0.");
     }
@@ -110,6 +115,8 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
         frame.spinner("minValue").enterText("418.63");
         frame.spinner("maxValue").enterText("858.59");
         frame.spinner("decimalCount").enterText("99");
+
+        GuiActionRunner.execute(() -> decimalSettingsDialog.saveSettings());
 
         assertThat(decimalSettings.getMinValue()).isEqualTo(418.63);
         assertThat(decimalSettings.getMaxValue()).isEqualTo(858.59);
