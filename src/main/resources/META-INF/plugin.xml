@@ -45,7 +45,7 @@
 
         <action id="randomness.ShowGroup" class="com.fwdekker.randomness.InsertDataAction"
                 text="Insert Random Data" description="Inserts random data at the caret.">
-            <keyboard-shortcut first-keystroke="control alt R" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="alt R" keymap="$default"/>
         </action>
     </actions>
 </idea-plugin>
