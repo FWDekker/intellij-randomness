@@ -38,7 +38,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
         decimalSettings.setAlphabets(DEFAULT_ALPHABETS);
 
         decimalSettingsDialog = GuiActionRunner.execute(() -> new StringSettingsDialog(decimalSettings));
-        frame = showInFrame(robot(), decimalSettingsDialog.getContentPane());
+        frame = showInFrame(robot(), decimalSettingsDialog.createCenterPanel());
     }
 
 

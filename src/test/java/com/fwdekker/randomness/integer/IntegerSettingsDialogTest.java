@@ -29,7 +29,7 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
         integerSettings.setMaxValue(DEFAULT_MAX_VALUE);
 
         integerSettingsDialog = GuiActionRunner.execute(() -> new IntegerSettingsDialog(integerSettings));
-        frame = showInFrame(robot(), integerSettingsDialog.getContentPane());
+        frame = showInFrame(robot(), integerSettingsDialog.createCenterPanel());
     }
 
 

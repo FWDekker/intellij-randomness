@@ -33,7 +33,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
         decimalSettings.setDecimalCount(DEFAULT_DECIMAL_COUNT);
 
         decimalSettingsDialog = GuiActionRunner.execute(() -> new DecimalSettingsDialog(decimalSettings));
-        frame = showInFrame(robot(), decimalSettingsDialog.getContentPane());
+        frame = showInFrame(robot(), decimalSettingsDialog.createCenterPanel());
     }
 
 
