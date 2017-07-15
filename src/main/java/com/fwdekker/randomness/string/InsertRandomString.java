@@ -11,7 +11,24 @@ import java.util.Random;
 final class InsertRandomString extends InsertRandomSomething {
     private static final Random RANDOM = new SecureRandom();
 
-    private final StringSettings stringSettings = StringSettings.getInstance();
+    private final StringSettings stringSettings;
+
+
+    /**
+     * Constructs a new {@code InsertRandomString} that uses the singleton {@code StringSettings} instance.
+     */
+    InsertRandomString() {
+        this.stringSettings = StringSettings.getInstance();
+    }
+
+    /**
+     * Constructs a new {@code InsertRandomString} that uses the given {@code StringSettings} instance.
+     *
+     * @param stringSettings the settings to use for generating strings
+     */
+    InsertRandomString(final StringSettings stringSettings) {
+        this.stringSettings = stringSettings;
+    }
 
 
     /**
