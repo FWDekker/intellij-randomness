@@ -11,6 +11,8 @@ plugins {
     id "org.jetbrains.intellij" version "0.2.14"
 }
 
+apply from: "integration.gradle"
+
 repositories {
     mavenCentral()
     maven {
@@ -27,34 +29,14 @@ dependencies {
     testCompile group: "org.assertj", name: "assertj-swing-junit", version: assertjSwingVersion
 }
 
+configurations {
+    codacy
+}
+
 sourceSets {
     // Change the output directory for the main source set back to the old path
     main.output.classesDir = new File(buildDir, "classes/main")
     test.output.classesDir = new File(buildDir, "classes/test")
-
-    test {
-        java.srcDirs = [new File("src/test/unit/java")]
-        resources.srcDirs = [new File("src/test/unit/resources")]
-    }
-    integration {
-        java.srcDirs = [new File("src/test/integration/java")]
-        resources.srcDirs = [new File("src/test/integration/resources")]
-
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
-    }
-}
-
-configurations {
-    codacy
-
-    integrationCompile.extendsFrom testCompile
-    integrationRuntime.extendsFrom testRuntime
-}
-
-task integration(type: Test, description: "Runs the integration tests.", group: "Verification") {
-    testClassesDirs = sourceSets.integration.output.classesDirs
-    classpath = sourceSets.integration.runtimeClasspath
 }
 
 

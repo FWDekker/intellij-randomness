@@ -1,0 +1,31 @@
+/*
+ * Configuration file for integration test module.
+ */
+
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+sourceSets {
+    test {
+        java.srcDirs = [new File("src/test/unit/java")]
+        resources.srcDirs = [new File("src/test/unit/resources")]
+    }
+    integrationTest {
+        java.srcDirs = [new File("src/test/integration/java")]
+        resources.srcDirs = [new File("src/test/integration/resources")]
+
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+
+task integrationTest(type: Test, description: "Runs the integration tests.", group: "Verification") {
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+}
+
+check.dependsOn integrationTest
+integrationTest.mustRunAfter test
