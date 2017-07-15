@@ -23,7 +23,7 @@ import javax.swing.ListSelectionModel;
         justification = "Initialized by UI framework"
 )
 final class StringSettingsDialog extends SettingsDialog {
-    private final StringSettings stringSettings = StringSettings.getInstance();
+    private final StringSettings stringSettings;
 
     private JPanel contentPane;
     private JSpinner minLength;
@@ -33,12 +33,23 @@ final class StringSettingsDialog extends SettingsDialog {
 
 
     /**
-     * Constructs a new {@code StringSettingsDialog}.
+     * Constructs a new {@code StringSettingsDialog} that uses the singleton {@code StringSettings} instance.
      */
     StringSettingsDialog() {
+        this(StringSettings.getInstance());
+    }
+
+    /**
+     * Constructs a new {@code StringSettingsDialog} that uses the given {@code StringSettings} instance.
+     *
+     * @param stringSettings the settings to manipulate with this dialog
+     */
+    StringSettingsDialog(final StringSettings stringSettings) {
         super();
 
         init();
+
+        this.stringSettings = stringSettings;
         loadSettings();
     }
 
@@ -92,16 +103,16 @@ final class StringSettingsDialog extends SettingsDialog {
     @Override
     protected ValidationInfo doValidate() {
         if (!(minLength.getValue() instanceof Integer)) {
-            return new ValidationInfo("Minimum value must be an integer.", minLength);
+            return new ValidationInfo("Minimum length must be an integer.", minLength);
         }
         if (!(maxLength.getValue() instanceof Integer)) {
-            return new ValidationInfo("Maximum value must be an integer.", maxLength);
+            return new ValidationInfo("Maximum length must be an integer.", maxLength);
         }
 
         final double newMinLength = (Integer) minLength.getValue();
         final double newMaxLength = (Integer) maxLength.getValue();
         if (newMaxLength < newMinLength) {
-            return new ValidationInfo("Maximum value cannot be smaller than minimum value.", maxLength);
+            return new ValidationInfo("Maximum length cannot be smaller than minimum length.", maxLength);
         }
 
         if (alphabetList.getSelectedValuesList().isEmpty()) {
