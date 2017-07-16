@@ -43,19 +43,18 @@ public abstract class InsertRandomSomething extends AnAction {
         final Document document = editor.getDocument();
         final CaretModel caretModel = editor.getCaretModel();
 
-        caretModel.getAllCarets().forEach(caret -> {
+        final Runnable replaceCaretSelections = () -> caretModel.getAllCarets().forEach(caret -> {
             final int start = caret.getSelectionStart();
             final int end = caret.getSelectionEnd();
 
             final String string = generateString();
             final int newEnd = start + string.length();
 
-            final Runnable runnable = () -> {
-                document.replaceString(start, end, string);
-                caret.setSelection(start, newEnd);
-            };
-            WriteCommandAction.runWriteCommandAction(project, runnable);
+            document.replaceString(start, end, string);
+            caret.setSelection(start, newEnd);
         });
+
+        WriteCommandAction.runWriteCommandAction(project, replaceCaretSelections);
     }
 
 
