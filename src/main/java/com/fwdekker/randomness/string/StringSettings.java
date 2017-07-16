@@ -9,6 +9,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -56,7 +57,7 @@ public final class StringSettings extends Settings implements PersistentStateCom
     }
 
     @Override
-    public void loadState(final StringSettings state) {
+    public void loadState(@NotNull final StringSettings state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 

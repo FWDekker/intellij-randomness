@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.InsertRandomSomething;
-
 import java.security.SecureRandom;
 import java.util.Random;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -27,7 +27,7 @@ final class InsertRandomInteger extends InsertRandomSomething {
      *
      * @param integerSettings the settings to use for generating integers
      */
-    InsertRandomInteger(final IntegerSettings integerSettings) {
+    InsertRandomInteger(@NotNull final IntegerSettings integerSettings) {
         this.integerSettings = integerSettings;
     }
 

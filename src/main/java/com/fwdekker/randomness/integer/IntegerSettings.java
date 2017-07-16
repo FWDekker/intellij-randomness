@@ -6,6 +6,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -44,7 +45,7 @@ public final class IntegerSettings extends Settings implements PersistentStateCo
     }
 
     @Override
-    public void loadState(final IntegerSettings state) {
+    public void loadState(@NotNull final IntegerSettings state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 

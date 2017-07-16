@@ -6,6 +6,8 @@ import java.text.ParseException;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -42,6 +44,7 @@ final class IntegerSettingsDialog extends SettingsDialog {
 
 
     @Override
+    @NotNull
     protected JComponent createCenterPanel() {
         return contentPane;
     }
@@ -67,6 +70,7 @@ final class IntegerSettingsDialog extends SettingsDialog {
     }
 
     @Override
+    @Nullable
     protected ValidationInfo doValidate() {
         if (!(minValue.getValue() instanceof Integer)) {
             return new ValidationInfo("Minimum value must be an integer.", minValue);

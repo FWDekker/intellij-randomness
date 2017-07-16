@@ -4,6 +4,7 @@ import com.fwdekker.randomness.InsertRandomSomething;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.Random;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -27,7 +28,7 @@ final class InsertRandomDecimal extends InsertRandomSomething {
      *
      * @param decimalSettings the settings to use for generating decimals
      */
-    InsertRandomDecimal(final DecimalSettings decimalSettings) {
+    InsertRandomDecimal(@NotNull final DecimalSettings decimalSettings) {
         this.decimalSettings = decimalSettings;
     }
 

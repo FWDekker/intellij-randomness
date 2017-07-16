@@ -7,6 +7,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -35,7 +37,7 @@ final class DecimalSettingsDialog extends SettingsDialog {
      *
      * @param decimalSettings the settings to manipulate with this dialog
      */
-    DecimalSettingsDialog(final DecimalSettings decimalSettings) {
+    DecimalSettingsDialog(@NotNull final DecimalSettings decimalSettings) {
         super();
 
         init();
@@ -46,6 +48,7 @@ final class DecimalSettingsDialog extends SettingsDialog {
 
 
     @Override
+    @NotNull
     protected JComponent createCenterPanel() {
         return contentPane;
     }
@@ -87,6 +90,7 @@ final class DecimalSettingsDialog extends SettingsDialog {
     }
 
     @Override
+    @Nullable
     protected ValidationInfo doValidate() {
         if (!(minValue.getValue() instanceof Double)) {
             return new ValidationInfo("Minimum value must be a decimal.", minValue);

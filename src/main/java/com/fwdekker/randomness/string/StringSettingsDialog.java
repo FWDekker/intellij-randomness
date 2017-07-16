@@ -13,6 +13,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -55,6 +57,7 @@ final class StringSettingsDialog extends SettingsDialog {
 
 
     @Override
+    @NotNull
     protected JComponent createCenterPanel() {
         return contentPane;
     }
@@ -101,6 +104,7 @@ final class StringSettingsDialog extends SettingsDialog {
     }
 
     @Override
+    @Nullable
     protected ValidationInfo doValidate() {
         if (!(minLength.getValue() instanceof Integer)) {
             return new ValidationInfo("Minimum length must be an integer.", minLength);

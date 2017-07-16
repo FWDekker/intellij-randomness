@@ -2,6 +2,7 @@ package com.fwdekker.randomness;
 
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
+import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -52,5 +53,6 @@ public abstract class SettingsDialog extends DialogWrapper {
      * @return {@code null} if the input is valid, or {@code ValidationInfo} indicating the error if input is not valid
      */
     @Override
+    @Nullable
     protected abstract ValidationInfo doValidate();
 }
