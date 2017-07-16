@@ -20,6 +20,11 @@ public final class IntegerSettingsTest {
 
 
     @Test
+    public void testGetComponentName() {
+        assertThat(integerSettings.getComponentName()).isEqualTo("IntegerSettings");
+    }
+
+    @Test
     public void testGetLoadState() {
         integerSettings.setMinValue(742);
         integerSettings.setMaxValue(908);

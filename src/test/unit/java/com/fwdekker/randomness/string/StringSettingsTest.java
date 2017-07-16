@@ -22,6 +22,11 @@ public final class StringSettingsTest {
 
 
     @Test
+    public void testGetComponentName() {
+        assertThat(stringSettings.getComponentName()).isEqualTo("StringSettings");
+    }
+
+    @Test
     public void testGetLoadState() {
         final HashSet<Alphabet> alphabets = new HashSet<>(Arrays.asList());
 

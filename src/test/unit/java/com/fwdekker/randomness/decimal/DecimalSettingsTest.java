@@ -20,6 +20,11 @@ public final class DecimalSettingsTest {
 
 
     @Test
+    public void testGetComponentName() {
+        assertThat(decimalSettings.getComponentName()).isEqualTo("DecimalSettings");
+    }
+
+    @Test
     public void testGetLoadState() {
         decimalSettings.setMinValue(399.75);
         decimalSettings.setMaxValue(928.22);
