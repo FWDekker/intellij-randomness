@@ -8,7 +8,7 @@ import java.util.Random;
 /**
  * Generates random alphanumerical strings based on the settings in {@link StringSettings}.
  */
-final class InsertRandomString extends InsertRandomSomething {
+public final class InsertRandomString extends InsertRandomSomething {
     private static final Random RANDOM = new SecureRandom();
 
     private final StringSettings stringSettings;
@@ -17,7 +17,7 @@ final class InsertRandomString extends InsertRandomSomething {
     /**
      * Constructs a new {@code InsertRandomString} that uses the singleton {@code StringSettings} instance.
      */
-    InsertRandomString() {
+    public InsertRandomString() {
         this.stringSettings = StringSettings.getInstance();
     }
 

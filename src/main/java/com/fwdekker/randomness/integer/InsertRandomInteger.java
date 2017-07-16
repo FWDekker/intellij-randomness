@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Generates a random integer based on the settings in {@link IntegerSettings}.
  */
-final class InsertRandomInteger extends InsertRandomSomething {
+public final class InsertRandomInteger extends InsertRandomSomething {
     private static final Random RANDOM = new SecureRandom();
 
     private final IntegerSettings integerSettings;
@@ -18,7 +18,7 @@ final class InsertRandomInteger extends InsertRandomSomething {
     /**
      * Constructs a new {@code InsertRandomInteger} that uses the singleton {@code IntegerSettings} instance.
      */
-    InsertRandomInteger() {
+    public InsertRandomInteger() {
         this.integerSettings = IntegerSettings.getInstance();
     }
 

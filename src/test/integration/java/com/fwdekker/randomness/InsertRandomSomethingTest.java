@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.VisualPosition;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import java.net.URL;
 import org.junit.AfterClass;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +53,10 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
 
     @Override
     protected String getTestDataPath() {
-        return getClass().getClassLoader().getResource("testData/").getPath();
+        final URL url = getClass().getClassLoader().getResource("testData/");
+        assert url != null;
+
+        return url.getPath();
     }
 
 

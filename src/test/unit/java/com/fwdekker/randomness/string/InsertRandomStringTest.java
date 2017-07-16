@@ -70,7 +70,9 @@ public final class InsertRandomStringTest {
 
         regex.append(enclosure);
         if (!alphabets.isEmpty()) {
-            regex.append("[" + Alphabet.concatenate(alphabets) + "]{" + minLength + "," + maxLength + "}");
+            regex
+                    .append("[").append(Alphabet.concatenate(alphabets)).append("]")
+                    .append("{").append(minLength).append(",").append(maxLength).append("}");
         }
         regex.append(enclosure);
 

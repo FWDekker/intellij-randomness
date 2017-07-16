@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Generates a random integer based on the settings in {@link DecimalSettings}.
  */
-final class InsertRandomDecimal extends InsertRandomSomething {
+public final class InsertRandomDecimal extends InsertRandomSomething {
     private static final Random RANDOM = new SecureRandom();
 
     private final DecimalSettings decimalSettings;
@@ -19,7 +19,7 @@ final class InsertRandomDecimal extends InsertRandomSomething {
     /**
      * Constructs a new {@code InsertRandomDecimal} that uses the singleton {@code DecimalSettings} instance.
      */
-    InsertRandomDecimal() {
+    public InsertRandomDecimal() {
         this.decimalSettings = DecimalSettings.getInstance();
     }
 

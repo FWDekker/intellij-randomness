@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.string;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,7 @@ public final class StringSettingsTest {
 
     @Test
     public void testGetLoadState() {
-        final HashSet<Alphabet> alphabets = new HashSet<>(Arrays.asList());
+        final HashSet<Alphabet> alphabets = new HashSet<>(Collections.emptyList());
 
         stringSettings.setMinLength(730);
         stringSettings.setMaxLength(891);
