@@ -25,7 +25,13 @@ sourceSets {
 task integrationTest(type: Test, description: "Runs the integration tests.", group: "Verification") {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
+
+    mustRunAfter test
+
+    jacoco {
+        append = true
+    }
 }
 
 check.dependsOn integrationTest
-integrationTest.mustRunAfter test
+jacocoTestReport.executionData file("$rootProject.buildDir/jacoco/integrationTest.exec")
