@@ -6,13 +6,14 @@ import com.intellij.openapi.editor.VisualPosition;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import org.junit.AfterClass;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
  * Integration tests for {@link InsertRandomSomething}.
+ *
+ * Note that {@link LightPlatformCodeInsightFixtureTestCase} is a JUnit 3 test class.
  */
 @SuppressWarnings("PMD.AddEmptyString") // These were added for readability
 public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFixtureTestCase {
@@ -55,14 +56,12 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
     }
 
 
-    @Test
     public void testInsertIntoEmpty() {
         myFixture.testAction(insertRandomSimple);
 
         assertThat(document.getText()).isEqualTo(RANDOM_STRING);
     }
 
-    @Test
     public void testInsertBefore() {
         document.setText("RkpjkS9Itb");
 
@@ -72,7 +71,6 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
         assertThat(document.getText()).isEqualTo(RANDOM_STRING + "RkpjkS9Itb");
     }
 
-    @Test
     public void testInsertAfter() {
         document.setText("0aiMbK5hK5");
 
@@ -82,7 +80,6 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
         assertThat(document.getText()).isEqualTo("0aiMbK5hK5" + RANDOM_STRING);
     }
 
-    @Test
     public void testInsertBetween() {
         document.setText("U6jBDMh8Nq");
 
@@ -92,7 +89,6 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
         assertThat(document.getText()).isEqualTo("U6jBD" + RANDOM_STRING + "Mh8Nq");
     }
 
-    @Test
     public void testReplaceAll() {
         document.setText("fMhAajjDw6");
 
@@ -102,7 +98,6 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
         assertThat(document.getText()).isEqualTo(RANDOM_STRING);
     }
 
-    @Test
     public void testReplacePart() {
         document.setText("qZPGZDEcPS");
 
@@ -112,7 +107,6 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
         assertThat(document.getText()).isEqualTo("qZP" + RANDOM_STRING + "cPS");
     }
 
-    @Test
     public void testInsertMultiple() {
         document.setText("DCtD41lFOk\nOCnrdYk9gE\nn1HAPKotDq");
 
@@ -127,7 +121,6 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
         );
     }
 
-    @Test
     public void testReplaceMultiple() {
         document.setText("YXSncq4FC9\nG31Ybbn1c4\nTNCqAhqPnh");
 
@@ -143,7 +136,6 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
         );
     }
 
-    @Test
     public void testInsertAndReplace() {
         document.setText("XOppzVdZTj\nZhAaVfQynW\nk3kWemkdAg");
 
