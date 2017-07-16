@@ -16,7 +16,7 @@ import java.util.Set;
  */
 @State(
         name = "StringSettings",
-        storages = @Storage(file = "$APP_CONFIG$/randomness.xml")
+        storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class StringSettings extends Settings implements PersistentStateComponent<StringSettings> {
     private static final int DEFAULT_MIN_LENGTH = 10;

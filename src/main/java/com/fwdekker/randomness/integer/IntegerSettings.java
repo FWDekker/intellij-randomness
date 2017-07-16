@@ -13,7 +13,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
  */
 @State(
         name = "IntegerSettings",
-        storages = @Storage(file = "$APP_CONFIG$/randomness.xml")
+        storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class IntegerSettings extends Settings implements PersistentStateComponent<IntegerSettings> {
     private static final int DEFAULT_MIN_VALUE = 0;

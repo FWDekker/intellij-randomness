@@ -13,7 +13,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
  */
 @State(
         name = "DecimalSettings",
-        storages = @Storage(file = "$APP_CONFIG$/randomness.xml")
+        storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class DecimalSettings extends Settings implements PersistentStateComponent<DecimalSettings> {
     private static final double DEFAULT_MIN_VALUE = 0.0;
