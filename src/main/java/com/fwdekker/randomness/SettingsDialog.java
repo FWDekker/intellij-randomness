@@ -31,11 +31,6 @@ public abstract class SettingsDialog<S extends Settings> extends DialogWrapper i
 
 
     @Override
-    public final S getSettings() {
-        return settings;
-    }
-
-    @Override
     public final void loadSettings() {
         loadSettings(settings);
     }

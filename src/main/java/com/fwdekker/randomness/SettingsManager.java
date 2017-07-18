@@ -10,13 +10,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface SettingsManager<S extends Settings> {
     /**
-     * Returns the settings currently managed by the implementing object.
-     *
-     * @return the settings currently managed by the implementing object
-     */
-    S getSettings();
-
-    /**
      * Loads the default settings instance into the implementing object.
      */
     void loadSettings();
