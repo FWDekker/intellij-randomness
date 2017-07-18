@@ -8,35 +8,35 @@ import java.util.stream.Collectors;
  * An {@code Alphabet} represents a collection of symbols.
  */
 enum Alphabet {
-    UPPERCASE("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "Uppercase (A, B, C, ...)"),
-    LOWERCASE("abcdefghijklmnopqrstuvwxyz", "Lowercase (a, b, c, ...)"),
-    DIGITS("0123456789", "Digits (0, 1, 2, ...)"),
-    MINUS("-", "Minus (-)"),
-    UNDERSCORE("_", "Underscore (_)"),
-    SPACE(" ", "Space ( )"),
-    SPECIAL("!@#$%^&*", "Special (!, @, #, $, %, ^, &, *)"),
-    BRACKETS("()[]{}<>", "Brackets ((, ), [, ], {, }, <, >)");
+    UPPERCASE("Uppercase (A, B, C, ...)", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+    LOWERCASE("Lowercase (a, b, c, ...)", "abcdefghijklmnopqrstuvwxyz"),
+    DIGITS("Digits (0, 1, 2, ...)", "0123456789"),
+    MINUS("Minus (-)", "-"),
+    UNDERSCORE("Underscore (_)", "_"),
+    SPACE("Space ( )", " "),
+    SPECIAL("Special (!, @, #, $, %, ^, &, *)", "!@#$%^&*"),
+    BRACKETS("Brackets ((, ), [, ], {, }, <, >)", "()[]{}<>");
 
 
+    /**
+     * The name of the alphabet.
+     */
+    private final String name;
     /**
      * The symbols in the alphabet.
      */
     private final String symbols;
-    /**
-     * A human-readable description of the alphabet.
-     */
-    private final String description;
 
 
     /**
      * Constructs a new {@code Alphabet}.
      *
-     * @param symbols     the symbols in the alphabet
-     * @param description a human-readable description of the alphabet
+     * @param name    the name of the alphabet
+     * @param symbols the symbols in the alphabet
      */
-    Alphabet(final String symbols, final String description) {
+    Alphabet(final String name, final String symbols) {
+        this.name = name;
         this.symbols = symbols;
-        this.description = description;
     }
 
 
@@ -54,6 +54,15 @@ enum Alphabet {
 
 
     /**
+     * Returns the name of the alphabet.
+     *
+     * @return the name of the alphabet
+     */
+    String getName() {
+        return name;
+    }
+
+    /**
      * Returns the symbols in the alphabet.
      *
      * @return the symbols in the alphabet
@@ -62,17 +71,8 @@ enum Alphabet {
         return symbols;
     }
 
-    /**
-     * Returns a human-readable description of the alphabet.
-     *
-     * @return a human-readable description of the alphabet
-     */
-    String getDescription() {
-        return description;
-    }
-
     @Override
     public String toString() {
-        return description;
+        return name;
     }
 }

@@ -20,13 +20,13 @@ public final class AlphabetTest {
 
 
     @Test
-    public void testGetSymbols() {
-        assertThat(Alphabet.UPPERCASE.getSymbols()).isEqualTo("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    public void testGetName() {
+        assertThat(Alphabet.UPPERCASE.getName()).isEqualTo("Uppercase (A, B, C, ...)");
     }
 
     @Test
-    public void testGetDescription() {
-        assertThat(Alphabet.UPPERCASE.getDescription()).isEqualTo("Uppercase (A, B, C, ...)");
+    public void testGetSymbols() {
+        assertThat(Alphabet.UPPERCASE.getSymbols()).isEqualTo("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     }
 
     @Test
