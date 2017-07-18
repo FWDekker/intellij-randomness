@@ -17,17 +17,17 @@ import org.jetbrains.annotations.NotNull;
         storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class IntegerSettings extends Settings implements PersistentStateComponent<IntegerSettings> {
-    private static final int DEFAULT_MIN_VALUE = 0;
-    private static final int DEFAULT_MAX_VALUE = 1000;
+    private static final long DEFAULT_MIN_VALUE = 0L;
+    private static final long DEFAULT_MAX_VALUE = 1000L;
 
     /**
      * The minimum value to be generated, inclusive.
      */
-    private int minValue = DEFAULT_MIN_VALUE;
+    private long minValue = DEFAULT_MIN_VALUE;
     /**
      * The maximum value to be generated, inclusive.
      */
-    private int maxValue = DEFAULT_MAX_VALUE;
+    private long maxValue = DEFAULT_MAX_VALUE;
 
 
     /**
@@ -55,7 +55,7 @@ public final class IntegerSettings extends Settings implements PersistentStateCo
      *
      * @return the minimum value to be generated, inclusive
      */
-    public int getMinValue() {
+    public long getMinValue() {
         return minValue;
     }
 
@@ -64,7 +64,7 @@ public final class IntegerSettings extends Settings implements PersistentStateCo
      *
      * @param minValue the minimum value to be generated, inclusive
      */
-    public void setMinValue(final int minValue) {
+    public void setMinValue(final long minValue) {
         this.minValue = minValue;
     }
 
@@ -73,7 +73,7 @@ public final class IntegerSettings extends Settings implements PersistentStateCo
      *
      * @return the maximum value to be generated, inclusive
      */
-    public int getMaxValue() {
+    public long getMaxValue() {
         return maxValue;
     }
 
@@ -82,7 +82,7 @@ public final class IntegerSettings extends Settings implements PersistentStateCo
      *
      * @param maxValue the maximum value to be generated, inclusive
      */
-    public void setMaxValue(final int maxValue) {
+    public void setMaxValue(final long maxValue) {
         this.maxValue = maxValue;
     }
 }

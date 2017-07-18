@@ -6,6 +6,7 @@ import java.text.ParseException;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,18 +46,40 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
         return contentPane;
     }
 
+    /**
+     * Initialises custom UI components.
+     * <p>
+     * This method is called by the scene builder at the start of the constructor.
+     */
+    @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
+    private void createUIComponents() {
+        minValue = new JSpinner(new SpinnerNumberModel(0L, Long.MIN_VALUE, Long.MAX_VALUE, 1L));
+        maxValue = new JSpinner(new SpinnerNumberModel(0L, Long.MIN_VALUE, Long.MAX_VALUE, 1L));
+    }
+
     @Override
     @Nullable
     protected ValidationInfo doValidate() {
-        if (!(minValue.getValue() instanceof Integer)) {
+        try {
+            minValue.commitEdit();
+        } catch (final ParseException e) {
             return new ValidationInfo("Minimum value must be an integer.", minValue);
         }
-        if (!(maxValue.getValue() instanceof Integer)) {
+        try {
+            maxValue.commitEdit();
+        } catch (final ParseException e) {
             return new ValidationInfo("Maximum value must be an integer.", maxValue);
         }
 
-        final int newMinValue = (Integer) minValue.getValue();
-        final int newMaxValue = (Integer) maxValue.getValue();
+        final double newMinValue = ((Number) minValue.getValue()).doubleValue();
+        final double newMaxValue = ((Number) maxValue.getValue()).doubleValue();
+
+        if (newMinValue % 1 != 0) {
+            return new ValidationInfo("Minimum value must be an integer.", minValue);
+        }
+        if (newMaxValue % 1 != 0) {
+            return new ValidationInfo("Maximum value must be an integer.", maxValue);
+        }
         if (newMaxValue < newMinValue) {
             return new ValidationInfo("Maximum value cannot be smaller than minimum value.", maxValue);
         }
@@ -80,7 +103,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
             throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
         }
 
-        settings.setMinValue((Integer) minValue.getValue());
-        settings.setMaxValue((Integer) maxValue.getValue());
+        settings.setMinValue(Math.round((double) minValue.getValue()));
+        settings.setMaxValue(Math.round((double) maxValue.getValue()));
     }
 }
