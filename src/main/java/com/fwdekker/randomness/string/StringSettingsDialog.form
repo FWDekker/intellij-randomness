@@ -26,7 +26,7 @@
           <text value="Maximum length"/>
         </properties>
       </component>
-      <component id="1885f" class="javax.swing.JSpinner" binding="minLength">
+      <component id="1885f" class="javax.swing.JSpinner" binding="minLength" custom-create="true">
         <constraints>
           <grid row="0" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="75" height="-1"/>
@@ -36,7 +36,7 @@
           <name value="minLength"/>
         </properties>
       </component>
-      <component id="ae252" class="javax.swing.JSpinner" binding="maxLength">
+      <component id="ae252" class="javax.swing.JSpinner" binding="maxLength" custom-create="true">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="75" height="-1"/>

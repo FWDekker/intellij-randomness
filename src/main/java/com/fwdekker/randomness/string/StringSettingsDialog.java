@@ -13,6 +13,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,6 +66,9 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
+        minLength = new JSpinner(new SpinnerNumberModel(0L, Long.MIN_VALUE, Long.MAX_VALUE, 1L));
+        maxLength = new JSpinner(new SpinnerNumberModel(0L, Long.MIN_VALUE, Long.MAX_VALUE, 1L));
+
         alphabetList = new JList<>(Alphabet.values());
         alphabetList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         alphabetList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -86,15 +90,11 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
 
     @Override
     public void saveSettings(@NotNull final StringSettings settings) {
-        try {
-            minLength.commitEdit();
-            maxLength.commitEdit();
-        } catch (final ParseException e) {
-            throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
-        }
+        final int newMinLength = ((Number) minLength.getValue()).intValue();
+        final int newMaxLength = ((Number) maxLength.getValue()).intValue();
 
-        settings.setMinLength((Integer) minLength.getValue());
-        settings.setMaxLength((Integer) maxLength.getValue());
+        settings.setMinLength(newMinLength);
+        settings.setMaxLength(newMaxLength);
         settings.setEnclosure(getSelectedEnclosure());
         settings.setAlphabets(new HashSet<>(alphabetList.getSelectedValuesList()));
     }
@@ -102,15 +102,33 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     @Override
     @Nullable
     protected ValidationInfo doValidate() {
-        if (!(minLength.getValue() instanceof Integer)) {
-            return new ValidationInfo("Minimum length must be an integer.", minLength);
+        try {
+            minLength.commitEdit();
+        } catch (final ParseException e) {
+            return new ValidationInfo("Minimum length must be a number.", minLength);
         }
-        if (!(maxLength.getValue() instanceof Integer)) {
-            return new ValidationInfo("Maximum length must be an integer.", maxLength);
+        try {
+            maxLength.commitEdit();
+        } catch (final ParseException e) {
+            return new ValidationInfo("Maximum length must be a number.", maxLength);
         }
 
-        final double newMinLength = (Integer) minLength.getValue();
-        final double newMaxLength = (Integer) maxLength.getValue();
+        final double newMinLength = ((Number) minLength.getValue()).doubleValue();
+        if (newMinLength % 1 != 0) {
+            return new ValidationInfo("Minimum length must be a whole number.", minLength);
+        }
+        if (newMinLength <= 0) {
+            return new ValidationInfo("Minimum length must be a positive number.", minLength);
+        }
+
+        final double newMaxLength = ((Number) maxLength.getValue()).doubleValue();
+        if (newMaxLength % 1 != 0) {
+            return new ValidationInfo("Maximum length must be a whole number.", maxLength);
+        }
+        if (newMaxLength > Integer.MAX_VALUE) {
+            return new ValidationInfo("Maximum length must not be greater than 2^31-1.", maxLength);
+        }
+
         if (newMaxLength < newMinLength) {
             return new ValidationInfo("Maximum length cannot be smaller than minimum length.", maxLength);
         }
