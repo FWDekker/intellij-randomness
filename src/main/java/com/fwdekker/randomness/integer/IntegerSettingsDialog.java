@@ -72,14 +72,15 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
         }
 
         final double newMinValue = ((Number) minValue.getValue()).doubleValue();
-        final double newMaxValue = ((Number) maxValue.getValue()).doubleValue();
-
         if (newMinValue % 1 != 0) {
             return new ValidationInfo("Minimum value must be an integer.", minValue);
         }
+
+        final double newMaxValue = ((Number) maxValue.getValue()).doubleValue();
         if (newMaxValue % 1 != 0) {
             return new ValidationInfo("Maximum value must be an integer.", maxValue);
         }
+
         if (newMaxValue < newMinValue) {
             return new ValidationInfo("Maximum value cannot be smaller than minimum value.", maxValue);
         }
