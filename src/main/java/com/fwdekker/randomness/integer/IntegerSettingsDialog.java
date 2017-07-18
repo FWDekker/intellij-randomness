@@ -63,12 +63,12 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
         try {
             minValue.commitEdit();
         } catch (final ParseException e) {
-            return new ValidationInfo("Minimum value must be an integer.", minValue);
+            return new ValidationInfo("Minimum value must be a number.", minValue);
         }
         try {
             maxValue.commitEdit();
         } catch (final ParseException e) {
-            return new ValidationInfo("Maximum value must be an integer.", maxValue);
+            return new ValidationInfo("Maximum value must be a number.", maxValue);
         }
 
         final double newMinValue = ((Number) minValue.getValue()).doubleValue();
@@ -97,14 +97,10 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
 
     @Override
     public void saveSettings(@NotNull final IntegerSettings settings) {
-        try {
-            minValue.commitEdit();
-            maxValue.commitEdit();
-        } catch (final ParseException e) {
-            throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
-        }
+        final long newMinValue = ((Number) minValue.getValue()).longValue();
+        final long newMaxValue = ((Number) maxValue.getValue()).longValue();
 
-        settings.setMinValue(Math.round((double) minValue.getValue()));
-        settings.setMaxValue(Math.round((double) maxValue.getValue()));
+        settings.setMinValue(newMinValue);
+        settings.setMaxValue(newMaxValue);
     }
 }
