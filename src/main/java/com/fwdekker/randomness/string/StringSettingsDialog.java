@@ -24,9 +24,7 @@ import org.jetbrains.annotations.Nullable;
         value = {"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"},
         justification = "Initialized by UI framework"
 )
-final class StringSettingsDialog extends SettingsDialog {
-    private final StringSettings stringSettings;
-
+final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     private JPanel contentPane;
     private JSpinner minLength;
     private JSpinner maxLength;
@@ -44,14 +42,12 @@ final class StringSettingsDialog extends SettingsDialog {
     /**
      * Constructs a new {@code StringSettingsDialog} that uses the given {@code StringSettings} instance.
      *
-     * @param stringSettings the settings to manipulate with this dialog
+     * @param settings the settings to manipulate with this dialog
      */
-    StringSettingsDialog(final StringSettings stringSettings) {
-        super();
+    StringSettingsDialog(@NotNull final StringSettings settings) {
+        super(settings);
 
         init();
-
-        this.stringSettings = stringSettings;
         loadSettings();
     }
 
@@ -76,20 +72,20 @@ final class StringSettingsDialog extends SettingsDialog {
 
 
     @Override
-    protected void loadSettings() {
-        minLength.setValue(stringSettings.getMinLength());
-        maxLength.setValue(stringSettings.getMaxLength());
-        setSelectedEnclosure(stringSettings.getEnclosure());
+    public void loadSettings(@NotNull final StringSettings settings) {
+        minLength.setValue(settings.getMinLength());
+        maxLength.setValue(settings.getMaxLength());
+        setSelectedEnclosure(settings.getEnclosure());
 
         for (int i = 0; i < Alphabet.values().length; i++) {
-            if (stringSettings.getAlphabets().contains(Alphabet.values()[i])) {
+            if (settings.getAlphabets().contains(Alphabet.values()[i])) {
                 alphabetList.addSelectionInterval(i, i);
             }
         }
     }
 
     @Override
-    protected void saveSettings() {
+    public void saveSettings(@NotNull final StringSettings settings) {
         try {
             minLength.commitEdit();
             maxLength.commitEdit();
@@ -97,10 +93,10 @@ final class StringSettingsDialog extends SettingsDialog {
             throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
         }
 
-        stringSettings.setMinLength((Integer) minLength.getValue());
-        stringSettings.setMaxLength((Integer) maxLength.getValue());
-        stringSettings.setEnclosure(getSelectedEnclosure());
-        stringSettings.setAlphabets(new HashSet<>(alphabetList.getSelectedValuesList()));
+        settings.setMinLength((Integer) minLength.getValue());
+        settings.setMaxLength((Integer) maxLength.getValue());
+        settings.setEnclosure(getSelectedEnclosure());
+        settings.setAlphabets(new HashSet<>(alphabetList.getSelectedValuesList()));
     }
 
     @Override

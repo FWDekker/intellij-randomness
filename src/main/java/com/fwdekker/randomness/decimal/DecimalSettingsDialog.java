@@ -14,10 +14,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Dialog for settings of random decimal generation.
  */
-final class DecimalSettingsDialog extends SettingsDialog {
+final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
     private static final double SPINNER_STEP_SIZE = 0.1;
-
-    private final DecimalSettings decimalSettings;
 
     private JPanel contentPane;
     private JSpinner minValue;
@@ -35,14 +33,12 @@ final class DecimalSettingsDialog extends SettingsDialog {
     /**
      * Constructs a new {@code DecimalSettingsDialog} that uses the given {@code DecimalSettings} instance.
      *
-     * @param decimalSettings the settings to manipulate with this dialog
+     * @param settings the settings to manipulate with this dialog
      */
-    DecimalSettingsDialog(@NotNull final DecimalSettings decimalSettings) {
-        super();
+    DecimalSettingsDialog(@NotNull final DecimalSettings settings) {
+        super(settings);
 
         init();
-
-        this.decimalSettings = decimalSettings;
         loadSettings();
     }
 
@@ -64,29 +60,6 @@ final class DecimalSettingsDialog extends SettingsDialog {
                 new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPINNER_STEP_SIZE));
         maxValue = new JSpinner(
                 new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPINNER_STEP_SIZE));
-    }
-
-
-    @Override
-    protected void loadSettings() {
-        minValue.setValue(decimalSettings.getMinValue());
-        maxValue.setValue(decimalSettings.getMaxValue());
-        decimalCount.setValue(decimalSettings.getDecimalCount());
-    }
-
-    @Override
-    protected void saveSettings() {
-        try {
-            minValue.commitEdit();
-            maxValue.commitEdit();
-            decimalCount.commitEdit();
-        } catch (final ParseException e) {
-            throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
-        }
-
-        decimalSettings.setMinValue((Double) minValue.getValue());
-        decimalSettings.setMaxValue((Double) maxValue.getValue());
-        decimalSettings.setDecimalCount((Integer) decimalCount.getValue());
     }
 
     @Override
@@ -114,5 +87,28 @@ final class DecimalSettingsDialog extends SettingsDialog {
         }
 
         return null;
+    }
+
+
+    @Override
+    public void loadSettings(@NotNull final DecimalSettings settings) {
+        minValue.setValue(settings.getMinValue());
+        maxValue.setValue(settings.getMaxValue());
+        decimalCount.setValue(settings.getDecimalCount());
+    }
+
+    @Override
+    public void saveSettings(@NotNull final DecimalSettings settings) {
+        try {
+            minValue.commitEdit();
+            maxValue.commitEdit();
+            decimalCount.commitEdit();
+        } catch (final ParseException e) {
+            throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
+        }
+
+        settings.setMinValue((Double) minValue.getValue());
+        settings.setMaxValue((Double) maxValue.getValue());
+        settings.setDecimalCount((Integer) decimalCount.getValue());
     }
 }

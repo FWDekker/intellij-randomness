@@ -13,9 +13,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Dialog for settings of random integer generation.
  */
-final class IntegerSettingsDialog extends SettingsDialog {
-    private final IntegerSettings integerSettings;
-
+final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     private JPanel contentPane;
     private JSpinner minValue;
     private JSpinner maxValue;
@@ -31,14 +29,12 @@ final class IntegerSettingsDialog extends SettingsDialog {
     /**
      * Constructs a new {@code IntegerSettingsDialog} that uses the given {@code IntegerSettings} instance.
      *
-     * @param integerSettings the settings to manipulate with this dialog
+     * @param settings the settings to manipulate with this dialog
      */
-    IntegerSettingsDialog(final IntegerSettings integerSettings) {
-        super();
+    IntegerSettingsDialog(@NotNull final IntegerSettings settings) {
+        super(settings);
 
         init();
-
-        this.integerSettings = integerSettings;
         loadSettings();
     }
 
@@ -47,26 +43,6 @@ final class IntegerSettingsDialog extends SettingsDialog {
     @NotNull
     protected JComponent createCenterPanel() {
         return contentPane;
-    }
-
-
-    @Override
-    protected void loadSettings() {
-        minValue.setValue(integerSettings.getMinValue());
-        maxValue.setValue(integerSettings.getMaxValue());
-    }
-
-    @Override
-    protected void saveSettings() {
-        try {
-            minValue.commitEdit();
-            maxValue.commitEdit();
-        } catch (final ParseException e) {
-            throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
-        }
-
-        integerSettings.setMinValue((Integer) minValue.getValue());
-        integerSettings.setMaxValue((Integer) maxValue.getValue());
     }
 
     @Override
@@ -86,5 +62,25 @@ final class IntegerSettingsDialog extends SettingsDialog {
         }
 
         return null;
+    }
+
+
+    @Override
+    public void loadSettings(@NotNull final IntegerSettings settings) {
+        minValue.setValue(settings.getMinValue());
+        maxValue.setValue(settings.getMaxValue());
+    }
+
+    @Override
+    public void saveSettings(@NotNull final IntegerSettings settings) {
+        try {
+            minValue.commitEdit();
+            maxValue.commitEdit();
+        } catch (final ParseException e) {
+            throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
+        }
+
+        settings.setMinValue((Integer) minValue.getValue());
+        settings.setMaxValue((Integer) maxValue.getValue());
     }
 }

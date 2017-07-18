@@ -9,15 +9,40 @@ import org.jetbrains.annotations.Nullable;
  * Superclass for settings dialogs.
  * <p>
  * Subclasses <b>MUST</b> call {@link #init()} and {@link #loadSettings()} in their constructor.
+ *
+ * @param <S> the type of settings managed by the subclass
  */
-public abstract class SettingsDialog extends DialogWrapper {
+public abstract class SettingsDialog<S extends Settings> extends DialogWrapper implements SettingsManager<S> {
+    private final S settings;
+
+
     /**
      * Constructs a new {@code SettingsDialog}.
      * <p>
      * Subclasses <b>MUST</b> call {@link #init()} and {@link #loadSettings()} in their constructor.
+     *
+     * @param settings the settings to manage
      */
-    protected SettingsDialog() {
+    protected SettingsDialog(final S settings) {
         super(null);
+
+        this.settings = settings;
+    }
+
+
+    @Override
+    public final S getSettings() {
+        return settings;
+    }
+
+    @Override
+    public final void loadSettings() {
+        loadSettings(settings);
+    }
+
+    @Override
+    public final void saveSettings() {
+        saveSettings(settings);
     }
 
 
@@ -35,17 +60,6 @@ public abstract class SettingsDialog extends DialogWrapper {
             close(OK_EXIT_CODE);
         }
     }
-
-
-    /**
-     * Loads settings from the model into the UI.
-     */
-    protected abstract void loadSettings();
-
-    /**
-     * Commits the values entered by the user to the model.
-     */
-    protected abstract void saveSettings();
 
     /**
      * Validates all input fields.
