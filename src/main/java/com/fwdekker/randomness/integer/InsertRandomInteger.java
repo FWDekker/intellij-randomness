@@ -1,8 +1,7 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.InsertRandomSomething;
-import java.security.SecureRandom;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -10,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
  * Generates a random integer based on the settings in {@link IntegerSettings}.
  */
 public final class InsertRandomInteger extends InsertRandomSomething {
-    private static final Random RANDOM = new SecureRandom();
-
     private final IntegerSettings integerSettings;
 
 
@@ -39,8 +36,8 @@ public final class InsertRandomInteger extends InsertRandomSomething {
      */
     @Override
     public String generateString() {
-        final long range = integerSettings.getMaxValue() - integerSettings.getMinValue();
-        final long randomValue = integerSettings.getMinValue() + RANDOM.nextLong() * range;
+        final long randomValue = ThreadLocalRandom.current()
+                .nextLong(integerSettings.getMinValue(), integerSettings.getMaxValue() + 1);
 
         return Long.toString(randomValue);
     }
