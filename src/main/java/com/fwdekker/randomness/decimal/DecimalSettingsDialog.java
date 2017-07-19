@@ -1,8 +1,9 @@
 package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.ValidationException;
+import com.fwdekker.randomness.Validator;
 import com.intellij.openapi.ui.ValidationInfo;
-import java.text.ParseException;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -67,36 +68,24 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            minValue.commitEdit();
-        } catch (final ParseException e) {
-            return new ValidationInfo("Minimum value must be a number.", minValue);
-        }
-        try {
-            maxValue.commitEdit();
-        } catch (final ParseException e) {
-            return new ValidationInfo("Maximum value must be a number.", maxValue);
-        }
-        try {
-            decimalCount.commitEdit();
-        } catch (final ParseException e) {
-            return new ValidationInfo("Decimal count must be a number.", decimalCount);
-        }
+            Validator.hasValidFormat(minValue,
+                    "Minimum value must be a number.");
+            Validator.hasValidFormat(maxValue,
+                    "Maximum value must be a number.");
 
-        final double newMinValue = ((Number) minValue.getValue()).doubleValue();
-        final double newMaxValue = ((Number) maxValue.getValue()).doubleValue();
-        if (newMaxValue < newMinValue) {
-            return new ValidationInfo("Maximum value cannot be smaller than minimum value.", maxValue);
-        }
+            Validator.areValidRange(minValue, maxValue,
+                    "Maximum value cannot be smaller than minimum value.");
 
-        final double newDecimalCount = ((Number) decimalCount.getValue()).doubleValue();
-        if (newDecimalCount < 0) {
-            return new ValidationInfo("Decimal count must not be a negative number.", decimalCount);
-        }
-        if (newDecimalCount > Integer.MAX_VALUE) {
-            return new ValidationInfo("Decimal count must not be greater than 2^31-1.", decimalCount);
-        }
-        if (newDecimalCount % 1 != 0) {
-            return new ValidationInfo("Decimal count must be a whole number.", decimalCount);
+            Validator.hasValidFormat(decimalCount,
+                    "Decimal count must be a number.");
+            Validator.isGreaterThan(decimalCount, 0,
+                    "Decimal count must not be a negative number.");
+            Validator.isLessThan(decimalCount, Integer.MAX_VALUE,
+                    "Decimal count must not be greater than 2^31-1.");
+            Validator.isInteger(decimalCount,
+                    "Decimal count must be a whole number.");
+        } catch (final ValidationException e) {
+            return new ValidationInfo(e.getMessage(), e.getComponent());
         }
 
         return null;

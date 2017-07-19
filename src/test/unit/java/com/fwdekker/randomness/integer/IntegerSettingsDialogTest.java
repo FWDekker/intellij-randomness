@@ -72,7 +72,7 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minValue").target());
-        assertThat(validationInfo.message).isEqualTo("Minimum value must be an integer.");
+        assertThat(validationInfo.message).isEqualTo("Minimum value must be a whole number.");
     }
 
     @Test
@@ -95,7 +95,7 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
-        assertThat(validationInfo.message).isEqualTo("Maximum value must be an integer.");
+        assertThat(validationInfo.message).isEqualTo("Maximum value must be a whole number.");
     }
 
     @Test

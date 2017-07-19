@@ -1,8 +1,9 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.ValidationException;
+import com.fwdekker.randomness.Validator;
 import com.intellij.openapi.ui.ValidationInfo;
-import java.text.ParseException;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -61,28 +62,15 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            minValue.commitEdit();
-        } catch (final ParseException e) {
-            return new ValidationInfo("Minimum value must be a number.", minValue);
-        }
-        try {
-            maxValue.commitEdit();
-        } catch (final ParseException e) {
-            return new ValidationInfo("Maximum value must be a number.", maxValue);
-        }
+            Validator.hasValidFormat(minValue, "Minimum value must be a number.");
+            Validator.isInteger(minValue, "Minimum value must be a whole number.");
 
-        final double newMinValue = ((Number) minValue.getValue()).doubleValue();
-        if (newMinValue % 1 != 0) {
-            return new ValidationInfo("Minimum value must be an integer.", minValue);
-        }
+            Validator.hasValidFormat(maxValue, "Maximum value must be a number.");
+            Validator.isInteger(maxValue, "Maximum value must be a whole number.");
 
-        final double newMaxValue = ((Number) maxValue.getValue()).doubleValue();
-        if (newMaxValue % 1 != 0) {
-            return new ValidationInfo("Maximum value must be an integer.", maxValue);
-        }
-
-        if (newMaxValue < newMinValue) {
-            return new ValidationInfo("Maximum value cannot be smaller than minimum value.", maxValue);
+            Validator.areValidRange(minValue, maxValue, "Maximum value cannot be smaller than minimum value.");
+        } catch (final ValidationException e) {
+            return new ValidationInfo(e.getMessage(), e.getComponent());
         }
 
         return null;

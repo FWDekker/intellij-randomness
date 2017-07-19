@@ -1,9 +1,10 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.ValidationException;
+import com.fwdekker.randomness.Validator;
 import com.intellij.openapi.ui.ValidationInfo;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashSet;
 import javax.swing.AbstractButton;
@@ -103,38 +104,27 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            minLength.commitEdit();
-        } catch (final ParseException e) {
-            return new ValidationInfo("Minimum length must be a number.", minLength);
-        }
-        try {
-            maxLength.commitEdit();
-        } catch (final ParseException e) {
-            return new ValidationInfo("Maximum length must be a number.", maxLength);
-        }
+            Validator.hasValidFormat(minLength,
+                    "Minimum length must be a number.");
+            Validator.isInteger(minLength,
+                    "Minimum length must be a whole number.");
+            Validator.isGreaterThan(minLength, 0,
+                    "Minimum length must be a positive number.");
 
-        final double newMinLength = ((Number) minLength.getValue()).doubleValue();
-        if (newMinLength % 1 != 0) {
-            return new ValidationInfo("Minimum length must be a whole number.", minLength);
-        }
-        if (newMinLength <= 0) {
-            return new ValidationInfo("Minimum length must be a positive number.", minLength);
-        }
+            Validator.hasValidFormat(maxLength,
+                    "Maximum length must be a number.");
+            Validator.isInteger(maxLength,
+                    "Maximum length must be a whole number.");
+            Validator.isLessThan(maxLength, (long) Integer.MAX_VALUE + 1L,
+                    "Maximum length must not be greater than 2^31-1.");
 
-        final double newMaxLength = ((Number) maxLength.getValue()).doubleValue();
-        if (newMaxLength % 1 != 0) {
-            return new ValidationInfo("Maximum length must be a whole number.", maxLength);
-        }
-        if (newMaxLength > Integer.MAX_VALUE) {
-            return new ValidationInfo("Maximum length must not be greater than 2^31-1.", maxLength);
-        }
+            Validator.areValidRange(minLength, maxLength,
+                    "Maximum length cannot be smaller than minimum length.");
 
-        if (newMaxLength < newMinLength) {
-            return new ValidationInfo("Maximum length cannot be smaller than minimum length.", maxLength);
-        }
-
-        if (alphabetList.getSelectedValuesList().isEmpty()) {
-            return new ValidationInfo("Select at least one set of symbols.", alphabetList);
+            Validator.isNotEmpty(alphabetList,
+                    "Select at least one set of symbols.");
+        } catch (ValidationException e) {
+            return new ValidationInfo(e.getMessage(), e.getComponent());
         }
 
         return null;
@@ -155,8 +145,8 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     }
 
     /**
-     * Selects the {@code JRadioButton} in the {@code enclosureGroup} group with the given text, and deselects all
-     * other {@code JRadioButton}s in that group.
+     * Selects the {@code JRadioButton} in the {@code enclosureGroup} group with the given text, and deselects all other
+     * {@code JRadioButton}s in that group.
      *
      * @param enclosure the text of the {@code JRadioButton} to select
      */
