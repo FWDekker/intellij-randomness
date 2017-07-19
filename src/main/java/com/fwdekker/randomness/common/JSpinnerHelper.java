@@ -37,7 +37,8 @@ public final class JSpinnerHelper {
      * @return a new {@code JSpinner} for entering decimals
      */
     public static JSpinner createDecimalSpinner() {
-        final SpinnerNumberModel model = new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0.1);
+        final SpinnerNumberModel model
+                = new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0.1);
 
         return createSpinner(model);
     }
