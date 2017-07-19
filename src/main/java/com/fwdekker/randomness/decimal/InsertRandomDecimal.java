@@ -2,8 +2,7 @@ package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.InsertRandomSomething;
 import java.math.BigDecimal;
-import java.security.SecureRandom;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -11,8 +10,6 @@ import org.jetbrains.annotations.NotNull;
  * Generates a random integer based on the settings in {@link DecimalSettings}.
  */
 public final class InsertRandomDecimal extends InsertRandomSomething {
-    private static final Random RANDOM = new SecureRandom();
-
     private final DecimalSettings decimalSettings;
 
 
@@ -40,8 +37,8 @@ public final class InsertRandomDecimal extends InsertRandomSomething {
      */
     @Override
     public String generateString() {
-        final double range = decimalSettings.getMaxValue() - decimalSettings.getMinValue();
-        final double randomValue = decimalSettings.getMinValue() + RANDOM.nextDouble() * range;
+        final double randomValue = ThreadLocalRandom.current()
+                .nextDouble(decimalSettings.getMinValue(), Math.nextUp(decimalSettings.getMaxValue()));
 
         return convertToString(randomValue);
     }

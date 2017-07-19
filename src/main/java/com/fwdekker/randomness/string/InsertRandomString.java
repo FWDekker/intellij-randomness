@@ -1,16 +1,13 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.InsertRandomSomething;
-import java.security.SecureRandom;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
  * Generates random alphanumerical strings based on the settings in {@link StringSettings}.
  */
 public final class InsertRandomString extends InsertRandomSomething {
-    private static final Random RANDOM = new SecureRandom();
-
     private final StringSettings stringSettings;
 
 
@@ -38,8 +35,8 @@ public final class InsertRandomString extends InsertRandomSomething {
      */
     @Override
     public String generateString() {
-        final int lengthRange = stringSettings.getMaxLength() - stringSettings.getMinLength();
-        final int length = stringSettings.getMinLength() + RANDOM.nextInt(lengthRange + 1);
+        final int length = ThreadLocalRandom.current()
+                .nextInt(stringSettings.getMinLength(), stringSettings.getMaxLength() + 1);
 
         final char[] text = new char[length];
         for (int i = 0; i < length; i++) {
@@ -57,7 +54,8 @@ public final class InsertRandomString extends InsertRandomSomething {
      */
     private char generateCharacter() {
         final String alphabet = Alphabet.concatenate(stringSettings.getAlphabets());
+        final int charIndex = ThreadLocalRandom.current().nextInt(alphabet.length());
 
-        return alphabet.charAt(RANDOM.nextInt(alphabet.length()));
+        return alphabet.charAt(charIndex);
     }
 }
