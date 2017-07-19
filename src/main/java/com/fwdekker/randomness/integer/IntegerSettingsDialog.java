@@ -62,13 +62,13 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            Validator.hasValidFormat(minValue, "Minimum value must be a number.");
-            Validator.isInteger(minValue, "Minimum value must be a whole number.");
+            Validator.hasValidFormat(minValue);
+            Validator.isInteger(minValue);
 
-            Validator.hasValidFormat(maxValue, "Maximum value must be a number.");
-            Validator.isInteger(maxValue, "Maximum value must be a whole number.");
+            Validator.hasValidFormat(maxValue);
+            Validator.isInteger(maxValue);
 
-            Validator.areValidRange(minValue, maxValue, "Maximum value cannot be smaller than minimum value.");
+            Validator.areValidRange(minValue, maxValue);
         } catch (final ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
         }

@@ -104,25 +104,17 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            Validator.hasValidFormat(minLength,
-                    "Minimum length must be a number.");
-            Validator.isInteger(minLength,
-                    "Minimum length must be a whole number.");
-            Validator.isGreaterThan(minLength, 0,
-                    "Minimum length must be a positive number.");
+            Validator.hasValidFormat(minLength);
+            Validator.isInteger(minLength);
+            Validator.isGreaterThan(minLength, 0);
 
-            Validator.hasValidFormat(maxLength,
-                    "Maximum length must be a number.");
-            Validator.isInteger(maxLength,
-                    "Maximum length must be a whole number.");
-            Validator.isLessThan(maxLength, (long) Integer.MAX_VALUE + 1L,
-                    "Maximum length must not be greater than 2^31-1.");
+            Validator.hasValidFormat(maxLength);
+            Validator.isInteger(maxLength);
+            Validator.isLessThan(maxLength, (long) Integer.MAX_VALUE + 1L);
 
-            Validator.areValidRange(minLength, maxLength,
-                    "Maximum length cannot be smaller than minimum length.");
+            Validator.areValidRange(minLength, maxLength);
 
-            Validator.isNotEmpty(alphabetList,
-                    "Select at least one set of symbols.");
+            Validator.isNotEmpty(alphabetList);
         } catch (ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
         }

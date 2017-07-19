@@ -60,7 +60,7 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minValue").target());
-        assertThat(validationInfo.message).isEqualTo("Minimum value must be a number.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a number.");
     }
 
     @Test
@@ -72,7 +72,7 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minValue").target());
-        assertThat(validationInfo.message).isEqualTo("Minimum value must be a whole number.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a whole number.");
     }
 
     @Test
@@ -83,7 +83,7 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
-        assertThat(validationInfo.message).isEqualTo("Maximum value must be a number.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a number.");
     }
 
     @Test
@@ -95,7 +95,7 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
-        assertThat(validationInfo.message).isEqualTo("Maximum value must be a whole number.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a whole number.");
     }
 
     @Test
@@ -107,7 +107,7 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
-        assertThat(validationInfo.message).isEqualTo("Maximum value cannot be smaller than minimum value.");
+        assertThat(validationInfo.message).isEqualTo("The maximum should be no smaller than the minimum.");
     }
 
 

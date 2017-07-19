@@ -24,14 +24,13 @@ public final class Validator {
      * ParseException}.
      *
      * @param spinner a spinner
-     * @param message the message of the thrown {@code ValidationException}
      * @throws ValidationException if calling {@link JSpinner#commitEdit()} results in a {@link ParseException}
      */
-    public static void hasValidFormat(final JSpinner spinner, final String message) throws ValidationException {
+    public static void hasValidFormat(final JSpinner spinner) throws ValidationException {
         try {
             spinner.commitEdit();
         } catch (final ParseException e) {
-            throw new ValidationException(message, e, spinner);
+            throw new ValidationException("Please enter a number.", e, spinner);
         }
     }
 
@@ -40,18 +39,16 @@ public final class Validator {
      * <p>
      * The thrown exception's component is {@code max}.
      *
-     * @param min     the spinner that forms the start of the range
-     * @param max     the spinner that forms the end of the range
-     * @param message the message of the thrown {@code ValidationException}
+     * @param min the spinner that forms the start of the range
+     * @param max the spinner that forms the end of the range
      * @throws ValidationException if {@code min}'s value is greater than that of {@code max}
      */
-    public static void areValidRange(final JSpinner min, final JSpinner max, final String message)
-            throws ValidationException {
+    public static void areValidRange(final JSpinner min, final JSpinner max) throws ValidationException {
         final double minValue = getSpinnerValue(min);
         final double maxValue = getSpinnerValue(max);
 
         if (minValue > maxValue) {
-            throw new ValidationException(message, max);
+            throw new ValidationException("The maximum should be no smaller than the minimum.", max);
         }
     }
 
@@ -60,13 +57,11 @@ public final class Validator {
      *
      * @param spinner a spinner
      * @param value   the value the spinner should be greater than
-     * @param message the message of the thrown {@code ValidationException}
      * @throws ValidationException if the spinner's value is less than or equal to the given value
      */
-    public static void isGreaterThan(final JSpinner spinner, final double value, final String message)
-            throws ValidationException {
+    public static void isGreaterThan(final JSpinner spinner, final double value) throws ValidationException {
         if (getSpinnerValue(spinner) <= value) {
-            throw new ValidationException(message, spinner);
+            throw new ValidationException("Please enter a value greater than " + value + ".", spinner);
         }
     }
 
@@ -75,13 +70,11 @@ public final class Validator {
      *
      * @param spinner a spinner
      * @param value   the value the spinner should be less than
-     * @param message the message of the thrown {@code ValidationException}
      * @throws ValidationException if the spinner's value is greater than or equal to the given value
      */
-    public static void isLessThan(final JSpinner spinner, final double value, final String message)
-            throws ValidationException {
+    public static void isLessThan(final JSpinner spinner, final double value) throws ValidationException {
         if (getSpinnerValue(spinner) >= value) {
-            throw new ValidationException(message, spinner);
+            throw new ValidationException("Please enter a value less than " + value + ".", spinner);
         }
     }
 
@@ -89,25 +82,23 @@ public final class Validator {
      * Throws a {@code ValidationException} if the spinner's value is not a whole number.
      *
      * @param spinner a spinner
-     * @param message the message of the thrown {@code ValidationException}
      * @throws ValidationException if the spinner's value is not a whole number
      */
-    public static void isInteger(final JSpinner spinner, final String message) throws ValidationException {
+    public static void isInteger(final JSpinner spinner) throws ValidationException {
         if (getSpinnerValue(spinner) % 1 != 0) {
-            throw new ValidationException(message, spinner);
+            throw new ValidationException("Please enter a whole number.", spinner);
         }
     }
 
     /**
      * Throws a {@code ValidationException} if no values are selected in the list.
      *
-     * @param list    a list
-     * @param message the message of the thrown {@code ValidationException}
+     * @param list a list
      * @throws ValidationException if no values are selected in the list
      */
-    public static void isNotEmpty(final JList list, final String message) throws ValidationException {
+    public static void isNotEmpty(final JList list) throws ValidationException {
         if (list.getSelectedValuesList().isEmpty()) {
-            throw new ValidationException(message, list);
+            throw new ValidationException("Please select at least one option.", list);
         }
     }
 

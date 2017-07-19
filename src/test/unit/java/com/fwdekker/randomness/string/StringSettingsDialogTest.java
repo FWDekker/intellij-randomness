@@ -86,7 +86,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
-        assertThat(validationInfo.message).isEqualTo("Minimum length must be a number.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a number.");
     }
 
     @Test
@@ -98,7 +98,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
-        assertThat(validationInfo.message).isEqualTo("Minimum length must be a whole number.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a whole number.");
     }
 
     @Test
@@ -110,7 +110,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
-        assertThat(validationInfo.message).isEqualTo("Minimum length must be a positive number.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a value greater than 0.0.");
     }
 
     @Test
@@ -121,7 +121,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
-        assertThat(validationInfo.message).isEqualTo("Maximum length must be a number.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a number.");
     }
 
     @Test
@@ -133,7 +133,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
-        assertThat(validationInfo.message).isEqualTo("Maximum length must be a whole number.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a whole number.");
     }
 
     @Test
@@ -145,7 +145,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
-        assertThat(validationInfo.message).isEqualTo("Maximum length must not be greater than 2^31-1.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a value less than 2.147483648E9.");
     }
 
     @Test
@@ -157,7 +157,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
-        assertThat(validationInfo.message).isEqualTo("Maximum length cannot be smaller than minimum length.");
+        assertThat(validationInfo.message).isEqualTo("The maximum should be no smaller than the minimum.");
     }
 
     @Test
@@ -168,7 +168,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.list("alphabets").target());
-        assertThat(validationInfo.message).isEqualTo("Select at least one set of symbols.");
+        assertThat(validationInfo.message).isEqualTo("Please select at least one option.");
     }
 
 

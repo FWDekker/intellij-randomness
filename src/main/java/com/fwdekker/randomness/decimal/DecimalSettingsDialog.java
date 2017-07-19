@@ -64,22 +64,14 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            Validator.hasValidFormat(minValue,
-                    "Minimum value must be a number.");
-            Validator.hasValidFormat(maxValue,
-                    "Maximum value must be a number.");
+            Validator.hasValidFormat(minValue);
+            Validator.hasValidFormat(maxValue);
+            Validator.areValidRange(minValue, maxValue);
 
-            Validator.areValidRange(minValue, maxValue,
-                    "Maximum value cannot be smaller than minimum value.");
-
-            Validator.hasValidFormat(decimalCount,
-                    "Decimal count must be a number.");
-            Validator.isGreaterThan(decimalCount, 0,
-                    "Decimal count must not be a negative number.");
-            Validator.isLessThan(decimalCount, Integer.MAX_VALUE,
-                    "Decimal count must not be greater than 2^31-1.");
-            Validator.isInteger(decimalCount,
-                    "Decimal count must be a whole number.");
+            Validator.hasValidFormat(decimalCount);
+            Validator.isGreaterThan(decimalCount, 0);
+            Validator.isLessThan(decimalCount, Integer.MAX_VALUE);
+            Validator.isInteger(decimalCount);
         } catch (final ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
         }
