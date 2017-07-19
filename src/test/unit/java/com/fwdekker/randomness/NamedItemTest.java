@@ -60,10 +60,8 @@ public final class NamedItemTest {
     @Test
     public void testEqualsOtherType() {
         final ArrayList realItem = new ArrayList();
-        final RandomAccess itemA = realItem;
-        final Cloneable itemB = realItem;
-        final NamedItem<RandomAccess> namedItemA = new NamedItem<>("znKHUZqExm", itemA);
-        final NamedItem<Cloneable> namedItemB = new NamedItem<>("znKHUZqExm", itemB);
+        final NamedItem<RandomAccess> namedItemA = new NamedItem<>("znKHUZqExm", realItem);
+        final NamedItem<Cloneable> namedItemB = new NamedItem<>("znKHUZqExm", realItem);
 
         assertThat(namedItemA.equals(namedItemB)).isTrue();
     }
@@ -105,10 +103,8 @@ public final class NamedItemTest {
     @Test
     public void testHashCodeOtherType() {
         final ArrayList realItem = new ArrayList();
-        final RandomAccess itemA = realItem;
-        final Cloneable itemB = realItem;
-        final NamedItem<RandomAccess> namedItemA = new NamedItem<>("vGi5P7o96T", itemA);
-        final NamedItem<Cloneable> namedItemB = new NamedItem<>("vGi5P7o96T", itemB);
+        final NamedItem<RandomAccess> namedItemA = new NamedItem<>("vGi5P7o96T", realItem);
+        final NamedItem<Cloneable> namedItemB = new NamedItem<>("vGi5P7o96T", realItem);
 
         assertThat(namedItemA.hashCode()).isEqualTo(namedItemB.hashCode());
     }
