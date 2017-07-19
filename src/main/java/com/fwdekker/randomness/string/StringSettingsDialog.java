@@ -1,8 +1,8 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.ValidationException;
-import com.fwdekker.randomness.Validator;
+import com.fwdekker.randomness.common.ValidationException;
+import com.fwdekker.randomness.common.Validator;
 import com.intellij.openapi.ui.ValidationInfo;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Collections;

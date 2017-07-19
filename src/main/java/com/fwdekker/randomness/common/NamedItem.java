@@ -1,4 +1,4 @@
-package com.fwdekker.randomness;
+package com.fwdekker.randomness.common;
 
 import java.util.Objects;
 

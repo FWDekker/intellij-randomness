@@ -1,4 +1,4 @@
-package com.fwdekker.randomness;
+package com.fwdekker.randomness.common;
 
 import javax.swing.JComponent;
 import org.jetbrains.annotations.NotNull;
