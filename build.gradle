@@ -57,7 +57,11 @@ findbugs {
 
 pmd {
     ignoreFailures = true
-    ruleSetFiles = files("$rootProject.projectDir/config/pmd/pmd-rules.xml")
+    ruleSetFiles = files("$rootProject.projectDir/config/pmd/main-pmd-rules.xml")
+}
+
+pmdTest {
+    ruleSetFiles = files("$rootProject.projectDir/config/pmd/test-pmd-rules.xml")
 }
 
 jacocoTestReport {

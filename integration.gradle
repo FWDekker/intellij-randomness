@@ -33,5 +33,9 @@ task integrationTest(type: Test, description: "Runs the integration tests.", gro
     }
 }
 
+pmdIntegrationTest {
+    ruleSetFiles = files("$rootProject.projectDir/config/pmd/test-pmd-rules.xml")
+}
+
 check.dependsOn integrationTest
 jacocoTestReport.executionData file("$rootProject.buildDir/jacoco/integrationTest.exec")

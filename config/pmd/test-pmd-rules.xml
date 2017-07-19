@@ -4,7 +4,10 @@
     <rule ref="rulesets/java/basic.xml"/>
     <rule ref="rulesets/java/braces.xml"/>
     <rule ref="rulesets/java/clone.xml"/>
-    <rule ref="rulesets/java/codesize.xml"/>
+    <rule ref="rulesets/java/codesize.xml">
+        <!-- Test classes may be large. -->
+        <exclude name="TooManyMethods"/>
+    </rule>
     <rule ref="rulesets/java/coupling.xml">
         <!-- Too many false positives. -->
         <exclude name="LawOfDemeter"/>
@@ -17,7 +20,10 @@
     </rule>
     <rule ref="rulesets/java/empty.xml"/>
     <rule ref="rulesets/java/finalizers.xml"/>
-    <rule ref="rulesets/java/imports.xml"/>
+    <rule ref="rulesets/java/imports.xml">
+        <!-- Makes test code more readable. -->
+        <exclude name="TooManyStaticImports"/>
+    </rule>
     <rule ref="rulesets/java/junit.xml">
         <!-- Too many false positives. -->
         <exclude name="JUnitTestContainsTooManyAsserts"/>
