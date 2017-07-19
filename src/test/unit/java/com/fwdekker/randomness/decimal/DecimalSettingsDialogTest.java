@@ -179,7 +179,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
      * @return the user's locale's representation of the given double
      */
     private static String doubleToString(final double decimal) {
-        final Locale locale = Locale.getDefault(Locale.Category.FORMAT);
+        final Locale locale = Locale.US;
         final NumberFormat formatter = NumberFormat.getInstance(locale);
 
         return formatter.format(decimal);
