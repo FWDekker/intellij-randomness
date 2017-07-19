@@ -1,13 +1,13 @@
 package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.common.JSpinnerHelper;
 import com.fwdekker.randomness.common.ValidationException;
 import com.fwdekker.randomness.common.Validator;
 import com.intellij.openapi.ui.ValidationInfo;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,8 +16,6 @@ import org.jetbrains.annotations.Nullable;
  * Dialog for settings of random decimal generation.
  */
 final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
-    private static final double SPINNER_STEP_SIZE = 0.1;
-
     private JPanel contentPane;
     private JSpinner minValue;
     private JSpinner maxValue;
@@ -57,11 +55,9 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
-        minValue = new JSpinner(
-                new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPINNER_STEP_SIZE));
-        maxValue = new JSpinner(
-                new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPINNER_STEP_SIZE));
-        decimalCount = new JSpinner(new SpinnerNumberModel(0L, Long.MIN_VALUE, Long.MAX_VALUE, 1L));
+        minValue = JSpinnerHelper.createDecimalSpinner();
+        maxValue = JSpinnerHelper.createDecimalSpinner();
+        decimalCount = JSpinnerHelper.createLongSpinner();
     }
 
     @Override

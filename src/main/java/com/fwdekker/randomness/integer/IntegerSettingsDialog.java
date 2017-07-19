@@ -1,13 +1,13 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.common.JSpinnerHelper;
 import com.fwdekker.randomness.common.ValidationException;
 import com.fwdekker.randomness.common.Validator;
 import com.intellij.openapi.ui.ValidationInfo;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,8 +54,8 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
-        minValue = new JSpinner(new SpinnerNumberModel(0L, Long.MIN_VALUE, Long.MAX_VALUE, 1L));
-        maxValue = new JSpinner(new SpinnerNumberModel(0L, Long.MIN_VALUE, Long.MAX_VALUE, 1L));
+        minValue = JSpinnerHelper.createLongSpinner();
+        maxValue = JSpinnerHelper.createLongSpinner();
     }
 
     @Override
