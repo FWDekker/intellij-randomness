@@ -1,8 +1,9 @@
 package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.ValidationException;
+import com.fwdekker.randomness.Validator;
 import com.intellij.openapi.ui.ValidationInfo;
-import java.text.ParseException;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -60,30 +61,31 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
                 new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPINNER_STEP_SIZE));
         maxValue = new JSpinner(
                 new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPINNER_STEP_SIZE));
+        decimalCount = new JSpinner(new SpinnerNumberModel(0L, Long.MIN_VALUE, Long.MAX_VALUE, 1L));
     }
 
     @Override
     @Nullable
     protected ValidationInfo doValidate() {
-        if (!(minValue.getValue() instanceof Double)) {
-            return new ValidationInfo("Minimum value must be a decimal.", minValue);
-        }
-        if (!(maxValue.getValue() instanceof Double)) {
-            return new ValidationInfo("Maximum value must be a decimal.", maxValue);
-        }
-        if (!(decimalCount.getValue() instanceof Integer)) {
-            return new ValidationInfo("Decimal count must be an integer.", decimalCount);
-        }
+        try {
+            Validator.hasValidFormat(minValue,
+                    "Minimum value must be a number.");
+            Validator.hasValidFormat(maxValue,
+                    "Maximum value must be a number.");
 
-        final double newMinValue = (Double) minValue.getValue();
-        final double newMaxValue = (Double) maxValue.getValue();
-        if (newMaxValue < newMinValue) {
-            return new ValidationInfo("Maximum value cannot be smaller than minimum value.", maxValue);
-        }
+            Validator.areValidRange(minValue, maxValue,
+                    "Maximum value cannot be smaller than minimum value.");
 
-        final int newDecimalCount = (Integer) decimalCount.getValue();
-        if (newDecimalCount < 0) {
-            return new ValidationInfo("Decimal count must be at least 0.", decimalCount);
+            Validator.hasValidFormat(decimalCount,
+                    "Decimal count must be a number.");
+            Validator.isGreaterThan(decimalCount, 0,
+                    "Decimal count must not be a negative number.");
+            Validator.isLessThan(decimalCount, Integer.MAX_VALUE,
+                    "Decimal count must not be greater than 2^31-1.");
+            Validator.isInteger(decimalCount,
+                    "Decimal count must be a whole number.");
+        } catch (final ValidationException e) {
+            return new ValidationInfo(e.getMessage(), e.getComponent());
         }
 
         return null;
@@ -99,16 +101,12 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
 
     @Override
     public void saveSettings(@NotNull final DecimalSettings settings) {
-        try {
-            minValue.commitEdit();
-            maxValue.commitEdit();
-            decimalCount.commitEdit();
-        } catch (final ParseException e) {
-            throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
-        }
+        final double newMinValue = ((Number) minValue.getValue()).doubleValue();
+        final double newMaxValue = ((Number) maxValue.getValue()).doubleValue();
+        final int newDecimalCount = ((Number) decimalCount.getValue()).intValue();
 
-        settings.setMinValue((Double) minValue.getValue());
-        settings.setMaxValue((Double) maxValue.getValue());
-        settings.setDecimalCount((Integer) decimalCount.getValue());
+        settings.setMinValue(newMinValue);
+        settings.setMaxValue(newMaxValue);
+        settings.setDecimalCount(newDecimalCount);
     }
 }

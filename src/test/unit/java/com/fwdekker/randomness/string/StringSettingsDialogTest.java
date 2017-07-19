@@ -24,36 +24,44 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
     private static final Set<Alphabet> DEFAULT_ALPHABETS
             = new HashSet<>(Arrays.asList(Alphabet.UPPERCASE, Alphabet.LOWERCASE));
 
-    private StringSettings decimalSettings;
-    private StringSettingsDialog decimalSettingsDialog;
+    private StringSettings stringSettings;
+    private StringSettingsDialog stringSettingsDialog;
     private FrameFixture frame;
 
 
     @Override
     protected void onSetUp() {
-        decimalSettings = new StringSettings();
-        decimalSettings.setMinLength(DEFAULT_MIN_VALUE);
-        decimalSettings.setMaxLength(DEFAULT_MAX_VALUE);
-        decimalSettings.setEnclosure(DEFAULT_ENCLOSURE);
-        decimalSettings.setAlphabets(DEFAULT_ALPHABETS);
+        stringSettings = new StringSettings();
+        stringSettings.setMinLength(DEFAULT_MIN_VALUE);
+        stringSettings.setMaxLength(DEFAULT_MAX_VALUE);
+        stringSettings.setEnclosure(DEFAULT_ENCLOSURE);
+        stringSettings.setAlphabets(DEFAULT_ALPHABETS);
 
-        decimalSettingsDialog = GuiActionRunner.execute(() -> new StringSettingsDialog(decimalSettings));
-        frame = showInFrame(robot(), decimalSettingsDialog.createCenterPanel());
+        stringSettingsDialog = GuiActionRunner.execute(() -> new StringSettingsDialog(stringSettings));
+        frame = showInFrame(robot(), stringSettingsDialog.createCenterPanel());
     }
 
 
     @Test
-    public void testDefaultMinLength() {
+    public void testDefaultIsValid() {
+        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> stringSettingsDialog.doValidate());
+
+        assertThat(validationInfo).isNull();
+    }
+
+
+    @Test
+    public void testLoadSettingsMinLength() {
         frame.spinner("minLength").requireValue(DEFAULT_MIN_VALUE);
     }
 
     @Test
-    public void testDefaultMaxLength() {
+    public void testLoadSettingsMaxLength() {
         frame.spinner("maxLength").requireValue(DEFAULT_MAX_VALUE);
     }
 
     @Test
-    public void testDefaultEnclosure() {
+    public void testLoadSettingsEnclosure() {
         frame.radioButton("enclosureNone").requireNotSelected();
         frame.radioButton("enclosureSingle").requireNotSelected();
         frame.radioButton("enclosureDouble").requireSelected();
@@ -61,7 +69,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
     }
 
     @Test
-    public void testDefaultAlphabets() {
+    public void testLoadSettingsAlphabets() {
         final String[] expectedSelected = DEFAULT_ALPHABETS.stream()
                 .map(Alphabet::toString)
                 .toArray(String[]::new);
@@ -69,38 +77,83 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
         frame.list("alphabets").requireSelectedItems(expectedSelected);
     }
 
-    @Test
-    public void testDefaultIsValid() {
-        assertThat(decimalSettingsDialog.doValidate()).isNull();
-    }
 
     @Test
-    public void testMinLengthType() {
-        GuiActionRunner.execute(() -> frame.spinner("minLength").target().setValue(929.35f));
+    public void testValidateMinLengthString() {
+        frame.spinner("minLength").enterText("foE");
 
-        final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
+        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> stringSettingsDialog.doValidate());
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
-        assertThat(validationInfo.message).isEqualTo("Minimum length must be an integer.");
+        assertThat(validationInfo.message).isEqualTo("Minimum length must be a number.");
     }
 
     @Test
-    public void testMaxLengthType() {
-        GuiActionRunner.execute(() -> frame.spinner("maxLength").target().setValue(585.95f));
+    public void testValidateMinLengthFloat() {
+        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
+            frame.spinner("minLength").target().setValue(553.92f);
+            return stringSettingsDialog.doValidate();
+        });
 
-        final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
+        assertThat(validationInfo.message).isEqualTo("Minimum length must be a whole number.");
+    }
+
+    @Test
+    public void testValidateMinLengthNegative() {
+        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
+            frame.spinner("minLength").target().setValue(-161);
+            return stringSettingsDialog.doValidate();
+        });
+
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
+        assertThat(validationInfo.message).isEqualTo("Minimum length must be a positive number.");
+    }
+
+    @Test
+    public void testValidateMaxLengthString() {
+        frame.spinner("maxLength").enterText("qsQ");
+
+        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> stringSettingsDialog.doValidate());
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
-        assertThat(validationInfo.message).isEqualTo("Maximum length must be an integer.");
+        assertThat(validationInfo.message).isEqualTo("Maximum length must be a number.");
     }
 
     @Test
-    public void testMaxLengthGreaterThanMinLength() {
-        frame.spinner("maxLength").enterTextAndCommit(Integer.toString(DEFAULT_MIN_VALUE - 1));
+    public void testValidateMaxLengthFloat() {
+        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
+            frame.spinner("maxLength").target().setValue(796.01f);
+            return stringSettingsDialog.doValidate();
+        });
 
-        final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
+        assertThat(validationInfo.message).isEqualTo("Maximum length must be a whole number.");
+    }
+
+    @Test
+    public void testValidateMaxLengthOverflow() {
+        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
+            frame.spinner("maxLength").target().setValue((long) Integer.MAX_VALUE + 2L);
+            return stringSettingsDialog.doValidate();
+        });
+
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
+        assertThat(validationInfo.message).isEqualTo("Maximum length must not be greater than 2^31-1.");
+    }
+
+    @Test
+    public void testValidateMaxLengthGreaterThanMinLength() {
+        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
+            frame.spinner("maxLength").target().setValue(DEFAULT_MIN_VALUE - 1);
+            return stringSettingsDialog.doValidate();
+        });
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
@@ -108,31 +161,51 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
     }
 
     @Test
-    public void testEmptyAlphabetSelection() {
+    public void testValidateEmptyAlphabetSelection() {
         frame.list("alphabets").clearSelection();
 
-        final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
+        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> stringSettingsDialog.doValidate());
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.list("alphabets").target());
         assertThat(validationInfo.message).isEqualTo("Select at least one set of symbols.");
     }
 
+
     @Test
-    public void testSaveSettings() {
+    public void testSaveSettingsWithoutParse() {
         final Set<Alphabet> newAlphabets = createAlphabetSet(Alphabet.DIGITS, Alphabet.LOWERCASE, Alphabet.SPECIAL);
 
-        frame.spinner("minLength").enterText("348");
-        frame.spinner("maxLength").enterText("870");
+        GuiActionRunner.execute(() -> {
+            frame.spinner("minLength").target().setValue(445);
+            frame.spinner("maxLength").target().setValue(803);
+            frame.radioButton("enclosureBacktick").target().setSelected(true);
+            frame.list("alphabets").target().setSelectedIndices(toIndexForEach(newAlphabets));
+        });
+
+        GuiActionRunner.execute(() -> stringSettingsDialog.saveSettings());
+
+        assertThat(stringSettings.getMinLength()).isEqualTo(445);
+        assertThat(stringSettings.getMaxLength()).isEqualTo(803);
+        assertThat(stringSettings.getEnclosure()).isEqualTo("`");
+        assertThat(stringSettings.getAlphabets()).isEqualTo(newAlphabets);
+    }
+
+    @Test
+    public void testSaveSettingsWithParse() {
+        final Set<Alphabet> newAlphabets = createAlphabetSet(Alphabet.DIGITS, Alphabet.LOWERCASE, Alphabet.SPECIAL);
+
+        frame.spinner("minLength").enterTextAndCommit("348");
+        frame.spinner("maxLength").enterTextAndCommit("870");
         frame.radioButton("enclosureBacktick").check();
         frame.list("alphabets").selectItems(toStringForEach(newAlphabets));
 
-        GuiActionRunner.execute(() -> decimalSettingsDialog.saveSettings());
+        GuiActionRunner.execute(() -> stringSettingsDialog.saveSettings());
 
-        assertThat(decimalSettings.getMinLength()).isEqualTo(348);
-        assertThat(decimalSettings.getMaxLength()).isEqualTo(870);
-        assertThat(decimalSettings.getEnclosure()).isEqualTo("`");
-        assertThat(decimalSettings.getAlphabets()).isEqualTo(newAlphabets);
+        assertThat(stringSettings.getMinLength()).isEqualTo(348);
+        assertThat(stringSettings.getMaxLength()).isEqualTo(870);
+        assertThat(stringSettings.getEnclosure()).isEqualTo("`");
+        assertThat(stringSettings.getAlphabets()).isEqualTo(newAlphabets);
     }
 
 
@@ -156,5 +229,17 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
         return alphabets.stream()
                 .map(Object::toString)
                 .toArray(String[]::new);
+    }
+
+    /**
+     * Returns the enumeration index of each alphabet as an array.
+     *
+     * @param alphabets a collection of alphabets
+     * @return the index of each alphabet
+     */
+    private int[] toIndexForEach(final Collection<Alphabet> alphabets) {
+        return alphabets.stream()
+                .mapToInt(Alphabet::ordinal)
+                .toArray();
     }
 }

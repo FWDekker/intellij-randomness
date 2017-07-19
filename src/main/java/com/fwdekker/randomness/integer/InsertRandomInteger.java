@@ -39,9 +39,9 @@ public final class InsertRandomInteger extends InsertRandomSomething {
      */
     @Override
     public String generateString() {
-        final int range = integerSettings.getMaxValue() - integerSettings.getMinValue();
-        final int randomValue = integerSettings.getMinValue() + RANDOM.nextInt(range + 1);
+        final long range = integerSettings.getMaxValue() - integerSettings.getMinValue();
+        final long randomValue = integerSettings.getMinValue() + RANDOM.nextLong() * range;
 
-        return Integer.toString(randomValue);
+        return Long.toString(randomValue);
     }
 }

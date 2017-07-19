@@ -1,11 +1,13 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.ValidationException;
+import com.fwdekker.randomness.Validator;
 import com.intellij.openapi.ui.ValidationInfo;
-import java.text.ParseException;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,20 +47,30 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
         return contentPane;
     }
 
+    /**
+     * Initialises custom UI components.
+     * <p>
+     * This method is called by the scene builder at the start of the constructor.
+     */
+    @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
+    private void createUIComponents() {
+        minValue = new JSpinner(new SpinnerNumberModel(0L, Long.MIN_VALUE, Long.MAX_VALUE, 1L));
+        maxValue = new JSpinner(new SpinnerNumberModel(0L, Long.MIN_VALUE, Long.MAX_VALUE, 1L));
+    }
+
     @Override
     @Nullable
     protected ValidationInfo doValidate() {
-        if (!(minValue.getValue() instanceof Integer)) {
-            return new ValidationInfo("Minimum value must be an integer.", minValue);
-        }
-        if (!(maxValue.getValue() instanceof Integer)) {
-            return new ValidationInfo("Maximum value must be an integer.", maxValue);
-        }
+        try {
+            Validator.hasValidFormat(minValue, "Minimum value must be a number.");
+            Validator.isInteger(minValue, "Minimum value must be a whole number.");
 
-        final int newMinValue = (Integer) minValue.getValue();
-        final int newMaxValue = (Integer) maxValue.getValue();
-        if (newMaxValue < newMinValue) {
-            return new ValidationInfo("Maximum value cannot be smaller than minimum value.", maxValue);
+            Validator.hasValidFormat(maxValue, "Maximum value must be a number.");
+            Validator.isInteger(maxValue, "Maximum value must be a whole number.");
+
+            Validator.areValidRange(minValue, maxValue, "Maximum value cannot be smaller than minimum value.");
+        } catch (final ValidationException e) {
+            return new ValidationInfo(e.getMessage(), e.getComponent());
         }
 
         return null;
@@ -73,14 +85,10 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
 
     @Override
     public void saveSettings(@NotNull final IntegerSettings settings) {
-        try {
-            minValue.commitEdit();
-            maxValue.commitEdit();
-        } catch (final ParseException e) {
-            throw new IllegalStateException("Settings were committed, but input could not be parsed.", e);
-        }
+        final long newMinValue = ((Number) minValue.getValue()).longValue();
+        final long newMaxValue = ((Number) maxValue.getValue()).longValue();
 
-        settings.setMinValue((Integer) minValue.getValue());
-        settings.setMaxValue((Integer) maxValue.getValue());
+        settings.setMinValue(newMinValue);
+        settings.setMaxValue(newMaxValue);
     }
 }
