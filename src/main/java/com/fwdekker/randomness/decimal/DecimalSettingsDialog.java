@@ -16,6 +16,10 @@ import org.jetbrains.annotations.Nullable;
  * Dialog for settings of random decimal generation.
  */
 final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
+    private static final double MIN_MIN_VALUE = -1E53;
+    private static final double MAX_MAX_VALUE = 1E53;
+    private static final double MAX_VALUE_RANGE = 1E53;
+
     private JPanel contentPane;
     private JSpinner minValue;
     private JSpinner maxValue;
@@ -65,8 +69,10 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
     protected ValidationInfo doValidate() {
         try {
             Validator.hasValidFormat(minValue);
+            Validator.isGreaterThan(minValue, MIN_MIN_VALUE);
             Validator.hasValidFormat(maxValue);
-            Validator.areValidRange(minValue, maxValue);
+            Validator.isLessThan(maxValue, MAX_MAX_VALUE);
+            Validator.areValidRange(minValue, maxValue, MAX_VALUE_RANGE);
 
             Validator.hasValidFormat(decimalCount);
             Validator.isGreaterThan(decimalCount, 0);

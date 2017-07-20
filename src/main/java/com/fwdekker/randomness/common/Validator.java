@@ -35,20 +35,29 @@ public final class Validator {
     }
 
     /**
-     * Throws a {@code ValidationException} if {@code max}'s value is less than that of {@code min}.
+     * Throws a {@code ValidationException} if the difference between the values of {@code min} and {@code max} is
+     * infinity or if it is greater than {@code size}.
      * <p>
      * The thrown exception's component is {@code max}.
      *
-     * @param min the spinner that forms the start of the range
-     * @param max the spinner that forms the end of the range
+     * @param min  the spinner that forms the start of the range
+     * @param max  the spinner that forms the end of the range
+     * @param size the maximum difference between the spinners' values
      * @throws ValidationException if {@code min}'s value is greater than that of {@code max}
      */
-    public static void areValidRange(final JSpinner min, final JSpinner max) throws ValidationException {
+    public static void areValidRange(final JSpinner min, final JSpinner max, final double size)
+            throws ValidationException {
         final double minValue = getSpinnerValue(min);
         final double maxValue = getSpinnerValue(max);
 
         if (minValue > maxValue) {
             throw new ValidationException("The maximum should be no smaller than the minimum.", max);
+        }
+        if (maxValue - minValue == Double.POSITIVE_INFINITY) {
+            throw new ValidationException("The range should not exceed " + size + ".", max);
+        }
+        if (maxValue - minValue > size) {
+            throw new ValidationException("The range should not exceed " + size + ".", max);
         }
     }
 

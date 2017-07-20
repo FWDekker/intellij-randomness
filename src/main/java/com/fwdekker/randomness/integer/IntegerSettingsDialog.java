@@ -68,7 +68,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
             Validator.hasValidFormat(maxValue);
             Validator.isInteger(maxValue);
 
-            Validator.areValidRange(minValue, maxValue);
+            Validator.areValidRange(minValue, maxValue, Long.MAX_VALUE);
         } catch (final ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
         }
