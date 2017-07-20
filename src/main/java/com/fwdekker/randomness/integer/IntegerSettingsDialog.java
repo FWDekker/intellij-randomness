@@ -54,8 +54,8 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
-        minValue = JSpinnerHelper.createSpinner();
-        maxValue = JSpinnerHelper.createSpinner();
+        minValue = JSpinnerHelper.createLongSpinner();
+        maxValue = JSpinnerHelper.createLongSpinner();
     }
 
     @Override
