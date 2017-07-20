@@ -21,36 +21,13 @@ public final class JSpinnerHelper {
 
 
     /**
-     * Creates a new {@code JSpinner} for entering longs.
-     *
-     * @return a new {@code JSpinner} for entering longs
-     */
-    public static JSpinner createLongSpinner() {
-        final SpinnerNumberModel model = new SpinnerNumberModel(0L, Long.MIN_VALUE, Long.MAX_VALUE, 1L);
-
-        return createSpinner(model);
-    }
-
-    /**
      * Creates a new {@code JSpinner} for entering decimals.
      *
      * @return a new {@code JSpinner} for entering decimals
      */
-    public static JSpinner createDecimalSpinner() {
+    public static JSpinner createSpinner() {
         final SpinnerNumberModel model
                 = new SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0.1);
-
-        return createSpinner(model);
-    }
-
-
-    /**
-     * Creates a new {@code JSpinner} from the given model.
-     *
-     * @param model a model
-     * @return a new {@code JSpinner} from the given model
-     */
-    private static JSpinner createSpinner(final SpinnerNumberModel model) {
         final JSpinner spinner = new JSpinner(model);
 
         final JSpinner.NumberEditor editor = new JSpinner.NumberEditor(spinner);
