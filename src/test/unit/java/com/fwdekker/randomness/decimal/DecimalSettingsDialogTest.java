@@ -62,33 +62,10 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
 
     @Test
-    public void testValidateMinValueString() {
-        frame.spinner("minValue").enterText("UtG");
-
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> decimalSettingsDialog.doValidate());
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.component).isEqualTo(frame.spinner("minValue").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a number.");
-    }
-
-    @Test
-    public void testValidateMaxValueString() {
-        frame.spinner("maxValue").enterText("Odp");
-
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> decimalSettingsDialog.doValidate());
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a number.");
-    }
-
-    @Test
     public void testValidateMaxValueGreaterThanMinValue() {
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
-            frame.spinner("maxValue").target().setValue(DEFAULT_MIN_VALUE - 1);
-            return decimalSettingsDialog.doValidate();
-        });
+        GuiActionRunner.execute(() -> frame.spinner("maxValue").target().setValue(DEFAULT_MIN_VALUE - 1));
+
+        final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
@@ -96,22 +73,10 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
     }
 
     @Test
-    public void testValidateDecimalCountString() {
-        frame.spinner("decimalCount").enterText("Ynf");
-
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> decimalSettingsDialog.doValidate());
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.component).isEqualTo(frame.spinner("decimalCount").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a number.");
-    }
-
-    @Test
     public void testValidateDecimalCountFloat() {
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
-            frame.spinner("decimalCount").target().setValue(693.57f);
-            return decimalSettingsDialog.doValidate();
-        });
+        GuiActionRunner.execute(() -> frame.spinner("decimalCount").target().setValue(693.57f));
+
+        final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("decimalCount").target());
@@ -120,10 +85,9 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void testValidateDecimalCountNegative() {
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
-            frame.spinner("decimalCount").target().setValue(-851);
-            return decimalSettingsDialog.doValidate();
-        });
+        GuiActionRunner.execute(() -> frame.spinner("decimalCount").target().setValue(-851));
+
+        final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("decimalCount").target());
@@ -132,10 +96,9 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void testValidateDecimalCountOverflow() {
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
-            frame.spinner("decimalCount").target().setValue((long) Integer.MAX_VALUE + 1L);
-            return decimalSettingsDialog.doValidate();
-        });
+        GuiActionRunner.execute(() -> frame.spinner("decimalCount").target().setValue((long) Integer.MAX_VALUE + 1L));
+
+        final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("decimalCount").target());
@@ -149,9 +112,9 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
             frame.spinner("minValue").target().setValue(112.54);
             frame.spinner("maxValue").target().setValue(644.74);
             frame.spinner("decimalCount").target().setValue(485);
-
-            decimalSettingsDialog.saveSettings();
         });
+
+        decimalSettingsDialog.saveSettings();
 
         assertThat(decimalSettings.getMinValue()).isEqualTo(112.54);
         assertThat(decimalSettings.getMaxValue()).isEqualTo(644.74);
@@ -164,7 +127,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
         frame.spinner("maxValue").enterTextAndCommit(doubleToString(858.59));
         frame.spinner("decimalCount").enterTextAndCommit("99");
 
-        GuiActionRunner.execute(() -> decimalSettingsDialog.saveSettings());
+        decimalSettingsDialog.saveSettings();
 
         assertThat(decimalSettings.getMinValue()).isEqualTo(418.63);
         assertThat(decimalSettings.getMaxValue()).isEqualTo(858.59);

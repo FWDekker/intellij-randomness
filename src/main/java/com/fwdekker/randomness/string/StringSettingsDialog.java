@@ -104,11 +104,9 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            Validator.hasValidFormat(minLength);
             Validator.isInteger(minLength);
             Validator.isGreaterThan(minLength, 0);
 
-            Validator.hasValidFormat(maxLength);
             Validator.isInteger(maxLength);
             Validator.isLessThan(maxLength, (long) Integer.MAX_VALUE + 1L);
 

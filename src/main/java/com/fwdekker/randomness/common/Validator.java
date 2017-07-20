@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.common;
 
-import java.text.ParseException;
 import javax.swing.JList;
 import javax.swing.JSpinner;
 
@@ -18,21 +17,6 @@ public final class Validator {
     private Validator() {
     }
 
-
-    /**
-     * Throws a {@code ValidationException} if calling {@link JSpinner#commitEdit()} results in a {@link
-     * ParseException}.
-     *
-     * @param spinner a spinner
-     * @throws ValidationException if calling {@link JSpinner#commitEdit()} results in a {@link ParseException}
-     */
-    public static void hasValidFormat(final JSpinner spinner) throws ValidationException {
-        try {
-            spinner.commitEdit();
-        } catch (final ParseException e) {
-            throw new ValidationException("Please enter a number.", e, spinner);
-        }
-    }
 
     /**
      * Throws a {@code ValidationException} if the difference between the values of {@code min} and {@code max} is

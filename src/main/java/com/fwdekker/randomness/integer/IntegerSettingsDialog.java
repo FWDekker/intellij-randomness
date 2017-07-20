@@ -62,12 +62,8 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            Validator.hasValidFormat(minValue);
             Validator.isInteger(minValue);
-
-            Validator.hasValidFormat(maxValue);
             Validator.isInteger(maxValue);
-
             Validator.areValidRange(minValue, maxValue, Long.MAX_VALUE);
         } catch (final ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());

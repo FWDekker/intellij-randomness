@@ -79,22 +79,10 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
 
     @Test
-    public void testValidateMinLengthString() {
-        frame.spinner("minLength").enterText("foE");
-
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> stringSettingsDialog.doValidate());
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a number.");
-    }
-
-    @Test
     public void testValidateMinLengthFloat() {
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
-            frame.spinner("minLength").target().setValue(553.92f);
-            return stringSettingsDialog.doValidate();
-        });
+        GuiActionRunner.execute(() -> frame.spinner("minLength").target().setValue(553.92f));
+
+        final ValidationInfo validationInfo = stringSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
@@ -103,10 +91,9 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void testValidateMinLengthNegative() {
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
-            frame.spinner("minLength").target().setValue(-161);
-            return stringSettingsDialog.doValidate();
-        });
+        GuiActionRunner.execute(() -> frame.spinner("minLength").target().setValue(-161));
+
+        final ValidationInfo validationInfo = stringSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
@@ -114,22 +101,10 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
     }
 
     @Test
-    public void testValidateMaxLengthString() {
-        frame.spinner("maxLength").enterText("qsQ");
-
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> stringSettingsDialog.doValidate());
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a number.");
-    }
-
-    @Test
     public void testValidateMaxLengthFloat() {
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
-            frame.spinner("maxLength").target().setValue(796.01f);
-            return stringSettingsDialog.doValidate();
-        });
+        GuiActionRunner.execute(() -> frame.spinner("maxLength").target().setValue(796.01f));
+
+        final ValidationInfo validationInfo = stringSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
@@ -138,10 +113,9 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void testValidateMaxLengthOverflow() {
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
-            frame.spinner("maxLength").target().setValue((long) Integer.MAX_VALUE + 2L);
-            return stringSettingsDialog.doValidate();
-        });
+        GuiActionRunner.execute(() -> frame.spinner("maxLength").target().setValue((long) Integer.MAX_VALUE + 2L));
+
+        final ValidationInfo validationInfo = stringSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
@@ -150,10 +124,9 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void testValidateMaxLengthGreaterThanMinLength() {
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
-            frame.spinner("maxLength").target().setValue(DEFAULT_MIN_VALUE - 1);
-            return stringSettingsDialog.doValidate();
-        });
+        GuiActionRunner.execute(() -> frame.spinner("maxLength").target().setValue(DEFAULT_MIN_VALUE - 1));
+
+        final ValidationInfo validationInfo = stringSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
@@ -162,9 +135,9 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void testValidateEmptyAlphabetSelection() {
-        frame.list("alphabets").clearSelection();
+        GuiActionRunner.execute(() -> frame.list("alphabets").target().clearSelection());
 
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> stringSettingsDialog.doValidate());
+        final ValidationInfo validationInfo = stringSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.list("alphabets").target());
@@ -183,7 +156,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
             frame.list("alphabets").target().setSelectedIndices(toIndexForEach(newAlphabets));
         });
 
-        GuiActionRunner.execute(() -> stringSettingsDialog.saveSettings());
+        stringSettingsDialog.saveSettings();
 
         assertThat(stringSettings.getMinLength()).isEqualTo(445);
         assertThat(stringSettings.getMaxLength()).isEqualTo(803);
@@ -200,7 +173,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
         frame.radioButton("enclosureBacktick").check();
         frame.list("alphabets").selectItems(toStringForEach(newAlphabets));
 
-        GuiActionRunner.execute(() -> stringSettingsDialog.saveSettings());
+        stringSettingsDialog.saveSettings();
 
         assertThat(stringSettings.getMinLength()).isEqualTo(348);
         assertThat(stringSettings.getMaxLength()).isEqualTo(870);

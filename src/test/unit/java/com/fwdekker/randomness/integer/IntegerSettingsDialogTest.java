@@ -53,22 +53,10 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
 
     @Test
-    public void testValidateMinValueString() {
-        frame.spinner("minValue").enterText("qzH");
-
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> integerSettingsDialog.doValidate());
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.component).isEqualTo(frame.spinner("minValue").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a number.");
-    }
-
-    @Test
     public void testValidateMinValueFloat() {
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
-            frame.spinner("minValue").target().setValue(285.21f);
-            return integerSettingsDialog.doValidate();
-        });
+        GuiActionRunner.execute(() -> frame.spinner("minValue").target().setValue(285.21f));
+
+        final ValidationInfo validationInfo = integerSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minValue").target());
@@ -76,22 +64,10 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
     }
 
     @Test
-    public void testValidateMaxValueString() {
-        frame.spinner("maxValue").enterText("NXt");
-
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> integerSettingsDialog.doValidate());
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a number.");
-    }
-
-    @Test
     public void testValidateMaxValueFloat() {
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
-            frame.spinner("maxValue").target().setValue(490.34f);
-            return integerSettingsDialog.doValidate();
-        });
+        GuiActionRunner.execute(() -> frame.spinner("maxValue").target().setValue(490.34f));
+
+        final ValidationInfo validationInfo = integerSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
@@ -100,10 +76,9 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void testValidateMaxValueGreaterThanMinValue() {
-        final ValidationInfo validationInfo = GuiActionRunner.execute(() -> {
-            frame.spinner("maxValue").target().setValue(DEFAULT_MIN_VALUE - 1);
-            return integerSettingsDialog.doValidate();
-        });
+        GuiActionRunner.execute(() -> frame.spinner("maxValue").target().setValue(DEFAULT_MIN_VALUE - 1));
+
+        final ValidationInfo validationInfo = integerSettingsDialog.doValidate();
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());

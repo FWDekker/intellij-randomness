@@ -68,13 +68,10 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            Validator.hasValidFormat(minValue);
             Validator.isGreaterThan(minValue, MIN_MIN_VALUE);
-            Validator.hasValidFormat(maxValue);
             Validator.isLessThan(maxValue, MAX_MAX_VALUE);
             Validator.areValidRange(minValue, maxValue, MAX_VALUE_RANGE);
 
-            Validator.hasValidFormat(decimalCount);
             Validator.isGreaterThan(decimalCount, 0);
             Validator.isLessThan(decimalCount, Integer.MAX_VALUE);
             Validator.isInteger(decimalCount);
