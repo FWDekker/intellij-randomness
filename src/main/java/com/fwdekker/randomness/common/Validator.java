@@ -59,6 +59,19 @@ public final class Validator {
     }
 
     /**
+     * Throws a {@code ValidationException} if the spinner's value is less than the given value.
+     *
+     * @param spinner a spinner
+     * @param value   the value the spinner should not be greater than
+     * @throws ValidationException if the spinner's value is less than the given value
+     */
+    public static void isGreaterThanOrEqualTo(final JSpinner spinner, final double value) throws ValidationException {
+        if (getSpinnerValue(spinner) < value) {
+            throw new ValidationException("Please enter a value greater than or equal to " + value + ".", spinner);
+        }
+    }
+
+    /**
      * Throws a {@code ValidationException} if the spinner's value is greater than or equal to the given value.
      *
      * @param spinner a spinner
@@ -68,6 +81,19 @@ public final class Validator {
     public static void isLessThan(final JSpinner spinner, final double value) throws ValidationException {
         if (getSpinnerValue(spinner) >= value) {
             throw new ValidationException("Please enter a value less than " + value + ".", spinner);
+        }
+    }
+
+    /**
+     * Throws a {@code ValidationException} if the spinner's value is greater than the given value.
+     *
+     * @param spinner a spinner
+     * @param value   the value the spinner should not be less than
+     * @throws ValidationException if the spinner's value is greater than the given value
+     */
+    public static void isLessThanOrEqualTo(final JSpinner spinner, final double value) throws ValidationException {
+        if (getSpinnerValue(spinner) > value) {
+            throw new ValidationException("Please enter a value less than or equal to " + value + ".", spinner);
         }
     }
 

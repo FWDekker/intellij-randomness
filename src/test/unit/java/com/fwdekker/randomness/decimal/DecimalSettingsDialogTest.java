@@ -102,7 +102,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("decimalCount").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a value less than 2.147483647E9.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a value less than or equal to 2.147483647E9.");
     }
 
 

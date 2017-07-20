@@ -108,7 +108,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
             Validator.isGreaterThan(minLength, 0);
 
             Validator.isInteger(maxLength);
-            Validator.isLessThan(maxLength, (long) Integer.MAX_VALUE + 1L);
+            Validator.isLessThanOrEqualTo(maxLength, Integer.MAX_VALUE);
 
             Validator.areValidRange(minLength, maxLength, Integer.MAX_VALUE);
 

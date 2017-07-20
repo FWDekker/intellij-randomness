@@ -119,7 +119,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a value less than 2.147483648E9.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a value less than or equal to 2.147483647E9.");
     }
 
     @Test
