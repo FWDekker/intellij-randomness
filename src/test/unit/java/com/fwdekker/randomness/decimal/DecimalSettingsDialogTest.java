@@ -62,6 +62,31 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
 
     @Test
+    public void testValidateMinValueUnderflow() {
+        GuiActionRunner.execute(() -> {
+            frame.spinner("minValue").target().setValue(-1E54);
+            frame.spinner("maxValue").target().setValue(-1E53);
+        });
+
+        final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
+
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.component).isEqualTo(frame.spinner("minValue").target());
+        assertThat(validationInfo.message).isEqualTo("Please enter a value greater than or equal to -1.0E53.");
+    }
+
+    @Test
+    public void testValidateMaxValueOverflow() {
+        GuiActionRunner.execute(() -> frame.spinner("maxValue").target().setValue(1E54));
+
+        final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
+
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
+        assertThat(validationInfo.message).isEqualTo("Please enter a value less than or equal to 1.0E53.");
+    }
+
+    @Test
     public void testValidateMaxValueGreaterThanMinValue() {
         GuiActionRunner.execute(() -> frame.spinner("maxValue").target().setValue(DEFAULT_MIN_VALUE - 1));
 
@@ -70,6 +95,20 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
         assertThat(validationInfo.message).isEqualTo("The maximum should be no smaller than the minimum.");
+    }
+
+    @Test
+    public void testValidateValueRange() {
+        GuiActionRunner.execute(() -> {
+            frame.spinner("minValue").target().setValue(-1E53);
+            frame.spinner("maxValue").target().setValue(1E53);
+        });
+
+        final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
+
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
+        assertThat(validationInfo.message).isEqualTo("The range should not exceed 1.0E53.");
     }
 
     @Test

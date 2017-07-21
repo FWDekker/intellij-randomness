@@ -85,6 +85,20 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(validationInfo.message).isEqualTo("The maximum should be no smaller than the minimum.");
     }
 
+    @Test
+    public void testValidateValueRange() {
+        GuiActionRunner.execute(() -> {
+            frame.spinner("minValue").target().setValue(Long.MIN_VALUE);
+            frame.spinner("maxValue").target().setValue(Long.MAX_VALUE);
+        });
+
+        final ValidationInfo validationInfo = integerSettingsDialog.doValidate();
+
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
+        assertThat(validationInfo.message).isEqualTo("The range should not exceed 9.223372036854776E18.");
+    }
+
 
     @Test
     public void testSaveSettingsWithoutParse() {
