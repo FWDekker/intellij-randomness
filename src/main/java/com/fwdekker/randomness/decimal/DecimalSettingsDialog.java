@@ -1,13 +1,13 @@
 package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.common.JSpinnerHelper;
+import com.fwdekker.randomness.ui.JDoubleSpinner;
 import com.fwdekker.randomness.common.ValidationException;
 import com.fwdekker.randomness.common.Validator;
+import com.fwdekker.randomness.ui.JLongSpinner;
 import com.intellij.openapi.ui.ValidationInfo;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,14 +16,12 @@ import org.jetbrains.annotations.Nullable;
  * Dialog for settings of random decimal generation.
  */
 final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
-    private static final double MIN_MIN_VALUE = -1E53;
-    private static final double MAX_MAX_VALUE = 1E53;
     private static final double MAX_VALUE_RANGE = 1E53;
 
     private JPanel contentPane;
-    private JSpinner minValue;
-    private JSpinner maxValue;
-    private JSpinner decimalCount;
+    private JDoubleSpinner minValue;
+    private JDoubleSpinner maxValue;
+    private JLongSpinner decimalCount;
 
 
     /**
@@ -59,22 +57,20 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
-        minValue = JSpinnerHelper.createDecimalSpinner();
-        maxValue = JSpinnerHelper.createDecimalSpinner();
-        decimalCount = JSpinnerHelper.createLongSpinner();
+        minValue = new JDoubleSpinner();
+        maxValue = new JDoubleSpinner();
+        decimalCount = new JLongSpinner(0, Integer.MAX_VALUE);
     }
 
     @Override
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            Validator.isGreaterThanOrEqualTo(minValue, MIN_MIN_VALUE);
-            Validator.isLessThanOrEqualTo(maxValue, MAX_MAX_VALUE);
+            minValue.validateValue();
+            maxValue.validateValue();
             Validator.areValidRange(minValue, maxValue, MAX_VALUE_RANGE);
 
-            Validator.isGreaterThan(decimalCount, 0);
-            Validator.isLessThanOrEqualTo(decimalCount, Integer.MAX_VALUE);
-            Validator.isInteger(decimalCount);
+            decimalCount.validateValue();
         } catch (final ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
         }
@@ -92,12 +88,8 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
 
     @Override
     public void saveSettings(@NotNull final DecimalSettings settings) {
-        final double newMinValue = ((Number) minValue.getValue()).doubleValue();
-        final double newMaxValue = ((Number) maxValue.getValue()).doubleValue();
-        final int newDecimalCount = ((Number) decimalCount.getValue()).intValue();
-
-        settings.setMinValue(newMinValue);
-        settings.setMaxValue(newMaxValue);
-        settings.setDecimalCount(newDecimalCount);
+        settings.setMinValue(minValue.getValue());
+        settings.setMaxValue(maxValue.getValue());
+        settings.setDecimalCount(Math.toIntExact(decimalCount.getValue()));
     }
 }

@@ -52,12 +52,12 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void testLoadSettingsMinLength() {
-        frame.spinner("minLength").requireValue(DEFAULT_MIN_VALUE);
+        frame.spinner("minLength").requireValue((long) DEFAULT_MIN_VALUE);
     }
 
     @Test
     public void testLoadSettingsMaxLength() {
-        frame.spinner("maxLength").requireValue(DEFAULT_MAX_VALUE);
+        frame.spinner("maxLength").requireValue((long) DEFAULT_MAX_VALUE);
     }
 
     @Test
@@ -82,11 +82,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
     public void testValidateMinLengthFloat() {
         GuiActionRunner.execute(() -> frame.spinner("minLength").target().setValue(553.92f));
 
-        final ValidationInfo validationInfo = stringSettingsDialog.doValidate();
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a whole number.");
+        frame.spinner("minLength").requireValue(553L);
     }
 
     @Test
@@ -97,18 +93,14 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a value greater than 0.0.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a value greater than or equal to 1.");
     }
 
     @Test
     public void testValidateMaxLengthFloat() {
         GuiActionRunner.execute(() -> frame.spinner("maxLength").target().setValue(796.01f));
 
-        final ValidationInfo validationInfo = stringSettingsDialog.doValidate();
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a whole number.");
+        frame.spinner("maxLength").requireValue(796L);
     }
 
     @Test
@@ -119,7 +111,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a value less than or equal to 2.147483647E9.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a value less than or equal to 2147483647.");
     }
 
     @Test

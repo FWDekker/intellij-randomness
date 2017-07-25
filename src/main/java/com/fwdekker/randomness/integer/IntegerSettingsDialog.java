@@ -1,13 +1,12 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.common.JSpinnerHelper;
 import com.fwdekker.randomness.common.ValidationException;
 import com.fwdekker.randomness.common.Validator;
+import com.fwdekker.randomness.ui.JLongSpinner;
 import com.intellij.openapi.ui.ValidationInfo;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,8 +16,8 @@ import org.jetbrains.annotations.Nullable;
  */
 final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     private JPanel contentPane;
-    private JSpinner minValue;
-    private JSpinner maxValue;
+    private JLongSpinner minValue;
+    private JLongSpinner maxValue;
 
 
     /**
@@ -54,16 +53,16 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
-        minValue = JSpinnerHelper.createLongSpinner();
-        maxValue = JSpinnerHelper.createLongSpinner();
+        minValue = new JLongSpinner();
+        maxValue = new JLongSpinner();
     }
 
     @Override
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            Validator.isInteger(minValue);
-            Validator.isInteger(maxValue);
+            minValue.validateValue();
+            maxValue.validateValue();
             Validator.areValidRange(minValue, maxValue, Long.MAX_VALUE);
         } catch (final ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
@@ -81,10 +80,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
 
     @Override
     public void saveSettings(@NotNull final IntegerSettings settings) {
-        final long newMinValue = ((Number) minValue.getValue()).longValue();
-        final long newMaxValue = ((Number) maxValue.getValue()).longValue();
-
-        settings.setMinValue(newMinValue);
-        settings.setMaxValue(newMaxValue);
+        settings.setMinValue(minValue.getValue());
+        settings.setMaxValue(maxValue.getValue());
     }
 }
