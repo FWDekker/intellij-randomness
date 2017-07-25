@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Unit tests for {@link JLongSpinner}.
  */
-public class JLongSpinnerTest {
+public final class JLongSpinnerTest {
     @Test
     public void testIllegalRange() {
         assertThatThrownBy(() -> new JLongSpinner(989, -339))
