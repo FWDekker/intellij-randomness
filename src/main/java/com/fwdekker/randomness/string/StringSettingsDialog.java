@@ -2,7 +2,6 @@ package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.SettingsDialog;
 import com.fwdekker.randomness.common.ValidationException;
-import com.fwdekker.randomness.common.Validator;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -106,10 +105,12 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
             minLength.validateValue();
             maxLength.validateValue();
             lengthRange.validate();
-
-            Validator.isNotEmpty(alphabetList);
         } catch (ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
+        }
+
+        if (alphabetList.getSelectedValuesList().isEmpty()) {
+            return new ValidationInfo("Please select at least one option.", alphabetList);
         }
 
         return null;
