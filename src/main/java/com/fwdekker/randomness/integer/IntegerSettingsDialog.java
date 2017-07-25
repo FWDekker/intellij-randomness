@@ -2,8 +2,8 @@ package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.SettingsDialog;
 import com.fwdekker.randomness.common.ValidationException;
-import com.fwdekker.randomness.common.Validator;
 import com.fwdekker.randomness.ui.JLongSpinner;
+import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
  */
 final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     private JPanel contentPane;
+    private JSpinnerRange valueRange;
     private JLongSpinner minValue;
     private JLongSpinner maxValue;
 
@@ -55,6 +56,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     private void createUIComponents() {
         minValue = new JLongSpinner();
         maxValue = new JLongSpinner();
+        valueRange = new JSpinnerRange(minValue, maxValue, Long.MAX_VALUE);
     }
 
     @Override
@@ -63,7 +65,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
         try {
             minValue.validateValue();
             maxValue.validateValue();
-            Validator.areValidRange(minValue, maxValue, Long.MAX_VALUE);
+            valueRange.validate();
         } catch (final ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
         }

@@ -4,6 +4,7 @@ import com.fwdekker.randomness.SettingsDialog;
 import com.fwdekker.randomness.common.ValidationException;
 import com.fwdekker.randomness.common.Validator;
 import com.fwdekker.randomness.ui.JLongSpinner;
+import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 )
 final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     private JPanel contentPane;
+    private JSpinnerRange lengthRange;
     private JLongSpinner minLength;
     private JLongSpinner maxLength;
     private ButtonGroup enclosureGroup;
@@ -68,6 +70,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     private void createUIComponents() {
         minLength = new JLongSpinner(1, Integer.MAX_VALUE);
         maxLength = new JLongSpinner(1, Integer.MAX_VALUE);
+        lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
 
         alphabetList = new JList<>(Alphabet.values());
         alphabetList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -102,8 +105,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
         try {
             minLength.validateValue();
             maxLength.validateValue();
-
-            Validator.areValidRange(minLength, maxLength, Integer.MAX_VALUE);
+            lengthRange.validate();
 
             Validator.isNotEmpty(alphabetList);
         } catch (ValidationException e) {
