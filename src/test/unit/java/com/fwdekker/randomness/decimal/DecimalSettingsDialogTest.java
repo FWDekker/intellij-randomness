@@ -57,7 +57,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void testLoadSettingsDecimalCount() {
-        frame.spinner("decimalCount").requireValue(DEFAULT_DECIMAL_COUNT);
+        frame.spinner("decimalCount").requireValue((long) DEFAULT_DECIMAL_COUNT);
     }
 
 
@@ -115,11 +115,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
     public void testValidateDecimalCountFloat() {
         GuiActionRunner.execute(() -> frame.spinner("decimalCount").target().setValue(693.57f));
 
-        final ValidationInfo validationInfo = decimalSettingsDialog.doValidate();
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.component).isEqualTo(frame.spinner("decimalCount").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a whole number.");
+        frame.spinner("decimalCount").requireValue(693L);
     }
 
     @Test
@@ -130,7 +126,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("decimalCount").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a value greater than 0.0.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a value greater than or equal to 0.");
     }
 
     @Test
@@ -141,7 +137,7 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("decimalCount").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a value less than or equal to 2.147483647E9.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a value less than or equal to 2147483647.");
     }
 
 

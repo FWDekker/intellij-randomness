@@ -56,22 +56,14 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
     public void testValidateMinValueFloat() {
         GuiActionRunner.execute(() -> frame.spinner("minValue").target().setValue(285.21f));
 
-        final ValidationInfo validationInfo = integerSettingsDialog.doValidate();
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.component).isEqualTo(frame.spinner("minValue").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a whole number.");
+        frame.spinner("minValue").requireValue(285L);
     }
 
     @Test
     public void testValidateMaxValueFloat() {
         GuiActionRunner.execute(() -> frame.spinner("maxValue").target().setValue(490.34f));
 
-        final ValidationInfo validationInfo = integerSettingsDialog.doValidate();
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.component).isEqualTo(frame.spinner("maxValue").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a whole number.");
+        frame.spinner("maxValue").requireValue(490L);
     }
 
     @Test

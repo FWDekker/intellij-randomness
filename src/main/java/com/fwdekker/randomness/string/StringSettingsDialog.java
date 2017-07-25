@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.common.JSpinnerHelper;
 import com.fwdekker.randomness.common.ValidationException;
-import com.fwdekker.randomness.common.Validator;
+import com.fwdekker.randomness.ui.JLongSpinner;
+import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Collections;
@@ -13,7 +13,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,8 +27,9 @@ import org.jetbrains.annotations.Nullable;
 )
 final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     private JPanel contentPane;
-    private JSpinner minLength;
-    private JSpinner maxLength;
+    private JSpinnerRange lengthRange;
+    private JLongSpinner minLength;
+    private JLongSpinner maxLength;
     private ButtonGroup enclosureGroup;
     private JList<Alphabet> alphabetList;
 
@@ -67,8 +67,9 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
-        minLength = JSpinnerHelper.createLongSpinner();
-        maxLength = JSpinnerHelper.createLongSpinner();
+        minLength = new JLongSpinner(1, Integer.MAX_VALUE);
+        maxLength = new JLongSpinner(1, Integer.MAX_VALUE);
+        lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
 
         alphabetList = new JList<>(Alphabet.values());
         alphabetList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -91,11 +92,8 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
 
     @Override
     public void saveSettings(@NotNull final StringSettings settings) {
-        final int newMinLength = ((Number) minLength.getValue()).intValue();
-        final int newMaxLength = ((Number) maxLength.getValue()).intValue();
-
-        settings.setMinLength(newMinLength);
-        settings.setMaxLength(newMaxLength);
+        settings.setMinLength(Math.toIntExact(minLength.getValue()));
+        settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
         settings.setEnclosure(getSelectedEnclosure());
         settings.setAlphabets(new HashSet<>(alphabetList.getSelectedValuesList()));
     }
@@ -104,17 +102,15 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            Validator.isInteger(minLength);
-            Validator.isGreaterThan(minLength, 0);
-
-            Validator.isInteger(maxLength);
-            Validator.isLessThanOrEqualTo(maxLength, Integer.MAX_VALUE);
-
-            Validator.areValidRange(minLength, maxLength, Integer.MAX_VALUE);
-
-            Validator.isNotEmpty(alphabetList);
+            minLength.validateValue();
+            maxLength.validateValue();
+            lengthRange.validate();
         } catch (ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
+        }
+
+        if (alphabetList.getSelectedValuesList().isEmpty()) {
+            return new ValidationInfo("Please select at least one option.", alphabetList);
         }
 
         return null;
