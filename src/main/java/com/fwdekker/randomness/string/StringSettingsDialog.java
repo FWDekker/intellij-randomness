@@ -2,13 +2,12 @@ package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.SettingsDialog;
 import com.fwdekker.randomness.common.ValidationException;
+import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.Collections;
 import java.util.HashSet;
-import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JList;
@@ -81,7 +80,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     public void loadSettings(@NotNull final StringSettings settings) {
         minLength.setValue(settings.getMinLength());
         maxLength.setValue(settings.getMaxLength());
-        setSelectedEnclosure(settings.getEnclosure());
+        ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
 
         for (int i = 0; i < Alphabet.values().length; i++) {
             if (settings.getAlphabets().contains(Alphabet.values()[i])) {
@@ -94,7 +93,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     public void saveSettings(@NotNull final StringSettings settings) {
         settings.setMinLength(Math.toIntExact(minLength.getValue()));
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
-        settings.setEnclosure(getSelectedEnclosure());
+        settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
         settings.setAlphabets(new HashSet<>(alphabetList.getSelectedValuesList()));
     }
 
@@ -114,32 +113,5 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
         }
 
         return null;
-    }
-
-
-    /**
-     * Returns the text of the currently selected {@code JRadioButton} in the {@code enclosureGroup} group.
-     *
-     * @return the text of the currently selected {@code JRadioButton} in the {@code enclosureGroup} group
-     */
-    private String getSelectedEnclosure() {
-        return Collections.list(enclosureGroup.getElements()).stream()
-                .filter(AbstractButton::isSelected)
-                .map(AbstractButton::getActionCommand)
-                .findFirst()
-                .orElse("");
-    }
-
-    /**
-     * Selects the {@code JRadioButton} in the {@code enclosureGroup} group with the given text, and deselects all other
-     * {@code JRadioButton}s in that group.
-     *
-     * @param enclosure the text of the {@code JRadioButton} to select
-     */
-    private void setSelectedEnclosure(final String enclosure) {
-        Collections.list(enclosureGroup.getElements()).stream()
-                .filter(button -> button.getActionCommand().equals(enclosure))
-                .findFirst()
-                .ifPresent(button -> button.setSelected(true));
     }
 }
