@@ -2,10 +2,12 @@ package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.SettingsDialog;
 import com.fwdekker.randomness.common.ValidationException;
+import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JDoubleSpinner;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
+import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +23,8 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
     private JDoubleSpinner minValue;
     private JDoubleSpinner maxValue;
     private JLongSpinner decimalCount;
+    private ButtonGroup groupingSeparatorGroup;
+    private ButtonGroup decimalSeparatorGroup;
 
 
     /**
@@ -84,6 +88,8 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
         decimalCount.setValue(settings.getDecimalCount());
+        ButtonGroupHelper.setValue(groupingSeparatorGroup, String.valueOf(settings.getGroupingSeparator()));
+        ButtonGroupHelper.setValue(decimalSeparatorGroup, String.valueOf(settings.getDecimalSeparator()));
     }
 
     @Override
@@ -91,5 +97,7 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
         settings.setDecimalCount(Math.toIntExact(decimalCount.getValue()));
+        settings.setGroupingSeparator(ButtonGroupHelper.getValue(groupingSeparatorGroup));
+        settings.setDecimalSeparator(ButtonGroupHelper.getValue(decimalSeparatorGroup));
     }
 }

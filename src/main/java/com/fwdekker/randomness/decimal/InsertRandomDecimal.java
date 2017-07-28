@@ -1,7 +1,8 @@
 package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.InsertRandomSomething;
-import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,7 +53,15 @@ public final class InsertRandomDecimal extends InsertRandomSomething {
      * @see <a href="https://stackoverflow.com/a/154354/">StackOverflow answer</a>
      */
     private String convertToString(final double decimal) {
-        return new BigDecimal(String.valueOf(decimal))
-                .setScale(decimalSettings.getDecimalCount(), BigDecimal.ROUND_HALF_UP).toString();
+        final DecimalFormat format = new DecimalFormat();
+
+        final DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
+        symbols.setGroupingSeparator(decimalSettings.getGroupingSeparator());
+        symbols.setDecimalSeparator(decimalSettings.getDecimalSeparator());
+        format.setMinimumFractionDigits(decimalSettings.getDecimalCount());
+        format.setMaximumFractionDigits(decimalSettings.getDecimalCount());
+        format.setDecimalFormatSymbols(symbols);
+
+        return format.format(decimal);
     }
 }
