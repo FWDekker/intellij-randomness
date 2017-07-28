@@ -147,6 +147,8 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
             frame.spinner("minValue").target().setValue(112.54);
             frame.spinner("maxValue").target().setValue(644.74);
             frame.spinner("decimalCount").target().setValue(485);
+            frame.radioButton("groupingSeparatorUnderscore").target().setSelected(true);
+            frame.radioButton("decimalSeparatorComma").target().setSelected(true);
         });
 
         decimalSettingsDialog.saveSettings();
@@ -154,6 +156,8 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(decimalSettings.getMinValue()).isEqualTo(112.54);
         assertThat(decimalSettings.getMaxValue()).isEqualTo(644.74);
         assertThat(decimalSettings.getDecimalCount()).isEqualTo(485);
+        assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('_');
+        assertThat(decimalSettings.getDecimalSeparator()).isEqualTo(',');
     }
 
     @Test
@@ -161,12 +165,17 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
         frame.spinner("minValue").enterTextAndCommit(doubleToString(418.63));
         frame.spinner("maxValue").enterTextAndCommit(doubleToString(858.59));
         frame.spinner("decimalCount").enterTextAndCommit("99");
+        frame.radioButton("groupingSeparatorPeriod").check();
+        frame.radioButton("decimalSeparatorComma").check();
 
         decimalSettingsDialog.saveSettings();
 
         assertThat(decimalSettings.getMinValue()).isEqualTo(418.63);
         assertThat(decimalSettings.getMaxValue()).isEqualTo(858.59);
         assertThat(decimalSettings.getDecimalCount()).isEqualTo(99);
+        assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('.');
+        assertThat(decimalSettings.getDecimalSeparator()).isEqualTo(',');
+
     }
 
 
