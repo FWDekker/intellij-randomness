@@ -53,6 +53,7 @@ public final class InsertRandomDecimal extends InsertRandomSomething {
      */
     private String convertToString(final double decimal) {
         final DecimalFormat format = new DecimalFormat();
+        format.setGroupingUsed(decimalSettings.getGroupingSeparator() != '\0');
 
         final DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
         symbols.setGroupingSeparator(decimalSettings.getGroupingSeparator());
