@@ -22,18 +22,6 @@ public final class ValidationException extends Exception {
         this.component = component;
     }
 
-    /**
-     * @param message   the detail message
-     * @param cause     the cause
-     * @param component the component
-     * @see Exception#Exception(String, Throwable)
-     */
-    public ValidationException(final String message, final Throwable cause, @NotNull final JComponent component) {
-        super(message, cause);
-
-        this.component = component;
-    }
-
 
     /**
      * Returns the invalid component.
