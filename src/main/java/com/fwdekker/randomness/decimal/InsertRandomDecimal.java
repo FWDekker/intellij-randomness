@@ -48,9 +48,8 @@ public final class InsertRandomDecimal extends InsertRandomSomething {
     /**
      * Returns a nicely formatted representation of a double.
      *
-     * @param decimal a double
+     * @param decimal a {@code double}
      * @return a nicely formatted representation of a double
-     * @see <a href="https://stackoverflow.com/a/154354/">StackOverflow answer</a>
      */
     private String convertToString(final double decimal) {
         final DecimalFormat format = new DecimalFormat();
