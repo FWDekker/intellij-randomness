@@ -58,4 +58,46 @@ public final class DecimalSettingsTest {
 
         assertThat(decimalSettings.getDecimalCount()).isEqualTo(987);
     }
+
+    @Test
+    public void testGetSetGroupingSeparator() {
+        decimalSettings.setGroupingSeparator('L');
+
+        assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('L');
+    }
+
+    @Test
+    public void testGetSetGroupingSeparatorStringEmpty() {
+        decimalSettings.setGroupingSeparator("");
+
+        assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('\0');
+    }
+
+    @Test
+    public void testGetSetGroupingSeparatorString() {
+        decimalSettings.setGroupingSeparator("3lk-c");
+
+        assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('3');
+    }
+
+    @Test
+    public void testGetSetDecimalSeparator() {
+        decimalSettings.setDecimalSeparator('}');
+
+        assertThat(decimalSettings.getDecimalSeparator()).isEqualTo('}');
+    }
+
+    @Test
+    public void testGetSetDecimalSeparatorStringEmpty() {
+        decimalSettings.setDecimalSeparator("");
+
+        assertThat(decimalSettings.getDecimalSeparator()).isEqualTo('\0');
+    }
+
+    @Test
+    public void testGetSetDecimalSeparatorString() {
+        decimalSettings.setDecimalSeparator("Px@>[");
+
+        assertThat(decimalSettings.getDecimalSeparator()).isEqualTo('P');
+    }
 }
