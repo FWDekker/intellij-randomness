@@ -2,9 +2,11 @@ package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.SettingsDialog;
 import com.fwdekker.randomness.common.ValidationException;
+import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
+import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +21,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     private JSpinnerRange valueRange;
     private JLongSpinner minValue;
     private JLongSpinner maxValue;
+    private ButtonGroup groupingSeparatorGroup;
 
 
     /**
@@ -78,11 +81,13 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     public void loadSettings(@NotNull final IntegerSettings settings) {
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
+        ButtonGroupHelper.setValue(groupingSeparatorGroup, String.valueOf(settings.getGroupingSeparator()));
     }
 
     @Override
     public void saveSettings(@NotNull final IntegerSettings settings) {
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
+        settings.setGroupingSeparator(ButtonGroupHelper.getValue(groupingSeparatorGroup));
     }
 }
