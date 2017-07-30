@@ -49,4 +49,25 @@ public final class IntegerSettingsTest {
 
         assertThat(integerSettings.getMaxValue()).isEqualTo(332);
     }
+
+    @Test
+    public void testGetSetGroupingSeparator() {
+        integerSettings.setGroupingSeparator('6');
+
+        assertThat(integerSettings.getGroupingSeparator()).isEqualTo('6');
+    }
+
+    @Test
+    public void testGetSetGroupingSeparatorStringEmpty() {
+        integerSettings.setGroupingSeparator("");
+
+        assertThat(integerSettings.getGroupingSeparator()).isEqualTo('\0');
+    }
+
+    @Test
+    public void testGetSetGroupingSeparatorString() {
+        integerSettings.setGroupingSeparator("tlRg}");
+
+        assertThat(integerSettings.getGroupingSeparator()).isEqualTo('t');
+    }
 }
