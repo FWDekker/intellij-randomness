@@ -12,6 +12,8 @@ public final class ValidationException extends Exception {
 
 
     /**
+     * Constructs a new {@code ValidationException}.
+     *
      * @param message   the detail message
      * @param component the component
      * @see Exception#Exception(String)
