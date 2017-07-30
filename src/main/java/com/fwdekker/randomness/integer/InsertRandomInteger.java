@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.InsertRandomSomething;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,6 +41,26 @@ public final class InsertRandomInteger extends InsertRandomSomething {
         final long randomValue = ThreadLocalRandom.current()
                 .nextLong(integerSettings.getMinValue(), integerSettings.getMaxValue() + 1);
 
-        return Long.toString(randomValue);
+        return convertToString(randomValue);
+    }
+
+
+    /**
+     * Returns a nicely formatted representation of a long.
+     *
+     * @param integer a {@code long}
+     * @return a nicely formatted representation of a long
+     */
+    private String convertToString(final long integer) {
+        final DecimalFormat format = new DecimalFormat();
+        format.setGroupingUsed(integerSettings.getGroupingSeparator() != '\0');
+
+        final DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
+        symbols.setGroupingSeparator(integerSettings.getGroupingSeparator());
+        format.setMinimumFractionDigits(0);
+        format.setMaximumFractionDigits(0);
+        format.setDecimalFormatSymbols(symbols);
+
+        return format.format(integer);
     }
 }
