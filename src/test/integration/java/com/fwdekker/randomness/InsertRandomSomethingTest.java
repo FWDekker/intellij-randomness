@@ -1,5 +1,6 @@
 package com.fwdekker.randomness;
 
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.VisualPosition;
@@ -13,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link InsertRandomSomething}.
- *
+ * <p>
  * Note that {@link LightPlatformCodeInsightFixtureTestCase} is a JUnit 3 test class.
  */
 @SuppressWarnings("PMD.AddEmptyString") // These were added for readability
@@ -67,7 +68,7 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
     }
 
     public void testInsertBefore() {
-        document.setText("RkpjkS9Itb");
+        WriteCommandAction.runWriteCommandAction(myFixture.getProject(), () -> document.setText("RkpjkS9Itb"));
 
         caretModel.moveToOffset(0);
         myFixture.testAction(insertRandomSimple);
@@ -76,7 +77,7 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
     }
 
     public void testInsertAfter() {
-        document.setText("0aiMbK5hK5");
+        WriteCommandAction.runWriteCommandAction(myFixture.getProject(), () -> document.setText("0aiMbK5hK5"));
 
         caretModel.moveToOffset(10);
         myFixture.testAction(insertRandomSimple);
@@ -85,7 +86,7 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
     }
 
     public void testInsertBetween() {
-        document.setText("U6jBDMh8Nq");
+        WriteCommandAction.runWriteCommandAction(myFixture.getProject(), () -> document.setText("U6jBDMh8Nq"));
 
         caretModel.moveToOffset(5);
         myFixture.testAction(insertRandomSimple);
@@ -94,7 +95,7 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
     }
 
     public void testReplaceAll() {
-        document.setText("fMhAajjDw6");
+        WriteCommandAction.runWriteCommandAction(myFixture.getProject(), () -> document.setText("fMhAajjDw6"));
 
         setSelection(0, 10);
         myFixture.testAction(insertRandomSimple);
@@ -103,7 +104,7 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
     }
 
     public void testReplacePart() {
-        document.setText("qZPGZDEcPS");
+        WriteCommandAction.runWriteCommandAction(myFixture.getProject(), () -> document.setText("qZPGZDEcPS"));
 
         setSelection(3, 7);
         myFixture.testAction(insertRandomSimple);
@@ -112,7 +113,8 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
     }
 
     public void testInsertMultiple() {
-        document.setText("DCtD41lFOk\nOCnrdYk9gE\nn1HAPKotDq");
+        WriteCommandAction.runWriteCommandAction(myFixture.getProject(),
+                () -> document.setText("DCtD41lFOk\nOCnrdYk9gE\nn1HAPKotDq"));
 
         addCaret(11);
         addCaret(22);
@@ -126,7 +128,8 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
     }
 
     public void testReplaceMultiple() {
-        document.setText("YXSncq4FC9\nG31Ybbn1c4\nTNCqAhqPnh");
+        WriteCommandAction.runWriteCommandAction(myFixture.getProject(),
+                () -> document.setText("YXSncq4FC9\nG31Ybbn1c4\nTNCqAhqPnh"));
 
         setSelection(2, 4);
         addSelection(18, 23);
@@ -141,7 +144,8 @@ public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFix
     }
 
     public void testInsertAndReplace() {
-        document.setText("XOppzVdZTj\nZhAaVfQynW\nk3kWemkdAg");
+        WriteCommandAction.runWriteCommandAction(myFixture.getProject(),
+                () -> document.setText("XOppzVdZTj\nZhAaVfQynW\nk3kWemkdAg"));
 
         caretModel.moveToOffset(5);
         addSelection(6, 9);
