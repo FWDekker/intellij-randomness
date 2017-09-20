@@ -8,7 +8,7 @@ plugins {
     id "jacoco"
     id "io.github.ddimtirov.codacy" version "0.1.0"
 
-    id "org.jetbrains.intellij" version "0.2.16"
+    id "org.jetbrains.intellij" version "0.2.17"
 }
 
 apply from: "integration.gradle"
