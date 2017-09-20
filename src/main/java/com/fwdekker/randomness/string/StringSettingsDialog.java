@@ -77,6 +77,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
 
 
     @Override
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minLength and such are always non-null
     public void loadSettings(@NotNull final StringSettings settings) {
         minLength.setValue(settings.getMinLength());
         maxLength.setValue(settings.getMaxLength());
@@ -90,6 +91,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     }
 
     @Override
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minLength and such are always non-null
     public void saveSettings(@NotNull final StringSettings settings) {
         settings.setMinLength(Math.toIntExact(minLength.getValue()));
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));

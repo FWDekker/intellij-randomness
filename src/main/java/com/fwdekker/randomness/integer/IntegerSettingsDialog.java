@@ -6,6 +6,7 @@ import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -78,6 +79,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
 
 
     @Override
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minValue and such are always non-null
     public void loadSettings(@NotNull final IntegerSettings settings) {
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
@@ -85,6 +87,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     }
 
     @Override
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minValue and such are always non-null
     public void saveSettings(@NotNull final IntegerSettings settings) {
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
