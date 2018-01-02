@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 
 /**
- * Dialog for settings of random integer generation.
+ * Dialog for settings of random string generation.
  */
 @SuppressFBWarnings(
         value = {"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"},
