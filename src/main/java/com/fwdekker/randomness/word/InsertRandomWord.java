@@ -36,7 +36,7 @@ public final class InsertRandomWord extends InsertRandomSomething {
      */
     @Override
     public String generateString() {
-        final List<String> words = Dictionary.getDefaultDictionary()
+        final List<String> words = wordSettings.getSelectedDictionariesCombined()
                 .getWordsWithLengthInRange(wordSettings.getMinLength(), wordSettings.getMaxLength());
         final int randomIndex = ThreadLocalRandom.current().nextInt(0, words.size());
         final String randomWord = wordSettings.getCapitalization().getTransform().apply(words.get(randomIndex));

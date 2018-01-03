@@ -6,6 +6,10 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -36,6 +40,10 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      * The way in which the generated word should be capitalized.
      */
     private CapitalizationMode capitalization = CapitalizationMode.NORMAL;
+    private Set<String> resourceDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
+    private Set<String> localDictionaries = new HashSet();
+    private Set<String> selectedResourceDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
+    private Set<String> selectedLocalDictionaries = new HashSet<>();
 
 
     /**
@@ -128,5 +136,61 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      */
     public void setCapitalization(final CapitalizationMode capitalization) {
         this.capitalization = capitalization;
+    }
+
+    public Set<String> getResourceDictionaries() {
+        return resourceDictionaries;
+    }
+
+    public void setResourceDictionaries(Set<String> resourceDictionaries) {
+        this.resourceDictionaries = resourceDictionaries;
+    }
+
+    public Set<String> getLocalDictionaries() {
+        return localDictionaries;
+    }
+
+    public void setLocalDictionaries(Set<String> localDictionaries) {
+        this.localDictionaries = localDictionaries;
+    }
+
+    public Set<String> getSelectedResourceDictionaries() {
+        return selectedResourceDictionaries;
+    }
+
+    public void setSelectedResourceDictionaries(Set<String> selectedResourceDictionaries) {
+        this.selectedResourceDictionaries = selectedResourceDictionaries;
+    }
+
+    public Set<String> getSelectedLocalDictionaries() {
+        return selectedLocalDictionaries;
+    }
+
+    public void setSelectedLocalDictionaries(Set<String> selectedLocalDictionaries) {
+        this.selectedLocalDictionaries = selectedLocalDictionaries;
+    }
+
+    public Set<Dictionary> getSelectedDictionaries() {
+        final Set<Dictionary> dictionaries = new HashSet<>();
+
+        dictionaries.addAll(selectedResourceDictionaries.stream()
+                                    .map(dictionary -> new Dictionary.ResourceDictionary(dictionary))
+                                    .collect(Collectors.toList()));
+        dictionaries.addAll(selectedLocalDictionaries.stream()
+                                    .map(dictionary -> new Dictionary.LocalDictionary(dictionary))
+                                    .collect(Collectors.toList()));
+
+        return dictionaries;
+    }
+
+    public Dictionary getSelectedDictionariesCombined() {
+        final Set<Dictionary> selectedDictionaries = getSelectedDictionaries();
+        Dictionary combinedDictionary = (Dictionary) selectedDictionaries.toArray()[0];
+
+        for (final Dictionary dictionary : selectedDictionaries) {
+            combinedDictionary = combinedDictionary.combineWith(dictionary);
+        }
+
+        return combinedDictionary;
     }
 }
