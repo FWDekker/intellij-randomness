@@ -13,7 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
 
-public final class JEditableTable extends JTable {
+public final class JEditableTable<T> extends JTable {
     private final DefaultTableModel model;
 
 
@@ -34,26 +34,26 @@ public final class JEditableTable extends JTable {
     }
 
 
-    public void addEntry(final String entry) {
+    public void addEntry(final T entry) {
         model.addRow(new Object[] {false, entry});
     }
 
-    public void setEntries(final Collection<String> entries) {
+    public void setEntries(final Collection<T> entries) {
         clear();
         entries.forEach(this::addEntry);
     }
 
-    private String getEntry(final int row) {
-        return model.getValueAt(row, 1).toString();
+    private T getEntry(final int row) {
+        return (T) model.getValueAt(row, 1);
     }
 
-    public List<String> getEntries() {
+    public List<T> getEntries() {
         return IntStream.range(0, model.getRowCount())
                 .mapToObj(this::getEntry)
                 .collect(Collectors.toList());
     }
 
-    public void removeEntry(final String entry) {
+    public void removeEntry(final T entry) {
         model.removeRow(getEntryRow(entry));
     }
 
@@ -66,34 +66,34 @@ public final class JEditableTable extends JTable {
     }
 
 
-    public List<String> getActiveEntries() {
+    public List<T> getActiveEntries() {
         return getEntries().stream()
                 .filter(this::isActive)
                 .collect(Collectors.toList());
     }
 
-    private void setActive(final String entry, final boolean selected) {
+    private void setActive(final T entry, final boolean selected) {
         setValueAt(selected, getEntryRow(entry), 0);
     }
 
-    public boolean isActive(final String entry) {
+    public boolean isActive(final T entry) {
         return (Boolean) getValueAt(getEntryRow(entry), 0);
     }
 
-    public void setActiveEntries(final Collection<String> entries) {
+    public void setActiveEntries(final Collection<T> entries) {
         getEntries().stream()
                 .forEach(entry -> setActive(entry, entries.contains(entry)));
     }
 
 
-    public List<String> getHighlightedEntries() {
+    public List<T> getHighlightedEntries() {
         return Arrays.stream(getSelectedRows())
                 .mapToObj(this::getEntry)
                 .collect(Collectors.toList());
     }
 
 
-    private int getEntryRow(final String entry) {
+    private int getEntryRow(final T entry) {
         return IntStream.range(0, model.getRowCount())
                 .filter(row -> getEntry(row).equals(entry))
                 .findFirst()

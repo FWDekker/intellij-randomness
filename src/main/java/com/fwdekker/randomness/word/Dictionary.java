@@ -164,11 +164,6 @@ public abstract class Dictionary {
         return Objects.hash(path);
     }
 
-    @Override
-    public final String toString() {
-        return path;
-    }
-
 
     /**
      * A {@code Dictionary} provided by the plugin.
@@ -196,6 +191,11 @@ public abstract class Dictionary {
         InputStream getInputStream(final String dictionary) {
             return Dictionary.class.getClassLoader().getResourceAsStream(dictionary);
         }
+
+        @Override
+        public String toString() {
+            return "[bundled] " + getPath();
+        }
     }
 
     /**
@@ -222,6 +222,11 @@ public abstract class Dictionary {
         @Override
         InputStream getInputStream(final String dictionary) throws IOException {
             return new FileInputStream(dictionary);
+        }
+
+        @Override
+        public String toString() {
+            return "[custom] " + getPath();
         }
     }
 

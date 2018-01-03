@@ -12,6 +12,7 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -34,8 +35,8 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private JLongSpinner maxLength;
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
-    private JEditableTable bundledDictionaryList;
-    private JEditableTable customDictionaryList;
+    private JEditableTable<Dictionary> bundledDictionaryList;
+    private JEditableTable<Dictionary> customDictionaryList;
     private JButton dictionaryAddButton;
     private JButton dictionaryRemoveButton;
 
@@ -76,8 +77,8 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         minLength = new JLongSpinner(1, Dictionary.getDefaultDictionary().longestWordLength());
         maxLength = new JLongSpinner(1, Dictionary.getDefaultDictionary().longestWordLength());
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
-        bundledDictionaryList = new JEditableTable();
-        customDictionaryList = new JEditableTable();
+        bundledDictionaryList = new JEditableTable<>();
+        customDictionaryList = new JEditableTable<>();
 
         dictionaryAddButton = new JButton();
         dictionaryAddButton.addActionListener(event -> {
@@ -85,7 +86,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                     .chooseFile(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null);
 
             if (newDictionarySource != null) {
-                customDictionaryList.addEntry(newDictionarySource.getCanonicalPath());
+                customDictionaryList.addEntry(new Dictionary.CustomDictionary(newDictionarySource.getCanonicalPath()));
             }
         });
         dictionaryRemoveButton = new JButton();
@@ -102,10 +103,10 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupHelper.setValue(capitalizationGroup, settings.getCapitalization());
 
-        bundledDictionaryList.setEntries(settings.getBundledDictionaries());
-        bundledDictionaryList.setActiveEntries(settings.getActiveBundledDictionaries());
-        customDictionaryList.setEntries(settings.getCustomDictionaries());
-        customDictionaryList.setActiveEntries(settings.getActiveCustomDictionaries());
+        bundledDictionaryList.setEntries(settings.getBundledDictionaries().stream().map(dictionary -> new Dictionary.BundledDictionary(dictionary)).collect(Collectors.toList()));
+        bundledDictionaryList.setActiveEntries(settings.getActiveBundledDictionaries().stream().map(dictionary -> new Dictionary.BundledDictionary(dictionary)).collect(Collectors.toList()));
+        customDictionaryList.setEntries(settings.getCustomDictionaries().stream().map(dictionary -> new Dictionary.CustomDictionary(dictionary)).collect(Collectors.toList()));
+        customDictionaryList.setActiveEntries(settings.getActiveCustomDictionaries().stream().map(dictionary -> new Dictionary.CustomDictionary(dictionary)).collect(Collectors.toList()));
     }
 
     @Override
@@ -115,10 +116,10 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
         settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
         settings.setCapitalization(CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)));
-        settings.setBundledDictionaries(new HashSet<>(bundledDictionaryList.getEntries()));
-        settings.setActiveBundledDictionaries(new HashSet<>(bundledDictionaryList.getActiveEntries()));
-        settings.setCustomDictionaries(new HashSet<>(customDictionaryList.getEntries()));
-        settings.setActiveCustomDictionaries(new HashSet<>(customDictionaryList.getActiveEntries()));
+        settings.setBundledDictionaries(bundledDictionaryList.getEntries().stream().map(Dictionary::getPath).collect(Collectors.toSet()));
+        settings.setActiveBundledDictionaries(new HashSet<>(bundledDictionaryList.getActiveEntries().stream().map(Dictionary::getPath).collect(Collectors.toSet())));
+        settings.setCustomDictionaries(new HashSet<>(customDictionaryList.getEntries().stream().map(Dictionary::getPath).collect(Collectors.toSet())));
+        settings.setActiveCustomDictionaries(new HashSet<>(customDictionaryList.getActiveEntries().stream().map(Dictionary::getPath).collect(Collectors.toSet())));
     }
 
     @Override
