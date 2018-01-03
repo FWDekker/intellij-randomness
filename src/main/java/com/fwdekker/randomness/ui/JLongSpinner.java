@@ -47,7 +47,7 @@ public final class JLongSpinner extends JSpinner {
      */
     public JLongSpinner() {
         super(new SpinnerNumberModel((Long) 0L, (Long) DEFAULT_MIN_VALUE, (Long) DEFAULT_MAX_VALUE,
-                (Long) DEFAULT_STEP_SIZE));
+                                     (Long) DEFAULT_STEP_SIZE));
 
         this.minValue = DEFAULT_MIN_VALUE;
         this.maxValue = DEFAULT_MAX_VALUE;

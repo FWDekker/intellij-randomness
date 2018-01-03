@@ -25,8 +25,9 @@ public final class InsertDataAction extends AnAction {
 
         final DefaultActionGroup actionGroup = (DefaultActionGroup) ActionManager.getInstance()
                 .getAction("randomness.Group");
-        final JBPopup popup = JBPopupFactory.getInstance().createActionGroupPopup(TITLE, actionGroup,
-                event.getDataContext(), JBPopupFactory.ActionSelectionAid.NUMBERING, true, event.getPlace());
+        final JBPopup popup = JBPopupFactory.getInstance()
+                .createActionGroupPopup(TITLE, actionGroup, event.getDataContext(),
+                                        JBPopupFactory.ActionSelectionAid.NUMBERING, true, event.getPlace());
 
         popup.showCenteredInCurrentWindow(project);
     }
