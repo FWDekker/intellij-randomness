@@ -14,32 +14,47 @@ import java.util.stream.Collectors;
  */
 public final class Dictionary {
     /**
-     * The name of the dictionary file.
+     * The name of the default dictionary file.
      */
-    private static final String DICTIONARY_FILE = "words_alpha.dictionary";
+    private static final String DEFAULT_DICTIONARY_FILE = "words_alpha.dic";
+    /**
+     * The default {@code Dictionary} instance.
+     */
+    private static final Dictionary DEFAULT_DICTIONARY = new Dictionary(DEFAULT_DICTIONARY_FILE);
+
     /**
      * A list of all words in the dictionary.
      */
-    private static final List<String> WORDS;
-
-
-    static {
-        // Read dictionary into memory
-        try (InputStream resource = Dictionary.class.getClassLoader().getResourceAsStream(DICTIONARY_FILE)) {
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(resource, StandardCharsets.UTF_8));
-            WORDS = reader.lines().collect(Collectors.toList());
-            reader.close();
-        } catch (final IOException e) {
-            throw new IllegalStateException("Failed to read dictionary into memory.", e);
-        }
-    }
+    private final List<String> words;
 
 
     /**
-     * Private constructor to prevent instantiation.
+     * Constructs a new {@code Dictionary} from the given resource file.
+     *
+     * @param dictionary the filename of the dictionary file
      */
-    private Dictionary() {
-        // Do nothing
+    public Dictionary(final String dictionary) {
+        // Read dictionary into memory
+        try (InputStream resource = Dictionary.class.getClassLoader().getResourceAsStream(dictionary)) {
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(resource, StandardCharsets.UTF_8));
+            words = reader.lines().collect(Collectors.toList());
+            reader.close();
+        } catch (final IOException e) {
+            throw new IllegalArgumentException("Failed to read dictionary into memory.", e);
+        }
+
+        if (words.isEmpty()) {
+            throw new IllegalArgumentException("Dictionary must be non-empty.");
+        }
+    }
+
+    /**
+     * Returns the default {@code Dictionary} instance.
+     *
+     * @return the default {@code Dictionary} instance
+     */
+    public static Dictionary getDefaultDictionary() {
+        return DEFAULT_DICTIONARY;
     }
 
 
@@ -50,8 +65,8 @@ public final class Dictionary {
      * @param maxLength the maximum word length (inclusive)
      * @return a list of all words with a length in the given range
      */
-    public static List<String> getWordsWithLengthInRange(final int minLength, final int maxLength) {
-        return WORDS.parallelStream()
+    public List<String> getWordsWithLengthInRange(final int minLength, final int maxLength) {
+        return words.parallelStream()
                 .filter(word -> word.length() >= minLength && word.length() <= maxLength)
                 .collect(Collectors.toList());
     }
@@ -61,8 +76,8 @@ public final class Dictionary {
      *
      * @return the length of the longest word
      */
-    public static int longestWordLength() {
-        return WORDS.parallelStream()
+    public int longestWordLength() {
+        return words.parallelStream()
                 .mapToInt(String::length)
                 .max()
                 .orElseThrow(() -> new IllegalStateException("Dictionary should not be empty."));
