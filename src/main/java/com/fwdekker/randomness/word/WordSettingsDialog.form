@@ -171,10 +171,10 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="f241b" class="javax.swing.JList" binding="localDictionaryList" custom-create="true">
+          <component id="f241b" class="javax.swing.JList" binding="customDictionaryList" custom-create="true">
             <constraints/>
             <properties>
-              <name value="localDictionaries"/>
+              <name value="customDictionaries"/>
             </properties>
           </component>
         </children>

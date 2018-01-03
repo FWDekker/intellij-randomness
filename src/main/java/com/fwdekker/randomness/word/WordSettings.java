@@ -41,9 +41,9 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      */
     private CapitalizationMode capitalization = CapitalizationMode.NORMAL;
     private Set<String> resourceDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
-    private Set<String> localDictionaries = new HashSet();
+    private Set<String> customDictionaries = new HashSet();
     private Set<String> selectedResourceDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
-    private Set<String> selectedLocalDictionaries = new HashSet<>();
+    private Set<String> selectedCustomDictionaries = new HashSet<>();
 
 
     /**
@@ -146,12 +146,12 @@ public final class WordSettings extends Settings implements PersistentStateCompo
         this.resourceDictionaries = resourceDictionaries;
     }
 
-    public Set<String> getLocalDictionaries() {
-        return localDictionaries;
+    public Set<String> getCustomDictionaries() {
+        return customDictionaries;
     }
 
-    public void setLocalDictionaries(Set<String> localDictionaries) {
-        this.localDictionaries = localDictionaries;
+    public void setCustomDictionaries(Set<String> customDictionaries) {
+        this.customDictionaries = customDictionaries;
     }
 
     public Set<String> getSelectedResourceDictionaries() {
@@ -162,12 +162,12 @@ public final class WordSettings extends Settings implements PersistentStateCompo
         this.selectedResourceDictionaries = selectedResourceDictionaries;
     }
 
-    public Set<String> getSelectedLocalDictionaries() {
-        return selectedLocalDictionaries;
+    public Set<String> getSelectedCustomDictionaries() {
+        return selectedCustomDictionaries;
     }
 
-    public void setSelectedLocalDictionaries(Set<String> selectedLocalDictionaries) {
-        this.selectedLocalDictionaries = selectedLocalDictionaries;
+    public void setSelectedCustomDictionaries(Set<String> selectedCustomDictionaries) {
+        this.selectedCustomDictionaries = selectedCustomDictionaries;
     }
 
     public Set<Dictionary> getSelectedDictionaries() {
@@ -176,8 +176,8 @@ public final class WordSettings extends Settings implements PersistentStateCompo
         dictionaries.addAll(selectedResourceDictionaries.stream()
                                     .map(dictionary -> new Dictionary.ResourceDictionary(dictionary))
                                     .collect(Collectors.toList()));
-        dictionaries.addAll(selectedLocalDictionaries.stream()
-                                    .map(dictionary -> new Dictionary.LocalDictionary(dictionary))
+        dictionaries.addAll(selectedCustomDictionaries.stream()
+                                    .map(dictionary -> new Dictionary.CustomDictionary(dictionary))
                                     .collect(Collectors.toList()));
 
         return dictionaries;

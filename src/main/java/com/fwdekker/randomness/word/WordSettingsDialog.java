@@ -39,7 +39,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
     private JList resourceDictionaryList;
-    private JList localDictionaryList;
+    private JList customDictionaryList;
     private JButton dictionaryAddButton;
 
 
@@ -84,9 +84,9 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         resourceDictionaryList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         resourceDictionaryList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 
-        localDictionaryList = new JList<>();
-        localDictionaryList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        localDictionaryList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        customDictionaryList = new JList<>();
+        customDictionaryList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        customDictionaryList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 
         dictionaryAddButton = new JButton();
         dictionaryAddButton.addActionListener(e -> {
@@ -96,13 +96,13 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                 return;
             }
 
-            final Dictionary newDictionary = new Dictionary.LocalDictionary(newDictionarySource.getCanonicalPath());
+            final Dictionary newDictionary = new Dictionary.CustomDictionary(newDictionarySource.getCanonicalPath());
             final Set<Dictionary> allDictionaries =
-                    IntStream.range(0, localDictionaryList.getModel().getSize())
-                            .mapToObj(index -> (Dictionary) localDictionaryList.getModel().getElementAt(index))
+                    IntStream.range(0, customDictionaryList.getModel().getSize())
+                            .mapToObj(index -> (Dictionary) customDictionaryList.getModel().getElementAt(index))
                             .collect(Collectors.toSet());
             allDictionaries.add(newDictionary);
-            localDictionaryList.setListData(allDictionaries.toArray());
+            customDictionaryList.setListData(allDictionaries.toArray());
         });
     }
 
@@ -122,10 +122,10 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             }
         }
 
-        localDictionaryList.setListData(settings.getLocalDictionaries().toArray());
-        for (int i = 0; i < settings.getLocalDictionaries().size(); i++) {
-            if (settings.getSelectedLocalDictionaries().contains(settings.getLocalDictionaries().toArray()[i])) {
-                localDictionaryList.addSelectionInterval(i, i);
+        customDictionaryList.setListData(settings.getCustomDictionaries().toArray());
+        for (int i = 0; i < settings.getCustomDictionaries().size(); i++) {
+            if (settings.getSelectedCustomDictionaries().contains(settings.getCustomDictionaries().toArray()[i])) {
+                customDictionaryList.addSelectionInterval(i, i);
             }
         }
     }
@@ -142,11 +142,11 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                                                          .getElementAt(index).toString())
                                                  .collect(Collectors.toSet()));
         settings.setSelectedResourceDictionaries(new HashSet<>(resourceDictionaryList.getSelectedValuesList()));
-        settings.setLocalDictionaries(IntStream.range(0, localDictionaryList.getModel().getSize())
-                                              .mapToObj(index -> localDictionaryList.getModel()
+        settings.setCustomDictionaries(IntStream.range(0, customDictionaryList.getModel().getSize())
+                                              .mapToObj(index -> customDictionaryList.getModel()
                                                       .getElementAt(index).toString())
                                               .collect(Collectors.toSet()));
-        settings.setSelectedLocalDictionaries(new HashSet<>(localDictionaryList.getSelectedValuesList()));
+        settings.setSelectedCustomDictionaries(new HashSet<>(customDictionaryList.getSelectedValuesList()));
     }
 
     @Override

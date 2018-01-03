@@ -201,8 +201,8 @@ public abstract class Dictionary implements PersistentStateComponent<Dictionary>
         }
     }
 
-    public static final class LocalDictionary extends Dictionary {
-        public LocalDictionary(final String dictionary) {
+    public static final class CustomDictionary extends Dictionary {
+        public CustomDictionary(final String dictionary) {
             super(dictionary);
         }
 
