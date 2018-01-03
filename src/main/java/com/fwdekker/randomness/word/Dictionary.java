@@ -31,7 +31,7 @@ public abstract class Dictionary {
     /**
      * The filename of the dictionary file.
      */
-    private final String dictionary;
+    private final String path;
     /**
      * A set of all words in the dictionary.
      */
@@ -43,20 +43,20 @@ public abstract class Dictionary {
      * Constructs an empty {@code Dictionary}.
      */
     private Dictionary() {
-        dictionary = "";
+        path = "";
         words = new HashSet<>();
     }
 
     /**
      * Constructs a new {@code Dictionary} from the given resource file.
      *
-     * @param dictionary the filename of the dictionary file
+     * @param path the filename of the dictionary file
      */
-    Dictionary(final String dictionary) {
-        this.dictionary = dictionary;
+    Dictionary(final String path) {
+        this.path = path;
 
         // Read dictionary into memory
-        try (InputStream iStream = getInputStream(dictionary)) {
+        try (InputStream iStream = getInputStream(path)) {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(iStream, StandardCharsets.UTF_8));
             words = reader.lines().collect(Collectors.toSet());
             reader.close();
@@ -79,6 +79,15 @@ public abstract class Dictionary {
     }
 
 
+    /**
+     * Returns an {@link InputStream} for the given dictionary file.
+     * <p>
+     * Different kinds of dictionaries may need a different method of accessing the source file.
+     *
+     * @param dictionary the location of the dictionary file
+     * @return an {@link InputStream} for the given dictionary file
+     * @throws IOException if the dictionary file could not be read
+     */
     abstract InputStream getInputStream(final String dictionary) throws IOException;
 
 
@@ -87,8 +96,8 @@ public abstract class Dictionary {
      *
      * @return the filename of the dictionary file
      */
-    public final String getDictionary() {
-        return dictionary;
+    public final String getPath() {
+        return path;
     }
 
     /**
@@ -149,50 +158,93 @@ public abstract class Dictionary {
         }
 
         final Dictionary that = (Dictionary) other;
-        return Objects.equals(this.dictionary, that.dictionary);
+        return Objects.equals(this.path, that.path);
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(dictionary);
+        return Objects.hash(path);
     }
 
     @Override
-    public String toString() {
-        return dictionary;
+    public final String toString() {
+        return path;
     }
 
 
+    /**
+     * A {@code Dictionary} provided by the plugin.
+     * <p>
+     * Bundled dictionaries are found in the application's resources.
+     */
     public static final class BundledDictionary extends Dictionary {
+        /**
+         * Constructs a new {@link BundledDictionary} for the given dictionary resource.
+         *
+         * @param dictionary the location of the dictionary resource
+         */
         public BundledDictionary(final String dictionary) {
             super(dictionary);
         }
 
 
+        /**
+         * Returns an {@link InputStream} to the given dictionary resource.
+         *
+         * @param dictionary the location of the dictionary resource
+         * @return an {@link InputStream} to the given dictionary resource
+         */
         @Override
         InputStream getInputStream(final String dictionary) {
             return Dictionary.class.getClassLoader().getResourceAsStream(dictionary);
         }
     }
 
+    /**
+     * A {@code Dictionary} added by the user.
+     */
     public static final class CustomDictionary extends Dictionary {
+        /**
+         * Constructs a new {@code CustomDictionary} for the given dictionary file.
+         *
+         * @param dictionary the location of the dictionary file
+         */
         public CustomDictionary(final String dictionary) {
             super(dictionary);
         }
 
 
+        /**
+         * Returns an {@link InputStream} of the file at the given absolute path.
+         *
+         * @param dictionary the absolute location of the dictionary file
+         * @return an {@link InputStream} of the file at the given absolute path
+         * @throws IOException if the given file could not be found
+         */
         @Override
         InputStream getInputStream(final String dictionary) throws IOException {
             return new FileInputStream(dictionary);
         }
     }
 
+    /**
+     * An (initially) empty {@code Dictionary} without a source file.
+     */
     private static final class SimpleDictionary extends Dictionary {
+        /**
+         * Constructs a new, empty {@code SimpleDictionary}.
+         */
         SimpleDictionary() {
             super();
         }
 
 
+        /**
+         * Throws {@link IllegalStateException}.
+         *
+         * @param dictionary ignored
+         * @return never
+         */
         @Override
         InputStream getInputStream(final String dictionary) {
             throw new IllegalStateException("This method should not be called.");

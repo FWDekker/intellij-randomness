@@ -89,7 +89,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         customDictionaryList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 
         dictionaryAddButton = new JButton();
-        dictionaryAddButton.addActionListener(e -> {
+        dictionaryAddButton.addActionListener(event -> {
             final VirtualFile newDictionarySource = FileChooser
                     .chooseFile(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null);
             if (newDictionarySource == null) {
@@ -117,14 +117,14 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
         bundledDictionaryList.setListData(settings.getBundledDictionaries().toArray());
         for (int i = 0; i < settings.getBundledDictionaries().size(); i++) {
-            if (settings.getSelectedBundledDictionaries().contains(settings.getBundledDictionaries().toArray()[i])) {
+            if (settings.getActiveBundledDictionaries().contains(settings.getBundledDictionaries().toArray()[i])) {
                 bundledDictionaryList.addSelectionInterval(i, i);
             }
         }
 
         customDictionaryList.setListData(settings.getCustomDictionaries().toArray());
         for (int i = 0; i < settings.getCustomDictionaries().size(); i++) {
-            if (settings.getSelectedCustomDictionaries().contains(settings.getCustomDictionaries().toArray()[i])) {
+            if (settings.getActiveCustomDictionaries().contains(settings.getCustomDictionaries().toArray()[i])) {
                 customDictionaryList.addSelectionInterval(i, i);
             }
         }
@@ -141,12 +141,12 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                                                  .mapToObj(index -> bundledDictionaryList.getModel()
                                                          .getElementAt(index).toString())
                                                  .collect(Collectors.toSet()));
-        settings.setSelectedBundledDictionaries(new HashSet<>(bundledDictionaryList.getSelectedValuesList()));
+        settings.setActiveBundledDictionaries(new HashSet<>(bundledDictionaryList.getSelectedValuesList()));
         settings.setCustomDictionaries(IntStream.range(0, customDictionaryList.getModel().getSize())
                                               .mapToObj(index -> customDictionaryList.getModel()
                                                       .getElementAt(index).toString())
                                               .collect(Collectors.toSet()));
-        settings.setSelectedCustomDictionaries(new HashSet<>(customDictionaryList.getSelectedValuesList()));
+        settings.setActiveCustomDictionaries(new HashSet<>(customDictionaryList.getSelectedValuesList()));
     }
 
     @Override

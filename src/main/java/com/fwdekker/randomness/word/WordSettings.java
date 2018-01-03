@@ -41,12 +41,21 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      */
     private CapitalizationMode capitalization = CapitalizationMode.NORMAL;
     /**
-     * The list of all
+     * The list of all dictionaries provided by the plugin.
      */
     private Set<String> bundledDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
+    /**
+     * The list of all dictionaries registered by the user.
+     */
     private Set<String> customDictionaries = new HashSet();
-    private Set<String> selectedBundledDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
-    private Set<String> selectedCustomDictionaries = new HashSet<>();
+    /**
+     * The list of bundled dictionaries that are currently active.
+     */
+    private Set<String> activeBundledDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
+    /**
+     * The list of custom dictionaries that are currently active.
+     */
+    private Set<String> activeCustomDictionaries = new HashSet<>();
 
 
     /**
@@ -141,56 +150,106 @@ public final class WordSettings extends Settings implements PersistentStateCompo
         this.capitalization = capitalization;
     }
 
+    /**
+     * Returns the list of all dictionaries provided by the plugin.
+     *
+     * @return the list of all dictionaries provided by the plugin
+     */
     public Set<String> getBundledDictionaries() {
         return bundledDictionaries;
     }
 
-    public void setBundledDictionaries(Set<String> bundledDictionaries) {
+    /**
+     * Sets the list of all dictionaries provided by the plugin.
+     *
+     * @param bundledDictionaries the list of all dictionaries provided by the plugin
+     */
+    public void setBundledDictionaries(final Set<String> bundledDictionaries) {
         this.bundledDictionaries = bundledDictionaries;
     }
 
+    /**
+     * Returns the list of all dictionaries registered by the user.
+     *
+     * @return the list of all dictionaries registered by the user
+     */
     public Set<String> getCustomDictionaries() {
         return customDictionaries;
     }
 
+    /**
+     * Sets the list of all dictionaries registered by the user.
+     *
+     * @param customDictionaries the list of all dictionaries registered by the user
+     */
     public void setCustomDictionaries(final Set<String> customDictionaries) {
         this.customDictionaries = customDictionaries;
     }
 
-    public Set<String> getSelectedBundledDictionaries() {
-        return selectedBundledDictionaries;
+    /**
+     * Returns the list of bundled dictionaries that are currently active.
+     *
+     * @return the list of bundled dictionaries that are currently active
+     */
+    public Set<String> getActiveBundledDictionaries() {
+        return activeBundledDictionaries;
     }
 
-    public void setSelectedBundledDictionaries(final Set<String> selectedBundledDictionaries) {
-        this.selectedBundledDictionaries = selectedBundledDictionaries;
+    /**
+     * Sets the list of bundled dictionaries that are currently active.
+     *
+     * @param activeBundledDictionaries the list of bundled dictionaries that are currently active
+     */
+    public void setActiveBundledDictionaries(final Set<String> activeBundledDictionaries) {
+        this.activeBundledDictionaries = activeBundledDictionaries;
     }
 
-    public Set<String> getSelectedCustomDictionaries() {
-        return selectedCustomDictionaries;
+    /**
+     * Returns the list of custom dictionaries that are currently active.
+     *
+     * @return the list of custom dictionaries that are currently active
+     */
+    public Set<String> getActiveCustomDictionaries() {
+        return activeCustomDictionaries;
     }
 
-    public void setSelectedCustomDictionaries(final Set<String> selectedCustomDictionaries) {
-        this.selectedCustomDictionaries = selectedCustomDictionaries;
+    /**
+     * Sets the list of custom dictionaries that are currently active.
+     *
+     * @param activeCustomDictionaries the list of custom dictionaries that are currently active
+     */
+    public void setActiveCustomDictionaries(final Set<String> activeCustomDictionaries) {
+        this.activeCustomDictionaries = activeCustomDictionaries;
     }
 
-    public Set<Dictionary> getSelectedDictionaries() {
+    /**
+     * Returns the list of all dictionaries that are currently active.
+     *
+     * @return the list of all dictionaries that are currently active
+     */
+    public Set<Dictionary> getActiveDictionaries() {
         final Set<Dictionary> dictionaries = new HashSet<>();
 
-        dictionaries.addAll(selectedBundledDictionaries.stream()
+        dictionaries.addAll(activeBundledDictionaries.stream()
                                     .map(dictionary -> new Dictionary.BundledDictionary(dictionary))
                                     .collect(Collectors.toList()));
-        dictionaries.addAll(selectedCustomDictionaries.stream()
+        dictionaries.addAll(activeCustomDictionaries.stream()
                                     .map(dictionary -> new Dictionary.CustomDictionary(dictionary))
                                     .collect(Collectors.toList()));
 
         return dictionaries;
     }
 
-    public Dictionary getSelectedDictionariesCombined() {
-        final Set<Dictionary> selectedDictionaries = getSelectedDictionaries();
-        Dictionary combinedDictionary = (Dictionary) selectedDictionaries.toArray()[0];
+    /**
+     * Returns all dictionaries that are currently active as a single dictionary.
+     *
+     * @return all dictionaries that are currently active as a single dictionary
+     */
+    public Dictionary getActiveDictionariesCombined() {
+        final Set<Dictionary> activeDictionaries = getActiveDictionaries();
+        Dictionary combinedDictionary = (Dictionary) activeDictionaries.toArray()[0];
 
-        for (final Dictionary dictionary : selectedDictionaries) {
+        for (final Dictionary dictionary : activeDictionaries) {
             combinedDictionary = combinedDictionary.combineWith(dictionary);
         }
 
