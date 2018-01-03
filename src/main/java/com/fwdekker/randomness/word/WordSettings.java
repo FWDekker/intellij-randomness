@@ -40,9 +40,12 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      * The way in which the generated word should be capitalized.
      */
     private CapitalizationMode capitalization = CapitalizationMode.NORMAL;
-    private Set<String> resourceDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
+    /**
+     * The list of all
+     */
+    private Set<String> bundledDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
     private Set<String> customDictionaries = new HashSet();
-    private Set<String> selectedResourceDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
+    private Set<String> selectedBundledDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
     private Set<String> selectedCustomDictionaries = new HashSet<>();
 
 
@@ -138,43 +141,43 @@ public final class WordSettings extends Settings implements PersistentStateCompo
         this.capitalization = capitalization;
     }
 
-    public Set<String> getResourceDictionaries() {
-        return resourceDictionaries;
+    public Set<String> getBundledDictionaries() {
+        return bundledDictionaries;
     }
 
-    public void setResourceDictionaries(Set<String> resourceDictionaries) {
-        this.resourceDictionaries = resourceDictionaries;
+    public void setBundledDictionaries(Set<String> bundledDictionaries) {
+        this.bundledDictionaries = bundledDictionaries;
     }
 
     public Set<String> getCustomDictionaries() {
         return customDictionaries;
     }
 
-    public void setCustomDictionaries(Set<String> customDictionaries) {
+    public void setCustomDictionaries(final Set<String> customDictionaries) {
         this.customDictionaries = customDictionaries;
     }
 
-    public Set<String> getSelectedResourceDictionaries() {
-        return selectedResourceDictionaries;
+    public Set<String> getSelectedBundledDictionaries() {
+        return selectedBundledDictionaries;
     }
 
-    public void setSelectedResourceDictionaries(Set<String> selectedResourceDictionaries) {
-        this.selectedResourceDictionaries = selectedResourceDictionaries;
+    public void setSelectedBundledDictionaries(final Set<String> selectedBundledDictionaries) {
+        this.selectedBundledDictionaries = selectedBundledDictionaries;
     }
 
     public Set<String> getSelectedCustomDictionaries() {
         return selectedCustomDictionaries;
     }
 
-    public void setSelectedCustomDictionaries(Set<String> selectedCustomDictionaries) {
+    public void setSelectedCustomDictionaries(final Set<String> selectedCustomDictionaries) {
         this.selectedCustomDictionaries = selectedCustomDictionaries;
     }
 
     public Set<Dictionary> getSelectedDictionaries() {
         final Set<Dictionary> dictionaries = new HashSet<>();
 
-        dictionaries.addAll(selectedResourceDictionaries.stream()
-                                    .map(dictionary -> new Dictionary.ResourceDictionary(dictionary))
+        dictionaries.addAll(selectedBundledDictionaries.stream()
+                                    .map(dictionary -> new Dictionary.BundledDictionary(dictionary))
                                     .collect(Collectors.toList()));
         dictionaries.addAll(selectedCustomDictionaries.stream()
                                     .map(dictionary -> new Dictionary.CustomDictionary(dictionary))

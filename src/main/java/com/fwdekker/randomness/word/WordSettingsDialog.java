@@ -38,7 +38,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private JLongSpinner maxLength;
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
-    private JList resourceDictionaryList;
+    private JList bundledDictionaryList;
     private JList customDictionaryList;
     private JButton dictionaryAddButton;
 
@@ -80,9 +80,9 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         maxLength = new JLongSpinner(1, Dictionary.getDefaultDictionary().longestWordLength());
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
 
-        resourceDictionaryList = new JList<>();
-        resourceDictionaryList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        resourceDictionaryList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        bundledDictionaryList = new JList<>();
+        bundledDictionaryList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        bundledDictionaryList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 
         customDictionaryList = new JList<>();
         customDictionaryList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -115,10 +115,10 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupHelper.setValue(capitalizationGroup, settings.getCapitalization());
 
-        resourceDictionaryList.setListData(settings.getResourceDictionaries().toArray());
-        for (int i = 0; i < settings.getResourceDictionaries().size(); i++) {
-            if (settings.getSelectedResourceDictionaries().contains(settings.getResourceDictionaries().toArray()[i])) {
-                resourceDictionaryList.addSelectionInterval(i, i);
+        bundledDictionaryList.setListData(settings.getBundledDictionaries().toArray());
+        for (int i = 0; i < settings.getBundledDictionaries().size(); i++) {
+            if (settings.getSelectedBundledDictionaries().contains(settings.getBundledDictionaries().toArray()[i])) {
+                bundledDictionaryList.addSelectionInterval(i, i);
             }
         }
 
@@ -137,11 +137,11 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
         settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
         settings.setCapitalization(CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)));
-        settings.setResourceDictionaries(IntStream.range(0, resourceDictionaryList.getModel().getSize())
-                                                 .mapToObj(index -> resourceDictionaryList.getModel()
+        settings.setBundledDictionaries(IntStream.range(0, bundledDictionaryList.getModel().getSize())
+                                                 .mapToObj(index -> bundledDictionaryList.getModel()
                                                          .getElementAt(index).toString())
                                                  .collect(Collectors.toSet()));
-        settings.setSelectedResourceDictionaries(new HashSet<>(resourceDictionaryList.getSelectedValuesList()));
+        settings.setSelectedBundledDictionaries(new HashSet<>(bundledDictionaryList.getSelectedValuesList()));
         settings.setCustomDictionaries(IntStream.range(0, customDictionaryList.getModel().getSize())
                                               .mapToObj(index -> customDictionaryList.getModel()
                                                       .getElementAt(index).toString())

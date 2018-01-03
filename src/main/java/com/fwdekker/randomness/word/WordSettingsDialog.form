@@ -146,10 +146,10 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="2d919" class="javax.swing.JList" binding="resourceDictionaryList" custom-create="true">
+          <component id="2d919" class="javax.swing.JList" binding="bundledDictionaryList" custom-create="true">
             <constraints/>
             <properties>
-              <name value="resourceDictionaries"/>
+              <name value="bundledDictionaries"/>
             </properties>
           </component>
         </children>

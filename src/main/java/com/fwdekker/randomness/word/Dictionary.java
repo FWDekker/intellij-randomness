@@ -1,7 +1,5 @@
 package com.fwdekker.randomness.word;
 
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.Transient;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -15,14 +13,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 
 /**
  * A dictionary of English words.
  */
-public abstract class Dictionary implements PersistentStateComponent<Dictionary> {
+public abstract class Dictionary {
     /**
      * The name of the default dictionary file.
      */
@@ -30,7 +26,7 @@ public abstract class Dictionary implements PersistentStateComponent<Dictionary>
     /**
      * The default {@code Dictionary} instance.
      */
-    private static final Dictionary DEFAULT_DICTIONARY = new ResourceDictionary(DEFAULT_DICTIONARY_FILE);
+    private static final Dictionary DEFAULT_DICTIONARY = new BundledDictionary(DEFAULT_DICTIONARY_FILE);
 
     /**
      * The filename of the dictionary file.
@@ -167,20 +163,8 @@ public abstract class Dictionary implements PersistentStateComponent<Dictionary>
     }
 
 
-    @Nullable
-    @Override
-    public Dictionary getState() {
-        return this;
-    }
-
-    @Override
-    public void loadState(final Dictionary state) {
-        XmlSerializerUtil.copyBean(state, this);
-    }
-
-
-    public static final class ResourceDictionary extends Dictionary {
-        public ResourceDictionary(final String dictionary) {
+    public static final class BundledDictionary extends Dictionary {
+        public BundledDictionary(final String dictionary) {
             super(dictionary);
         }
 

@@ -15,7 +15,7 @@ public final class DictionaryTest {
 
     @Test
     public void testEmptyDictionary() {
-        assertThatThrownBy(() -> new Dictionary.ResourceDictionary("dictionaries/empty.dic"))
+        assertThatThrownBy(() -> new Dictionary.BundledDictionary("dictionaries/empty.dic"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Dictionary must be non-empty.")
                 .hasNoCause();
@@ -107,8 +107,8 @@ public final class DictionaryTest {
 
     @Test
     public void testCombineWith() {
-        final Dictionary combined = new Dictionary.ResourceDictionary("dictionaries/simple.dic")
-                .combineWith(new Dictionary.ResourceDictionary("dictionaries/varied.dic"));
+        final Dictionary combined = new Dictionary.BundledDictionary("dictionaries/simple.dic")
+                .combineWith(new Dictionary.BundledDictionary("dictionaries/varied.dic"));
 
         assertThat(combined.getWords())
                 .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow", "simplicity", "bend",
@@ -117,8 +117,8 @@ public final class DictionaryTest {
 
     @Test
     public void testCombineWithDuplicates() {
-        final Dictionary combined = new Dictionary.ResourceDictionary("dictionaries/simple.dic")
-                .combineWith(new Dictionary.ResourceDictionary("dictionaries/simple.dic"));
+        final Dictionary combined = new Dictionary.BundledDictionary("dictionaries/simple.dic")
+                .combineWith(new Dictionary.BundledDictionary("dictionaries/simple.dic"));
 
         assertThat(combined.getWords())
                 .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow");
@@ -131,6 +131,6 @@ public final class DictionaryTest {
      * @param dictionaryName the filename of the dictionary to use for the current test
      */
     private void useDictionary(final String dictionaryName) {
-        dictionary = new Dictionary.ResourceDictionary("dictionaries/" + dictionaryName + ".dic");
+        dictionary = new Dictionary.BundledDictionary("dictionaries/" + dictionaryName + ".dic");
     }
 }
