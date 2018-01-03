@@ -11,6 +11,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -75,6 +76,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         minLength = new JLongSpinner(1, Dictionary.getDefaultDictionary().longestWordLength());
         maxLength = new JLongSpinner(1, Dictionary.getDefaultDictionary().longestWordLength());
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
+
         bundledDictionaries = new JEditableTable<>();
 
         dictionaryAddButton = new JButton();
@@ -87,8 +89,22 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             }
         });
         dictionaryRemoveButton = new JButton();
-        dictionaryRemoveButton.addActionListener(event -> bundledDictionaries.getHighlightedEntries()
-                .forEach(bundledDictionaries::removeEntry));
+        dictionaryRemoveButton.addActionListener(event -> {
+            bundledDictionaries.getHighlightedEntry().ifPresent(dictionary -> {
+                if (dictionary instanceof Dictionary.CustomDictionary) {
+                    bundledDictionaries.removeEntry(dictionary);
+                } else {
+                    throw new IllegalStateException("Button should have been disabled.");
+                }
+            });
+        });
+
+        bundledDictionaries.getSelectionModel().addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting()) {
+                final Optional<Dictionary> highlightedDictionary = bundledDictionaries.getHighlightedEntry();
+                dictionaryRemoveButton.setEnabled(highlightedDictionary.isPresent() && highlightedDictionary.get() instanceof Dictionary.CustomDictionary);
+            }
+        });
     }
 
 

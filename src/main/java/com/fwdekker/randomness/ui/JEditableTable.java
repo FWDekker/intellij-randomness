@@ -6,9 +6,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
@@ -21,9 +23,11 @@ public final class JEditableTable<T> extends JTable {
         super();
 
         model = new DefaultTableModel(0, 2);
-
         setModel(model);
+
+        setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         setTableHeader(null);
+
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(final ComponentEvent e) {
@@ -86,10 +90,10 @@ public final class JEditableTable<T> extends JTable {
     }
 
 
-    public List<T> getHighlightedEntries() {
+    public Optional<T> getHighlightedEntry() {
         return Arrays.stream(getSelectedRows())
                 .mapToObj(this::getEntry)
-                .collect(Collectors.toList());
+                .findFirst();
     }
 
 
@@ -120,5 +124,10 @@ public final class JEditableTable<T> extends JTable {
             default:
                 throw new IllegalArgumentException("JEditableTable only has two columns.");
         }
+    }
+
+    @Override
+    public boolean isCellEditable(final int row, final int column) {
+        return column == 0;
     }
 }
