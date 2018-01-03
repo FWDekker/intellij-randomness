@@ -23,6 +23,15 @@ public final class DictionaryTest {
 
 
     @Test
+    public void testGetWords() {
+        useDictionary("simple");
+
+        assertThat(dictionary.getWords())
+                .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow");
+    }
+
+
+    @Test
     public void testGetWordsWithLengthInRangeInvertedRange() {
         useDictionary("simple");
 
@@ -93,6 +102,26 @@ public final class DictionaryTest {
 
         assertThat(dictionary.longestWordLength())
                 .isEqualTo(45);
+    }
+
+
+    @Test
+    public void testCombineWith() {
+        final Dictionary combined = new Dictionary("dictionaries/simple.dic")
+                .combineWith(new Dictionary("dictionaries/varied.dic"));
+
+        assertThat(combined.getWords())
+                .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow", "simplicity", "bend",
+                                           "consideration", "pneumonoultramicroscopicsilicovolcanoconiosis");
+    }
+
+    @Test
+    public void testCombineWithDuplicates() {
+        final Dictionary combined = new Dictionary("dictionaries/simple.dic")
+                .combineWith(new Dictionary("dictionaries/simple.dic"));
+
+        assertThat(combined.getWords())
+                .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow");
     }
 
 
