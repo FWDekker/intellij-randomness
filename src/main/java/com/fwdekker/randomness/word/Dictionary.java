@@ -32,7 +32,7 @@ public final class Dictionary {
             WORDS = reader.lines().collect(Collectors.toList());
             reader.close();
         } catch (final IOException e) {
-            throw new IllegalStateException("Could not generate random word.", e);
+            throw new IllegalStateException("Failed to read dictionary into memory.", e);
         }
     }
 
