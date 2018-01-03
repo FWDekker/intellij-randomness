@@ -92,4 +92,27 @@ public final class ButtonGroupHelperTest {
 
         assertThat(buttonB.isSelected()).isTrue();
     }
+
+    @Test
+    public void testSetValueObject() {
+        final AbstractButton buttonA = new JButton();
+        buttonA.setActionCommand("iqGfVwJDLd");
+        final AbstractButton buttonB = new JButton();
+        buttonB.setActionCommand("ouzioKGsKi");
+        final AbstractButton buttonC = new JButton();
+        buttonC.setActionCommand("pKVEAoQzmr");
+
+        group.add(buttonA);
+        group.add(buttonB);
+        group.add(buttonC);
+
+        ButtonGroupHelper.setValue(group, new Object() {
+            @Override
+            public String toString() {
+                return "ouzioKGsKi";
+            }
+        });
+
+        assertThat(buttonB.isSelected()).isTrue();
+    }
 }

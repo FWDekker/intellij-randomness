@@ -24,6 +24,9 @@
         <applicationService
                 serviceImplementation="com.fwdekker.randomness.string.StringSettings"
                 serviceInterface="com.fwdekker.randomness.string.StringSettings"/>
+        <applicationService
+                serviceImplementation="com.fwdekker.randomness.word.WordSettings"
+                serviceInterface="com.fwdekker.randomness.word.WordSettings"/>
     </extensions>
 
     <actions>
@@ -34,6 +37,8 @@
                     text="Insert Random Decimal" description="Inserts a random decimal at the caret."/>
             <action id="randomness.InsertString" class="com.fwdekker.randomness.string.InsertRandomString"
                     text="Insert Random String" description="Inserts a random string at the caret."/>
+            <action id="randomness.InsertWord" class="com.fwdekker.randomness.word.InsertRandomWord"
+                    text="Insert Random Word" description="Inserts a random English word at the caret."/>
 
             <separator/>
 
@@ -43,6 +48,8 @@
                     text="Random Decimal Settings" description="Settings for Insert Random Decimal."/>
             <action id="randomness.StringSettings" class="com.fwdekker.randomness.string.StringSettingsAction"
                     text="Random String Settings" description="Settings for Insert Random String."/>
+            <action id="randomness.WordSettings" class="com.fwdekker.randomness.word.WordSettingsAction"
+                    text="Random Word Settings" description="Settings for Insert Random Word."/>
         </group>
 
         <action id="randomness.ShowGroup" class="com.fwdekker.randomness.InsertDataAction"
