@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.word;
 
-import com.intellij.util.xmlb.annotations.Transient;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,7 +34,6 @@ public abstract class Dictionary {
     /**
      * A set of all words in the dictionary.
      */
-    @Transient
     private final Set<String> words;
 
 

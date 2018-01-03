@@ -138,14 +138,14 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
         settings.setCapitalization(CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)));
         settings.setBundledDictionaries(IntStream.range(0, bundledDictionaryList.getModel().getSize())
-                                                 .mapToObj(index -> bundledDictionaryList.getModel()
-                                                         .getElementAt(index).toString())
-                                                 .collect(Collectors.toSet()));
+                                                .mapToObj(index -> bundledDictionaryList.getModel()
+                                                        .getElementAt(index).toString())
+                                                .collect(Collectors.toSet()));
         settings.setActiveBundledDictionaries(new HashSet<>(bundledDictionaryList.getSelectedValuesList()));
         settings.setCustomDictionaries(IntStream.range(0, customDictionaryList.getModel().getSize())
-                                              .mapToObj(index -> customDictionaryList.getModel()
-                                                      .getElementAt(index).toString())
-                                              .collect(Collectors.toSet()));
+                                               .mapToObj(index -> customDictionaryList.getModel()
+                                                       .getElementAt(index).toString())
+                                               .collect(Collectors.toSet()));
         settings.setActiveCustomDictionaries(new HashSet<>(customDictionaryList.getSelectedValuesList()));
     }
 
