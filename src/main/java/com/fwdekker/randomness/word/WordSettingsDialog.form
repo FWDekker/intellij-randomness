@@ -27,7 +27,9 @@
             <minimum-size width="75" height="-1"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <name value="minLength"/>
+        </properties>
       </component>
       <component id="48ce4" class="javax.swing.JLabel">
         <constraints>
@@ -43,7 +45,9 @@
             <minimum-size width="75" height="-1"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <name value="maxLength"/>
+        </properties>
       </component>
       <component id="bef3d" class="javax.swing.JLabel">
         <constraints>

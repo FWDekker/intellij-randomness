@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * Generates random alphanumerical English words based on the settings in {@link WordSettings}.
  */
 public final class InsertRandomWord extends InsertRandomSomething {
-    private final String DICTIONARY_FILE = "words_alpha.txt";
+    private static final String DICTIONARY_FILE = "words_alpha.txt";
 
     private final WordSettings wordSettings;
 
@@ -50,9 +50,10 @@ public final class InsertRandomWord extends InsertRandomSomething {
                     .filter(word -> word.length() >= wordSettings.getMinLength()
                             && word.length() <= wordSettings.getMaxLength())
                     .collect(Collectors.toList());
+            reader.close();
 
             final int randomIndex = ThreadLocalRandom.current().nextInt(0, words.size() - 1);
-            return words.get(randomIndex);
+            return wordSettings.getEnclosure() + words.get(randomIndex) + wordSettings.getEnclosure();
         } catch (final IOException e) {
             throw new RuntimeException("Could not generate random word.", e);
         }
