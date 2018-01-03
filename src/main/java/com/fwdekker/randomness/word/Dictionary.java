@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A dictionary of English words.
  */
-public abstract class Dictionary implements PersistentStateComponent<Dictionary>, Comparable<Dictionary> {
+public abstract class Dictionary implements PersistentStateComponent<Dictionary> {
     /**
      * The name of the default dictionary file.
      */
@@ -166,16 +166,6 @@ public abstract class Dictionary implements PersistentStateComponent<Dictionary>
         return dictionary;
     }
 
-    @Override
-    public int compareTo(final @NotNull Dictionary that) {
-        if (this.equals(that)) {
-            return 0;
-        } else if (Integer.compare(this.hashCode(), that.hashCode()) >= 0) {
-            return 1;
-        } else {
-            return -1;
-        }
-    }
 
     @Nullable
     @Override
