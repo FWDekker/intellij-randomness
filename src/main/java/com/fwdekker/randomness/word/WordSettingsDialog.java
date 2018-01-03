@@ -91,6 +91,11 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             minLength.validateValue();
             maxLength.validateValue();
             lengthRange.validate();
+
+            if (!Dictionary.wordWithLengthInRangeExists(minLength.getValue().intValue(),
+                                                        maxLength.getValue().intValue())) {
+                throw new ValidationException("No words within that length range could be found.", minLength);
+            }
         } catch (ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
         }

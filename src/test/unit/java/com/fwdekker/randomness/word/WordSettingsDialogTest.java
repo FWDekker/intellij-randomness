@@ -14,8 +14,8 @@ import static org.assertj.swing.fixture.Containers.showInFrame;
  * GUI tests for {@link WordSettingsDialog}.
  */
 public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
-    private static final int DEFAULT_MIN_VALUE = 563;
-    private static final int DEFAULT_MAX_VALUE = 672;
+    private static final int DEFAULT_MIN_VALUE = 13;
+    private static final int DEFAULT_MAX_VALUE = 17;
     private static final String DEFAULT_ENCLOSURE = "\"";
 
     private WordSettings wordSettings;
@@ -107,6 +107,18 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
         assertThat(validationInfo.message).isEqualTo("The maximum should be no smaller than the minimum.");
+    }
+
+    @Test
+    public void testValidateLengthRangeNoWords() {
+        GuiActionRunner.execute(() -> frame.spinner("minLength").target().setValue(1000));
+        GuiActionRunner.execute(() -> frame.spinner("maxLength").target().setValue(1000));
+
+        final ValidationInfo validationInfo = wordSettingsDialog.doValidate();
+
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
+        assertThat(validationInfo.message).isEqualTo("No words within that length range could be found.");
     }
 
 
