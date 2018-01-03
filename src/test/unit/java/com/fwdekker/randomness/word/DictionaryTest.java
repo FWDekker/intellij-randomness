@@ -36,27 +36,7 @@ public final class DictionaryTest {
 
 
     @Test
-    public void testWordWithLengthInRangeExistsInvertedRange() {
-        assertThat(Dictionary.wordWithLengthInRangeExists(1000, 0)).isFalse();
-    }
-
-    @Test
-    public void testWordWithLengthInRangeExistsNegativeLength() {
-        assertThat(Dictionary.wordWithLengthInRangeExists(-1000, 0)).isFalse();
-    }
-
-    @Test
-    public void testWordWithLengthInRangeExistsEmptyWord() {
-        assertThat(Dictionary.wordWithLengthInRangeExists(0, 0)).isFalse();
-    }
-
-    @Test
-    public void testWordWithLengthInRangeExistsShortWord() {
-        assertThat(Dictionary.wordWithLengthInRangeExists(0, 1)).isTrue();
-    }
-
-    @Test
-    public void testWordWithLengthInRangeExistsLongWord() {
-        assertThat(Dictionary.wordWithLengthInRangeExists(1000, 1001)).isFalse();
+    public void testLongestWordLength() {
+        assertThat(Dictionary.longestWordLength()).isEqualTo(31);
     }
 }

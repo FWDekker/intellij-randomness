@@ -63,8 +63,8 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
-        minLength = new JLongSpinner(1, Integer.MAX_VALUE);
-        maxLength = new JLongSpinner(1, Integer.MAX_VALUE);
+        minLength = new JLongSpinner(1, Dictionary.longestWordLength());
+        maxLength = new JLongSpinner(1, Dictionary.longestWordLength());
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
     }
 
@@ -94,11 +94,6 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             minLength.validateValue();
             maxLength.validateValue();
             lengthRange.validate();
-
-            if (!Dictionary.wordWithLengthInRangeExists(minLength.getValue().intValue(),
-                                                        maxLength.getValue().intValue())) {
-                throw new ValidationException("No words within that length range could be found.", minLength);
-            }
         } catch (ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
         }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,13 +59,14 @@ public final class Dictionary {
     }
 
     /**
-     * Returns {@code true} iff. there is a word in the dictionary with a length in the given range.
+     * Returns the length of the longest word.
      *
-     * @param minLength the minimum word length (inclusive)
-     * @param maxLength the maximum word length (inclusive)
-     * @return {@code true} iff. there is a word in the dictionary with a length in the given range
+     * @return the length of the longest word
      */
-    public static boolean wordWithLengthInRangeExists(final int minLength, final int maxLength) {
-        return !getWordsWithLengthInRange(minLength, maxLength).isEmpty();
+    public static int longestWordLength() {
+        return WORDS.parallelStream()
+                .mapToInt(String::length)
+                .max()
+                .orElseThrow(() -> new IllegalStateException("Dictionary should not be empty."));
     }
 }
