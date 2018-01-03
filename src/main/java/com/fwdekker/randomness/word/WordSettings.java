@@ -222,6 +222,19 @@ public final class WordSettings extends Settings implements PersistentStateCompo
         this.activeCustomDictionaries = activeCustomDictionaries;
     }
 
+    public Set<Dictionary> getAllDictionaries() {
+        final Set<Dictionary> dictionaries = new HashSet<>();
+
+        dictionaries.addAll(bundledDictionaries.stream()
+                                    .map(Dictionary.BundledDictionary::new)
+                                    .collect(Collectors.toList()));
+        dictionaries.addAll(customDictionaries.stream()
+                                    .map(Dictionary.CustomDictionary::new)
+                                    .collect(Collectors.toList()));
+
+        return dictionaries;
+    }
+
     /**
      * Returns the list of all dictionaries that are currently active.
      *
