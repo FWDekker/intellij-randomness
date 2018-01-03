@@ -104,7 +104,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("maxLength").target());
-        assertThat(validationInfo.message).isEqualTo("Please enter a value less than or equal to 2147483647.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a value less than or equal to 31.");
     }
 
     @Test
@@ -127,7 +127,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.component).isEqualTo(frame.spinner("minLength").target());
-        assertThat(validationInfo.message).isEqualTo("No words within that length range could be found.");
+        assertThat(validationInfo.message).isEqualTo("Please enter a value less than or equal to 31.");
     }
 
 
