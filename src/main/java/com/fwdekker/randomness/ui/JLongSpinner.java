@@ -35,11 +35,11 @@ public final class JLongSpinner extends JSpinner {
     /**
      * The smallest number that may be represented by this {@code JDoubleSpinner}.
      */
-    private final long minValue;
+    private long minValue;
     /**
      * The largest number that may be represented by this {@code JDoubleSpinner}.
      */
-    private final long maxValue;
+    private long maxValue;
 
 
     /**
@@ -84,6 +84,14 @@ public final class JLongSpinner extends JSpinner {
     @Override
     public Long getValue() {
         return ((Number) super.getValue()).longValue();
+    }
+
+    public void setMinValue(final long minValue) {
+        this.minValue = minValue;
+    }
+
+    public void setMaxValue(final long maxValue) {
+        this.maxValue = maxValue;
     }
 
     /**
