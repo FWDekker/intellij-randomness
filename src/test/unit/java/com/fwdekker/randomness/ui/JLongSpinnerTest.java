@@ -48,6 +48,25 @@ public final class JLongSpinnerTest {
 
 
     @Test
+    public void testGetSetMinValue() {
+        final JLongSpinner spinner = new JLongSpinner();
+
+        spinner.setMinValue(979L);
+
+        assertThat(spinner.getMinValue()).isEqualTo(979L);
+    }
+
+    @Test
+    public void testGetSetMaxValue() {
+        final JLongSpinner spinner = new JLongSpinner();
+
+        spinner.setMinValue(166L);
+
+        assertThat(spinner.getMinValue()).isEqualTo(166L);
+    }
+
+
+    @Test
     public void testValidateUnderflowCustomRange() {
         final JLongSpinner spinner = new JLongSpinner(-950, -559);
 
