@@ -42,8 +42,18 @@ public final class ButtonGroupHelper {
                 .filter(button -> button.getActionCommand().equals("\0".equals(value) ? "" : value))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Could not find a button with action command `"
-                        + value + "`."));
+                                                                      + value + "`."));
 
         targetButton.setSelected(true);
+    }
+
+    /**
+     * Sets the currently selected button to the button with the given action command.
+     *
+     * @param group a {@code ButtonGroup}
+     * @param value an {@code Object} of which {@link #toString()} returns an action command
+     */
+    public static void setValue(final ButtonGroup group, final Object value) {
+        setValue(group, value.toString());
     }
 }
