@@ -18,7 +18,7 @@ public final class ValidationException extends Exception {
      * @param component the component
      * @see Exception#Exception(String)
      */
-    public ValidationException(final String message, @NotNull final JComponent component) {
+    public ValidationException(final String message, final @NotNull JComponent component) {
         super(message);
 
         this.component = component;

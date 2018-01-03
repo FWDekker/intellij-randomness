@@ -57,7 +57,7 @@ public final class StringSettings extends Settings implements PersistentStateCom
     }
 
     @Override
-    public void loadState(@NotNull final StringSettings state) {
+    public void loadState(final @NotNull StringSettings state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 

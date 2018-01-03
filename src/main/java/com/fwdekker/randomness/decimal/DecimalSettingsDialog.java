@@ -40,7 +40,7 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
      *
      * @param settings the settings to manipulate with this dialog
      */
-    DecimalSettingsDialog(@NotNull final DecimalSettings settings) {
+    DecimalSettingsDialog(final @NotNull DecimalSettings settings) {
         super(settings);
 
         init();
@@ -86,7 +86,7 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
 
     @Override
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minValue and such are always non-null
-    public void loadSettings(@NotNull final DecimalSettings settings) {
+    public void loadSettings(final @NotNull DecimalSettings settings) {
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
         decimalCount.setValue(settings.getDecimalCount());
@@ -96,7 +96,7 @@ final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
 
     @Override
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minValue and such are always non-null
-    public void saveSettings(@NotNull final DecimalSettings settings) {
+    public void saveSettings(final @NotNull DecimalSettings settings) {
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
         settings.setDecimalCount(Math.toIntExact(decimalCount.getValue()));

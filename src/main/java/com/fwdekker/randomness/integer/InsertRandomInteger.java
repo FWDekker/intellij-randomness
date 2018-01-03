@@ -26,7 +26,7 @@ public final class InsertRandomInteger extends InsertRandomSomething {
      *
      * @param integerSettings the settings to use for generating integers
      */
-    InsertRandomInteger(@NotNull final IntegerSettings integerSettings) {
+    InsertRandomInteger(final @NotNull IntegerSettings integerSettings) {
         this.integerSettings = integerSettings;
     }
 

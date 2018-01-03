@@ -42,7 +42,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
      *
      * @param settings the settings to manipulate with this dialog
      */
-    WordSettingsDialog(@NotNull final WordSettings settings) {
+    WordSettingsDialog(final @NotNull WordSettings settings) {
         super(settings);
 
         init();
@@ -71,7 +71,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
     @Override
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minLength and such are always non-null
-    public void loadSettings(@NotNull final WordSettings settings) {
+    public void loadSettings(final @NotNull WordSettings settings) {
         minLength.setValue(settings.getMinLength());
         maxLength.setValue(settings.getMaxLength());
         ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
@@ -80,7 +80,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
     @Override
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minLength and such are always non-null
-    public void saveSettings(@NotNull final WordSettings settings) {
+    public void saveSettings(final @NotNull WordSettings settings) {
         settings.setMinLength(Math.toIntExact(minLength.getValue()));
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
         settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
@@ -94,7 +94,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             minLength.validateValue();
             maxLength.validateValue();
             lengthRange.validate();
-        } catch (ValidationException e) {
+        } catch (final ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
         }
 

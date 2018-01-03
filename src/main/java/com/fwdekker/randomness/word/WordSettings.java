@@ -53,7 +53,7 @@ public final class WordSettings extends Settings implements PersistentStateCompo
     }
 
     @Override
-    public void loadState(@NotNull final WordSettings state) {
+    public void loadState(final @NotNull WordSettings state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 

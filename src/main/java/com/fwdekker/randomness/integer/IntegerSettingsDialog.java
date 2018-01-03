@@ -37,7 +37,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
      *
      * @param settings the settings to manipulate with this dialog
      */
-    IntegerSettingsDialog(@NotNull final IntegerSettings settings) {
+    IntegerSettingsDialog(final @NotNull IntegerSettings settings) {
         super(settings);
 
         init();
@@ -80,7 +80,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
 
     @Override
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minValue and such are always non-null
-    public void loadSettings(@NotNull final IntegerSettings settings) {
+    public void loadSettings(final @NotNull IntegerSettings settings) {
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
         ButtonGroupHelper.setValue(groupingSeparatorGroup, String.valueOf(settings.getGroupingSeparator()));
@@ -88,7 +88,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
 
     @Override
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minValue and such are always non-null
-    public void saveSettings(@NotNull final IntegerSettings settings) {
+    public void saveSettings(final @NotNull IntegerSettings settings) {
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
         settings.setGroupingSeparator(ButtonGroupHelper.getValue(groupingSeparatorGroup));

@@ -50,7 +50,7 @@ public final class IntegerSettings extends Settings implements PersistentStateCo
     }
 
     @Override
-    public void loadState(@NotNull final IntegerSettings state) {
+    public void loadState(final @NotNull IntegerSettings state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 

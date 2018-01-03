@@ -26,7 +26,7 @@ public final class InsertRandomDecimal extends InsertRandomSomething {
      *
      * @param decimalSettings the settings to use for generating decimals
      */
-    InsertRandomDecimal(@NotNull final DecimalSettings decimalSettings) {
+    InsertRandomDecimal(final @NotNull DecimalSettings decimalSettings) {
         this.decimalSettings = decimalSettings;
     }
 

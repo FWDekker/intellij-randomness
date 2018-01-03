@@ -45,7 +45,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
      *
      * @param settings the settings to manipulate with this dialog
      */
-    StringSettingsDialog(@NotNull final StringSettings settings) {
+    StringSettingsDialog(final @NotNull StringSettings settings) {
         super(settings);
 
         init();
@@ -78,7 +78,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
 
     @Override
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minLength and such are always non-null
-    public void loadSettings(@NotNull final StringSettings settings) {
+    public void loadSettings(final @NotNull StringSettings settings) {
         minLength.setValue(settings.getMinLength());
         maxLength.setValue(settings.getMaxLength());
         ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
@@ -92,7 +92,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
 
     @Override
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minLength and such are always non-null
-    public void saveSettings(@NotNull final StringSettings settings) {
+    public void saveSettings(final @NotNull StringSettings settings) {
         settings.setMinLength(Math.toIntExact(minLength.getValue()));
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
         settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
@@ -106,7 +106,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
             minLength.validateValue();
             maxLength.validateValue();
             lengthRange.validate();
-        } catch (ValidationException e) {
+        } catch (final ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
         }
 

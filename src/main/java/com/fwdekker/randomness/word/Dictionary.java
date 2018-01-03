@@ -16,8 +16,7 @@ public final class Dictionary {
     /**
      * The name of the dictionary file.
      */
-    public static final String DICTIONARY_FILE = "words_alpha.dictionary";
-
+    private static final String DICTIONARY_FILE = "words_alpha.dictionary";
     /**
      * A list of all words in the dictionary.
      */
