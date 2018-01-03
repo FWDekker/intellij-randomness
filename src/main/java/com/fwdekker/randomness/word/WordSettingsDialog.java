@@ -73,7 +73,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
-        minLength = new JLongSpinner(1, Dictionary.getDefaultDictionary().longestWordLength());
+        minLength = new JLongSpinner(Dictionary.getDefaultDictionary().shortestWordLength(), Integer.MAX_VALUE);
         maxLength = new JLongSpinner(1, Dictionary.getDefaultDictionary().longestWordLength());
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
 
@@ -150,6 +150,14 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     @Nullable
     protected ValidationInfo doValidate() {
         try {
+            if (bundledDictionaries.getActiveEntries().isEmpty()) {
+                throw new ValidationException("Select at least one dictionary.", bundledDictionaries);
+            }
+
+            final Dictionary dictionary = Dictionary.combine(bundledDictionaries.getActiveEntries());
+            minLength.setMinValue(dictionary.shortestWordLength());
+            maxLength.setMaxValue(dictionary.longestWordLength());
+
             minLength.validateValue();
             maxLength.validateValue();
             lengthRange.validate();

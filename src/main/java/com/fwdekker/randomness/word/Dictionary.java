@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -132,6 +133,13 @@ public abstract class Dictionary {
                 .orElseThrow(() -> new IllegalStateException("Dictionary should not be empty."));
     }
 
+    public final int shortestWordLength() {
+        return words.parallelStream()
+                .mapToInt(String::length)
+                .min()
+                .orElseThrow(() -> new IllegalStateException("Dictionary should not be empty."));
+    }
+
     /**
      * Combines this {@code Dictionary} with the given {@code Dictionary} into a new {@code Dictionary}.
      *
@@ -143,6 +151,12 @@ public abstract class Dictionary {
         dictionary.words.addAll(this.words);
         dictionary.words.addAll(that.words);
         return dictionary;
+    }
+
+    public static final Dictionary combine(final Collection<Dictionary> dictionaries) {
+        final Dictionary combinedDictionary = new SimpleDictionary();
+        dictionaries.forEach(dictionary -> combinedDictionary.words.addAll(dictionary.words));
+        return combinedDictionary;
     }
 
 
