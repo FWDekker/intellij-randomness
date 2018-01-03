@@ -32,6 +32,10 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      * The string that encloses the generated word on both sides.
      */
     private String enclosure = "\"";
+    /**
+     * The way in which the generated word should be capitalized.
+     */
+    private CapitalizationMode capitalization = CapitalizationMode.NORMAL;
 
 
     /**
@@ -106,5 +110,23 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      */
     public void setEnclosure(final String enclosure) {
         this.enclosure = enclosure;
+    }
+
+    /**
+     * Returns the way in which the generated word should be capitalized.
+     *
+     * @return the way in which the generated word should be capitalized
+     */
+    public CapitalizationMode getCapitalization() {
+        return capitalization;
+    }
+
+    /**
+     * Sets the way in which the generated word should be capitalized.
+     *
+     * @param capitalization the way in which the generated word should be capitalized
+     */
+    public void setCapitalization(final CapitalizationMode capitalization) {
+        this.capitalization = capitalization;
     }
 }

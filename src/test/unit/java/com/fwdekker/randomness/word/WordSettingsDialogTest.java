@@ -17,6 +17,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
     private static final int DEFAULT_MIN_VALUE = 13;
     private static final int DEFAULT_MAX_VALUE = 17;
     private static final String DEFAULT_ENCLOSURE = "\"";
+    private static final CapitalizationMode DEFAULT_CAPITALIZATION = CapitalizationMode.UPPER;
 
     private WordSettings wordSettings;
     private WordSettingsDialog wordSettingsDialog;
@@ -29,6 +30,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
         wordSettings.setMinLength(DEFAULT_MIN_VALUE);
         wordSettings.setMaxLength(DEFAULT_MAX_VALUE);
         wordSettings.setEnclosure(DEFAULT_ENCLOSURE);
+        wordSettings.setCapitalization(DEFAULT_CAPITALIZATION);
 
         wordSettingsDialog = GuiActionRunner.execute(() -> new WordSettingsDialog(wordSettings));
         frame = showInFrame(robot(), wordSettingsDialog.createCenterPanel());
@@ -59,6 +61,13 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
         frame.radioButton("enclosureSingle").requireNotSelected();
         frame.radioButton("enclosureDouble").requireSelected();
         frame.radioButton("enclosureBacktick").requireNotSelected();
+    }
+
+    @Test
+    public void testLoadSettingsCapitalization() {
+        frame.radioButton("capitalizationNormal").requireNotSelected();
+        frame.radioButton("capitalizationUpper").requireSelected();
+        frame.radioButton("capitalizationLower").requireNotSelected();
     }
 
 
@@ -128,6 +137,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
             frame.spinner("minLength").target().setValue(840);
             frame.spinner("maxLength").target().setValue(861);
             frame.radioButton("enclosureSingle").target().setSelected(true);
+            frame.radioButton("capitalizationLower").target().setSelected(true);
         });
 
         wordSettingsDialog.saveSettings();
@@ -135,6 +145,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(wordSettings.getMinLength()).isEqualTo(840);
         assertThat(wordSettings.getMaxLength()).isEqualTo(861);
         assertThat(wordSettings.getEnclosure()).isEqualTo("'");
+        assertThat(wordSettings.getCapitalization()).isEqualTo(CapitalizationMode.LOWER);
     }
 
     @Test
@@ -142,11 +153,13 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
         frame.spinner("minLength").enterTextAndCommit("68");
         frame.spinner("maxLength").enterTextAndCommit("161");
         frame.radioButton("enclosureBacktick").check();
+        frame.radioButton("capitalizationNormal").check();
 
         wordSettingsDialog.saveSettings();
 
         assertThat(wordSettings.getMinLength()).isEqualTo(68);
         assertThat(wordSettings.getMaxLength()).isEqualTo(161);
         assertThat(wordSettings.getEnclosure()).isEqualTo("`");
+        assertThat(wordSettings.getCapitalization()).isEqualTo(CapitalizationMode.NORMAL);
     }
 }

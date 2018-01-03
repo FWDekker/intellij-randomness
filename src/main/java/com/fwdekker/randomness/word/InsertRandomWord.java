@@ -1,14 +1,8 @@
 package com.fwdekker.randomness.word;
 
 import com.fwdekker.randomness.InsertRandomSomething;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 
 /**
@@ -45,6 +39,8 @@ public final class InsertRandomWord extends InsertRandomSomething {
         final List<String> words = Dictionary
                 .getWordsWithLengthInRange(wordSettings.getMinLength(), wordSettings.getMaxLength());
         final int randomIndex = ThreadLocalRandom.current().nextInt(0, words.size());
-        return wordSettings.getEnclosure() + words.get(randomIndex) + wordSettings.getEnclosure();
+        final String randomWord = wordSettings.getCapitalization().getTransform().apply(words.get(randomIndex));
+
+        return wordSettings.getEnclosure() + randomWord + wordSettings.getEnclosure();
     }
 }

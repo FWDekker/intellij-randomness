@@ -26,6 +26,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private JSpinnerRange lengthRange;
     private JLongSpinner minLength;
     private JLongSpinner maxLength;
+    private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
 
 
@@ -74,6 +75,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         minLength.setValue(settings.getMinLength());
         maxLength.setValue(settings.getMaxLength());
         ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
+        ButtonGroupHelper.setValue(capitalizationGroup, settings.getCapitalization());
     }
 
     @Override
@@ -82,6 +84,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         settings.setMinLength(Math.toIntExact(minLength.getValue()));
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
         settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
+        settings.setCapitalization(CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)));
     }
 
     @Override

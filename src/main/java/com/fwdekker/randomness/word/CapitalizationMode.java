@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.word;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 
@@ -14,15 +15,15 @@ public enum CapitalizationMode {
      */
     NORMAL("normal", (string) -> (string.length() == 0
             ? ""
-            : Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase())),
+            : Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase(Locale.getDefault()))),
     /**
      * Makes all characters uppercase.
      */
-    UPPER("upper", (string) -> string.toUpperCase()),
+    UPPER("upper", (string) -> string.toUpperCase(Locale.getDefault())),
     /**
      * Makes all characters lowercase.
      */
-    LOWER("lower", string -> string.toLowerCase());
+    LOWER("lower", string -> string.toLowerCase(Locale.getDefault()));
 
 
     /**

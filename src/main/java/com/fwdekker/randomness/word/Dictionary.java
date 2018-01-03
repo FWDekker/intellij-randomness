@@ -21,16 +21,17 @@ public final class Dictionary {
     /**
      * A list of all words in the dictionary.
      */
-    private static final List<String> words;
+    private static final List<String> WORDS;
 
 
     static {
         // Read dictionary into memory
         try (InputStream resource = Dictionary.class.getClassLoader().getResourceAsStream(DICTIONARY_FILE)) {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(resource, StandardCharsets.UTF_8));
-            words = reader.lines().collect(Collectors.toList());
+            WORDS = reader.lines().collect(Collectors.toList());
+            reader.close();
         } catch (final IOException e) {
-            throw new RuntimeException("Could not generate random word.", e);
+            throw new IllegalStateException("Could not generate random word.", e);
         }
     }
 
@@ -51,7 +52,7 @@ public final class Dictionary {
      * @return a list of all words with a length in the given range
      */
     public static List<String> getWordsWithLengthInRange(final int minLength, final int maxLength) {
-        return words.parallelStream()
+        return WORDS.parallelStream()
                 .filter(word -> word.length() >= minLength && word.length() <= maxLength)
                 .collect(Collectors.toList());
     }
