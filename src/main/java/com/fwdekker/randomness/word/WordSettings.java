@@ -6,6 +6,10 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -36,6 +40,22 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      * The way in which the generated word should be capitalized.
      */
     private CapitalizationMode capitalization = CapitalizationMode.NORMAL;
+    /**
+     * The list of all dictionaries provided by the plugin.
+     */
+    private Set<String> bundledDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
+    /**
+     * The list of all dictionaries registered by the user.
+     */
+    private Set<String> userDictionaries = new HashSet<>();
+    /**
+     * The list of bundled dictionaries that are currently active.
+     */
+    private Set<String> activeBundledDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
+    /**
+     * The list of user dictionaries that are currently active.
+     */
+    private Set<String> activeUserDictionaries = new HashSet<>();
 
 
     /**
@@ -128,5 +148,114 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      */
     public void setCapitalization(final CapitalizationMode capitalization) {
         this.capitalization = capitalization;
+    }
+
+    /**
+     * Returns the list of all dictionaries provided by the plugin.
+     *
+     * @return the list of all dictionaries provided by the plugin
+     */
+    public Set<String> getBundledDictionaries() {
+        return bundledDictionaries;
+    }
+
+    /**
+     * Sets the list of all dictionaries provided by the plugin.
+     *
+     * @param bundledDictionaries the list of all dictionaries provided by the plugin
+     */
+    public void setBundledDictionaries(final Set<String> bundledDictionaries) {
+        this.bundledDictionaries = bundledDictionaries;
+    }
+
+    /**
+     * Returns the list of all dictionaries registered by the user.
+     *
+     * @return the list of all dictionaries registered by the user
+     */
+    public Set<String> getUserDictionaries() {
+        return userDictionaries;
+    }
+
+    /**
+     * Sets the list of all dictionaries registered by the user.
+     *
+     * @param userDictionaries the list of all dictionaries registered by the user
+     */
+    public void setUserDictionaries(final Set<String> userDictionaries) {
+        this.userDictionaries = userDictionaries;
+    }
+
+    /**
+     * Returns the list of bundled dictionaries that are currently active.
+     *
+     * @return the list of bundled dictionaries that are currently active
+     */
+    public Set<String> getActiveBundledDictionaries() {
+        return activeBundledDictionaries;
+    }
+
+    /**
+     * Sets the list of bundled dictionaries that are currently active.
+     *
+     * @param activeBundledDictionaries the list of bundled dictionaries that are currently active
+     */
+    public void setActiveBundledDictionaries(final Set<String> activeBundledDictionaries) {
+        this.activeBundledDictionaries = activeBundledDictionaries;
+    }
+
+    /**
+     * Returns the list of user dictionaries that are currently active.
+     *
+     * @return the list of user dictionaries that are currently active
+     */
+    public Set<String> getActiveUserDictionaries() {
+        return activeUserDictionaries;
+    }
+
+    /**
+     * Sets the list of user dictionaries that are currently active.
+     *
+     * @param activeUserDictionaries the list of user dictionaries that are currently active
+     */
+    public void setActiveUserDictionaries(final Set<String> activeUserDictionaries) {
+        this.activeUserDictionaries = activeUserDictionaries;
+    }
+
+
+    /**
+     * Returns the list of all dictionaries.
+     *
+     * @return the list of all dictionaries
+     */
+    public Set<Dictionary> getDictionaries() {
+        final Set<Dictionary> dictionaries = new HashSet<>();
+
+        dictionaries.addAll(bundledDictionaries.stream()
+                                    .map(Dictionary.BundledDictionary::getDictionary)
+                                    .collect(Collectors.toList()));
+        dictionaries.addAll(userDictionaries.stream()
+                                    .map(Dictionary.UserDictionary::getDictionary)
+                                    .collect(Collectors.toList()));
+
+        return dictionaries;
+    }
+
+    /**
+     * Returns the list of all dictionaries that are currently active.
+     *
+     * @return the list of all dictionaries that are currently active
+     */
+    public Set<Dictionary> getActiveDictionaries() {
+        final Set<Dictionary> dictionaries = new HashSet<>();
+
+        dictionaries.addAll(activeBundledDictionaries.stream()
+                                    .map(Dictionary.BundledDictionary::getDictionary)
+                                    .collect(Collectors.toList()));
+        dictionaries.addAll(activeUserDictionaries.stream()
+                                    .map(Dictionary.UserDictionary::getDictionary)
+                                    .collect(Collectors.toList()));
+
+        return dictionaries;
     }
 }

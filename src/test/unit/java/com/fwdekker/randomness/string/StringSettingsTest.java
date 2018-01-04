@@ -3,6 +3,7 @@ package com.fwdekker.randomness.string;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -67,8 +68,8 @@ public final class StringSettingsTest {
     }
 
     @Test
-    public void testGetSetAlphabet() {
-        final HashSet<Alphabet> alphabets
+    public void testGetSetAlphabets() {
+        final Set<Alphabet> alphabets
                 = new HashSet<>(Arrays.asList(Alphabet.LOWERCASE, Alphabet.BRACKETS, Alphabet.MINUS));
         stringSettings.setAlphabets(alphabets);
 

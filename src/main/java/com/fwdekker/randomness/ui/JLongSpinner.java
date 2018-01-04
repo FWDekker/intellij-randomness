@@ -35,11 +35,11 @@ public final class JLongSpinner extends JSpinner {
     /**
      * The smallest number that may be represented by this {@code JDoubleSpinner}.
      */
-    private final long minValue;
+    private long minValue;
     /**
      * The largest number that may be represented by this {@code JDoubleSpinner}.
      */
-    private final long maxValue;
+    private long maxValue;
 
 
     /**
@@ -100,5 +100,42 @@ public final class JLongSpinner extends JSpinner {
         if (value > maxValue) {
             throw new ValidationException("Please enter a value less than or equal to " + maxValue + ".", this);
         }
+    }
+
+
+    /**
+     * Returns the smallest number that may be represented by this {@code JDoubleSpinner}.
+     *
+     * @return the smallest number that may be represented by this {@code JDoubleSpinner}
+     */
+    public long getMinValue() {
+        return minValue;
+    }
+
+    /**
+     * Sets the smallest number that may be represented by this {@code JDoubleSpinner}.
+     *
+     * @param minValue the smallest number that may be represented by this {@code JDoubleSpinner}
+     */
+    public void setMinValue(final long minValue) {
+        this.minValue = minValue;
+    }
+
+    /**
+     * Returns the largest number that may be represented by this {@code JDoubleSpinner}.
+     *
+     * @return the largest number that may be represented by this {@code JDoubleSpinner}
+     */
+    public long getMaxValue() {
+        return maxValue;
+    }
+
+    /**
+     * Sets the largest number that may be represented by this {@code JDoubleSpinner}.
+     *
+     * @param maxValue the largest number that may be represented by this {@code JDoubleSpinner}
+     */
+    public void setMaxValue(final long maxValue) {
+        this.maxValue = maxValue;
     }
 }
