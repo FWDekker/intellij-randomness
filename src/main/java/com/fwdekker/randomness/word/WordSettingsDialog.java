@@ -6,17 +6,18 @@ import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JEditableList;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
-import com.intellij.openapi.fileChooser.FileChooser;
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.openapi.vfs.VirtualFile;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +37,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private JLongSpinner maxLength;
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
-    private JEditableList<Dictionary> bundledDictionaries;
+    private JEditableList<Dictionary> dictionaries;
     private JButton dictionaryAddButton;
     private JButton dictionaryRemoveButton;
 
@@ -78,30 +79,16 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         maxLength = new JLongSpinner(1, Integer.MAX_VALUE);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
 
-        bundledDictionaries = new JEditableList<>();
+        dictionaries = new JEditableList<>();
 
         dictionaryAddButton = new JButton();
-        dictionaryAddButton.addActionListener(event -> {
-            final VirtualFile newDictionarySource = FileChooser
-                    .chooseFile(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null);
-
-            if (newDictionarySource != null) {
-                final Dictionary newDictionary
-                        = Dictionary.UserDictionary.getDictionary(newDictionarySource.getCanonicalPath());
-                bundledDictionaries.addEntry(newDictionary);
-            }
-        });
+        dictionaryAddButton.addActionListener(event -> addDictionary());
         dictionaryRemoveButton = new JButton();
-        dictionaryRemoveButton.addActionListener(event -> bundledDictionaries.getHighlightedEntry()
-                .ifPresent(dictionary -> {
-                    if (dictionary instanceof Dictionary.UserDictionary) {
-                        bundledDictionaries.removeEntry(dictionary);
-                    }
-                }));
+        dictionaryRemoveButton.addActionListener(event -> removeDictionary());
 
-        bundledDictionaries.getSelectionModel().addListSelectionListener(event -> {
+        dictionaries.getSelectionModel().addListSelectionListener(event -> {
             if (!event.getValueIsAdjusting()) {
-                final Optional<Dictionary> highlightedDictionary = bundledDictionaries.getHighlightedEntry();
+                final Optional<Dictionary> highlightedDictionary = dictionaries.getHighlightedEntry();
                 final boolean enable = highlightedDictionary.isPresent()
                         && highlightedDictionary.get() instanceof Dictionary.UserDictionary;
                 dictionaryRemoveButton.setEnabled(enable);
@@ -118,8 +105,8 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupHelper.setValue(capitalizationGroup, settings.getCapitalization());
 
-        bundledDictionaries.setEntries(settings.getDictionaries());
-        bundledDictionaries.setActiveEntries(settings.getActiveDictionaries());
+        dictionaries.setEntries(settings.getDictionaries());
+        dictionaries.setActiveEntries(settings.getActiveDictionaries());
     }
 
     @Override
@@ -130,19 +117,19 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
         settings.setCapitalization(CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)));
 
-        settings.setBundledDictionaries(bundledDictionaries.getEntries().stream()
+        settings.setBundledDictionaries(dictionaries.getEntries().stream()
                                                 .filter(Dictionary.BundledDictionary.class::isInstance)
                                                 .map(Dictionary::getPath)
                                                 .collect(Collectors.toSet()));
-        settings.setActiveBundledDictionaries(bundledDictionaries.getActiveEntries().stream()
+        settings.setActiveBundledDictionaries(dictionaries.getActiveEntries().stream()
                                                       .filter(Dictionary.BundledDictionary.class::isInstance)
                                                       .map(Dictionary::getPath)
                                                       .collect(Collectors.toSet()));
-        settings.setUserDictionaries(bundledDictionaries.getEntries().stream()
+        settings.setUserDictionaries(dictionaries.getEntries().stream()
                                              .filter(Dictionary.UserDictionary.class::isInstance)
                                              .map(Dictionary::getPath)
                                              .collect(Collectors.toSet()));
-        settings.setActiveUserDictionaries(bundledDictionaries.getActiveEntries().stream()
+        settings.setActiveUserDictionaries(dictionaries.getActiveEntries().stream()
                                                    .filter(Dictionary.UserDictionary.class::isInstance)
                                                    .map(Dictionary::getPath)
                                                    .collect(Collectors.toSet()));
@@ -152,11 +139,11 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     @Nullable
     protected ValidationInfo doValidate() {
         try {
-            if (bundledDictionaries.getActiveEntries().isEmpty()) {
-                throw new ValidationException("Select at least one dictionary.", bundledDictionaries);
+            if (dictionaries.getActiveEntries().isEmpty()) {
+                throw new ValidationException("Select at least one dictionary.", dictionaries);
             }
 
-            final Dictionary dictionary = Dictionary.combine(bundledDictionaries.getActiveEntries());
+            final Dictionary dictionary = Dictionary.combine(dictionaries.getActiveEntries());
             minLength.setMinValue(dictionary.getShortestWord().length());
             maxLength.setMaxValue(dictionary.getLongestWord().length());
 
@@ -168,5 +155,37 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         }
 
         return null;
+    }
+
+
+    /**
+     * Handles the event when a new {@code Dictionary} is added to the list.
+     */
+    private void addDictionary() {
+        final JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("Dictionaries", "dic"));
+
+        if (chooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION) {
+            final Dictionary newDictionary;
+
+            try {
+                newDictionary = Dictionary.UserDictionary.getDictionary(chooser.getSelectedFile().getCanonicalPath());
+            } catch (final IOException e) {
+                throw new UncheckedIOException(e);
+            }
+
+            dictionaries.addEntry(newDictionary);
+        }
+    }
+
+    /**
+     * Handles the event when the currently highlighted {@code Dictionary} should be removed the list.
+     */
+    private void removeDictionary() {
+        dictionaries.getHighlightedEntry().ifPresent(dictionary -> {
+            if (dictionary instanceof Dictionary.UserDictionary) {
+                dictionaries.removeEntry(dictionary);
+            }
+        });
     }
 }

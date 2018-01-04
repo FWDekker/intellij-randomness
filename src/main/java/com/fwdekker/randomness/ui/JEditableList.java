@@ -76,7 +76,7 @@ public final class JEditableList<T> extends JTable {
      * @return the entry in the given row
      */
     @SuppressWarnings("unchecked") // Type guaranteed by design
-    private T getEntry(final int row) {
+    public T getEntry(final int row) {
         return (T) model.getValueAt(row, 1);
     }
 
