@@ -90,7 +90,7 @@ public abstract class Dictionary {
      * @return an {@link InputStream} for the given dictionary file
      * @throws IOException if the dictionary file could not be read
      */
-    abstract InputStream getInputStream(final String dictionary) throws IOException;
+    protected abstract InputStream getInputStream(String dictionary) throws IOException;
 
 
     /**
@@ -228,7 +228,7 @@ public abstract class Dictionary {
          * @return an {@link InputStream} to the given dictionary resource
          */
         @Override
-        InputStream getInputStream(final String dictionary) {
+        protected InputStream getInputStream(final String dictionary) {
             return Dictionary.class.getClassLoader().getResourceAsStream(dictionary);
         }
 
@@ -284,7 +284,7 @@ public abstract class Dictionary {
          * @throws IOException if the given file could not be found
          */
         @Override
-        InputStream getInputStream(final String dictionary) throws IOException {
+        protected InputStream getInputStream(final String dictionary) throws IOException {
             return new FileInputStream(dictionary);
         }
 
