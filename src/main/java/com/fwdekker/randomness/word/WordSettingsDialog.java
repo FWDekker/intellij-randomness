@@ -85,7 +85,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                     .chooseFile(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null);
 
             if (newDictionarySource != null) {
-                bundledDictionaries.addEntry(new Dictionary.CustomDictionary(newDictionarySource.getCanonicalPath()));
+                bundledDictionaries.addEntry(Dictionary.CustomDictionary.getDictionary(newDictionarySource.getCanonicalPath()));
             }
         });
         dictionaryRemoveButton = new JButton();

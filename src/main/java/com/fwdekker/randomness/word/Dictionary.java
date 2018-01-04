@@ -9,8 +9,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,7 +54,7 @@ public abstract class Dictionary {
      *
      * @param path the filename of the dictionary file
      */
-    Dictionary(final String path) {
+    private Dictionary(final String path) {
         this.path = path;
 
         // Read dictionary into memory
@@ -186,12 +188,34 @@ public abstract class Dictionary {
      */
     public static final class BundledDictionary extends Dictionary {
         /**
+         * A cache of previously created {@code BundledDictionary(s)}.
+         */
+        private static final Map<String, BundledDictionary> cache = new HashMap<>();
+
+
+        /**
          * Constructs a new {@link BundledDictionary} for the given dictionary resource.
          *
          * @param dictionary the location of the dictionary resource
          */
-        public BundledDictionary(final String dictionary) {
+        private BundledDictionary(final String dictionary) {
             super(dictionary);
+        }
+
+        /**
+         * Constructs a new {@code BundledDictionary} for the given dictionary resource, or returns the previously
+         * created instance of this resource if there is one.
+         *
+         * @param dictionary the location of the dictionary resource
+         * @return a new {@code BundledDictionary} for the given dictionary resource, or returns the previously
+         * created instance of this resource if there is one
+         */
+        public static synchronized BundledDictionary getDictionary(final String dictionary) {
+            if (!cache.containsKey(dictionary)) {
+                cache.put(dictionary, new BundledDictionary(dictionary));
+            }
+
+            return cache.get(dictionary);
         }
 
 
@@ -217,12 +241,34 @@ public abstract class Dictionary {
      */
     public static final class CustomDictionary extends Dictionary {
         /**
+         * A cache of previously created {@code BundledDictionary(s)}.
+         */
+        private static final Map<String, CustomDictionary> dictionaries = new HashMap<>();
+
+
+        /**
          * Constructs a new {@code CustomDictionary} for the given dictionary file.
          *
          * @param dictionary the location of the dictionary file
          */
-        public CustomDictionary(final String dictionary) {
+        private CustomDictionary(final String dictionary) {
             super(dictionary);
+        }
+
+        /**
+         * Constructs a new {@code CustomDictionary} for the given dictionary file, or returns the previously created
+         * instance of this file if there is one.
+         *
+         * @param dictionary the location of the dictionary file
+         * @return a new {@code CustomDictionary} for the given dictionary file, or returns the previously created
+         * instance of this file if there is one
+         */
+        public static synchronized CustomDictionary getDictionary(final String dictionary) {
+            if (!dictionaries.containsKey(dictionary)) {
+                dictionaries.put(dictionary, new CustomDictionary(dictionary));
+            }
+
+            return dictionaries.get(dictionary);
         }
 
 

@@ -18,7 +18,7 @@ public final class DictionaryTest {
 
     @Test
     public void testEmptyDictionary() {
-        assertThatThrownBy(() -> new Dictionary.BundledDictionary("dictionaries/empty.dic"))
+        assertThatThrownBy(() -> Dictionary.BundledDictionary.getDictionary("dictionaries/empty.dic"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Dictionary must be non-empty.")
                 .hasNoCause();
@@ -26,7 +26,7 @@ public final class DictionaryTest {
 
     @Test
     public void testInvalidFile() {
-        assertThatThrownBy(() -> new Dictionary.CustomDictionary("invalid_file"))
+        assertThatThrownBy(() -> Dictionary.CustomDictionary.getDictionary("invalid_file"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Failed to read dictionary into memory.")
                 .hasCauseInstanceOf(IOException.class);
@@ -143,8 +143,8 @@ public final class DictionaryTest {
     @Test
     public void testCombine() {
         final Dictionary combined = Dictionary.combine(Arrays.asList(
-                new Dictionary.BundledDictionary("dictionaries/simple.dic"),
-                new Dictionary.BundledDictionary("dictionaries/varied.dic")));
+                Dictionary.BundledDictionary.getDictionary("dictionaries/simple.dic"),
+                Dictionary.BundledDictionary.getDictionary("dictionaries/varied.dic")));
 
         assertThat(combined.getWords())
                 .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow", "simplicity", "bend",
@@ -154,8 +154,8 @@ public final class DictionaryTest {
     @Test
     public void testCombineDuplicates() {
         final Dictionary combined = Dictionary.combine(Arrays.asList(
-                new Dictionary.BundledDictionary("dictionaries/simple.dic"),
-                new Dictionary.BundledDictionary("dictionaries/simple.dic")));
+                Dictionary.BundledDictionary.getDictionary("dictionaries/simple.dic"),
+                Dictionary.BundledDictionary.getDictionary("dictionaries/simple.dic")));
 
         assertThat(combined.getWords())
                 .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow");
@@ -177,6 +177,6 @@ public final class DictionaryTest {
      * @param dictionaryName the filename of the dictionary to use for the current test
      */
     private void useDictionary(final String dictionaryName) {
-        dictionary = new Dictionary.BundledDictionary("dictionaries/" + dictionaryName + ".dic");
+        dictionary = Dictionary.BundledDictionary.getDictionary("dictionaries/" + dictionaryName + ".dic");
     }
 }
