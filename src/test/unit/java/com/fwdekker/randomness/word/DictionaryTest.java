@@ -26,7 +26,7 @@ public final class DictionaryTest {
 
     @Test
     public void testInvalidFile() {
-        assertThatThrownBy(() -> Dictionary.CustomDictionary.getDictionary("invalid_file"))
+        assertThatThrownBy(() -> Dictionary.UserDictionary.getDictionary("invalid_file"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Failed to read dictionary into memory.")
                 .hasCauseInstanceOf(IOException.class);

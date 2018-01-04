@@ -239,33 +239,33 @@ public abstract class Dictionary {
     /**
      * A {@code Dictionary} added by the user.
      */
-    public static final class CustomDictionary extends Dictionary {
+    public static final class UserDictionary extends Dictionary {
         /**
          * A cache of previously created {@code BundledDictionary(s)}.
          */
-        private static final Map<String, CustomDictionary> dictionaries = new HashMap<>();
+        private static final Map<String, UserDictionary> dictionaries = new HashMap<>();
 
 
         /**
-         * Constructs a new {@code CustomDictionary} for the given dictionary file.
+         * Constructs a new {@code UserDictionary} for the given dictionary file.
          *
          * @param dictionary the location of the dictionary file
          */
-        private CustomDictionary(final String dictionary) {
+        private UserDictionary(final String dictionary) {
             super(dictionary);
         }
 
         /**
-         * Constructs a new {@code CustomDictionary} for the given dictionary file, or returns the previously created
+         * Constructs a new {@code UserDictionary} for the given dictionary file, or returns the previously created
          * instance of this file if there is one.
          *
          * @param dictionary the location of the dictionary file
-         * @return a new {@code CustomDictionary} for the given dictionary file, or returns the previously created
+         * @return a new {@code UserDictionary} for the given dictionary file, or returns the previously created
          * instance of this file if there is one
          */
-        public static synchronized CustomDictionary getDictionary(final String dictionary) {
+        public static synchronized UserDictionary getDictionary(final String dictionary) {
             if (!dictionaries.containsKey(dictionary)) {
-                dictionaries.put(dictionary, new CustomDictionary(dictionary));
+                dictionaries.put(dictionary, new UserDictionary(dictionary));
             }
 
             return dictionaries.get(dictionary);

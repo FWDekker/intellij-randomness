@@ -1,5 +1,8 @@
 package com.fwdekker.randomness.word;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -57,5 +60,41 @@ public final class WordSettingsTest {
         wordSettings.setEnclosure("IERMV6Q5Qx");
 
         assertThat(wordSettings.getEnclosure()).isEqualTo("IERMV6Q5Qx");
+    }
+
+    @Test
+    public void testGetSetBundledDictionaries() {
+        final Set<String> bundledDictionaries
+                = new HashSet<>(Arrays.asList("6OE]SfZj6(", "HGeldsz2XM", "V6AhkeIKX6"));
+        wordSettings.setBundledDictionaries(bundledDictionaries);
+
+        assertThat(wordSettings.getBundledDictionaries()).isEqualTo(bundledDictionaries);
+    }
+
+    @Test
+    public void testGetSetUserDictionaries() {
+        final Set<String> userDictionaries
+                = new HashSet<>(Arrays.asList(")asQAYwW[u", "Bz>GSRlNA1", "Cjsg{Olylo"));
+        wordSettings.setUserDictionaries(userDictionaries);
+
+        assertThat(wordSettings.getUserDictionaries()).isEqualTo(userDictionaries);
+    }
+
+    @Test
+    public void testGetSetActiveBundledDictionaries() {
+        final Set<String> bundledDictionaries
+                = new HashSet<>(Arrays.asList("6QeMvZ>uHQ", "Onb]HUugM1", "008xGJhIXE"));
+        wordSettings.setActiveBundledDictionaries(bundledDictionaries);
+
+        assertThat(wordSettings.getActiveBundledDictionaries()).isEqualTo(bundledDictionaries);
+    }
+
+    @Test
+    public void testGetSetActiveUserDictionaries() {
+        final Set<String> userDictionaries
+                = new HashSet<>(Arrays.asList("ukeB8}RLbm", "JRcuz7sm4(", "{QZGJQli36"));
+        wordSettings.setActiveUserDictionaries(userDictionaries);
+
+        assertThat(wordSettings.getActiveUserDictionaries()).isEqualTo(userDictionaries);
     }
 }

@@ -47,15 +47,15 @@ public final class WordSettings extends Settings implements PersistentStateCompo
     /**
      * The list of all dictionaries registered by the user.
      */
-    private Set<String> customDictionaries = new HashSet();
+    private Set<String> userDictionaries = new HashSet();
     /**
      * The list of bundled dictionaries that are currently active.
      */
     private Set<String> activeBundledDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
     /**
-     * The list of custom dictionaries that are currently active.
+     * The list of user dictionaries that are currently active.
      */
-    private Set<String> activeCustomDictionaries = new HashSet<>();
+    private Set<String> activeUserDictionaries = new HashSet<>();
 
 
     /**
@@ -173,17 +173,17 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      *
      * @return the list of all dictionaries registered by the user
      */
-    public Set<String> getCustomDictionaries() {
-        return customDictionaries;
+    public Set<String> getUserDictionaries() {
+        return userDictionaries;
     }
 
     /**
      * Sets the list of all dictionaries registered by the user.
      *
-     * @param customDictionaries the list of all dictionaries registered by the user
+     * @param userDictionaries the list of all dictionaries registered by the user
      */
-    public void setCustomDictionaries(final Set<String> customDictionaries) {
-        this.customDictionaries = customDictionaries;
+    public void setUserDictionaries(final Set<String> userDictionaries) {
+        this.userDictionaries = userDictionaries;
     }
 
     /**
@@ -205,31 +205,37 @@ public final class WordSettings extends Settings implements PersistentStateCompo
     }
 
     /**
-     * Returns the list of custom dictionaries that are currently active.
+     * Returns the list of user dictionaries that are currently active.
      *
-     * @return the list of custom dictionaries that are currently active
+     * @return the list of user dictionaries that are currently active
      */
-    public Set<String> getActiveCustomDictionaries() {
-        return activeCustomDictionaries;
+    public Set<String> getActiveUserDictionaries() {
+        return activeUserDictionaries;
     }
 
     /**
-     * Sets the list of custom dictionaries that are currently active.
+     * Sets the list of user dictionaries that are currently active.
      *
-     * @param activeCustomDictionaries the list of custom dictionaries that are currently active
+     * @param activeUserDictionaries the list of user dictionaries that are currently active
      */
-    public void setActiveCustomDictionaries(final Set<String> activeCustomDictionaries) {
-        this.activeCustomDictionaries = activeCustomDictionaries;
+    public void setActiveUserDictionaries(final Set<String> activeUserDictionaries) {
+        this.activeUserDictionaries = activeUserDictionaries;
     }
 
-    public Set<Dictionary> getAllDictionaries() {
+
+    /**
+     * Returns the list of all dictionaries.
+     *
+     * @return the list of all dictionaries
+     */
+    public Set<Dictionary> getDictionaries() {
         final Set<Dictionary> dictionaries = new HashSet<>();
 
         dictionaries.addAll(bundledDictionaries.stream()
                                     .map(Dictionary.BundledDictionary::getDictionary)
                                     .collect(Collectors.toList()));
-        dictionaries.addAll(customDictionaries.stream()
-                                    .map(Dictionary.CustomDictionary::getDictionary)
+        dictionaries.addAll(userDictionaries.stream()
+                                    .map(Dictionary.UserDictionary::getDictionary)
                                     .collect(Collectors.toList()));
 
         return dictionaries;
@@ -246,19 +252,10 @@ public final class WordSettings extends Settings implements PersistentStateCompo
         dictionaries.addAll(activeBundledDictionaries.stream()
                                     .map(Dictionary.BundledDictionary::getDictionary)
                                     .collect(Collectors.toList()));
-        dictionaries.addAll(activeCustomDictionaries.stream()
-                                    .map(Dictionary.CustomDictionary::getDictionary)
+        dictionaries.addAll(activeUserDictionaries.stream()
+                                    .map(Dictionary.UserDictionary::getDictionary)
                                     .collect(Collectors.toList()));
 
         return dictionaries;
-    }
-
-    /**
-     * Returns all dictionaries that are currently active as a single dictionary.
-     *
-     * @return all dictionaries that are currently active as a single dictionary
-     */
-    public Dictionary getActiveDictionariesCombined() {
-        return Dictionary.combine(getActiveDictionaries());
     }
 }

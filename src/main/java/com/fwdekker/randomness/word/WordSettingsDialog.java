@@ -85,13 +85,13 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                     .chooseFile(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null);
 
             if (newDictionarySource != null) {
-                bundledDictionaries.addEntry(Dictionary.CustomDictionary.getDictionary(newDictionarySource.getCanonicalPath()));
+                bundledDictionaries.addEntry(Dictionary.UserDictionary.getDictionary(newDictionarySource.getCanonicalPath()));
             }
         });
         dictionaryRemoveButton = new JButton();
         dictionaryRemoveButton.addActionListener(event -> {
             bundledDictionaries.getHighlightedEntry().ifPresent(dictionary -> {
-                if (dictionary instanceof Dictionary.CustomDictionary) {
+                if (dictionary instanceof Dictionary.UserDictionary) {
                     bundledDictionaries.removeEntry(dictionary);
                 } else {
                     throw new IllegalStateException("Button should have been disabled.");
@@ -102,7 +102,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         bundledDictionaries.getSelectionModel().addListSelectionListener(event -> {
             if (!event.getValueIsAdjusting()) {
                 final Optional<Dictionary> highlightedDictionary = bundledDictionaries.getHighlightedEntry();
-                dictionaryRemoveButton.setEnabled(highlightedDictionary.isPresent() && highlightedDictionary.get() instanceof Dictionary.CustomDictionary);
+                dictionaryRemoveButton.setEnabled(highlightedDictionary.isPresent() && highlightedDictionary.get() instanceof Dictionary.UserDictionary);
             }
         });
     }
@@ -116,7 +116,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupHelper.setValue(capitalizationGroup, settings.getCapitalization());
 
-        bundledDictionaries.setEntries(settings.getAllDictionaries());
+        bundledDictionaries.setEntries(settings.getDictionaries());
         bundledDictionaries.setActiveEntries(settings.getActiveDictionaries());
     }
 
@@ -136,12 +136,12 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                                                       .filter(Dictionary.BundledDictionary.class::isInstance)
                                                       .map(Dictionary::getPath)
                                                       .collect(Collectors.toSet()));
-        settings.setCustomDictionaries(bundledDictionaries.getEntries().stream()
-                                               .filter(Dictionary.CustomDictionary.class::isInstance)
+        settings.setUserDictionaries(bundledDictionaries.getEntries().stream()
+                                               .filter(Dictionary.UserDictionary.class::isInstance)
                                                .map(Dictionary::getPath)
                                                .collect(Collectors.toSet()));
-        settings.setActiveCustomDictionaries(bundledDictionaries.getActiveEntries().stream()
-                                                     .filter(Dictionary.CustomDictionary.class::isInstance)
+        settings.setActiveUserDictionaries(bundledDictionaries.getActiveEntries().stream()
+                                                     .filter(Dictionary.UserDictionary.class::isInstance)
                                                      .map(Dictionary::getPath)
                                                      .collect(Collectors.toSet()));
     }
