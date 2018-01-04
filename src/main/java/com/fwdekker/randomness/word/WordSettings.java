@@ -47,7 +47,7 @@ public final class WordSettings extends Settings implements PersistentStateCompo
     /**
      * The list of all dictionaries registered by the user.
      */
-    private Set<String> userDictionaries = new HashSet();
+    private Set<String> userDictionaries = new HashSet<>();
     /**
      * The list of bundled dictionaries that are currently active.
      */
