@@ -133,7 +133,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="2c67a" class="com.fwdekker.randomness.ui.JEditableTable" binding="bundledDictionaries" custom-create="true">
+          <component id="2c67a" class="com.fwdekker.randomness.ui.JEditableList" binding="bundledDictionaries" custom-create="true">
             <constraints/>
             <properties>
               <name value="bundledDictionaries"/>

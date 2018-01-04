@@ -3,7 +3,7 @@ package com.fwdekker.randomness.word;
 import com.fwdekker.randomness.SettingsDialog;
 import com.fwdekker.randomness.common.ValidationException;
 import com.fwdekker.randomness.ui.ButtonGroupHelper;
-import com.fwdekker.randomness.ui.JEditableTable;
+import com.fwdekker.randomness.ui.JEditableList;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Dialog for settings of random word generation.
  */
+@SuppressWarnings("PMD.SingularField") // Required by UI Framework
 @SuppressFBWarnings(
         value = {"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"},
         justification = "Initialized by UI framework"
@@ -35,7 +36,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private JLongSpinner maxLength;
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
-    private JEditableTable<Dictionary> bundledDictionaries;
+    private JEditableList<Dictionary> bundledDictionaries;
     private JButton dictionaryAddButton;
     private JButton dictionaryRemoveButton;
 
@@ -77,7 +78,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         maxLength = new JLongSpinner(1, Dictionary.getDefaultDictionary().getLongestWord().length());
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
 
-        bundledDictionaries = new JEditableTable<>();
+        bundledDictionaries = new JEditableList<>();
 
         dictionaryAddButton = new JButton();
         dictionaryAddButton.addActionListener(event -> {
@@ -85,24 +86,25 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                     .chooseFile(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null);
 
             if (newDictionarySource != null) {
-                bundledDictionaries.addEntry(Dictionary.UserDictionary.getDictionary(newDictionarySource.getCanonicalPath()));
+                final Dictionary newDictionary
+                        = Dictionary.UserDictionary.getDictionary(newDictionarySource.getCanonicalPath());
+                bundledDictionaries.addEntry(newDictionary);
             }
         });
         dictionaryRemoveButton = new JButton();
-        dictionaryRemoveButton.addActionListener(event -> {
-            bundledDictionaries.getHighlightedEntry().ifPresent(dictionary -> {
-                if (dictionary instanceof Dictionary.UserDictionary) {
-                    bundledDictionaries.removeEntry(dictionary);
-                } else {
-                    throw new IllegalStateException("Button should have been disabled.");
-                }
-            });
-        });
+        dictionaryRemoveButton.addActionListener(event -> bundledDictionaries.getHighlightedEntry()
+                .ifPresent(dictionary -> {
+                    if (dictionary instanceof Dictionary.UserDictionary) {
+                        bundledDictionaries.removeEntry(dictionary);
+                    }
+                }));
 
         bundledDictionaries.getSelectionModel().addListSelectionListener(event -> {
             if (!event.getValueIsAdjusting()) {
                 final Optional<Dictionary> highlightedDictionary = bundledDictionaries.getHighlightedEntry();
-                dictionaryRemoveButton.setEnabled(highlightedDictionary.isPresent() && highlightedDictionary.get() instanceof Dictionary.UserDictionary);
+                final boolean enable = highlightedDictionary.isPresent()
+                        && highlightedDictionary.get() instanceof Dictionary.UserDictionary;
+                dictionaryRemoveButton.setEnabled(enable);
             }
         });
     }
@@ -137,13 +139,13 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                                                       .map(Dictionary::getPath)
                                                       .collect(Collectors.toSet()));
         settings.setUserDictionaries(bundledDictionaries.getEntries().stream()
-                                               .filter(Dictionary.UserDictionary.class::isInstance)
-                                               .map(Dictionary::getPath)
-                                               .collect(Collectors.toSet()));
+                                             .filter(Dictionary.UserDictionary.class::isInstance)
+                                             .map(Dictionary::getPath)
+                                             .collect(Collectors.toSet()));
         settings.setActiveUserDictionaries(bundledDictionaries.getActiveEntries().stream()
-                                                     .filter(Dictionary.UserDictionary.class::isInstance)
-                                                     .map(Dictionary::getPath)
-                                                     .collect(Collectors.toSet()));
+                                                   .filter(Dictionary.UserDictionary.class::isInstance)
+                                                   .map(Dictionary::getPath)
+                                                   .collect(Collectors.toSet()));
     }
 
     @Override

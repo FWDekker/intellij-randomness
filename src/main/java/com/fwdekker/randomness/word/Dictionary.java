@@ -190,7 +190,7 @@ public abstract class Dictionary {
         /**
          * A cache of previously created {@code BundledDictionary(s)}.
          */
-        private static final Map<String, BundledDictionary> cache = new HashMap<>();
+        private static final Map<String, BundledDictionary> CACHE = new HashMap<>();
 
 
         /**
@@ -210,12 +210,14 @@ public abstract class Dictionary {
          * @return a new {@code BundledDictionary} for the given dictionary resource, or returns the previously
          * created instance of this resource if there is one
          */
-        public static synchronized BundledDictionary getDictionary(final String dictionary) {
-            if (!cache.containsKey(dictionary)) {
-                cache.put(dictionary, new BundledDictionary(dictionary));
+        public static BundledDictionary getDictionary(final String dictionary) {
+            synchronized (BundledDictionary.class) {
+                if (!CACHE.containsKey(dictionary)) {
+                    CACHE.put(dictionary, new BundledDictionary(dictionary));
+                }
             }
 
-            return cache.get(dictionary);
+            return CACHE.get(dictionary);
         }
 
 
@@ -243,7 +245,7 @@ public abstract class Dictionary {
         /**
          * A cache of previously created {@code BundledDictionary(s)}.
          */
-        private static final Map<String, UserDictionary> dictionaries = new HashMap<>();
+        private static final Map<String, UserDictionary> CACHE = new HashMap<>();
 
 
         /**
@@ -263,12 +265,14 @@ public abstract class Dictionary {
          * @return a new {@code UserDictionary} for the given dictionary file, or returns the previously created
          * instance of this file if there is one
          */
-        public static synchronized UserDictionary getDictionary(final String dictionary) {
-            if (!dictionaries.containsKey(dictionary)) {
-                dictionaries.put(dictionary, new UserDictionary(dictionary));
+        public static UserDictionary getDictionary(final String dictionary) {
+            synchronized (UserDictionary.class) {
+                if (!CACHE.containsKey(dictionary)) {
+                    CACHE.put(dictionary, new UserDictionary(dictionary));
+                }
             }
 
-            return dictionaries.get(dictionary);
+            return CACHE.get(dictionary);
         }
 
 
