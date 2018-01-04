@@ -85,16 +85,6 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
     }
 
     @Test
-    public void testAddDictionaryCancel() {
-        frame.button("dictionaryAdd").click();
-        JFileChooserFinder.findFileChooser().using(robot())
-                .cancel();
-
-        assertThat(dialogDictionaries.getEntries())
-                .containsExactly(Dictionary.BundledDictionary.getDictionary("words_alpha.dic"));
-    }
-
-    @Test
     public void testAddDictionaryDuplicate() {
         GuiActionRunner.execute(() -> dialogDictionaries
                 .addEntry(Dictionary.UserDictionary.getDictionary(getDictionaryFile("dictionaries/simple.dic")
