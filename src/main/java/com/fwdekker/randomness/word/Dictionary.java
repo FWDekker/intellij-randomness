@@ -26,10 +26,6 @@ public abstract class Dictionary {
      * The name of the default dictionary file.
      */
     public static final String DEFAULT_DICTIONARY_FILE = "words_alpha.dic";
-    /**
-     * The default {@code Dictionary} instance.
-     */
-    private static final Dictionary DEFAULT_DICTIONARY = new BundledDictionary(DEFAULT_DICTIONARY_FILE);
 
     /**
      * The filename of the dictionary file.
@@ -69,15 +65,6 @@ public abstract class Dictionary {
         if (words.isEmpty()) {
             throw new IllegalArgumentException("Dictionary must be non-empty.");
         }
-    }
-
-    /**
-     * Returns the default {@code Dictionary} instance.
-     *
-     * @return the default {@code Dictionary} instance
-     */
-    public static Dictionary getDefaultDictionary() {
-        return DEFAULT_DICTIONARY;
     }
 
 
@@ -313,7 +300,7 @@ public abstract class Dictionary {
          * @return never
          */
         @Override
-        InputStream getInputStream(final String dictionary) {
+        protected InputStream getInputStream(final String dictionary) {
             throw new IllegalStateException("This method should not be called.");
         }
     }
