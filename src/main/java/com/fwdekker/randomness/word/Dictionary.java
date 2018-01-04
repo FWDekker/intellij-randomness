@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -122,40 +123,39 @@ public abstract class Dictionary {
     }
 
     /**
-     * Returns the length of the longest word.
+     * Returns the shortest word in this {@code Dictionary}.
      *
-     * @return the length of the longest word
+     * @return the shortest word in this {@code Dictionary}
      */
-    public final int longestWordLength() {
+    public final String getShortestWord() {
         return words.parallelStream()
-                .mapToInt(String::length)
-                .max()
-                .orElseThrow(() -> new IllegalStateException("Dictionary should not be empty."));
-    }
-
-    public final int shortestWordLength() {
-        return words.parallelStream()
-                .mapToInt(String::length)
-                .min()
+                .min(Comparator.comparingInt(String::length))
                 .orElseThrow(() -> new IllegalStateException("Dictionary should not be empty."));
     }
 
     /**
-     * Combines this {@code Dictionary} with the given {@code Dictionary} into a new {@code Dictionary}.
+     * Returns the longest word in this {@code Dictionary}.
      *
-     * @param that the {@code Dictionary} to add words from
-     * @return a new {@code Dictionary} containing the words from both this and that {@code Dictionary}
+     * @return the longest word in this {@code Dictionary}
      */
-    public final Dictionary combineWith(final Dictionary that) {
-        final Dictionary dictionary = new SimpleDictionary();
-        dictionary.words.addAll(this.words);
-        dictionary.words.addAll(that.words);
-        return dictionary;
+    public final String getLongestWord() {
+        return words.parallelStream()
+                .max(Comparator.comparingInt(String::length))
+                .orElseThrow(() -> new IllegalStateException("Dictionary should not be empty."));
     }
 
+
+    /**
+     * Combines the given {@code Dictionary Dictionary(s)} into a single {@code Dictionary}.
+     *
+     * @param dictionaries the {@code Dictionary Dictionary(s)} to combine
+     * @return a {@code Dictionary} containing all words in the given {@code Dictionary Dictionary(s)}
+     */
     public static final Dictionary combine(final Collection<Dictionary> dictionaries) {
         final Dictionary combinedDictionary = new SimpleDictionary();
+
         dictionaries.forEach(dictionary -> combinedDictionary.words.addAll(dictionary.words));
+
         return combinedDictionary;
     }
 

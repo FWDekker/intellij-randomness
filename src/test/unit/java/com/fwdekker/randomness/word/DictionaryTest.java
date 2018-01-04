@@ -1,5 +1,8 @@
 package com.fwdekker.randomness.word;
 
+import java.io.IOException;
+import java.util.Arrays;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,6 +24,22 @@ public final class DictionaryTest {
                 .hasNoCause();
     }
 
+    @Test
+    public void testInvalidFile() {
+        assertThatThrownBy(() -> new Dictionary.CustomDictionary("invalid_file"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Failed to read dictionary into memory.")
+                .hasCauseInstanceOf(IOException.class);
+    }
+
+
+    @Test
+    public void testGetPath() {
+        useDictionary("simple");
+
+        assertThat(dictionary.getPath())
+                .isEqualTo("dictionaries/simple.dic");
+    }
 
     @Test
     public void testGetWords() {
@@ -89,26 +108,43 @@ public final class DictionaryTest {
 
 
     @Test
-    public void testLongestWordSimpleLength() {
+    public void testGetShortestWordSimple() {
         useDictionary("simple");
 
-        assertThat(dictionary.longestWordLength())
-                .isEqualTo(4);
+        assertThat(dictionary.getShortestWord())
+                .hasSize(1);
     }
 
     @Test
-    public void testLongestWordVariedLength() {
+    public void testGetShortestWordVaried() {
         useDictionary("varied");
 
-        assertThat(dictionary.longestWordLength())
-                .isEqualTo(45);
+        assertThat(dictionary.getShortestWord())
+                .hasSize(4);
+    }
+
+    @Test
+    public void testGetLongestWordSimple() {
+        useDictionary("simple");
+
+        assertThat(dictionary.getLongestWord())
+                .hasSize(4);
+    }
+
+    @Test
+    public void testGetLongestWordVaried() {
+        useDictionary("varied");
+
+        assertThat(dictionary.getLongestWord())
+                .hasSize(45);
     }
 
 
     @Test
-    public void testCombineWith() {
-        final Dictionary combined = new Dictionary.BundledDictionary("dictionaries/simple.dic")
-                .combineWith(new Dictionary.BundledDictionary("dictionaries/varied.dic"));
+    public void testCombine() {
+        final Dictionary combined = Dictionary.combine(Arrays.asList(
+                new Dictionary.BundledDictionary("dictionaries/simple.dic"),
+                new Dictionary.BundledDictionary("dictionaries/varied.dic")));
 
         assertThat(combined.getWords())
                 .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow", "simplicity", "bend",
@@ -116,12 +152,22 @@ public final class DictionaryTest {
     }
 
     @Test
-    public void testCombineWithDuplicates() {
-        final Dictionary combined = new Dictionary.BundledDictionary("dictionaries/simple.dic")
-                .combineWith(new Dictionary.BundledDictionary("dictionaries/simple.dic"));
+    public void testCombineDuplicates() {
+        final Dictionary combined = Dictionary.combine(Arrays.asList(
+                new Dictionary.BundledDictionary("dictionaries/simple.dic"),
+                new Dictionary.BundledDictionary("dictionaries/simple.dic")));
 
         assertThat(combined.getWords())
                 .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow");
+    }
+
+
+    @Test
+    public void testEqualsContract() {
+        EqualsVerifier.forClass(Dictionary.class)
+                .usingGetClass()
+                .withIgnoredFields("words")
+                .verify();
     }
 
 

@@ -259,13 +259,6 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      * @return all dictionaries that are currently active as a single dictionary
      */
     public Dictionary getActiveDictionariesCombined() {
-        final Set<Dictionary> activeDictionaries = getActiveDictionaries();
-        Dictionary combinedDictionary = (Dictionary) activeDictionaries.toArray()[0];
-
-        for (final Dictionary dictionary : activeDictionaries) {
-            combinedDictionary = combinedDictionary.combineWith(dictionary);
-        }
-
-        return combinedDictionary;
+        return Dictionary.combine(getActiveDictionaries());
     }
 }
