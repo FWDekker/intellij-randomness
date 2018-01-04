@@ -48,11 +48,15 @@ public final class JEditableList<T> extends JTable {
 
     /**
      * Adds an entry to the list.
+     * <p>
+     * If the given entry is already in the list, nothing happens.
      *
      * @param entry the entry to add
      */
     public void addEntry(final T entry) {
-        model.addRow(new Object[] {false, entry});
+        if (!hasEntry(entry)) {
+            model.addRow(new Object[] {false, entry});
+        }
     }
 
     /**
@@ -82,7 +86,7 @@ public final class JEditableList<T> extends JTable {
      * @return a list of all entries
      */
     public List<T> getEntries() {
-        return IntStream.range(0, model.getRowCount())
+        return IntStream.range(0, getEntryCount())
                 .mapToObj(this::getEntry)
                 .collect(Collectors.toList());
     }
@@ -100,7 +104,7 @@ public final class JEditableList<T> extends JTable {
      * Removes all entries.
      */
     public void clear() {
-        IntStream.range(0, getEntryCount()).forEach(model::removeRow);
+        IntStream.range(0, getEntryCount()).forEach(row -> model.removeRow(0));
     }
 
     /**
@@ -167,13 +171,24 @@ public final class JEditableList<T> extends JTable {
 
 
     /**
+     * Returns {@code true} iff. the given entry exists in the list.
+     *
+     * @param entry the entry to check for presence
+     * @return {@code true} iff. the given entry exists in the list
+     */
+    private boolean hasEntry(final T entry) {
+        return IntStream.range(0, getEntryCount())
+                .anyMatch(row -> getEntry(row).equals(entry));
+    }
+
+    /**
      * Returns the row number of the given entry.
      *
      * @param entry the entry to return the row number of
      * @return the row number of the given entry
      */
     private int getEntryRow(final T entry) {
-        return IntStream.range(0, model.getRowCount())
+        return IntStream.range(0, getEntryCount())
                 .filter(row -> getEntry(row).equals(entry))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("No row with entry `" + entry + "` found."));
