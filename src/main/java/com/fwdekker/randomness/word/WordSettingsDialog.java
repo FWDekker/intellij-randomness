@@ -16,6 +16,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -78,20 +79,14 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
 
         dictionaries = new JEditableList<>();
+        dictionaries.getSelectionModel().addListSelectionListener(this::onDictionaryHighlightChange);
+        dictionaries.addEntryActivityChangeListener(event -> onDictionaryActivityChange());
+        onDictionaryActivityChange();
 
         dictionaryAddButton = new JButton();
         dictionaryAddButton.addActionListener(event -> addDictionary());
         dictionaryRemoveButton = new JButton();
         dictionaryRemoveButton.addActionListener(event -> removeDictionary());
-
-        dictionaries.getSelectionModel().addListSelectionListener(event -> {
-            if (!event.getValueIsAdjusting()) {
-                final Optional<Dictionary> highlightedDictionary = dictionaries.getHighlightedEntry();
-                final boolean enable = highlightedDictionary.isPresent()
-                        && highlightedDictionary.get() instanceof Dictionary.UserDictionary;
-                dictionaryRemoveButton.setEnabled(enable);
-            }
-        });
     }
 
 
@@ -141,10 +136,6 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                 throw new ValidationException("Select at least one dictionary.", dictionaries);
             }
 
-            final Dictionary dictionary = Dictionary.combine(dictionaries.getActiveEntries());
-            minLength.setMinValue(dictionary.getShortestWord().length());
-            maxLength.setMaxValue(dictionary.getLongestWord().length());
-
             minLength.validateValue();
             maxLength.validateValue();
             lengthRange.validate();
@@ -157,7 +148,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
 
     /**
-     * Handles the event when a new {@code Dictionary} is added to the list.
+     * Fires when a new {@code Dictionary} is added to the list.
      */
     private void addDictionary() {
         FileChooser.chooseFiles(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null, files -> {
@@ -171,7 +162,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     }
 
     /**
-     * Handles the event when the currently highlighted {@code Dictionary} should be removed the list.
+     * Fires when the currently highlighted {@code Dictionary} should be removed the list.
      */
     private void removeDictionary() {
         dictionaries.getHighlightedEntry().ifPresent(dictionary -> {
@@ -179,5 +170,34 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                 dictionaries.removeEntry(dictionary);
             }
         });
+    }
+
+    /**
+     * Fires when the user (un)highlights a dictionary.
+     *
+     * @param event the triggering event
+     */
+    private void onDictionaryHighlightChange(final ListSelectionEvent event) {
+        if (!event.getValueIsAdjusting()) {
+            final Optional<Dictionary> highlightedDictionary = dictionaries.getHighlightedEntry();
+            final boolean enable = highlightedDictionary.isPresent()
+                    && highlightedDictionary.get() instanceof Dictionary.UserDictionary;
+            dictionaryRemoveButton.setEnabled(enable);
+        }
+    }
+
+    /**
+     * Fires when the user (de)activates a dictionary.
+     */
+    private void onDictionaryActivityChange() {
+        final Dictionary dictionary = Dictionary.combine(dictionaries.getActiveEntries());
+
+        if (dictionary.getWords().isEmpty()) {
+            minLength.setMaxValue(1);
+            maxLength.setMinValue(Integer.MAX_VALUE);
+        } else {
+            minLength.setMaxValue(dictionary.getLongestWord().length());
+            maxLength.setMinValue(dictionary.getShortestWord().length());
+        }
     }
 }

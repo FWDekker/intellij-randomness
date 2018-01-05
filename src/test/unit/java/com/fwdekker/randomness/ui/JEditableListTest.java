@@ -2,6 +2,7 @@ package com.fwdekker.randomness.ui;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.Before;
 import org.junit.Test;
@@ -159,6 +160,129 @@ public final class JEditableListTest {
 
         assertThat(list.getEntryCount())
                 .isEqualTo(2);
+    }
+
+
+    @Test
+    public void testActiveEntriesEmpty() {
+        assertThat(list.getActiveEntries())
+                .isEmpty();
+    }
+
+    @Test
+    public void testActiveEntriesNone() {
+        list.setEntries(Arrays.asList("DnqtROf4fd", "0<16CDsby2", "h0hu4XePhv"));
+
+        assertThat(list.getActiveEntries())
+                .isEmpty();
+    }
+
+    @Test
+    public void testActiveEntriesSome() {
+        final List<String> entries = Arrays.asList("9}juZWluy}", "UGuD08qUXr", "eQA[]AdpYR");
+        list.setEntries(entries);
+        list.setActiveEntries(Arrays.asList("UGuD08qUXr"));
+
+        assertThat(list.getActiveEntries())
+                .containsExactly("UGuD08qUXr");
+    }
+
+    @Test
+    public void testActiveEntriesAll() {
+        final List<String> entries = Arrays.asList("o28ix>b}x(", "6Zzl>yi5LB", "XyEVdjv1VM");
+        list.setEntries(entries);
+        list.setActiveEntries(entries);
+
+        assertThat(list.getActiveEntries())
+                .containsExactlyElementsOf(entries);
+    }
+
+    @Test
+    public void testSetActiveEntriesNonExistent() {
+        final List<String> entries = Arrays.asList("JXIPoWsGR{", ">Jq7ILgv9]");
+        list.setEntries(entries);
+        list.setActiveEntries(Arrays.asList("JXIPoWsGR{", "j>NBYo}DnW", ">Jq7ILgv9]"));
+
+        assertThat(list.getActiveEntries())
+                .containsExactlyElementsOf(entries);
+    }
+
+    @Test
+    public void testIsActive() {
+        final List<String> entries = Arrays.asList("I85kO5f8}6", "qcSv3u((zE", "{jjD)iFxEr");
+        list.setEntries(entries);
+        list.setEntryActivity("I85kO5f8}6", true);
+
+        assertThat(list.isActive("I85kO5f8}6")).isTrue();
+        assertThat(list.isActive("qcSv3u((zE")).isFalse();
+        assertThat(list.isActive("{jjD)iFxEr")).isFalse();
+    }
+
+    @Test
+    public void testIsActiveNonExistent() {
+        assertThatThrownBy(() -> list.isActive("Vr{1zIC9iH"))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("No row with entry `Vr{1zIC9iH` found.")
+                .hasNoCause();
+    }
+
+    @Test
+    public void testActivityListenerOnUpdate() {
+        final boolean[] fired = {false};
+        list.addEntry("DsX[DtA>6{");
+
+        list.addEntryActivityChangeListener(event -> fired[0] = true);
+        list.setEntryActivity("DsX[DtA>6{", true);
+
+        assertThat(fired[0]).isTrue();
+    }
+
+    @Test
+    public void testActivityListenerNoChangeOnInsert() {
+        final boolean[] fired = {false};
+
+        list.addEntryActivityChangeListener(event -> fired[0] = true);
+        list.addEntry("DsX[DtA>6{");
+
+        assertThat(fired[0]).isFalse();
+    }
+
+    @Test
+    public void testActivityListenerRemoveNoFire() {
+        final boolean[] fired = {false};
+        list.addEntry("bvDAPSZFG3");
+
+        final JEditableList.EntryActivityChangeListener listener = event -> fired[0] = true;
+        list.addEntryActivityChangeListener(listener);
+        list.removeEntryActivityChangeListener(listener);
+        list.setEntryActivity("bvDAPSZFG3", true);
+
+        assertThat(fired[0]).isFalse();
+    }
+
+
+    @Test
+    public void testGetHighlightedEntryNone() {
+        assertThat(list.getHighlightedEntry()).isNotPresent();
+    }
+
+    @Test
+    public void testGetHighlightedEntrySingle() {
+        list.setEntries(Arrays.asList("Bb]CEbJlAD", "8QNk5l<]ln", "U5Hbo0whnn"));
+        list.addRowSelectionInterval(0, 0);
+
+        assertThat(list.getHighlightedEntry().get())
+                .isEqualTo("Bb]CEbJlAD");
+    }
+
+    @Test
+    public void testGetHighlightedEntryMultiple() {
+        list.setEntries(Arrays.asList("k<Goz2<IG9", "E4nRBR>wKG", "sCxbg}sfy("));
+        list.addRowSelectionInterval(0, 0);
+        list.addRowSelectionInterval(2, 2);
+
+        assertThat(list.getHighlightedEntry().get())
+                .isEqualTo("sCxbg}sfy(");
     }
 
 
