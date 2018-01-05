@@ -198,7 +198,7 @@ public final class JEditableList<T> extends JTable {
      * @param entries exactly those entries of which the checkboxes should be checked
      */
     public void setActiveEntries(final Collection<T> entries) {
-        getEntries().stream().forEach(entry -> setActive(entry, entries.contains(entry)));
+        getEntries().forEach(entry -> setActive(entry, entries.contains(entry)));
     }
 
     /**
