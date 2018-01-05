@@ -169,7 +169,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             final Dictionary newDictionary;
 
             try {
-                newDictionary = Dictionary.UserDictionary.getDictionary(chooser.getSelectedFile().getCanonicalPath());
+                newDictionary = Dictionary.UserDictionary.get(chooser.getSelectedFile().getCanonicalPath());
             } catch (final IOException e) {
                 throw new UncheckedIOException(e);
             }

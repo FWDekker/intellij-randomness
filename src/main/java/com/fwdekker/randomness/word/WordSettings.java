@@ -232,10 +232,10 @@ public final class WordSettings extends Settings implements PersistentStateCompo
         final Set<Dictionary> dictionaries = new HashSet<>();
 
         dictionaries.addAll(bundledDictionaries.stream()
-                                    .map(Dictionary.BundledDictionary::getDictionary)
+                                    .map(Dictionary.BundledDictionary::get)
                                     .collect(Collectors.toList()));
         dictionaries.addAll(userDictionaries.stream()
-                                    .map(Dictionary.UserDictionary::getDictionary)
+                                    .map(Dictionary.UserDictionary::get)
                                     .collect(Collectors.toList()));
 
         return dictionaries;
@@ -250,10 +250,10 @@ public final class WordSettings extends Settings implements PersistentStateCompo
         final Set<Dictionary> dictionaries = new HashSet<>();
 
         dictionaries.addAll(activeBundledDictionaries.stream()
-                                    .map(Dictionary.BundledDictionary::getDictionary)
+                                    .map(Dictionary.BundledDictionary::get)
                                     .collect(Collectors.toList()));
         dictionaries.addAll(activeUserDictionaries.stream()
-                                    .map(Dictionary.UserDictionary::getDictionary)
+                                    .map(Dictionary.UserDictionary::get)
                                     .collect(Collectors.toList()));
 
         return dictionaries;

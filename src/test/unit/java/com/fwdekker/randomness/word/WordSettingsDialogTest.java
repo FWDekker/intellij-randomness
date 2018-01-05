@@ -87,8 +87,8 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
     @Test
     public void testAddDictionaryDuplicate() {
         GuiActionRunner.execute(() -> dialogDictionaries
-                .addEntry(Dictionary.UserDictionary.getDictionary(getDictionaryFile("dictionaries/simple.dic")
-                                                                          .getCanonicalPath())));
+                .addEntry(Dictionary.UserDictionary.get(getDictionaryFile("dictionaries/simple.dic")
+                                                                .getCanonicalPath())));
 
         frame.button("dictionaryAdd").click();
         JFileChooserFinder.findFileChooser().using(robot())
@@ -113,8 +113,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
     @Test
     public void testRemoveUserDictionary() {
         GuiActionRunner.execute(() -> {
-            dialogDictionaries
-                    .addEntry(Dictionary.UserDictionary.getDictionary(getDictionaryFile("dictionaries/simple.dic")
+            dialogDictionaries.addEntry(Dictionary.UserDictionary.get(getDictionaryFile("dictionaries/simple.dic")
                                                                               .getCanonicalPath()));
             frame.table("dictionaries").target().clearSelection();
             frame.table("dictionaries").target().addRowSelectionInterval(1, 1);

@@ -197,7 +197,7 @@ public abstract class Dictionary {
          * @return a new {@code BundledDictionary} for the given dictionary resource, or returns the previously
          * created instance of this resource if there is one
          */
-        public static BundledDictionary getDictionary(final String dictionary) {
+        public static BundledDictionary get(final String dictionary) {
             synchronized (BundledDictionary.class) {
                 if (!CACHE.containsKey(dictionary)) {
                     CACHE.put(dictionary, new BundledDictionary(dictionary));
@@ -252,7 +252,7 @@ public abstract class Dictionary {
          * @return a new {@code UserDictionary} for the given dictionary file, or returns the previously created
          * instance of this file if there is one
          */
-        public static UserDictionary getDictionary(final String dictionary) {
+        public static UserDictionary get(final String dictionary) {
             synchronized (UserDictionary.class) {
                 if (!CACHE.containsKey(dictionary)) {
                     CACHE.put(dictionary, new UserDictionary(dictionary));
