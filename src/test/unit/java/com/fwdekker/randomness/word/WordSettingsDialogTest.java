@@ -7,6 +7,7 @@ import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.finder.JFileChooserFinder;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,6 +75,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
 
     @Test
+    @Ignore("Doesn't work with IntelliJ file chooser")
     public void testAddDictionary() {
         frame.button("dictionaryAdd").click();
         JFileChooserFinder.findFileChooser().using(robot())
@@ -85,6 +87,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
     }
 
     @Test
+    @Ignore("Doesn't work with IntelliJ file chooser")
     public void testAddDictionaryDuplicate() {
         GuiActionRunner.execute(() -> dialogDictionaries
                 .addEntry(Dictionary.UserDictionary.get(getDictionaryFile("dictionaries/simple.dic")

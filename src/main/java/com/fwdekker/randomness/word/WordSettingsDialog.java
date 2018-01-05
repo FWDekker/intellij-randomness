@@ -6,18 +6,16 @@ import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JEditableList;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.ui.ValidationInfo;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -162,20 +160,14 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
      * Handles the event when a new {@code Dictionary} is added to the list.
      */
     private void addDictionary() {
-        final JFileChooser chooser = new JFileChooser();
-        chooser.setFileFilter(new FileNameExtensionFilter("Dictionaries", "dic"));
-
-        if (chooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION) {
-            final Dictionary newDictionary;
-
-            try {
-                newDictionary = Dictionary.UserDictionary.get(chooser.getSelectedFile().getCanonicalPath());
-            } catch (final IOException e) {
-                throw new UncheckedIOException(e);
+        FileChooser.chooseFiles(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null, files -> {
+            if (files.isEmpty()) {
+                return;
             }
 
+            final Dictionary newDictionary = Dictionary.UserDictionary.get(files.get(0).getCanonicalPath());
             dictionaries.addEntry(newDictionary);
-        }
+        });
     }
 
     /**
