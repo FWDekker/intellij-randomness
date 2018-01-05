@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.word;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -221,7 +222,7 @@ public abstract class Dictionary {
 
         @Override
         public String toString() {
-            return "[bundled] " + getPath();
+            return "[bundled] " + new File(getPath()).getName();
         }
     }
 
@@ -277,7 +278,7 @@ public abstract class Dictionary {
 
         @Override
         public String toString() {
-            return "[custom] " + getPath();
+            return "[custom] " + new File(getPath()).getName();
         }
     }
 

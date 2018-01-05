@@ -272,6 +272,6 @@ public final class JEditableList<T> extends JTable {
          *
          * @param changedRow the index of the row of which the activity was changed
          */
-        void accept(final int changedRow);
+        void accept(int changedRow);
     }
 }
