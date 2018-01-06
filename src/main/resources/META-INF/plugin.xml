@@ -32,13 +32,13 @@
     <actions>
         <group id="randomness.Group">
             <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.InsertRandomInteger"
-                    text="Insert Random Integer" description="Inserts a random integer at the caret."/>
+                    text="Insert Random Integer" description="Inserts a random integer at the carets."/>
             <action id="randomness.InsertDecimal" class="com.fwdekker.randomness.decimal.InsertRandomDecimal"
-                    text="Insert Random Decimal" description="Inserts a random decimal at the caret."/>
+                    text="Insert Random Decimal" description="Inserts a random decimal at the carets."/>
             <action id="randomness.InsertString" class="com.fwdekker.randomness.string.InsertRandomString"
-                    text="Insert Random String" description="Inserts a random string at the caret."/>
+                    text="Insert Random String" description="Inserts a random string at the carets."/>
             <action id="randomness.InsertWord" class="com.fwdekker.randomness.word.InsertRandomWord"
-                    text="Insert Random Word" description="Inserts a random English word at the caret."/>
+                    text="Insert Random Word" description="Inserts a random English word at the carets."/>
 
             <separator/>
 
