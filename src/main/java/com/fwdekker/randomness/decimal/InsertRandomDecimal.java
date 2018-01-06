@@ -31,6 +31,11 @@ public final class InsertRandomDecimal extends InsertRandomSomething {
     }
 
 
+    @Override
+    protected String getName() {
+        return "Insert Random Decimal";
+    }
+
     /**
      * Returns a random integer between the minimum and maximum value, inclusive.
      *

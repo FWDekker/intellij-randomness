@@ -29,6 +29,11 @@ public final class InsertRandomWord extends InsertRandomSomething {
     }
 
 
+    @Override
+    protected String getName() {
+        return "Insert Random Word";
+    }
+
     /**
      * Returns a random alphanumerical English word.
      *

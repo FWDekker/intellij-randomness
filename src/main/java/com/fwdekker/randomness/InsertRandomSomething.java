@@ -25,6 +25,7 @@ public abstract class InsertRandomSomething extends AnAction {
         final Presentation presentation = event.getPresentation();
         final Editor editor = event.getData(CommonDataKeys.EDITOR);
 
+        presentation.setText(getName());
         presentation.setEnabled(editor != null);
     }
 
@@ -57,6 +58,13 @@ public abstract class InsertRandomSomething extends AnAction {
         WriteCommandAction.runWriteCommandAction(project, replaceCaretSelections);
     }
 
+
+    /**
+     * Returns the name of the action to display.
+     *
+     * @return the name of the action to display
+     */
+    protected abstract String getName();
 
     /**
      * Generates a random string.

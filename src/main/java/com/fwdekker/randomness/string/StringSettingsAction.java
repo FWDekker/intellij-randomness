@@ -8,9 +8,6 @@ import com.fwdekker.randomness.SettingsDialog;
  * Controller for random string generation settings.
  */
 public final class StringSettingsAction extends SettingsAction {
-    private static final String TITLE = "Random String Settings";
-
-
     @Override
     public SettingsDialog createDialog() {
         return new StringSettingsDialog();
@@ -18,6 +15,6 @@ public final class StringSettingsAction extends SettingsAction {
 
     @Override
     public String getTitle() {
-        return TITLE;
+        return "Random String Settings";
     }
 }

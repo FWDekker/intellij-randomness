@@ -28,6 +28,11 @@ public final class InsertRandomString extends InsertRandomSomething {
     }
 
 
+    @Override
+    protected String getName() {
+        return "Insert Random String";
+    }
+
     /**
      * Returns a random string of alphanumerical characters.
      *

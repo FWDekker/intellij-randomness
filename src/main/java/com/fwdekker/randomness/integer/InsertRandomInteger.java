@@ -31,6 +31,11 @@ public final class InsertRandomInteger extends InsertRandomSomething {
     }
 
 
+    @Override
+    protected String getName() {
+        return "Insert Random Integer";
+    }
+
     /**
      * Returns a random integer between the minimum and maximum value, inclusive.
      *
