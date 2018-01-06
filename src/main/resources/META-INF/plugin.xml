@@ -16,11 +16,11 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService
-                serviceImplementation="com.fwdekker.randomness.decimal.DecimalSettings"
-                serviceInterface="com.fwdekker.randomness.decimal.DecimalSettings"/>
-        <applicationService
                 serviceImplementation="com.fwdekker.randomness.integer.IntegerSettings"
                 serviceInterface="com.fwdekker.randomness.integer.IntegerSettings"/>
+        <applicationService
+                serviceImplementation="com.fwdekker.randomness.decimal.DecimalSettings"
+                serviceInterface="com.fwdekker.randomness.decimal.DecimalSettings"/>
         <applicationService
                 serviceImplementation="com.fwdekker.randomness.string.StringSettings"
                 serviceInterface="com.fwdekker.randomness.string.StringSettings"/>
@@ -30,31 +30,48 @@
     </extensions>
 
     <actions>
-        <group id="randomness.Group">
-            <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.InsertRandomInteger"
-                    text="Insert Random Integer" description="Inserts a random integer at the carets."/>
-            <action id="randomness.InsertDecimal" class="com.fwdekker.randomness.decimal.InsertRandomDecimal"
-                    text="Insert Random Decimal" description="Inserts a random decimal at the carets."/>
-            <action id="randomness.InsertString" class="com.fwdekker.randomness.string.InsertRandomString"
-                    text="Insert Random String" description="Inserts a random string at the carets."/>
-            <action id="randomness.InsertWord" class="com.fwdekker.randomness.word.InsertRandomWord"
-                    text="Insert Random Word" description="Inserts a random English word at the carets."/>
+        <!-- Integer -->
+        <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.InsertRandomInteger"
+                text="Insert Random Integer" description="Inserts a random integer at the carets."/>
+        <action id="randomness.IntegerSettings" class="com.fwdekker.randomness.integer.IntegerSettingsAction"
+                text="Random Integer Settings" description="Settings for Insert Random Integer."/>
 
-            <separator/>
+        <!-- Decimal -->
+        <action id="randomness.InsertDecimal" class="com.fwdekker.randomness.decimal.InsertRandomDecimal"
+                text="Insert Random Decimal" description="Inserts a random decimal at the carets."/>
+        <action id="randomness.DecimalSettings" class="com.fwdekker.randomness.decimal.DecimalSettingsAction"
+                text="Random Decimal Settings" description="Settings for Insert Random Decimal."/>
 
-            <action id="randomness.IntegerSettings" class="com.fwdekker.randomness.integer.IntegerSettingsAction"
-                    text="Random Integer Settings" description="Settings for Insert Random Integer."/>
-            <action id="randomness.DecimalSettings" class="com.fwdekker.randomness.decimal.DecimalSettingsAction"
-                    text="Random Decimal Settings" description="Settings for Insert Random Decimal."/>
-            <action id="randomness.StringSettings" class="com.fwdekker.randomness.string.StringSettingsAction"
-                    text="Random String Settings" description="Settings for Insert Random String."/>
-            <action id="randomness.WordSettings" class="com.fwdekker.randomness.word.WordSettingsAction"
-                    text="Random Word Settings" description="Settings for Insert Random Word."/>
-        </group>
+        <!-- String -->
+        <action id="randomness.InsertString" class="com.fwdekker.randomness.string.InsertRandomString"
+                text="Insert Random String" description="Inserts a random string at the carets."/>
+        <action id="randomness.StringSettings" class="com.fwdekker.randomness.string.StringSettingsAction"
+                text="Random String Settings" description="Settings for Insert Random String."/>
 
+        <!-- Words -->
+        <action id="randomness.InsertWord" class="com.fwdekker.randomness.word.InsertRandomWord"
+                text="Insert Random Word" description="Inserts a random English word at the carets."/>
+        <action id="randomness.WordSettings" class="com.fwdekker.randomness.word.WordSettingsAction"
+                text="Random Word Settings" description="Settings for Insert Random Word."/>
+
+
+        <!-- Actions menu -->
         <action id="randomness.ShowGroup" class="com.fwdekker.randomness.InsertDataAction"
                 text="Insert Random Data" description="Inserts random data at the caret.">
             <keyboard-shortcut first-keystroke="alt R" keymap="$default"/>
         </action>
+        <group id="randomness.Group">
+            <reference id="randomness.InsertInteger"/>
+            <reference id="randomness.InsertDecimal"/>
+            <reference id="randomness.InsertString"/>
+            <reference id="randomness.InsertWord"/>
+
+            <separator/>
+
+            <reference id="randomness.IntegerSettings"/>
+            <reference id="randomness.DecimalSettings"/>
+            <reference id="randomness.StringSettings"/>
+            <reference id="randomness.WordSettings"/>
+        </group>
     </actions>
 </idea-plugin>
