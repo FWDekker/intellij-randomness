@@ -74,7 +74,7 @@ public final class ArraySettings extends Settings implements PersistentStateComp
      *
      * @param count the number of elements to generate
      */
-    public void setCount(int count) {
+    public void setCount(final int count) {
         this.count = count;
     }
 
@@ -92,7 +92,7 @@ public final class ArraySettings extends Settings implements PersistentStateComp
      *
      * @param brackets the brackets to surround arrays with
      */
-    public void setBrackets(String brackets) {
+    public void setBrackets(final String brackets) {
         this.brackets = brackets;
     }
 
@@ -110,7 +110,7 @@ public final class ArraySettings extends Settings implements PersistentStateComp
      *
      * @param separator the separator to place between generated elements
      */
-    public void setSeparator(String separator) {
+    public void setSeparator(final String separator) {
         this.separator = separator;
     }
 
@@ -128,7 +128,7 @@ public final class ArraySettings extends Settings implements PersistentStateComp
      *
      * @param spaceAfterSeparator {@code true} iff. a space should be placed after each separator
      */
-    public void setSpaceAfterSeparator(boolean spaceAfterSeparator) {
+    public void setSpaceAfterSeparator(final boolean spaceAfterSeparator) {
         this.spaceAfterSeparator = spaceAfterSeparator;
     }
 

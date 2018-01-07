@@ -23,7 +23,7 @@ public final class InsertRandomString extends InsertRandomSomething {
     /**
      * Constructs a new {@code InsertRandomString} that uses the given {@code StringSettings} instance.
      *
-     * @param arraySettings the settings to use for generating arrays
+     * @param arraySettings  the settings to use for generating arrays
      * @param stringSettings the settings to use for generating strings
      */
     InsertRandomString(final @NotNull ArraySettings arraySettings, final @NotNull StringSettings stringSettings) {

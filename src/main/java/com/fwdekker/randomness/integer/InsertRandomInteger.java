@@ -25,7 +25,7 @@ public final class InsertRandomInteger extends InsertRandomSomething {
     /**
      * Constructs a new {@code InsertRandomInteger} that uses the given {@code IntegerSettings} instance.
      *
-     * @param arraySettings the settings to use for generating arrays
+     * @param arraySettings   the settings to use for generating arrays
      * @param integerSettings the settings to use for generating integers
      */
     InsertRandomInteger(final @NotNull ArraySettings arraySettings, final @NotNull IntegerSettings integerSettings) {

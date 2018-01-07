@@ -5,15 +5,22 @@ import com.fwdekker.randomness.common.ValidationException;
 import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.intellij.openapi.ui.ValidationInfo;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
+/**
+ * Dialog for settings of random array generation.
+ */
+@SuppressFBWarnings(
+        value = {"NP_NULL_ON_SOME_PATH"},
+        justification = "Initialized by UI framework"
+)
 final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     private JPanel contentPane;
     private JLongSpinner countSpinner;
@@ -68,6 +75,7 @@ final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     }
 
     @Override
+    @SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH", justification = "")
     public void saveSettings(final @NotNull ArraySettings settings) {
         settings.setCount(Math.toIntExact(countSpinner.getValue()));
         settings.setBrackets(ButtonGroupHelper.getValue(bracketsGroup));

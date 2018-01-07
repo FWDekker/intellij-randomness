@@ -80,7 +80,7 @@
             <reference id="randomness.StringSettings"/>
             <reference id="randomness.WordSettings"/>
 
-            <separator />
+            <separator/>
 
             <reference id="randomness.ArraySettings"/>
         </group>
