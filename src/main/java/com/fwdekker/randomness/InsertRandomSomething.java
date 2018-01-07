@@ -9,6 +9,9 @@ import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import java.awt.event.InputEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -48,7 +51,7 @@ public abstract class InsertRandomSomething extends AnAction {
             final int start = caret.getSelectionStart();
             final int end = caret.getSelectionEnd();
 
-            final String string = generateString();
+            final String string = generateString(event);
             final int newEnd = start + string.length();
 
             document.replaceString(start, end, string);
@@ -72,4 +75,19 @@ public abstract class InsertRandomSomething extends AnAction {
      * @return a random string
      */
     protected abstract String generateString();
+
+    private String generateString(final AnActionEvent event) {
+        final boolean multiple = (event.getModifiers() & (InputEvent.SHIFT_MASK | InputEvent.SHIFT_DOWN_MASK)) == 0;
+        if (multiple) {
+            return generateString();
+        }
+
+        final List<String> strings = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+            strings.add(generateString());
+        }
+
+        return "[" + String.join(",", strings) + "]";
+    }
 }
