@@ -1,5 +1,6 @@
 package com.fwdekker.randomness;
 
+import com.fwdekker.randomness.array.ArraySettings;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -18,6 +19,26 @@ import java.util.List;
  * Inserts a randomly generated string at the position of the event's editor's caret.
  */
 public abstract class InsertRandomSomething extends AnAction {
+    private final ArraySettings arraySettings;
+
+
+    /**
+     * Constructs a new {@code InsertRandomSomething} that uses the singleton {@code ArraySettings} instance.
+     */
+    public InsertRandomSomething() {
+        this.arraySettings = ArraySettings.getInstance();
+    }
+
+    /**
+     * Constructs a new {@code InsertRandomSomething} that uses the given {@code ArraySettings} instance.
+     *
+     * @param arraySettings the settings to use for generating arrays
+     */
+    public InsertRandomSomething(final ArraySettings arraySettings) {
+        this.arraySettings = arraySettings;
+    }
+
+
     /**
      * Disables this action if no editor is currently opened.
      *
@@ -76,6 +97,14 @@ public abstract class InsertRandomSomething extends AnAction {
      */
     protected abstract String generateString();
 
+    /**
+     * Generates a random string based on the given {@link AnActionEvent}.
+     * <p>
+     * In particular, it selects whether to generate a single string or an array of strings.
+     *
+     * @param event the performed action
+     * @return a random string based on the given {@link AnActionEvent}
+     */
     private String generateString(final AnActionEvent event) {
         final boolean multiple = (event.getModifiers() & (InputEvent.SHIFT_MASK | InputEvent.SHIFT_DOWN_MASK)) == 0;
         if (multiple) {
@@ -84,10 +113,10 @@ public abstract class InsertRandomSomething extends AnAction {
 
         final List<String> strings = new ArrayList<>();
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < arraySettings.getCount(); i++) {
             strings.add(generateString());
         }
 
-        return "[" + String.join(",", strings) + "]";
+        return arraySettings.arrayify(strings);
     }
 }

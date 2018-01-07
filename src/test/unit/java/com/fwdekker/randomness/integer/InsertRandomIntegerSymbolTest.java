@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.integer;
 
+import com.fwdekker.randomness.array.ArraySettings;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public final class InsertRandomIntegerSymbolTest {
         integerSettings.setMaxValue(value);
         integerSettings.setGroupingSeparator(groupingSeparator);
 
-        final InsertRandomInteger insertRandomInteger = new InsertRandomInteger(integerSettings);
+        final InsertRandomInteger insertRandomInteger = new InsertRandomInteger(new ArraySettings(), integerSettings);
         final String randomString = insertRandomInteger.generateString();
 
         assertThat(randomString).isEqualTo(expectedString);

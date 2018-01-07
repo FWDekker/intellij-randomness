@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.decimal;
 
+import com.fwdekker.randomness.array.ArraySettings;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public final class InsertRandomDecimalSymbolTest {
         decimalSettings.setGroupingSeparator(groupingSeparator);
         decimalSettings.setDecimalSeparator(decimalSeparator);
 
-        final InsertRandomDecimal insertRandomDecimal = new InsertRandomDecimal(decimalSettings);
+        final InsertRandomDecimal insertRandomDecimal = new InsertRandomDecimal(new ArraySettings(), decimalSettings);
         final String randomString = insertRandomDecimal.generateString();
 
         assertThat(randomString).isEqualTo(expectedString);
