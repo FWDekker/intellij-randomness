@@ -27,6 +27,9 @@
         <applicationService
                 serviceImplementation="com.fwdekker.randomness.word.WordSettings"
                 serviceInterface="com.fwdekker.randomness.word.WordSettings"/>
+        <applicationService
+                serviceImplementation="com.fwdekker.randomness.array.ArraySettings"
+                serviceInterface="com.fwdekker.randomness.array.ArraySettings"/>
     </extensions>
 
     <actions>
@@ -54,6 +57,10 @@
         <action id="randomness.WordSettings" class="com.fwdekker.randomness.word.WordSettingsAction"
                 text="Random Word Settings" description="Settings for Insert Random Word."/>
 
+        <!-- Arrays -->
+        <action id="randomness.ArraySettings" class="com.fwdekker.randomness.array.ArraySettingsAction"
+                text="Random Array Settings" description="Settings for inserting arrays of values."/>
+
 
         <!-- Actions menu -->
         <action id="randomness.ShowGroup" class="com.fwdekker.randomness.InsertDataAction"
@@ -72,6 +79,10 @@
             <reference id="randomness.DecimalSettings"/>
             <reference id="randomness.StringSettings"/>
             <reference id="randomness.WordSettings"/>
+
+            <separator/>
+
+            <reference id="randomness.ArraySettings"/>
         </group>
     </actions>
 </idea-plugin>

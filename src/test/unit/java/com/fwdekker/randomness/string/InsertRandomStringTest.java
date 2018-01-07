@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.string;
 
+import com.fwdekker.randomness.array.ArraySettings;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -54,7 +55,7 @@ public final class InsertRandomStringTest {
         stringSettings.setEnclosure(enclosure);
         stringSettings.setAlphabets(alphabets);
 
-        final InsertRandomString insertRandomString = new InsertRandomString(stringSettings);
+        final InsertRandomString insertRandomString = new InsertRandomString(new ArraySettings(), stringSettings);
 
         assertThat(insertRandomString.generateString()).containsPattern(buildResultPattern());
     }
