@@ -84,6 +84,11 @@ public final class InsertRandomSomethingTest {
      */
     private static class InsertRandomSimple extends InsertRandomSomething {
         @Override
+        protected String getName() {
+            return "Insert Random Simple";
+        }
+
+        @Override
         protected String generateString() {
             return RANDOM_STRING;
         }
