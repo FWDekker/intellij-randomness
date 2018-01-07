@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Note that {@link LightPlatformCodeInsightFixtureTestCase} is a JUnit 3 test class.
  */
 @SuppressWarnings("PMD.AddEmptyString") // These were added for readability
-public final class InsertRandomSomethingTest extends LightPlatformCodeInsightFixtureTestCase {
+public final class InsertRandomSomethingIntegrationTest extends LightPlatformCodeInsightFixtureTestCase {
     /**
      * The recognizable string that is inserted by the insertion action.
      */
