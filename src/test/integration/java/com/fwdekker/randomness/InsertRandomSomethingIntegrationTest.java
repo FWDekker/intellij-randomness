@@ -114,38 +114,36 @@ public final class InsertRandomSomethingIntegrationTest extends LightPlatformCod
 
     public void testInsertMultiple() {
         WriteCommandAction.runWriteCommandAction(myFixture.getProject(),
-                () -> document.setText("DCtD41lFOk\nOCnrdYk9gE\nn1HAPKotDq"));
+                                                 () -> document.setText("DCtD41lFOk\nOCnrdYk9gE\nn1HAPKotDq"));
 
         addCaret(11);
         addCaret(22);
         myFixture.testAction(insertRandomSimple);
 
-        assertThat(document.getText()).isEqualTo(""
-                + RANDOM_STRING + "DCtD41lFOk\n"
-                + RANDOM_STRING + "OCnrdYk9gE\n"
-                + RANDOM_STRING + "n1HAPKotDq"
-        );
+        assertThat(document.getText())
+                .isEqualTo(RANDOM_STRING + "DCtD41lFOk\n"
+                                   + RANDOM_STRING + "OCnrdYk9gE\n"
+                                   + RANDOM_STRING + "n1HAPKotDq");
     }
 
     public void testReplaceMultiple() {
         WriteCommandAction.runWriteCommandAction(myFixture.getProject(),
-                () -> document.setText("YXSncq4FC9\nG31Ybbn1c4\nTNCqAhqPnh"));
+                                                 () -> document.setText("YXSncq4FC9\nG31Ybbn1c4\nTNCqAhqPnh"));
 
         setSelection(2, 4);
         addSelection(18, 23);
         addSelection(29, 29);
         myFixture.testAction(insertRandomSimple);
 
-        assertThat(document.getText()).isEqualTo(""
-                + "YX" + RANDOM_STRING + "cq4FC9\n"
-                + "G31Ybbn" + RANDOM_STRING
-                + "NCqAhq" + RANDOM_STRING + "Pnh"
-        );
+        assertThat(document.getText())
+                .isEqualTo("YX" + RANDOM_STRING + "cq4FC9\n"
+                                   + "G31Ybbn" + RANDOM_STRING
+                                   + "NCqAhq" + RANDOM_STRING + "Pnh");
     }
 
     public void testInsertAndReplace() {
         WriteCommandAction.runWriteCommandAction(myFixture.getProject(),
-                () -> document.setText("XOppzVdZTj\nZhAaVfQynW\nk3kWemkdAg"));
+                                                 () -> document.setText("XOppzVdZTj\nZhAaVfQynW\nk3kWemkdAg"));
 
         caretModel.moveToOffset(5);
         addSelection(6, 9);
@@ -153,10 +151,10 @@ public final class InsertRandomSomethingIntegrationTest extends LightPlatformCod
         addSelection(24, 28);
         myFixture.testAction(insertRandomSimple);
 
-        assertThat(document.getText()).isEqualTo(""
-                + "XOppz" + RANDOM_STRING + "V" + RANDOM_STRING + "j\n"
-                + "ZhAa" + RANDOM_STRING + "VfQynW\n"
-                + "k3" + RANDOM_STRING + "kdAg");
+        assertThat(document.getText())
+                .isEqualTo("XOppz" + RANDOM_STRING + "V" + RANDOM_STRING + "j\n"
+                                   + "ZhAa" + RANDOM_STRING + "VfQynW\n"
+                                   + "k3" + RANDOM_STRING + "kdAg");
     }
 
 
