@@ -4,6 +4,7 @@ import com.intellij.ui.popup.list.ListPopupImpl;
 import com.intellij.ui.speedSearch.SpeedSearch;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.stream.IntStream;
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
@@ -40,16 +41,6 @@ public final class JBPopupHelper {
      */
     public static void registerShiftActions(final ListPopupImpl popup, final String normalTitle,
                                             final String shiftTitle) {
-        final AbstractAction handleWithModifier = new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(), event.getWhen(),
-                                                       event.getModifiers(), KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
-                                                       KeyEvent.KEY_LOCATION_UNKNOWN);
-                popup.handleSelect(true, keyEvent);
-            }
-        };
-
         popup.registerAction("shiftReleased", KeyStroke.getKeyStroke("released SHIFT"), new AbstractAction() {
             public void actionPerformed(final ActionEvent event) {
                 popup.setCaption(normalTitle);
@@ -60,11 +51,30 @@ public final class JBPopupHelper {
                 popup.setCaption(shiftTitle);
             }
         });
-        popup.registerAction("shiftInvokeAction", KeyStroke.getKeyStroke("shift ENTER"), handleWithModifier);
+        popup.registerAction("shiftInvokeAction", KeyStroke.getKeyStroke("shift ENTER"), new AbstractAction() {
+            @Override
+            public void actionPerformed(final ActionEvent event) {
+                final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(), event.getWhen(),
+                                                       event.getModifiers(), KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
+                                                       KeyEvent.KEY_LOCATION_UNKNOWN);
+                popup.handleSelect(true, keyEvent);
+            }
+        });
 
         final int nine = 9;
-        for (int i = 0; i < nine; i++) {
-            popup.registerAction("shiftInvoke" + i, KeyStroke.getKeyStroke("shift " + i), handleWithModifier);
-        }
+        IntStream.range(1, nine).forEach(i -> popup
+                .registerAction("shiftInvoke" + i, KeyStroke.getKeyStroke("shift " + i),
+                                new AbstractAction() {
+                                    @Override
+                                    public void actionPerformed(final ActionEvent event) {
+                                        final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(),
+                                                                               event.getWhen(), event.getModifiers(),
+                                                                               KeyEvent.VK_ENTER,
+                                                                               KeyEvent.CHAR_UNDEFINED,
+                                                                               KeyEvent.KEY_LOCATION_UNKNOWN);
+                                        popup.getList().addSelectionInterval(i - 1, i - 1);
+                                        popup.handleSelect(true, keyEvent);
+                                    }
+                                }));
     }
 }
