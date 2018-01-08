@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.word;
 
 import com.fwdekker.randomness.InsertRandomSomething;
+import com.fwdekker.randomness.SettingsAction;
 import com.fwdekker.randomness.array.ArraySettings;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -37,6 +38,11 @@ public final class InsertRandomWord extends InsertRandomSomething {
     @Override
     protected String getName() {
         return "Insert Random Word";
+    }
+
+    @Override
+    protected SettingsAction getSettingsAction() {
+        return new WordSettingsAction();
     }
 
     /**

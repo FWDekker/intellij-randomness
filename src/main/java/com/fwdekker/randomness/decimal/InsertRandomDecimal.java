@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.InsertRandomSomething;
+import com.fwdekker.randomness.SettingsAction;
 import com.fwdekker.randomness.array.ArraySettings;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -38,6 +39,11 @@ public final class InsertRandomDecimal extends InsertRandomSomething {
     @Override
     protected String getName() {
         return "Insert Random Decimal";
+    }
+
+    @Override
+    protected SettingsAction getSettingsAction() {
+        return new DecimalSettingsAction();
     }
 
     /**

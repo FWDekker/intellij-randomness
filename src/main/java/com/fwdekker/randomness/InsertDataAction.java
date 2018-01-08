@@ -15,7 +15,8 @@ import com.intellij.ui.popup.list.ListPopupImpl;
  */
 public final class InsertDataAction extends AnAction {
     private static final String TITLE = "Insert Random Data";
-    private static final String ARRAY_TITLE = "Insert Random Array";
+    private static final String SHIFT_TITLE = "Insert Random Array";
+    private static final String CTRL_TITLE = "Insert Random Settings";
     private static final String AD_TEXT = "Hold Shift to insert an array";
 
 
@@ -32,7 +33,8 @@ public final class InsertDataAction extends AnAction {
                 .createActionGroupPopup(TITLE, actionGroup, event.getDataContext(),
                                         JBPopupFactory.ActionSelectionAid.NUMBERING, true, event.getPlace());
         JBPopupHelper.disableSpeedSearch(popup);
-        JBPopupHelper.registerShiftActions(popup, TITLE, ARRAY_TITLE);
+        JBPopupHelper.registerShiftActions(popup, TITLE, SHIFT_TITLE);
+        JBPopupHelper.registerCtrlActions(popup, TITLE, CTRL_TITLE);
 
         popup.setAdText(AD_TEXT);
         popup.showCenteredInCurrentWindow(project);

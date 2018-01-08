@@ -60,6 +60,11 @@ public abstract class InsertRandomSomething extends AnAction {
      */
     @Override
     public final void actionPerformed(final AnActionEvent event) {
+        if ((event.getModifiers() & (InputEvent.CTRL_MASK | InputEvent.CTRL_DOWN_MASK)) != 0) {
+            getSettingsAction().actionPerformed(event);
+            return;
+        }
+
         final Editor editor = event.getData(CommonDataKeys.EDITOR);
         if (editor == null) {
             return;
@@ -89,6 +94,13 @@ public abstract class InsertRandomSomething extends AnAction {
      * @return the name of the action to display
      */
     protected abstract String getName();
+
+    /**
+     * Returns the {@link SettingsAction} to manage this action's behaviour.
+     *
+     * @return the {@link SettingsAction} to manage this action's behaviour
+     */
+    protected abstract SettingsAction getSettingsAction();
 
     /**
      * Generates a random string.

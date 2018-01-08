@@ -45,6 +45,7 @@ public final class InsertRandomSomethingTest {
 
         insertRandomSomething.actionPerformed(event);
 
+        verify(event, times(1)).getModifiers();
         verify(event, times(1)).getData(CommonDataKeys.EDITOR);
         verifyNoMoreInteractions(event);
     }
@@ -95,6 +96,11 @@ public final class InsertRandomSomethingTest {
         @Override
         protected String getName() {
             return "Insert Random Simple";
+        }
+
+        @Override
+        protected SettingsAction getSettingsAction() {
+            return null;
         }
 
         @Override

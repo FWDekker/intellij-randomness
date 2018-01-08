@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.InsertRandomSomething;
+import com.fwdekker.randomness.SettingsAction;
 import com.fwdekker.randomness.array.ArraySettings;
 import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,11 @@ public final class InsertRandomString extends InsertRandomSomething {
     @Override
     protected String getName() {
         return "Insert Random String";
+    }
+
+    @Override
+    protected SettingsAction getSettingsAction() {
+        return new StringSettingsAction();
     }
 
     /**
