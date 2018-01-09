@@ -1,8 +1,6 @@
 package com.fwdekker.randomness.word;
 
 import com.fwdekker.randomness.InsertRandomSomething;
-import com.fwdekker.randomness.SettingsAction;
-import com.fwdekker.randomness.array.ArraySettings;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;
@@ -25,12 +23,9 @@ public final class InsertRandomWord extends InsertRandomSomething {
     /**
      * Constructs a new {@code InsertRandomWord} that uses the given {@code WordSettings} instance.
      *
-     * @param arraySettings the settings to use for generating arrays
      * @param wordSettings  the settings to use for generating words
      */
-    InsertRandomWord(final @NotNull ArraySettings arraySettings, final @NotNull WordSettings wordSettings) {
-        super(arraySettings);
-
+    InsertRandomWord(final @NotNull WordSettings wordSettings) {
         this.wordSettings = wordSettings;
     }
 
@@ -38,11 +33,6 @@ public final class InsertRandomWord extends InsertRandomSomething {
     @Override
     protected String getName() {
         return "Insert Word";
-    }
-
-    @Override
-    protected SettingsAction getSettingsAction() {
-        return new WordSettingsAction();
     }
 
     /**

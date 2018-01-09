@@ -1,6 +1,5 @@
 package com.fwdekker.randomness;
 
-import com.fwdekker.randomness.array.ArraySettings;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
@@ -45,7 +44,6 @@ public final class InsertRandomSomethingTest {
 
         insertRandomSomething.actionPerformed(event);
 
-        verify(event, times(1)).getModifiers();
         verify(event, times(1)).getData(CommonDataKeys.EDITOR);
         verifyNoMoreInteractions(event);
     }
@@ -85,22 +83,9 @@ public final class InsertRandomSomethingTest {
      * Simple implementation of {@code InsertRandomSomething}.
      */
     private static class InsertRandomSimple extends InsertRandomSomething {
-        /**
-         * Constructs a new {@code InsertRandomSimple} with default settings.
-         */
-        InsertRandomSimple() {
-            super(new ArraySettings());
-        }
-
-
         @Override
         protected String getName() {
             return "Insert Simple";
-        }
-
-        @Override
-        protected SettingsAction getSettingsAction() {
-            return null;
         }
 
         @Override

@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.word;
 
-import com.fwdekker.randomness.array.ArraySettings;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;
@@ -47,7 +46,7 @@ public final class InsertRandomWordTest {
         wordSettings.setMaxLength(maxLength);
         wordSettings.setEnclosure(enclosure);
 
-        final InsertRandomWord insertRandomWord = new InsertRandomWord(new ArraySettings(), wordSettings);
+        final InsertRandomWord insertRandomWord = new InsertRandomWord(wordSettings);
         final String randomString = insertRandomWord.generateString();
 
         assertThat(randomString)

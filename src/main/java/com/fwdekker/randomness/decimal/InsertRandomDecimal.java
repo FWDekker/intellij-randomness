@@ -1,8 +1,6 @@
 package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.InsertRandomSomething;
-import com.fwdekker.randomness.SettingsAction;
-import com.fwdekker.randomness.array.ArraySettings;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.concurrent.ThreadLocalRandom;
@@ -26,12 +24,9 @@ public final class InsertRandomDecimal extends InsertRandomSomething {
     /**
      * Constructs a new {@code InsertRandomDecimal} that uses the given {@code DecimalSettings} instance.
      *
-     * @param arraySettings   the settings to use for generating arrays
      * @param decimalSettings the settings to use for generating decimals
      */
-    InsertRandomDecimal(final @NotNull ArraySettings arraySettings, final @NotNull DecimalSettings decimalSettings) {
-        super(arraySettings);
-
+    InsertRandomDecimal(final @NotNull DecimalSettings decimalSettings) {
         this.decimalSettings = decimalSettings;
     }
 
@@ -39,11 +34,6 @@ public final class InsertRandomDecimal extends InsertRandomSomething {
     @Override
     protected String getName() {
         return "Insert Decimal";
-    }
-
-    @Override
-    protected SettingsAction getSettingsAction() {
-        return new DecimalSettingsAction();
     }
 
     /**

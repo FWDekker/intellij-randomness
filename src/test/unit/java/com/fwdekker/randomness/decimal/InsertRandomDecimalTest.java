@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.decimal;
 
-import com.fwdekker.randomness.array.ArraySettings;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;
@@ -68,7 +67,7 @@ public final class InsertRandomDecimalTest {
         decimalSettings.setMaxValue(maxValue);
         decimalSettings.setDecimalCount(decimalCount);
 
-        final InsertRandomDecimal insertRandomDecimal = new InsertRandomDecimal(new ArraySettings(), decimalSettings);
+        final InsertRandomDecimal insertRandomDecimal = new InsertRandomDecimal(decimalSettings);
         final String randomString = insertRandomDecimal.generateString();
 
         assertThat(randomString).isEqualTo(expectedString);

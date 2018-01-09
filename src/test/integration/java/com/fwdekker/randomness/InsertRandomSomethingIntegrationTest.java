@@ -205,11 +205,6 @@ public final class InsertRandomSomethingIntegrationTest extends LightPlatformCod
         }
 
         @Override
-        protected SettingsAction getSettingsAction() {
-            return null;
-        }
-
-        @Override
         protected String generateString() {
             return RANDOM_STRING;
         }

@@ -1,8 +1,6 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.InsertRandomSomething;
-import com.fwdekker.randomness.SettingsAction;
-import com.fwdekker.randomness.array.ArraySettings;
 import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,12 +22,9 @@ public final class InsertRandomString extends InsertRandomSomething {
     /**
      * Constructs a new {@code InsertRandomString} that uses the given {@code StringSettings} instance.
      *
-     * @param arraySettings  the settings to use for generating arrays
      * @param stringSettings the settings to use for generating strings
      */
-    InsertRandomString(final @NotNull ArraySettings arraySettings, final @NotNull StringSettings stringSettings) {
-        super(arraySettings);
-
+    InsertRandomString(final @NotNull StringSettings stringSettings) {
         this.stringSettings = stringSettings;
     }
 
@@ -37,11 +32,6 @@ public final class InsertRandomString extends InsertRandomSomething {
     @Override
     protected String getName() {
         return "Insert String";
-    }
-
-    @Override
-    protected SettingsAction getSettingsAction() {
-        return new StringSettingsAction();
     }
 
     /**
