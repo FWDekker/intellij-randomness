@@ -3,7 +3,6 @@ package com.fwdekker.randomness;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import java.awt.event.InputEvent;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +40,7 @@ public abstract class DataGroupAction extends ActionGroup {
 
     @Override
     public final boolean canBePerformed(final DataContext context) {
-        return context.getData(CommonDataKeys.EDITOR) != null;
+        return true;
     }
 
     @Override
