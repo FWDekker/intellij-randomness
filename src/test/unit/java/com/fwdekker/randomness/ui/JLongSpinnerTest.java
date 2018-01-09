@@ -60,9 +60,9 @@ public final class JLongSpinnerTest {
     public void testGetSetMaxValue() {
         final JLongSpinner spinner = new JLongSpinner();
 
-        spinner.setMinValue(166L);
+        spinner.setMaxValue(166L);
 
-        assertThat(spinner.getMinValue()).isEqualTo(166L);
+        assertThat(spinner.getMaxValue()).isEqualTo(166L);
     }
 
 

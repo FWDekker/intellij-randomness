@@ -23,18 +23,6 @@ public abstract class DataArrayInsertAction extends DataInsertAction {
         this.dataInsertAction = dataInsertAction;
     }
 
-    /**
-     * Constructs a new {@code DataArrayInsertAction} that uses the given {@code ArraySettings} instance.
-     *
-     * @param dataInsertAction the action to generate data with
-     * @param arraySettings         the settings to use for generating arrays
-     */
-    public DataArrayInsertAction(final DataInsertAction dataInsertAction,
-                                 final ArraySettings arraySettings) {
-        this.arraySettings = arraySettings;
-        this.dataInsertAction = dataInsertAction;
-    }
-
 
     /**
      * Generates a random array of strings.

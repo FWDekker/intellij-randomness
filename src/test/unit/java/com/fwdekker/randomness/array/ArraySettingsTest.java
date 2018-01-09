@@ -1,5 +1,7 @@
 package com.fwdekker.randomness.array;
 
+import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,5 +68,23 @@ public final class ArraySettingsTest {
         arraySettings.setSpaceAfterSeparator(false);
 
         assertThat(arraySettings.isSpaceAfterSeparator()).isEqualTo(false);
+    }
+
+
+    @Test
+    public void testArrayifyEmpty() {
+        assertThat(arraySettings.arrayify(Collections.emptyList()))
+                .isEqualTo("[]");
+    }
+
+    @Test
+    public void testArrayify() {
+        arraySettings.setCount(4);
+        arraySettings.setBrackets("@#");
+        arraySettings.setSeparator(";;");
+        arraySettings.setSpaceAfterSeparator(true);
+
+        assertThat(arraySettings.arrayify(Arrays.asList("Garhwali", "Pattypan", "Troll")))
+                .isEqualTo("@Garhwali;; Pattypan;; Troll#");
     }
 }
