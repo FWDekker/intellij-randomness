@@ -16,14 +16,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Parameterized unit tests for {@link StringInsertAction}.
  */
 @RunWith(Parameterized.class)
-public final class InsertRandomStringTest {
+public final class StringInsertActionTest {
     private final int minLength;
     private final int maxLength;
     private final String enclosure;
     private final Set<Alphabet> alphabets;
 
 
-    public InsertRandomStringTest(final int minLength, final int maxLength, final String enclosure,
+    public StringInsertActionTest(final int minLength, final int maxLength, final String enclosure,
                                   final Alphabet... alphabets) {
         this.minLength = minLength;
         this.maxLength = maxLength;

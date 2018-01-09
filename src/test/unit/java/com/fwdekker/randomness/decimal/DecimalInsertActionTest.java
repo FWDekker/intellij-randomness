@@ -13,14 +13,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Parameterized unit tests for {@link DecimalInsertAction}.
  */
 @RunWith(Parameterized.class)
-public final class InsertRandomDecimalTest {
+public final class DecimalInsertActionTest {
     private final double minValue;
     private final double maxValue;
     private final int decimalCount;
     private final String expectedString;
 
 
-    public InsertRandomDecimalTest(final double minValue, final double maxValue, final int decimalCount,
+    public DecimalInsertActionTest(final double minValue, final double maxValue, final int decimalCount,
                                    final String expectedString) {
         this.minValue = minValue;
         this.maxValue = maxValue;

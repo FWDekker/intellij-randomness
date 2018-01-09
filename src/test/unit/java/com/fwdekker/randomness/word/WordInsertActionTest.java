@@ -13,13 +13,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Parameterized unit tests for {@link WordInsertAction}.
  */
 @RunWith(Parameterized.class)
-public final class InsertRandomWordTest {
+public final class WordInsertActionTest {
     private final int minLength;
     private final int maxLength;
     private final String enclosure;
 
 
-    public InsertRandomWordTest(final int minLength, final int maxLength, final String enclosure) {
+    public WordInsertActionTest(final int minLength, final int maxLength, final String enclosure) {
         this.minLength = minLength;
         this.maxLength = maxLength;
         this.enclosure = enclosure;

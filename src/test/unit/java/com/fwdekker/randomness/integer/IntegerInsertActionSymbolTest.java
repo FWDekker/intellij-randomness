@@ -13,13 +13,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for the symbols used in {@link IntegerInsertAction}.
  */
 @RunWith(Parameterized.class)
-public final class InsertRandomIntegerSymbolTest {
+public final class IntegerInsertActionSymbolTest {
     private final long value;
     private final char groupingSeparator;
     private final String expectedString;
 
 
-    public InsertRandomIntegerSymbolTest(final long value, final char groupingSeparator, final String expectedString) {
+    public IntegerInsertActionSymbolTest(final long value, final char groupingSeparator, final String expectedString) {
         this.value = value;
         this.groupingSeparator = groupingSeparator;
         this.expectedString = expectedString;

@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for the symbols used in {@link DecimalInsertAction}.
  */
 @RunWith(Parameterized.class)
-public final class InsertRandomDecimalSymbolTest {
+public final class DecimalInsertActionSymbolTest {
     private final double value;
     private final int decimalCount;
     private final char groupingSeparator;
@@ -21,7 +21,7 @@ public final class InsertRandomDecimalSymbolTest {
     private final String expectedString;
 
 
-    public InsertRandomDecimalSymbolTest(final double value, final int decimalCount, final char groupingSeparator,
+    public DecimalInsertActionSymbolTest(final double value, final int decimalCount, final char groupingSeparator,
                                          final char decimalSeparator, final String expectedString) {
         this.value = value;
         this.decimalCount = decimalCount;

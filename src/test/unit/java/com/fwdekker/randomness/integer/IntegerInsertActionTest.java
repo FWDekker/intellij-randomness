@@ -13,13 +13,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Parameterized unit tests for {@link IntegerInsertAction}.
  */
 @RunWith(Parameterized.class)
-public final class InsertRandomIntegerTest {
+public final class IntegerInsertActionTest {
     private final int minValue;
     private final int maxValue;
     private final String expectedString;
 
 
-    public InsertRandomIntegerTest(final int minValue, final int maxValue, final String expectedString) {
+    public IntegerInsertActionTest(final int minValue, final int maxValue, final String expectedString) {
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.expectedString = expectedString;
