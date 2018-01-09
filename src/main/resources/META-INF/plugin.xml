@@ -68,10 +68,12 @@
             <keyboard-shortcut first-keystroke="alt R" keymap="$default"/>
         </action>
         <group id="randomness.Group">
-            <reference id="randomness.InsertInteger"/>
-            <reference id="randomness.InsertDecimal"/>
-            <reference id="randomness.InsertString"/>
-            <reference id="randomness.InsertWord"/>
+            <group id="randomness.IntegerGroup" class="com.fwdekker.randomness.integer.IntegerGroupAction"
+                   popup="true"/>
+            <group id="randomness.DecimalGroup" class="com.fwdekker.randomness.decimal.DecimalGroupAction"
+                   popup="true"/>
+            <group id="randomness.StringGroup" class="com.fwdekker.randomness.string.StringGroupAction" popup="true"/>
+            <group id="randomness.WordGroup" class="com.fwdekker.randomness.word.WordGroupAction" popup="true"/>
 
             <separator/>
 
