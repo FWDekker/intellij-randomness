@@ -33,7 +33,7 @@
     </extensions>
 
     <actions>
-        <action id="randomness.ShowGroup" class="com.fwdekker.randomness.InsertDataAction"
+        <action id="randomness.ShowGroup" class="com.fwdekker.randomness.PopupAction"
                 text="Insert Data" description="Inserts random data at the caret.">
             <keyboard-shortcut first-keystroke="alt R" keymap="$default"/>
         </action>

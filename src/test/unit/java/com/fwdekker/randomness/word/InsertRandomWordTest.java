@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
- * Parameterized unit tests for {@link com.fwdekker.randomness.word.InsertRandomWord}.
+ * Parameterized unit tests for {@link WordInsertAction}.
  */
 @RunWith(Parameterized.class)
 public final class InsertRandomWordTest {
@@ -46,7 +46,7 @@ public final class InsertRandomWordTest {
         wordSettings.setMaxLength(maxLength);
         wordSettings.setEnclosure(enclosure);
 
-        final InsertRandomWord insertRandomWord = new InsertRandomWord(wordSettings);
+        final WordInsertAction insertRandomWord = new WordInsertAction(wordSettings);
         final String randomString = insertRandomWord.generateString();
 
         assertThat(randomString)

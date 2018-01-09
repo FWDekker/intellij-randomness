@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.decimal;
 
-import com.fwdekker.randomness.InsertRandomSomething;
+import com.fwdekker.randomness.DataInsertAction;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.concurrent.ThreadLocalRandom;
@@ -10,23 +10,23 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Generates a random integer based on the settings in {@link DecimalSettings}.
  */
-public final class InsertRandomDecimal extends InsertRandomSomething {
+public final class DecimalInsertAction extends DataInsertAction {
     private final DecimalSettings decimalSettings;
 
 
     /**
-     * Constructs a new {@code InsertRandomDecimal} that uses the singleton {@code DecimalSettings} instance.
+     * Constructs a new {@code DecimalInsertAction} that uses the singleton {@code DecimalSettings} instance.
      */
-    public InsertRandomDecimal() {
+    public DecimalInsertAction() {
         this.decimalSettings = DecimalSettings.getInstance();
     }
 
     /**
-     * Constructs a new {@code InsertRandomDecimal} that uses the given {@code DecimalSettings} instance.
+     * Constructs a new {@code DecimalInsertAction} that uses the given {@code DecimalSettings} instance.
      *
      * @param decimalSettings the settings to use for generating decimals
      */
-    InsertRandomDecimal(final @NotNull DecimalSettings decimalSettings) {
+    DecimalInsertAction(final @NotNull DecimalSettings decimalSettings) {
         this.decimalSettings = decimalSettings;
     }
 

@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.word;
 
-import com.fwdekker.randomness.InsertRandomSomething;
+import com.fwdekker.randomness.DataInsertAction;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;
@@ -9,23 +9,23 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Generates random alphanumerical English words based on the settings in {@link WordSettings}.
  */
-public final class InsertRandomWord extends InsertRandomSomething {
+public final class WordInsertAction extends DataInsertAction {
     private final WordSettings wordSettings;
 
 
     /**
-     * Constructs a new {@code InsertRandomWord} that uses the singleton {@code WordSettings} instance.
+     * Constructs a new {@code WordInsertAction} that uses the singleton {@code WordSettings} instance.
      */
-    public InsertRandomWord() {
+    public WordInsertAction() {
         this.wordSettings = WordSettings.getInstance();
     }
 
     /**
-     * Constructs a new {@code InsertRandomWord} that uses the given {@code WordSettings} instance.
+     * Constructs a new {@code WordInsertAction} that uses the given {@code WordSettings} instance.
      *
      * @param wordSettings  the settings to use for generating words
      */
-    InsertRandomWord(final @NotNull WordSettings wordSettings) {
+    WordInsertAction(final @NotNull WordSettings wordSettings) {
         this.wordSettings = wordSettings;
     }
 

@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
- * Parameterized unit tests for {@link InsertRandomInteger}.
+ * Parameterized unit tests for {@link IntegerInsertAction}.
  */
 @RunWith(Parameterized.class)
 public final class InsertRandomIntegerTest {
@@ -44,7 +44,7 @@ public final class InsertRandomIntegerTest {
         integerSettings.setMinValue(minValue);
         integerSettings.setMaxValue(maxValue);
 
-        final InsertRandomInteger insertRandomInteger = new InsertRandomInteger(integerSettings);
+        final IntegerInsertAction insertRandomInteger = new IntegerInsertAction(integerSettings);
         final String randomString = insertRandomInteger.generateString();
 
         assertThat(randomString).isEqualTo(expectedString);

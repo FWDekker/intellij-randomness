@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nullable;
  * A group of actions for a particular type of random data that can be generated.
  */
 public abstract class DataGroupAction extends ActionGroup {
-    private final InsertRandomSomething insertAction;
-    private final InsertRandomSomethingArray insertArrayAction;
+    private final DataInsertAction insertAction;
+    private final DataArrayInsertAction insertArrayAction;
     private final SettingsAction settingsAction;
 
 
@@ -67,18 +67,18 @@ public abstract class DataGroupAction extends ActionGroup {
 
 
     /**
-     * Returns a new {@link InsertRandomSomething}.
+     * Returns a new {@link DataInsertAction}.
      *
-     * @return a new {@link InsertRandomSomething}
+     * @return a new {@link DataInsertAction}
      */
-    protected abstract InsertRandomSomething getInsertAction();
+    protected abstract DataInsertAction getInsertAction();
 
     /**
-     * Returns a new {@link InsertRandomSomethingArray}.
+     * Returns a new {@link DataArrayInsertAction}.
      *
-     * @return a new {@link InsertRandomSomethingArray}
+     * @return a new {@link DataArrayInsertAction}
      */
-    protected abstract InsertRandomSomethingArray getInsertArrayAction();
+    protected abstract DataArrayInsertAction getInsertArrayAction();
 
     /**
      * Returns a new {@link SettingsAction}.

@@ -13,7 +13,7 @@ import com.intellij.ui.popup.list.ListPopupImpl;
 /**
  * Shows a popup for all available actions.
  */
-public final class InsertDataAction extends AnAction {
+public final class PopupAction extends AnAction {
     private static final String TITLE = "Insert Random Data";
     private static final String SHIFT_TITLE = "Insert Random Array";
     private static final String CTRL_TITLE = "Insert Random Settings";

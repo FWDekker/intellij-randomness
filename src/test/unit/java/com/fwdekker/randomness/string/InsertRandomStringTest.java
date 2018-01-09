@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
- * Parameterized unit tests for {@link InsertRandomString}.
+ * Parameterized unit tests for {@link StringInsertAction}.
  */
 @RunWith(Parameterized.class)
 public final class InsertRandomStringTest {
@@ -54,7 +54,7 @@ public final class InsertRandomStringTest {
         stringSettings.setEnclosure(enclosure);
         stringSettings.setAlphabets(alphabets);
 
-        final InsertRandomString insertRandomString = new InsertRandomString(stringSettings);
+        final StringInsertAction insertRandomString = new StringInsertAction(stringSettings);
 
         assertThat(insertRandomString.generateString()).containsPattern(buildResultPattern());
     }

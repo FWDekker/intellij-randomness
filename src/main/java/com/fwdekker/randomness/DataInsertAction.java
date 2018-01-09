@@ -14,7 +14,7 @@ import com.intellij.openapi.project.Project;
 /**
  * Inserts a randomly generated string at the positions of the event's editor's carets.
  */
-public abstract class InsertRandomSomething extends AnAction {
+public abstract class DataInsertAction extends AnAction {
     /**
      * Disables this action if no editor is currently opened.
      *

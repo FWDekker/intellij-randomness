@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
- * Unit tests for the symbols used in {@link InsertRandomDecimal}.
+ * Unit tests for the symbols used in {@link DecimalInsertAction}.
  */
 @RunWith(Parameterized.class)
 public final class InsertRandomDecimalSymbolTest {
@@ -57,7 +57,7 @@ public final class InsertRandomDecimalSymbolTest {
         decimalSettings.setGroupingSeparator(groupingSeparator);
         decimalSettings.setDecimalSeparator(decimalSeparator);
 
-        final InsertRandomDecimal insertRandomDecimal = new InsertRandomDecimal(decimalSettings);
+        final DecimalInsertAction insertRandomDecimal = new DecimalInsertAction(decimalSettings);
         final String randomString = insertRandomDecimal.generateString();
 
         assertThat(randomString).isEqualTo(expectedString);

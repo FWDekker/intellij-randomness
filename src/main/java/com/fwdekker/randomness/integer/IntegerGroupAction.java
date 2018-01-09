@@ -1,8 +1,8 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.DataGroupAction;
-import com.fwdekker.randomness.InsertRandomSomething;
-import com.fwdekker.randomness.InsertRandomSomethingArray;
+import com.fwdekker.randomness.DataInsertAction;
+import com.fwdekker.randomness.DataArrayInsertAction;
 import com.fwdekker.randomness.SettingsAction;
 
 
@@ -11,13 +11,13 @@ import com.fwdekker.randomness.SettingsAction;
  */
 public final class IntegerGroupAction extends DataGroupAction {
     @Override
-    protected InsertRandomSomething getInsertAction() {
-        return new InsertRandomInteger();
+    protected DataInsertAction getInsertAction() {
+        return new IntegerInsertAction();
     }
 
     @Override
-    protected InsertRandomSomethingArray getInsertArrayAction() {
-        return new IntegerArrayAction();
+    protected DataArrayInsertAction getInsertArrayAction() {
+        return new IntegerArrayInsertAction();
     }
 
     @Override
