@@ -12,7 +12,7 @@ import com.intellij.openapi.project.Project;
 
 
 /**
- * Inserts a randomly generated string at the position of the event's editor's caret.
+ * Inserts a randomly generated string at the positions of the event's editor's carets.
  */
 public abstract class InsertRandomSomething extends AnAction {
     /**

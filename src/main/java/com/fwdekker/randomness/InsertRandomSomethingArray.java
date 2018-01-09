@@ -1,11 +1,13 @@
 package com.fwdekker.randomness;
 
 import com.fwdekker.randomness.array.ArraySettings;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Inserts a randomly generated array of strings at the positions of the event's editor's carets.
+ */
 public abstract class InsertRandomSomethingArray extends InsertRandomSomething {
     private final ArraySettings arraySettings;
     private final InsertRandomSomething insertRandomSomething;
@@ -13,6 +15,8 @@ public abstract class InsertRandomSomethingArray extends InsertRandomSomething {
 
     /**
      * Constructs a new {@code InsertRandomSomethingArray} that uses the singleton {@code ArraySettings} instance.
+     *
+     * @param insertRandomSomething the action to generate data with
      */
     public InsertRandomSomethingArray(final InsertRandomSomething insertRandomSomething) {
         this.arraySettings = ArraySettings.getInstance();
@@ -22,21 +26,20 @@ public abstract class InsertRandomSomethingArray extends InsertRandomSomething {
     /**
      * Constructs a new {@code InsertRandomSomethingArray} that uses the given {@code ArraySettings} instance.
      *
-     * @param arraySettings the settings to use for generating arrays
+     * @param insertRandomSomething the action to generate data with
+     * @param arraySettings         the settings to use for generating arrays
      */
-    public InsertRandomSomethingArray(final ArraySettings arraySettings, final InsertRandomSomething insertRandomSomething) {
+    public InsertRandomSomethingArray(final InsertRandomSomething insertRandomSomething,
+                                      final ArraySettings arraySettings) {
         this.arraySettings = arraySettings;
         this.insertRandomSomething = insertRandomSomething;
     }
 
 
     /**
-     * Generates a random string based on the given {@link AnActionEvent}.
-     * <p>
-     * In particular, it selects whether to generate a single string or an array of strings.
+     * Generates a random array of strings.
      *
-     * @param event the performed action
-     * @return a random string based on the given {@link AnActionEvent}
+     * @return a random array of strings
      */
     @Override
     protected final String generateString() {

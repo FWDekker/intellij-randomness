@@ -10,12 +10,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
+/**
+ * A group of actions for a particular type of random data that can be generated.
+ */
 public abstract class DataGroupAction extends ActionGroup {
     private final InsertRandomSomething insertAction;
     private final InsertRandomSomethingArray insertArrayAction;
     private final SettingsAction settingsAction;
 
 
+    /**
+     * Constructs a new {@code DataGroupAction}.
+     */
     public DataGroupAction() {
         insertAction = getInsertAction();
         insertArrayAction = getInsertArrayAction();
@@ -25,7 +31,7 @@ public abstract class DataGroupAction extends ActionGroup {
 
     @NotNull
     @Override
-    public AnAction[] getChildren(final @Nullable AnActionEvent e) {
+    public final AnAction[] getChildren(final @Nullable AnActionEvent event) {
         return new AnAction[] {
                 insertAction,
                 insertArrayAction,
@@ -34,12 +40,13 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
     @Override
-    public boolean canBePerformed(final DataContext context) {
+    public final boolean canBePerformed(final DataContext context) {
         return context.getData(CommonDataKeys.EDITOR) != null;
     }
 
     @Override
-    public void actionPerformed(final AnActionEvent event) {
+    @SuppressWarnings("PMD.ConfusingTernary") // != 0 for binary mask is expected
+    public final void actionPerformed(final AnActionEvent event) {
         super.actionPerformed(event);
 
         if ((event.getModifiers() & (InputEvent.SHIFT_MASK | InputEvent.SHIFT_DOWN_MASK)) != 0) {
@@ -52,16 +59,31 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
     @Override
-    public void update(final AnActionEvent event) {
+    public final void update(final AnActionEvent event) {
         super.update(event);
 
         event.getPresentation().setText(insertAction.getName());
     }
 
 
+    /**
+     * Returns a new {@link InsertRandomSomething}.
+     *
+     * @return a new {@link InsertRandomSomething}
+     */
     protected abstract InsertRandomSomething getInsertAction();
 
+    /**
+     * Returns a new {@link InsertRandomSomethingArray}.
+     *
+     * @return a new {@link InsertRandomSomethingArray}
+     */
     protected abstract InsertRandomSomethingArray getInsertArrayAction();
 
+    /**
+     * Returns a new {@link SettingsAction}.
+     *
+     * @return a new {@link SettingsAction}
+     */
     protected abstract SettingsAction getSettingsAction();
 }

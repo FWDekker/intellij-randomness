@@ -62,8 +62,8 @@ public final class JBPopupHelper {
         });
 
         final int nine = 9;
-        IntStream.range(1, nine).forEach(i -> popup
-                .registerAction("shiftInvoke" + i, KeyStroke.getKeyStroke("shift " + i),
+        IntStream.range(1, nine).forEach(key -> popup
+                .registerAction("shiftInvoke" + key, KeyStroke.getKeyStroke("shift " + key),
                                 new AbstractAction() {
                                     @Override
                                     public void actionPerformed(final ActionEvent event) {
@@ -72,7 +72,7 @@ public final class JBPopupHelper {
                                                                                KeyEvent.VK_ENTER,
                                                                                KeyEvent.CHAR_UNDEFINED,
                                                                                KeyEvent.KEY_LOCATION_UNKNOWN);
-                                        popup.getList().addSelectionInterval(i - 1, i - 1);
+                                        popup.getList().addSelectionInterval(key - 1, key - 1);
                                         popup.handleSelect(true, keyEvent);
                                     }
                                 }));
@@ -108,8 +108,8 @@ public final class JBPopupHelper {
         });
 
         final int nine = 9;
-        IntStream.range(1, nine).forEach(i -> popup
-                .registerAction("ctrlInvoke" + i, KeyStroke.getKeyStroke("control " + i),
+        IntStream.range(1, nine).forEach(key -> popup
+                .registerAction("ctrlInvoke" + key, KeyStroke.getKeyStroke("control " + key),
                                 new AbstractAction() {
                                     @Override
                                     public void actionPerformed(final ActionEvent event) {
@@ -118,7 +118,7 @@ public final class JBPopupHelper {
                                                                                KeyEvent.VK_ENTER,
                                                                                KeyEvent.CHAR_UNDEFINED,
                                                                                KeyEvent.KEY_LOCATION_UNKNOWN);
-                                        popup.getList().addSelectionInterval(i - 1, i - 1);
+                                        popup.getList().addSelectionInterval(key - 1, key - 1);
                                         popup.handleSelect(true, keyEvent);
                                     }
                                 }));
