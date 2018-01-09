@@ -15,6 +15,6 @@ public final class DecimalSettingsAction extends SettingsAction {
 
     @Override
     public String getTitle() {
-        return "Random Decimal Settings";
+        return "Decimal Settings";
     }
 }

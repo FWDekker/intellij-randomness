@@ -13,18 +13,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
- * Integration tests for {@link InsertRandomSomething}.
+ * Integration tests for {@link DataInsertAction}.
  * <p>
  * Note that {@link LightPlatformCodeInsightFixtureTestCase} is a JUnit 3 test class.
  */
 @SuppressWarnings("PMD.AddEmptyString") // These were added for readability
-public final class InsertRandomSomethingIntegrationTest extends LightPlatformCodeInsightFixtureTestCase {
+public final class DataInsertActionIntegrationTest extends LightPlatformCodeInsightFixtureTestCase {
     /**
      * The recognizable string that is inserted by the insertion action.
      */
     private static final String RANDOM_STRING = "random_string";
 
-    private InsertRandomSimple insertRandomSimple;
+    private SimpleInsertAction insertRandomSimple;
     private Document document;
     private CaretModel caretModel;
 
@@ -39,7 +39,7 @@ public final class InsertRandomSomethingIntegrationTest extends LightPlatformCod
 
         document = myFixture.getEditor().getDocument();
         caretModel = myFixture.getEditor().getCaretModel();
-        insertRandomSimple = new InsertRandomSimple();
+        insertRandomSimple = new SimpleInsertAction();
     }
 
     @Override
@@ -196,9 +196,9 @@ public final class InsertRandomSomethingIntegrationTest extends LightPlatformCod
 
 
     /**
-     * Simple implementation of {@code InsertRandomSomething}.
+     * Simple implementation of {@code DataInsertAction}.
      */
-    private static class InsertRandomSimple extends InsertRandomSomething {
+    private static class SimpleInsertAction extends DataInsertAction {
         @Override
         protected String getName() {
             return "Insert Random Simple";

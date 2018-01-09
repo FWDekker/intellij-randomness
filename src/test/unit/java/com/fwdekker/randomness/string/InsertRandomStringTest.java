@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.string;
 
-import com.fwdekker.randomness.array.ArraySettings;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
- * Parameterized unit tests for {@link InsertRandomString}.
+ * Parameterized unit tests for {@link StringInsertAction}.
  */
 @RunWith(Parameterized.class)
 public final class InsertRandomStringTest {
@@ -55,7 +54,7 @@ public final class InsertRandomStringTest {
         stringSettings.setEnclosure(enclosure);
         stringSettings.setAlphabets(alphabets);
 
-        final InsertRandomString insertRandomString = new InsertRandomString(new ArraySettings(), stringSettings);
+        final StringInsertAction insertRandomString = new StringInsertAction(stringSettings);
 
         assertThat(insertRandomString.generateString()).containsPattern(buildResultPattern());
     }

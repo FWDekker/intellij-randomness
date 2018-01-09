@@ -15,6 +15,6 @@ public final class StringSettingsAction extends SettingsAction {
 
     @Override
     public String getTitle() {
-        return "Random String Settings";
+        return "String Settings";
     }
 }

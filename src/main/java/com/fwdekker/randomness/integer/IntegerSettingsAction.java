@@ -15,6 +15,6 @@ public final class IntegerSettingsAction extends SettingsAction {
 
     @Override
     public String getTitle() {
-        return "Random Integer Settings";
+        return "Integer Settings";
     }
 }

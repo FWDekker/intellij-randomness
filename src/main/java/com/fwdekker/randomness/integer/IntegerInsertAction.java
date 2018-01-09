@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.integer;
 
-import com.fwdekker.randomness.InsertRandomSomething;
-import com.fwdekker.randomness.array.ArraySettings;
+import com.fwdekker.randomness.DataInsertAction;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.concurrent.ThreadLocalRandom;
@@ -11,33 +10,30 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Generates a random integer based on the settings in {@link IntegerSettings}.
  */
-public final class InsertRandomInteger extends InsertRandomSomething {
+public final class IntegerInsertAction extends DataInsertAction {
     private final IntegerSettings integerSettings;
 
 
     /**
-     * Constructs a new {@code InsertRandomInteger} that uses the singleton {@code IntegerSettings} instance.
+     * Constructs a new {@code IntegerInsertAction} that uses the singleton {@code IntegerSettings} instance.
      */
-    public InsertRandomInteger() {
+    public IntegerInsertAction() {
         this.integerSettings = IntegerSettings.getInstance();
     }
 
     /**
-     * Constructs a new {@code InsertRandomInteger} that uses the given {@code IntegerSettings} instance.
+     * Constructs a new {@code IntegerInsertAction} that uses the given {@code IntegerSettings} instance.
      *
-     * @param arraySettings   the settings to use for generating arrays
      * @param integerSettings the settings to use for generating integers
      */
-    InsertRandomInteger(final @NotNull ArraySettings arraySettings, final @NotNull IntegerSettings integerSettings) {
-        super(arraySettings);
-
+    IntegerInsertAction(final @NotNull IntegerSettings integerSettings) {
         this.integerSettings = integerSettings;
     }
 
 
     @Override
     protected String getName() {
-        return "Insert Random Integer";
+        return "Insert Integer";
     }
 
     /**

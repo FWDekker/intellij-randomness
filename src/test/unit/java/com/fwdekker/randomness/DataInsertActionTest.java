@@ -1,6 +1,5 @@
 package com.fwdekker.randomness;
 
-import com.fwdekker.randomness.array.ArraySettings;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
@@ -18,20 +17,20 @@ import static org.mockito.Mockito.when;
 
 
 /**
- * Unit tests for {@link InsertRandomSomething}.
+ * Unit tests for {@link DataInsertAction}.
  */
-public final class InsertRandomSomethingTest {
+public final class DataInsertActionTest {
     /**
      * The recognizable string that is inserted by the insertion action.
      */
     private static final String RANDOM_STRING = "random_string";
 
-    private InsertRandomSomething insertRandomSomething;
+    private DataInsertAction dataInsertAction;
 
 
     @Before
     public void beforeEach() {
-        insertRandomSomething = new InsertRandomSimple();
+        dataInsertAction = new SimpleInsertAction();
     }
 
 
@@ -43,7 +42,7 @@ public final class InsertRandomSomethingTest {
         final AnActionEvent event = mock(AnActionEvent.class);
         when(event.getData(CommonDataKeys.EDITOR)).thenReturn(null);
 
-        insertRandomSomething.actionPerformed(event);
+        dataInsertAction.actionPerformed(event);
 
         verify(event, times(1)).getData(CommonDataKeys.EDITOR);
         verifyNoMoreInteractions(event);
@@ -59,7 +58,7 @@ public final class InsertRandomSomethingTest {
         when(event.getData(CommonDataKeys.EDITOR)).thenReturn(null);
         when(event.getPresentation()).thenReturn(presentation);
 
-        insertRandomSomething.update(event);
+        dataInsertAction.update(event);
 
         assertThat(presentation.isEnabled()).isFalse();
     }
@@ -74,27 +73,19 @@ public final class InsertRandomSomethingTest {
         when(event.getData(CommonDataKeys.EDITOR)).thenReturn(mock(Editor.class));
         when(event.getPresentation()).thenReturn(presentation);
 
-        insertRandomSomething.update(event);
+        dataInsertAction.update(event);
 
         assertThat(presentation.isEnabled()).isTrue();
     }
 
 
     /**
-     * Simple implementation of {@code InsertRandomSomething}.
+     * Simple implementation of {@code DataInsertAction}.
      */
-    private static class InsertRandomSimple extends InsertRandomSomething {
-        /**
-         * Constructs a new {@code InsertRandomSimple} with default settings.
-         */
-        InsertRandomSimple() {
-            super(new ArraySettings());
-        }
-
-
+    private static class SimpleInsertAction extends DataInsertAction {
         @Override
         protected String getName() {
-            return "Insert Random Simple";
+            return "Insert Simple";
         }
 
         @Override

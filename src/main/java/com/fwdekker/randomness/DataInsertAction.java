@@ -1,6 +1,5 @@
 package com.fwdekker.randomness;
 
-import com.fwdekker.randomness.array.ArraySettings;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -10,35 +9,12 @@ import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import java.awt.event.InputEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
- * Inserts a randomly generated string at the position of the event's editor's caret.
+ * Inserts a randomly generated string at the positions of the event's editor's carets.
  */
-public abstract class InsertRandomSomething extends AnAction {
-    private final ArraySettings arraySettings;
-
-
-    /**
-     * Constructs a new {@code InsertRandomSomething} that uses the singleton {@code ArraySettings} instance.
-     */
-    public InsertRandomSomething() {
-        this.arraySettings = ArraySettings.getInstance();
-    }
-
-    /**
-     * Constructs a new {@code InsertRandomSomething} that uses the given {@code ArraySettings} instance.
-     *
-     * @param arraySettings the settings to use for generating arrays
-     */
-    public InsertRandomSomething(final ArraySettings arraySettings) {
-        this.arraySettings = arraySettings;
-    }
-
-
+public abstract class DataInsertAction extends AnAction {
     /**
      * Disables this action if no editor is currently opened.
      *
@@ -72,7 +48,7 @@ public abstract class InsertRandomSomething extends AnAction {
             final int start = caret.getSelectionStart();
             final int end = caret.getSelectionEnd();
 
-            final String string = generateString(event);
+            final String string = generateString();
             final int newEnd = start + string.length();
 
             document.replaceString(start, end, string);
@@ -96,27 +72,4 @@ public abstract class InsertRandomSomething extends AnAction {
      * @return a random string
      */
     protected abstract String generateString();
-
-    /**
-     * Generates a random string based on the given {@link AnActionEvent}.
-     * <p>
-     * In particular, it selects whether to generate a single string or an array of strings.
-     *
-     * @param event the performed action
-     * @return a random string based on the given {@link AnActionEvent}
-     */
-    private String generateString(final AnActionEvent event) {
-        final boolean multiple = (event.getModifiers() & (InputEvent.SHIFT_MASK | InputEvent.SHIFT_DOWN_MASK)) == 0;
-        if (multiple) {
-            return generateString();
-        }
-
-        final List<String> strings = new ArrayList<>();
-
-        for (int i = 0; i < arraySettings.getCount(); i++) {
-            strings.add(generateString());
-        }
-
-        return arraySettings.arrayify(strings);
-    }
 }

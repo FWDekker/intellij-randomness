@@ -8,6 +8,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * Shows a modal dialog for changing settings.
  */
 public abstract class SettingsAction extends AnAction {
+    @Override
+    public final void update(final AnActionEvent event) {
+        super.update(event);
+
+        event.getPresentation().setText(getTitle());
+    }
+
     /**
      * Creates and displays a modal dialog for changing settings.
      *

@@ -15,6 +15,6 @@ public final class ArraySettingsAction extends SettingsAction {
 
     @Override
     public String getTitle() {
-        return "Random Array Settings";
+        return "Array Settings";
     }
 }
