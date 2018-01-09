@@ -38,7 +38,7 @@ public final class InsertRandomInteger extends InsertRandomSomething {
 
     @Override
     protected String getName() {
-        return "Insert Random Integer";
+        return "Insert Integer";
     }
 
     @Override

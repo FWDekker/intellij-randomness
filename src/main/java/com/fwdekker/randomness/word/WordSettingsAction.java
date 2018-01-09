@@ -15,6 +15,6 @@ public final class WordSettingsAction extends SettingsAction {
 
     @Override
     public String getTitle() {
-        return "Random Word Settings";
+        return "Word Settings";
     }
 }

@@ -95,7 +95,7 @@ public final class InsertRandomSomethingTest {
 
         @Override
         protected String getName() {
-            return "Insert Random Simple";
+            return "Insert Simple";
         }
 
         @Override

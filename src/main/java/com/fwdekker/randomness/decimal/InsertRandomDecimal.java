@@ -38,7 +38,7 @@ public final class InsertRandomDecimal extends InsertRandomSomething {
 
     @Override
     protected String getName() {
-        return "Insert Random Decimal";
+        return "Insert Decimal";
     }
 
     @Override
