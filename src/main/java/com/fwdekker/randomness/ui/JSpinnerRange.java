@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.ui;
 
-import com.fwdekker.randomness.common.ValidationException;
+import com.fwdekker.randomness.ValidationException;
 import javax.swing.JSpinner;
 
 

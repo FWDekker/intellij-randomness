@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.common.ValidationException;
+import com.fwdekker.randomness.ValidationException;
 import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;

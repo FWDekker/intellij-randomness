@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.ui;
 
-import com.fwdekker.randomness.common.ValidationException;
+import com.fwdekker.randomness.ValidationException;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import javax.swing.JSpinner;
