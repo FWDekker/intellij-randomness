@@ -17,7 +17,7 @@ public final class InsertDataAction extends AnAction {
     private static final String TITLE = "Insert Random Data";
     private static final String SHIFT_TITLE = "Insert Random Array";
     private static final String CTRL_TITLE = "Insert Random Settings";
-    private static final String AD_TEXT = "Hold Shift to insert an array";
+    private static final String AD_TEXT = "Shift = Array. Ctrl = Settings.";
 
 
     @Override
