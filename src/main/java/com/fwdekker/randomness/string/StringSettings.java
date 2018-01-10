@@ -20,8 +20,8 @@ import org.jetbrains.annotations.NotNull;
         storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class StringSettings extends Settings implements PersistentStateComponent<StringSettings> {
-    private static final int DEFAULT_MIN_LENGTH = 10;
-    private static final int DEFAULT_MAX_LENGTH = 10;
+    private static final int DEFAULT_MIN_LENGTH = 3;
+    private static final int DEFAULT_MAX_LENGTH = 8;
 
     /**
      * The minimum length of a generated string, inclusive.
