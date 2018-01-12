@@ -87,4 +87,15 @@ public final class ArraySettingsTest {
         assertThat(arraySettings.arrayify(Arrays.asList("Garhwali", "Pattypan", "Troll")))
                 .isEqualTo("@Garhwali;; Pattypan;; Troll#");
     }
+
+    @Test
+    public void testArrayifyNoBrackets() {
+        arraySettings.setCount(8);
+        arraySettings.setBrackets("");
+        arraySettings.setSeparator("h");
+        arraySettings.setSpaceAfterSeparator(false);
+
+        assertThat(arraySettings.arrayify(Arrays.asList("Antheia", "Cowbinds", "Cotutor")))
+                .isEqualTo("AntheiahCowbindshCotutor");
+    }
 }

@@ -141,8 +141,8 @@ public final class ArraySettings extends Settings implements PersistentStateComp
      * @return a string representation as defined by this {@code ArraySettings}' settings
      */
     public String arrayify(final Collection<String> strings) {
-        final char leftBracket = brackets.charAt(0);
-        final char rightBracket = brackets.charAt(1);
+        final String leftBracket = brackets.length() >= 2 ? "" + brackets.charAt(0) : "";
+        final String rightBracket = brackets.length() >= 2 ? "" + brackets.charAt(1) : "";
         final String separator = this.separator + (spaceAfterSeparator ? " " : "");
 
         return leftBracket + String.join(separator, strings) + rightBracket;
