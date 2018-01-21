@@ -1,8 +1,9 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.DataInsertAction;
-import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 
 /**

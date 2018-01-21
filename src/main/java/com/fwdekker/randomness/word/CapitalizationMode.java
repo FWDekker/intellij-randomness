@@ -87,6 +87,6 @@ public enum CapitalizationMode {
                 .filter(value -> value.getName().equals(name))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("There does not exist a capitalization mode with name "
-                                                                      + "`" + name + "`."));
+                        + "`" + name + "`."));
     }
 }

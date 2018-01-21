@@ -1,10 +1,11 @@
 package com.fwdekker.randomness.ui;
 
 import com.fwdekker.randomness.ValidationException;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
+
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 
 /**

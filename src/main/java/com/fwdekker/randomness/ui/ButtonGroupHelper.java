@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.ui;
 
-import java.util.Collections;
-import java.util.NoSuchElementException;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import java.util.Collections;
+import java.util.NoSuchElementException;
 
 
 /**
@@ -42,7 +42,7 @@ public final class ButtonGroupHelper {
                 .filter(button -> button.getActionCommand().equals("\0".equals(value) ? "" : value))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Could not find a button with action command `"
-                                                                      + value + "`."));
+                        + value + "`."));
 
         targetButton.setSelected(true);
     }

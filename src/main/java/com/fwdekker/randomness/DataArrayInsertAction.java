@@ -1,6 +1,7 @@
 package com.fwdekker.randomness;
 
 import com.fwdekker.randomness.array.ArraySettings;
+
 import java.util.ArrayList;
 import java.util.List;
 

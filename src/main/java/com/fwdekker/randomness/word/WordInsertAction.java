@@ -1,9 +1,10 @@
 package com.fwdekker.randomness.word;
 
 import com.fwdekker.randomness.DataInsertAction;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -23,7 +24,7 @@ public final class WordInsertAction extends DataInsertAction {
     /**
      * Constructs a new {@code WordInsertAction} that uses the given {@code WordSettings} instance.
      *
-     * @param wordSettings  the settings to use for generating words
+     * @param wordSettings the settings to use for generating words
      */
     WordInsertAction(final @NotNull WordSettings wordSettings) {
         this.wordSettings = wordSettings;

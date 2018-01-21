@@ -1,10 +1,11 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.DataInsertAction;
+import org.jetbrains.annotations.NotNull;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.concurrent.ThreadLocalRandom;
-import org.jetbrains.annotations.NotNull;
 
 
 /**

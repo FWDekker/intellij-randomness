@@ -1,5 +1,10 @@
 package com.fwdekker.randomness.ui;
 
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
@@ -10,11 +15,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
 
 
 /**
@@ -65,7 +65,7 @@ public final class JEditableList<T> extends JTable {
      */
     public void addEntry(final T entry) {
         if (!hasEntry(entry)) {
-            model.addRow(new Object[] {false, entry});
+            model.addRow(new Object[]{false, entry});
         }
     }
 

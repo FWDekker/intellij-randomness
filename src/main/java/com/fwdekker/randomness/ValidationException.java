@@ -1,7 +1,8 @@
 package com.fwdekker.randomness;
 
-import javax.swing.JComponent;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.JComponent;
 
 
 /**

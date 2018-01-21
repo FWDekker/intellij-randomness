@@ -2,11 +2,12 @@ package com.fwdekker.randomness.ui;
 
 import com.intellij.ui.popup.list.ListPopupImpl;
 import com.intellij.ui.speedSearch.SpeedSearch;
+
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.stream.IntStream;
-import javax.swing.AbstractAction;
-import javax.swing.KeyStroke;
 
 
 /**
@@ -55,8 +56,8 @@ public final class JBPopupHelper {
             @Override
             public void actionPerformed(final ActionEvent event) {
                 final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(), event.getWhen(),
-                                                       event.getModifiers(), KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
-                                                       KeyEvent.KEY_LOCATION_UNKNOWN);
+                        event.getModifiers(), KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
+                        KeyEvent.KEY_LOCATION_UNKNOWN);
                 popup.handleSelect(true, keyEvent);
             }
         });
@@ -64,18 +65,18 @@ public final class JBPopupHelper {
         final int nine = 9;
         IntStream.range(1, nine).forEach(key -> popup
                 .registerAction("shiftInvoke" + key, KeyStroke.getKeyStroke("shift " + key),
-                                new AbstractAction() {
-                                    @Override
-                                    public void actionPerformed(final ActionEvent event) {
-                                        final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(),
-                                                                               event.getWhen(), event.getModifiers(),
-                                                                               KeyEvent.VK_ENTER,
-                                                                               KeyEvent.CHAR_UNDEFINED,
-                                                                               KeyEvent.KEY_LOCATION_UNKNOWN);
-                                        popup.getList().addSelectionInterval(key - 1, key - 1);
-                                        popup.handleSelect(true, keyEvent);
-                                    }
-                                }));
+                        new AbstractAction() {
+                            @Override
+                            public void actionPerformed(final ActionEvent event) {
+                                final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(),
+                                        event.getWhen(), event.getModifiers(),
+                                        KeyEvent.VK_ENTER,
+                                        KeyEvent.CHAR_UNDEFINED,
+                                        KeyEvent.KEY_LOCATION_UNKNOWN);
+                                popup.getList().addSelectionInterval(key - 1, key - 1);
+                                popup.handleSelect(true, keyEvent);
+                            }
+                        }));
     }
 
     /**
@@ -101,8 +102,8 @@ public final class JBPopupHelper {
             @Override
             public void actionPerformed(final ActionEvent event) {
                 final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(), event.getWhen(),
-                                                       event.getModifiers(), KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
-                                                       KeyEvent.KEY_LOCATION_UNKNOWN);
+                        event.getModifiers(), KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
+                        KeyEvent.KEY_LOCATION_UNKNOWN);
                 popup.handleSelect(true, keyEvent);
             }
         });
@@ -110,17 +111,17 @@ public final class JBPopupHelper {
         final int nine = 9;
         IntStream.range(1, nine).forEach(key -> popup
                 .registerAction("ctrlInvoke" + key, KeyStroke.getKeyStroke("control " + key),
-                                new AbstractAction() {
-                                    @Override
-                                    public void actionPerformed(final ActionEvent event) {
-                                        final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(),
-                                                                               event.getWhen(), event.getModifiers(),
-                                                                               KeyEvent.VK_ENTER,
-                                                                               KeyEvent.CHAR_UNDEFINED,
-                                                                               KeyEvent.KEY_LOCATION_UNKNOWN);
-                                        popup.getList().addSelectionInterval(key - 1, key - 1);
-                                        popup.handleSelect(true, keyEvent);
-                                    }
-                                }));
+                        new AbstractAction() {
+                            @Override
+                            public void actionPerformed(final ActionEvent event) {
+                                final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(),
+                                        event.getWhen(), event.getModifiers(),
+                                        KeyEvent.VK_ENTER,
+                                        KeyEvent.CHAR_UNDEFINED,
+                                        KeyEvent.KEY_LOCATION_UNKNOWN);
+                                popup.getList().addSelectionInterval(key - 1, key - 1);
+                                popup.handleSelect(true, keyEvent);
+                            }
+                        }));
     }
 }

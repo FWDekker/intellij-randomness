@@ -1,11 +1,12 @@
 package com.fwdekker.randomness.ui;
 
 import com.fwdekker.randomness.ValidationException;
+
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import java.awt.Dimension;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 
 
 /**
@@ -47,7 +48,7 @@ public final class JLongSpinner extends JSpinner {
      */
     public JLongSpinner() {
         super(new SpinnerNumberModel((Long) 0L, (Long) DEFAULT_MIN_VALUE, (Long) DEFAULT_MAX_VALUE,
-                                     (Long) DEFAULT_STEP_SIZE));
+                (Long) DEFAULT_STEP_SIZE));
 
         this.minValue = DEFAULT_MIN_VALUE;
         this.maxValue = DEFAULT_MAX_VALUE;

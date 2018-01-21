@@ -1,8 +1,8 @@
 package com.fwdekker.randomness.string;
 
+import com.fwdekker.randomness.DataArrayInsertAction;
 import com.fwdekker.randomness.DataGroupAction;
 import com.fwdekker.randomness.DataInsertAction;
-import com.fwdekker.randomness.DataArrayInsertAction;
 import com.fwdekker.randomness.SettingsAction;
 
 

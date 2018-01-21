@@ -6,11 +6,12 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -232,11 +233,11 @@ public final class WordSettings extends Settings implements PersistentStateCompo
         final Set<Dictionary> dictionaries = new HashSet<>();
 
         dictionaries.addAll(bundledDictionaries.stream()
-                                    .map(Dictionary.BundledDictionary::get)
-                                    .collect(Collectors.toList()));
+                .map(Dictionary.BundledDictionary::get)
+                .collect(Collectors.toList()));
         dictionaries.addAll(userDictionaries.stream()
-                                    .map(Dictionary.UserDictionary::get)
-                                    .collect(Collectors.toList()));
+                .map(Dictionary.UserDictionary::get)
+                .collect(Collectors.toList()));
 
         return dictionaries;
     }
@@ -250,11 +251,11 @@ public final class WordSettings extends Settings implements PersistentStateCompo
         final Set<Dictionary> dictionaries = new HashSet<>();
 
         dictionaries.addAll(activeBundledDictionaries.stream()
-                                    .map(Dictionary.BundledDictionary::get)
-                                    .collect(Collectors.toList()));
+                .map(Dictionary.BundledDictionary::get)
+                .collect(Collectors.toList()));
         dictionaries.addAll(activeUserDictionaries.stream()
-                                    .map(Dictionary.UserDictionary::get)
-                                    .collect(Collectors.toList()));
+                .map(Dictionary.UserDictionary::get)
+                .collect(Collectors.toList()));
 
         return dictionaries;
     }

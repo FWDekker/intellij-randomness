@@ -10,15 +10,16 @@ import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.ui.ValidationInfo;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /**
@@ -111,21 +112,21 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         settings.setCapitalization(CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)));
 
         settings.setBundledDictionaries(dictionaries.getEntries().stream()
-                                                .filter(Dictionary.BundledDictionary.class::isInstance)
-                                                .map(Dictionary::getPath)
-                                                .collect(Collectors.toSet()));
+                .filter(Dictionary.BundledDictionary.class::isInstance)
+                .map(Dictionary::getPath)
+                .collect(Collectors.toSet()));
         settings.setActiveBundledDictionaries(dictionaries.getActiveEntries().stream()
-                                                      .filter(Dictionary.BundledDictionary.class::isInstance)
-                                                      .map(Dictionary::getPath)
-                                                      .collect(Collectors.toSet()));
+                .filter(Dictionary.BundledDictionary.class::isInstance)
+                .map(Dictionary::getPath)
+                .collect(Collectors.toSet()));
         settings.setUserDictionaries(dictionaries.getEntries().stream()
-                                             .filter(Dictionary.UserDictionary.class::isInstance)
-                                             .map(Dictionary::getPath)
-                                             .collect(Collectors.toSet()));
+                .filter(Dictionary.UserDictionary.class::isInstance)
+                .map(Dictionary::getPath)
+                .collect(Collectors.toSet()));
         settings.setActiveUserDictionaries(dictionaries.getActiveEntries().stream()
-                                                   .filter(Dictionary.UserDictionary.class::isInstance)
-                                                   .map(Dictionary::getPath)
-                                                   .collect(Collectors.toSet()));
+                .filter(Dictionary.UserDictionary.class::isInstance)
+                .map(Dictionary::getPath)
+                .collect(Collectors.toSet()));
     }
 
     @Override
