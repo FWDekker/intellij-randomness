@@ -13,7 +13,8 @@
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Count"/>
+          <labelFor value="38ced"/>
+          <text value="&amp;Count"/>
         </properties>
       </component>
       <vspacer id="dc630">
@@ -52,7 +53,7 @@
         </constraints>
         <properties>
           <name value="spaceAfterSeparator"/>
-          <text value="Space after separator"/>
+          <text value="&amp;Space after separator"/>
         </properties>
       </component>
       <component id="37af5" class="javax.swing.JLabel">

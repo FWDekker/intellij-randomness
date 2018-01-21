@@ -34,7 +34,7 @@
         </constraints>
         <properties>
           <labelFor value="6a447"/>
-          <text value="Minimum value"/>
+          <text value="Mi&amp;nimum value"/>
         </properties>
       </component>
       <component id="d8024" class="javax.swing.JLabel">
@@ -43,7 +43,7 @@
         </constraints>
         <properties>
           <labelFor value="7daea"/>
-          <text value="Maximum value"/>
+          <text value="Ma&amp;ximum value"/>
         </properties>
       </component>
       <component id="b93dd" class="com.fwdekker.randomness.ui.JLongSpinner" binding="decimalCount" custom-create="true">
@@ -62,7 +62,7 @@
         </constraints>
         <properties>
           <labelFor value="b93dd"/>
-          <text value="Number of decimals"/>
+          <text value="Number of &amp;decimals"/>
         </properties>
       </component>
       <component id="baa64" class="javax.swing.JRadioButton">

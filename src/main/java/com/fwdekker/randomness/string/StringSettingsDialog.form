@@ -14,7 +14,7 @@
         </constraints>
         <properties>
           <labelFor value="1885f"/>
-          <text value="Minimum length"/>
+          <text value="Mi&amp;nimum length"/>
         </properties>
       </component>
       <component id="13f0a" class="javax.swing.JLabel">
@@ -23,7 +23,7 @@
         </constraints>
         <properties>
           <labelFor value="ae252"/>
-          <text value="Maximum length"/>
+          <text value="Ma&amp;ximum length"/>
         </properties>
       </component>
       <component id="1885f" class="com.fwdekker.randomness.ui.JLongSpinner" binding="minLength" custom-create="true">
