@@ -33,10 +33,39 @@
     </extensions>
 
     <actions>
+        <!-- Popup -->
         <action id="randomness.ShowGroup" class="com.fwdekker.randomness.PopupAction"
-                text="Insert Data" description="Inserts random data at the caret.">
+                text="Randomness" description="Opens the Randomness popup.">
             <keyboard-shortcut first-keystroke="alt R" keymap="$default"/>
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
+
+        <!-- Integers -->
+        <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.IntegerInsertAction"
+                text="Insert Integer" description="Inserts random integers at the carets."/>
+        <action id="randomness.IntegerSettings" class="com.fwdekker.randomness.integer.IntegerSettingsAction"
+                text="Integer Settings" description="Settings for the Insert Integer action."/>
+
+        <!-- Decimals -->
+        <action id="randomness.InsertDecimal" class="com.fwdekker.randomness.decimal.DecimalInsertAction"
+                text="Insert Decimal" description="Inserts random decimals at the carets."/>
+        <action id="randomness.DecimalSettings" class="com.fwdekker.randomness.decimal.DecimalSettingsAction"
+                text="Decimal Settings" description="Settings for the Insert Decimal action."/>
+
+        <!-- Strings -->
+        <action id="randomness.InsertString" class="com.fwdekker.randomness.string.StringInsertAction"
+                text="Insert String" description="Inserts random strings at the carets."/>
+        <action id="randomness.StringSettings" class="com.fwdekker.randomness.string.StringSettingsAction"
+                text="String Settings" description="Settings for the Insert String action."/>
+
+        <!-- Words -->
+        <action id="randomness.InsertWord" class="com.fwdekker.randomness.word.WordInsertAction"
+                text="Insert Word" description="Inserts random words at the carets."/>
+        <action id="randomness.WordSettings" class="com.fwdekker.randomness.word.WordSettingsAction"
+                text="Word Settings" description="Settings for the Insert Word action."/>
+
+        <!-- Arrays -->
+        <action id="randomness.ArraySettings" class="com.fwdekker.randomness.array.ArraySettingsAction"
+                text="Array Settings" description="Settings for inserting arrays of data."/>
     </actions>
 </idea-plugin>
