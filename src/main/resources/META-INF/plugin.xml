@@ -36,6 +36,7 @@
         <action id="randomness.ShowGroup" class="com.fwdekker.randomness.PopupAction"
                 text="Insert Data" description="Inserts random data at the caret.">
             <keyboard-shortcut first-keystroke="alt R" keymap="$default"/>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
     </actions>
 </idea-plugin>
