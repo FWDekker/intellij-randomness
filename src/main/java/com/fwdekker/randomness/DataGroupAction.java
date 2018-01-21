@@ -31,7 +31,7 @@ public abstract class DataGroupAction extends ActionGroup {
     @NotNull
     @Override
     public final AnAction[] getChildren(final @Nullable AnActionEvent event) {
-        return new AnAction[] {
+        return new AnAction[]{
                 insertAction,
                 insertArrayAction,
                 settingsAction
@@ -62,6 +62,11 @@ public abstract class DataGroupAction extends ActionGroup {
         super.update(event);
 
         event.getPresentation().setText(insertAction.getName());
+    }
+
+    @Override
+    public final boolean isPopup() {
+        return true;
     }
 
 

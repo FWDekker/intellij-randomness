@@ -1,13 +1,20 @@
 package com.fwdekker.randomness;
 
+import com.fwdekker.randomness.array.ArraySettingsAction;
+import com.fwdekker.randomness.decimal.DecimalGroupAction;
+import com.fwdekker.randomness.integer.IntegerGroupAction;
+import com.fwdekker.randomness.string.StringGroupAction;
 import com.fwdekker.randomness.ui.JBPopupHelper;
-import com.intellij.openapi.actionSystem.ActionManager;
+import com.fwdekker.randomness.word.WordGroupAction;
+import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.Separator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.popup.list.ListPopupImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -27,16 +34,33 @@ public final class PopupAction extends AnAction {
             return;
         }
 
-        final DefaultActionGroup actionGroup = (DefaultActionGroup) ActionManager.getInstance()
-                .getAction("randomness.Group");
         final ListPopupImpl popup = (ListPopupImpl) JBPopupFactory.getInstance()
-                .createActionGroupPopup(TITLE, actionGroup, event.getDataContext(),
-                                        JBPopupFactory.ActionSelectionAid.NUMBERING, true, event.getPlace());
+                .createActionGroupPopup(TITLE, new PopupGroup(), event.getDataContext(),
+                        JBPopupFactory.ActionSelectionAid.NUMBERING, true, event.getPlace());
         JBPopupHelper.disableSpeedSearch(popup);
         JBPopupHelper.registerShiftActions(popup, TITLE, SHIFT_TITLE);
         JBPopupHelper.registerCtrlActions(popup, TITLE, CTRL_TITLE);
 
         popup.setAdText(AD_TEXT);
         popup.showCenteredInCurrentWindow(project);
+    }
+
+
+    /**
+     * The {@code ActionGroup} containing the popup's actions.
+     */
+    private static class PopupGroup extends ActionGroup {
+        @NotNull
+        @Override
+        public AnAction[] getChildren(final @Nullable AnActionEvent event) {
+            return new AnAction[]{
+                    new IntegerGroupAction(),
+                    new DecimalGroupAction(),
+                    new StringGroupAction(),
+                    new WordGroupAction(),
+                    new Separator(),
+                    new ArraySettingsAction()
+            };
+        }
     }
 }
