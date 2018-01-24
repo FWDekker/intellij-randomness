@@ -10,4 +10,4 @@ This plugin is also available on the [plugin repository](https://plugins.jetbrai
 
 
 ## How to use
-To insert random data, press `Alt + R` (or `⌥R`) and choose the type of data you want to insert.
+To insert random data, press `Alt + R` (or `⌥R`) and choose the type of data you want to insert. Hold `Shift` while selecting a data type to insert a whole array of values, or hold `Ctrl` (or `⌥`) while selecting to change the settings of that data type.
