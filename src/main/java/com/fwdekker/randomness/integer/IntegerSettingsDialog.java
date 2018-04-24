@@ -23,6 +23,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     private JSpinnerRange valueRange;
     private JLongSpinner minValue;
     private JLongSpinner maxValue;
+    private JLongSpinner base;
     private ButtonGroup groupingSeparatorGroup;
 
 
@@ -61,7 +62,13 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     private void createUIComponents() {
         minValue = new JLongSpinner();
         maxValue = new JLongSpinner();
+        base = new JLongSpinner(2, 36);
         valueRange = new JSpinnerRange(minValue, maxValue, Long.MAX_VALUE);
+
+        base.addChangeListener(e -> {
+            final long value = ((JLongSpinner) e.getSource()).getValue();
+            ButtonGroupHelper.forEach(groupingSeparatorGroup, button -> button.setEnabled(value == 10));
+        });
     }
 
     @Override
@@ -70,6 +77,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
         try {
             minValue.validateValue();
             maxValue.validateValue();
+            base.validateValue();
             valueRange.validate();
         } catch (final ValidationException e) {
             return new ValidationInfo(e.getMessage(), e.getComponent());
@@ -84,6 +92,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     public void loadSettings(final @NotNull IntegerSettings settings) {
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
+        base.setValue(settings.getBase());
         ButtonGroupHelper.setValue(groupingSeparatorGroup, String.valueOf(settings.getGroupingSeparator()));
     }
 
@@ -92,6 +101,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     public void saveSettings(final @NotNull IntegerSettings settings) {
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
+        settings.setBase(base.getValue().intValue());
         settings.setGroupingSeparator(ButtonGroupHelper.getValue(groupingSeparatorGroup));
     }
 }

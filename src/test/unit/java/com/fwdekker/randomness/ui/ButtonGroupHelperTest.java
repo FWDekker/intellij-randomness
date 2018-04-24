@@ -1,11 +1,12 @@
 package com.fwdekker.randomness.ui;
 
-import java.util.NoSuchElementException;
+import org.junit.Before;
+import org.junit.Test;
+
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import org.junit.Before;
-import org.junit.Test;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -21,6 +22,33 @@ public final class ButtonGroupHelperTest {
     @Before
     public void beforeEach() {
         group = new ButtonGroup();
+    }
+
+
+    @Test
+    public void testForEachEmpty() {
+        final int[] sum = {0};
+
+        ButtonGroupHelper.forEach(group, button -> sum[0]++);
+
+        assertThat(sum).isEqualTo(0);
+    }
+
+    @Test
+    public void testForEach() {
+        final AbstractButton buttonA = new JButton();
+        final AbstractButton buttonB = new JButton();
+        final AbstractButton buttonC = new JButton();
+
+        group.add(buttonA);
+        group.add(buttonB);
+        group.add(buttonC);
+
+        final int[] sum = {0};
+
+        ButtonGroupHelper.forEach(group, button -> sum[0]++);
+
+        assertThat(sum).isEqualTo(3);
     }
 
 

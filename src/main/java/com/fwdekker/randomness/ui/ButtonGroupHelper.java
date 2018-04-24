@@ -3,7 +3,9 @@ package com.fwdekker.randomness.ui;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 
 
 /**
@@ -16,6 +18,20 @@ public final class ButtonGroupHelper {
     private ButtonGroupHelper() {
     }
 
+
+    /**
+     * Executes a consumer for each button in a group.
+     *
+     * @param group    the group of buttons
+     * @param consumer the function to apply to each button
+     */
+    public static void forEach(final ButtonGroup group, final Consumer<AbstractButton> consumer) {
+        final Enumeration<AbstractButton> buttons = group.getElements();
+
+        while (buttons.hasMoreElements()) {
+            consumer.accept(buttons.nextElement());
+        }
+    }
 
     /**
      * Returns the action command of the currently selected button, or {@code null} if no button is selected.

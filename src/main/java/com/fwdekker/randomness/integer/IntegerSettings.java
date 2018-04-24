@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public final class IntegerSettings extends Settings implements PersistentStateComponent<IntegerSettings> {
     private static final long DEFAULT_MIN_VALUE = 0L;
     private static final long DEFAULT_MAX_VALUE = 1000L;
+    private static final int DEFAULT_BASE = 10;
     private static final char DEFAULT_GROUPING_SEPARATOR = '\0';
 
     /**
@@ -29,6 +30,10 @@ public final class IntegerSettings extends Settings implements PersistentStateCo
      * The maximum value to be generated, inclusive.
      */
     private long maxValue = DEFAULT_MAX_VALUE;
+    /**
+     * The base the generated value should be displayed in.
+     */
+    private int base = DEFAULT_BASE;
     /**
      * The character that should separate groups.
      */
@@ -89,6 +94,24 @@ public final class IntegerSettings extends Settings implements PersistentStateCo
      */
     public void setMaxValue(final long maxValue) {
         this.maxValue = maxValue;
+    }
+
+    /**
+     * Returns the base the generated value should be displayed in.
+     *
+     * @return the base the generated value should be displayed in
+     */
+    public int getBase() {
+        return base;
+    }
+
+    /**
+     * Sets the base the generated value should be displayed in.
+     *
+     * @param base the base the generated value should be displayed in
+     */
+    public void setBase(int base) {
+        this.base = base;
     }
 
     /**

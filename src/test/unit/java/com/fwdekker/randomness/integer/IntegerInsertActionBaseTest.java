@@ -11,17 +11,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
- * Unit tests for the symbols used in {@link IntegerInsertAction}.
+ * Unit tests for the base conversion used in {@link IntegerInsertAction}.
  */
 @RunWith(Parameterized.class)
-public final class IntegerInsertActionSymbolTest {
+public class IntegerInsertActionBaseTest {
     private final long value;
+    private final int base;
     private final char groupingSeparator;
     private final String expectedString;
 
 
-    public IntegerInsertActionSymbolTest(final long value, final char groupingSeparator, final String expectedString) {
+    public IntegerInsertActionBaseTest(final long value, final int base, final char groupingSeparator, final String expectedString) {
         this.value = value;
+        this.base = base;
         this.groupingSeparator = groupingSeparator;
         this.expectedString = expectedString;
     }
@@ -30,9 +32,9 @@ public final class IntegerInsertActionSymbolTest {
     @Parameterized.Parameters
     public static Collection<Object[]> params() {
         return Arrays.asList(new Object[][] {
-                {95713, '\0', "95713"},
-                {163583, '.', "163.583"},
-                {351426, ',', "351,426"},
+                {33360, 10, '.', "33.360"},
+                {48345, 10, '.', "48.345"},
+                {48345, 11, '.', "33360"},
         });
     }
 
@@ -42,6 +44,7 @@ public final class IntegerInsertActionSymbolTest {
         final IntegerSettings integerSettings = new IntegerSettings();
         integerSettings.setMinValue(value);
         integerSettings.setMaxValue(value);
+        integerSettings.setBase(base);
         integerSettings.setGroupingSeparator(groupingSeparator);
 
         final IntegerInsertAction insertRandomInteger = new IntegerInsertAction(integerSettings);

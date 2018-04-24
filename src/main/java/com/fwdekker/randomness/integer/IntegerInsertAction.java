@@ -58,6 +58,11 @@ public final class IntegerInsertAction extends DataInsertAction {
      * @return a nicely formatted representation of a long
      */
     private String convertToString(final long integer) {
+        if (integerSettings.getBase() != 10) {
+            return Long.toString(integer, integerSettings.getBase());
+        }
+
+
         final DecimalFormat format = new DecimalFormat();
         format.setGroupingUsed(integerSettings.getGroupingSeparator() != '\0');
 

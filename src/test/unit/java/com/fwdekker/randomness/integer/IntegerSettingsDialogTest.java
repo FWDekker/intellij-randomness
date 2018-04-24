@@ -16,6 +16,7 @@ import static org.assertj.swing.fixture.Containers.showInFrame;
 public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
     private static final long DEFAULT_MIN_VALUE = 2147483883L;
     private static final long DEFAULT_MAX_VALUE = 6442451778L;
+    private static final long DEFAULT_BASE = 10;
 
     private IntegerSettings integerSettings;
     private IntegerSettingsDialog integerSettingsDialog;
@@ -27,6 +28,7 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
         integerSettings = new IntegerSettings();
         integerSettings.setMinValue(DEFAULT_MIN_VALUE);
         integerSettings.setMaxValue(DEFAULT_MAX_VALUE);
+        integerSettings.setBase((int) DEFAULT_BASE);
 
         integerSettingsDialog = GuiActionRunner.execute(() -> new IntegerSettingsDialog(integerSettings));
         frame = showInFrame(robot(), integerSettingsDialog.createCenterPanel());
@@ -49,6 +51,11 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
     @Test
     public void testLoadSettingsMaxValue() {
         frame.spinner("maxValue").requireValue(DEFAULT_MAX_VALUE);
+    }
+
+    @Test
+    public void testLoadSettingsBase() {
+        frame.spinner("base").requireValue(DEFAULT_BASE);
     }
 
 
@@ -91,28 +98,39 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(validationInfo.message).isEqualTo("The range should not exceed 9.223372036854776E18.");
     }
 
+    @Test
+    public void testValidateBaseFloat() {
+        GuiActionRunner.execute(() -> frame.spinner("base").target().setValue(22.62f));
+
+        frame.spinner("base").requireValue(22L);
+    }
+
 
     @Test
     public void testSaveSettingsWithoutParse() {
         GuiActionRunner.execute(() -> {
             frame.spinner("minValue").target().setValue((long) Integer.MAX_VALUE + 1L);
             frame.spinner("maxValue").target().setValue((long) Integer.MAX_VALUE + 2L);
+            frame.spinner("base").target().setValue(14L);
 
             integerSettingsDialog.saveSettings();
         });
 
         assertThat(integerSettings.getMinValue()).isEqualTo(2147483648L);
         assertThat(integerSettings.getMaxValue()).isEqualTo(2147483649L);
+        assertThat(integerSettings.getBase()).isEqualTo(14L);
     }
 
     @Test
     public void testSaveSettingsWithParse() {
         frame.spinner("minValue").enterTextAndCommit("2147483648");
         frame.spinner("maxValue").enterTextAndCommit("2147483649");
+        frame.spinner("base").enterTextAndCommit("35");
 
         GuiActionRunner.execute(() -> integerSettingsDialog.saveSettings());
 
         assertThat(integerSettings.getMinValue()).isEqualTo(2147483648L);
         assertThat(integerSettings.getMaxValue()).isEqualTo(2147483649L);
+        assertThat(integerSettings.getBase()).isEqualTo(35L);
     }
 }

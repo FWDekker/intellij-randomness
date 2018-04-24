@@ -28,12 +28,14 @@ public final class IntegerSettingsTest {
     public void testGetLoadState() {
         integerSettings.setMinValue(742);
         integerSettings.setMaxValue(908);
+        integerSettings.setBase(12);
 
         final IntegerSettings newIntegerSettings = new IntegerSettings();
         newIntegerSettings.loadState(integerSettings.getState());
 
         assertThat(newIntegerSettings.getMinValue()).isEqualTo(742);
         assertThat(newIntegerSettings.getMaxValue()).isEqualTo(908);
+        assertThat(newIntegerSettings.getBase()).isEqualTo(12);
     }
 
     @Test
@@ -48,6 +50,13 @@ public final class IntegerSettingsTest {
         integerSettings.setMaxValue(332);
 
         assertThat(integerSettings.getMaxValue()).isEqualTo(332);
+    }
+
+    @Test
+    public void testGetSetBase() {
+        integerSettings.setBase(7);
+
+        assertThat(integerSettings.getBase()).isEqualTo(7);
     }
 
     @Test
