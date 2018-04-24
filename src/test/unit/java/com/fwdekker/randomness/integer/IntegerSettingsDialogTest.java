@@ -118,7 +118,7 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(integerSettings.getMinValue()).isEqualTo(2147483648L);
         assertThat(integerSettings.getMaxValue()).isEqualTo(2147483649L);
-        assertThat(integerSettings.getBase()).isEqualTo(14L);
+        assertThat(integerSettings.getBase()).isEqualTo(14);
     }
 
     @Test
@@ -131,6 +131,6 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(integerSettings.getMinValue()).isEqualTo(2147483648L);
         assertThat(integerSettings.getMaxValue()).isEqualTo(2147483649L);
-        assertThat(integerSettings.getBase()).isEqualTo(35L);
+        assertThat(integerSettings.getBase()).isEqualTo(35);
     }
 }

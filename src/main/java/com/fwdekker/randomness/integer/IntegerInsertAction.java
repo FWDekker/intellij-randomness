@@ -58,7 +58,7 @@ public final class IntegerInsertAction extends DataInsertAction {
      * @return a nicely formatted representation of a long
      */
     private String convertToString(final long integer) {
-        if (integerSettings.getBase() != 10) {
+        if (integerSettings.getBase() != IntegerSettings.DECIMAL_BASE) {
             return Long.toString(integer, integerSettings.getBase());
         }
 

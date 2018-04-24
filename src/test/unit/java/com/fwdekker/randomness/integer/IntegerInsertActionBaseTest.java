@@ -14,14 +14,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for the base conversion used in {@link IntegerInsertAction}.
  */
 @RunWith(Parameterized.class)
-public class IntegerInsertActionBaseTest {
+public final class IntegerInsertActionBaseTest {
     private final long value;
     private final int base;
     private final char groupingSeparator;
     private final String expectedString;
 
 
-    public IntegerInsertActionBaseTest(final long value, final int base, final char groupingSeparator, final String expectedString) {
+    public IntegerInsertActionBaseTest(final long value, final int base,
+                                       final char groupingSeparator,
+                                       final String expectedString) {
         this.value = value;
         this.base = base;
         this.groupingSeparator = groupingSeparator;
@@ -31,7 +33,7 @@ public class IntegerInsertActionBaseTest {
 
     @Parameterized.Parameters
     public static Collection<Object[]> params() {
-        return Arrays.asList(new Object[][] {
+        return Arrays.asList(new Object[][]{
                 {33360, 10, '.', "33.360"},
                 {48345, 10, '.', "48.345"},
                 {48345, 11, '.', "33360"},

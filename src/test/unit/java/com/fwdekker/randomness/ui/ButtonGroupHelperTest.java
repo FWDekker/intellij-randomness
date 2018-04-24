@@ -31,7 +31,7 @@ public final class ButtonGroupHelperTest {
 
         ButtonGroupHelper.forEach(group, button -> sum[0]++);
 
-        assertThat(sum).isEqualTo(0);
+        assertThat(sum[0]).isEqualTo(0);
     }
 
     @Test
@@ -48,7 +48,7 @@ public final class ButtonGroupHelperTest {
 
         ButtonGroupHelper.forEach(group, button -> sum[0]++);
 
-        assertThat(sum).isEqualTo(3);
+        assertThat(sum[0]).isEqualTo(3);
     }
 
 

@@ -62,12 +62,14 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     private void createUIComponents() {
         minValue = new JLongSpinner();
         maxValue = new JLongSpinner();
-        base = new JLongSpinner(2, 36);
+        base = new JLongSpinner(IntegerSettings.MIN_BASE, IntegerSettings.MAX_BASE);
         valueRange = new JSpinnerRange(minValue, maxValue, Long.MAX_VALUE);
 
-        base.addChangeListener(e -> {
-            final long value = ((JLongSpinner) e.getSource()).getValue();
-            ButtonGroupHelper.forEach(groupingSeparatorGroup, button -> button.setEnabled(value == 10));
+        base.addChangeListener(event -> {
+            final long value = ((JLongSpinner) event.getSource()).getValue();
+            final boolean enabled = value == IntegerSettings.DECIMAL_BASE;
+            ButtonGroupHelper.forEach(groupingSeparatorGroup,
+                    button -> button.setEnabled(enabled));
         });
     }
 

@@ -17,6 +17,10 @@ import org.jetbrains.annotations.NotNull;
         storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class IntegerSettings extends Settings implements PersistentStateComponent<IntegerSettings> {
+    public static final int MIN_BASE = 2;
+    public static final int DECIMAL_BASE = 10;
+    public static final int MAX_BASE = 36;
+
     private static final long DEFAULT_MIN_VALUE = 0L;
     private static final long DEFAULT_MAX_VALUE = 1000L;
     private static final int DEFAULT_BASE = 10;
@@ -110,7 +114,7 @@ public final class IntegerSettings extends Settings implements PersistentStateCo
      *
      * @param base the base the generated value should be displayed in
      */
-    public void setBase(int base) {
+    public void setBase(final int base) {
         this.base = base;
     }
 
