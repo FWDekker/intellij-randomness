@@ -17,9 +17,9 @@ import java.util.Locale;
  */
 public final class JLongSpinner extends JSpinner {
     /**
-     * The default step size when decrementing or incrementing the value.
+     * The default value represented by a {@code JDoubleSpinner}.
      */
-    private static final long DEFAULT_STEP_SIZE = 1L;
+    private static final long DEFAULT_VALUE = 0L;
     /**
      * The smallest number that can be represented by a {@code JDoubleSpinner}.
      */
@@ -28,6 +28,10 @@ public final class JLongSpinner extends JSpinner {
      * The largest number that can be represented by a {@code JDoubleSpinner}.
      */
     private static final long DEFAULT_MAX_VALUE = Long.MAX_VALUE;
+    /**
+     * The default step size when decrementing or incrementing the value.
+     */
+    private static final long DEFAULT_STEP_SIZE = 1L;
     /**
      * The minimal and preferred width of this component.
      */
@@ -47,11 +51,21 @@ public final class JLongSpinner extends JSpinner {
      * Constructs a new {@code JLongSpinner}.
      */
     public JLongSpinner() {
-        super(new SpinnerNumberModel((Long) 0L, (Long) DEFAULT_MIN_VALUE, (Long) DEFAULT_MAX_VALUE,
-                (Long) DEFAULT_STEP_SIZE));
+        this(DEFAULT_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MAX_VALUE);
+    }
 
-        this.minValue = DEFAULT_MIN_VALUE;
-        this.maxValue = DEFAULT_MAX_VALUE;
+    /**
+     * Constructs a new {@code JLongSpinner}.
+     *
+     * @param value    the default value represented by this {@code JDoubleSpinner}
+     * @param minValue the smallest number that may be represented by this {@code JDoubleSpinner}
+     * @param maxValue the largest number that may be represented by this {@code JDoubleSpinner}
+     */
+    public JLongSpinner(final long value, final long minValue, final long maxValue) {
+        super(new SpinnerNumberModel((Long) value, (Long) minValue, (Long) maxValue, (Long) DEFAULT_STEP_SIZE));
+
+        this.minValue = minValue;
+        this.maxValue = maxValue;
 
         final JSpinner.NumberEditor editor = new JSpinner.NumberEditor(this);
         editor.getFormat().setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
@@ -64,21 +78,6 @@ public final class JLongSpinner extends JSpinner {
         final Dimension preferredSize = getPreferredSize();
         preferredSize.width = SPINNER_WIDTH;
         setPreferredSize(preferredSize);
-    }
-
-    /**
-     * Constructs a new {@code JLongSpinner}.
-     *
-     * @param minValue the smallest number that may be represented by this {@code JDoubleSpinner}
-     * @param maxValue the largest number that may be represented by this {@code JDoubleSpinner}
-     */
-    public JLongSpinner(final long minValue, final long maxValue) {
-        if (minValue > maxValue) {
-            throw new IllegalArgumentException("minValue should be greater than maxValue.");
-        }
-
-        this.minValue = minValue;
-        this.maxValue = maxValue;
     }
 
 

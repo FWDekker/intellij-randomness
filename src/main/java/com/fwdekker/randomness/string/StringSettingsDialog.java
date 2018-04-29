@@ -67,8 +67,8 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
-        minLength = new JLongSpinner(1, Integer.MAX_VALUE);
-        maxLength = new JLongSpinner(1, Integer.MAX_VALUE);
+        minLength = new JLongSpinner(1, 1, Integer.MAX_VALUE);
+        maxLength = new JLongSpinner(1, 1, Integer.MAX_VALUE);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
 
         alphabetList = new JList<>(Alphabet.values());

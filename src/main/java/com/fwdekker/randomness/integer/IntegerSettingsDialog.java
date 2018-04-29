@@ -62,7 +62,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     private void createUIComponents() {
         minValue = new JLongSpinner();
         maxValue = new JLongSpinner();
-        base = new JLongSpinner(IntegerSettings.MIN_BASE, IntegerSettings.MAX_BASE);
+        base = new JLongSpinner(IntegerSettings.DECIMAL_BASE, IntegerSettings.MIN_BASE, IntegerSettings.MAX_BASE);
         valueRange = new JSpinnerRange(minValue, maxValue, Long.MAX_VALUE);
 
         base.addChangeListener(event -> {
@@ -94,7 +94,7 @@ final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     public void loadSettings(final @NotNull IntegerSettings settings) {
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
-        base.setValue(settings.getBase());
+        base.setValue((long) settings.getBase());
         ButtonGroupHelper.setValue(groupingSeparatorGroup, String.valueOf(settings.getGroupingSeparator()));
     }
 

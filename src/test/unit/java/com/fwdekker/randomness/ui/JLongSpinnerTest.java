@@ -13,9 +13,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public final class JLongSpinnerTest {
     @Test
     public void testIllegalRange() {
-        assertThatThrownBy(() -> new JLongSpinner(989, -339))
+        assertThatThrownBy(() -> new JLongSpinner(414, 989, -339))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("minValue should be greater than maxValue.");
+                .hasMessage("(minimum <= value <= maximum) is false");
     }
 
 
@@ -68,7 +68,7 @@ public final class JLongSpinnerTest {
 
     @Test
     public void testValidateUnderflowCustomRange() {
-        final JLongSpinner spinner = new JLongSpinner(-950, -559);
+        final JLongSpinner spinner = new JLongSpinner(-665, -950, -559);
 
         spinner.setValue(-979);
 
@@ -79,7 +79,7 @@ public final class JLongSpinnerTest {
 
     @Test
     public void testValidateOverflowCustomRange() {
-        final JLongSpinner spinner = new JLongSpinner(279, 678);
+        final JLongSpinner spinner = new JLongSpinner(424, 279, 678);
 
         spinner.setValue(838);
 

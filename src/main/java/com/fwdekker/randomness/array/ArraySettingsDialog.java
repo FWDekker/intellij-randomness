@@ -63,7 +63,7 @@ final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
-        countSpinner = new JLongSpinner(1, Integer.MAX_VALUE);
+        countSpinner = new JLongSpinner(1, 1, Integer.MAX_VALUE);
     }
 
 
