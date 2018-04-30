@@ -4,20 +4,18 @@
 
 configurations {
     integrationTestCompile.extendsFrom testCompile
-    integrationTestRuntime.extendsFrom testRuntime
+    integrationTestRuntime.extendsFrom integrationTestCompile, testRuntime
 }
 
 sourceSets {
-    test {
-        java.srcDirs = [new File("src/test/unit/java")]
-        resources.srcDirs = [new File("src/test/unit/resources")]
-    }
     integrationTest {
-        java.srcDirs = [new File("src/test/integration/java")]
-        resources.srcDirs = [new File("src/test/integration/resources")]
+        java.srcDirs file("src/integration-test/java")
+        resources.srcDirs file("src/integration-test/resources")
 
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
+        compileClasspath += sourceSets.main.output
+        compileClasspath += configurations.compileOnly
+        compileClasspath += configurations.testCompileOnly
+        runtimeClasspath += compileClasspath
     }
 }
 
@@ -26,16 +24,18 @@ task integrationTest(type: Test, description: "Runs the integration tests.", gro
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
 
-    mustRunAfter test
-
     jacoco {
-        append = true
+        append = false
     }
 }
 
 pmdIntegrationTest {
-    ruleSetFiles = files("$rootProject.projectDir/config/pmd/test-pmd-rules.xml")
+    ruleSetFiles = files("$rootDir/config/pmd/test-pmd-rules.xml")
 }
 
+jacocoTestReport {
+    executionData file("$buildDir/jacoco/integrationTest.exec")
+}
+
+integrationTest.mustRunAfter test
 check.dependsOn integrationTest
-jacocoTestReport.executionData file("$rootProject.buildDir/jacoco/integrationTest.exec")
