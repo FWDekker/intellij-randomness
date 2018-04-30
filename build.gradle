@@ -8,16 +8,14 @@ plugins {
     id "jacoco"
     id "io.github.ddimtirov.codacy" version "0.1.0"
 
-    id "org.jetbrains.intellij" version "0.2.17"
+    id "org.jetbrains.intellij" version "0.3.1"
 }
 
 apply from: "integration.gradle"
 
 repositories {
     mavenCentral()
-    maven {
-        url "https://plugins.gradle.org/m2/"
-    }
+    maven { url "https://plugins.gradle.org/m2/" }
 }
 
 dependencies {
@@ -53,16 +51,16 @@ checkstyle {
 
 findbugs {
     ignoreFailures = true
-    includeFilter = file("$rootProject.projectDir/config/findbugs/includeFilter.xml")
+    includeFilter = file("$rootDir/config/findbugs/includeFilter.xml")
 }
 
 pmd {
     ignoreFailures = true
-    ruleSetFiles = files("$rootProject.projectDir/config/pmd/main-pmd-rules.xml")
+    ruleSetFiles = files("$rootDir/config/pmd/main-pmd-rules.xml")
 }
 
 pmdTest {
-    ruleSetFiles = files("$rootProject.projectDir/config/pmd/test-pmd-rules.xml")
+    ruleSetFiles = files("$rootDir/config/pmd/test-pmd-rules.xml")
 }
 
 jacocoTestReport {
