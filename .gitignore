@@ -23,12 +23,6 @@
 hs_err_pid*
 
 
-## JetBrains
-# User-specific stuff:
-.idea/
-*.iws
-*.iml
-
 
 ## Gradle
 .gradle
