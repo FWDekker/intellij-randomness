@@ -1,7 +1,8 @@
 package com.fwdekker.randomness.word;
 
-import java.util.NoSuchElementException;
 import org.junit.Test;
+
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,13 +13,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 public final class CapitalizationModeTest {
     @Test
-    public void testNormalTransformEmptyString() {
-        assertThat(CapitalizationMode.NORMAL.getTransform().apply("")).isEqualTo("");
+    public void testRetainTransform() {
+        assertThat(CapitalizationMode.RETAIN.getTransform().apply("AwfJYzzUoR")).isEqualTo("AwfJYzzUoR");
     }
 
     @Test
-    public void testNormalTransform() {
-        assertThat(CapitalizationMode.NORMAL.getTransform().apply("cOoKiE")).isEqualTo("Cookie");
+    public void testSentenceTransformEmptyString() {
+        assertThat(CapitalizationMode.SENTENCE.getTransform().apply("")).isEqualTo("");
+    }
+
+    @Test
+    public void testSentenceTransform() {
+        assertThat(CapitalizationMode.SENTENCE.getTransform().apply("cOoKiE")).isEqualTo("Cookie");
     }
 
     @Test
@@ -32,8 +38,18 @@ public final class CapitalizationModeTest {
     }
 
     @Test
-    public void testGetNameNormal() {
-        assertThat(CapitalizationMode.NORMAL.getName()).isEqualTo("normal");
+    public void testFirstLetterTransform() {
+        assertThat(CapitalizationMode.FIRST_LETTER.getTransform().apply("bgiOP SMQpR")).isEqualTo("Bgiop Smqpr");
+    }
+
+    @Test
+    public void testGetNameRetain() {
+        assertThat(CapitalizationMode.RETAIN.getName()).isEqualTo("retain");
+    }
+
+    @Test
+    public void testGetNameSentence() {
+        assertThat(CapitalizationMode.SENTENCE.getName()).isEqualTo("sentence");
     }
 
     @Test
@@ -47,8 +63,18 @@ public final class CapitalizationModeTest {
     }
 
     @Test
-    public void testToStringNormal() {
-        assertThat(CapitalizationMode.NORMAL.toString()).isEqualTo("normal");
+    public void testGetNameFirstLetter() {
+        assertThat(CapitalizationMode.FIRST_LETTER.getName()).isEqualTo("first letter");
+    }
+
+    @Test
+    public void testToStringRetain() {
+        assertThat(CapitalizationMode.RETAIN.toString()).isEqualTo("retain");
+    }
+
+    @Test
+    public void testToStringSentence() {
+        assertThat(CapitalizationMode.SENTENCE.toString()).isEqualTo("sentence");
     }
 
     @Test
@@ -62,8 +88,18 @@ public final class CapitalizationModeTest {
     }
 
     @Test
-    public void testGetModeNormal() {
-        assertThat(CapitalizationMode.getMode("normal")).isEqualTo(CapitalizationMode.NORMAL);
+    public void testToStringFirstLetter() {
+        assertThat(CapitalizationMode.FIRST_LETTER.toString()).isEqualTo("first letter");
+    }
+
+    @Test
+    public void testGetModeRetain() {
+        assertThat(CapitalizationMode.getMode("retain")).isEqualTo(CapitalizationMode.RETAIN);
+    }
+
+    @Test
+    public void testGetModeSentence() {
+        assertThat(CapitalizationMode.getMode("sentence")).isEqualTo(CapitalizationMode.SENTENCE);
     }
 
     @Test
@@ -74,6 +110,11 @@ public final class CapitalizationModeTest {
     @Test
     public void testGetModeLower() {
         assertThat(CapitalizationMode.getMode("lower")).isEqualTo(CapitalizationMode.LOWER);
+    }
+
+    @Test
+    public void testGetModeFirstLetter() {
+        assertThat(CapitalizationMode.getMode("first letter")).isEqualTo(CapitalizationMode.FIRST_LETTER);
     }
 
     @Test

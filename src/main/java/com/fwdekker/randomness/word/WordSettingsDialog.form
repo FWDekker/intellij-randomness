@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.fwdekker.randomness.word.WordSettingsDialog">
-  <grid id="27dc6" binding="contentPane" layout-manager="GridLayoutManager" row-count="7" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="contentPane" layout-manager="GridLayoutManager" row-count="7" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
       <xy x="20" y="20" width="527" height="400"/>
@@ -19,7 +19,7 @@
       </component>
       <component id="8a66f" class="com.fwdekker.randomness.ui.JLongSpinner" binding="minLength" custom-create="true">
         <constraints>
-          <grid row="0" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+          <grid row="0" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="75" height="-1"/>
           </grid>
         </constraints>
@@ -38,7 +38,7 @@
       </component>
       <component id="2e2f" class="com.fwdekker.randomness.ui.JLongSpinner" binding="maxLength" custom-create="true">
         <constraints>
-          <grid row="1" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+          <grid row="1" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="75" height="-1"/>
           </grid>
         </constraints>
@@ -64,15 +64,6 @@
           <text value="None"/>
         </properties>
       </component>
-      <component id="4715d" class="javax.swing.JRadioButton" default-binding="true">
-        <constraints>
-          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <name value="enclosureDouble"/>
-          <text value="&quot;"/>
-        </properties>
-      </component>
       <component id="d5ff3" class="javax.swing.JRadioButton" default-binding="true">
         <constraints>
           <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -82,50 +73,12 @@
           <text value="'"/>
         </properties>
       </component>
-      <component id="65560" class="javax.swing.JRadioButton" default-binding="true">
-        <constraints>
-          <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <name value="enclosureBacktick"/>
-          <text value="`"/>
-        </properties>
-      </component>
       <component id="19950" class="javax.swing.JLabel">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Capitalization"/>
-        </properties>
-      </component>
-      <component id="85d22" class="javax.swing.JRadioButton" default-binding="true">
-        <constraints>
-          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <actionCommand value="normal"/>
-          <name value="capitalizationNormal"/>
-          <text value="Normal"/>
-        </properties>
-      </component>
-      <component id="2d597" class="javax.swing.JRadioButton" default-binding="true">
-        <constraints>
-          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <actionCommand value="upper"/>
-          <name value="capitalizationUpper"/>
-          <text value="UPPER"/>
-        </properties>
-      </component>
-      <component id="bf7aa" class="javax.swing.JRadioButton" default-binding="true">
-        <constraints>
-          <grid row="3" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <name value="capitalizationLower"/>
-          <text value="lower"/>
         </properties>
       </component>
       <scrollpane id="c5804">
@@ -146,7 +99,7 @@
       </scrollpane>
       <component id="6090f" class="javax.swing.JButton" binding="dictionaryAddButton" custom-create="true">
         <constraints>
-          <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <actionCommand value="add"/>
@@ -156,7 +109,7 @@
       </component>
       <component id="21b61" class="javax.swing.JButton" binding="dictionaryRemoveButton" custom-create="true">
         <constraints>
-          <grid row="5" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <actionCommand value="remove"/>
@@ -166,7 +119,7 @@
       </component>
       <vspacer id="f49c8">
         <constraints>
-          <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="6" column="5" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
       <component id="fb562" class="javax.swing.JLabel">
@@ -175,6 +128,73 @@
         </constraints>
         <properties>
           <text value="Dictionaries"/>
+        </properties>
+      </component>
+      <component id="bf7aa" class="javax.swing.JRadioButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <name value="capitalizationLower"/>
+          <text value="lower"/>
+        </properties>
+      </component>
+      <component id="2d597" class="javax.swing.JRadioButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <actionCommand value="upper"/>
+          <name value="capitalizationUpper"/>
+          <text value="UPPER"/>
+        </properties>
+      </component>
+      <component id="85d22" class="javax.swing.JRadioButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <actionCommand value="sentence"/>
+          <name value="capitalizationSentence"/>
+          <text value="Sentence"/>
+        </properties>
+      </component>
+      <component id="5bc1d" class="javax.swing.JRadioButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <actionCommand value="retain"/>
+          <name value="capitalizationRetain"/>
+          <text value="RETaiN"/>
+        </properties>
+      </component>
+      <component id="5602b" class="javax.swing.JRadioButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <actionCommand value="first letter"/>
+          <name value="capitalizationFirstLetter"/>
+          <text value="First Letter"/>
+        </properties>
+      </component>
+      <component id="4715d" class="javax.swing.JRadioButton" default-binding="true">
+        <constraints>
+          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <name value="enclosureDouble"/>
+          <text value="&quot;"/>
+        </properties>
+      </component>
+      <component id="65560" class="javax.swing.JRadioButton" default-binding="true">
+        <constraints>
+          <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <name value="enclosureBacktick"/>
+          <text value="`"/>
         </properties>
       </component>
     </children>
@@ -190,6 +210,8 @@
       <member id="85d22"/>
       <member id="2d597"/>
       <member id="bf7aa"/>
+      <member id="5bc1d"/>
+      <member id="5602b"/>
     </group>
   </buttonGroups>
 </form>

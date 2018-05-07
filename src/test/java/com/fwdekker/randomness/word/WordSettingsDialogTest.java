@@ -2,13 +2,14 @@ package com.fwdekker.randomness.word;
 
 import com.fwdekker.randomness.ui.JEditableList;
 import com.intellij.openapi.ui.ValidationInfo;
-import java.io.File;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.finder.JFileChooserFinder;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.swing.fixture.Containers.showInFrame;
@@ -68,7 +69,9 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void testLoadSettingsCapitalization() {
-        frame.radioButton("capitalizationNormal").requireSelected();
+        frame.radioButton("capitalizationRetain").requireSelected();
+        frame.radioButton("capitalizationSentence").requireNotSelected();
+        frame.radioButton("capitalizationFirstLetter").requireNotSelected();
         frame.radioButton("capitalizationUpper").requireNotSelected();
         frame.radioButton("capitalizationLower").requireNotSelected();
     }
@@ -91,7 +94,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
     public void testAddDictionaryDuplicate() {
         GuiActionRunner.execute(() -> dialogDictionaries
                 .addEntry(Dictionary.UserDictionary.get(getDictionaryFile("dictionaries/simple.dic")
-                                                                .getCanonicalPath())));
+                        .getCanonicalPath())));
 
         frame.button("dictionaryAdd").click();
         JFileChooserFinder.findFileChooser().using(robot())
@@ -117,7 +120,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
     public void testRemoveUserDictionary() {
         GuiActionRunner.execute(() -> {
             dialogDictionaries.addEntry(Dictionary.UserDictionary.get(getDictionaryFile("dictionaries/simple.dic")
-                                                                              .getCanonicalPath()));
+                    .getCanonicalPath()));
             frame.table("dictionaries").target().clearSelection();
             frame.table("dictionaries").target().addRowSelectionInterval(1, 1);
             frame.button("dictionaryRemove").target().doClick();

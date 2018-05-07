@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 /**
@@ -11,9 +12,13 @@ import java.util.function.Function;
  */
 public enum CapitalizationMode {
     /**
+     * Does not change the string.
+     */
+    RETAIN("retain", string -> string),
+    /**
      * Makes the first character uppercase and all characters after that lowercase.
      */
-    NORMAL("normal", string -> (string.length() == 0
+    SENTENCE("sentence", string -> (string.length() == 0
             ? ""
             : Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase(Locale.getDefault()))),
     /**
@@ -23,7 +28,12 @@ public enum CapitalizationMode {
     /**
      * Makes all characters lowercase.
      */
-    LOWER("lower", string -> string.toLowerCase(Locale.getDefault()));
+    LOWER("lower", string -> string.toLowerCase(Locale.getDefault())),
+    /**
+     * Makes the first letter of each word uppercase.
+     */
+    FIRST_LETTER("first letter", string ->
+            Arrays.stream(string.split(" ")).map(SENTENCE.transform).collect(Collectors.joining(" ")));
 
 
     /**
