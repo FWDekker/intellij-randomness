@@ -8,7 +8,7 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,7 +44,7 @@ public final class WordSettings extends Settings implements PersistentStateCompo
     /**
      * The list of all dictionaries provided by the plugin.
      */
-    private Set<String> bundledDictionaries = Collections.singleton(Dictionary.DEFAULT_DICTIONARY_FILE);
+    private Set<String> bundledDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
     /**
      * The list of all dictionaries registered by the user.
      */
@@ -52,7 +52,7 @@ public final class WordSettings extends Settings implements PersistentStateCompo
     /**
      * The list of bundled dictionaries that are currently active.
      */
-    private Set<String> activeBundledDictionaries = Collections.singleton(Dictionary.DEFAULT_DICTIONARY_FILE);
+    private Set<String> activeBundledDictionaries = new HashSet<>(Arrays.asList(Dictionary.DEFAULT_DICTIONARY_FILE));
     /**
      * The list of user dictionaries that are currently active.
      */
