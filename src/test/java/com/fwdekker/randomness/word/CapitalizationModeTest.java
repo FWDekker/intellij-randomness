@@ -38,6 +38,11 @@ public final class CapitalizationModeTest {
     }
 
     @Test
+    public void testFirstLetterTransform() {
+        assertThat(CapitalizationMode.FIRST_LETTER.getTransform().apply("bgiOP SMQpR")).isEqualTo("Bgiop Smqpr");
+    }
+
+    @Test
     public void testGetNameRetain() {
         assertThat(CapitalizationMode.RETAIN.getName()).isEqualTo("retain");
     }
@@ -55,6 +60,11 @@ public final class CapitalizationModeTest {
     @Test
     public void testGetNameLower() {
         assertThat(CapitalizationMode.LOWER.getName()).isEqualTo("lower");
+    }
+
+    @Test
+    public void testGetNameFirstLetter() {
+        assertThat(CapitalizationMode.FIRST_LETTER.getName()).isEqualTo("first letter");
     }
 
     @Test
@@ -78,6 +88,11 @@ public final class CapitalizationModeTest {
     }
 
     @Test
+    public void testToStringFirstLetter() {
+        assertThat(CapitalizationMode.FIRST_LETTER.toString()).isEqualTo("first letter");
+    }
+
+    @Test
     public void testGetModeRetain() {
         assertThat(CapitalizationMode.getMode("retain")).isEqualTo(CapitalizationMode.RETAIN);
     }
@@ -95,6 +110,11 @@ public final class CapitalizationModeTest {
     @Test
     public void testGetModeLower() {
         assertThat(CapitalizationMode.getMode("lower")).isEqualTo(CapitalizationMode.LOWER);
+    }
+
+    @Test
+    public void testGetModeFirstLetter() {
+        assertThat(CapitalizationMode.getMode("first letter")).isEqualTo(CapitalizationMode.FIRST_LETTER);
     }
 
     @Test
