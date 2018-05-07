@@ -1,7 +1,8 @@
 package com.fwdekker.randomness.word;
 
-import java.util.NoSuchElementException;
 import org.junit.Test;
+
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,6 +12,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Unit tests for {@link CapitalizationMode}.
  */
 public final class CapitalizationModeTest {
+    @Test
+    public void testRetainTransform() {
+        assertThat(CapitalizationMode.RETAIN.getTransform().apply("AwfJYzzUoR")).isEqualTo("AwfJYzzUoR");
+    }
+
     @Test
     public void testNormalTransformEmptyString() {
         assertThat(CapitalizationMode.NORMAL.getTransform().apply("")).isEqualTo("");
@@ -32,6 +38,11 @@ public final class CapitalizationModeTest {
     }
 
     @Test
+    public void testGetNameRetain() {
+        assertThat(CapitalizationMode.RETAIN.getName()).isEqualTo("retain");
+    }
+
+    @Test
     public void testGetNameNormal() {
         assertThat(CapitalizationMode.NORMAL.getName()).isEqualTo("normal");
     }
@@ -47,6 +58,11 @@ public final class CapitalizationModeTest {
     }
 
     @Test
+    public void testToStringRetain() {
+        assertThat(CapitalizationMode.RETAIN.toString()).isEqualTo("retain");
+    }
+
+    @Test
     public void testToStringNormal() {
         assertThat(CapitalizationMode.NORMAL.toString()).isEqualTo("normal");
     }
@@ -59,6 +75,11 @@ public final class CapitalizationModeTest {
     @Test
     public void testToStringLower() {
         assertThat(CapitalizationMode.LOWER.toString()).isEqualTo("lower");
+    }
+
+    @Test
+    public void testGetModeRetain() {
+        assertThat(CapitalizationMode.getMode("retain")).isEqualTo(CapitalizationMode.RETAIN);
     }
 
     @Test

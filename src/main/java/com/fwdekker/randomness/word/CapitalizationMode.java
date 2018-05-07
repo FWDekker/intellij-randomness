@@ -11,6 +11,10 @@ import java.util.function.Function;
  */
 public enum CapitalizationMode {
     /**
+     * Does not change the string.
+     */
+    RETAIN("retain", string -> string),
+    /**
      * Makes the first character uppercase and all characters after that lowercase.
      */
     NORMAL("normal", string -> (string.length() == 0
