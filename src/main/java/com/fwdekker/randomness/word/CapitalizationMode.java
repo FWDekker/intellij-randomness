@@ -17,7 +17,7 @@ public enum CapitalizationMode {
     /**
      * Makes the first character uppercase and all characters after that lowercase.
      */
-    NORMAL("normal", string -> (string.length() == 0
+    SENTENCE("sentence", string -> (string.length() == 0
             ? ""
             : Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase(Locale.getDefault()))),
     /**

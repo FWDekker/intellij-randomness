@@ -42,7 +42,7 @@ public final class WordSettings extends Settings implements PersistentStateCompo
     /**
      * The way in which the generated word should be capitalized.
      */
-    private CapitalizationMode capitalization = CapitalizationMode.NORMAL;
+    private CapitalizationMode capitalization = CapitalizationMode.RETAIN;
     /**
      * The list of all dictionaries provided by the plugin.
      */

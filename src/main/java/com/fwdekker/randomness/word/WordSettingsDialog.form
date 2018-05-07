@@ -172,9 +172,9 @@
           <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <actionCommand value="normal"/>
-          <name value="capitalizationNormal"/>
-          <text value="Normal"/>
+          <actionCommand value="sentence"/>
+          <name value="capitalizationSentence"/>
+          <text value="Sentence"/>
         </properties>
       </component>
       <component id="5bc1d" class="javax.swing.JRadioButton" default-binding="true">

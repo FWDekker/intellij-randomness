@@ -18,13 +18,13 @@ public final class CapitalizationModeTest {
     }
 
     @Test
-    public void testNormalTransformEmptyString() {
-        assertThat(CapitalizationMode.NORMAL.getTransform().apply("")).isEqualTo("");
+    public void testSentenceTransformEmptyString() {
+        assertThat(CapitalizationMode.SENTENCE.getTransform().apply("")).isEqualTo("");
     }
 
     @Test
-    public void testNormalTransform() {
-        assertThat(CapitalizationMode.NORMAL.getTransform().apply("cOoKiE")).isEqualTo("Cookie");
+    public void testSentenceTransform() {
+        assertThat(CapitalizationMode.SENTENCE.getTransform().apply("cOoKiE")).isEqualTo("Cookie");
     }
 
     @Test
@@ -43,8 +43,8 @@ public final class CapitalizationModeTest {
     }
 
     @Test
-    public void testGetNameNormal() {
-        assertThat(CapitalizationMode.NORMAL.getName()).isEqualTo("normal");
+    public void testGetNameSentence() {
+        assertThat(CapitalizationMode.SENTENCE.getName()).isEqualTo("sentence");
     }
 
     @Test
@@ -63,8 +63,8 @@ public final class CapitalizationModeTest {
     }
 
     @Test
-    public void testToStringNormal() {
-        assertThat(CapitalizationMode.NORMAL.toString()).isEqualTo("normal");
+    public void testToStringSentence() {
+        assertThat(CapitalizationMode.SENTENCE.toString()).isEqualTo("sentence");
     }
 
     @Test
@@ -83,8 +83,8 @@ public final class CapitalizationModeTest {
     }
 
     @Test
-    public void testGetModeNormal() {
-        assertThat(CapitalizationMode.getMode("normal")).isEqualTo(CapitalizationMode.NORMAL);
+    public void testGetModeSentence() {
+        assertThat(CapitalizationMode.getMode("sentence")).isEqualTo(CapitalizationMode.SENTENCE);
     }
 
     @Test
