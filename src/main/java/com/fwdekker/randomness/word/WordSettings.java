@@ -8,8 +8,10 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -229,8 +231,8 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      *
      * @return the list of all dictionaries
      */
-    public Set<Dictionary> getDictionaries() {
-        final Set<Dictionary> dictionaries = new HashSet<>();
+    public List<Dictionary> getDictionaries() {
+        final List<Dictionary> dictionaries = new ArrayList<>();
 
         dictionaries.addAll(bundledDictionaries.stream()
                 .map(Dictionary.BundledDictionary::get)
@@ -247,8 +249,8 @@ public final class WordSettings extends Settings implements PersistentStateCompo
      *
      * @return the list of all dictionaries that are currently active
      */
-    public Set<Dictionary> getActiveDictionaries() {
-        final Set<Dictionary> dictionaries = new HashSet<>();
+    public List<Dictionary> getActiveDictionaries() {
+        final List<Dictionary> dictionaries = new ArrayList<>();
 
         dictionaries.addAll(activeBundledDictionaries.stream()
                 .map(Dictionary.BundledDictionary::get)
