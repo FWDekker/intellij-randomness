@@ -3,7 +3,6 @@ package com.fwdekker.randomness.word;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,14 +22,6 @@ public final class DictionaryTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Dictionary must be non-empty.")
                 .hasNoCause();
-    }
-
-    @Test
-    public void testInvalidFile() {
-        assertThatThrownBy(() -> Dictionary.UserDictionary.get("invalid_file"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Failed to read dictionary into memory.")
-                .hasCauseInstanceOf(IOException.class);
     }
 
 
@@ -149,7 +140,7 @@ public final class DictionaryTest {
 
         assertThat(combined.getWords())
                 .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow", "simplicity", "bend",
-                                           "consideration", "pneumonoultramicroscopicsilicovolcanoconiosis");
+                        "consideration", "pneumonoultramicroscopicsilicovolcanoconiosis");
     }
 
     @Test

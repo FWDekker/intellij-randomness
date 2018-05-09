@@ -1,5 +1,7 @@
 package com.fwdekker.randomness.word;
 
+import com.intellij.openapi.ui.ValidationInfo;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,7 +62,11 @@ public abstract class Dictionary {
      * @param name  the human-readable name of the dictionary
      * @param input the {@code InputStream} containing the dictionary's contents
      */
-    private Dictionary(final String uid, final String name, final InputStream input) {
+    protected Dictionary(final String uid, final String name, final InputStream input) {
+        if (input == null) {
+            throw new IllegalArgumentException("Failed to read dictionary into memory.");
+        }
+
         this.uid = uid;
         this.name = name;
 
@@ -138,6 +144,16 @@ public abstract class Dictionary {
                 .orElseThrow(() -> new IllegalStateException("Dictionary should not be empty."));
     }
 
+    /**
+     * Detects whether this dictionary is still valid.
+     * <p>
+     * Depending on the underlying model, the dictionary may become invalid or even disappear. This method detects such
+     * problems.
+     *
+     * @return {@code null} if this dictionary is valid, or a {@code ValidationInfo} explaining why it is invalid
+     */
+    public abstract ValidationInfo validate();
+
 
     /**
      * Combines the given {@code Dictionary Dictionary(s)} into a single {@code Dictionary}.
@@ -214,8 +230,19 @@ public abstract class Dictionary {
 
 
         @Override
+        public ValidationInfo validate() {
+            try {
+                getInputStream(getUid());
+            } catch (final IllegalArgumentException e) {
+                return new ValidationInfo("The dictionary resource for " + getName() + " does not exist.");
+            }
+
+            return null;
+        }
+
+        @Override
         public String toString() {
-            return "[bundled] " + new File(getUid()).getName();
+            return "[bundled] " + getName();
         }
 
 
@@ -269,6 +296,19 @@ public abstract class Dictionary {
 
 
         @Override
+        public ValidationInfo validate() {
+            final File file = new File(getUid());
+            if (!file.exists()) {
+                return new ValidationInfo("The dictionary file for " + getName() + " does not exist.");
+            }
+            if (!file.canRead()) {
+                return new ValidationInfo("The dictionary file for " + getName() + " exists, but could not be read.");
+            }
+
+            return null;
+        }
+
+        @Override
         public String toString() {
             return "[custom] " + getName();
         }
@@ -279,7 +319,6 @@ public abstract class Dictionary {
          *
          * @param dictionary the absolute location of the dictionary file
          * @return an {@link InputStream} of the file at the given absolute path
-         * @throws IOException if the given file could not be found
          */
         private static InputStream getInputStream(final String dictionary) {
             try {
@@ -299,6 +338,12 @@ public abstract class Dictionary {
          */
         SimpleDictionary() {
             super();
+        }
+
+
+        @Override
+        public ValidationInfo validate() {
+            return null;
         }
     }
 }
