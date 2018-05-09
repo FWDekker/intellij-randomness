@@ -10,8 +10,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 import static org.assertj.swing.fixture.Containers.showInFrame;
 
 
@@ -129,6 +134,29 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(frame.table("dictionaries").target().getRowCount()).isEqualTo(1);
     }
 
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testValidateInvalidDictionary() throws IOException {
+        final JEditableList<Dictionary> dictionaries = (JEditableList<Dictionary>) frame.table("dictionaries").target();
+
+        final File dictionaryFile = File.createTempFile("test", "dic");
+        Files.write(dictionaryFile.toPath(), "Limbas\nOstiary\nHackee".getBytes(StandardCharsets.UTF_8));
+        final Dictionary dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+
+        if (!dictionaryFile.delete()) {
+            fail("Failed to delete test file as part of test.");
+        }
+
+        GuiActionRunner.execute(() -> {
+            dictionaries.addEntry(dictionary);
+            dictionaries.setActiveEntries(Collections.singletonList(dictionary));
+        });
+
+        final ValidationInfo validationInfo = wordSettingsDialog.doValidate();
+
+        assertThat(validationInfo).isNotNull();
+    }
 
     @Test
     public void testValidateMinLengthFloat() {
