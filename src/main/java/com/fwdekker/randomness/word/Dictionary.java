@@ -141,7 +141,7 @@ public abstract class Dictionary {
      * @param dictionaries the {@code Dictionary Dictionary(s)} to combine
      * @return a {@code Dictionary} containing all words in the given {@code Dictionary Dictionary(s)}
      */
-    public static final Dictionary combine(final Collection<Dictionary> dictionaries) {
+    public static Dictionary combine(final Collection<Dictionary> dictionaries) {
         final Dictionary combinedDictionary = new SimpleDictionary();
 
         dictionaries.forEach(dictionary -> combinedDictionary.words.addAll(dictionary.words));
