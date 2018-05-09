@@ -19,7 +19,10 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 script:
-  - ./gradlew check codacyUpload
+  - ./gradlew check
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 # Caching
 before_cache:
