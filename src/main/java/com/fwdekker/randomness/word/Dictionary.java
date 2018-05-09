@@ -234,7 +234,7 @@ public abstract class Dictionary {
             try {
                 getInputStream(getUid());
             } catch (final IllegalArgumentException e) {
-                return new ValidationInfo("The dictionary resource for " + getName() + " does not exist.");
+                return new ValidationInfo("The dictionary resource for " + getName() + " no longer exists.");
             }
 
             return null;
@@ -299,7 +299,7 @@ public abstract class Dictionary {
         public ValidationInfo validate() {
             final File file = new File(getUid());
             if (!file.exists()) {
-                return new ValidationInfo("The dictionary file for " + getName() + " does not exist.");
+                return new ValidationInfo("The dictionary file for " + getName() + " no longer exists.");
             }
             if (!file.canRead()) {
                 return new ValidationInfo("The dictionary file for " + getName() + " exists, but could not be read.");

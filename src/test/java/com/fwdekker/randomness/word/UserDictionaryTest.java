@@ -5,12 +5,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,19 +27,25 @@ public final class UserDictionaryTest {
     @Before
     public void beforeEach() throws IOException {
         dictionaryFile = new File("test/test.dic");
-        if (!dictionaryFile.getParentFile().mkdirs()) {
+        final File dictionaryDirectory = dictionaryFile.getParentFile();
+
+        if (!dictionaryDirectory.exists() && !dictionaryDirectory.mkdirs()) {
             fail("Failed to set up test directory.");
         }
         if (!dictionaryFile.createNewFile()) {
             fail("Failed to set up test file.");
         }
 
-        createDictionary(dictionaryFile, "Spanners\nHeralds\nTree");
+        Files.write(dictionaryFile.toPath(), "Spanners\nHeralds\nTree".getBytes(StandardCharsets.UTF_8));
     }
 
     @After
     public void afterEach() {
-        if (!dictionaryFile.delete() || !dictionaryFile.getParentFile().delete()) {
+        final File dictionaryDirectory = dictionaryFile.getParentFile();
+
+        if (dictionaryFile.exists() && !dictionaryFile.delete()) {
+            Logger.getLogger(getClass().getName()).warning("Failed to clean up test files.");
+        } else if (dictionaryDirectory.exists() && !dictionaryDirectory.delete()) {
             Logger.getLogger(getClass().getName()).warning("Failed to clean up test directory.");
         }
     }
@@ -75,7 +79,7 @@ public final class UserDictionaryTest {
         final ValidationInfo validationInfo = dictionary.validate();
 
         assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.message).isEqualTo("The dictionary file for test.dic does not exist.");
+        assertThat(validationInfo.message).isEqualTo("The dictionary file for test.dic no longer exists.");
         assertThat(validationInfo.component).isNull();
     }
 
@@ -84,12 +88,5 @@ public final class UserDictionaryTest {
         dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
 
         assertThat(dictionary.toString()).isEqualTo("[custom] test.dic");
-    }
-
-
-    private void createDictionary(final File target, final String contents) throws IOException {
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(target), "utf-8"))) {
-            writer.write(contents);
-        }
     }
 }
