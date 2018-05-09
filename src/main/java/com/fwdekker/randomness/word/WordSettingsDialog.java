@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -113,30 +114,38 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
         settings.setBundledDictionaries(dictionaries.getEntries().stream()
                 .filter(Dictionary.BundledDictionary.class::isInstance)
-                .map(Dictionary::getPath)
+                .map(Dictionary::getUid)
                 .collect(Collectors.toSet()));
         settings.setActiveBundledDictionaries(dictionaries.getActiveEntries().stream()
                 .filter(Dictionary.BundledDictionary.class::isInstance)
-                .map(Dictionary::getPath)
+                .map(Dictionary::getUid)
                 .collect(Collectors.toSet()));
         settings.setUserDictionaries(dictionaries.getEntries().stream()
                 .filter(Dictionary.UserDictionary.class::isInstance)
-                .map(Dictionary::getPath)
+                .map(Dictionary::getUid)
                 .collect(Collectors.toSet()));
         settings.setActiveUserDictionaries(dictionaries.getActiveEntries().stream()
                 .filter(Dictionary.UserDictionary.class::isInstance)
-                .map(Dictionary::getPath)
+                .map(Dictionary::getUid)
                 .collect(Collectors.toSet()));
     }
 
     @Override
     @Nullable
     protected ValidationInfo doValidate() {
-        try {
-            if (dictionaries.getActiveEntries().isEmpty()) {
-                throw new ValidationException("Select at least one dictionary.", dictionaries);
-            }
+        if (dictionaries.getActiveEntries().isEmpty()) {
+            return new ValidationInfo("Select at least one dictionary.", dictionaries);
+        }
 
+        final Optional<ValidationInfo> invalidDictionary = dictionaries.getActiveEntries().stream()
+                .map(Dictionary::validate)
+                .filter(Objects::nonNull)
+                .findFirst();
+        if (invalidDictionary.isPresent()) {
+            return new ValidationInfo(invalidDictionary.get().message, dictionaries);
+        }
+
+        try {
             minLength.validateValue();
             maxLength.validateValue();
             lengthRange.validate();

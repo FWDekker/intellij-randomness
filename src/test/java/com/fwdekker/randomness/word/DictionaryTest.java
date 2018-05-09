@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.word;
 
-import java.io.IOException;
-import java.util.Arrays;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -24,20 +24,12 @@ public final class DictionaryTest {
                 .hasNoCause();
     }
 
-    @Test
-    public void testInvalidFile() {
-        assertThatThrownBy(() -> Dictionary.UserDictionary.get("invalid_file"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Failed to read dictionary into memory.")
-                .hasCauseInstanceOf(IOException.class);
-    }
-
 
     @Test
     public void testGetPath() {
         useDictionary("simple");
 
-        assertThat(dictionary.getPath())
+        assertThat(dictionary.getUid())
                 .isEqualTo("dictionaries/simple.dic");
     }
 
@@ -148,7 +140,7 @@ public final class DictionaryTest {
 
         assertThat(combined.getWords())
                 .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow", "simplicity", "bend",
-                                           "consideration", "pneumonoultramicroscopicsilicovolcanoconiosis");
+                        "consideration", "pneumonoultramicroscopicsilicovolcanoconiosis");
     }
 
     @Test
@@ -166,7 +158,7 @@ public final class DictionaryTest {
     public void testEqualsContract() {
         EqualsVerifier.forClass(Dictionary.class)
                 .usingGetClass()
-                .withIgnoredFields("words")
+                .withIgnoredFields("name", "words")
                 .verify();
     }
 
