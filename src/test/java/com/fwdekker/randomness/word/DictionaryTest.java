@@ -1,9 +1,10 @@
 package com.fwdekker.randomness.word;
 
-import java.io.IOException;
-import java.util.Arrays;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -37,7 +38,7 @@ public final class DictionaryTest {
     public void testGetPath() {
         useDictionary("simple");
 
-        assertThat(dictionary.getPath())
+        assertThat(dictionary.getUid())
                 .isEqualTo("dictionaries/simple.dic");
     }
 
@@ -166,7 +167,7 @@ public final class DictionaryTest {
     public void testEqualsContract() {
         EqualsVerifier.forClass(Dictionary.class)
                 .usingGetClass()
-                .withIgnoredFields("words")
+                .withIgnoredFields("name", "words")
                 .verify();
     }
 

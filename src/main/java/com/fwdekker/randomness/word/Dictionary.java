@@ -3,6 +3,7 @@ package com.fwdekker.randomness.word;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -29,9 +31,13 @@ public abstract class Dictionary {
     public static final String DEFAULT_DICTIONARY_FILE = "words_alpha.dic";
 
     /**
-     * The filename of the dictionary file.
+     * The unique identifier of the dictionary.
      */
-    private final String path;
+    private final String uid;
+    /**
+     * The human-readable name of the dictionary.
+     */
+    private final String name;
     /**
      * A set of all words in the dictionary.
      */
@@ -42,23 +48,24 @@ public abstract class Dictionary {
      * Constructs an empty {@code Dictionary}.
      */
     private Dictionary() {
-        path = "";
+        uid = UUID.randomUUID().toString();
+        name = uid;
         words = new HashSet<>();
     }
 
     /**
      * Constructs a new {@code Dictionary} from the given resource file.
      *
-     * @param path the filename of the dictionary file
+     * @param uid   the unique identifier of the dictionary
+     * @param name  the human-readable name of the dictionary
+     * @param input the {@code InputStream} containing the dictionary's contents
      */
-    private Dictionary(final String path) {
-        this.path = path;
+    private Dictionary(final String uid, final String name, final InputStream input) {
+        this.uid = uid;
+        this.name = name;
 
-        // Read dictionary into memory
-        try (InputStream iStream = getInputStream(path)) {
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(iStream, StandardCharsets.UTF_8));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
             words = reader.lines().collect(Collectors.toSet());
-            reader.close();
         } catch (final IOException e) {
             throw new IllegalArgumentException("Failed to read dictionary into memory.", e);
         }
@@ -70,24 +77,21 @@ public abstract class Dictionary {
 
 
     /**
-     * Returns an {@link InputStream} for the given dictionary file.
-     * <p>
-     * Different kinds of dictionaries may need a different method of accessing the source file.
+     * Returns the unique identifier of the dictionary.
      *
-     * @param dictionary the location of the dictionary file
-     * @return an {@link InputStream} for the given dictionary file
-     * @throws IOException if the dictionary file could not be read
+     * @return the unique identifier of the dictionary
      */
-    protected abstract InputStream getInputStream(String dictionary) throws IOException;
-
+    public final String getUid() {
+        return uid;
+    }
 
     /**
-     * Returns the filename of the dictionary file.
+     * Returns the human-readable name of the dictionary.
      *
-     * @return the filename of the dictionary file
+     * @return the human-readable name of the dictionary
      */
-    public final String getPath() {
-        return path;
+    public final String getName() {
+        return name;
     }
 
     /**
@@ -160,12 +164,12 @@ public abstract class Dictionary {
         }
 
         final Dictionary that = (Dictionary) other;
-        return Objects.equals(this.path, that.path);
+        return Objects.equals(this.uid, that.uid);
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(path);
+        return Objects.hash(uid);
     }
 
 
@@ -184,28 +188,34 @@ public abstract class Dictionary {
         /**
          * Constructs a new {@link BundledDictionary} for the given dictionary resource.
          *
-         * @param dictionary the location of the dictionary resource
+         * @param path the path to the dictionary resource
          */
-        private BundledDictionary(final String dictionary) {
-            super(dictionary);
+        private BundledDictionary(final String path) {
+            super(path, new File(path).getName(), getInputStream(path));
         }
 
         /**
          * Constructs a new {@code BundledDictionary} for the given dictionary resource, or returns the previously
          * created instance of this resource if there is one.
          *
-         * @param dictionary the location of the dictionary resource
+         * @param path the path to the dictionary resource
          * @return a new {@code BundledDictionary} for the given dictionary resource, or returns the previously
          * created instance of this resource if there is one
          */
-        public static BundledDictionary get(final String dictionary) {
+        public static BundledDictionary get(final String path) {
             synchronized (BundledDictionary.class) {
-                if (!CACHE.containsKey(dictionary)) {
-                    CACHE.put(dictionary, new BundledDictionary(dictionary));
+                if (!CACHE.containsKey(path)) {
+                    CACHE.put(path, new BundledDictionary(path));
                 }
             }
 
-            return CACHE.get(dictionary);
+            return CACHE.get(path);
+        }
+
+
+        @Override
+        public String toString() {
+            return "[bundled] " + new File(getUid()).getName();
         }
 
 
@@ -215,14 +225,8 @@ public abstract class Dictionary {
          * @param dictionary the location of the dictionary resource
          * @return an {@link InputStream} to the given dictionary resource
          */
-        @Override
-        protected InputStream getInputStream(final String dictionary) {
+        private static InputStream getInputStream(final String dictionary) {
             return Dictionary.class.getClassLoader().getResourceAsStream(dictionary);
-        }
-
-        @Override
-        public String toString() {
-            return "[bundled] " + new File(getPath()).getName();
         }
     }
 
@@ -239,28 +243,34 @@ public abstract class Dictionary {
         /**
          * Constructs a new {@code UserDictionary} for the given dictionary file.
          *
-         * @param dictionary the location of the dictionary file
+         * @param path the absolute path to the dictionary file
          */
-        private UserDictionary(final String dictionary) {
-            super(dictionary);
+        private UserDictionary(final String path) {
+            super(path, new File(path).getName(), getInputStream(path));
         }
 
         /**
          * Constructs a new {@code UserDictionary} for the given dictionary file, or returns the previously created
          * instance of this file if there is one.
          *
-         * @param dictionary the location of the dictionary file
+         * @param path the absolute path to the dictionary file
          * @return a new {@code UserDictionary} for the given dictionary file, or returns the previously created
          * instance of this file if there is one
          */
-        public static UserDictionary get(final String dictionary) {
+        public static UserDictionary get(final String path) {
             synchronized (UserDictionary.class) {
-                if (!CACHE.containsKey(dictionary)) {
-                    CACHE.put(dictionary, new UserDictionary(dictionary));
+                if (!CACHE.containsKey(path)) {
+                    CACHE.put(path, new UserDictionary(path));
                 }
             }
 
-            return CACHE.get(dictionary);
+            return CACHE.get(path);
+        }
+
+
+        @Override
+        public String toString() {
+            return "[custom] " + getName();
         }
 
 
@@ -271,14 +281,12 @@ public abstract class Dictionary {
          * @return an {@link InputStream} of the file at the given absolute path
          * @throws IOException if the given file could not be found
          */
-        @Override
-        protected InputStream getInputStream(final String dictionary) throws IOException {
-            return new FileInputStream(dictionary);
-        }
-
-        @Override
-        public String toString() {
-            return "[custom] " + new File(getPath()).getName();
+        private static InputStream getInputStream(final String dictionary) {
+            try {
+                return new FileInputStream(dictionary);
+            } catch (final FileNotFoundException e) {
+                throw new IllegalArgumentException("Failed to read dictionary into memory.", e);
+            }
         }
     }
 
@@ -291,18 +299,6 @@ public abstract class Dictionary {
          */
         SimpleDictionary() {
             super();
-        }
-
-
-        /**
-         * Throws {@link IllegalStateException}.
-         *
-         * @param dictionary ignored
-         * @return never
-         */
-        @Override
-        protected InputStream getInputStream(final String dictionary) {
-            throw new IllegalStateException("This method should not be called.");
         }
     }
 }

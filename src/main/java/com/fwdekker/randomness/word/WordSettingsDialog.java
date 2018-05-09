@@ -113,19 +113,19 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
         settings.setBundledDictionaries(dictionaries.getEntries().stream()
                 .filter(Dictionary.BundledDictionary.class::isInstance)
-                .map(Dictionary::getPath)
+                .map(Dictionary::getUid)
                 .collect(Collectors.toSet()));
         settings.setActiveBundledDictionaries(dictionaries.getActiveEntries().stream()
                 .filter(Dictionary.BundledDictionary.class::isInstance)
-                .map(Dictionary::getPath)
+                .map(Dictionary::getUid)
                 .collect(Collectors.toSet()));
         settings.setUserDictionaries(dictionaries.getEntries().stream()
                 .filter(Dictionary.UserDictionary.class::isInstance)
-                .map(Dictionary::getPath)
+                .map(Dictionary::getUid)
                 .collect(Collectors.toSet()));
         settings.setActiveUserDictionaries(dictionaries.getActiveEntries().stream()
                 .filter(Dictionary.UserDictionary.class::isInstance)
-                .map(Dictionary::getPath)
+                .map(Dictionary::getUid)
                 .collect(Collectors.toSet()));
     }
 
