@@ -231,9 +231,7 @@ public abstract class Dictionary {
 
         @Override
         public ValidationInfo validate() {
-            try {
-                getInputStream(getUid());
-            } catch (final IllegalArgumentException e) {
+            if (getInputStream(getUid()) == null) {
                 return new ValidationInfo("The dictionary resource for " + getName() + " no longer exists.");
             }
 
