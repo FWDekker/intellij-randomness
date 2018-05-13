@@ -1,15 +1,12 @@
 package com.fwdekker.randomness.word;
 
 import com.intellij.openapi.ui.ValidationInfo;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,37 +17,6 @@ import static org.assertj.core.api.Assertions.fail;
  * Unit tests for {@link Dictionary.UserDictionary}.
  */
 public final class UserDictionaryTest {
-    private File dictionaryFile;
-    private Dictionary dictionary;
-
-
-    @Before
-    public void beforeEach() throws IOException {
-        dictionaryFile = new File("test/test.dic");
-        final File dictionaryDirectory = dictionaryFile.getParentFile();
-
-        if (!dictionaryDirectory.exists() && !dictionaryDirectory.mkdirs()) {
-            fail("Failed to set up test directory.");
-        }
-        if (!dictionaryFile.createNewFile()) {
-            fail("Failed to set up test file.");
-        }
-
-        Files.write(dictionaryFile.toPath(), "Spanners\nHeralds\nTree".getBytes(StandardCharsets.UTF_8));
-    }
-
-    @After
-    public void afterEach() {
-        final File dictionaryDirectory = dictionaryFile.getParentFile();
-
-        if (dictionaryFile.exists() && !dictionaryFile.delete()) {
-            Logger.getLogger(getClass().getName()).warning("Failed to clean up test files.");
-        } else if (dictionaryDirectory.exists() && !dictionaryDirectory.delete()) {
-            Logger.getLogger(getClass().getName()).warning("Failed to clean up test directory.");
-        }
-    }
-
-
     @Test
     public void testInvalidFile() {
         assertThatThrownBy(() -> Dictionary.UserDictionary.get("invalid_file"))
@@ -61,7 +27,8 @@ public final class UserDictionaryTest {
 
     @Test
     public void testValidateSuccess() {
-        dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final File dictionaryFile = setUpDictionary("Bbls\nOverpray\nTreeward");
+        final Dictionary dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
 
         final ValidationInfo validationInfo = dictionary.validate();
 
@@ -70,7 +37,8 @@ public final class UserDictionaryTest {
 
     @Test
     public void testValidateFileDoesNotExist() {
-        dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final File dictionaryFile = setUpDictionary("Loafer\nAquavit\nSpahees");
+        final Dictionary dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
 
         if (!dictionaryFile.delete()) {
             fail("Failed to delete test file as part of test.");
@@ -79,14 +47,38 @@ public final class UserDictionaryTest {
         final ValidationInfo validationInfo = dictionary.validate();
 
         assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.message).isEqualTo("The dictionary file for test.dic no longer exists.");
+        assertThat(validationInfo.message).matches("The dictionary file for .* no longer exists\\.");
         assertThat(validationInfo.component).isNull();
     }
 
     @Test
     public void testToString() {
-        dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final File dictionaryFile = setUpDictionary("Cholers\nJaloused\nStopback");
+        final Dictionary dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
 
-        assertThat(dictionary.toString()).isEqualTo("[custom] test.dic");
+        assertThat(dictionary.toString()).matches("\\[custom\\] .*\\.dic");
+    }
+
+
+    /**
+     * Creates a temporary dictionary file with the given contents.
+     * <p>
+     * Because the created file is a temporary file, it does not have to be cleaned up afterwards.
+     *
+     * @param contents the contents to write to the dictionary file
+     * @return the created temporary dictionary file
+     */
+    private File setUpDictionary(final String contents) {
+        final File dictionaryFile;
+
+        try {
+            dictionaryFile = File.createTempFile("dictionary", ".dic");
+            Files.write(dictionaryFile.toPath(), contents.getBytes(StandardCharsets.UTF_8));
+
+            return dictionaryFile;
+        } catch (final IOException e) {
+            fail("Could not set up dictionary file.");
+            return new File("");
+        }
     }
 }
