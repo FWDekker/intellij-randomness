@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -212,7 +213,7 @@ public abstract class Dictionary {
 
         /**
          * Constructs a new {@code BundledDictionary} for the given dictionary resource, or returns the previously
-         * created instance of this resource if there is one.
+         * created instance for this resource if there is one.
          *
          * @param path the path to the dictionary resource
          * @return a new {@code BundledDictionary} for the given dictionary resource, or returns the previously
@@ -231,13 +232,7 @@ public abstract class Dictionary {
 
         @Override
         public ValidationInfo validate() {
-            try {
-                getInputStream(getUid());
-            } catch (final IllegalArgumentException e) {
-                return new ValidationInfo("The dictionary resource for " + getName() + " no longer exists.");
-            }
-
-            return null;
+            return validate(getUid());
         }
 
         @Override
@@ -245,6 +240,31 @@ public abstract class Dictionary {
             return "[bundled] " + getName();
         }
 
+
+        /**
+         * Detects whether the dictionary at the given resource would be valid.
+         *
+         * @param path the path to the dictionary resource
+         * @return {@code null} if the dictionary would be valid, or a {@code ValidationInfo} explaining why it would be
+         * invalid
+         */
+        public static ValidationInfo validate(final String path) {
+            final String name = new File(path).getName();
+
+            try (InputStream iStream = getInputStream(path)) {
+                if (iStream == null) {
+                    return new ValidationInfo("The dictionary resource for " + name + " no longer exists.");
+                }
+
+                if (iStream.read() < 0) {
+                    return new ValidationInfo("The dictionary resource for " + name + " is empty.");
+                }
+            } catch (final IOException e) {
+                return new ValidationInfo("The dictionary resource for " + name + " exists, but could not be read.");
+            }
+
+            return null;
+        }
 
         /**
          * Returns an {@link InputStream} to the given dictionary resource.
@@ -277,11 +297,11 @@ public abstract class Dictionary {
         }
 
         /**
-         * Constructs a new {@code UserDictionary} for the given dictionary file, or returns the previously created
-         * instance of this file if there is one.
+         * Constructs a new {@code UserDictionary} for the given dictionary path, or returns the previously created
+         * instance for the file if there is one.
          *
          * @param path the absolute path to the dictionary file
-         * @return a new {@code UserDictionary} for the given dictionary file, or returns the previously created
+         * @return a new {@code UserDictionary} for the given dictionary path, or returns the previously created
          * instance of this file if there is one
          */
         public static UserDictionary get(final String path) {
@@ -297,15 +317,7 @@ public abstract class Dictionary {
 
         @Override
         public ValidationInfo validate() {
-            final File file = new File(getUid());
-            if (!file.exists()) {
-                return new ValidationInfo("The dictionary file for " + getName() + " no longer exists.");
-            }
-            if (!file.canRead()) {
-                return new ValidationInfo("The dictionary file for " + getName() + " exists, but could not be read.");
-            }
-
-            return null;
+            return validate(getUid());
         }
 
         @Override
@@ -313,6 +325,34 @@ public abstract class Dictionary {
             return "[custom] " + getName();
         }
 
+
+        /**
+         * Detects whether the dictionary at the given path would be valid.
+         *
+         * @param path the absolute path to the dictionary file
+         * @return {@code null} if the dictionary would be valid, or a {@code ValidationInfo} explaining why it would be
+         * invalid
+         */
+        public static ValidationInfo validate(final String path) {
+            final File file = new File(path);
+            final String name = file.getName();
+
+            if (!file.exists()) {
+                return new ValidationInfo("The dictionary file for " + name + " no longer exists.");
+            }
+            if (!file.canRead()) {
+                return new ValidationInfo("The dictionary file for " + name + " exists, but could not be read.");
+            }
+            try (InputStream iStream = Files.newInputStream(file.toPath())) {
+                if (iStream.read() < 0) {
+                    return new ValidationInfo("The dictionary file for " + name + " is empty.");
+                }
+            } catch (final IOException e) {
+                return new ValidationInfo("The dictionary file for " + name + " exists, but could not be read.");
+            }
+
+            return null;
+        }
 
         /**
          * Returns an {@link InputStream} of the file at the given absolute path.

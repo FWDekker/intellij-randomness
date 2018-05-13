@@ -5,13 +5,16 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -227,17 +230,73 @@ public final class WordSettings extends Settings implements PersistentStateCompo
 
 
     /**
-     * Returns the list of all dictionaries.
+     * Validates all dictionaries in the given collections.
      *
-     * @return the list of all dictionaries
+     * @param bundledDictionaries a list of {@code BundledDictionary}s
+     * @param userDictionaries    a list of {@code UserDictionary}s
+     * @return {@code null} if all dictionaries are valid, or a {@code ValidationInfo} explaining why there is an
+     * invalid dictionary
      */
-    public List<Dictionary> getDictionaries() {
+    private ValidationInfo validateDictionaries(final Collection<String> bundledDictionaries,
+                                                final Collection<String> userDictionaries) {
+        final ValidationInfo bundledValidationInfo = bundledDictionaries.stream()
+                .map(Dictionary.BundledDictionary::validate)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+        if (bundledValidationInfo != null) {
+            return bundledValidationInfo;
+        }
+
+        final ValidationInfo userValidationInfo = userDictionaries.stream()
+                .map(Dictionary.UserDictionary::validate)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+        if (userValidationInfo != null) {
+            return userValidationInfo;
+        }
+
+        return null;
+    }
+
+    /**
+     * Validates all dictionaries.
+     *
+     * @return {@code null} if all dictionaries are valid, or a {@code ValidationInfo} explaining why there is an
+     * invalid dictionary
+     */
+    public ValidationInfo validateAllDictionaries() {
+        return validateDictionaries(bundledDictionaries, userDictionaries);
+    }
+
+    /**
+     * Validates all dictionaries that are currently active.
+     *
+     * @return {@code null} if all dictionaries are valid, or a {@code ValidationInfo} explaining why there is an
+     * invalid dictionary
+     */
+    public ValidationInfo validateActiveDictionaries() {
+        return validateDictionaries(activeBundledDictionaries, activeUserDictionaries);
+    }
+
+    /**
+     * Returns the list of all dictionaries in the given collections that are valid.
+     *
+     * @param bundledDictionaries a list of {@code BundledDictionary}s
+     * @param userDictionaries    a list of {@code UserDictionary}s
+     * @return the list of all dictionaries in the given lists that are valid
+     */
+    private List<Dictionary> getValidDictionaries(final Collection<String> bundledDictionaries,
+                                                  final Collection<String> userDictionaries) {
         final List<Dictionary> dictionaries = new ArrayList<>();
 
         dictionaries.addAll(bundledDictionaries.stream()
+                .filter(dictionary -> Dictionary.BundledDictionary.validate(dictionary) == null)
                 .map(Dictionary.BundledDictionary::get)
                 .collect(Collectors.toList()));
         dictionaries.addAll(userDictionaries.stream()
+                .filter(dictionary -> Dictionary.UserDictionary.validate(dictionary) == null)
                 .map(Dictionary.UserDictionary::get)
                 .collect(Collectors.toList()));
 
@@ -245,20 +304,20 @@ public final class WordSettings extends Settings implements PersistentStateCompo
     }
 
     /**
-     * Returns the list of all dictionaries that are currently active.
+     * Returns the list of all dictionaries that are valid.
      *
-     * @return the list of all dictionaries that are currently active
+     * @return the list of all dictionaries that are valid
      */
-    public List<Dictionary> getActiveDictionaries() {
-        final List<Dictionary> dictionaries = new ArrayList<>();
+    public List<Dictionary> getValidAllDictionaries() {
+        return getValidDictionaries(bundledDictionaries, userDictionaries);
+    }
 
-        dictionaries.addAll(activeBundledDictionaries.stream()
-                .map(Dictionary.BundledDictionary::get)
-                .collect(Collectors.toList()));
-        dictionaries.addAll(activeUserDictionaries.stream()
-                .map(Dictionary.UserDictionary::get)
-                .collect(Collectors.toList()));
-
-        return dictionaries;
+    /**
+     * Returns the list of all dictionaries that are valid and currently active.
+     *
+     * @return the list of all dictionaries that are valid and currently active
+     */
+    public List<Dictionary> getValidActiveDictionaries() {
+        return getValidDictionaries(activeBundledDictionaries, activeUserDictionaries);
     }
 }

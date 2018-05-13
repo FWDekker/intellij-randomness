@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.word;
 
 import com.fwdekker.randomness.DataInsertAction;
+import com.fwdekker.randomness.ui.JBPopupHelper;
+import com.intellij.openapi.ui.ValidationInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -43,8 +45,27 @@ public final class WordInsertAction extends DataInsertAction {
      */
     @Override
     public String generateString() {
-        final List<String> words = Dictionary.combine(wordSettings.getActiveDictionaries())
+        final ValidationInfo validationInfo = wordSettings.validateActiveDictionaries();
+        if (validationInfo != null) {
+            JBPopupHelper.showMessagePopup(
+                    "Randomness error",
+                    validationInfo.message,
+                    "Please check your Randomness `word` settings."
+            );
+            return "";
+        }
+
+        final List<String> words = Dictionary.combine(wordSettings.getValidActiveDictionaries())
                 .getWordsWithLengthInRange(wordSettings.getMinLength(), wordSettings.getMaxLength());
+        if (words.isEmpty()) {
+            JBPopupHelper.showMessagePopup(
+                    "Randomness error",
+                    "There are no words compatible with the current settings.",
+                    "Please check your Randomness `word` settings."
+            );
+            return "";
+        }
+
         final int randomIndex = ThreadLocalRandom.current().nextInt(0, words.size());
         final String randomWord = wordSettings.getCapitalization().getTransform().apply(words.get(randomIndex));
 

@@ -1,58 +1,22 @@
 package com.fwdekker.randomness.word;
 
 import com.intellij.openapi.ui.ValidationInfo;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.logging.Logger;
 
+import static com.fwdekker.randomness.word.DictionaryHelper.setUpDictionary;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.fail;
 
 
 /**
  * Unit tests for {@link Dictionary.UserDictionary}.
  */
 public final class UserDictionaryTest {
-    private File dictionaryFile;
-    private Dictionary dictionary;
-
-
-    @Before
-    public void beforeEach() throws IOException {
-        dictionaryFile = new File("test/test.dic");
-        final File dictionaryDirectory = dictionaryFile.getParentFile();
-
-        if (!dictionaryDirectory.exists() && !dictionaryDirectory.mkdirs()) {
-            fail("Failed to set up test directory.");
-        }
-        if (!dictionaryFile.createNewFile()) {
-            fail("Failed to set up test file.");
-        }
-
-        Files.write(dictionaryFile.toPath(), "Spanners\nHeralds\nTree".getBytes(StandardCharsets.UTF_8));
-    }
-
-    @After
-    public void afterEach() {
-        final File dictionaryDirectory = dictionaryFile.getParentFile();
-
-        if (dictionaryFile.exists() && !dictionaryFile.delete()) {
-            Logger.getLogger(getClass().getName()).warning("Failed to clean up test files.");
-        } else if (dictionaryDirectory.exists() && !dictionaryDirectory.delete()) {
-            Logger.getLogger(getClass().getName()).warning("Failed to clean up test directory.");
-        }
-    }
-
-
     @Test
-    public void testInvalidFile() {
+    public void testInitDoesNotExist() {
         assertThatThrownBy(() -> Dictionary.UserDictionary.get("invalid_file"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Failed to read dictionary into memory.")
@@ -60,8 +24,29 @@ public final class UserDictionaryTest {
     }
 
     @Test
-    public void testValidateSuccess() {
-        dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+    public void testInitEmpty() {
+        final File dictionaryFile = setUpDictionary("");
+
+        assertThatThrownBy(() -> Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Dictionary must be non-empty.");
+    }
+
+    @Test
+    public void testInitTwiceEquals() {
+        final File dictionaryFile = setUpDictionary("Fonded\nLustrum\nUpgale");
+
+        final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+
+        assertThat(dictionaryA).isEqualTo(dictionaryB);
+    }
+
+
+    @Test
+    public void testValidateInstanceSuccess() {
+        final File dictionaryFile = setUpDictionary("Rhodinal\nScruff\nPibrochs");
+        final Dictionary dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
 
         final ValidationInfo validationInfo = dictionary.validate();
 
@@ -69,24 +54,43 @@ public final class UserDictionaryTest {
     }
 
     @Test
-    public void testValidateFileDoesNotExist() {
-        dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+    public void testValidateStaticSuccess() {
+        final File dictionaryFile = setUpDictionary("Bbls\nOverpray\nTreeward");
 
-        if (!dictionaryFile.delete()) {
-            fail("Failed to delete test file as part of test.");
-        }
+        final ValidationInfo validationInfo = Dictionary.UserDictionary.validate(dictionaryFile.getAbsolutePath());
 
-        final ValidationInfo validationInfo = dictionary.validate();
+        assertThat(validationInfo).isNull();
+    }
+
+    @Test
+    public void testValidateStaticFileDoesNotExist() {
+        final ValidationInfo validationInfo = Dictionary.UserDictionary.validate("invalid_path");
 
         assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.message).isEqualTo("The dictionary file for test.dic no longer exists.");
+        assertThat(validationInfo.message).isEqualTo("The dictionary file for invalid_path no longer exists.");
         assertThat(validationInfo.component).isNull();
     }
 
     @Test
-    public void testToString() {
-        dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+    public void testValidateStaticFileEmpty() {
+        final File dictionaryFile = setUpDictionary("");
+        final String dictionaryName = dictionaryFile.getName();
 
-        assertThat(dictionary.toString()).isEqualTo("[custom] test.dic");
+        final ValidationInfo validationInfo = Dictionary.UserDictionary.validate(dictionaryFile.getAbsolutePath());
+
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.message).isEqualTo("The dictionary file for " + dictionaryName + " is empty.");
+        assertThat(validationInfo.component).isNull();
+    }
+
+
+    @Test
+    public void testToString() {
+        final File dictionaryFile = setUpDictionary("Cholers\nJaloused\nStopback");
+        final String dictionaryName = dictionaryFile.getName();
+
+        final Dictionary dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+
+        assertThat(dictionary.toString()).isEqualTo("[custom] " + dictionaryName);
     }
 }
