@@ -11,8 +11,6 @@ plugins {
     id "org.jetbrains.intellij" version "0.3.1"
 }
 
-apply from: "integration.gradle"
-
 repositories {
     mavenCentral()
     maven { url "https://plugins.gradle.org/m2/" }
