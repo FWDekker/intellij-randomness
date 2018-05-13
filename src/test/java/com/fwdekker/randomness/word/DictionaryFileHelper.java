@@ -61,5 +61,7 @@ public final class DictionaryFileHelper {
                 Logger.getLogger(this.getClass().getName()).warning("Failed to clean up dictionary file.");
             }
         }
+
+        files.clear();
     }
 }
