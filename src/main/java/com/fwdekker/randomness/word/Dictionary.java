@@ -212,7 +212,7 @@ public abstract class Dictionary {
 
         /**
          * Constructs a new {@code BundledDictionary} for the given dictionary resource, or returns the previously
-         * created instance of this resource if there is one.
+         * created instance for this resource if there is one.
          *
          * @param path the path to the dictionary resource
          * @return a new {@code BundledDictionary} for the given dictionary resource, or returns the previously
@@ -228,14 +228,22 @@ public abstract class Dictionary {
             return CACHE.get(path);
         }
 
+        /**
+         * Constructs a new {@code BundledDictionary} for each of the given dictionary resources, or returns the
+         * previously created instance for a resource if there is one.
+         *
+         * @param paths the paths to the dictionary resources
+         * @return a new {@code BundledDictionary} for each of the given dictionary resources, or returns the
+         * previously created instance for a resource if there is one
+         */
+        public static List<BundledDictionary> get(final Collection<String> paths) {
+            return paths.stream().map(BundledDictionary::get).collect(Collectors.toList());
+        }
+
 
         @Override
         public ValidationInfo validate() {
-            if (getInputStream(getUid()) == null) {
-                return new ValidationInfo("The dictionary resource for " + getName() + " no longer exists.");
-            }
-
-            return null;
+            return validate(getUid());
         }
 
         @Override
@@ -243,6 +251,36 @@ public abstract class Dictionary {
             return "[bundled] " + getName();
         }
 
+
+        /**
+         * Detects whether the dictionary at the given resource would be valid.
+         *
+         * @param path the path to the dictionary resource
+         * @return {@code null} if the dictionary would be valid, or a {@code ValidationInfo} explaining why it would be
+         * invalid
+         */
+        public static ValidationInfo validate(final String path) {
+            if (getInputStream(path) == null) {
+                final String name = new File(path).getName();
+                return new ValidationInfo("The dictionary resource for " + name + " no longer exists.");
+            }
+
+            return null;
+        }
+
+        /**
+         * Detects whether the dictionaries at the given resources would be valid.
+         *
+         * @param paths the paths to the dictionary resources
+         * @return {@code null} if all dictionaries would be valid, or a {@code ValidationInfo} explaining why they
+         * would be invalid
+         */
+        public static ValidationInfo validate(final Collection<String> paths) {
+            return paths.stream().map(BundledDictionary::validate)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(null);
+        }
 
         /**
          * Returns an {@link InputStream} to the given dictionary resource.
@@ -275,11 +313,11 @@ public abstract class Dictionary {
         }
 
         /**
-         * Constructs a new {@code UserDictionary} for the given dictionary file, or returns the previously created
-         * instance of this file if there is one.
+         * Constructs a new {@code UserDictionary} for the given dictionary path, or returns the previously created
+         * instance for the file if there is one.
          *
          * @param path the absolute path to the dictionary file
-         * @return a new {@code UserDictionary} for the given dictionary file, or returns the previously created
+         * @return a new {@code UserDictionary} for the given dictionary path, or returns the previously created
          * instance of this file if there is one
          */
         public static UserDictionary get(final String path) {
@@ -292,18 +330,22 @@ public abstract class Dictionary {
             return CACHE.get(path);
         }
 
+        /**
+         * Constructs a new {@code UserDictionary} for each of the given dictionary paths, or returns the previously
+         * created instance for a file if there is one.
+         *
+         * @param paths the absolute paths to the dictionary files
+         * @return a new {@code UserDictionary} for each of the given dictionary paths, or returns the previously
+         * created instance for a file if there is one
+         */
+        public static List<UserDictionary> get(final Collection<String> paths) {
+            return paths.stream().map(UserDictionary::get).collect(Collectors.toList());
+        }
+
 
         @Override
         public ValidationInfo validate() {
-            final File file = new File(getUid());
-            if (!file.exists()) {
-                return new ValidationInfo("The dictionary file for " + getName() + " no longer exists.");
-            }
-            if (!file.canRead()) {
-                return new ValidationInfo("The dictionary file for " + getName() + " exists, but could not be read.");
-            }
-
-            return null;
+            return validate(getUid());
         }
 
         @Override
@@ -311,6 +353,41 @@ public abstract class Dictionary {
             return "[custom] " + getName();
         }
 
+
+        /**
+         * Detects whether the dictionary at the given path would be valid.
+         *
+         * @param path the absolute path to the dictionary file
+         * @return {@code null} if the dictionary would be valid, or a {@code ValidationInfo} explaining why it would be
+         * invalid
+         */
+        public static ValidationInfo validate(final String path) {
+            final File file = new File(path);
+            final String name = file.getName();
+
+            if (!file.exists()) {
+                return new ValidationInfo("The dictionary file for " + name + " no longer exists.");
+            }
+            if (!file.canRead()) {
+                return new ValidationInfo("The dictionary file for " + name + " exists, but could not be read.");
+            }
+
+            return null;
+        }
+
+        /**
+         * Detects whether the dictionaries at the given paths would be valid.
+         *
+         * @param paths the absolute paths to the dictionary files
+         * @return {@code null} if all dictionaries would be valid, or a {@code ValidationInfo} explaining why they
+         * would be invalid
+         */
+        public static ValidationInfo validate(final Collection<String> paths) {
+            return paths.stream().map(UserDictionary::validate)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(null);
+        }
 
         /**
          * Returns an {@link InputStream} of the file at the given absolute path.
