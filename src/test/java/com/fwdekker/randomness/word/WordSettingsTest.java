@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.word;
 
 import com.intellij.openapi.ui.ValidationInfo;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.fwdekker.randomness.word.DictionaryHelper.setUpDictionary;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -19,8 +19,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for {@link WordSettings}.
  */
 public final class WordSettingsTest {
+    private static final DictionaryFileHelper FILE_HELPER = new DictionaryFileHelper();
+
     private WordSettings wordSettings;
 
+
+    @AfterClass
+    public static void afterAll() {
+        FILE_HELPER.cleanUpDictionaries();
+    }
 
     @Before
     public void beforeEach() {
@@ -111,7 +118,7 @@ public final class WordSettingsTest {
 
     @Test
     public void testValidateAllDictionariesSuccessNonEmpty() {
-        final File userDictionary = setUpDictionary("Reflet\nHerniate\nBuz");
+        final File userDictionary = FILE_HELPER.setUpDictionary("Reflet\nHerniate\nBuz");
 
         wordSettings.setBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
         wordSettings.setUserDictionaries(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
@@ -121,7 +128,7 @@ public final class WordSettingsTest {
 
     @Test
     public void testValidateAllDictionaryInvalidBundled() {
-        final File userDictionary = setUpDictionary("Inblow\nImmunes\nEnteroid");
+        final File userDictionary = FILE_HELPER.setUpDictionary("Inblow\nImmunes\nEnteroid");
 
         wordSettings.setBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/empty.dic")));
         wordSettings.setUserDictionaries(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
@@ -135,7 +142,7 @@ public final class WordSettingsTest {
 
     @Test
     public void testValidateAllDictionaryInvalidUser() {
-        final File userDictionary = setUpDictionary("");
+        final File userDictionary = FILE_HELPER.setUpDictionary("");
         final String userDictionaryName = userDictionary.getName();
 
         wordSettings.setBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
@@ -158,7 +165,7 @@ public final class WordSettingsTest {
 
     @Test
     public void testValidateActiveDictionariesSuccessNonEmpty() {
-        final File userDictionary = setUpDictionary("Dicranum\nJiffy\nChatties");
+        final File userDictionary = FILE_HELPER.setUpDictionary("Dicranum\nJiffy\nChatties");
 
         wordSettings.setActiveBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
         wordSettings.setActiveUserDictionaries(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
@@ -168,7 +175,7 @@ public final class WordSettingsTest {
 
     @Test
     public void testValidateActiveDictionaryInvalidBundled() {
-        final File userDictionary = setUpDictionary("Fastest\nWows\nBrimmers");
+        final File userDictionary = FILE_HELPER.setUpDictionary("Fastest\nWows\nBrimmers");
 
         wordSettings.setActiveBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/empty.dic")));
         wordSettings.setActiveUserDictionaries(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
@@ -182,7 +189,7 @@ public final class WordSettingsTest {
 
     @Test
     public void testValidateActiveDictionaryInvalidUser() {
-        final File userDictionary = setUpDictionary("");
+        final File userDictionary = FILE_HELPER.setUpDictionary("");
         final String userDictionaryName = userDictionary.getName();
 
         wordSettings.setActiveBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
@@ -206,8 +213,8 @@ public final class WordSettingsTest {
 
     @Test
     public void testGetValidAllDictionariesFilterBoth() {
-        final File validUserDictionary = setUpDictionary("Resilium\nAncerata\nBylander");
-        final File invalidUserDictionary = setUpDictionary("");
+        final File validUserDictionary = FILE_HELPER.setUpDictionary("Resilium\nAncerata\nBylander");
+        final File invalidUserDictionary = FILE_HELPER.setUpDictionary("");
 
         wordSettings.setBundledDictionaries(new HashSet<>(Arrays.asList(
                 "dictionaries/simple.dic",
@@ -236,8 +243,8 @@ public final class WordSettingsTest {
 
     @Test
     public void testGetValidActiveDictionariesFilterBoth() {
-        final File validUserDictionary = setUpDictionary("Resilium\nAncerata\nBylander");
-        final File invalidUserDictionary = setUpDictionary("");
+        final File validUserDictionary = FILE_HELPER.setUpDictionary("Resilium\nAncerata\nBylander");
+        final File invalidUserDictionary = FILE_HELPER.setUpDictionary("");
 
         wordSettings.setActiveBundledDictionaries(new HashSet<>(Arrays.asList(
                 "dictionaries/simple.dic",

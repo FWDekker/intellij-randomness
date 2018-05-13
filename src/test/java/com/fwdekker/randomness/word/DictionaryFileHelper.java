@@ -4,18 +4,28 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.fail;
 
 
 /**
- * Helper class for tests of {@code Dictionary}s.
+ * Helper class for file manipulation for tests of {@code Dictionary}s.
  */
-public final class DictionaryHelper {
+public final class DictionaryFileHelper {
     /**
-     * Private constructor to prevent instantiation.
+     * The files that have been created by this helper.
      */
-    private DictionaryHelper() {
+    private final List<File> files;
+
+
+    /**
+     * Constructs a new {@code DictionaryFileHelper}.
+     */
+    public DictionaryFileHelper() {
+        files = new ArrayList<>();
     }
 
 
@@ -27,17 +37,29 @@ public final class DictionaryHelper {
      * @param contents the contents to write to the dictionary file
      * @return the created temporary dictionary file
      */
-    public static File setUpDictionary(final String contents) {
+    public File setUpDictionary(final String contents) {
         final File dictionaryFile;
 
         try {
             dictionaryFile = File.createTempFile("dictionary", ".dic");
             Files.write(dictionaryFile.toPath(), contents.getBytes(StandardCharsets.UTF_8));
+            files.add(dictionaryFile);
 
             return dictionaryFile;
         } catch (final IOException e) {
             fail("Could not set up dictionary file.");
             return new File("");
+        }
+    }
+
+    /**
+     * Cleans up the created dictionary files.
+     */
+    public void cleanUpDictionaries() {
+        for (final File dictionaryFile : files) {
+            if (dictionaryFile.exists() && !dictionaryFile.delete()) {
+                Logger.getLogger(this.getClass().getName()).warning("Failed to clean up dictionary file.");
+            }
         }
     }
 }
