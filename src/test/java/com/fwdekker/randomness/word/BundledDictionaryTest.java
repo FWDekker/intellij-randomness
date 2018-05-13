@@ -3,6 +3,9 @@ package com.fwdekker.randomness.word;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -12,21 +15,97 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 public final class BundledDictionaryTest {
     @Test
-    public void testConstructorDoesNotExist() {
-        assertThatThrownBy(() -> Dictionary.BundledDictionary.get("invalid resource"))
+    public void testInitDoesNotExist() {
+        assertThatThrownBy(() -> Dictionary.BundledDictionary.get("invalid_resource"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Failed to read dictionary into memory.")
                 .hasNoCause();
     }
 
     @Test
-    public void testValidateSuccess() {
+    public void testInitEmpty() {
+        assertThatThrownBy(() -> Dictionary.BundledDictionary.get("dictionaries/empty.dic"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Dictionary must be non-empty.")
+                .hasNoCause();
+    }
+
+    @Test
+    public void testInitTwiceEquals() {
+        final Dictionary dictionaryA = Dictionary.BundledDictionary.get("dictionaries/varied.dic");
+        final Dictionary dictionaryB = Dictionary.BundledDictionary.get("dictionaries/varied.dic");
+
+        assertThat(dictionaryA).isEqualTo(dictionaryB);
+    }
+
+    @Test
+    public void testInitListTwiceEquals() {
+        final List<Dictionary.BundledDictionary> dictionaries = Dictionary.BundledDictionary.get(Arrays.asList(
+                "dictionaries/simple.dic",
+                "dictionaries/simple.dic"
+        ));
+
+        assertThat(dictionaries).hasSize(2);
+        assertThat(dictionaries.get(0)).isEqualTo(dictionaries.get(1));
+    }
+
+
+    @Test
+    public void testValidateInstanceSuccess() {
         final Dictionary dictionary = Dictionary.BundledDictionary.get("dictionaries/simple.dic");
 
         final ValidationInfo validationInfo = dictionary.validate();
 
         assertThat(validationInfo).isNull();
     }
+
+    @Test
+    public void testValidateStaticSuccess() {
+        final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate("dictionaries/simple.dic");
+
+        assertThat(validationInfo).isNull();
+    }
+
+    @Test
+    public void testValidateStaticFileDoesNotExist() {
+        final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate("invalid_resource");
+
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.message).isEqualTo("The dictionary resource for invalid_resource no longer exists.");
+        assertThat(validationInfo.component).isNull();
+    }
+
+    @Test
+    public void testValidateStaticFileEmpty() {
+        final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate("dictionaries/empty.dic");
+
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.message).isEqualTo("The dictionary resource for empty.dic is empty.");
+        assertThat(validationInfo.component).isNull();
+    }
+
+    @Test
+    public void testValidateStaticListSuccess() {
+        final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate(Arrays.asList(
+                "dictionaries/simple.dic",
+                "dictionaries/varied.dic"
+        ));
+
+        assertThat(validationInfo).isNull();
+    }
+
+    @Test
+    public void testValidateStaticListPartial() {
+        final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate(Arrays.asList(
+                "dictionaries/varied.dic",
+                "dictionaries/empty.dic"
+        ));
+
+        assertThat(validationInfo).isNotNull();
+        assertThat(validationInfo.message).isEqualTo("The dictionary resource for empty.dic is empty.");
+        assertThat(validationInfo.component).isNull();
+    }
+
 
     @Test
     public void testToString() {

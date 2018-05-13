@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -260,9 +261,18 @@ public abstract class Dictionary {
          * invalid
          */
         public static ValidationInfo validate(final String path) {
-            if (getInputStream(path) == null) {
-                final String name = new File(path).getName();
-                return new ValidationInfo("The dictionary resource for " + name + " no longer exists.");
+            final String name = new File(path).getName();
+
+            try (InputStream iStream = getInputStream(path)) {
+                if (iStream == null) {
+                    return new ValidationInfo("The dictionary resource for " + name + " no longer exists.");
+                }
+
+                if (iStream.read() < 0) {
+                    return new ValidationInfo("The dictionary resource for " + name + " is empty.");
+                }
+            } catch (final IOException e) {
+                return new ValidationInfo("The dictionary resource for " + name + " exists, but could not be read.");
             }
 
             return null;
@@ -369,6 +379,13 @@ public abstract class Dictionary {
                 return new ValidationInfo("The dictionary file for " + name + " no longer exists.");
             }
             if (!file.canRead()) {
+                return new ValidationInfo("The dictionary file for " + name + " exists, but could not be read.");
+            }
+            try (InputStream iStream = Files.newInputStream(file.toPath())) {
+                if (iStream.read() < 0) {
+                    return new ValidationInfo("The dictionary file for " + name + " is empty.");
+                }
+            } catch (final IOException e) {
                 return new ValidationInfo("The dictionary file for " + name + " exists, but could not be read.");
             }
 
