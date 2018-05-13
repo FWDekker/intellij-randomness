@@ -100,8 +100,8 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupHelper.setValue(capitalizationGroup, settings.getCapitalization());
 
-        dictionaries.setEntries(settings.getDictionaries());
-        dictionaries.setActiveEntries(settings.getActiveDictionaries());
+        dictionaries.setEntries(settings.getValidDictionaries());
+        dictionaries.setActiveEntries(settings.getValidActiveDictionaries());
     }
 
     @Override

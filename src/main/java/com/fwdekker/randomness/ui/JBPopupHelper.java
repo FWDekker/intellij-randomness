@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui;
 
+import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.popup.list.ListPopupImpl;
 import com.intellij.ui.speedSearch.SpeedSearch;
 
@@ -123,5 +124,25 @@ public final class JBPopupHelper {
                                 popup.handleSelect(true, keyEvent);
                             }
                         }));
+    }
+
+    /**
+     * Displays a popup with a title and two messages.
+     *
+     * @param title    the title of the popup
+     * @param messageA the first message
+     * @param messageB the second message
+     */
+    public static void showMessagePopup(final String title, final String messageA, final String messageB) {
+        final Runnable nop = () -> {
+        };
+
+        JBPopupFactory.getInstance().createConfirmation(
+                title,
+                messageA,
+                messageB,
+                nop,
+                1
+        ).showInFocusCenter();
     }
 }
