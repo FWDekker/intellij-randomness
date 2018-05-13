@@ -259,21 +259,6 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(wordSettings.getCapitalization()).isEqualTo(CapitalizationMode.LOWER);
     }
 
-    @Test
-    public void testSaveSettingsWithParse() {
-        frame.spinner("minLength").enterTextAndCommit("68");
-        frame.spinner("maxLength").enterTextAndCommit("161");
-        frame.radioButton("enclosureBacktick").check();
-        frame.radioButton("capitalizationUpper").check();
-
-        wordSettingsDialog.saveSettings();
-
-        assertThat(wordSettings.getMinLength()).isEqualTo(68);
-        assertThat(wordSettings.getMaxLength()).isEqualTo(161);
-        assertThat(wordSettings.getEnclosure()).isEqualTo("`");
-        assertThat(wordSettings.getCapitalization()).isEqualTo(CapitalizationMode.UPPER);
-    }
-
 
     private File getDictionaryFile(final String path) {
         return new File(getClass().getClassLoader().getResource(path).getPath());

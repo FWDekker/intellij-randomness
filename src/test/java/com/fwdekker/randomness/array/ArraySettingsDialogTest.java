@@ -112,19 +112,4 @@ public final class ArraySettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(arraySettings.getSeparator()).isEqualTo(";");
         assertThat(arraySettings.isSpaceAfterSeparator()).isEqualTo(false);
     }
-
-    @Test
-    public void testSaveSettingsWithParse() {
-        frame.spinner("count").enterTextAndCommit("257");
-        frame.radioButton("bracketsRound").check();
-        frame.radioButton("separatorSemicolon").check();
-        frame.checkBox("spaceAfterSeparator").uncheck();
-
-        arraySettingsDialog.saveSettings();
-
-        assertThat(arraySettings.getCount()).isEqualTo(257);
-        assertThat(arraySettings.getBrackets()).isEqualTo("()");
-        assertThat(arraySettings.getSeparator()).isEqualTo(";");
-        assertThat(arraySettings.isSpaceAfterSeparator()).isEqualTo(false);
-    }
 }
