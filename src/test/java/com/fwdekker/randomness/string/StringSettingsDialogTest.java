@@ -169,18 +169,6 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
     }
 
     /**
-     * Calls {@code toString} on each alphabet and returns the result as an array.
-     *
-     * @param alphabets a collection of alphabets
-     * @return the {@code toString} of each alphabet
-     */
-    private String[] toStringForEach(final Collection<Alphabet> alphabets) {
-        return alphabets.stream()
-                .map(Object::toString)
-                .toArray(String[]::new);
-    }
-
-    /**
      * Returns the enumeration index of each alphabet as an array.
      *
      * @param alphabets a collection of alphabets

@@ -6,9 +6,6 @@ import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.junit.Test;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.swing.fixture.Containers.showInFrame;
 
@@ -159,19 +156,5 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(decimalSettings.getDecimalCount()).isEqualTo(485);
         assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('_');
         assertThat(decimalSettings.getDecimalSeparator()).isEqualTo(',');
-    }
-
-
-    /**
-     * Locale-dependently converts a double into a string.
-     *
-     * @param decimal a double
-     * @return the user's locale's representation of the given double
-     */
-    private static String doubleToString(final double decimal) {
-        final Locale locale = Locale.US;
-        final NumberFormat formatter = NumberFormat.getInstance(locale);
-
-        return formatter.format(decimal);
     }
 }
