@@ -110,12 +110,22 @@
           <text value=";"/>
         </properties>
       </component>
+      <component id="66c28" class="javax.swing.JRadioButton" default-binding="true">
+        <constraints>
+          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <name value="separatorNewline"/>
+          <text value="\n"/>
+        </properties>
+      </component>
     </children>
   </grid>
   <buttonGroups>
     <group name="separatorGroup" bound="true">
       <member id="6b534"/>
       <member id="61c87"/>
+      <member id="66c28"/>
     </group>
     <group name="bracketsGroup" bound="true">
       <member id="39bc6"/>

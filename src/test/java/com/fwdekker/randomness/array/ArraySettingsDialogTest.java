@@ -57,6 +57,7 @@ public final class ArraySettingsDialogTest extends AssertJSwingJUnitTestCase {
     public void testLoadSettingsSeparator() {
         frame.radioButton("separatorComma").requireSelected();
         frame.radioButton("separatorSemicolon").requireNotSelected();
+        frame.radioButton("separatorNewline").requireNotSelected();
     }
 
     @Test
