@@ -120,17 +120,4 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(integerSettings.getMaxValue()).isEqualTo(2147483649L);
         assertThat(integerSettings.getBase()).isEqualTo(14);
     }
-
-    @Test
-    public void testSaveSettingsWithParse() {
-        frame.spinner("minValue").enterTextAndCommit("2147483648");
-        frame.spinner("maxValue").enterTextAndCommit("2147483649");
-        frame.spinner("base").enterTextAndCommit("35");
-
-        GuiActionRunner.execute(() -> integerSettingsDialog.saveSettings());
-
-        assertThat(integerSettings.getMinValue()).isEqualTo(2147483648L);
-        assertThat(integerSettings.getMaxValue()).isEqualTo(2147483649L);
-        assertThat(integerSettings.getBase()).isEqualTo(35);
-    }
 }

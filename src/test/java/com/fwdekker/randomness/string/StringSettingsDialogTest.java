@@ -1,14 +1,15 @@
 package com.fwdekker.randomness.string;
 
 import com.intellij.openapi.ui.ValidationInfo;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.swing.fixture.Containers.showInFrame;
@@ -152,23 +153,6 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         assertThat(stringSettings.getMinLength()).isEqualTo(445);
         assertThat(stringSettings.getMaxLength()).isEqualTo(803);
-        assertThat(stringSettings.getEnclosure()).isEqualTo("`");
-        assertThat(stringSettings.getAlphabets()).isEqualTo(newAlphabets);
-    }
-
-    @Test
-    public void testSaveSettingsWithParse() {
-        final Set<Alphabet> newAlphabets = createAlphabetSet(Alphabet.DIGITS, Alphabet.LOWERCASE, Alphabet.SPECIAL);
-
-        frame.spinner("minLength").enterTextAndCommit("348");
-        frame.spinner("maxLength").enterTextAndCommit("870");
-        frame.radioButton("enclosureBacktick").check();
-        frame.list("alphabets").selectItems(toStringForEach(newAlphabets));
-
-        stringSettingsDialog.saveSettings();
-
-        assertThat(stringSettings.getMinLength()).isEqualTo(348);
-        assertThat(stringSettings.getMaxLength()).isEqualTo(870);
         assertThat(stringSettings.getEnclosure()).isEqualTo("`");
         assertThat(stringSettings.getAlphabets()).isEqualTo(newAlphabets);
     }

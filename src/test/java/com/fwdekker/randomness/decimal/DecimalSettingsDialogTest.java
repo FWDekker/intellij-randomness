@@ -1,12 +1,13 @@
 package com.fwdekker.randomness.decimal;
 
 import com.intellij.openapi.ui.ValidationInfo;
-import java.text.NumberFormat;
-import java.util.Locale;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.junit.Test;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.swing.fixture.Containers.showInFrame;
@@ -158,24 +159,6 @@ public final class DecimalSettingsDialogTest extends AssertJSwingJUnitTestCase {
         assertThat(decimalSettings.getDecimalCount()).isEqualTo(485);
         assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('_');
         assertThat(decimalSettings.getDecimalSeparator()).isEqualTo(',');
-    }
-
-    @Test
-    public void testSaveSettingsWithParse() {
-        frame.spinner("minValue").enterTextAndCommit(doubleToString(418.63));
-        frame.spinner("maxValue").enterTextAndCommit(doubleToString(858.59));
-        frame.spinner("decimalCount").enterTextAndCommit("99");
-        frame.radioButton("groupingSeparatorPeriod").check();
-        frame.radioButton("decimalSeparatorComma").check();
-
-        decimalSettingsDialog.saveSettings();
-
-        assertThat(decimalSettings.getMinValue()).isEqualTo(418.63);
-        assertThat(decimalSettings.getMaxValue()).isEqualTo(858.59);
-        assertThat(decimalSettings.getDecimalCount()).isEqualTo(99);
-        assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('.');
-        assertThat(decimalSettings.getDecimalSeparator()).isEqualTo(',');
-
     }
 
 
