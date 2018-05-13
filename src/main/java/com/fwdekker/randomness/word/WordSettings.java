@@ -229,34 +229,6 @@ public final class WordSettings extends Settings implements PersistentStateCompo
 
 
     /**
-     * Returns the list of all dictionaries.
-     *
-     * @return the list of all dictionaries
-     */
-    public List<String> getDictionaries() {
-        final List<String> dictionaries = new ArrayList<>();
-
-        dictionaries.addAll(bundledDictionaries);
-        dictionaries.addAll(userDictionaries);
-
-        return dictionaries;
-    }
-
-    /**
-     * Returns the list of all dictionaries that are currently active.
-     *
-     * @return the list of all dictionaries that are currently active
-     */
-    public List<String> getActiveDictionaries() {
-        final List<String> dictionaries = new ArrayList<>();
-
-        dictionaries.addAll(activeBundledDictionaries);
-        dictionaries.addAll(activeUserDictionaries);
-
-        return dictionaries;
-    }
-
-    /**
      * Validates all dictionaries.
      *
      * @return {@code null} if all dictionaries are valid, or a {@code ValidationInfo} explaining why there is an

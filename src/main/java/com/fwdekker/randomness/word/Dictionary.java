@@ -229,18 +229,6 @@ public abstract class Dictionary {
             return CACHE.get(path);
         }
 
-        /**
-         * Constructs a new {@code BundledDictionary} for each of the given dictionary resources, or returns the
-         * previously created instance for a resource if there is one.
-         *
-         * @param paths the paths to the dictionary resources
-         * @return a new {@code BundledDictionary} for each of the given dictionary resources, or returns the
-         * previously created instance for a resource if there is one
-         */
-        public static List<BundledDictionary> get(final Collection<String> paths) {
-            return paths.stream().map(BundledDictionary::get).collect(Collectors.toList());
-        }
-
 
         @Override
         public ValidationInfo validate() {
@@ -276,20 +264,6 @@ public abstract class Dictionary {
             }
 
             return null;
-        }
-
-        /**
-         * Detects whether the dictionaries at the given resources would be valid.
-         *
-         * @param paths the paths to the dictionary resources
-         * @return {@code null} if all dictionaries would be valid, or a {@code ValidationInfo} explaining why they
-         * would be invalid
-         */
-        public static ValidationInfo validate(final Collection<String> paths) {
-            return paths.stream().map(BundledDictionary::validate)
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .orElse(null);
         }
 
         /**
@@ -340,18 +314,6 @@ public abstract class Dictionary {
             return CACHE.get(path);
         }
 
-        /**
-         * Constructs a new {@code UserDictionary} for each of the given dictionary paths, or returns the previously
-         * created instance for a file if there is one.
-         *
-         * @param paths the absolute paths to the dictionary files
-         * @return a new {@code UserDictionary} for each of the given dictionary paths, or returns the previously
-         * created instance for a file if there is one
-         */
-        public static List<UserDictionary> get(final Collection<String> paths) {
-            return paths.stream().map(UserDictionary::get).collect(Collectors.toList());
-        }
-
 
         @Override
         public ValidationInfo validate() {
@@ -390,20 +352,6 @@ public abstract class Dictionary {
             }
 
             return null;
-        }
-
-        /**
-         * Detects whether the dictionaries at the given paths would be valid.
-         *
-         * @param paths the absolute paths to the dictionary files
-         * @return {@code null} if all dictionaries would be valid, or a {@code ValidationInfo} explaining why they
-         * would be invalid
-         */
-        public static ValidationInfo validate(final Collection<String> paths) {
-            return paths.stream().map(UserDictionary::validate)
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .orElse(null);
         }
 
         /**

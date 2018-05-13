@@ -3,9 +3,6 @@ package com.fwdekker.randomness.word;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -38,17 +35,6 @@ public final class BundledDictionaryTest {
         assertThat(dictionaryA).isEqualTo(dictionaryB);
     }
 
-    @Test
-    public void testInitListTwiceEquals() {
-        final List<Dictionary.BundledDictionary> dictionaries = Dictionary.BundledDictionary.get(Arrays.asList(
-                "dictionaries/simple.dic",
-                "dictionaries/simple.dic"
-        ));
-
-        assertThat(dictionaries).hasSize(2);
-        assertThat(dictionaries.get(0)).isEqualTo(dictionaries.get(1));
-    }
-
 
     @Test
     public void testValidateInstanceSuccess() {
@@ -78,28 +64,6 @@ public final class BundledDictionaryTest {
     @Test
     public void testValidateStaticFileEmpty() {
         final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate("dictionaries/empty.dic");
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.message).isEqualTo("The dictionary resource for empty.dic is empty.");
-        assertThat(validationInfo.component).isNull();
-    }
-
-    @Test
-    public void testValidateStaticListSuccess() {
-        final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate(Arrays.asList(
-                "dictionaries/simple.dic",
-                "dictionaries/varied.dic"
-        ));
-
-        assertThat(validationInfo).isNull();
-    }
-
-    @Test
-    public void testValidateStaticListPartial() {
-        final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate(Arrays.asList(
-                "dictionaries/varied.dic",
-                "dictionaries/empty.dic"
-        ));
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.message).isEqualTo("The dictionary resource for empty.dic is empty.");

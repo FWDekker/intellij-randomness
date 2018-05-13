@@ -7,8 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -44,19 +42,6 @@ public final class UserDictionaryTest {
         final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
 
         assertThat(dictionaryA).isEqualTo(dictionaryB);
-    }
-
-    @Test
-    public void testInitListTwiceEquals() {
-        final File dictionaryFile = setUpDictionary("Fomenter\nOutwits\nManqu");
-
-        final List<Dictionary.UserDictionary> dictionaries = Dictionary.UserDictionary.get(Arrays.asList(
-                dictionaryFile.getAbsolutePath(),
-                dictionaryFile.getAbsolutePath()
-        ));
-
-        assertThat(dictionaries).hasSize(2);
-        assertThat(dictionaries.get(0)).isEqualTo(dictionaries.get(1));
     }
 
 
@@ -97,35 +82,6 @@ public final class UserDictionaryTest {
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.message).isEqualTo("The dictionary file for " + dictionaryName + " is empty.");
-        assertThat(validationInfo.component).isNull();
-    }
-
-    @Test
-    public void testValidateStaticListSuccess() {
-        final File dictionaryFileA = setUpDictionary("Hexaxon\nChuse\nFricace");
-        final File dictionaryFileB = setUpDictionary("Psyllid\nRefroze\nRoving");
-
-        final ValidationInfo validationInfo = Dictionary.UserDictionary.validate(Arrays.asList(
-                dictionaryFileA.getAbsolutePath(),
-                dictionaryFileB.getAbsolutePath()
-        ));
-
-        assertThat(validationInfo).isNull();
-    }
-
-    @Test
-    public void testValidateStaticListPartial() {
-        final File dictionaryFileA = setUpDictionary("Hexaxon\nChuse\nFricace");
-        final File dictionaryFileB = setUpDictionary("");
-        final String dictionaryFileBName = dictionaryFileB.getName();
-
-        final ValidationInfo validationInfo = Dictionary.UserDictionary.validate(Arrays.asList(
-                dictionaryFileA.getAbsolutePath(),
-                dictionaryFileB.getAbsolutePath()
-        ));
-
-        assertThat(validationInfo).isNotNull();
-        assertThat(validationInfo.message).isEqualTo("The dictionary file for " + dictionaryFileBName + " is empty.");
         assertThat(validationInfo.component).isNull();
     }
 
