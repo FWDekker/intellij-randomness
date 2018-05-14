@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.decimal;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,23 +9,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Unit tests for {@link DecimalSettings}.
  */
-public final class DecimalSettingsTest {
+final class DecimalSettingsTest {
     private DecimalSettings decimalSettings;
 
 
-    @Before
-    public void beforeEach() {
+    @BeforeEach
+    void beforeEach() {
         decimalSettings = new DecimalSettings();
     }
 
 
     @Test
-    public void testGetComponentName() {
+    void testGetComponentName() {
         assertThat(decimalSettings.getComponentName()).isEqualTo("DecimalSettings");
     }
 
     @Test
-    public void testGetLoadState() {
+    void testGetLoadState() {
         decimalSettings.setMinValue(399.75);
         decimalSettings.setMaxValue(928.22);
         decimalSettings.setDecimalCount(205);
@@ -39,63 +39,63 @@ public final class DecimalSettingsTest {
     }
 
     @Test
-    public void testGetSetMinValue() {
+    void testGetSetMinValue() {
         decimalSettings.setMinValue(720.41);
 
         assertThat(decimalSettings.getMinValue()).isEqualTo(720.41);
     }
 
     @Test
-    public void testGetSetMaxValue() {
+    void testGetSetMaxValue() {
         decimalSettings.setMaxValue(901.38);
 
         assertThat(decimalSettings.getMaxValue()).isEqualTo(901.38);
     }
 
     @Test
-    public void testGetSetDecimalCount() {
+    void testGetSetDecimalCount() {
         decimalSettings.setDecimalCount(987);
 
         assertThat(decimalSettings.getDecimalCount()).isEqualTo(987);
     }
 
     @Test
-    public void testGetSetGroupingSeparator() {
+    void testGetSetGroupingSeparator() {
         decimalSettings.setGroupingSeparator('L');
 
         assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('L');
     }
 
     @Test
-    public void testGetSetGroupingSeparatorStringEmpty() {
+    void testGetSetGroupingSeparatorStringEmpty() {
         decimalSettings.setGroupingSeparator("");
 
         assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('\0');
     }
 
     @Test
-    public void testGetSetGroupingSeparatorString() {
+    void testGetSetGroupingSeparatorString() {
         decimalSettings.setGroupingSeparator("3lk-c");
 
         assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('3');
     }
 
     @Test
-    public void testGetSetDecimalSeparator() {
+    void testGetSetDecimalSeparator() {
         decimalSettings.setDecimalSeparator('}');
 
         assertThat(decimalSettings.getDecimalSeparator()).isEqualTo('}');
     }
 
     @Test
-    public void testGetSetDecimalSeparatorStringEmpty() {
+    void testGetSetDecimalSeparatorStringEmpty() {
         decimalSettings.setDecimalSeparator("");
 
         assertThat(decimalSettings.getDecimalSeparator()).isEqualTo('\0');
     }
 
     @Test
-    public void testGetSetDecimalSeparatorString() {
+    void testGetSetDecimalSeparatorString() {
         decimalSettings.setDecimalSeparator("Px@>[");
 
         assertThat(decimalSettings.getDecimalSeparator()).isEqualTo('P');

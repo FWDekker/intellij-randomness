@@ -1,9 +1,10 @@
 package com.fwdekker.randomness.array;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.Before;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,23 +12,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Unit tests for {@link ArraySettings}.
  */
-public final class ArraySettingsTest {
+final class ArraySettingsTest {
     private ArraySettings arraySettings;
 
 
-    @Before
-    public void beforeEach() {
+    @BeforeEach
+    void beforeEach() {
         arraySettings = new ArraySettings();
     }
 
 
     @Test
-    public void testGetComponentName() {
+    void testGetComponentName() {
         assertThat(arraySettings.getComponentName()).isEqualTo("ArraySettings");
     }
 
     @Test
-    public void testGetLoadState() {
+    void testGetLoadState() {
         arraySettings.setCount(997);
         arraySettings.setBrackets("0fWx<i6jTJ");
         arraySettings.setSeparator("f3hu)Rxiz1");
@@ -43,28 +44,28 @@ public final class ArraySettingsTest {
     }
 
     @Test
-    public void testGetSetCount() {
+    void testGetSetCount() {
         arraySettings.setCount(655);
 
         assertThat(arraySettings.getCount()).isEqualTo(655);
     }
 
     @Test
-    public void testGetSetBrackets() {
+    void testGetSetBrackets() {
         arraySettings.setBrackets("RLevljrzf0");
 
         assertThat(arraySettings.getBrackets()).isEqualTo("RLevljrzf0");
     }
 
     @Test
-    public void testGetSetSeparator() {
+    void testGetSetSeparator() {
         arraySettings.setBrackets("d2[tlXkGf{");
 
         assertThat(arraySettings.getBrackets()).isEqualTo("d2[tlXkGf{");
     }
 
     @Test
-    public void testGetSetSpaceAfterSeparator() {
+    void testGetSetSpaceAfterSeparator() {
         arraySettings.setSpaceAfterSeparator(false);
 
         assertThat(arraySettings.isSpaceAfterSeparator()).isEqualTo(false);
@@ -72,13 +73,13 @@ public final class ArraySettingsTest {
 
 
     @Test
-    public void testArrayifyEmpty() {
+    void testArrayifyEmpty() {
         assertThat(arraySettings.arrayify(Collections.emptyList()))
                 .isEqualTo("[]");
     }
 
     @Test
-    public void testArrayify() {
+    void testArrayify() {
         arraySettings.setCount(4);
         arraySettings.setBrackets("@#");
         arraySettings.setSeparator(";;");
@@ -89,7 +90,7 @@ public final class ArraySettingsTest {
     }
 
     @Test
-    public void testArrayifyNoBrackets() {
+    void testArrayifyNoBrackets() {
         arraySettings.setCount(8);
         arraySettings.setBrackets("");
         arraySettings.setSeparator("h");

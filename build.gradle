@@ -17,13 +17,16 @@ repositories {
 }
 
 dependencies {
-    compile group: "com.google.code.findbugs", name: "jsr305", version: findbugsVersion
     compile group: "com.google.code.findbugs", name: "annotations", version: findbugsVersion
+    compile group: "com.google.code.findbugs", name: "jsr305", version: findbugsVersion
 
-    testCompile group: "junit", name: "junit", version: junitVersion
     testCompile group: "nl.jqno.equalsverifier", name: "equalsverifier", version: equalsVerifierVersion
     testCompile group: "org.assertj", name: "assertj-core", version: assertjVersion
     testCompile group: "org.assertj", name: "assertj-swing-junit", version: assertjSwingVersion
+    testCompile group: "org.junit.jupiter", name: "junit-jupiter-api", version: junitVersion
+    testCompile group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
+    testCompile group: "org.junit.jupiter", name: "junit-jupiter-params", version: junitVersion
+    testCompile group: "org.junit.vintage", name: "junit-vintage-engine", version: junitVersion
     testCompile group: "org.mockito", name: "mockito-core", version: mockitoVersion
 }
 
@@ -31,6 +34,10 @@ configurations {
     codacy
 }
 
+
+test {
+    useJUnitPlatform()
+}
 
 intellij {
     version = intellijVersion

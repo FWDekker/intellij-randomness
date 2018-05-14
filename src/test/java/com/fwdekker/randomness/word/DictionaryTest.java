@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.word;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
@@ -12,12 +12,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Unit tests for {@link Dictionary}.
  */
-public final class DictionaryTest {
+final class DictionaryTest {
     private Dictionary dictionary;
 
 
     @Test
-    public void testEmptyDictionary() {
+    void testEmptyDictionary() {
         assertThatThrownBy(() -> Dictionary.BundledDictionary.get("dictionaries/empty.dic"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Dictionary must be non-empty.")
@@ -26,7 +26,7 @@ public final class DictionaryTest {
 
 
     @Test
-    public void testGetPath() {
+    void testGetPath() {
         useDictionary("simple");
 
         assertThat(dictionary.getUid())
@@ -34,7 +34,7 @@ public final class DictionaryTest {
     }
 
     @Test
-    public void testGetWords() {
+    void testGetWords() {
         useDictionary("simple");
 
         assertThat(dictionary.getWords())
@@ -43,7 +43,7 @@ public final class DictionaryTest {
 
 
     @Test
-    public void testGetWordsWithLengthInRangeInvertedRange() {
+    void testGetWordsWithLengthInRangeInvertedRange() {
         useDictionary("simple");
 
         assertThat(dictionary.getWordsWithLengthInRange(696, 54))
@@ -51,7 +51,7 @@ public final class DictionaryTest {
     }
 
     @Test
-    public void testGetWordsWithLengthInRangeNegativeLength() {
+    void testGetWordsWithLengthInRangeNegativeLength() {
         useDictionary("simple");
 
         assertThat(dictionary.getWordsWithLengthInRange(-4, -2))
@@ -59,7 +59,7 @@ public final class DictionaryTest {
     }
 
     @Test
-    public void testGetWordsWithLengthInRangeEmptyRange() {
+    void testGetWordsWithLengthInRangeEmptyRange() {
         useDictionary("simple");
 
         assertThat(dictionary.getWordsWithLengthInRange(0, 0))
@@ -67,7 +67,7 @@ public final class DictionaryTest {
     }
 
     @Test
-    public void testGetWordsWithLengthInRangeOvershortWord() {
+    void testGetWordsWithLengthInRangeOvershortWord() {
         useDictionary("varied");
 
         assertThat(dictionary.getWordsWithLengthInRange(0, 1))
@@ -75,7 +75,7 @@ public final class DictionaryTest {
     }
 
     @Test
-    public void testGetWordsWithLengthInRangeShortWord() {
+    void testGetWordsWithLengthInRangeShortWord() {
         useDictionary("simple");
 
         assertThat(dictionary.getWordsWithLengthInRange(1, 1))
@@ -83,7 +83,7 @@ public final class DictionaryTest {
     }
 
     @Test
-    public void testGetWordsWithLengthInRangeLongWord() {
+    void testGetWordsWithLengthInRangeLongWord() {
         useDictionary("varied");
 
         assertThat(dictionary.getWordsWithLengthInRange(40, 50))
@@ -91,7 +91,7 @@ public final class DictionaryTest {
     }
 
     @Test
-    public void testGetWordsWithLengthInRangeOverlongWord() {
+    void testGetWordsWithLengthInRangeOverlongWord() {
         useDictionary("simple");
 
         assertThat(dictionary.getWordsWithLengthInRange(1000, 1001))
@@ -100,7 +100,7 @@ public final class DictionaryTest {
 
 
     @Test
-    public void testGetShortestWordSimple() {
+    void testGetShortestWordSimple() {
         useDictionary("simple");
 
         assertThat(dictionary.getShortestWord())
@@ -108,7 +108,7 @@ public final class DictionaryTest {
     }
 
     @Test
-    public void testGetShortestWordVaried() {
+    void testGetShortestWordVaried() {
         useDictionary("varied");
 
         assertThat(dictionary.getShortestWord())
@@ -116,7 +116,7 @@ public final class DictionaryTest {
     }
 
     @Test
-    public void testGetLongestWordSimple() {
+    void testGetLongestWordSimple() {
         useDictionary("simple");
 
         assertThat(dictionary.getLongestWord())
@@ -124,7 +124,7 @@ public final class DictionaryTest {
     }
 
     @Test
-    public void testGetLongestWordVaried() {
+    void testGetLongestWordVaried() {
         useDictionary("varied");
 
         assertThat(dictionary.getLongestWord())
@@ -133,7 +133,7 @@ public final class DictionaryTest {
 
 
     @Test
-    public void testCombine() {
+    void testCombine() {
         final Dictionary combined = Dictionary.combine(Arrays.asList(
                 Dictionary.BundledDictionary.get("dictionaries/simple.dic"),
                 Dictionary.BundledDictionary.get("dictionaries/varied.dic")));
@@ -144,7 +144,7 @@ public final class DictionaryTest {
     }
 
     @Test
-    public void testCombineDuplicates() {
+    void testCombineDuplicates() {
         final Dictionary combined = Dictionary.combine(Arrays.asList(
                 Dictionary.BundledDictionary.get("dictionaries/simple.dic"),
                 Dictionary.BundledDictionary.get("dictionaries/simple.dic")));
@@ -155,7 +155,7 @@ public final class DictionaryTest {
 
 
     @Test
-    public void testEqualsContract() {
+    void testEqualsContract() {
         EqualsVerifier.forClass(Dictionary.class)
                 .usingGetClass()
                 .withIgnoredFields("name", "words")

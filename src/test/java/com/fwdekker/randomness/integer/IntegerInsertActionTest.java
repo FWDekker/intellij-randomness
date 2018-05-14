@@ -1,10 +1,10 @@
 package com.fwdekker.randomness.integer;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import java.util.Arrays;
 import java.util.Collection;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,23 +12,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Parameterized unit tests for {@link IntegerInsertAction}.
  */
-@RunWith(Parameterized.class)
-public final class IntegerInsertActionTest {
-    private final int minValue;
-    private final int maxValue;
-    private final String expectedString;
-
-
-    public IntegerInsertActionTest(final int minValue, final int maxValue, final String expectedString) {
-        this.minValue = minValue;
-        this.maxValue = maxValue;
-        this.expectedString = expectedString;
-    }
-
-
-    @Parameterized.Parameters
-    public static Collection<Object[]> params() {
-        return Arrays.asList(new Object[][] {
+final class IntegerInsertActionTest {
+    @SuppressWarnings("PMD.UnusedPrivateMethod") // Used as parameterized method source
+    private static Collection<Object[]> provider() {
+        return Arrays.asList(new Object[][]{
                 {0, 0, "0"},
                 {1, 1, "1"},
                 {-5, -5, "-5"},
@@ -38,8 +25,9 @@ public final class IntegerInsertActionTest {
     }
 
 
-    @Test
-    public void testValue() {
+    @ParameterizedTest
+    @MethodSource("provider")
+    void testValue(final int minValue, final int maxValue, final String expectedString) {
         final IntegerSettings integerSettings = new IntegerSettings();
         integerSettings.setMinValue(minValue);
         integerSettings.setMaxValue(maxValue);

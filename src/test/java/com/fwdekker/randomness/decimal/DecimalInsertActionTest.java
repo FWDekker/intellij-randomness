@@ -1,10 +1,10 @@
 package com.fwdekker.randomness.decimal;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import java.util.Arrays;
 import java.util.Collection;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,26 +12,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Parameterized unit tests for {@link DecimalInsertAction}.
  */
-@RunWith(Parameterized.class)
-public final class DecimalInsertActionTest {
-    private final double minValue;
-    private final double maxValue;
-    private final int decimalCount;
-    private final String expectedString;
-
-
-    public DecimalInsertActionTest(final double minValue, final double maxValue, final int decimalCount,
-                                   final String expectedString) {
-        this.minValue = minValue;
-        this.maxValue = maxValue;
-        this.decimalCount = decimalCount;
-        this.expectedString = expectedString;
-    }
-
-
-    @Parameterized.Parameters
-    public static Collection<Object[]> params() {
-        return Arrays.asList(new Object[][] {
+final class DecimalInsertActionTest {
+    @SuppressWarnings("PMD.UnusedPrivateMethod") // Used as parameterized method source
+    private static Collection<Object[]> provider() {
+        return Arrays.asList(new Object[][]{
                 {5.0, 5.0, 0, "5"},
                 {7.0, 7.0, 1, "7.0"},
                 {8.0, 8.0, 2, "8.00"},
@@ -60,8 +44,9 @@ public final class DecimalInsertActionTest {
     }
 
 
-    @Test
-    public void testValue() {
+    @ParameterizedTest
+    @MethodSource("provider")
+    void testValue(final double minValue, final double maxValue, final int decimalCount, final String expectedString) {
         final DecimalSettings decimalSettings = new DecimalSettings();
         decimalSettings.setMinValue(minValue);
         decimalSettings.setMaxValue(maxValue);
