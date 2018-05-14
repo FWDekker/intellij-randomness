@@ -8,7 +8,11 @@ import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.ui.popup.Balloon;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.ui.awt.RelativePoint;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -163,6 +167,15 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private void addDictionary() {
         FileChooser.chooseFiles(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null, files -> {
             if (files.isEmpty()) {
+                return;
+            }
+
+            final ValidationInfo validationInfo = Dictionary.UserDictionary.validate(files.get(0).getCanonicalPath());
+            if (validationInfo != null) {
+                JBPopupFactory.getInstance()
+                        .createHtmlTextBalloonBuilder(validationInfo.message, MessageType.ERROR, null)
+                        .createBalloon()
+                        .show(RelativePoint.getSouthOf(dictionaryAddButton), Balloon.Position.below);
                 return;
             }
 
