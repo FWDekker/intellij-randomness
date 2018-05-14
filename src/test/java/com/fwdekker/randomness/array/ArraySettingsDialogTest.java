@@ -25,7 +25,6 @@ public final class ArraySettingsDialogTest extends AssertJSwingJUnitTestCase {
 
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void onSetUp() {
         arraySettings = new ArraySettings();
         arraySettingsDialog = GuiActionRunner.execute(() -> new ArraySettingsDialog(arraySettings));
