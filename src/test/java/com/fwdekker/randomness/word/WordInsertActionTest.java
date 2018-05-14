@@ -1,8 +1,7 @@
 package com.fwdekker.randomness.word;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,22 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Parameterized unit tests for {@link WordInsertAction}.
  */
-@RunWith(Parameterized.class)
-public final class WordInsertActionTest {
-    private final int minLength;
-    private final int maxLength;
-    private final String enclosure;
-
-
-    public WordInsertActionTest(final int minLength, final int maxLength, final String enclosure) {
-        this.minLength = minLength;
-        this.maxLength = maxLength;
-        this.enclosure = enclosure;
-    }
-
-
-    @Parameterized.Parameters
-    public static Collection<Object[]> params() {
+final class WordInsertActionTest {
+    @SuppressWarnings("PMD.UnusedPrivateMethod") // Used as parameterized method source
+    private static Collection<Object[]> provider() {
         return Arrays.asList(new Object[][] {
                 {0, 1, ""},
                 {1, 1, ""},
@@ -40,8 +26,9 @@ public final class WordInsertActionTest {
     }
 
 
-    @Test
-    public void testValue() {
+    @ParameterizedTest
+    @MethodSource("provider")
+    void testValue(final int minLength, final int maxLength, final String enclosure) {
         final WordSettings wordSettings = new WordSettings();
         wordSettings.setMinLength(minLength);
         wordSettings.setMaxLength(maxLength);

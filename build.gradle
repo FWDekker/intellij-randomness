@@ -25,6 +25,7 @@ dependencies {
     testCompile group: "org.assertj", name: "assertj-swing-junit", version: assertjSwingVersion
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-api", version: junitVersion
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
+    testCompile group: "org.junit.jupiter", name: "junit-jupiter-params", version: junitVersion
     testCompile group: "org.junit.vintage", name: "junit-vintage-engine", version: junitVersion
     testCompile group: "org.mockito", name: "mockito-core", version: mockitoVersion
 }
