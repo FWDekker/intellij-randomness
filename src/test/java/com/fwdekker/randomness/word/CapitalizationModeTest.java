@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.word;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
@@ -11,114 +11,114 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Unit tests for {@link CapitalizationMode}.
  */
-public final class CapitalizationModeTest {
+final class CapitalizationModeTest {
     @Test
-    public void testRetainTransform() {
+    void testRetainTransform() {
         assertThat(CapitalizationMode.RETAIN.getTransform().apply("AwfJYzzUoR")).isEqualTo("AwfJYzzUoR");
     }
 
     @Test
-    public void testSentenceTransformEmptyString() {
+    void testSentenceTransformEmptyString() {
         assertThat(CapitalizationMode.SENTENCE.getTransform().apply("")).isEqualTo("");
     }
 
     @Test
-    public void testSentenceTransform() {
+    void testSentenceTransform() {
         assertThat(CapitalizationMode.SENTENCE.getTransform().apply("cOoKiE")).isEqualTo("Cookie");
     }
 
     @Test
-    public void testUpperTransform() {
+    void testUpperTransform() {
         assertThat(CapitalizationMode.UPPER.getTransform().apply("vAnDaLisM")).isEqualTo("VANDALISM");
     }
 
     @Test
-    public void testLowerTransform() {
+    void testLowerTransform() {
         assertThat(CapitalizationMode.LOWER.getTransform().apply("ChAnnEl")).isEqualTo("channel");
     }
 
     @Test
-    public void testFirstLetterTransform() {
+    void testFirstLetterTransform() {
         assertThat(CapitalizationMode.FIRST_LETTER.getTransform().apply("bgiOP SMQpR")).isEqualTo("Bgiop Smqpr");
     }
 
     @Test
-    public void testGetNameRetain() {
+    void testGetNameRetain() {
         assertThat(CapitalizationMode.RETAIN.getName()).isEqualTo("retain");
     }
 
     @Test
-    public void testGetNameSentence() {
+    void testGetNameSentence() {
         assertThat(CapitalizationMode.SENTENCE.getName()).isEqualTo("sentence");
     }
 
     @Test
-    public void testGetNameUpper() {
+    void testGetNameUpper() {
         assertThat(CapitalizationMode.UPPER.getName()).isEqualTo("upper");
     }
 
     @Test
-    public void testGetNameLower() {
+    void testGetNameLower() {
         assertThat(CapitalizationMode.LOWER.getName()).isEqualTo("lower");
     }
 
     @Test
-    public void testGetNameFirstLetter() {
+    void testGetNameFirstLetter() {
         assertThat(CapitalizationMode.FIRST_LETTER.getName()).isEqualTo("first letter");
     }
 
     @Test
-    public void testToStringRetain() {
+    void testToStringRetain() {
         assertThat(CapitalizationMode.RETAIN.toString()).isEqualTo("retain");
     }
 
     @Test
-    public void testToStringSentence() {
+    void testToStringSentence() {
         assertThat(CapitalizationMode.SENTENCE.toString()).isEqualTo("sentence");
     }
 
     @Test
-    public void testToStringUpper() {
+    void testToStringUpper() {
         assertThat(CapitalizationMode.UPPER.toString()).isEqualTo("upper");
     }
 
     @Test
-    public void testToStringLower() {
+    void testToStringLower() {
         assertThat(CapitalizationMode.LOWER.toString()).isEqualTo("lower");
     }
 
     @Test
-    public void testToStringFirstLetter() {
+    void testToStringFirstLetter() {
         assertThat(CapitalizationMode.FIRST_LETTER.toString()).isEqualTo("first letter");
     }
 
     @Test
-    public void testGetModeRetain() {
+    void testGetModeRetain() {
         assertThat(CapitalizationMode.getMode("retain")).isEqualTo(CapitalizationMode.RETAIN);
     }
 
     @Test
-    public void testGetModeSentence() {
+    void testGetModeSentence() {
         assertThat(CapitalizationMode.getMode("sentence")).isEqualTo(CapitalizationMode.SENTENCE);
     }
 
     @Test
-    public void testGetModeUpper() {
+    void testGetModeUpper() {
         assertThat(CapitalizationMode.getMode("upper")).isEqualTo(CapitalizationMode.UPPER);
     }
 
     @Test
-    public void testGetModeLower() {
+    void testGetModeLower() {
         assertThat(CapitalizationMode.getMode("lower")).isEqualTo(CapitalizationMode.LOWER);
     }
 
     @Test
-    public void testGetModeFirstLetter() {
+    void testGetModeFirstLetter() {
         assertThat(CapitalizationMode.getMode("first letter")).isEqualTo(CapitalizationMode.FIRST_LETTER);
     }
 
     @Test
-    public void testGetModeOther() {
+    void testGetModeOther() {
         assertThatThrownBy(() -> CapitalizationMode.getMode(""))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("There does not exist a capitalization mode with name ``.")

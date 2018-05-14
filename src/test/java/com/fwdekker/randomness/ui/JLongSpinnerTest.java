@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.ui;
 
 import com.fwdekker.randomness.ValidationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,9 +10,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Unit tests for {@link JLongSpinner}.
  */
-public final class JLongSpinnerTest {
+final class JLongSpinnerTest {
     @Test
-    public void testIllegalRange() {
+    void testIllegalRange() {
         assertThatThrownBy(() -> new JLongSpinner(414, 989, -339))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("(minimum <= value <= maximum) is false");
@@ -20,7 +20,7 @@ public final class JLongSpinnerTest {
 
 
     @Test
-    public void testGetSetValue() {
+    void testGetSetValue() {
         final JLongSpinner spinner = new JLongSpinner();
 
         spinner.setValue(-583L);
@@ -29,7 +29,7 @@ public final class JLongSpinnerTest {
     }
 
     @Test
-    public void testGetSetValueType() {
+    void testGetSetValueType() {
         final JLongSpinner spinner = new JLongSpinner();
 
         spinner.setValue(125);
@@ -38,7 +38,7 @@ public final class JLongSpinnerTest {
     }
 
     @Test
-    public void testGetSetValueTruncation() {
+    void testGetSetValueTruncation() {
         final JLongSpinner spinner = new JLongSpinner();
 
         spinner.setValue(786.79);
@@ -48,7 +48,7 @@ public final class JLongSpinnerTest {
 
 
     @Test
-    public void testGetSetMinValue() {
+    void testGetSetMinValue() {
         final JLongSpinner spinner = new JLongSpinner();
 
         spinner.setMinValue(979L);
@@ -57,7 +57,7 @@ public final class JLongSpinnerTest {
     }
 
     @Test
-    public void testGetSetMaxValue() {
+    void testGetSetMaxValue() {
         final JLongSpinner spinner = new JLongSpinner();
 
         spinner.setMaxValue(166L);
@@ -67,7 +67,7 @@ public final class JLongSpinnerTest {
 
 
     @Test
-    public void testValidateUnderflowCustomRange() {
+    void testValidateUnderflowCustomRange() {
         final JLongSpinner spinner = new JLongSpinner(-665, -950, -559);
 
         spinner.setValue(-979);
@@ -78,7 +78,7 @@ public final class JLongSpinnerTest {
     }
 
     @Test
-    public void testValidateOverflowCustomRange() {
+    void testValidateOverflowCustomRange() {
         final JLongSpinner spinner = new JLongSpinner(424, 279, 678);
 
         spinner.setValue(838);

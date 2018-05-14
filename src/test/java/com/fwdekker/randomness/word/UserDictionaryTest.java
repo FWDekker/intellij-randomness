@@ -1,8 +1,8 @@
 package com.fwdekker.randomness.word;
 
 import com.intellij.openapi.ui.ValidationInfo;
-import org.junit.AfterClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,18 +14,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Unit tests for {@link Dictionary.UserDictionary}.
  */
-public final class UserDictionaryTest {
+final class UserDictionaryTest {
     private static final DictionaryFileHelper FILE_HELPER = new DictionaryFileHelper();
 
 
-    @AfterClass
-    public static void afterAll() {
+    @AfterAll
+    static void afterAll() {
         FILE_HELPER.cleanUpDictionaries();
     }
 
 
     @Test
-    public void testInitDoesNotExist() {
+    void testInitDoesNotExist() {
         assertThatThrownBy(() -> Dictionary.UserDictionary.get("invalid_file"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Failed to read dictionary into memory.")
@@ -33,7 +33,7 @@ public final class UserDictionaryTest {
     }
 
     @Test
-    public void testInitEmpty() {
+    void testInitEmpty() {
         final File dictionaryFile = FILE_HELPER.setUpDictionary("");
 
         assertThatThrownBy(() -> Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath()))
@@ -42,7 +42,7 @@ public final class UserDictionaryTest {
     }
 
     @Test
-    public void testInitTwiceEquals() {
+    void testInitTwiceEquals() {
         final File dictionaryFile = FILE_HELPER.setUpDictionary("Fonded\nLustrum\nUpgale");
 
         final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
@@ -53,7 +53,7 @@ public final class UserDictionaryTest {
 
 
     @Test
-    public void testValidateInstanceSuccess() {
+    void testValidateInstanceSuccess() {
         final File dictionaryFile = FILE_HELPER.setUpDictionary("Rhodinal\nScruff\nPibrochs");
         final Dictionary dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
 
@@ -63,7 +63,7 @@ public final class UserDictionaryTest {
     }
 
     @Test
-    public void testValidateStaticSuccess() {
+    void testValidateStaticSuccess() {
         final File dictionaryFile = FILE_HELPER.setUpDictionary("Bbls\nOverpray\nTreeward");
 
         final ValidationInfo validationInfo = Dictionary.UserDictionary.validate(dictionaryFile.getAbsolutePath());
@@ -72,7 +72,7 @@ public final class UserDictionaryTest {
     }
 
     @Test
-    public void testValidateStaticFileDoesNotExist() {
+    void testValidateStaticFileDoesNotExist() {
         final ValidationInfo validationInfo = Dictionary.UserDictionary.validate("invalid_path");
 
         assertThat(validationInfo).isNotNull();
@@ -81,7 +81,7 @@ public final class UserDictionaryTest {
     }
 
     @Test
-    public void testValidateStaticFileEmpty() {
+    void testValidateStaticFileEmpty() {
         final File dictionaryFile = FILE_HELPER.setUpDictionary("");
         final String dictionaryName = dictionaryFile.getName();
 
@@ -94,7 +94,7 @@ public final class UserDictionaryTest {
 
 
     @Test
-    public void testToString() {
+    void testToString() {
         final File dictionaryFile = FILE_HELPER.setUpDictionary("Cholers\nJaloused\nStopback");
         final String dictionaryName = dictionaryFile.getName();
 

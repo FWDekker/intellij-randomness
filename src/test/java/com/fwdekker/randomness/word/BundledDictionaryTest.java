@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.word;
 
 import com.intellij.openapi.ui.ValidationInfo;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,9 +10,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Unit tests for {@link Dictionary.BundledDictionary}.
  */
-public final class BundledDictionaryTest {
+final class BundledDictionaryTest {
     @Test
-    public void testInitDoesNotExist() {
+    void testInitDoesNotExist() {
         assertThatThrownBy(() -> Dictionary.BundledDictionary.get("invalid_resource"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Failed to read dictionary into memory.")
@@ -20,7 +20,7 @@ public final class BundledDictionaryTest {
     }
 
     @Test
-    public void testInitEmpty() {
+    void testInitEmpty() {
         assertThatThrownBy(() -> Dictionary.BundledDictionary.get("dictionaries/empty.dic"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Dictionary must be non-empty.")
@@ -28,7 +28,7 @@ public final class BundledDictionaryTest {
     }
 
     @Test
-    public void testInitTwiceEquals() {
+    void testInitTwiceEquals() {
         final Dictionary dictionaryA = Dictionary.BundledDictionary.get("dictionaries/varied.dic");
         final Dictionary dictionaryB = Dictionary.BundledDictionary.get("dictionaries/varied.dic");
 
@@ -37,7 +37,7 @@ public final class BundledDictionaryTest {
 
 
     @Test
-    public void testValidateInstanceSuccess() {
+    void testValidateInstanceSuccess() {
         final Dictionary dictionary = Dictionary.BundledDictionary.get("dictionaries/simple.dic");
 
         final ValidationInfo validationInfo = dictionary.validate();
@@ -46,14 +46,14 @@ public final class BundledDictionaryTest {
     }
 
     @Test
-    public void testValidateStaticSuccess() {
+    void testValidateStaticSuccess() {
         final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate("dictionaries/simple.dic");
 
         assertThat(validationInfo).isNull();
     }
 
     @Test
-    public void testValidateStaticFileDoesNotExist() {
+    void testValidateStaticFileDoesNotExist() {
         final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate("invalid_resource");
 
         assertThat(validationInfo).isNotNull();
@@ -62,7 +62,7 @@ public final class BundledDictionaryTest {
     }
 
     @Test
-    public void testValidateStaticFileEmpty() {
+    void testValidateStaticFileEmpty() {
         final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate("dictionaries/empty.dic");
 
         assertThat(validationInfo).isNotNull();
@@ -72,7 +72,7 @@ public final class BundledDictionaryTest {
 
 
     @Test
-    public void testToString() {
+    void testToString() {
         final Dictionary dictionary = Dictionary.BundledDictionary.get("dictionaries/simple.dic");
 
         assertThat(dictionary.toString()).isEqualTo("[bundled] simple.dic");

@@ -1,9 +1,10 @@
 package com.fwdekker.randomness.ui;
 
 import com.fwdekker.randomness.ValidationException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import javax.swing.JSpinner;
-import org.junit.Before;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
@@ -13,20 +14,20 @@ import static org.mockito.Mockito.when;
 /**
  * Unit tests for {@link JSpinnerRange}.
  */
-public final class JSpinnerRangeTest {
+final class JSpinnerRangeTest {
     private JSpinner min;
     private JSpinner max;
 
 
-    @Before
-    public void beforeEach() {
+    @BeforeEach
+    void beforeEach() {
         min = mock(JSpinner.class);
         max = mock(JSpinner.class);
     }
 
 
     @Test
-    public void testIllegalMaxRange() {
+    void testIllegalMaxRange() {
         assertThatThrownBy(() -> new JSpinnerRange(min, max, -37.20))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("maxRange must be a positive number.");
@@ -34,7 +35,7 @@ public final class JSpinnerRangeTest {
 
 
     @Test
-    public void testRangeRelative() {
+    void testRangeRelative() {
         when(min.getValue()).thenReturn(85.20);
         when(max.getValue()).thenReturn(-636.33);
 
@@ -46,7 +47,7 @@ public final class JSpinnerRangeTest {
     }
 
     @Test
-    public void testRangeSize() {
+    void testRangeSize() {
         when(min.getValue()).thenReturn(-1E53);
         when(max.getValue()).thenReturn(1E53);
 
@@ -58,7 +59,7 @@ public final class JSpinnerRangeTest {
     }
 
     @Test
-    public void testRangeSizeCustomRange() {
+    void testRangeSizeCustomRange() {
         when(min.getValue()).thenReturn(-794.90);
         when(max.getValue()).thenReturn(769.52);
 

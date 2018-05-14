@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.integer;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,23 +9,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Unit tests for {@link IntegerSettings}.
  */
-public final class IntegerSettingsTest {
+final class IntegerSettingsTest {
     private IntegerSettings integerSettings;
 
 
-    @Before
-    public void beforeEach() {
+    @BeforeEach
+    void beforeEach() {
         integerSettings = new IntegerSettings();
     }
 
 
     @Test
-    public void testGetComponentName() {
+    void testGetComponentName() {
         assertThat(integerSettings.getComponentName()).isEqualTo("IntegerSettings");
     }
 
     @Test
-    public void testGetLoadState() {
+    void testGetLoadState() {
         integerSettings.setMinValue(742);
         integerSettings.setMaxValue(908);
         integerSettings.setBase(12);
@@ -39,42 +39,42 @@ public final class IntegerSettingsTest {
     }
 
     @Test
-    public void testGetSetMinValue() {
+    void testGetSetMinValue() {
         integerSettings.setMinValue(366);
 
         assertThat(integerSettings.getMinValue()).isEqualTo(366);
     }
 
     @Test
-    public void testGetSetMaxValue() {
+    void testGetSetMaxValue() {
         integerSettings.setMaxValue(332);
 
         assertThat(integerSettings.getMaxValue()).isEqualTo(332);
     }
 
     @Test
-    public void testGetSetBase() {
+    void testGetSetBase() {
         integerSettings.setBase(7);
 
         assertThat(integerSettings.getBase()).isEqualTo(7);
     }
 
     @Test
-    public void testGetSetGroupingSeparator() {
+    void testGetSetGroupingSeparator() {
         integerSettings.setGroupingSeparator('6');
 
         assertThat(integerSettings.getGroupingSeparator()).isEqualTo('6');
     }
 
     @Test
-    public void testGetSetGroupingSeparatorStringEmpty() {
+    void testGetSetGroupingSeparatorStringEmpty() {
         integerSettings.setGroupingSeparator("");
 
         assertThat(integerSettings.getGroupingSeparator()).isEqualTo('\0');
     }
 
     @Test
-    public void testGetSetGroupingSeparatorString() {
+    void testGetSetGroupingSeparatorString() {
         integerSettings.setGroupingSeparator("tlRg}");
 
         assertThat(integerSettings.getGroupingSeparator()).isEqualTo('t');

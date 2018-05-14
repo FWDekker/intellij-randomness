@@ -1,11 +1,12 @@
 package com.fwdekker.randomness.string;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.Before;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,23 +14,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Unit tests for {@link StringSettings}.
  */
-public final class StringSettingsTest {
+final class StringSettingsTest {
     private StringSettings stringSettings;
 
 
-    @Before
-    public void beforeEach() {
+    @BeforeEach
+    void beforeEach() {
         stringSettings = new StringSettings();
     }
 
 
     @Test
-    public void testGetComponentName() {
+    void testGetComponentName() {
         assertThat(stringSettings.getComponentName()).isEqualTo("StringSettings");
     }
 
     @Test
-    public void testGetLoadState() {
+    void testGetLoadState() {
         final HashSet<Alphabet> alphabets = new HashSet<>(Collections.emptyList());
 
         stringSettings.setMinLength(730);
@@ -47,28 +48,28 @@ public final class StringSettingsTest {
     }
 
     @Test
-    public void testGetSetMinLength() {
+    void testGetSetMinLength() {
         stringSettings.setMinLength(173);
 
         assertThat(stringSettings.getMinLength()).isEqualTo(173);
     }
 
     @Test
-    public void testGetSetMaxLength() {
+    void testGetSetMaxLength() {
         stringSettings.setMaxLength(421);
 
         assertThat(stringSettings.getMaxLength()).isEqualTo(421);
     }
 
     @Test
-    public void testGetSetEnclosure() {
+    void testGetSetEnclosure() {
         stringSettings.setEnclosure("hWD");
 
         assertThat(stringSettings.getEnclosure()).isEqualTo("hWD");
     }
 
     @Test
-    public void testGetSetAlphabets() {
+    void testGetSetAlphabets() {
         final Set<Alphabet> alphabets
                 = new HashSet<>(Arrays.asList(Alphabet.LOWERCASE, Alphabet.BRACKETS, Alphabet.MINUS));
         stringSettings.setAlphabets(alphabets);

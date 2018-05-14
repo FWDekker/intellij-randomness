@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.ui;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -15,18 +15,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Unit tests for {@link ButtonGroupHelper}.
  */
-public final class ButtonGroupHelperTest {
+final class ButtonGroupHelperTest {
     private ButtonGroup group;
 
 
-    @Before
-    public void beforeEach() {
+    @BeforeEach
+    void beforeEach() {
         group = new ButtonGroup();
     }
 
 
     @Test
-    public void testForEachEmpty() {
+    void testForEachEmpty() {
         final int[] sum = {0};
 
         ButtonGroupHelper.forEach(group, button -> sum[0]++);
@@ -35,7 +35,7 @@ public final class ButtonGroupHelperTest {
     }
 
     @Test
-    public void testForEach() {
+    void testForEach() {
         final AbstractButton buttonA = new JButton();
         final AbstractButton buttonB = new JButton();
         final AbstractButton buttonC = new JButton();
@@ -53,12 +53,12 @@ public final class ButtonGroupHelperTest {
 
 
     @Test
-    public void testGetValueEmpty() {
+    void testGetValueEmpty() {
         assertThat(ButtonGroupHelper.getValue(group)).isNull();
     }
 
     @Test
-    public void testGetValueNoneSelected() {
+    void testGetValueNoneSelected() {
         final AbstractButton button = new JButton();
 
         group.add(button);
@@ -67,7 +67,7 @@ public final class ButtonGroupHelperTest {
     }
 
     @Test
-    public void testGetValue() {
+    void testGetValue() {
         final AbstractButton buttonA = new JButton();
         buttonA.setActionCommand("29zo4");
         final AbstractButton buttonB = new JButton();
@@ -82,14 +82,14 @@ public final class ButtonGroupHelperTest {
 
 
     @Test
-    public void testSetValueEmpty() {
+    void testSetValueEmpty() {
         assertThatThrownBy(() -> ButtonGroupHelper.setValue(group, "syWR#"))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("Could not find a button with action command `syWR#`.");
     }
 
     @Test
-    public void testSetValueNotFound() {
+    void testSetValueNotFound() {
         final AbstractButton buttonA = new JButton();
         buttonA.setActionCommand("*VgyA");
         final AbstractButton buttonB = new JButton();
@@ -104,7 +104,7 @@ public final class ButtonGroupHelperTest {
     }
 
     @Test
-    public void testSetValue() {
+    void testSetValue() {
         final AbstractButton buttonA = new JButton();
         buttonA.setActionCommand("TRUaN");
         final AbstractButton buttonB = new JButton();
@@ -122,7 +122,7 @@ public final class ButtonGroupHelperTest {
     }
 
     @Test
-    public void testSetValueObject() {
+    void testSetValueObject() {
         final AbstractButton buttonA = new JButton();
         buttonA.setActionCommand("iqGfVwJDLd");
         final AbstractButton buttonB = new JButton();

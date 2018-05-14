@@ -4,8 +4,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.editor.Editor;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 /**
  * Unit tests for {@link DataInsertAction}.
  */
-public final class DataInsertActionTest {
+final class DataInsertActionTest {
     /**
      * The recognizable string that is inserted by the insertion action.
      */
@@ -28,8 +28,8 @@ public final class DataInsertActionTest {
     private DataInsertAction dataInsertAction;
 
 
-    @Before
-    public void beforeEach() {
+    @BeforeEach
+    void beforeEach() {
         dataInsertAction = new SimpleInsertAction();
     }
 
@@ -38,7 +38,7 @@ public final class DataInsertActionTest {
      * Tests that no further actions are taken when the editor is {@code null}.
      */
     @Test
-    public void testActionPerformedNullEditor() {
+    void testActionPerformedNullEditor() {
         final AnActionEvent event = mock(AnActionEvent.class);
         when(event.getData(CommonDataKeys.EDITOR)).thenReturn(null);
 
@@ -52,7 +52,7 @@ public final class DataInsertActionTest {
      * Tests that the action's presentation is disabled when the editor is null.
      */
     @Test
-    public void testUpdateDisabled() {
+    void testUpdateDisabled() {
         final AnActionEvent event = mock(AnActionEvent.class);
         final Presentation presentation = spy(Presentation.class);
         when(event.getData(CommonDataKeys.EDITOR)).thenReturn(null);
@@ -67,7 +67,7 @@ public final class DataInsertActionTest {
      * Tests that the action's presentation is enabled when the editor is not null.
      */
     @Test
-    public void testUpdateEnabled() {
+    void testUpdateEnabled() {
         final AnActionEvent event = mock(AnActionEvent.class);
         final Presentation presentation = spy(Presentation.class);
         when(event.getData(CommonDataKeys.EDITOR)).thenReturn(mock(Editor.class));

@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.ui;
 
 import com.fwdekker.randomness.ValidationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,23 +10,23 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Unit tests for {@link JDoubleSpinner}.
  */
-public final class JDoubleSpinnerTest {
+final class JDoubleSpinnerTest {
     @Test
-    public void testIllegalMinValue() {
+    void testIllegalMinValue() {
         assertThatThrownBy(() -> new JDoubleSpinner(-1E80, -477.23))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("minValue should not be smaller than -1.0E53.");
     }
 
     @Test
-    public void testIllegalMaxValue() {
+    void testIllegalMaxValue() {
         assertThatThrownBy(() -> new JDoubleSpinner(-161.29, 1E73))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("maxValue should not be greater than 1.0E53.");
     }
 
     @Test
-    public void testIllegalRange() {
+    void testIllegalRange() {
         assertThatThrownBy(() -> new JDoubleSpinner(-602.98, -929.41))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("minValue should be greater than maxValue.");
@@ -34,7 +34,7 @@ public final class JDoubleSpinnerTest {
 
 
     @Test
-    public void testGetSetValue() {
+    void testGetSetValue() {
         final JDoubleSpinner spinner = new JDoubleSpinner();
 
         spinner.setValue(179.40);
@@ -43,7 +43,7 @@ public final class JDoubleSpinnerTest {
     }
 
     @Test
-    public void testGetSetValueType() {
+    void testGetSetValueType() {
         final JDoubleSpinner spinner = new JDoubleSpinner();
 
         spinner.setValue(638L);
@@ -53,7 +53,7 @@ public final class JDoubleSpinnerTest {
 
 
     @Test
-    public void testValidateUnderflow() {
+    void testValidateUnderflow() {
         final JDoubleSpinner spinner = new JDoubleSpinner();
 
         spinner.setValue(-1E55);
@@ -64,7 +64,7 @@ public final class JDoubleSpinnerTest {
     }
 
     @Test
-    public void testValidateOverflow() {
+    void testValidateOverflow() {
         final JDoubleSpinner spinner = new JDoubleSpinner();
 
         spinner.setValue(1E98);
@@ -75,7 +75,7 @@ public final class JDoubleSpinnerTest {
     }
 
     @Test
-    public void testValidateUnderflowCustomRange() {
+    void testValidateUnderflowCustomRange() {
         final JDoubleSpinner spinner = new JDoubleSpinner(-738.33, 719.45);
 
         spinner.setValue(-808.68);
@@ -86,7 +86,7 @@ public final class JDoubleSpinnerTest {
     }
 
     @Test
-    public void testValidateOverflowCustomRange() {
+    void testValidateOverflowCustomRange() {
         final JDoubleSpinner spinner = new JDoubleSpinner(-972.80, -69.36);
 
         spinner.setValue(94.0);

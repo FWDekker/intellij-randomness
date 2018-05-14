@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.fail;
 /**
  * Helper class for file manipulation for tests of {@code Dictionary}s.
  */
-public final class DictionaryFileHelper {
+final class DictionaryFileHelper {
     /**
      * The files that have been created by this helper.
      */
@@ -24,7 +24,7 @@ public final class DictionaryFileHelper {
     /**
      * Constructs a new {@code DictionaryFileHelper}.
      */
-    public DictionaryFileHelper() {
+    DictionaryFileHelper() {
         files = new ArrayList<>();
     }
 
@@ -37,7 +37,7 @@ public final class DictionaryFileHelper {
      * @param contents the contents to write to the dictionary file
      * @return the created temporary dictionary file
      */
-    public File setUpDictionary(final String contents) {
+    File setUpDictionary(final String contents) {
         final File dictionaryFile;
 
         try {
@@ -55,7 +55,7 @@ public final class DictionaryFileHelper {
     /**
      * Cleans up the created dictionary files.
      */
-    public void cleanUpDictionaries() {
+    void cleanUpDictionaries() {
         for (final File dictionaryFile : files) {
             if (dictionaryFile.exists() && !dictionaryFile.delete()) {
                 Logger.getLogger(this.getClass().getName()).warning("Failed to clean up dictionary file.");

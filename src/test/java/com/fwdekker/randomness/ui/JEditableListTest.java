@@ -1,11 +1,12 @@
 package com.fwdekker.randomness.ui;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import org.junit.Before;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -14,24 +15,24 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Unit tests for {@link JEditableList}.
  */
-public final class JEditableListTest {
+final class JEditableListTest {
     private JEditableList<String> list;
 
 
-    @Before
-    public void beforeEach() {
+    @BeforeEach
+    void beforeEach() {
         list = new JEditableList<>();
     }
 
 
     @Test
-    public void testGetEntriesEmpty() {
+    void testGetEntriesEmpty() {
         assertThat(list.getEntries())
                 .isEmpty();
     }
 
     @Test
-    public void testAddEntry() {
+    void testAddEntry() {
         list.addEntry("sxTODMrLvE");
 
         assertThat(list.getEntries())
@@ -39,7 +40,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testAddEntryDuplicate() {
+    void testAddEntryDuplicate() {
         list.addEntry("6bqmI9JEkv");
         list.addEntry("6bqmI9JEkv");
 
@@ -48,7 +49,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testSetEntriesEmptyToEmpty() {
+    void testSetEntriesEmptyToEmpty() {
         list.setEntries(Collections.emptyList());
 
         assertThat(list.getEntries())
@@ -56,7 +57,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testSetEntriesEmptyToNonEmpty() {
+    void testSetEntriesEmptyToNonEmpty() {
         list.setEntries(Arrays.asList("[qOBxjKQ6P", "DGw{4ag(99"));
 
         assertThat(list.getEntries())
@@ -64,7 +65,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testSetEntriesNonemptyToEmpty() {
+    void testSetEntriesNonemptyToEmpty() {
         list.addEntry("u1}9]G<<CN");
         list.addEntry("SV9MUxo5yM");
         list.setEntries(Collections.emptyList());
@@ -74,7 +75,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testSetEntriesNonemptyToNonempty() {
+    void testSetEntriesNonemptyToNonempty() {
         list.addEntry("d>OO>rp2zJ");
         list.addEntry("Po(tiIXnxQ");
         list.addEntry("oq5BQYk0<7");
@@ -85,7 +86,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testRemoveEntry() {
+    void testRemoveEntry() {
         list.addEntry("><t1wfkCLz");
         list.addEntry("X0hxkJGK)7");
         list.addEntry("TI5i9bUyLc");
@@ -96,7 +97,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testRemoveEntryDuplicate() {
+    void testRemoveEntryDuplicate() {
         list.addEntry("UNIODenA]8");
         list.addEntry(">q(isDDjGx");
         list.addEntry("tyFoveRt5n");
@@ -108,7 +109,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testRemoveEntryNonExisting() {
+    void testRemoveEntryNonExisting() {
         list.addEntry("qiGIG5Slmn");
         list.addEntry("uxlt{9}FeZ");
         list.addEntry("a4BEQoJpLJ");
@@ -120,7 +121,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testClearEmpty() {
+    void testClearEmpty() {
         list.clear();
 
         assertThat(list.getEntries())
@@ -128,7 +129,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testClearNonempty() {
+    void testClearNonempty() {
         list.addEntry("4lbw4K>}UH");
         list.addEntry("CMVe{rkBl[");
         list.clear();
@@ -138,13 +139,13 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testGetEntryCountEmpty() {
+    void testGetEntryCountEmpty() {
         assertThat(list.getEntryCount())
                 .isEqualTo(0);
     }
 
     @Test
-    public void testGetEntryCount() {
+    void testGetEntryCount() {
         list.addEntry("1JfHiG[CiD");
         list.addEntry("gXsoY21wzb");
 
@@ -153,7 +154,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testGetEntryCountDuplicate() {
+    void testGetEntryCountDuplicate() {
         list.addEntry("jDwxzlHh]f");
         list.addEntry("A>)6q<f5kT");
         list.addEntry("A>)6q<f5kT");
@@ -164,13 +165,13 @@ public final class JEditableListTest {
 
 
     @Test
-    public void testActiveEntriesEmpty() {
+    void testActiveEntriesEmpty() {
         assertThat(list.getActiveEntries())
                 .isEmpty();
     }
 
     @Test
-    public void testActiveEntriesNone() {
+    void testActiveEntriesNone() {
         list.setEntries(Arrays.asList("DnqtROf4fd", "0<16CDsby2", "h0hu4XePhv"));
 
         assertThat(list.getActiveEntries())
@@ -178,7 +179,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testActiveEntriesSome() {
+    void testActiveEntriesSome() {
         final List<String> entries = Arrays.asList("9}juZWluy}", "UGuD08qUXr", "eQA[]AdpYR");
         list.setEntries(entries);
         list.setActiveEntries(Arrays.asList("UGuD08qUXr"));
@@ -188,7 +189,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testActiveEntriesAll() {
+    void testActiveEntriesAll() {
         final List<String> entries = Arrays.asList("o28ix>b}x(", "6Zzl>yi5LB", "XyEVdjv1VM");
         list.setEntries(entries);
         list.setActiveEntries(entries);
@@ -198,7 +199,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testSetActiveEntriesNonExistent() {
+    void testSetActiveEntriesNonExistent() {
         final List<String> entries = Arrays.asList("JXIPoWsGR{", ">Jq7ILgv9]");
         list.setEntries(entries);
         list.setActiveEntries(Arrays.asList("JXIPoWsGR{", "j>NBYo}DnW", ">Jq7ILgv9]"));
@@ -208,7 +209,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testIsActive() {
+    void testIsActive() {
         final List<String> entries = Arrays.asList("I85kO5f8}6", "qcSv3u((zE", "{jjD)iFxEr");
         list.setEntries(entries);
         list.setEntryActivity("I85kO5f8}6", true);
@@ -219,7 +220,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testIsActiveNonExistent() {
+    void testIsActiveNonExistent() {
         assertThatThrownBy(() -> list.isActive("Vr{1zIC9iH"))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("No row with entry `Vr{1zIC9iH` found.")
@@ -227,7 +228,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testActivityListenerOnUpdate() {
+    void testActivityListenerOnUpdate() {
         final boolean[] fired = {false};
         list.addEntry("DsX[DtA>6{");
 
@@ -238,7 +239,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testActivityListenerNoChangeOnInsert() {
+    void testActivityListenerNoChangeOnInsert() {
         final boolean[] fired = {false};
 
         list.addEntryActivityChangeListener(event -> fired[0] = true);
@@ -248,7 +249,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testActivityListenerRemoveNoFire() {
+    void testActivityListenerRemoveNoFire() {
         final boolean[] fired = {false};
         list.addEntry("bvDAPSZFG3");
 
@@ -262,12 +263,12 @@ public final class JEditableListTest {
 
 
     @Test
-    public void testGetHighlightedEntryNone() {
+    void testGetHighlightedEntryNone() {
         assertThat(list.getHighlightedEntry()).isNotPresent();
     }
 
     @Test
-    public void testGetHighlightedEntrySingle() {
+    void testGetHighlightedEntrySingle() {
         list.setEntries(Arrays.asList("Bb]CEbJlAD", "8QNk5l<]ln", "U5Hbo0whnn"));
         list.addRowSelectionInterval(0, 0);
 
@@ -276,7 +277,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testGetHighlightedEntryMultiple() {
+    void testGetHighlightedEntryMultiple() {
         list.setEntries(Arrays.asList("k<Goz2<IG9", "E4nRBR>wKG", "sCxbg}sfy("));
         list.addRowSelectionInterval(0, 0);
         list.addRowSelectionInterval(2, 2);
@@ -287,7 +288,7 @@ public final class JEditableListTest {
 
 
     @Test
-    public void testGetColumnClasses() {
+    void testGetColumnClasses() {
         assertThat(list.getColumnClass(0)).isEqualTo(Boolean.class);
         assertThat(list.getColumnClass(1)).isEqualTo(String.class);
 
@@ -302,7 +303,7 @@ public final class JEditableListTest {
     }
 
     @Test
-    public void testIsCellEditable() {
+    void testIsCellEditable() {
         assertThat(list.isCellEditable(10, 5)).isFalse();
         assertThat(list.isCellEditable(7, 10)).isFalse();
         assertThat(list.isCellEditable(8, 2)).isFalse();

@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.word;
 
 import com.intellij.openapi.ui.ValidationInfo;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Arrays;
@@ -18,30 +18,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Unit tests for {@link WordSettings}.
  */
-public final class WordSettingsTest {
+final class WordSettingsTest {
     private static final DictionaryFileHelper FILE_HELPER = new DictionaryFileHelper();
 
     private WordSettings wordSettings;
 
 
-    @AfterClass
-    public static void afterAll() {
+    @AfterAll
+    static void afterAll() {
         FILE_HELPER.cleanUpDictionaries();
     }
 
-    @Before
-    public void beforeEach() {
+    @BeforeEach
+    void beforeEach() {
         wordSettings = new WordSettings();
     }
 
 
     @Test
-    public void testGetComponentName() {
+    void testGetComponentName() {
         assertThat(wordSettings.getComponentName()).isEqualTo("WordSettings");
     }
 
     @Test
-    public void testGetLoadState() {
+    void testGetLoadState() {
         wordSettings.setMinLength(502);
         wordSettings.setMaxLength(812);
         wordSettings.setEnclosure("QJ8S4UrFaa");
@@ -55,28 +55,28 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testGetSetMinLength() {
+    void testGetSetMinLength() {
         wordSettings.setMinLength(905);
 
         assertThat(wordSettings.getMinLength()).isEqualTo(905);
     }
 
     @Test
-    public void testGetSetMaxLength() {
+    void testGetSetMaxLength() {
         wordSettings.setMaxLength(756);
 
         assertThat(wordSettings.getMaxLength()).isEqualTo(756);
     }
 
     @Test
-    public void testGetSetEnclosure() {
+    void testGetSetEnclosure() {
         wordSettings.setEnclosure("IERMV6Q5Qx");
 
         assertThat(wordSettings.getEnclosure()).isEqualTo("IERMV6Q5Qx");
     }
 
     @Test
-    public void testGetSetBundledDictionaries() {
+    void testGetSetBundledDictionaries() {
         final Set<String> bundledDictionaries = new HashSet<>(Arrays.asList("6OE]SfZj6(", "HGeldsz2XM", "V6AhkeIKX6"));
         wordSettings.setBundledDictionaries(bundledDictionaries);
 
@@ -84,7 +84,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testGetSetUserDictionaries() {
+    void testGetSetUserDictionaries() {
         final Set<String> userDictionaries = new HashSet<>(Arrays.asList(")asQAYwW[u", "Bz>GSRlNA1", "Cjsg{Olylo"));
         wordSettings.setUserDictionaries(userDictionaries);
 
@@ -92,7 +92,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testGetSetActiveBundledDictionaries() {
+    void testGetSetActiveBundledDictionaries() {
         final Set<String> bundledDictionaries = new HashSet<>(Arrays.asList("6QeMvZ>uHQ", "Onb]HUugM1", "008xGJhIXE"));
         wordSettings.setActiveBundledDictionaries(bundledDictionaries);
 
@@ -100,7 +100,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testGetSetActiveUserDictionaries() {
+    void testGetSetActiveUserDictionaries() {
         final Set<String> userDictionaries = new HashSet<>(Arrays.asList("ukeB8}RLbm", "JRcuz7sm4(", "{QZGJQli36"));
         wordSettings.setActiveUserDictionaries(userDictionaries);
 
@@ -109,7 +109,7 @@ public final class WordSettingsTest {
 
 
     @Test
-    public void testValidateAllDictionariesSuccessEmpty() {
+    void testValidateAllDictionariesSuccessEmpty() {
         wordSettings.setBundledDictionaries(Collections.emptySet());
         wordSettings.setUserDictionaries(Collections.emptySet());
 
@@ -117,7 +117,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testValidateAllDictionariesSuccessNonEmpty() {
+    void testValidateAllDictionariesSuccessNonEmpty() {
         final File userDictionary = FILE_HELPER.setUpDictionary("Reflet\nHerniate\nBuz");
 
         wordSettings.setBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
@@ -127,7 +127,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testValidateAllDictionaryInvalidBundled() {
+    void testValidateAllDictionaryInvalidBundled() {
         final File userDictionary = FILE_HELPER.setUpDictionary("Inblow\nImmunes\nEnteroid");
 
         wordSettings.setBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/empty.dic")));
@@ -141,7 +141,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testValidateAllDictionaryInvalidUser() {
+    void testValidateAllDictionaryInvalidUser() {
         final File userDictionary = FILE_HELPER.setUpDictionary("");
         final String userDictionaryName = userDictionary.getName();
 
@@ -156,7 +156,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testValidateActiveDictionariesSuccessEmpty() {
+    void testValidateActiveDictionariesSuccessEmpty() {
         wordSettings.setActiveBundledDictionaries(Collections.emptySet());
         wordSettings.setActiveUserDictionaries(Collections.emptySet());
 
@@ -164,7 +164,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testValidateActiveDictionariesSuccessNonEmpty() {
+    void testValidateActiveDictionariesSuccessNonEmpty() {
         final File userDictionary = FILE_HELPER.setUpDictionary("Dicranum\nJiffy\nChatties");
 
         wordSettings.setActiveBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
@@ -174,7 +174,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testValidateActiveDictionaryInvalidBundled() {
+    void testValidateActiveDictionaryInvalidBundled() {
         final File userDictionary = FILE_HELPER.setUpDictionary("Fastest\nWows\nBrimmers");
 
         wordSettings.setActiveBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/empty.dic")));
@@ -188,7 +188,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testValidateActiveDictionaryInvalidUser() {
+    void testValidateActiveDictionaryInvalidUser() {
         final File userDictionary = FILE_HELPER.setUpDictionary("");
         final String userDictionaryName = userDictionary.getName();
 
@@ -204,7 +204,7 @@ public final class WordSettingsTest {
 
 
     @Test
-    public void testGetValidAllDictionariesEmpty() {
+    void testGetValidAllDictionariesEmpty() {
         wordSettings.setBundledDictionaries(Collections.emptySet());
         wordSettings.setUserDictionaries(Collections.emptySet());
 
@@ -212,7 +212,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testGetValidAllDictionariesFilterBoth() {
+    void testGetValidAllDictionariesFilterBoth() {
         final File validUserDictionary = FILE_HELPER.setUpDictionary("Resilium\nAncerata\nBylander");
         final File invalidUserDictionary = FILE_HELPER.setUpDictionary("");
 
@@ -234,7 +234,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testGetValidActiveDictionariesEmpty() {
+    void testGetValidActiveDictionariesEmpty() {
         wordSettings.setActiveBundledDictionaries(Collections.emptySet());
         wordSettings.setActiveUserDictionaries(Collections.emptySet());
 
@@ -242,7 +242,7 @@ public final class WordSettingsTest {
     }
 
     @Test
-    public void testGetValidActiveDictionariesFilterBoth() {
+    void testGetValidActiveDictionariesFilterBoth() {
         final File validUserDictionary = FILE_HELPER.setUpDictionary("Resilium\nAncerata\nBylander");
         final File invalidUserDictionary = FILE_HELPER.setUpDictionary("");
 
