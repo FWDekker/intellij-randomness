@@ -76,7 +76,7 @@ final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     }
 
     @Override
-    @SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH", justification = "")
+    @SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH")
     public void saveSettings(final @NotNull ArraySettings settings) {
         settings.setCount(Math.toIntExact(countSpinner.getValue()));
         settings.setBrackets(ButtonGroupHelper.getValue(bracketsGroup));
