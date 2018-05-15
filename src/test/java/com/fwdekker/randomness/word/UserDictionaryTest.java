@@ -42,13 +42,34 @@ final class UserDictionaryTest {
     }
 
     @Test
-    void testInitTwiceEquals() {
+    void testInitTwiceSame() {
         final File dictionaryFile = FILE_HELPER.setUpDictionary("Fonded\nLustrum\nUpgale");
 
         final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
         final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
 
-        assertThat(dictionaryA).isEqualTo(dictionaryB);
+        assertThat(dictionaryA).isSameAs(dictionaryB);
+    }
+
+    @Test
+    void testInitTwiceNoCacheEqualButNotSame() {
+        final File dictionaryFile = FILE_HELPER.setUpDictionary("Dyers\nHexsub\nBookit");
+
+        final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath(), false);
+
+        assertThat(dictionaryB).isEqualTo(dictionaryA);
+        assertThat(dictionaryB).isNotSameAs(dictionaryA);
+    }
+
+    @Test
+    void testInitNoCacheStoresAnyway() {
+        final File dictionaryFile = FILE_HELPER.setUpDictionary("Pecking\nAdinole\nFlashpan");
+
+        final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath(), false);
+        final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+
+        assertThat(dictionaryB).isSameAs(dictionaryA);
     }
 
 

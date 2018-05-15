@@ -212,16 +212,29 @@ public abstract class Dictionary {
         }
 
         /**
+         * Calls {@link #get(String, boolean)} with {@code useCache} set to {@code true}.
+         *
+         * @param path the path to the dictionary resource
+         * @return a new {@code BundledDictionary} for the given dictionary resource, or the previously created instance
+         * of this dictionary if there is one
+         */
+        public static BundledDictionary get(final String path) {
+            return get(path, true);
+        }
+
+        /**
          * Constructs a new {@code BundledDictionary} for the given dictionary resource, or returns the previously
          * created instance for this resource if there is one.
          *
-         * @param path the path to the dictionary resource
-         * @return a new {@code BundledDictionary} for the given dictionary resource, or returns the previously
-         * created instance of this resource if there is one
+         * @param path     the path to the dictionary resource
+         * @param useCache {@code true} if a cached version of the dictionary should be returned if it exists,
+         *                 {@code false} if the cache should always be updated
+         * @return a new {@code BundledDictionary} for the given dictionary resource, or the previously created instance
+         * of this dictionary if there is one
          */
-        public static BundledDictionary get(final String path) {
+        public static BundledDictionary get(final String path, final boolean useCache) {
             synchronized (BundledDictionary.class) {
-                if (!CACHE.containsKey(path)) {
+                if (!useCache || !CACHE.containsKey(path)) {
                     CACHE.put(path, new BundledDictionary(path));
                 }
             }
@@ -297,16 +310,29 @@ public abstract class Dictionary {
         }
 
         /**
+         * Calls {@link #get(String, boolean)} with {@code useCache} set to {@code true}.
+         *
+         * @param path the absolute path to the dictionary file
+         * @return a new {@code UserDictionary} for the given dictionary path, or the previously created instance of
+         * this dictionary if there is one
+         */
+        public static UserDictionary get(final String path) {
+            return get(path, true);
+        }
+
+        /**
          * Constructs a new {@code UserDictionary} for the given dictionary path, or returns the previously created
          * instance for the file if there is one.
          *
-         * @param path the absolute path to the dictionary file
-         * @return a new {@code UserDictionary} for the given dictionary path, or returns the previously created
-         * instance of this file if there is one
+         * @param path     the absolute path to the dictionary file
+         * @param useCache {@code true} if a cached version of the dictionary should be returned if it exists,
+         *                 {@code false} if the cache should always be updated
+         * @return a new {@code UserDictionary} for the given dictionary path, or the previously created instance of
+         * this dictionary if there is one
          */
-        public static UserDictionary get(final String path) {
+        public static UserDictionary get(final String path, final boolean useCache) {
             synchronized (UserDictionary.class) {
-                if (!CACHE.containsKey(path)) {
+                if (!useCache || !CACHE.containsKey(path)) {
                     CACHE.put(path, new UserDictionary(path));
                 }
             }
