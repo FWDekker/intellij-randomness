@@ -242,6 +242,13 @@ public abstract class Dictionary {
             return CACHE.get(path);
         }
 
+        /**
+         * Clears the cache of stored dictionaries.
+         */
+        public static void clearCache() {
+            CACHE.clear();
+        }
+
 
         @Override
         public ValidationInfo validate() {
@@ -338,6 +345,13 @@ public abstract class Dictionary {
             }
 
             return CACHE.get(path);
+        }
+
+        /**
+         * Clears the cache of stored dictionaries.
+         */
+        public static void clearCache() {
+            CACHE.clear();
         }
 
 

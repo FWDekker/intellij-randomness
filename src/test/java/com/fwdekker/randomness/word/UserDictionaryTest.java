@@ -72,6 +72,20 @@ final class UserDictionaryTest {
         assertThat(dictionaryB).isSameAs(dictionaryA);
     }
 
+    @Test
+    void testInitAfterClearCache() {
+        final File dictionaryFile = FILE_HELPER.setUpDictionary("Melamin\nPetrol\nBruckled");
+        final Dictionary dictionaryBefore = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+
+        Dictionary.UserDictionary.clearCache();
+
+        FILE_HELPER.writeToFile(dictionaryFile, "Rutch\nDespin\nSweltry");
+        final Dictionary dictionaryAfter = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+
+        assertThat(dictionaryBefore.getWords()).containsExactlyInAnyOrder("Melamin", "Petrol", "Bruckled");
+        assertThat(dictionaryAfter.getWords()).containsExactlyInAnyOrder("Rutch", "Despin", "Sweltry");
+    }
+
 
     @Test
     void testValidateInstanceSuccess() {
