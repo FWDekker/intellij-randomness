@@ -42,13 +42,48 @@ final class UserDictionaryTest {
     }
 
     @Test
-    void testInitTwiceEquals() {
+    void testInitTwiceSame() {
         final File dictionaryFile = FILE_HELPER.setUpDictionary("Fonded\nLustrum\nUpgale");
 
         final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
         final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
 
-        assertThat(dictionaryA).isEqualTo(dictionaryB);
+        assertThat(dictionaryA).isSameAs(dictionaryB);
+    }
+
+    @Test
+    void testInitTwiceNoCacheEqualButNotSame() {
+        final File dictionaryFile = FILE_HELPER.setUpDictionary("Dyers\nHexsub\nBookit");
+
+        final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath(), false);
+
+        assertThat(dictionaryB).isEqualTo(dictionaryA);
+        assertThat(dictionaryB).isNotSameAs(dictionaryA);
+    }
+
+    @Test
+    void testInitNoCacheStoresAnyway() {
+        final File dictionaryFile = FILE_HELPER.setUpDictionary("Pecking\nAdinole\nFlashpan");
+
+        final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath(), false);
+        final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+
+        assertThat(dictionaryB).isSameAs(dictionaryA);
+    }
+
+    @Test
+    void testInitAfterClearCache() {
+        final File dictionaryFile = FILE_HELPER.setUpDictionary("Melamin\nPetrol\nBruckled");
+        final Dictionary dictionaryBefore = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+
+        Dictionary.UserDictionary.clearCache();
+
+        FILE_HELPER.writeToFile(dictionaryFile, "Rutch\nDespin\nSweltry");
+        final Dictionary dictionaryAfter = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+
+        assertThat(dictionaryBefore.getWords()).containsExactlyInAnyOrder("Melamin", "Petrol", "Bruckled");
+        assertThat(dictionaryAfter.getWords()).containsExactlyInAnyOrder("Rutch", "Despin", "Sweltry");
     }
 
 

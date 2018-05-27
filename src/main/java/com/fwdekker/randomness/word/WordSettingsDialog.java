@@ -124,6 +124,8 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                 .filter(Dictionary.BundledDictionary.class::isInstance)
                 .map(Dictionary::getUid)
                 .collect(Collectors.toSet()));
+        Dictionary.BundledDictionary.clearCache();
+
         settings.setUserDictionaries(dictionaries.getEntries().stream()
                 .filter(Dictionary.UserDictionary.class::isInstance)
                 .map(Dictionary::getUid)
@@ -132,6 +134,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                 .filter(Dictionary.UserDictionary.class::isInstance)
                 .map(Dictionary::getUid)
                 .collect(Collectors.toSet()));
+        Dictionary.UserDictionary.clearCache();
     }
 
     @Override
@@ -179,7 +182,7 @@ final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                 return;
             }
 
-            final Dictionary newDictionary = Dictionary.UserDictionary.get(files.get(0).getCanonicalPath());
+            final Dictionary newDictionary = Dictionary.UserDictionary.get(files.get(0).getCanonicalPath(), false);
             dictionaries.addEntry(newDictionary);
         });
     }

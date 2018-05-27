@@ -30,6 +30,20 @@ final class DictionaryFileHelper {
 
 
     /**
+     * Writes the given contents to the given file.
+     *
+     * @param target   the file to write to
+     * @param contents the contents to write to the file
+     */
+    void writeToFile(final File target, final String contents) {
+        try {
+            Files.write(target.toPath(), contents.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            fail("Could not write to dictionary file.");
+        }
+    }
+
+    /**
      * Creates a temporary dictionary file with the given contents.
      * <p>
      * Because the created file is a temporary file, it does not have to be cleaned up afterwards.
@@ -42,7 +56,7 @@ final class DictionaryFileHelper {
 
         try {
             dictionaryFile = File.createTempFile("dictionary", ".dic");
-            Files.write(dictionaryFile.toPath(), contents.getBytes(StandardCharsets.UTF_8));
+            writeToFile(dictionaryFile, contents);
             files.add(dictionaryFile);
 
             return dictionaryFile;

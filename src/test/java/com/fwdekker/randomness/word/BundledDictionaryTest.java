@@ -32,7 +32,24 @@ final class BundledDictionaryTest {
         final Dictionary dictionaryA = Dictionary.BundledDictionary.get("dictionaries/varied.dic");
         final Dictionary dictionaryB = Dictionary.BundledDictionary.get("dictionaries/varied.dic");
 
-        assertThat(dictionaryA).isEqualTo(dictionaryB);
+        assertThat(dictionaryA).isSameAs(dictionaryB);
+    }
+
+    @Test
+    void testInitTwiceNoCacheEqualButNotSame() {
+        final Dictionary dictionaryA = Dictionary.BundledDictionary.get("dictionaries/simple.dic");
+        final Dictionary dictionaryB = Dictionary.BundledDictionary.get("dictionaries/simple.dic", false);
+
+        assertThat(dictionaryB).isEqualTo(dictionaryA);
+        assertThat(dictionaryB).isNotSameAs(dictionaryA);
+    }
+
+    @Test
+    void testInitNoCacheStoresAnyway() {
+        final Dictionary dictionaryA = Dictionary.BundledDictionary.get("dictionaries/simple.dic", false);
+        final Dictionary dictionaryB = Dictionary.BundledDictionary.get("dictionaries/simple.dic");
+
+        assertThat(dictionaryB).isSameAs(dictionaryA);
     }
 
 
