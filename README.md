@@ -1,5 +1,5 @@
 <h1 align="center">
-<img src="misc/artwork/logo.png" width="150"/>
+<img src=".github/logo.png" width="150"/>
 <br/>
 Randomness
 </h1>
