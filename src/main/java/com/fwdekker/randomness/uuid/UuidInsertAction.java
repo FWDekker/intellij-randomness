@@ -6,7 +6,7 @@ import java.util.UUID;
 
 
 /**
- * Generates a random type 4 UUID based.
+ * Generates a random type 4 UUID.
  */
 public final class UuidInsertAction extends DataInsertAction {
     @Override
