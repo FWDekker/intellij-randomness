@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 enum Alphabet {
     UPPERCASE("Uppercase (A, B, C, ...)", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
     LOWERCASE("Lowercase (a, b, c, ...)", "abcdefghijklmnopqrstuvwxyz"),
+    HEXADECIMAL("Hexadecimal (0, 1, 2, ..., d, e, f)", "0123456789abcdef"),
     DIGITS("Digits (0, 1, 2, ...)", "0123456789"),
     MINUS("Minus (-)", "-"),
     UNDERSCORE("Underscore (_)", "_"),
