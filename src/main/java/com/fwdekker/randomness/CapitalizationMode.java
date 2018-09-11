@@ -38,7 +38,7 @@ public enum CapitalizationMode {
     /**
      * Makes each letter randomly uppercase or lowercase.
      */
-    RANDOM("RAnDoM", string -> {
+    RANDOM("random", string -> {
         final Random random = new Random();
         return string.chars()
                 .map(c -> random.nextBoolean() ? Character.toLowerCase(c) : Character.toUpperCase(c))

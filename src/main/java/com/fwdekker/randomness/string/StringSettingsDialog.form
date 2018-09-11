@@ -142,6 +142,7 @@
           <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
+          <actionCommand value="upper"/>
           <name value="capitalizationUpper"/>
           <text value="UPPER"/>
         </properties>
@@ -151,6 +152,7 @@
           <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
+          <actionCommand value="random"/>
           <name value="capitalizationRandom"/>
           <text value="RAnDoM"/>
         </properties>
@@ -164,7 +166,7 @@
       <member id="8b3e3"/>
       <member id="364e0"/>
     </group>
-    <group name="capitalizationGroup">
+    <group name="capitalizationGroup" bound="true">
       <member id="c6fa1"/>
       <member id="e20f5"/>
       <member id="4426c"/>

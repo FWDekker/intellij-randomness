@@ -22,16 +22,16 @@ final class AlphabetTest {
 
     @Test
     void testGetName() {
-        assertThat(Alphabet.ALPHABET.getName()).isEqualTo("Uppercase (A, B, C, ...)");
+        assertThat(Alphabet.ALPHABET.getName()).isEqualTo("Alphabet (a, b, c, ...)");
     }
 
     @Test
     void testGetSymbols() {
-        assertThat(Alphabet.ALPHABET.getSymbols()).isEqualTo("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        assertThat(Alphabet.ALPHABET.getSymbols()).isEqualTo("abcdefghijklmnopqrstuvwxyz");
     }
 
     @Test
     void testToString() {
-        assertThat(Alphabet.ALPHABET.toString()).isEqualTo("Uppercase (A, B, C, ...)");
+        assertThat(Alphabet.ALPHABET.toString()).isEqualTo("Alphabet (a, b, c, ...)");
     }
 }

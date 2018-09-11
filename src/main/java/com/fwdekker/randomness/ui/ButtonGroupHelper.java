@@ -57,8 +57,8 @@ public final class ButtonGroupHelper {
         final AbstractButton targetButton = Collections.list(group.getElements()).stream()
                 .filter(button -> button.getActionCommand().equals("\0".equals(value) ? "" : value))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Could not find a button with action command `"
-                        + value + "`."));
+                .orElseThrow(() ->
+                        new NoSuchElementException("Could not find a button with action command `" + value + "`."));
 
         targetButton.setSelected(true);
     }
