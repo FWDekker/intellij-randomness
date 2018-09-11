@@ -4,4 +4,5 @@ com.fwdekker.randomness.decimal
 com.fwdekker.randomness.integer
 com.fwdekker.randomness.string
 com.fwdekker.randomness.ui
+com.fwdekker.randomness.uuid
 com.fwdekker.randomness.word
