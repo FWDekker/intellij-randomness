@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word;
 
+import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.Settings;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;

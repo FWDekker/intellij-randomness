@@ -1,4 +1,4 @@
-package com.fwdekker.randomness.word;
+package com.fwdekker.randomness;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +40,13 @@ final class CapitalizationModeTest {
     @Test
     void testFirstLetterTransform() {
         assertThat(CapitalizationMode.FIRST_LETTER.getTransform().apply("bgiOP SMQpR")).isEqualTo("Bgiop Smqpr");
+    }
+
+    @Test
+    void testRandomTransform() {
+        assertThat(CapitalizationMode.RANDOM.getTransform().apply("GHmdukhNqua"))
+                .isNotEqualTo("GHmdukhNqua") // Has a chance of 0.002% of failing
+                .isEqualToIgnoringCase("GHmdukhNqua");
     }
 
     @Test

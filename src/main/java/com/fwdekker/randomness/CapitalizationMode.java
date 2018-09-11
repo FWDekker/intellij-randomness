@@ -1,8 +1,9 @@
-package com.fwdekker.randomness.word;
+package com.fwdekker.randomness;
 
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,17 @@ public enum CapitalizationMode {
      * Makes the first letter of each word uppercase.
      */
     FIRST_LETTER("first letter", string ->
-            Arrays.stream(string.split(" ")).map(SENTENCE.transform).collect(Collectors.joining(" ")));
+            Arrays.stream(string.split(" ")).map(SENTENCE.transform).collect(Collectors.joining(" "))),
+    /**
+     * Makes each letter randomly uppercase or lowercase.
+     */
+    RANDOM("RAnDoM", string -> {
+        final Random random = new Random();
+        return string.chars()
+                .map(c -> random.nextBoolean() ? Character.toLowerCase(c) : Character.toUpperCase(c))
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    });
 
 
     /**

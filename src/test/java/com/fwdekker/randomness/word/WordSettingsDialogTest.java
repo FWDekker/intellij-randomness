@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word;
 
+import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.ui.JEditableList;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.assertj.swing.edt.GuiActionRunner;

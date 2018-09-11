@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word;
 
+import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.SettingsDialog;
 import com.fwdekker.randomness.ValidationException;
 import com.fwdekker.randomness.ui.ButtonGroupHelper;
