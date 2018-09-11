@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
  */
 enum Alphabet {
     ALPHABET("Alphabet (a, b, c, ...)", "abcdefghijklmnopqrstuvwxyz"),
-    HEXADECIMAL("Hexadecimal (0, 1, 2, ..., d, e, f)", "0123456789abcdef"),
     DIGITS("Digits (0, 1, 2, ...)", "0123456789"),
+    HEXADECIMAL("Hexadecimal (0, 1, 2, ..., d, e, f)", "0123456789abcdef"),
     MINUS("Minus (-)", "-"),
     UNDERSCORE("Underscore (_)", "_"),
     SPACE("Space ( )", " "),
