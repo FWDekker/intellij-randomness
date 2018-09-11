@@ -23,7 +23,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
     private static final int DEFAULT_MAX_VALUE = 719;
     private static final String DEFAULT_ENCLOSURE = "\"";
     private static final Set<Alphabet> DEFAULT_ALPHABETS
-            = new HashSet<>(Arrays.asList(Alphabet.UPPERCASE, Alphabet.ALPHABET));
+            = new HashSet<>(Arrays.asList(Alphabet.ALPHABET, Alphabet.ALPHABET));
 
     private StringSettings stringSettings;
     private StringSettingsDialog stringSettingsDialog;

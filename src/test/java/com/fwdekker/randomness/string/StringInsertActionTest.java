@@ -25,7 +25,7 @@ final class StringInsertActionTest {
                 {0, 0, "2Rv", new Alphabet[]{}},
 
                 {723, 723, "", new Alphabet[]{Alphabet.ALPHABET}},
-                {466, 466, "z", new Alphabet[]{Alphabet.UPPERCASE, Alphabet.SPECIAL, Alphabet.UNDERSCORE}}
+                {466, 466, "z", new Alphabet[]{Alphabet.ALPHABET, Alphabet.SPECIAL, Alphabet.UNDERSCORE}}
         });
     }
 
