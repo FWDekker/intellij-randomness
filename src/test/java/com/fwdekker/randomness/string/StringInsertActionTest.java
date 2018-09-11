@@ -25,7 +25,7 @@ final class StringInsertActionTest {
                 {0, 0, "a", CapitalizationMode.LOWER, new Alphabet[]{}},
                 {0, 0, "2Rv", CapitalizationMode.FIRST_LETTER, new Alphabet[]{}},
 
-                {723, 723, "", CapitalizationMode.LOWER, new Alphabet[]{Alphabet.ALPHABET}},
+                {723, 723, "", CapitalizationMode.UPPER, new Alphabet[]{Alphabet.ALPHABET}},
                 {466, 466, "z", CapitalizationMode.LOWER, new Alphabet[]{Alphabet.ALPHABET, Alphabet.UNDERSCORE}}
         });
     }
