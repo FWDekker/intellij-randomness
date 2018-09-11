@@ -66,7 +66,7 @@
 
         <!-- UUIDs -->
         <action id="randomness.InsertUuid" class="com.fwdekker.randomness.uuid.UuidInsertAction"
-                text="Insert UUID" description="Inserts random uuids at the carets."/>
+                text="Insert UUID" description="Inserts random UUIDs at the carets."/>
 
         <!-- Arrays -->
         <action id="randomness.ArraySettings" class="com.fwdekker.randomness.array.ArraySettingsAction"
