@@ -5,6 +5,7 @@ import com.fwdekker.randomness.decimal.DecimalGroupAction;
 import com.fwdekker.randomness.integer.IntegerGroupAction;
 import com.fwdekker.randomness.string.StringGroupAction;
 import com.fwdekker.randomness.ui.JBPopupHelper;
+import com.fwdekker.randomness.uuid.UuidGroupAction;
 import com.fwdekker.randomness.word.WordGroupAction;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -58,6 +59,7 @@ public final class PopupAction extends AnAction {
                     new DecimalGroupAction(),
                     new StringGroupAction(),
                     new WordGroupAction(),
+                    new UuidGroupAction(),
                     new Separator(),
                     new ArraySettingsAction()
             };
