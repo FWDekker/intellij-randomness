@@ -49,6 +49,7 @@ final class CapitalizationModeTest {
                 .isEqualToIgnoringCase("GHmdukhNqua");
     }
 
+
     @Test
     void testGetNameRetain() {
         assertThat(CapitalizationMode.RETAIN.getName()).isEqualTo("retain");
@@ -73,6 +74,12 @@ final class CapitalizationModeTest {
     void testGetNameFirstLetter() {
         assertThat(CapitalizationMode.FIRST_LETTER.getName()).isEqualTo("first letter");
     }
+
+    @Test
+    void testGetNameRandom() {
+        assertThat(CapitalizationMode.RANDOM.getName()).isEqualTo("random");
+    }
+
 
     @Test
     void testToStringRetain() {
@@ -100,6 +107,12 @@ final class CapitalizationModeTest {
     }
 
     @Test
+    void testToStringRandom() {
+        assertThat(CapitalizationMode.RANDOM.toString()).isEqualTo("random");
+    }
+
+
+    @Test
     void testGetModeRetain() {
         assertThat(CapitalizationMode.getMode("retain")).isEqualTo(CapitalizationMode.RETAIN);
     }
@@ -122,6 +135,11 @@ final class CapitalizationModeTest {
     @Test
     void testGetModeFirstLetter() {
         assertThat(CapitalizationMode.getMode("first letter")).isEqualTo(CapitalizationMode.FIRST_LETTER);
+    }
+
+    @Test
+    void testGetModeRandom() {
+        assertThat(CapitalizationMode.getMode("random")).isEqualTo(CapitalizationMode.RANDOM);
     }
 
     @Test
