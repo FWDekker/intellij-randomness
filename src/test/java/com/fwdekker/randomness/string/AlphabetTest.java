@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 final class AlphabetTest {
     @Test
     void testConcatenate() {
-        final List<Alphabet> alphabets = Arrays.asList(Alphabet.LOWERCASE, Alphabet.MINUS, Alphabet.SPECIAL);
+        final List<Alphabet> alphabets = Arrays.asList(Alphabet.ALPHABET, Alphabet.MINUS, Alphabet.SPECIAL);
 
         assertThat(Alphabet.concatenate(alphabets)).isEqualTo("abcdefghijklmnopqrstuvwxyz-!@#$%^&*");
     }
