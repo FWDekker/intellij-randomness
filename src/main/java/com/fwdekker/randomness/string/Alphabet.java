@@ -8,8 +8,7 @@ import java.util.stream.Collectors;
  * An {@code Alphabet} represents a collection of symbols.
  */
 enum Alphabet {
-    UPPERCASE("Uppercase (A, B, C, ...)", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-    LOWERCASE("Lowercase (a, b, c, ...)", "abcdefghijklmnopqrstuvwxyz"),
+    ALPHABET("Alphabet (a, b, c, ...)", "abcdefghijklmnopqrstuvwxyz"),
     HEXADECIMAL("Hexadecimal (0, 1, 2, ..., d, e, f)", "0123456789abcdef"),
     DIGITS("Digits (0, 1, 2, ...)", "0123456789"),
     MINUS("Minus (-)", "-"),

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.string;
 
+import com.fwdekker.randomness.CapitalizationMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -19,44 +20,47 @@ final class StringInsertActionTest {
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Used as parameterized method source
     private static Collection<Object[]> provider() {
         return Arrays.asList(new Object[][]{
-                {0, 0, "", new Alphabet[]{}},
-                {0, 0, "'", new Alphabet[]{}},
-                {0, 0, "a", new Alphabet[]{}},
-                {0, 0, "2Rv", new Alphabet[]{}},
+                {0, 0, "", CapitalizationMode.RETAIN, new Alphabet[]{}},
+                {0, 0, "'", CapitalizationMode.UPPER, new Alphabet[]{}},
+                {0, 0, "a", CapitalizationMode.LOWER, new Alphabet[]{}},
+                {0, 0, "2Rv", CapitalizationMode.FIRST_LETTER, new Alphabet[]{}},
 
-                {723, 723, "", new Alphabet[]{Alphabet.LOWERCASE}},
-                {466, 466, "z", new Alphabet[]{Alphabet.UPPERCASE, Alphabet.SPECIAL, Alphabet.UNDERSCORE}}
+                {723, 723, "", CapitalizationMode.LOWER, new Alphabet[]{Alphabet.ALPHABET}},
+                {466, 466, "z", CapitalizationMode.LOWER, new Alphabet[]{Alphabet.ALPHABET, Alphabet.UNDERSCORE}}
         });
     }
 
 
     @ParameterizedTest
     @MethodSource("provider")
-    void testValue(final int minLength, final int maxLength, final String enclosure, final Alphabet... alphabets) {
+    void testValue(final int minLength, final int maxLength, final String enclosure,
+                   final CapitalizationMode capitalization, final Alphabet... alphabets) {
         final Set<Alphabet> alphabetSet = new HashSet<>(Arrays.asList(alphabets));
 
         final StringSettings stringSettings = new StringSettings();
         stringSettings.setMinLength(minLength);
         stringSettings.setMaxLength(maxLength);
         stringSettings.setEnclosure(enclosure);
+        stringSettings.setCapitalization(capitalization);
         stringSettings.setAlphabets(alphabetSet);
 
         final StringInsertAction insertRandomString = new StringInsertAction(stringSettings);
-        final Pattern expectedPattern = buildExpectedPattern(minLength, maxLength, enclosure, alphabetSet);
+        final Pattern expectedPattern
+                = buildExpectedPattern(minLength, maxLength, enclosure, capitalization, alphabetSet);
 
         assertThat(insertRandomString.generateString()).containsPattern(expectedPattern);
     }
 
 
     private Pattern buildExpectedPattern(final int minLength, final int maxLength, final String enclosure,
-                                         final Set<Alphabet> alphabets) {
+                                         final CapitalizationMode capitalization, final Set<Alphabet> alphabets) {
         final StringBuilder regex = new StringBuilder();
 
         regex.append(enclosure);
         if (!alphabets.isEmpty()) {
             regex
                     .append('[')
-                    .append(Alphabet.concatenate(alphabets))
+                    .append(capitalization.getTransform().apply(Alphabet.concatenate(alphabets)))
                     .append("]{")
                     .append(minLength).append(',').append(maxLength)
                     .append('}');

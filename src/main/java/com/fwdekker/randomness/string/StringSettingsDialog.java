@@ -5,6 +5,7 @@ import com.fwdekker.randomness.ValidationException;
 import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
+import com.fwdekker.randomness.CapitalizationMode;
 import com.intellij.openapi.ui.ValidationInfo;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     private JLongSpinner minLength;
     private JLongSpinner maxLength;
     private ButtonGroup enclosureGroup;
+    private ButtonGroup capitalizationGroup;
     private JList<Alphabet> alphabetList;
 
 
@@ -83,6 +85,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
         minLength.setValue(settings.getMinLength());
         maxLength.setValue(settings.getMaxLength());
         ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
+        ButtonGroupHelper.setValue(capitalizationGroup, settings.getCapitalization());
 
         for (int i = 0; i < Alphabet.values().length; i++) {
             if (settings.getAlphabets().contains(Alphabet.values()[i])) {
@@ -97,6 +100,7 @@ final class StringSettingsDialog extends SettingsDialog<StringSettings> {
         settings.setMinLength(Math.toIntExact(minLength.getValue()));
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
         settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
+        settings.setCapitalization(CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)));
         settings.setAlphabets(new HashSet<>(alphabetList.getSelectedValuesList()));
     }
 

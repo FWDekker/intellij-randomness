@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.Settings;
+import com.fwdekker.randomness.CapitalizationMode;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
@@ -37,10 +38,14 @@ public final class StringSettings extends Settings implements PersistentStateCom
      */
     private String enclosure = "\"";
     /**
+     * The capitalization mode of the generated string.
+     */
+    private CapitalizationMode capitalization = CapitalizationMode.UPPER;
+    /**
      * The alphabet to be used for generating strings.
      */
     private Set<Alphabet> alphabets
-            = new HashSet<>(Arrays.asList(Alphabet.UPPERCASE, Alphabet.LOWERCASE, Alphabet.DIGITS));
+            = new HashSet<>(Arrays.asList(Alphabet.ALPHABET, Alphabet.DIGITS));
 
 
     /**
@@ -115,6 +120,24 @@ public final class StringSettings extends Settings implements PersistentStateCom
      */
     public void setEnclosure(final String enclosure) {
         this.enclosure = enclosure;
+    }
+
+    /**
+     * Returns the capitalization mode of the generated string.
+     *
+     * @return the capitalization mode of the generated string
+     */
+    public CapitalizationMode getCapitalization() {
+        return capitalization;
+    }
+
+    /**
+     * Sets the capitalization mode of the generated string.
+     *
+     * @param capitalization the capitalization mode of the generated string
+     */
+    public void setCapitalization(final CapitalizationMode capitalization) {
+        this.capitalization = capitalization;
     }
 
     /**

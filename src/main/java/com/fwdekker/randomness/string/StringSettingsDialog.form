@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.fwdekker.randomness.string.StringSettingsDialog">
-  <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="5" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="6" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="48" y="54" width="443" height="297"/>
+      <xy x="48" y="54" width="460" height="297"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -93,7 +93,7 @@
       </component>
       <component id="f9e9f" class="javax.swing.JLabel">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <labelFor value="9ade9"/>
@@ -102,7 +102,7 @@
       </component>
       <scrollpane id="9ade9">
         <constraints>
-          <grid row="3" column="1" row-span="2" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="1" row-span="2" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -117,9 +117,46 @@
       </scrollpane>
       <vspacer id="935f7">
         <constraints>
-          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
+      <component id="9ce8e" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Capitalization"/>
+        </properties>
+      </component>
+      <component id="4426c" class="javax.swing.JRadioButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <name value="capitalizationLower"/>
+          <text value="lower"/>
+        </properties>
+      </component>
+      <component id="e20f5" class="javax.swing.JRadioButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <actionCommand value="upper"/>
+          <name value="capitalizationUpper"/>
+          <text value="UPPER"/>
+        </properties>
+      </component>
+      <component id="c6fa1" class="javax.swing.JRadioButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <actionCommand value="random"/>
+          <name value="capitalizationRandom"/>
+          <text value="RAnDoM"/>
+        </properties>
+      </component>
     </children>
   </grid>
   <buttonGroups>
@@ -128,6 +165,11 @@
       <member id="53831"/>
       <member id="8b3e3"/>
       <member id="364e0"/>
+    </group>
+    <group name="capitalizationGroup" bound="true">
+      <member id="c6fa1"/>
+      <member id="e20f5"/>
+      <member id="4426c"/>
     </group>
   </buttonGroups>
 </form>

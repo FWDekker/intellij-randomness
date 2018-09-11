@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 final class AlphabetTest {
     @Test
     void testConcatenate() {
-        final List<Alphabet> alphabets = Arrays.asList(Alphabet.LOWERCASE, Alphabet.MINUS, Alphabet.SPECIAL);
+        final List<Alphabet> alphabets = Arrays.asList(Alphabet.ALPHABET, Alphabet.MINUS, Alphabet.SPECIAL);
 
         assertThat(Alphabet.concatenate(alphabets)).isEqualTo("abcdefghijklmnopqrstuvwxyz-!@#$%^&*");
     }
@@ -22,16 +22,16 @@ final class AlphabetTest {
 
     @Test
     void testGetName() {
-        assertThat(Alphabet.UPPERCASE.getName()).isEqualTo("Uppercase (A, B, C, ...)");
+        assertThat(Alphabet.ALPHABET.getName()).isEqualTo("Alphabet (a, b, c, ...)");
     }
 
     @Test
     void testGetSymbols() {
-        assertThat(Alphabet.UPPERCASE.getSymbols()).isEqualTo("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        assertThat(Alphabet.ALPHABET.getSymbols()).isEqualTo("abcdefghijklmnopqrstuvwxyz");
     }
 
     @Test
     void testToString() {
-        assertThat(Alphabet.UPPERCASE.toString()).isEqualTo("Uppercase (A, B, C, ...)");
+        assertThat(Alphabet.ALPHABET.toString()).isEqualTo("Alphabet (a, b, c, ...)");
     }
 }
