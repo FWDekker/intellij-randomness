@@ -64,6 +64,10 @@
         <action id="randomness.WordSettings" class="com.fwdekker.randomness.word.WordSettingsAction"
                 text="Word Settings" description="Settings for the Insert Word action."/>
 
+        <!-- UUIDs -->
+        <action id="randomness.InsertUuid" class="com.fwdekker.randomness.uuid.UuidInsertAction"
+                text="Insert UUID" description="Inserts random uuids at the carets."/>
+
         <!-- Arrays -->
         <action id="randomness.ArraySettings" class="com.fwdekker.randomness.array.ArraySettingsAction"
                 text="Array Settings" description="Settings for inserting arrays of data."/>

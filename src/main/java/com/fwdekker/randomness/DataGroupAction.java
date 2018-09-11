@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.event.InputEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -32,11 +34,14 @@ public abstract class DataGroupAction extends ActionGroup {
     @NotNull
     @Override
     public final AnAction[] getChildren(final @Nullable AnActionEvent event) {
-        return new AnAction[]{
-                insertAction,
-                insertArrayAction,
-                settingsAction
-        };
+        final List<AnAction> children = new ArrayList<>();
+        children.add(insertAction);
+        children.add(insertArrayAction);
+        if (settingsAction != null) {
+            children.add(settingsAction);
+        }
+
+        return children.toArray(new AnAction[0]);
     }
 
     @Override
@@ -45,16 +50,18 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
     @Override
-    @SuppressWarnings("PMD.ConfusingTernary") // != 0 for binary mask is expected
     public final void actionPerformed(final AnActionEvent event) {
         super.actionPerformed(event);
 
-        if ((event.getModifiers() & (InputEvent.SHIFT_MASK | InputEvent.SHIFT_DOWN_MASK)) != 0) {
-            getInsertArrayAction().actionPerformed(event);
-        } else if ((event.getModifiers() & (InputEvent.CTRL_MASK | InputEvent.CTRL_DOWN_MASK)) != 0) {
-            getSettingsAction().actionPerformed(event);
+        final boolean shiftPressed = (event.getModifiers() & (InputEvent.SHIFT_MASK | InputEvent.SHIFT_DOWN_MASK)) != 0;
+        final boolean ctrlPressed = (event.getModifiers() & (InputEvent.CTRL_MASK | InputEvent.CTRL_DOWN_MASK)) != 0;
+
+        if (shiftPressed) {
+            insertArrayAction.actionPerformed(event);
+        } else if (ctrlPressed && settingsAction != null) {
+            settingsAction.actionPerformed(event);
         } else {
-            getInsertAction().actionPerformed(event);
+            insertAction.actionPerformed(event);
         }
     }
 
