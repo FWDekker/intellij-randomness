@@ -50,7 +50,8 @@ public final class StringInsertAction extends DataInsertAction {
             text[i] = generateCharacter();
         }
 
-        return stringSettings.getEnclosure() + new String(text) + stringSettings.getEnclosure();
+        final String capitalizedText = stringSettings.getCapitalization().getTransform().apply(new String(text));
+        return stringSettings.getEnclosure() + capitalizedText + stringSettings.getEnclosure();
     }
 
 
