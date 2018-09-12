@@ -14,9 +14,9 @@ import java.awt.event.InputEvent;
  * A group of actions for a particular type of random data that can be generated.
  */
 public abstract class DataGroupAction extends ActionGroup {
-    private final DataInsertAction insertAction;
-    private final DataArrayInsertAction insertArrayAction;
-    private final SettingsAction settingsAction;
+    private final @NotNull DataInsertAction insertAction;
+    private final @NotNull DataArrayInsertAction insertArrayAction;
+    private final @NotNull SettingsAction settingsAction;
 
 
     /**
@@ -45,7 +45,7 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
     @Override
-    public final void actionPerformed(final AnActionEvent event) {
+    public final void actionPerformed(final @NotNull AnActionEvent event) {
         super.actionPerformed(event);
 
         final boolean shiftPressed = (event.getModifiers() & (InputEvent.SHIFT_MASK | InputEvent.SHIFT_DOWN_MASK)) != 0;
@@ -61,7 +61,7 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
     @Override
-    public final void update(final AnActionEvent event) {
+    public final void update(final @NotNull AnActionEvent event) {
         super.update(event);
 
         event.getPresentation().setText(insertAction.getName());
@@ -73,12 +73,12 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
 
-    // TODO mark these methods as returning @NotNull
     /**
      * Returns a new {@link DataInsertAction}.
      *
      * @return a new {@link DataInsertAction}
      */
+    @NotNull
     protected abstract DataInsertAction getInsertAction();
 
     /**
@@ -86,6 +86,7 @@ public abstract class DataGroupAction extends ActionGroup {
      *
      * @return a new {@link DataArrayInsertAction}
      */
+    @NotNull
     protected abstract DataArrayInsertAction getInsertArrayAction();
 
     /**
@@ -93,5 +94,6 @@ public abstract class DataGroupAction extends ActionGroup {
      *
      * @return a new {@link SettingsAction}
      */
+    @NotNull
     protected abstract SettingsAction getSettingsAction();
 }
