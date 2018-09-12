@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @State(
         name = "IntegerSettings",
+        name = "UuidSettings",
         storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class UuidSettings extends Settings implements PersistentStateComponent<UuidSettings> {

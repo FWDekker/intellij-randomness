@@ -44,8 +44,7 @@ public final class StringSettings extends Settings implements PersistentStateCom
     /**
      * The alphabet to be used for generating strings.
      */
-    private Set<Alphabet> alphabets
-            = new HashSet<>(Arrays.asList(Alphabet.ALPHABET, Alphabet.DIGITS));
+    private Set<Alphabet> alphabets = new HashSet<>(Arrays.asList(Alphabet.ALPHABET, Alphabet.DIGITS));
 
 
     /**

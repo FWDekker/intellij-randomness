@@ -15,6 +15,6 @@ public final class UuidSettingsAction extends SettingsAction {
 
     @Override
     public String getTitle() {
-        return "Integer Settings";
+        return "UUID Settings";
     }
 }
