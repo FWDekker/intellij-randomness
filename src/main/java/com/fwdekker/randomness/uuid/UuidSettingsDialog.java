@@ -1,10 +1,12 @@
 package com.fwdekker.randomness.uuid;
 
 import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -14,6 +16,7 @@ import javax.swing.JPanel;
  */
 public class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
     private JPanel contentPane;
+    private ButtonGroup enclosureGroup;
 
 
     /**
@@ -51,9 +54,11 @@ public class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
 
     @Override
     public void loadSettings(final @NotNull UuidSettings settings) {
+        ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
     }
 
     @Override
     public void saveSettings(final @NotNull UuidSettings settings) {
+        settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
     }
 }

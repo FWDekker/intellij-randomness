@@ -13,11 +13,16 @@ import org.jetbrains.annotations.NotNull;
  * Contains settings for generating random UUIDs.
  */
 @State(
-        name = "IntegerSettings",
         name = "UuidSettings",
         storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class UuidSettings extends Settings implements PersistentStateComponent<UuidSettings> {
+    /**
+     * The string that encloses the generated UUID on both sides.
+     */
+    private String enclosure = "\"";
+
+
     /**
      * Returns the singleton {@code UuidSettings} instance.
      *
@@ -35,5 +40,24 @@ public final class UuidSettings extends Settings implements PersistentStateCompo
     @Override
     public void loadState(final @NotNull UuidSettings state) {
         XmlSerializerUtil.copyBean(state, this);
+    }
+
+
+    /**
+     * Returns the string that encloses the generated UUID on both sides.
+     *
+     * @return the string that encloses the generated UUID on both sides
+     */
+    public String getEnclosure() {
+        return enclosure;
+    }
+
+    /**
+     * Sets the string that encloses the generated UUID on both sides.
+     *
+     * @param enclosure the string that encloses the generated UUID on both sides
+     */
+    public void setEnclosure(final String enclosure) {
+        this.enclosure = enclosure;
     }
 }
