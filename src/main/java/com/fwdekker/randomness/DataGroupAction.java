@@ -8,8 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.event.InputEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -34,14 +32,11 @@ public abstract class DataGroupAction extends ActionGroup {
     @NotNull
     @Override
     public final AnAction[] getChildren(final @Nullable AnActionEvent event) {
-        final List<AnAction> children = new ArrayList<>();
-        children.add(insertAction);
-        children.add(insertArrayAction);
-        if (settingsAction != null) {
-            children.add(settingsAction);
-        }
-
-        return children.toArray(new AnAction[0]);
+        return new AnAction[]{
+                insertAction,
+                insertArrayAction,
+                settingsAction
+        };
     }
 
     @Override
@@ -58,7 +53,7 @@ public abstract class DataGroupAction extends ActionGroup {
 
         if (shiftPressed) {
             insertArrayAction.actionPerformed(event);
-        } else if (ctrlPressed && settingsAction != null) {
+        } else if (ctrlPressed) {
             settingsAction.actionPerformed(event);
         } else {
             insertAction.actionPerformed(event);
@@ -78,6 +73,7 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
 
+    // TODO mark these methods as returning @NotNull
     /**
      * Returns a new {@link DataInsertAction}.
      *
