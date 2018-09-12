@@ -27,6 +27,7 @@ There are four types of data that can be inserted:
 2. **Decimals**, such as `8,816,573.10`
 3. **Strings**, such as `"PaQDQqSBEH"`
 4. **Words**, such as `"Imporous"`
+5. **UUIDs**, such as `0caa7b28-fe58-4ba6-a25a-9e5beaaf8f4b`
 
 In addition to these data types, it's also possible to generate entire **arrays** of a data type. For example, an array of integers might look like `[978, 881, 118, 286, 288]`.
 
