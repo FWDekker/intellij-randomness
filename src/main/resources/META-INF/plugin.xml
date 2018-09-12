@@ -28,6 +28,9 @@
                 serviceImplementation="com.fwdekker.randomness.word.WordSettings"
                 serviceInterface="com.fwdekker.randomness.word.WordSettings"/>
         <applicationService
+                serviceImplementation="com.fwdekker.randomness.uuid.UuidSettings"
+                serviceInterface="com.fwdekker.randomness.uuid.UuidSettings"/>
+        <applicationService
                 serviceImplementation="com.fwdekker.randomness.array.ArraySettings"
                 serviceInterface="com.fwdekker.randomness.array.ArraySettings"/>
     </extensions>
@@ -67,6 +70,8 @@
         <!-- UUIDs -->
         <action id="randomness.InsertUuid" class="com.fwdekker.randomness.uuid.UuidInsertAction"
                 text="Insert UUID" description="Inserts random UUIDs at the carets."/>
+        <action id="randomness.UuidSettings" class="com.fwdekker.randomness.uuid.UuidSettingsAction"
+                text="UUID Settings" description="Settings for the Insert UUID action."/>
 
         <!-- Arrays -->
         <action id="randomness.ArraySettings" class="com.fwdekker.randomness.array.ArraySettingsAction"

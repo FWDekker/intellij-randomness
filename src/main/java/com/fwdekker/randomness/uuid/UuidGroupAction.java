@@ -22,6 +22,6 @@ public final class UuidGroupAction extends DataGroupAction {
 
     @Override
     protected SettingsAction getSettingsAction() {
-        return null;
+        return new UuidSettingsAction();
     }
 }
