@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 /**
  * Dialog for settings of random UUID generation.
  */
-public class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
+public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
     private JPanel contentPane;
     private ButtonGroup enclosureGroup;
 
