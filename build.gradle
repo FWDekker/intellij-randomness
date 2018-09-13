@@ -45,16 +45,16 @@ intellij {
 }
 
 checkstyle {
-    ignoreFailures = true
+    ignoreFailures = false
 }
 
 findbugs {
-    ignoreFailures = true
+    ignoreFailures = false
     includeFilter = file("$rootDir/config/findbugs/includeFilter.xml")
 }
 
 pmd {
-    ignoreFailures = true
+    ignoreFailures = false
     ruleSetFiles = files("$rootDir/config/pmd/main-pmd-rules.xml")
 }
 

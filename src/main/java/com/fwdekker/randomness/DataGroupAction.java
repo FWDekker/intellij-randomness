@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,6 +46,10 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
     @Override
+    @SuppressFBWarnings(
+            value = {"NP_NULL_ON_SOME_PATH"},
+            justification = "Verified by annotation"
+    )
     public final void actionPerformed(final @NotNull AnActionEvent event) {
         super.actionPerformed(event);
 
@@ -61,6 +66,10 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
     @Override
+    @SuppressFBWarnings(
+            value = {"NP_NULL_ON_SOME_PATH"},
+            justification = "Verified by annotation"
+    )
     public final void update(final @NotNull AnActionEvent event) {
         super.update(event);
 
@@ -78,7 +87,6 @@ public abstract class DataGroupAction extends ActionGroup {
      *
      * @return a new {@link DataInsertAction}
      */
-    @NotNull
     protected abstract DataInsertAction getInsertAction();
 
     /**
@@ -86,7 +94,6 @@ public abstract class DataGroupAction extends ActionGroup {
      *
      * @return a new {@link DataArrayInsertAction}
      */
-    @NotNull
     protected abstract DataArrayInsertAction getInsertArrayAction();
 
     /**
@@ -94,6 +101,5 @@ public abstract class DataGroupAction extends ActionGroup {
      *
      * @return a new {@link SettingsAction}
      */
-    @NotNull
     protected abstract SettingsAction getSettingsAction();
 }
