@@ -4,8 +4,6 @@ import com.fwdekker.randomness.DataArrayInsertAction;
 import com.fwdekker.randomness.DataGroupAction;
 import com.fwdekker.randomness.DataInsertAction;
 import com.fwdekker.randomness.SettingsAction;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 
 /**
