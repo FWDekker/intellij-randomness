@@ -3,6 +3,7 @@ package com.fwdekker.randomness.uuid;
 import com.fwdekker.randomness.SettingsDialog;
 import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.intellij.openapi.ui.ValidationInfo;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,11 +54,19 @@ public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
 
 
     @Override
+    @SuppressFBWarnings(
+            value = {"NP_NULL_ON_SOME_PATH"},
+            justification = "Verified by annotation"
+    )
     public void loadSettings(final @NotNull UuidSettings settings) {
         ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
     }
 
     @Override
+    @SuppressFBWarnings(
+            value = {"NP_NULL_ON_SOME_PATH"},
+            justification = "Verified by annotation"
+    )
     public void saveSettings(final @NotNull UuidSettings settings) {
         settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
     }

@@ -12,19 +12,16 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class StringGroupAction extends DataGroupAction {
     @Override
-    @NotNull
     protected DataInsertAction getInsertAction() {
         return new StringInsertAction();
     }
 
     @Override
-    @NotNull
     protected DataArrayInsertAction getInsertArrayAction() {
         return new StringArrayInsertAction();
     }
 
     @Override
-    @NotNull
     protected SettingsAction getSettingsAction() {
         return new StringSettingsAction();
     }

@@ -12,19 +12,16 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class UuidGroupAction extends DataGroupAction {
     @Override
-    @NotNull
     protected DataInsertAction getInsertAction() {
         return new UuidInsertAction();
     }
 
     @Override
-    @NotNull
     protected DataArrayInsertAction getInsertArrayAction() {
         return new UuidArrayInsertAction();
     }
 
     @Override
-    @NotNull
     protected SettingsAction getSettingsAction() {
         return new UuidSettingsAction();
     }

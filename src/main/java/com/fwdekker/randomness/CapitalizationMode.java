@@ -41,7 +41,7 @@ public enum CapitalizationMode {
     RANDOM("random", string -> {
         final Random random = new Random();
         return string.chars()
-                .map(c -> random.nextBoolean() ? Character.toLowerCase(c) : Character.toUpperCase(c))
+                .map(chr -> random.nextBoolean() ? Character.toLowerCase(chr) : Character.toUpperCase(chr))
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
     });
