@@ -1,4 +1,4 @@
 /**
- * Insertion of random strings, i.e. {@code String}s.
+ * Insertion of random strings.
  */
 package com.fwdekker.randomness.string;

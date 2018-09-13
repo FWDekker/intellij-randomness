@@ -1,4 +1,4 @@
 /**
- * Insertion of random integers, i.e. {@code int}s.
+ * Insertion of random integers.
  */
 package com.fwdekker.randomness.integer;

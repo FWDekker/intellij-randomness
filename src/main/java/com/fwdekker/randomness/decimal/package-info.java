@@ -1,4 +1,4 @@
 /**
- * Insertion of random decimals, i.e. {@code double}s.
+ * Insertion of random decimals.
  */
 package com.fwdekker.randomness.decimal;
