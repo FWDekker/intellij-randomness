@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.uuid;
 
 import com.fwdekker.randomness.Settings;
-import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
         name = "UuidSettings",
         storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
-public final class UuidSettings extends Settings implements PersistentStateComponent<UuidSettings> {
+public final class UuidSettings implements Settings<UuidSettings> {
     /**
      * The string that encloses the generated UUID on both sides.
      */

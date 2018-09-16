@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.Settings;
-import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
         name = "IntegerSettings",
         storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
-public final class IntegerSettings extends Settings implements PersistentStateComponent<IntegerSettings> {
+public final class IntegerSettings implements Settings<IntegerSettings> {
     public static final int MIN_BASE = 2;
     public static final int DECIMAL_BASE = 10;
     public static final int MAX_BASE = 36;

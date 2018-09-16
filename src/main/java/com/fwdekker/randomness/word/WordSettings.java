@@ -2,7 +2,6 @@ package com.fwdekker.randomness.word;
 
 import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.Settings;
-import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
         name = "WordSettings",
         storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
-public final class WordSettings extends Settings implements PersistentStateComponent<WordSettings> {
+public final class WordSettings implements Settings<WordSettings> {
     private static final int DEFAULT_MIN_LENGTH = 3;
     private static final int DEFAULT_MAX_LENGTH = 8;
 

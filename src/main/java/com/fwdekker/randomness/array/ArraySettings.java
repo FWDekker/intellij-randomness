@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.array;
 
 import com.fwdekker.randomness.Settings;
-import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -17,7 +16,7 @@ import java.util.Collection;
         name = "ArraySettings",
         storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
-public final class ArraySettings extends Settings implements PersistentStateComponent<ArraySettings> {
+public final class ArraySettings implements Settings<ArraySettings> {
     private static final int DEFAULT_COUNT = 5;
     private static final String DEFAULT_BRACKETS = "[]";
     private static final String DEFAULT_SEPARATOR = ",";

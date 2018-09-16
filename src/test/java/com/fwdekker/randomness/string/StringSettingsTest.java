@@ -25,11 +25,6 @@ final class StringSettingsTest {
 
 
     @Test
-    void testGetComponentName() {
-        assertThat(stringSettings.getComponentName()).isEqualTo("StringSettings");
-    }
-
-    @Test
     void testGetLoadState() {
         final HashSet<Alphabet> alphabets = new HashSet<>(Collections.emptyList());
 

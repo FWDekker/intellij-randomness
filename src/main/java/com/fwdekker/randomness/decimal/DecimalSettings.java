@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.Settings;
-import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -15,7 +14,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
         name = "DecimalSettings",
         storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
-public final class DecimalSettings extends Settings implements PersistentStateComponent<DecimalSettings> {
+public final class DecimalSettings implements Settings<DecimalSettings> {
     private static final double DEFAULT_MIN_VALUE = 0.0;
     private static final double DEFAULT_MAX_VALUE = 1000.0;
     private static final int DEFAULT_DECIMAL_COUNT = 2;

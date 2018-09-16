@@ -23,11 +23,6 @@ final class ArraySettingsTest {
 
 
     @Test
-    void testGetComponentName() {
-        assertThat(arraySettings.getComponentName()).isEqualTo("ArraySettings");
-    }
-
-    @Test
     void testGetLoadState() {
         arraySettings.setCount(997);
         arraySettings.setBrackets("0fWx<i6jTJ");

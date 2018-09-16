@@ -36,11 +36,6 @@ final class WordSettingsTest {
 
 
     @Test
-    void testGetComponentName() {
-        assertThat(wordSettings.getComponentName()).isEqualTo("WordSettings");
-    }
-
-    @Test
     void testGetLoadState() {
         wordSettings.setMinLength(502);
         wordSettings.setMaxLength(812);
