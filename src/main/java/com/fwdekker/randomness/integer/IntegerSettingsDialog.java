@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 /**
  * Dialog for settings of random integer generation.
  */
-final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
+public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     private JPanel contentPane;
     private JSpinnerRange valueRange;
     private JLongSpinner minValue;

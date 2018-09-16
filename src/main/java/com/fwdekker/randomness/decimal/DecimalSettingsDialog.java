@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 /**
  * Dialog for settings of random decimal generation.
  */
-final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
+public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
     private JPanel contentPane;
     private JSpinnerRange valueRange;
     private JDoubleSpinner minValue;

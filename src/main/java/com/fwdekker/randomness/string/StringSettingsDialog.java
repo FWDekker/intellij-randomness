@@ -26,7 +26,7 @@ import java.util.HashSet;
         value = {"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"},
         justification = "Initialized by UI framework"
 )
-final class StringSettingsDialog extends SettingsDialog<StringSettings> {
+public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     private JPanel contentPane;
     private JSpinnerRange lengthRange;
     private JLongSpinner minLength;

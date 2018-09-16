@@ -22,7 +22,7 @@ import javax.swing.JPanel;
         value = {"NP_NULL_ON_SOME_PATH"},
         justification = "Initialized by UI framework"
 )
-final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
+public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     private JPanel contentPane;
     private JLongSpinner countSpinner;
     private ButtonGroup bracketsGroup;
