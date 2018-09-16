@@ -1,5 +1,6 @@
 package com.fwdekker.randomness;
 
+import com.fwdekker.randomness.array.ArraySettings;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -9,6 +10,9 @@ import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -72,4 +76,41 @@ public abstract class DataInsertAction extends AnAction {
      * @return a random string
      */
     protected abstract String generateString();
+
+
+    /**
+     * Inserts a randomly generated array of strings at the positions of the event's editor's carets.
+     */
+    public abstract class ArrayAction extends DataInsertAction {
+        private final ArraySettings arraySettings;
+        private final DataInsertAction dataInsertAction;
+
+
+        /**
+         * Constructs a new {@code DataInsertAction.ArrayAction} that uses the singleton {@code ArraySettings} instance.
+         *
+         * @param dataInsertAction the action to generate data with
+         */
+        public ArrayAction(final DataInsertAction dataInsertAction) {
+            this.arraySettings = ArraySettings.getInstance();
+            this.dataInsertAction = dataInsertAction;
+        }
+
+
+        /**
+         * Generates a random array of strings.
+         *
+         * @return a random array of strings
+         */
+        @Override
+        protected final String generateString() {
+            final List<String> strings = new ArrayList<>();
+
+            for (int i = 0; i < arraySettings.getCount(); i++) {
+                strings.add(dataInsertAction.generateString());
+            }
+
+            return arraySettings.arrayify(strings);
+        }
+    }
 }

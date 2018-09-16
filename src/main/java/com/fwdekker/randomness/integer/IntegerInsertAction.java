@@ -74,4 +74,23 @@ public final class IntegerInsertAction extends DataInsertAction {
 
         return format.format(integer);
     }
+
+
+    /**
+     * Inserts an array of integers.
+     */
+    public final class ArrayAction extends DataInsertAction.ArrayAction {
+        /**
+         * Constructs a new {@code ArrayAction} for integers.
+         */
+        public ArrayAction() {
+            super(IntegerInsertAction.this);
+        }
+
+
+        @Override
+        protected String getName() {
+            return "Insert Integer Array";
+        }
+    }
 }

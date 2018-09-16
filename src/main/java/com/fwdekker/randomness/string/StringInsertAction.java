@@ -66,4 +66,23 @@ public final class StringInsertAction extends DataInsertAction {
 
         return alphabet.charAt(charIndex);
     }
+
+
+    /**
+     * Inserts an array of strings.
+     */
+    public final class ArrayAction extends DataInsertAction.ArrayAction {
+        /**
+         * Constructs a new {@code ArrayAction} for strings.
+         */
+        public ArrayAction() {
+            super(StringInsertAction.this);
+        }
+
+
+        @Override
+        protected String getName() {
+            return "Insert String Array";
+        }
+    }
 }

@@ -16,7 +16,7 @@ import java.awt.event.InputEvent;
  */
 public abstract class DataGroupAction extends ActionGroup {
     private final @NotNull DataInsertAction insertAction;
-    private final @NotNull DataArrayInsertAction insertArrayAction;
+    private final @NotNull DataInsertAction.ArrayAction insertArrayAction;
     private final @NotNull SettingsAction settingsAction;
 
 
@@ -90,11 +90,11 @@ public abstract class DataGroupAction extends ActionGroup {
     protected abstract DataInsertAction getInsertAction();
 
     /**
-     * Returns a new {@link DataArrayInsertAction}.
+     * Returns a new {@link DataInsertAction.ArrayAction}.
      *
-     * @return a new {@link DataArrayInsertAction}
+     * @return a new {@link DataInsertAction.ArrayAction}
      */
-    protected abstract DataArrayInsertAction getInsertArrayAction();
+    protected abstract DataInsertAction.ArrayAction getInsertArrayAction();
 
     /**
      * Returns a new {@link SettingsAction}.

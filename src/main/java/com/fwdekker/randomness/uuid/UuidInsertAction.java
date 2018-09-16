@@ -39,4 +39,23 @@ public final class UuidInsertAction extends DataInsertAction {
     protected String generateString() {
         return uuidSettings.getEnclosure() + UUID.randomUUID().toString() + uuidSettings.getEnclosure();
     }
+
+
+    /**
+     * Inserts an array of UUIDs.
+     */
+    public final class ArrayAction extends DataInsertAction.ArrayAction {
+        /**
+         * Constructs a new {@code ArrayAction} for UUIDs.
+         */
+        public ArrayAction() {
+            super(UuidInsertAction.this);
+        }
+
+
+        @Override
+        protected String getName() {
+            return "Insert UUID Array";
+        }
+    }
 }

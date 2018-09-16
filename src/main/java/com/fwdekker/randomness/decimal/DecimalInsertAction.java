@@ -70,4 +70,23 @@ public final class DecimalInsertAction extends DataInsertAction {
 
         return format.format(decimal);
     }
+
+
+    /**
+     * Inserts an array of decimals.
+     */
+    public final class ArrayAction extends DataInsertAction.ArrayAction {
+        /**
+         * Constructs a new {@code ArrayAction} for decimals.
+         */
+        public ArrayAction() {
+            super(DecimalInsertAction.this);
+        }
+
+
+        @Override
+        protected String getName() {
+            return "Insert Decimal Array";
+        }
+    }
 }

@@ -71,4 +71,23 @@ public final class WordInsertAction extends DataInsertAction {
 
         return wordSettings.getEnclosure() + randomWord + wordSettings.getEnclosure();
     }
+
+
+    /**
+     * Inserts an array of words.
+     */
+    public final class ArrayAction extends DataInsertAction.ArrayAction {
+        /**
+         * Constructs a new {@code ArrayAction} for words.
+         */
+        public ArrayAction() {
+            super(WordInsertAction.this);
+        }
+
+
+        @Override
+        protected String getName() {
+            return "Insert Word Array";
+        }
+    }
 }

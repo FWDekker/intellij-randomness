@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.decimal;
 
-import com.fwdekker.randomness.DataArrayInsertAction;
+import com.fwdekker.randomness.DataInsertAction.ArrayAction;
 import com.fwdekker.randomness.DataGroupAction;
 import com.fwdekker.randomness.DataInsertAction;
 import com.fwdekker.randomness.SettingsAction;
@@ -16,8 +16,8 @@ public final class DecimalGroupAction extends DataGroupAction {
     }
 
     @Override
-    protected DataArrayInsertAction getInsertArrayAction() {
-        return new DecimalArrayInsertAction();
+    protected DataInsertAction.ArrayAction getInsertArrayAction() {
+        return new DecimalInsertAction().new ArrayAction();
     }
 
     @Override
