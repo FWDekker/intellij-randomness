@@ -17,7 +17,7 @@ public final class WordGroupAction extends DataGroupAction {
 
     @Override
     protected DataArrayInsertAction getInsertArrayAction() {
-        return new WordArrayInsertAction();
+        return new WordInsertAction().new ArrayAction();
     }
 
     @Override

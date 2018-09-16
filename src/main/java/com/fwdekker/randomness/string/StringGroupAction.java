@@ -17,7 +17,7 @@ public final class StringGroupAction extends DataGroupAction {
 
     @Override
     protected DataArrayInsertAction getInsertArrayAction() {
-        return new StringArrayInsertAction();
+        return new StringInsertAction().new ArrayAction();
     }
 
     @Override

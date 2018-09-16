@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word;
 
+import com.fwdekker.randomness.DataArrayInsertAction;
 import com.fwdekker.randomness.DataInsertAction;
 import com.fwdekker.randomness.ui.JBPopupHelper;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -70,5 +71,24 @@ public final class WordInsertAction extends DataInsertAction {
         final String randomWord = wordSettings.getCapitalization().getTransform().apply(words.get(randomIndex));
 
         return wordSettings.getEnclosure() + randomWord + wordSettings.getEnclosure();
+    }
+
+
+    /**
+     * Inserts an array of words.
+     */
+    public final class ArrayAction extends DataArrayInsertAction {
+        /**
+         * Constructs a new {@code ArrayAction} for words.
+         */
+        public ArrayAction() {
+            super(WordInsertAction.this);
+        }
+
+
+        @Override
+        protected String getName() {
+            return "Insert Word Array";
+        }
     }
 }

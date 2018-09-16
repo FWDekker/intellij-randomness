@@ -17,7 +17,7 @@ public final class IntegerGroupAction extends DataGroupAction {
 
     @Override
     protected DataArrayInsertAction getInsertArrayAction() {
-        return new IntegerArrayInsertAction();
+        return new IntegerInsertAction().new ArrayAction();
     }
 
     @Override

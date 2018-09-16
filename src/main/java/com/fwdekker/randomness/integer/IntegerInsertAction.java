@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.integer;
 
+import com.fwdekker.randomness.DataArrayInsertAction;
 import com.fwdekker.randomness.DataInsertAction;
 import org.jetbrains.annotations.NotNull;
 
@@ -73,5 +74,24 @@ public final class IntegerInsertAction extends DataInsertAction {
         format.setDecimalFormatSymbols(symbols);
 
         return format.format(integer);
+    }
+
+
+    /**
+     * Inserts an array of integers.
+     */
+    public final class ArrayAction extends DataArrayInsertAction {
+        /**
+         * Constructs a new {@code ArrayAction} for integers.
+         */
+        public ArrayAction() {
+            super(IntegerInsertAction.this);
+        }
+
+
+        @Override
+        protected String getName() {
+            return "Insert Integer Array";
+        }
     }
 }

@@ -17,7 +17,7 @@ public final class UuidGroupAction extends DataGroupAction {
 
     @Override
     protected DataArrayInsertAction getInsertArrayAction() {
-        return new UuidArrayInsertAction();
+        return new UuidInsertAction().new ArrayAction();
     }
 
     @Override

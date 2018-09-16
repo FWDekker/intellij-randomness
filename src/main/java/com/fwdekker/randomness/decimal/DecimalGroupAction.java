@@ -17,7 +17,7 @@ public final class DecimalGroupAction extends DataGroupAction {
 
     @Override
     protected DataArrayInsertAction getInsertArrayAction() {
-        return new DecimalArrayInsertAction();
+        return new DecimalInsertAction().new ArrayAction();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.string;
 
+import com.fwdekker.randomness.DataArrayInsertAction;
 import com.fwdekker.randomness.DataInsertAction;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,5 +66,24 @@ public final class StringInsertAction extends DataInsertAction {
         final int charIndex = ThreadLocalRandom.current().nextInt(alphabet.length());
 
         return alphabet.charAt(charIndex);
+    }
+
+
+    /**
+     * Inserts an array of strings.
+     */
+    public final class ArrayAction extends DataArrayInsertAction {
+        /**
+         * Constructs a new {@code ArrayAction} for strings.
+         */
+        public ArrayAction() {
+            super(StringInsertAction.this);
+        }
+
+
+        @Override
+        protected String getName() {
+            return "Insert String Array";
+        }
     }
 }
