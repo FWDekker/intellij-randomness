@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
         value = {"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"},
         justification = "Initialized by UI framework"
 )
-final class WordSettingsDialog extends SettingsDialog<WordSettings> {
+public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private JPanel contentPane;
     private JSpinnerRange lengthRange;
     private JLongSpinner minLength;
