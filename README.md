@@ -26,7 +26,7 @@ To insert random data, press `Alt + R` (or `⌥R`) and choose the type of data y
 
 ## Features
 ### Data types
-There are four types of data that can be inserted:
+There are five types of data that can be inserted:
 1. **Integers**, such as `7,826,922`
 2. **Decimals**, such as `8,816,573.10`
 3. **Strings**, such as `"PaQDQqSBEH"`
