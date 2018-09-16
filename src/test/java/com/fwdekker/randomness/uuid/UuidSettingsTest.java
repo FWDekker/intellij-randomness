@@ -20,11 +20,6 @@ public final class UuidSettingsTest {
 
 
     @Test
-    void testGetComponentName() {
-        assertThat(uuidSettings.getComponentName()).isEqualTo("UuidSettings");
-    }
-
-    @Test
     void testGetLoadState() {
         uuidSettings.setEnclosure("nvpB");
 

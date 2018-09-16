@@ -1,8 +1,7 @@
 package com.fwdekker.randomness.string;
 
-import com.fwdekker.randomness.Settings;
 import com.fwdekker.randomness.CapitalizationMode;
-import com.intellij.openapi.components.PersistentStateComponent;
+import com.fwdekker.randomness.Settings;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -21,7 +20,7 @@ import java.util.Set;
         name = "StringSettings",
         storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
-public final class StringSettings extends Settings implements PersistentStateComponent<StringSettings> {
+public final class StringSettings implements Settings<StringSettings> {
     private static final int DEFAULT_MIN_LENGTH = 3;
     private static final int DEFAULT_MAX_LENGTH = 8;
 
