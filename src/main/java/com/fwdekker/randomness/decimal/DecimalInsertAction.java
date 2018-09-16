@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.decimal;
 
-import com.fwdekker.randomness.DataArrayInsertAction;
 import com.fwdekker.randomness.DataInsertAction;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,7 +75,7 @@ public final class DecimalInsertAction extends DataInsertAction {
     /**
      * Inserts an array of decimals.
      */
-    public final class ArrayAction extends DataArrayInsertAction {
+    public final class ArrayAction extends DataInsertAction.ArrayAction {
         /**
          * Constructs a new {@code ArrayAction} for decimals.
          */

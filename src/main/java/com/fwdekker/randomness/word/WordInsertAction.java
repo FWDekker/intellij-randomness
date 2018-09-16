@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.word;
 
-import com.fwdekker.randomness.DataArrayInsertAction;
 import com.fwdekker.randomness.DataInsertAction;
 import com.fwdekker.randomness.ui.JBPopupHelper;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -77,7 +76,7 @@ public final class WordInsertAction extends DataInsertAction {
     /**
      * Inserts an array of words.
      */
-    public final class ArrayAction extends DataArrayInsertAction {
+    public final class ArrayAction extends DataInsertAction.ArrayAction {
         /**
          * Constructs a new {@code ArrayAction} for words.
          */

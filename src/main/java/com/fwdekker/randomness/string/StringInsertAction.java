@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.string;
 
-import com.fwdekker.randomness.DataArrayInsertAction;
 import com.fwdekker.randomness.DataInsertAction;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,7 +71,7 @@ public final class StringInsertAction extends DataInsertAction {
     /**
      * Inserts an array of strings.
      */
-    public final class ArrayAction extends DataArrayInsertAction {
+    public final class ArrayAction extends DataInsertAction.ArrayAction {
         /**
          * Constructs a new {@code ArrayAction} for strings.
          */
