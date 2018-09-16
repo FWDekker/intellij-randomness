@@ -5,6 +5,7 @@ Randomness
 </h1>
 
 [![Release](https://img.shields.io/github/release/FWDekker/intellij-randomness.svg?style=for-the-badge)](https://plugins.jetbrains.com/plugin/9836-randomness)
+[![Documentation](https://img.shields.io/badge/documentation-ready-blue.svg?style=for-the-badge)](https://fwdekker.github.io/intellij-randomness/)
 [![Travis build status](https://img.shields.io/travis/FWDekker/intellij-randomness/master.svg?style=for-the-badge)](https://travis-ci.org/FWDekker/intellij-randomness)
 [![Codacy grade](https://img.shields.io/codacy/grade/bc99104953f64f7da2db9e8ff6e557f5/master.svg?style=for-the-badge)](https://www.codacy.com/app/FWDekker/intellij-randomness)
 [![Codacy coverage](https://img.shields.io/codacy/coverage/bc99104953f64f7da2db9e8ff6e557f5/master.svg?style=for-the-badge)](https://www.codacy.com/app/FWDekker/intellij-randomness)
