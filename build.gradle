@@ -2,7 +2,7 @@ plugins {
     id "idea"
 
     id "checkstyle"
-    id "findbugs"
+    id "com.github.spotbugs" version "1.6.11"
     id "pmd"
 
     id "jacoco"
@@ -17,8 +17,9 @@ repositories {
 }
 
 dependencies {
-    compile group: "com.google.code.findbugs", name: "annotations", version: findbugsVersion
     compile group: "com.google.code.findbugs", name: "jsr305", version: findbugsVersion
+    compile group: "com.github.spotbugs", name: "spotbugs-annotations", version: spotbugsVersion
+    compile group: "net.jcip", name: "jcip-annotations", version: jcipVersion
 
     testCompile group: "nl.jqno.equalsverifier", name: "equalsverifier", version: equalsVerifierVersion
     testCompile group: "org.assertj", name: "assertj-core", version: assertjVersion
@@ -48,9 +49,10 @@ checkstyle {
     ignoreFailures = false
 }
 
-findbugs {
+spotbugs {
     ignoreFailures = false
-    includeFilter = file("$rootDir/config/findbugs/includeFilter.xml")
+    excludeFilter = file("$rootDir/config/spotbugs/excludeFilter.xml")
+    includeFilter = file("$rootDir/config/spotbugs/includeFilter.xml")
 }
 
 pmd {

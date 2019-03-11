@@ -41,7 +41,6 @@ public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
 
 
     @Override
-    @NotNull
     protected JComponent createCenterPanel() {
         return contentPane;
     }

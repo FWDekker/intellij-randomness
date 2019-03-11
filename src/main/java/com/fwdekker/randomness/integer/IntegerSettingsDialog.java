@@ -48,7 +48,6 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
 
 
     @Override
-    @NotNull
     protected JComponent createCenterPanel() {
         return contentPane;
     }

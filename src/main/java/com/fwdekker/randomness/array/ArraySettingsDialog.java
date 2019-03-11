@@ -51,7 +51,6 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
 
 
     @Override
-    @NotNull
     protected JComponent createCenterPanel() {
         return contentPane;
     }
