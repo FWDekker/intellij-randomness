@@ -5,6 +5,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -55,7 +56,7 @@ public final class ArraySettings implements Settings<ArraySettings> {
     }
 
     @Override
-    public void loadState(final ArraySettings state) {
+    public void loadState(final @NotNull ArraySettings state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 

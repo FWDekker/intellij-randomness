@@ -69,7 +69,6 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
 
     @Override
-    @NotNull
     protected JComponent createCenterPanel() {
         return contentPane;
     }

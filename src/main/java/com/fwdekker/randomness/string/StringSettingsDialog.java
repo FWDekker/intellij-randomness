@@ -57,7 +57,6 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
 
 
     @Override
-    @NotNull
     protected JComponent createCenterPanel() {
         return contentPane;
     }

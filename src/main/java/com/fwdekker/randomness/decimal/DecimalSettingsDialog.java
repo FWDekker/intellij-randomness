@@ -50,7 +50,6 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
 
 
     @Override
-    @NotNull
     protected JComponent createCenterPanel() {
         return contentPane;
     }
