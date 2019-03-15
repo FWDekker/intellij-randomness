@@ -26,7 +26,7 @@ final class UserDictionaryTest {
 
     @Test
     void testInitDoesNotExist() {
-        assertThatThrownBy(() -> Dictionary.UserDictionary.get("invalid_file"))
+        assertThatThrownBy(() -> Dictionary.UserDictionary.Companion.get("invalid_file", true))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Failed to read dictionary into memory.")
             .hasCauseInstanceOf(IOException.class);
@@ -36,7 +36,7 @@ final class UserDictionaryTest {
     void testInitEmpty() {
         final File dictionaryFile = FILE_HELPER.createDictionaryFile("");
 
-        assertThatThrownBy(() -> Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath()))
+        assertThatThrownBy(() -> Dictionary.UserDictionary.Companion.get(dictionaryFile.getAbsolutePath(), true))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Dictionary must be non-empty.");
     }
@@ -45,8 +45,8 @@ final class UserDictionaryTest {
     void testInitTwiceSame() {
         final File dictionaryFile = FILE_HELPER.createDictionaryFile("Fonded\nLustrum\nUpgale");
 
-        final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
-        final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final Dictionary dictionaryA = Dictionary.UserDictionary.Companion.get(dictionaryFile.getAbsolutePath(), true);
+        final Dictionary dictionaryB = Dictionary.UserDictionary.Companion.get(dictionaryFile.getAbsolutePath(), true);
 
         assertThat(dictionaryA).isSameAs(dictionaryB);
     }
@@ -55,8 +55,8 @@ final class UserDictionaryTest {
     void testInitTwiceNoCacheEqualButNotSame() {
         final File dictionaryFile = FILE_HELPER.createDictionaryFile("Dyers\nHexsub\nBookit");
 
-        final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
-        final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath(), false);
+        final Dictionary dictionaryA = Dictionary.UserDictionary.Companion.get(dictionaryFile.getAbsolutePath(), true);
+        final Dictionary dictionaryB = Dictionary.UserDictionary.Companion.get(dictionaryFile.getAbsolutePath(), false);
 
         assertThat(dictionaryB).isEqualTo(dictionaryA);
         assertThat(dictionaryB).isNotSameAs(dictionaryA);
@@ -66,8 +66,8 @@ final class UserDictionaryTest {
     void testInitNoCacheStoresAnyway() {
         final File dictionaryFile = FILE_HELPER.createDictionaryFile("Pecking\nAdinole\nFlashpan");
 
-        final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath(), false);
-        final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final Dictionary dictionaryA = Dictionary.UserDictionary.Companion.get(dictionaryFile.getAbsolutePath(), false);
+        final Dictionary dictionaryB = Dictionary.UserDictionary.Companion.get(dictionaryFile.getAbsolutePath(), true);
 
         assertThat(dictionaryB).isSameAs(dictionaryA);
     }
@@ -75,12 +75,14 @@ final class UserDictionaryTest {
     @Test
     void testInitAfterClearCache() {
         final File dictionaryFile = FILE_HELPER.createDictionaryFile("Melamin\nPetrol\nBruckled");
-        final Dictionary dictionaryBefore = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final Dictionary dictionaryBefore =
+            Dictionary.UserDictionary.Companion.get(dictionaryFile.getAbsolutePath(), true);
 
-        Dictionary.UserDictionary.clearCache();
+        Dictionary.UserDictionary.Companion.clearCache();
 
         FILE_HELPER.writeToFile(dictionaryFile, "Rutch\nDespin\nSweltry");
-        final Dictionary dictionaryAfter = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final Dictionary dictionaryAfter =
+            Dictionary.UserDictionary.Companion.get(dictionaryFile.getAbsolutePath(), true);
 
         assertThat(dictionaryBefore.getWords()).containsExactlyInAnyOrder("Melamin", "Petrol", "Bruckled");
         assertThat(dictionaryAfter.getWords()).containsExactlyInAnyOrder("Rutch", "Despin", "Sweltry");
@@ -90,7 +92,7 @@ final class UserDictionaryTest {
     @Test
     void testValidateInstanceSuccess() {
         final File dictionaryFile = FILE_HELPER.createDictionaryFile("Rhodinal\nScruff\nPibrochs");
-        final Dictionary dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final Dictionary dictionary = Dictionary.UserDictionary.Companion.get(dictionaryFile.getAbsolutePath(), true);
 
         final ValidationInfo validationInfo = dictionary.validate();
 
@@ -101,14 +103,15 @@ final class UserDictionaryTest {
     void testValidateStaticSuccess() {
         final File dictionaryFile = FILE_HELPER.createDictionaryFile("Bbls\nOverpray\nTreeward");
 
-        final ValidationInfo validationInfo = Dictionary.UserDictionary.validate(dictionaryFile.getAbsolutePath());
+        final ValidationInfo validationInfo =
+            Dictionary.UserDictionary.Companion.validate(dictionaryFile.getAbsolutePath());
 
         assertThat(validationInfo).isNull();
     }
 
     @Test
     void testValidateStaticFileDoesNotExist() {
-        final ValidationInfo validationInfo = Dictionary.UserDictionary.validate("invalid_path");
+        final ValidationInfo validationInfo = Dictionary.UserDictionary.Companion.validate("invalid_path");
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.message).isEqualTo("The dictionary file for invalid_path no longer exists.");
@@ -120,7 +123,8 @@ final class UserDictionaryTest {
         final File dictionaryFile = FILE_HELPER.createDictionaryFile("");
         final String dictionaryName = dictionaryFile.getName();
 
-        final ValidationInfo validationInfo = Dictionary.UserDictionary.validate(dictionaryFile.getAbsolutePath());
+        final ValidationInfo validationInfo =
+            Dictionary.UserDictionary.Companion.validate(dictionaryFile.getAbsolutePath());
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.message).isEqualTo("The dictionary file for " + dictionaryName + " is empty.");
@@ -133,7 +137,7 @@ final class UserDictionaryTest {
         final File dictionaryFile = FILE_HELPER.createDictionaryFile("Cholers\nJaloused\nStopback");
         final String dictionaryName = dictionaryFile.getName();
 
-        final Dictionary dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final Dictionary dictionary = Dictionary.UserDictionary.Companion.get(dictionaryFile.getAbsolutePath(), true);
 
         assertThat(dictionary.toString()).isEqualTo("[custom] " + dictionaryName);
     }

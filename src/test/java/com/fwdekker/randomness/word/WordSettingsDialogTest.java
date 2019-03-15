@@ -99,8 +99,8 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
     @Ignore("Doesn't work with IntelliJ file chooser")
     public void testAddDictionaryDuplicate() {
         GuiActionRunner.execute(() -> dialogDictionaries
-            .addEntry(Dictionary.UserDictionary.get(getDictionaryFile("dictionaries/simple.dic")
-                .getCanonicalPath())));
+            .addEntry(Dictionary.UserDictionary.Companion.get(getDictionaryFile("dictionaries/simple.dic")
+                .getCanonicalPath(), true)));
 
         frame.button("dictionaryAdd").click();
         JFileChooserFinder.findFileChooser().using(robot())
@@ -125,8 +125,9 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
     @Test
     public void testRemoveUserDictionary() {
         GuiActionRunner.execute(() -> {
-            dialogDictionaries.addEntry(Dictionary.UserDictionary.get(getDictionaryFile("dictionaries/simple.dic")
-                .getCanonicalPath()));
+            dialogDictionaries.addEntry(Dictionary.UserDictionary.Companion.get(
+                getDictionaryFile("dictionaries/simple.dic").getCanonicalPath(), true)
+            );
             frame.table("dictionaries").target().clearSelection();
             frame.table("dictionaries").target().addRowSelectionInterval(1, 1);
             frame.button("dictionaryRemove").target().doClick();
@@ -143,7 +144,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
 
         final File dictionaryFile = File.createTempFile("test", "dic");
         Files.write(dictionaryFile.toPath(), "Limbas\nOstiary\nHackee".getBytes(StandardCharsets.UTF_8));
-        final Dictionary dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
+        final Dictionary dictionary = Dictionary.UserDictionary.Companion.get(dictionaryFile.getAbsolutePath(), true);
 
         if (!dictionaryFile.delete()) {
             fail("Failed to delete test file as part of test.");

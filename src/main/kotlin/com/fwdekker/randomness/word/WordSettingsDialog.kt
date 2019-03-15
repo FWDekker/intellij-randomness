@@ -52,8 +52,7 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
      *
      * This method is called by the scene builder at the start of the constructor.
      */
-    private// Method used by scene builder
-    fun createUIComponents() {
+    private fun createUIComponents() {
         minLength = JLongSpinner(1, 1, Integer.MAX_VALUE.toLong())
         maxLength = JLongSpinner(1, 1, Integer.MAX_VALUE.toLong())
         lengthRange = JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE.toDouble())
@@ -137,11 +136,13 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
      */
     private fun addDictionary() {
         FileChooser.chooseFiles(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null) { files ->
-            if (files.isEmpty()) {
+            if (files.isEmpty())
                 return@chooseFiles
-            }
 
-            val validationInfo = Dictionary.UserDictionary.validate(files[0].canonicalPath)
+            val canonicalPath = files.firstOrNull()?.canonicalPath
+                ?: return@chooseFiles
+
+            val validationInfo = Dictionary.UserDictionary.validate(canonicalPath)
             if (validationInfo != null) {
                 JBPopupFactory.getInstance()
                     .createHtmlTextBalloonBuilder(validationInfo.message, MessageType.ERROR, null)
@@ -150,7 +151,7 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
                 return@chooseFiles
             }
 
-            val newDictionary = Dictionary.UserDictionary.get(files[0].canonicalPath, false)
+            val newDictionary = Dictionary.UserDictionary.get(canonicalPath, false)
             dictionaries.addEntry(newDictionary)
         }
     }

@@ -223,8 +223,8 @@ final class WordSettingsTest {
         final List<Dictionary> dictionaries = wordSettings.getValidAllDictionaries();
 
         assertThat(dictionaries).containsExactlyInAnyOrder(
-            Dictionary.UserDictionary.get(validUserDictionary.getAbsolutePath()),
-            Dictionary.BundledDictionary.get("dictionaries/simple.dic")
+            Dictionary.UserDictionary.Companion.get(validUserDictionary.getAbsolutePath(), true),
+            Dictionary.BundledDictionary.Companion.get("dictionaries/simple.dic", true)
         );
     }
 
@@ -253,8 +253,8 @@ final class WordSettingsTest {
         final List<Dictionary> dictionaries = wordSettings.getValidActiveDictionaries();
 
         assertThat(dictionaries).containsExactlyInAnyOrder(
-            Dictionary.UserDictionary.get(validUserDictionary.getAbsolutePath()),
-            Dictionary.BundledDictionary.get("dictionaries/simple.dic")
+            Dictionary.UserDictionary.Companion.get(validUserDictionary.getAbsolutePath(), true),
+            Dictionary.BundledDictionary.Companion.get("dictionaries/simple.dic", true)
         );
     }
 }

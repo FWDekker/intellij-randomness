@@ -26,7 +26,8 @@ class StringSettings : Settings<StringSettings> {
         /**
          * The singleton `StringSettings` instance.
          */
-        val default: StringSettings = ServiceManager.getService(StringSettings::class.java)
+        val default: StringSettings
+            get() = ServiceManager.getService(StringSettings::class.java)
     }
 
 

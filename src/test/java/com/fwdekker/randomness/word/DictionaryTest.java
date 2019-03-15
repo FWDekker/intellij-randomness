@@ -18,7 +18,7 @@ final class DictionaryTest {
 
     @Test
     void testEmptyDictionary() {
-        assertThatThrownBy(() -> Dictionary.BundledDictionary.get("dictionaries/empty.dic"))
+        assertThatThrownBy(() -> Dictionary.BundledDictionary.Companion.get("dictionaries/empty.dic", true))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Dictionary must be non-empty.")
             .hasNoCause();
@@ -134,9 +134,9 @@ final class DictionaryTest {
 
     @Test
     void testCombine() {
-        final Dictionary combined = Dictionary.combine(Arrays.asList(
-            Dictionary.BundledDictionary.get("dictionaries/simple.dic"),
-            Dictionary.BundledDictionary.get("dictionaries/varied.dic")));
+        final Dictionary combined = Dictionary.Companion.combine(Arrays.asList(
+            Dictionary.BundledDictionary.Companion.get("dictionaries/simple.dic", true),
+            Dictionary.BundledDictionary.Companion.get("dictionaries/varied.dic", true)));
 
         assertThat(combined.getWords())
             .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow", "simplicity", "bend",
@@ -145,9 +145,9 @@ final class DictionaryTest {
 
     @Test
     void testCombineDuplicates() {
-        final Dictionary combined = Dictionary.combine(Arrays.asList(
-            Dictionary.BundledDictionary.get("dictionaries/simple.dic"),
-            Dictionary.BundledDictionary.get("dictionaries/simple.dic")));
+        final Dictionary combined = Dictionary.Companion.combine(Arrays.asList(
+            Dictionary.BundledDictionary.Companion.get("dictionaries/simple.dic", true),
+            Dictionary.BundledDictionary.Companion.get("dictionaries/simple.dic", true)));
 
         assertThat(combined.getWords())
             .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow");
@@ -169,6 +169,6 @@ final class DictionaryTest {
      * @param dictionaryName the filename of the dictionary to use for the current test
      */
     private void useDictionary(final String dictionaryName) {
-        dictionary = Dictionary.BundledDictionary.get("dictionaries/" + dictionaryName + ".dic");
+        dictionary = Dictionary.BundledDictionary.Companion.get("dictionaries/" + dictionaryName + ".dic", true);
     }
 }

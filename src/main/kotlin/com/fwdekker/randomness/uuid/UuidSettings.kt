@@ -16,7 +16,8 @@ class UuidSettings : Settings<UuidSettings> {
         /**
          * The singleton `UuidSettings` instance.
          */
-        val default: UuidSettings = ServiceManager.getService(UuidSettings::class.java)
+        val default: UuidSettings
+            get() = ServiceManager.getService(UuidSettings::class.java)
     }
 
 

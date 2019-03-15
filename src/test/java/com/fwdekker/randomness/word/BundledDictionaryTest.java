@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 final class BundledDictionaryTest {
     @Test
     void testInitDoesNotExist() {
-        assertThatThrownBy(() -> Dictionary.BundledDictionary.get("invalid_resource"))
+        assertThatThrownBy(() -> Dictionary.BundledDictionary.Companion.get("invalid_resource", true))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Failed to read dictionary into memory.")
             .hasNoCause();
@@ -21,7 +21,7 @@ final class BundledDictionaryTest {
 
     @Test
     void testInitEmpty() {
-        assertThatThrownBy(() -> Dictionary.BundledDictionary.get("dictionaries/empty.dic"))
+        assertThatThrownBy(() -> Dictionary.BundledDictionary.Companion.get("dictionaries/empty.dic", true))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Dictionary must be non-empty.")
             .hasNoCause();
@@ -29,16 +29,16 @@ final class BundledDictionaryTest {
 
     @Test
     void testInitTwiceEquals() {
-        final Dictionary dictionaryA = Dictionary.BundledDictionary.get("dictionaries/varied.dic");
-        final Dictionary dictionaryB = Dictionary.BundledDictionary.get("dictionaries/varied.dic");
+        final Dictionary dictionaryA = Dictionary.BundledDictionary.Companion.get("dictionaries/varied.dic", true);
+        final Dictionary dictionaryB = Dictionary.BundledDictionary.Companion.get("dictionaries/varied.dic", true);
 
         assertThat(dictionaryA).isSameAs(dictionaryB);
     }
 
     @Test
     void testInitTwiceNoCacheEqualButNotSame() {
-        final Dictionary dictionaryA = Dictionary.BundledDictionary.get("dictionaries/simple.dic");
-        final Dictionary dictionaryB = Dictionary.BundledDictionary.get("dictionaries/simple.dic", false);
+        final Dictionary dictionaryA = Dictionary.BundledDictionary.Companion.get("dictionaries/simple.dic", true);
+        final Dictionary dictionaryB = Dictionary.BundledDictionary.Companion.get("dictionaries/simple.dic", false);
 
         assertThat(dictionaryB).isEqualTo(dictionaryA);
         assertThat(dictionaryB).isNotSameAs(dictionaryA);
@@ -46,8 +46,8 @@ final class BundledDictionaryTest {
 
     @Test
     void testInitNoCacheStoresAnyway() {
-        final Dictionary dictionaryA = Dictionary.BundledDictionary.get("dictionaries/simple.dic", false);
-        final Dictionary dictionaryB = Dictionary.BundledDictionary.get("dictionaries/simple.dic");
+        final Dictionary dictionaryA = Dictionary.BundledDictionary.Companion.get("dictionaries/simple.dic", false);
+        final Dictionary dictionaryB = Dictionary.BundledDictionary.Companion.get("dictionaries/simple.dic", true);
 
         assertThat(dictionaryB).isSameAs(dictionaryA);
     }
@@ -55,7 +55,7 @@ final class BundledDictionaryTest {
 
     @Test
     void testValidateInstanceSuccess() {
-        final Dictionary dictionary = Dictionary.BundledDictionary.get("dictionaries/simple.dic");
+        final Dictionary dictionary = Dictionary.BundledDictionary.Companion.get("dictionaries/simple.dic", true);
 
         final ValidationInfo validationInfo = dictionary.validate();
 
@@ -64,14 +64,15 @@ final class BundledDictionaryTest {
 
     @Test
     void testValidateStaticSuccess() {
-        final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate("dictionaries/simple.dic");
+        final ValidationInfo validationInfo =
+            Dictionary.BundledDictionary.Companion.validate("dictionaries/simple.dic");
 
         assertThat(validationInfo).isNull();
     }
 
     @Test
     void testValidateStaticFileDoesNotExist() {
-        final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate("invalid_resource");
+        final ValidationInfo validationInfo = Dictionary.BundledDictionary.Companion.validate("invalid_resource");
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.message).isEqualTo("The dictionary resource for invalid_resource no longer exists.");
@@ -80,7 +81,7 @@ final class BundledDictionaryTest {
 
     @Test
     void testValidateStaticFileEmpty() {
-        final ValidationInfo validationInfo = Dictionary.BundledDictionary.validate("dictionaries/empty.dic");
+        final ValidationInfo validationInfo = Dictionary.BundledDictionary.Companion.validate("dictionaries/empty.dic");
 
         assertThat(validationInfo).isNotNull();
         assertThat(validationInfo.message).isEqualTo("The dictionary resource for empty.dic is empty.");
@@ -90,7 +91,7 @@ final class BundledDictionaryTest {
 
     @Test
     void testToString() {
-        final Dictionary dictionary = Dictionary.BundledDictionary.get("dictionaries/simple.dic");
+        final Dictionary dictionary = Dictionary.BundledDictionary.Companion.get("dictionaries/simple.dic", true);
 
         assertThat(dictionary.toString()).isEqualTo("[bundled] simple.dic");
     }

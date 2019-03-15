@@ -22,7 +22,8 @@ class ArraySettings : Settings<ArraySettings> {
         /**
          * The singleton `ArraySettings` instance.
          */
-        val default: ArraySettings = ServiceManager.getService(ArraySettings::class.java)
+        val default: ArraySettings
+            get() = ServiceManager.getService(ArraySettings::class.java)
     }
 
 
