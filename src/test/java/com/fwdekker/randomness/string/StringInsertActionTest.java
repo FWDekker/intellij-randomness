@@ -60,7 +60,7 @@ final class StringInsertActionTest {
         if (!alphabets.isEmpty()) {
             regex
                 .append('[')
-                .append(capitalization.getTransform().apply(Alphabet.concatenate(alphabets)))
+                .append(capitalization.getTransform().apply(Alphabet.Companion.concatenate(alphabets)))
                 .append("]{")
                 .append(minLength).append(',').append(maxLength)
                 .append('}');
