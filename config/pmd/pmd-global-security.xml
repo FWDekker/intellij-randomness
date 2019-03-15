@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<ruleset name="PMD Global Security Rules">
+    <description>Selection of rules from the Security category that should apply to all code.</description>
+
+    <rule ref="category/java/security.xml/HardCodedCryptoKey"/>
+    <rule ref="category/java/security.xml/InsecureCryptoIv"/>
+</ruleset>

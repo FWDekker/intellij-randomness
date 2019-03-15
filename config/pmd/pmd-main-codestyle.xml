@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<ruleset name="PMD Main Code Style Rules">
+    <description>Selection of rules from the Code Style category that should apply to production code.</description>
+
+    <rule ref="category/java/codestyle.xml/TooManyStaticImports"/>
+</ruleset>

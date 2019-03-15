@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<ruleset name="PMD Main Documentation Rules">
+    <description>Selection of rules from the Documentation category that should apply to production code.</description>
+
+    <!-- No need to disallow certain words.
+    <rule ref="category/java/documentation.xml/CommentContent"/> -->
+    <rule ref="category/java/documentation.xml/CommentRequired"/>
+    <rule ref="category/java/documentation.xml/CommentSize"/>
+    <rule ref="category/java/documentation.xml/UncommentedEmptyConstructor"/>
+    <rule ref="category/java/documentation.xml/UncommentedEmptyMethodBody"/>
+</ruleset>
