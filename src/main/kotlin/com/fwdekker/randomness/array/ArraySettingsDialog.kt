@@ -13,9 +13,9 @@ import javax.swing.JPanel
 /**
  * Dialog for settings of random array generation.
  *
- * @param settings the settings to manipulate with this dialog. Defaults to [ArraySettings.instance]
+ * @param settings the settings to manipulate with this dialog. Defaults to [ArraySettings.default]
  */
-class ArraySettingsDialog(settings: ArraySettings = ArraySettings.instance) : SettingsDialog<ArraySettings>(settings) {
+class ArraySettingsDialog(settings: ArraySettings = ArraySettings.default) : SettingsDialog<ArraySettings>(settings) {
     private lateinit var contentPane: JPanel
     private lateinit var countSpinner: JLongSpinner
     private lateinit var bracketsGroup: ButtonGroup

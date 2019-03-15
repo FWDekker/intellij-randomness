@@ -44,6 +44,16 @@ test {
     useJUnitPlatform()
 }
 
+dokka {
+    outputFormat = "html"
+    includes = ["packages.md"]
+
+    includeNonPublic = false
+    skipDeprecated = false
+    reportUndocumented = true
+    skipEmptyPackages = true
+}
+
 intellij {
     version = intellijVersion
     updateSinceUntilBuild = false

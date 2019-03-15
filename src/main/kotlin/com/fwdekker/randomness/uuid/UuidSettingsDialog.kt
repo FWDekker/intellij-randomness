@@ -10,9 +10,9 @@ import javax.swing.JPanel
 /**
  * Dialog for settings of random UUID generation.
  *
- * @param settings the settings to manipulate with this dialog. Defaults to [UuidSettings.instance]
+ * @param settings the settings to manipulate with this dialog. Defaults to [UuidSettings.default]
  */
-class UuidSettingsDialog(settings: UuidSettings = UuidSettings.instance) : SettingsDialog<UuidSettings>(settings) {
+class UuidSettingsDialog(settings: UuidSettings = UuidSettings.default) : SettingsDialog<UuidSettings>(settings) {
     private lateinit var contentPane: JPanel
     private lateinit var enclosureGroup: ButtonGroup
 

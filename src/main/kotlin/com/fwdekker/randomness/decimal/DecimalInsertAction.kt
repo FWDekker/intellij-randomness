@@ -8,10 +8,10 @@ import java.util.concurrent.ThreadLocalRandom
 /**
  * Generates a random integer based on the settings in [DecimalSettings].
  *
- * @param settings the settings to use for generating decimals. Defaults to [DecimalSettings.instance]
+ * @param settings the settings to use for generating decimals. Defaults to [DecimalSettings.default]
  */
-class DecimalInsertAction(private val settings: DecimalSettings = DecimalSettings.instance) : DataInsertAction() {
-    override fun getName() = "Insert Decimal" // TODO convert to field in superclass
+class DecimalInsertAction(private val settings: DecimalSettings = DecimalSettings.default) : DataInsertAction() {
+    override val name = "Insert Decimal"
 
 
     /**
@@ -51,8 +51,7 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
     /**
      * Inserts an array of decimals.
      */
-    inner class ArrayAction : DataInsertAction.ArrayAction(this@DecimalInsertAction) {
-        // TODO Inspect the use of `this@` above
-        override fun getName() = "Insert Decimal Array"
+    inner class ArrayAction : DataInsertAction.ArrayAction(this) {
+        override val name = "Insert Decimal Array"
     }
 }

@@ -14,9 +14,9 @@ import javax.swing.JPanel
 /**
  * Dialog for settings of random decimal generation.
  *
- * @param settings the settings to manipulate with this dialog. Defaults to [DecimalSettings.instance]
+ * @param settings the settings to manipulate with this dialog. Defaults to [DecimalSettings.default]
  */
-class DecimalSettingsDialog(settings: DecimalSettings = DecimalSettings.instance) :
+class DecimalSettingsDialog(settings: DecimalSettings = DecimalSettings.default) :
     SettingsDialog<DecimalSettings>(settings) {
     private lateinit var contentPane: JPanel
     private lateinit var valueRange: JSpinnerRange

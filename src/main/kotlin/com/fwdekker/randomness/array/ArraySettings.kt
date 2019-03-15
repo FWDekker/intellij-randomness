@@ -22,9 +22,7 @@ class ArraySettings : Settings<ArraySettings> {
         /**
          * The singleton `ArraySettings` instance.
          */
-        // TODO Rename to `default`
-        val instance: ArraySettings
-            get() = ServiceManager.getService(ArraySettings::class.java)
+        val default: ArraySettings = ServiceManager.getService(ArraySettings::class.java)
     }
 
 

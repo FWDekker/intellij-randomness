@@ -26,8 +26,7 @@ class IntegerSettings : Settings<IntegerSettings> {
         /**
          * The singleton `IntegerSettings` instance.
          */
-        val instance: IntegerSettings
-            get() = ServiceManager.getService(IntegerSettings::class.java)
+        val default: IntegerSettings = ServiceManager.getService(IntegerSettings::class.java)
     }
 
 

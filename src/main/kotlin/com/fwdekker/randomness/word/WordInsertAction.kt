@@ -8,10 +8,10 @@ import java.util.concurrent.ThreadLocalRandom
 /**
  * Generates random alphanumerical English words based on the settings in [WordSettings].
  *
- * @param settings the settings to use for generating integers. Defaults to [WordSettings.instance]
+ * @param settings the settings to use for generating integers. Defaults to [WordSettings.default]
  */
-class WordInsertAction(private val settings: WordSettings = WordSettings.instance) : DataInsertAction() {
-    override fun getName() = "Insert Word"
+class WordInsertAction(private val settings: WordSettings = WordSettings.default) : DataInsertAction() {
+    override val name = "Insert Word"
 
 
     /**
@@ -52,7 +52,7 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.instanc
     /**
      * Inserts an array of words.
      */
-    inner class ArrayAction : DataInsertAction.ArrayAction(this@WordInsertAction) {
-        override fun getName() = "Insert Word Array"
+    inner class ArrayAction : DataInsertAction.ArrayAction(this) {
+        override val name = "Insert Word Array"
     }
 }

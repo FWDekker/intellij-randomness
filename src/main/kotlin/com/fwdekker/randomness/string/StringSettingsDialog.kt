@@ -17,10 +17,10 @@ import javax.swing.ListSelectionModel
 /**
  * Dialog for settings of random string generation.
  *
- * @param settings the settings to manipulate with this dialog. Defaults to [StringSettings.instance]
+ * @param settings the settings to manipulate with this dialog. Defaults to [StringSettings.default]
  */
 // TODO Kotlin-ify concatenation of alphabets
-class StringSettingsDialog(settings: StringSettings = StringSettings.instance) :
+class StringSettingsDialog(settings: StringSettings = StringSettings.default) :
     SettingsDialog<StringSettings>(settings) {
     private lateinit var contentPane: JPanel
     private lateinit var lengthRange: JSpinnerRange

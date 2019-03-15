@@ -24,10 +24,10 @@ import javax.swing.event.ListSelectionEvent
 /**
  * Dialog for settings of random word generation.
  *
- * @param settings the settings to manipulate with this dialog. Defaults to [WordSettings.instance]
+ * @param settings the settings to manipulate with this dialog. Defaults to [WordSettings.default]
  */
 // TODO Kotlin-ify this whole thing
-class WordSettingsDialog(settings: WordSettings = WordSettings.instance) : SettingsDialog<WordSettings>(settings) {
+class WordSettingsDialog(settings: WordSettings = WordSettings.default) : SettingsDialog<WordSettings>(settings) {
     private lateinit var contentPane: JPanel
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JLongSpinner

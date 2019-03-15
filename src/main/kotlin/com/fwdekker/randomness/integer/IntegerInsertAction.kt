@@ -8,10 +8,10 @@ import java.util.concurrent.ThreadLocalRandom
 /**
  * Generates a random integer based on the settings in [IntegerSettings].
  *
- * @param settings the settings to use for generating integers. Defaults to [IntegerSettings.instance]
+ * @param settings the settings to use for generating integers. Defaults to [IntegerSettings.default]
  */
-class IntegerInsertAction(private val settings: IntegerSettings = IntegerSettings.instance) : DataInsertAction() {
-    override fun getName() = "Insert Integer"
+class IntegerInsertAction(private val settings: IntegerSettings = IntegerSettings.default) : DataInsertAction() {
+    override val name = "Insert Integer"
 
 
     /**
@@ -56,7 +56,7 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
     /**
      * Inserts an array of integers.
      */
-    inner class ArrayAction : DataInsertAction.ArrayAction(this@IntegerInsertAction) {
-        override fun getName() = "Insert Integer Array"
+    inner class ArrayAction : DataInsertAction.ArrayAction(this) {
+        override val name = "Insert Integer Array"
     }
 }

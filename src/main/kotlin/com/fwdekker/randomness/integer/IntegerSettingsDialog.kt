@@ -14,7 +14,7 @@ import javax.swing.JPanel
 /**
  * Dialog for settings of random integer generation.
  */
-class IntegerSettingsDialog(settings: IntegerSettings = IntegerSettings.instance) :
+class IntegerSettingsDialog(settings: IntegerSettings = IntegerSettings.default) :
     SettingsDialog<IntegerSettings>(settings) {
     private lateinit var contentPane: JPanel
     private lateinit var valueRange: JSpinnerRange

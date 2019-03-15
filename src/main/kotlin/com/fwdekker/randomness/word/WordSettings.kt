@@ -23,8 +23,7 @@ class WordSettings : Settings<WordSettings> {
         /**
          * The singleton `WordSettings` instance.
          */
-        val instance: WordSettings
-            get() = ServiceManager.getService(WordSettings::class.java)
+        val default: WordSettings = ServiceManager.getService(WordSettings::class.java)
     }
 
 

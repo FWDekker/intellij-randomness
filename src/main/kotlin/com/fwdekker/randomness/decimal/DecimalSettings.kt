@@ -24,8 +24,7 @@ class DecimalSettings : Settings<DecimalSettings> {
         /**
          * The singleton `DecimalSettings` instance.
          */
-        val instance: DecimalSettings
-            get() = ServiceManager.getService(DecimalSettings::class.java)
+        val default: DecimalSettings = ServiceManager.getService(DecimalSettings::class.java)
     }
 
 

@@ -7,10 +7,10 @@ import java.util.concurrent.ThreadLocalRandom
 /**
  * Generates random alphanumerical strings based on the settings in [StringSettings].
  *
- * @param settings the settings to use for generating integers. Defaults to [StringSettings.instance]
+ * @param settings the settings to use for generating integers. Defaults to [StringSettings.default]
  */
-class StringInsertAction(private val settings: StringSettings = StringSettings.instance) : DataInsertAction() {
-    override fun getName() = "Insert String"
+class StringInsertAction(private val settings: StringSettings = StringSettings.default) : DataInsertAction() {
+    override val name = "Insert String"
 
 
     /**
@@ -45,7 +45,7 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.i
     /**
      * Inserts an array of strings.
      */
-    inner class ArrayAction : DataInsertAction.ArrayAction(this@StringInsertAction) {
-        override fun getName() = "Insert String Array"
+    inner class ArrayAction : DataInsertAction.ArrayAction(this) {
+        override val name = "Insert String Array"
     }
 }
