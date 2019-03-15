@@ -94,7 +94,7 @@ public abstract class DataInsertAction extends AnAction {
         public ArrayAction(final DataInsertAction dataInsertAction) {
             super();
 
-            this.arraySettings = ArraySettings.INSTANCE;
+            this.arraySettings = ArraySettings.Companion.getInstance();
             this.dataInsertAction = dataInsertAction;
         }
 

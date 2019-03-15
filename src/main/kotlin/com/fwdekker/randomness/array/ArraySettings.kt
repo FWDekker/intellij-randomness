@@ -11,11 +11,20 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  * Contains settings for generating random arrays of other types of random values.
  */
 @State(name = "ArraySettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-object ArraySettings : Settings<ArraySettings> {
-    private const val DEFAULT_COUNT = 5
-    private const val DEFAULT_BRACKETS = "[]"
-    private const val DEFAULT_SEPARATOR = ","
-    private const val DEFAULT_SPACE_AFTER_SEPARATOR = true
+class ArraySettings : Settings<ArraySettings> {
+    companion object {
+        private const val DEFAULT_COUNT = 5
+        private const val DEFAULT_BRACKETS = "[]"
+        private const val DEFAULT_SEPARATOR = ","
+        private const val DEFAULT_SPACE_AFTER_SEPARATOR = true
+
+
+        /**
+         * The singleton `ArraySettings` instance.
+         */
+        val instance: ArraySettings
+            get() = ServiceManager.getService(ArraySettings::class.java)
+    }
 
     /**
      * The number of elements to generate.
@@ -33,12 +42,6 @@ object ArraySettings : Settings<ArraySettings> {
      * `true` iff. a space should be placed after each separator.
      */
     var isSpaceAfterSeparator = DEFAULT_SPACE_AFTER_SEPARATOR
-
-    /**
-     * The singleton `ArraySettings` instance.
-     */
-    val instance: ArraySettings
-        get() = ServiceManager.getService(ArraySettings::class.java)
 
 
     override fun getState() = this
