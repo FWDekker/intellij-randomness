@@ -82,8 +82,8 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
     override fun saveSettings(settings: WordSettings) {
         settings.minLength = Math.toIntExact(minLength.value)
         settings.maxLength = Math.toIntExact(maxLength.value)
-        settings.enclosure = ButtonGroupHelper.getValue(enclosureGroup)
-        settings.capitalization = CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup))
+        settings.enclosure = ButtonGroupHelper.getValue(enclosureGroup)!!
+        settings.capitalization = CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)!!)
 
         settings.bundledDictionaries = dictionaries.entries
             .filter { Dictionary.BundledDictionary::class.java.isInstance(it) }
@@ -160,7 +160,7 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
      * Fires when the currently highlighted `Dictionary` should be removed the list.
      */
     private fun removeDictionary() {
-        dictionaries.highlightedEntry.ifPresent { dictionary ->
+        dictionaries.highlightedEntry?.let { dictionary ->
             if (dictionary is Dictionary.UserDictionary) {
                 dictionaries.removeEntry(dictionary)
             }
@@ -175,7 +175,7 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
     private fun onDictionaryHighlightChange(event: ListSelectionEvent) {
         if (!event.valueIsAdjusting) {
             val highlightedDictionary = dictionaries.highlightedEntry
-            val enable = highlightedDictionary.isPresent && highlightedDictionary.get() is Dictionary.UserDictionary
+            val enable = highlightedDictionary is Dictionary.UserDictionary
             dictionaryRemoveButton.isEnabled = enable
         }
     }

@@ -39,9 +39,9 @@ final class JSpinnerRangeTest {
         when(min.getValue()).thenReturn(85.20);
         when(max.getValue()).thenReturn(-636.33);
 
-        final JSpinnerRange range = new JSpinnerRange(min, max);
+        final JSpinnerRange range = new JSpinnerRange(min, max, JSpinnerRange.DEFAULT_MAX_RANGE);
 
-        assertThatThrownBy(() -> range.validate())
+        assertThatThrownBy(range::validate)
             .isInstanceOf(ValidationException.class)
             .hasMessage("The maximum should be no smaller than the minimum.");
     }
@@ -51,9 +51,9 @@ final class JSpinnerRangeTest {
         when(min.getValue()).thenReturn(-1E53);
         when(max.getValue()).thenReturn(1E53);
 
-        final JSpinnerRange range = new JSpinnerRange(min, max);
+        final JSpinnerRange range = new JSpinnerRange(min, max, JSpinnerRange.DEFAULT_MAX_RANGE);
 
-        assertThatThrownBy(() -> range.validate())
+        assertThatThrownBy(range::validate)
             .isInstanceOf(ValidationException.class)
             .hasMessage("The range should not exceed 1.0E53.");
     }
@@ -65,7 +65,7 @@ final class JSpinnerRangeTest {
 
         final JSpinnerRange range = new JSpinnerRange(min, max, 793.31);
 
-        assertThatThrownBy(() -> range.validate())
+        assertThatThrownBy(range::validate)
             .isInstanceOf(ValidationException.class)
             .hasMessage("The range should not exceed 793.31.");
     }

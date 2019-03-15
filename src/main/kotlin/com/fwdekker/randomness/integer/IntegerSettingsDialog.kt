@@ -7,6 +7,7 @@ import com.fwdekker.randomness.ui.JLongSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
 import com.intellij.openapi.ui.ValidationInfo
 import java.lang.Long // TODO Remove this
+import java.util.function.Consumer
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 
@@ -50,7 +51,7 @@ class IntegerSettingsDialog(settings: IntegerSettings = IntegerSettings.default)
         base.addChangeListener { event ->
             val value = (event.source as JLongSpinner).value
             val enabled = value == IntegerSettings.DECIMAL_BASE.toLong()
-            ButtonGroupHelper.forEach(groupingSeparatorGroup) { button -> button.isEnabled = enabled }
+            ButtonGroupHelper.forEach(groupingSeparatorGroup, Consumer { button -> button.isEnabled = enabled })
         }
     }
 
@@ -79,6 +80,6 @@ class IntegerSettingsDialog(settings: IntegerSettings = IntegerSettings.default)
         settings.minValue = minValue.value
         settings.maxValue = maxValue.value
         settings.base = base.value.toInt()
-        settings.setGroupingSeparator(ButtonGroupHelper.getValue(groupingSeparatorGroup))
+        settings.setGroupingSeparator(ButtonGroupHelper.getValue(groupingSeparatorGroup)!!)
     }
 }

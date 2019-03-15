@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @param words the words in the dictionary
  */
 // TODO Make this whole thing more Kotlin-like
-// TODO Fix ugly exception catching and throwing\
+// TODO Fix ugly exception catching and throwing
 abstract class Dictionary(
     val uid: String = UUID.randomUUID().toString(),
     val name: String = uid,

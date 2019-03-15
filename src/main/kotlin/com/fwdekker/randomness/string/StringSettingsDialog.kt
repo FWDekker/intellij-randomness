@@ -71,8 +71,8 @@ class StringSettingsDialog(settings: StringSettings = StringSettings.default) :
     override fun saveSettings(settings: StringSettings) {
         settings.minLength = Math.toIntExact(minLength.value)
         settings.maxLength = Math.toIntExact(maxLength.value)
-        settings.enclosure = ButtonGroupHelper.getValue(enclosureGroup)
-        settings.capitalization = CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup))
+        settings.enclosure = ButtonGroupHelper.getValue(enclosureGroup)!!
+        settings.capitalization = CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)!!)
         settings.alphabets = HashSet(alphabetList.selectedValuesList)
     }
 

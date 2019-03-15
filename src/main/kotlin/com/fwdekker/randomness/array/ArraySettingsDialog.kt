@@ -50,8 +50,8 @@ class ArraySettingsDialog(settings: ArraySettings = ArraySettings.default) : Set
 
     override fun saveSettings(settings: ArraySettings) {
         settings.count = Math.toIntExact(countSpinner.value)
-        settings.brackets = ButtonGroupHelper.getValue(bracketsGroup) // TODO use extension functions
-        settings.separator = ButtonGroupHelper.getValue(separatorGroup)
+        settings.brackets = ButtonGroupHelper.getValue(bracketsGroup)!! // TODO use extension functions
+        settings.separator = ButtonGroupHelper.getValue(separatorGroup)!!
         settings.isSpaceAfterSeparator = spaceAfterSeparatorCheckBox.isSelected
     }
 

@@ -74,7 +74,7 @@ class DecimalSettingsDialog(settings: DecimalSettings = DecimalSettings.default)
         settings.minValue = minValue.value
         settings.maxValue = maxValue.value
         settings.decimalCount = Math.toIntExact(decimalCount.value)
-        settings.setGroupingSeparator(ButtonGroupHelper.getValue(groupingSeparatorGroup))
-        settings.setDecimalSeparator(ButtonGroupHelper.getValue(decimalSeparatorGroup))
+        settings.setGroupingSeparator(ButtonGroupHelper.getValue(groupingSeparatorGroup)!!) // TODO Remove !!
+        settings.setDecimalSeparator(ButtonGroupHelper.getValue(decimalSeparatorGroup)!!)
     }
 }

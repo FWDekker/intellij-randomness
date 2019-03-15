@@ -33,6 +33,6 @@ class UuidSettingsDialog(settings: UuidSettings = UuidSettings.default) : Settin
     }
 
     override fun saveSettings(settings: UuidSettings) {
-        settings.enclosure = ButtonGroupHelper.getValue(enclosureGroup)
+        settings.enclosure = ButtonGroupHelper.getValue(enclosureGroup)!!
     }
 }
