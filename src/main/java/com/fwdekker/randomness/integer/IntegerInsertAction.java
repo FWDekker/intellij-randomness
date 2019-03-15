@@ -18,7 +18,9 @@ public final class IntegerInsertAction extends DataInsertAction {
     /**
      * Constructs a new {@code IntegerInsertAction} that uses the singleton {@code IntegerSettings} instance.
      */
-    public IntegerInsertAction() {
+    /* default */ IntegerInsertAction() {
+        super();
+
         this.integerSettings = IntegerSettings.getInstance();
     }
 
@@ -27,7 +29,9 @@ public final class IntegerInsertAction extends DataInsertAction {
      *
      * @param integerSettings the settings to use for generating integers
      */
-    IntegerInsertAction(final @NotNull IntegerSettings integerSettings) {
+    /* default */ IntegerInsertAction(final @NotNull IntegerSettings integerSettings) {
+        super();
+
         this.integerSettings = integerSettings;
     }
 
@@ -45,7 +49,7 @@ public final class IntegerInsertAction extends DataInsertAction {
     @Override
     public String generateString() {
         final long randomValue = ThreadLocalRandom.current()
-                .nextLong(integerSettings.getMinValue(), integerSettings.getMaxValue() + 1);
+            .nextLong(integerSettings.getMinValue(), integerSettings.getMaxValue() + 1);
 
         return convertToString(randomValue);
     }

@@ -30,7 +30,7 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
     /**
      * Constructs a new {@code IntegerSettingsDialog} that uses the singleton {@code IntegerSettings} instance.
      */
-    IntegerSettingsDialog() {
+    /* default */ IntegerSettingsDialog() {
         this(IntegerSettings.getInstance());
     }
 
@@ -39,7 +39,7 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
      *
      * @param settings the settings to manipulate with this dialog
      */
-    IntegerSettingsDialog(final @NotNull IntegerSettings settings) {
+    /* default */ IntegerSettingsDialog(final @NotNull IntegerSettings settings) {
         super(settings);
 
         init();
@@ -68,7 +68,7 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
             final long value = ((JLongSpinner) event.getSource()).getValue();
             final boolean enabled = value == IntegerSettings.DECIMAL_BASE;
             ButtonGroupHelper.forEach(groupingSeparatorGroup,
-                    button -> button.setEnabled(enabled));
+                button -> button.setEnabled(enabled));
         });
     }
 

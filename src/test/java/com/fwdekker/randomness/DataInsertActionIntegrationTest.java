@@ -18,6 +18,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>
  * Note that {@link LightPlatformCodeInsightFixtureTestCase} is a JUnit 3 test class.
  */
+@SuppressWarnings({ // This is a JUnit 3 test class
+    "PMD.JUnit4TestShouldUseAfterAnnotation",
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseTestAnnotation"
+})
 public final class DataInsertActionIntegrationTest extends LightPlatformCodeInsightFixtureTestCase {
     /**
      * The recognizable string that is inserted by the insertion action.
@@ -46,10 +51,6 @@ public final class DataInsertActionIntegrationTest extends LightPlatformCodeInsi
     @AfterClass
     protected void tearDown() throws Exception {
         super.tearDown();
-
-        this.document = null;
-        this.caretModel = null;
-        this.insertRandomSimple = null;
     }
 
     @Override
@@ -114,21 +115,21 @@ public final class DataInsertActionIntegrationTest extends LightPlatformCodeInsi
 
     public void testInsertMultiple() {
         WriteCommandAction.runWriteCommandAction(myFixture.getProject(),
-                () -> document.setText("DCtD41lFOk\nOCnrdYk9gE\nn1HAPKotDq"));
+            () -> document.setText("DCtD41lFOk\nOCnrdYk9gE\nn1HAPKotDq"));
 
         addCaret(11);
         addCaret(22);
         myFixture.testAction(insertRandomSimple);
 
         assertThat(document.getText())
-                .isEqualTo(RANDOM_STRING + "DCtD41lFOk\n"
-                        + RANDOM_STRING + "OCnrdYk9gE\n"
-                        + RANDOM_STRING + "n1HAPKotDq");
+            .isEqualTo(RANDOM_STRING + "DCtD41lFOk\n"
+                + RANDOM_STRING + "OCnrdYk9gE\n"
+                + RANDOM_STRING + "n1HAPKotDq");
     }
 
     public void testReplaceMultiple() {
         WriteCommandAction.runWriteCommandAction(myFixture.getProject(),
-                () -> document.setText("YXSncq4FC9\nG31Ybbn1c4\nTNCqAhqPnh"));
+            () -> document.setText("YXSncq4FC9\nG31Ybbn1c4\nTNCqAhqPnh"));
 
         setSelection(2, 4);
         addSelection(18, 23);
@@ -136,14 +137,14 @@ public final class DataInsertActionIntegrationTest extends LightPlatformCodeInsi
         myFixture.testAction(insertRandomSimple);
 
         assertThat(document.getText())
-                .isEqualTo("YX" + RANDOM_STRING + "cq4FC9\n"
-                        + "G31Ybbn" + RANDOM_STRING
-                        + "NCqAhq" + RANDOM_STRING + "Pnh");
+            .isEqualTo("YX" + RANDOM_STRING + "cq4FC9\n"
+                + "G31Ybbn" + RANDOM_STRING
+                + "NCqAhq" + RANDOM_STRING + "Pnh");
     }
 
     public void testInsertAndReplace() {
         WriteCommandAction.runWriteCommandAction(myFixture.getProject(),
-                () -> document.setText("XOppzVdZTj\nZhAaVfQynW\nk3kWemkdAg"));
+            () -> document.setText("XOppzVdZTj\nZhAaVfQynW\nk3kWemkdAg"));
 
         caretModel.moveToOffset(5);
         addSelection(6, 9);
@@ -152,9 +153,9 @@ public final class DataInsertActionIntegrationTest extends LightPlatformCodeInsi
         myFixture.testAction(insertRandomSimple);
 
         assertThat(document.getText())
-                .isEqualTo("XOppz" + RANDOM_STRING + "V" + RANDOM_STRING + "j\n"
-                        + "ZhAa" + RANDOM_STRING + "VfQynW\n"
-                        + "k3" + RANDOM_STRING + "kdAg");
+            .isEqualTo("XOppz" + RANDOM_STRING + "V" + RANDOM_STRING + "j\n"
+                + "ZhAa" + RANDOM_STRING + "VfQynW\n"
+                + "k3" + RANDOM_STRING + "kdAg");
     }
 
 

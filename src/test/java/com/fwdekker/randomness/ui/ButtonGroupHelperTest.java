@@ -84,8 +84,8 @@ final class ButtonGroupHelperTest {
     @Test
     void testSetValueEmpty() {
         assertThatThrownBy(() -> ButtonGroupHelper.setValue(group, "syWR#"))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("Could not find a button with action command `syWR#`.");
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage("Could not find a button with action command `syWR#`.");
     }
 
     @Test
@@ -99,8 +99,8 @@ final class ButtonGroupHelperTest {
         group.add(buttonB);
 
         assertThatThrownBy(() -> ButtonGroupHelper.setValue(group, "OD>5&"))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("Could not find a button with action command `OD>5&`.");
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage("Could not find a button with action command `OD>5&`.");
     }
 
     @Test

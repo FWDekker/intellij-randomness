@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<ruleset name="PMD Test Error Prone Rules">
+    <description>Selection of rules from the Error Prone category that should apply to test code.</description>
+
+    <rule ref="category/java/errorprone.xml/JUnitSpelling"/>
+    <rule ref="category/java/errorprone.xml/JUnitStaticSuite"/>
+    <rule ref="category/java/errorprone.xml/TestClassWithoutTestCases"/>
+    <rule ref="category/java/errorprone.xml/UnnecessaryBooleanAssertion"/>
+</ruleset>

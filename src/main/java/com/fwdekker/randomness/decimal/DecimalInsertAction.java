@@ -18,7 +18,9 @@ public final class DecimalInsertAction extends DataInsertAction {
     /**
      * Constructs a new {@code DecimalInsertAction} that uses the singleton {@code DecimalSettings} instance.
      */
-    public DecimalInsertAction() {
+    /* default */ DecimalInsertAction() {
+        super();
+
         this.decimalSettings = DecimalSettings.getInstance();
     }
 
@@ -27,7 +29,9 @@ public final class DecimalInsertAction extends DataInsertAction {
      *
      * @param decimalSettings the settings to use for generating decimals
      */
-    DecimalInsertAction(final @NotNull DecimalSettings decimalSettings) {
+    /* default */ DecimalInsertAction(final @NotNull DecimalSettings decimalSettings) {
+        super();
+
         this.decimalSettings = decimalSettings;
     }
 
@@ -45,7 +49,7 @@ public final class DecimalInsertAction extends DataInsertAction {
     @Override
     public String generateString() {
         final double randomValue = ThreadLocalRandom.current()
-                .nextDouble(decimalSettings.getMinValue(), Math.nextUp(decimalSettings.getMaxValue()));
+            .nextDouble(decimalSettings.getMinValue(), Math.nextUp(decimalSettings.getMaxValue()));
 
         return convertToString(randomValue);
     }

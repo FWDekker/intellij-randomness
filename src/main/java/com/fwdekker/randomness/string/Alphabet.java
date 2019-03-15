@@ -48,8 +48,8 @@ enum Alphabet {
      */
     static String concatenate(final Collection<Alphabet> alphabets) {
         return alphabets.stream()
-                .map(Alphabet::getSymbols)
-                .collect(Collectors.joining());
+            .map(Alphabet::getSymbols)
+            .collect(Collectors.joining());
     }
 
 

@@ -19,7 +19,9 @@ public final class WordInsertAction extends DataInsertAction {
     /**
      * Constructs a new {@code WordInsertAction} that uses the singleton {@code WordSettings} instance.
      */
-    public WordInsertAction() {
+    /* default */ WordInsertAction() {
+        super();
+
         this.wordSettings = WordSettings.getInstance();
     }
 
@@ -28,7 +30,9 @@ public final class WordInsertAction extends DataInsertAction {
      *
      * @param wordSettings the settings to use for generating words
      */
-    WordInsertAction(final @NotNull WordSettings wordSettings) {
+    /* default */ WordInsertAction(final @NotNull WordSettings wordSettings) {
+        super();
+
         this.wordSettings = wordSettings;
     }
 
@@ -48,20 +52,20 @@ public final class WordInsertAction extends DataInsertAction {
         final ValidationInfo validationInfo = wordSettings.validateActiveDictionaries();
         if (validationInfo != null) {
             JBPopupHelper.showMessagePopup(
-                    "Randomness error",
-                    validationInfo.message,
-                    "Please check your Randomness `word` settings."
+                "Randomness error",
+                validationInfo.message,
+                "Please check your Randomness `word` settings."
             );
             return "";
         }
 
         final List<String> words = Dictionary.combine(wordSettings.getValidActiveDictionaries())
-                .getWordsWithLengthInRange(wordSettings.getMinLength(), wordSettings.getMaxLength());
+            .getWordsWithLengthInRange(wordSettings.getMinLength(), wordSettings.getMaxLength());
         if (words.isEmpty()) {
             JBPopupHelper.showMessagePopup(
-                    "Randomness error",
-                    "There are no words compatible with the current settings.",
-                    "Please check your Randomness `word` settings."
+                "Randomness error",
+                "There are no words compatible with the current settings.",
+                "Please check your Randomness `word` settings."
             );
             return "";
         }

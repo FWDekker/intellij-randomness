@@ -51,11 +51,9 @@ final class DictionaryFileHelper {
      * @param contents the contents to write to the dictionary file
      * @return the created temporary dictionary file
      */
-    File setUpDictionary(final String contents) {
-        final File dictionaryFile;
-
+    File createDictionaryFile(final String contents) {
         try {
-            dictionaryFile = File.createTempFile("dictionary", ".dic");
+            final File dictionaryFile = File.createTempFile("dictionary", ".dic");
             writeToFile(dictionaryFile, contents);
             files.add(dictionaryFile);
 

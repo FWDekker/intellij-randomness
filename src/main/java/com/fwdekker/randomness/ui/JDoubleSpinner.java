@@ -59,6 +59,8 @@ public final class JDoubleSpinner extends JSpinner {
      * @param maxValue the largest number that may be represented by this {@code JDoubleSpinner}
      */
     public JDoubleSpinner(final double minValue, final double maxValue) {
+        super();
+
         if (minValue < DEFAULT_MIN_VALUE) {
             throw new IllegalArgumentException("minValue should not be smaller than " + DEFAULT_MIN_VALUE + ".");
         }

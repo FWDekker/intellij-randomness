@@ -19,9 +19,11 @@ public enum CapitalizationMode {
     /**
      * Makes the first character uppercase and all characters after that lowercase.
      */
-    SENTENCE("sentence", string -> (string.length() == 0
+    SENTENCE("sentence", string ->
+        string.length() == 0
             ? ""
-            : Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase(Locale.getDefault()))),
+            : Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase(Locale.getDefault())
+    ),
     /**
      * Makes all characters uppercase.
      */
@@ -34,16 +36,16 @@ public enum CapitalizationMode {
      * Makes the first letter of each word uppercase.
      */
     FIRST_LETTER("first letter", string ->
-            Arrays.stream(string.split(" ")).map(SENTENCE.transform).collect(Collectors.joining(" "))),
+        Arrays.stream(string.split(" ")).map(SENTENCE.transform).collect(Collectors.joining(" "))),
     /**
      * Makes each letter randomly uppercase or lowercase.
      */
     RANDOM("random", string -> {
         final Random random = new Random();
         return string.chars()
-                .map(chr -> random.nextBoolean() ? Character.toLowerCase(chr) : Character.toUpperCase(chr))
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
+            .map(chr -> random.nextBoolean() ? Character.toLowerCase(chr) : Character.toUpperCase(chr))
+            .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+            .toString();
     });
 
 
@@ -105,9 +107,9 @@ public enum CapitalizationMode {
      */
     public static CapitalizationMode getMode(final String name) {
         return Arrays.stream(values())
-                .filter(value -> value.getName().equals(name))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("There does not exist a capitalization mode with name "
-                        + "`" + name + "`."));
+            .filter(value -> value.getName().equals(name))
+            .findFirst()
+            .orElseThrow(() -> new NoSuchElementException("There does not exist a capitalization mode with name "
+                + "`" + name + "`."));
     }
 }

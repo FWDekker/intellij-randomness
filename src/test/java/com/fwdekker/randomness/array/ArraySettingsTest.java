@@ -70,7 +70,7 @@ final class ArraySettingsTest {
     @Test
     void testArrayifyEmpty() {
         assertThat(arraySettings.arrayify(Collections.emptyList()))
-                .isEqualTo("[]");
+            .isEqualTo("[]");
     }
 
     @Test
@@ -81,7 +81,7 @@ final class ArraySettingsTest {
         arraySettings.setSpaceAfterSeparator(true);
 
         assertThat(arraySettings.arrayify(Arrays.asList("Garhwali", "Pattypan", "Troll")))
-                .isEqualTo("@Garhwali;; Pattypan;; Troll#");
+            .isEqualTo("@Garhwali;; Pattypan;; Troll#");
     }
 
     @Test
@@ -92,6 +92,6 @@ final class ArraySettingsTest {
         arraySettings.setSpaceAfterSeparator(false);
 
         assertThat(arraySettings.arrayify(Arrays.asList("Antheia", "Cowbinds", "Cotutor")))
-                .isEqualTo("AntheiahCowbindshCotutor");
+            .isEqualTo("AntheiahCowbindshCotutor");
     }
 }

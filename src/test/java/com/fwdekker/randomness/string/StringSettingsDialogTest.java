@@ -23,7 +23,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
     private static final int DEFAULT_MAX_VALUE = 719;
     private static final String DEFAULT_ENCLOSURE = "\"";
     private static final Set<Alphabet> DEFAULT_ALPHABETS
-            = new HashSet<>(Arrays.asList(Alphabet.ALPHABET, Alphabet.ALPHABET));
+        = new HashSet<>(Arrays.asList(Alphabet.ALPHABET, Alphabet.ALPHABET));
 
     private StringSettings stringSettings;
     private StringSettingsDialog stringSettingsDialog;
@@ -72,8 +72,8 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
     @Test
     public void testLoadSettingsAlphabets() {
         final String[] expectedSelected = DEFAULT_ALPHABETS.stream()
-                .map(Alphabet::toString)
-                .toArray(String[]::new);
+            .map(Alphabet::toString)
+            .toArray(String[]::new);
 
         frame.list("alphabets").requireSelectedItems(expectedSelected);
     }
@@ -176,7 +176,7 @@ public final class StringSettingsDialogTest extends AssertJSwingJUnitTestCase {
      */
     private int[] toIndexForEach(final Collection<Alphabet> alphabets) {
         return alphabets.stream()
-                .mapToInt(Alphabet::ordinal)
-                .toArray();
+            .mapToInt(Alphabet::ordinal)
+            .toArray();
     }
 }

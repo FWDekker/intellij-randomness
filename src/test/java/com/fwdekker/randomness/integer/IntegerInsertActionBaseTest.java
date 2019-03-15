@@ -16,9 +16,9 @@ final class IntegerInsertActionBaseTest {
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Used as parameterized method source
     private static Collection<Object[]> provider() {
         return Arrays.asList(new Object[][]{
-                {33360, 10, '.', "33.360"},
-                {48345, 10, '.', "48.345"},
-                {48345, 11, '.', "33360"},
+            {33360, 10, '.', "33.360"},
+            {48345, 10, '.', "48.345"},
+            {48345, 11, '.', "33360"},
         });
     }
 

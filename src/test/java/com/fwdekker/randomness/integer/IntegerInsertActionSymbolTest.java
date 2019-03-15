@@ -16,9 +16,9 @@ final class IntegerInsertActionSymbolTest {
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Used as parameterized method source
     private static Collection<Object[]> provider() {
         return Arrays.asList(new Object[][]{
-                {95713, '\0', "95713"},
-                {163583, '.', "163.583"},
-                {351426, ',', "351,426"},
+            {95713, '\0', "95713"},
+            {163583, '.', "163.583"},
+            {351426, ',', "351,426"},
         });
     }
 

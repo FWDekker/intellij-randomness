@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<ruleset name="PMD Test Best Practices Rules">
+    <description>Selection of rules from the Best Practices category that should apply to test code.</description>
+
+    <rule ref="category/java/bestpractices.xml/JUnit4SuitesShouldUseSuiteAnnotation"/>
+    <rule ref="category/java/bestpractices.xml/JUnit4TestShouldUseAfterAnnotation"/>
+    <rule ref="category/java/bestpractices.xml/JUnit4TestShouldUseBeforeAnnotation"/>
+    <rule ref="category/java/bestpractices.xml/JUnit4TestShouldUseTestAnnotation"/>
+    <!-- Gives false positives with AssertJ.
+    <rule ref="category/java/bestpractices.xml/JUnitAssertionsShouldIncludeMessage"/> -->
+    <!-- Really depends on the test.
+    <rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts"/> -->
+    <!-- AssertJ is used instead.
+    <rule ref="category/java/bestpractices.xml/JUnitTestsShouldIncludeAssert"/> -->
+    <rule ref="category/java/bestpractices.xml/JUnitUseExpected"/>
+    <rule ref="category/java/bestpractices.xml/UseAssertEqualsInsteadOfAssertTrue"/>
+    <rule ref="category/java/bestpractices.xml/UseAssertNullInsteadOfAssertTrue"/>
+    <rule ref="category/java/bestpractices.xml/UseAssertSameInsteadOfAssertTrue"/>
+    <rule ref="category/java/bestpractices.xml/UseAssertTrueInsteadOfAssertEquals"/>
+</ruleset>

@@ -20,13 +20,13 @@ final class StringInsertActionTest {
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Used as parameterized method source
     private static Collection<Object[]> provider() {
         return Arrays.asList(new Object[][]{
-                {0, 0, "", CapitalizationMode.RETAIN, new Alphabet[]{}},
-                {0, 0, "'", CapitalizationMode.UPPER, new Alphabet[]{}},
-                {0, 0, "a", CapitalizationMode.LOWER, new Alphabet[]{}},
-                {0, 0, "2Rv", CapitalizationMode.FIRST_LETTER, new Alphabet[]{}},
+            {0, 0, "", CapitalizationMode.RETAIN, new Alphabet[]{}},
+            {0, 0, "'", CapitalizationMode.UPPER, new Alphabet[]{}},
+            {0, 0, "a", CapitalizationMode.LOWER, new Alphabet[]{}},
+            {0, 0, "2Rv", CapitalizationMode.FIRST_LETTER, new Alphabet[]{}},
 
-                {723, 723, "", CapitalizationMode.UPPER, new Alphabet[]{Alphabet.ALPHABET}},
-                {466, 466, "z", CapitalizationMode.LOWER, new Alphabet[]{Alphabet.ALPHABET, Alphabet.UNDERSCORE}}
+            {723, 723, "", CapitalizationMode.UPPER, new Alphabet[]{Alphabet.ALPHABET}},
+            {466, 466, "z", CapitalizationMode.LOWER, new Alphabet[]{Alphabet.ALPHABET, Alphabet.UNDERSCORE}}
         });
     }
 
@@ -46,7 +46,7 @@ final class StringInsertActionTest {
 
         final StringInsertAction insertRandomString = new StringInsertAction(stringSettings);
         final Pattern expectedPattern
-                = buildExpectedPattern(minLength, maxLength, enclosure, capitalization, alphabetSet);
+            = buildExpectedPattern(minLength, maxLength, enclosure, capitalization, alphabetSet);
 
         assertThat(insertRandomString.generateString()).containsPattern(expectedPattern);
     }
@@ -59,11 +59,11 @@ final class StringInsertActionTest {
         regex.append(enclosure);
         if (!alphabets.isEmpty()) {
             regex
-                    .append('[')
-                    .append(capitalization.getTransform().apply(Alphabet.concatenate(alphabets)))
-                    .append("]{")
-                    .append(minLength).append(',').append(maxLength)
-                    .append('}');
+                .append('[')
+                .append(capitalization.getTransform().apply(Alphabet.concatenate(alphabets)))
+                .append("]{")
+                .append(minLength).append(',').append(maxLength)
+                .append('}');
         }
         regex.append(enclosure);
 

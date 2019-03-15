@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
  * Contains settings for generating random words.
  */
 @State(
-        name = "WordSettings",
-        storages = @Storage("$APP_CONFIG$/randomness.xml")
+    name = "WordSettings",
+    storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class WordSettings implements Settings<WordSettings> {
     private static final int DEFAULT_MIN_LENGTH = 3;
@@ -240,19 +240,19 @@ public final class WordSettings implements Settings<WordSettings> {
     private ValidationInfo validateDictionaries(final Collection<String> bundledDictionaries,
                                                 final Collection<String> userDictionaries) {
         final ValidationInfo bundledValidationInfo = bundledDictionaries.stream()
-                .map(Dictionary.BundledDictionary::validate)
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
+            .map(Dictionary.BundledDictionary::validate)
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null);
         if (bundledValidationInfo != null) {
             return bundledValidationInfo;
         }
 
         final ValidationInfo userValidationInfo = userDictionaries.stream()
-                .map(Dictionary.UserDictionary::validate)
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
+            .map(Dictionary.UserDictionary::validate)
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null);
         if (userValidationInfo != null) {
             return userValidationInfo;
         }
@@ -292,13 +292,13 @@ public final class WordSettings implements Settings<WordSettings> {
         final List<Dictionary> dictionaries = new ArrayList<>();
 
         dictionaries.addAll(bundledDictionaries.stream()
-                .filter(dictionary -> Dictionary.BundledDictionary.validate(dictionary) == null)
-                .map(Dictionary.BundledDictionary::get)
-                .collect(Collectors.toList()));
+            .filter(dictionary -> Dictionary.BundledDictionary.validate(dictionary) == null)
+            .map(Dictionary.BundledDictionary::get)
+            .collect(Collectors.toList()));
         dictionaries.addAll(userDictionaries.stream()
-                .filter(dictionary -> Dictionary.UserDictionary.validate(dictionary) == null)
-                .map(Dictionary.UserDictionary::get)
-                .collect(Collectors.toList()));
+            .filter(dictionary -> Dictionary.UserDictionary.validate(dictionary) == null)
+            .map(Dictionary.UserDictionary::get)
+            .collect(Collectors.toList()));
 
         return dictionaries;
     }

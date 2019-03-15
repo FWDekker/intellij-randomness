@@ -14,22 +14,22 @@ final class JDoubleSpinnerTest {
     @Test
     void testIllegalMinValue() {
         assertThatThrownBy(() -> new JDoubleSpinner(-1E80, -477.23))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("minValue should not be smaller than -1.0E53.");
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("minValue should not be smaller than -1.0E53.");
     }
 
     @Test
     void testIllegalMaxValue() {
         assertThatThrownBy(() -> new JDoubleSpinner(-161.29, 1E73))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("maxValue should not be greater than 1.0E53.");
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("maxValue should not be greater than 1.0E53.");
     }
 
     @Test
     void testIllegalRange() {
         assertThatThrownBy(() -> new JDoubleSpinner(-602.98, -929.41))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("minValue should be greater than maxValue.");
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("minValue should be greater than maxValue.");
     }
 
 
@@ -59,8 +59,8 @@ final class JDoubleSpinnerTest {
         spinner.setValue(-1E55);
 
         assertThatThrownBy(() -> spinner.validateValue())
-                .isInstanceOf(ValidationException.class)
-                .hasMessage("Please enter a value greater than or equal to -1.0E53.");
+            .isInstanceOf(ValidationException.class)
+            .hasMessage("Please enter a value greater than or equal to -1.0E53.");
     }
 
     @Test
@@ -70,8 +70,8 @@ final class JDoubleSpinnerTest {
         spinner.setValue(1E98);
 
         assertThatThrownBy(() -> spinner.validateValue())
-                .isInstanceOf(ValidationException.class)
-                .hasMessage("Please enter a value less than or equal to 1.0E53.");
+            .isInstanceOf(ValidationException.class)
+            .hasMessage("Please enter a value less than or equal to 1.0E53.");
     }
 
     @Test
@@ -81,8 +81,8 @@ final class JDoubleSpinnerTest {
         spinner.setValue(-808.68);
 
         assertThatThrownBy(() -> spinner.validateValue())
-                .isInstanceOf(ValidationException.class)
-                .hasMessage("Please enter a value greater than or equal to -738.33.");
+            .isInstanceOf(ValidationException.class)
+            .hasMessage("Please enter a value greater than or equal to -738.33.");
     }
 
     @Test
@@ -92,7 +92,7 @@ final class JDoubleSpinnerTest {
         spinner.setValue(94.0);
 
         assertThatThrownBy(() -> spinner.validateValue())
-                .isInstanceOf(ValidationException.class)
-                .hasMessage("Please enter a value less than or equal to -69.36.");
+            .isInstanceOf(ValidationException.class)
+            .hasMessage("Please enter a value less than or equal to -69.36.");
     }
 }

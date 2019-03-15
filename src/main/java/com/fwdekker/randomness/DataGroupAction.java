@@ -24,6 +24,8 @@ public abstract class DataGroupAction extends ActionGroup {
      * Constructs a new {@code DataGroupAction}.
      */
     public DataGroupAction() {
+        super();
+
         insertAction = getInsertAction();
         insertArrayAction = getInsertArrayAction();
         settingsAction = getSettingsAction();
@@ -34,9 +36,9 @@ public abstract class DataGroupAction extends ActionGroup {
     @Override
     public final AnAction[] getChildren(final @Nullable AnActionEvent event) {
         return new AnAction[]{
-                insertAction,
-                insertArrayAction,
-                settingsAction
+            insertAction,
+            insertArrayAction,
+            settingsAction
         };
     }
 
@@ -46,10 +48,7 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
     @Override
-    @SuppressFBWarnings(
-            value = {"NP_NULL_ON_SOME_PATH"},
-            justification = "Verified by annotation"
-    )
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // Verified by annotation
     public final void actionPerformed(final @NotNull AnActionEvent event) {
         super.actionPerformed(event);
 
@@ -66,10 +65,7 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
     @Override
-    @SuppressFBWarnings(
-            value = {"NP_NULL_ON_SOME_PATH"},
-            justification = "Verified by annotation"
-    )
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // Verified by annotation
     public final void update(final @NotNull AnActionEvent event) {
         super.update(event);
 

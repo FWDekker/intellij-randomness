@@ -23,7 +23,7 @@ public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
     /**
      * Constructs a new {@code UuidSettingsDialog} that uses the singleton {@code UuidSettings} instance.
      */
-    UuidSettingsDialog() {
+    /* default */ UuidSettingsDialog() {
         this(UuidSettings.getInstance());
     }
 
@@ -32,7 +32,7 @@ public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
      *
      * @param settings the settings to manipulate with this dialog
      */
-    UuidSettingsDialog(final @NotNull UuidSettings settings) {
+    /* default */ UuidSettingsDialog(final @NotNull UuidSettings settings) {
         super(settings);
 
         init();
@@ -53,19 +53,13 @@ public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
 
 
     @Override
-    @SuppressFBWarnings(
-            value = {"NP_NULL_ON_SOME_PATH"},
-            justification = "Verified by annotation"
-    )
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // Verified by annotation
     public void loadSettings(final @NotNull UuidSettings settings) {
         ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
     }
 
     @Override
-    @SuppressFBWarnings(
-            value = {"NP_NULL_ON_SOME_PATH"},
-            justification = "Verified by annotation"
-    )
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // Verified by annotation
     public void saveSettings(final @NotNull UuidSettings settings) {
         settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
     }

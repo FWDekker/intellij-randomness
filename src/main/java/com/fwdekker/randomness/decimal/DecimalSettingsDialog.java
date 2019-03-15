@@ -32,7 +32,7 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
     /**
      * Constructs a new {@code DecimalSettingsDialog} that uses the singleton {@code DecimalSettings} instance.
      */
-    DecimalSettingsDialog() {
+    /* default */ DecimalSettingsDialog() {
         this(DecimalSettings.getInstance());
     }
 
@@ -41,7 +41,7 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
      *
      * @param settings the settings to manipulate with this dialog
      */
-    DecimalSettingsDialog(final @NotNull DecimalSettings settings) {
+    /* default */ DecimalSettingsDialog(final @NotNull DecimalSettings settings) {
         super(settings);
 
         init();

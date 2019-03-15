@@ -56,12 +56,18 @@ spotbugs {
 }
 
 pmd {
+    toolVersion = pmdVersion
     ignoreFailures = true
-    ruleSetFiles = files("$rootDir/config/pmd/main-pmd-rules.xml")
+    ruleSetFiles = files(file("$rootDir/config/pmd").listFiles())
+        .filter { File f -> f.name.startsWith("pmd-global-") || f.name.startsWith("pmd-main-") }
+    ruleSets = []
 }
 
 pmdTest {
-    ruleSetFiles = files("$rootDir/config/pmd/test-pmd-rules.xml")
+    ignoreFailures = true
+    ruleSetFiles = files(file("$rootDir/config/pmd").listFiles())
+        .filter { File f -> f.name.startsWith("pmd-global-") || f.name.startsWith("pmd-test-") }
+    ruleSets = []
 }
 
 jacocoTestReport {

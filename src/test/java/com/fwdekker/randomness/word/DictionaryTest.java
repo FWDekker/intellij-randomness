@@ -19,9 +19,9 @@ final class DictionaryTest {
     @Test
     void testEmptyDictionary() {
         assertThatThrownBy(() -> Dictionary.BundledDictionary.get("dictionaries/empty.dic"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Dictionary must be non-empty.")
-                .hasNoCause();
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Dictionary must be non-empty.")
+            .hasNoCause();
     }
 
 
@@ -30,7 +30,7 @@ final class DictionaryTest {
         useDictionary("simple");
 
         assertThat(dictionary.getUid())
-                .isEqualTo("dictionaries/simple.dic");
+            .isEqualTo("dictionaries/simple.dic");
     }
 
     @Test
@@ -38,7 +38,7 @@ final class DictionaryTest {
         useDictionary("simple");
 
         assertThat(dictionary.getWords())
-                .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow");
+            .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow");
     }
 
 
@@ -47,7 +47,7 @@ final class DictionaryTest {
         useDictionary("simple");
 
         assertThat(dictionary.getWordsWithLengthInRange(696, 54))
-                .isEmpty();
+            .isEmpty();
     }
 
     @Test
@@ -55,7 +55,7 @@ final class DictionaryTest {
         useDictionary("simple");
 
         assertThat(dictionary.getWordsWithLengthInRange(-4, -2))
-                .isEmpty();
+            .isEmpty();
     }
 
     @Test
@@ -63,7 +63,7 @@ final class DictionaryTest {
         useDictionary("simple");
 
         assertThat(dictionary.getWordsWithLengthInRange(0, 0))
-                .isEmpty();
+            .isEmpty();
     }
 
     @Test
@@ -71,7 +71,7 @@ final class DictionaryTest {
         useDictionary("varied");
 
         assertThat(dictionary.getWordsWithLengthInRange(0, 1))
-                .isEmpty();
+            .isEmpty();
     }
 
     @Test
@@ -79,7 +79,7 @@ final class DictionaryTest {
         useDictionary("simple");
 
         assertThat(dictionary.getWordsWithLengthInRange(1, 1))
-                .containsExactly("a");
+            .containsExactly("a");
     }
 
     @Test
@@ -87,7 +87,7 @@ final class DictionaryTest {
         useDictionary("varied");
 
         assertThat(dictionary.getWordsWithLengthInRange(40, 50))
-                .containsExactly("pneumonoultramicroscopicsilicovolcanoconiosis");
+            .containsExactly("pneumonoultramicroscopicsilicovolcanoconiosis");
     }
 
     @Test
@@ -95,7 +95,7 @@ final class DictionaryTest {
         useDictionary("simple");
 
         assertThat(dictionary.getWordsWithLengthInRange(1000, 1001))
-                .isEmpty();
+            .isEmpty();
     }
 
 
@@ -104,7 +104,7 @@ final class DictionaryTest {
         useDictionary("simple");
 
         assertThat(dictionary.getShortestWord())
-                .hasSize(1);
+            .hasSize(1);
     }
 
     @Test
@@ -112,7 +112,7 @@ final class DictionaryTest {
         useDictionary("varied");
 
         assertThat(dictionary.getShortestWord())
-                .hasSize(4);
+            .hasSize(4);
     }
 
     @Test
@@ -120,7 +120,7 @@ final class DictionaryTest {
         useDictionary("simple");
 
         assertThat(dictionary.getLongestWord())
-                .hasSize(4);
+            .hasSize(4);
     }
 
     @Test
@@ -128,38 +128,38 @@ final class DictionaryTest {
         useDictionary("varied");
 
         assertThat(dictionary.getLongestWord())
-                .hasSize(45);
+            .hasSize(45);
     }
 
 
     @Test
     void testCombine() {
         final Dictionary combined = Dictionary.combine(Arrays.asList(
-                Dictionary.BundledDictionary.get("dictionaries/simple.dic"),
-                Dictionary.BundledDictionary.get("dictionaries/varied.dic")));
+            Dictionary.BundledDictionary.get("dictionaries/simple.dic"),
+            Dictionary.BundledDictionary.get("dictionaries/varied.dic")));
 
         assertThat(combined.getWords())
-                .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow", "simplicity", "bend",
-                        "consideration", "pneumonoultramicroscopicsilicovolcanoconiosis");
+            .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow", "simplicity", "bend",
+                "consideration", "pneumonoultramicroscopicsilicovolcanoconiosis");
     }
 
     @Test
     void testCombineDuplicates() {
         final Dictionary combined = Dictionary.combine(Arrays.asList(
-                Dictionary.BundledDictionary.get("dictionaries/simple.dic"),
-                Dictionary.BundledDictionary.get("dictionaries/simple.dic")));
+            Dictionary.BundledDictionary.get("dictionaries/simple.dic"),
+            Dictionary.BundledDictionary.get("dictionaries/simple.dic")));
 
         assertThat(combined.getWords())
-                .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow");
+            .containsExactlyInAnyOrder("a", "the", "dog", "woof", "cat", "meow");
     }
 
 
     @Test
     void testEqualsContract() {
         EqualsVerifier.forClass(Dictionary.class)
-                .usingGetClass()
-                .withIgnoredFields("name", "words")
-                .verify();
+            .usingGetClass()
+            .withIgnoredFields("name", "words")
+            .verify();
     }
 
 
