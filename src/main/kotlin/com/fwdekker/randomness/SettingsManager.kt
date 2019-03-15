@@ -1,35 +1,33 @@
-package com.fwdekker.randomness;
-
-import org.jetbrains.annotations.NotNull;
+package com.fwdekker.randomness
 
 
 /**
- * A {@code SettingsManager} is an object that can change settings of a given type.
+ * A `SettingsManager` is an object that can change settings of a given type.
  *
  * @param <S> the type of settings that are changed by the implementation
- */
-public interface SettingsManager<S extends Settings> {
+  */
+interface SettingsManager<S : Settings<*>> {
     /**
      * Loads the default settings instance into the implementing object.
      */
-    void loadSettings();
+    fun loadSettings()
 
     /**
      * Loads the given settings instance into the implementing object.
      *
      * @param settings a settings instance
      */
-    void loadSettings(@NotNull S settings);
+    fun loadSettings(settings: S)
 
     /**
      * Saves the implementing object's state into the default settings instance.
      */
-    void saveSettings();
+    fun saveSettings()
 
     /**
      * Saves the implementing object's state into the given settings instance.
      *
      * @param settings a settings instance
      */
-    void saveSettings(@NotNull S settings);
+    fun saveSettings(settings: S)
 }
