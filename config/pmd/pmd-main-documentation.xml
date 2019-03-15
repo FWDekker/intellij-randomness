@@ -5,8 +5,14 @@
 
     <!-- No need to disallow certain words.
     <rule ref="category/java/documentation.xml/CommentContent"/> -->
-    <rule ref="category/java/documentation.xml/CommentRequired"/>
-    <rule ref="category/java/documentation.xml/CommentSize"/>
+    <rule ref="category/java/documentation.xml/CommentRequired">
+        <properties>
+            <!-- Comment for each field is excessive. -->
+            <property name="fieldCommentRequirement" value="Ignored"/>
+        </properties>
+    </rule>
+    <!-- Line length is checked by CheckStyle. Line count should not be limited.
+    <rule ref="category/java/documentation.xml/CommentSize"/> -->
     <rule ref="category/java/documentation.xml/UncommentedEmptyConstructor"/>
     <rule ref="category/java/documentation.xml/UncommentedEmptyMethodBody"/>
 </ruleset>

@@ -14,17 +14,17 @@ final class BundledDictionaryTest {
     @Test
     void testInitDoesNotExist() {
         assertThatThrownBy(() -> Dictionary.BundledDictionary.get("invalid_resource"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Failed to read dictionary into memory.")
-                .hasNoCause();
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Failed to read dictionary into memory.")
+            .hasNoCause();
     }
 
     @Test
     void testInitEmpty() {
         assertThatThrownBy(() -> Dictionary.BundledDictionary.get("dictionaries/empty.dic"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Dictionary must be non-empty.")
-                .hasNoCause();
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Dictionary must be non-empty.")
+            .hasNoCause();
     }
 
     @Test

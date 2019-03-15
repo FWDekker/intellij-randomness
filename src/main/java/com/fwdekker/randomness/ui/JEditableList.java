@@ -87,7 +87,7 @@ public final class JEditableList<T> extends JTable {
      */
     private boolean hasEntry(final T entry) {
         return IntStream.range(0, getEntryCount())
-                .anyMatch(row -> getEntry(row).equals(entry));
+            .anyMatch(row -> getEntry(row).equals(entry));
     }
 
     /**
@@ -109,9 +109,9 @@ public final class JEditableList<T> extends JTable {
      */
     private int getEntryRow(final T entry) {
         return IntStream.range(0, getEntryCount())
-                .filter(row -> getEntry(row).equals(entry))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("No row with entry `" + entry + "` found."));
+            .filter(row -> getEntry(row).equals(entry))
+            .findFirst()
+            .orElseThrow(() -> new NoSuchElementException("No row with entry `" + entry + "` found."));
     }
 
     /**
@@ -121,8 +121,8 @@ public final class JEditableList<T> extends JTable {
      */
     public List<T> getEntries() {
         return IntStream.range(0, getEntryCount())
-                .mapToObj(this::getEntry)
-                .collect(Collectors.toList());
+            .mapToObj(this::getEntry)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -158,8 +158,8 @@ public final class JEditableList<T> extends JTable {
      */
     public List<T> getActiveEntries() {
         return getEntries().stream()
-                .filter(this::isActive)
-                .collect(Collectors.toList());
+            .filter(this::isActive)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -227,8 +227,8 @@ public final class JEditableList<T> extends JTable {
      */
     public Optional<T> getHighlightedEntry() {
         return Arrays.stream(getSelectedRows())
-                .mapToObj(this::getEntry)
-                .findFirst();
+            .mapToObj(this::getEntry)
+            .findFirst();
     }
 
 

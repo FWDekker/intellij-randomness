@@ -41,10 +41,10 @@ public final class ButtonGroupHelper {
      */
     public static String getValue(final ButtonGroup group) {
         return Collections.list(group.getElements()).stream()
-                .filter(AbstractButton::isSelected)
-                .map(AbstractButton::getActionCommand)
-                .findFirst()
-                .orElse(null);
+            .filter(AbstractButton::isSelected)
+            .map(AbstractButton::getActionCommand)
+            .findFirst()
+            .orElse(null);
     }
 
     /**
@@ -55,10 +55,10 @@ public final class ButtonGroupHelper {
      */
     public static void setValue(final ButtonGroup group, final String value) {
         final AbstractButton targetButton = Collections.list(group.getElements()).stream()
-                .filter(button -> button.getActionCommand().equals("\0".equals(value) ? "" : value))
-                .findFirst()
-                .orElseThrow(() ->
-                        new NoSuchElementException("Could not find a button with action command `" + value + "`."));
+            .filter(button -> button.getActionCommand().equals("\0".equals(value) ? "" : value))
+            .findFirst()
+            .orElseThrow(() ->
+                new NoSuchElementException("Could not find a button with action command `" + value + "`."));
 
         targetButton.setSelected(true);
     }

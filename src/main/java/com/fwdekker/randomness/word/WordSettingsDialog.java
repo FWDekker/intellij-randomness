@@ -31,11 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Dialog for settings of random word generation.
  */
-@SuppressWarnings("PMD.SingularField") // Required by UI Framework
-@SuppressFBWarnings(
-        value = {"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"},
-        justification = "Initialized by UI framework"
-)
+@SuppressFBWarnings({"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"}) // Initialized by UI framework
 public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private JPanel contentPane;
     private JSpinnerRange lengthRange;
@@ -51,7 +47,7 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     /**
      * Constructs a new {@code WordSettingsDialog} that uses the singleton {@code WordSettings} instance.
      */
-    WordSettingsDialog() {
+    /* default */ WordSettingsDialog() {
         this(WordSettings.getInstance());
     }
 
@@ -60,7 +56,7 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
      *
      * @param settings the settings to manipulate with this dialog
      */
-    WordSettingsDialog(final @NotNull WordSettings settings) {
+    /* default */ WordSettingsDialog(final @NotNull WordSettings settings) {
         super(settings);
 
         init();
@@ -117,23 +113,23 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         settings.setCapitalization(CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)));
 
         settings.setBundledDictionaries(dictionaries.getEntries().stream()
-                .filter(Dictionary.BundledDictionary.class::isInstance)
-                .map(Dictionary::getUid)
-                .collect(Collectors.toSet()));
+            .filter(Dictionary.BundledDictionary.class::isInstance)
+            .map(Dictionary::getUid)
+            .collect(Collectors.toSet()));
         settings.setActiveBundledDictionaries(dictionaries.getActiveEntries().stream()
-                .filter(Dictionary.BundledDictionary.class::isInstance)
-                .map(Dictionary::getUid)
-                .collect(Collectors.toSet()));
+            .filter(Dictionary.BundledDictionary.class::isInstance)
+            .map(Dictionary::getUid)
+            .collect(Collectors.toSet()));
         Dictionary.BundledDictionary.clearCache();
 
         settings.setUserDictionaries(dictionaries.getEntries().stream()
-                .filter(Dictionary.UserDictionary.class::isInstance)
-                .map(Dictionary::getUid)
-                .collect(Collectors.toSet()));
+            .filter(Dictionary.UserDictionary.class::isInstance)
+            .map(Dictionary::getUid)
+            .collect(Collectors.toSet()));
         settings.setActiveUserDictionaries(dictionaries.getActiveEntries().stream()
-                .filter(Dictionary.UserDictionary.class::isInstance)
-                .map(Dictionary::getUid)
-                .collect(Collectors.toSet()));
+            .filter(Dictionary.UserDictionary.class::isInstance)
+            .map(Dictionary::getUid)
+            .collect(Collectors.toSet()));
         Dictionary.UserDictionary.clearCache();
     }
 
@@ -145,9 +141,9 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         }
 
         final Optional<ValidationInfo> invalidDictionary = dictionaries.getActiveEntries().stream()
-                .map(Dictionary::validate)
-                .filter(Objects::nonNull)
-                .findFirst();
+            .map(Dictionary::validate)
+            .filter(Objects::nonNull)
+            .findFirst();
         if (invalidDictionary.isPresent()) {
             return new ValidationInfo(invalidDictionary.get().message, dictionaries);
         }
@@ -176,9 +172,9 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             final ValidationInfo validationInfo = Dictionary.UserDictionary.validate(files.get(0).getCanonicalPath());
             if (validationInfo != null) {
                 JBPopupFactory.getInstance()
-                        .createHtmlTextBalloonBuilder(validationInfo.message, MessageType.ERROR, null)
-                        .createBalloon()
-                        .show(RelativePoint.getSouthOf(dictionaryAddButton), Balloon.Position.below);
+                    .createHtmlTextBalloonBuilder(validationInfo.message, MessageType.ERROR, null)
+                    .createBalloon()
+                    .show(RelativePoint.getSouthOf(dictionaryAddButton), Balloon.Position.below);
                 return;
             }
 
@@ -207,7 +203,7 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         if (!event.getValueIsAdjusting()) {
             final Optional<Dictionary> highlightedDictionary = dictionaries.getHighlightedEntry();
             final boolean enable = highlightedDictionary.isPresent()
-                    && highlightedDictionary.get() instanceof Dictionary.UserDictionary;
+                && highlightedDictionary.get() instanceof Dictionary.UserDictionary;
             dictionaryRemoveButton.setEnabled(enable);
         }
     }

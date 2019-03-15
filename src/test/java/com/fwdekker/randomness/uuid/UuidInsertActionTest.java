@@ -18,9 +18,9 @@ public final class UuidInsertActionTest {
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Used as parameterized method source
     private static Collection<Object[]> provider() {
         return Arrays.asList(new Object[][]{
-                {""},
-                {"'"},
-                {"Eglzfpf5"}
+            {""},
+            {"'"},
+            {"Eglzfpf5"}
         });
     }
 
@@ -35,12 +35,12 @@ public final class UuidInsertActionTest {
         final String generatedString = insertRandomUuid.generateString();
 
         assertThat(generatedString)
-                .startsWith(enclosure)
-                .endsWith(enclosure);
+            .startsWith(enclosure)
+            .endsWith(enclosure);
 
         final String generatedUuid = generatedString
-                .replaceAll("^" + enclosure, "")
-                .replaceAll(enclosure + "$", "");
+            .replaceAll("^" + enclosure, "")
+            .replaceAll(enclosure + "$", "");
         assertThatCode(() -> UUID.fromString(generatedUuid)).doesNotThrowAnyException();
     }
 }

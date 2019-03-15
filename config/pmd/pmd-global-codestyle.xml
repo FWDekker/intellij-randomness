@@ -13,10 +13,12 @@
     <rule ref="category/java/codestyle.xml/BooleanGetMethodName"/>
     <rule ref="category/java/codestyle.xml/CallSuperInConstructor"/> <!-- TODO check if this is wanted -->
     <rule ref="category/java/codestyle.xml/ClassNamingConventions"/>
-    <rule ref="category/java/codestyle.xml/CommentDefaultAccessModifier"/>
+    <!-- Production code only. Default package is standard for JUnit tests.
+    <rule ref="category/java/codestyle.xml/CommentDefaultAccessModifier"/> -->
     <rule ref="category/java/codestyle.xml/ConfusingTernary"/>
     <rule ref="category/java/codestyle.xml/ControlStatementBraces"/>
-    <rule ref="category/java/codestyle.xml/DefaultPackage"/>
+    <!-- Production code only. Default package is standard for JUnit tests.
+    <rule ref="category/java/codestyle.xml/DefaultPackage"/> -->
     <rule ref="category/java/codestyle.xml/DontImportJavaLang"/>
     <rule ref="category/java/codestyle.xml/DuplicateImports"/>
     <rule ref="category/java/codestyle.xml/EmptyMethodInAbstractClassShouldBeAbstract"/>
@@ -33,7 +35,12 @@
     <rule ref="category/java/codestyle.xml/LocalInterfaceSessionNamingConvention"/> -->
     <rule ref="category/java/codestyle.xml/LocalVariableCouldBeFinal"/>
     <rule ref="category/java/codestyle.xml/LocalVariableNamingConventions"/>
-    <rule ref="category/java/codestyle.xml/LongVariable"/>
+    <rule ref="category/java/codestyle.xml/LongVariable">
+        <properties>
+            <!-- Longer variable names are OK. -->
+            <property name="minimum" value="36"/>
+        </properties>
+    </rule>
     <!-- Project does not use EJB.
     <rule ref="category/java/codestyle.xml/MDBAndSessionBeanNamingConvention"/> -->
     <rule ref="category/java/codestyle.xml/MethodArgumentCouldBeFinal"/>
@@ -49,7 +56,7 @@
     <rule ref="category/java/codestyle.xml/ShortClassName"/>
     <rule ref="category/java/codestyle.xml/ShortMethodName"/>
     <rule ref="category/java/codestyle.xml/ShortVariable"/>
-    <!-- Production code only.
+    <!-- Production code only. Static imports make tests easier to read.
     <rule ref="category/java/codestyle.xml/TooManyStaticImports"/> -->
     <rule ref="category/java/codestyle.xml/UnnecessaryAnnotationValueElement"/>
     <rule ref="category/java/codestyle.xml/UnnecessaryConstructor"/>
@@ -60,5 +67,10 @@
     <rule ref="category/java/codestyle.xml/UseDiamondOperator"/>
     <rule ref="category/java/codestyle.xml/UselessParentheses"/>
     <rule ref="category/java/codestyle.xml/UselessQualifiedThis"/>
-    <rule ref="category/java/codestyle.xml/UseUnderscoresInNumericLiterals"/>
+    <rule ref="category/java/codestyle.xml/UseUnderscoresInNumericLiterals">
+        <properties>
+            <!-- Sub-million can be eyeballed. -->
+            <property name="acceptableDecimalLength" value="7"/>
+        </properties>
+    </rule>
 </ruleset>

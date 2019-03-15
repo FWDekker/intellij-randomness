@@ -22,10 +22,7 @@ import java.util.HashSet;
 /**
  * Dialog for settings of random string generation.
  */
-@SuppressFBWarnings(
-        value = {"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"},
-        justification = "Initialized by UI framework"
-)
+@SuppressFBWarnings({"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"}) // Initialized by UI framework
 public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     private JPanel contentPane;
     private JSpinnerRange lengthRange;
@@ -39,7 +36,7 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     /**
      * Constructs a new {@code StringSettingsDialog} that uses the singleton {@code StringSettings} instance.
      */
-    StringSettingsDialog() {
+    /* default */ StringSettingsDialog() {
         this(StringSettings.getInstance());
     }
 
@@ -48,7 +45,7 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
      *
      * @param settings the settings to manipulate with this dialog
      */
-    StringSettingsDialog(final @NotNull StringSettings settings) {
+    /* default */ StringSettingsDialog(final @NotNull StringSettings settings) {
         super(settings);
 
         init();

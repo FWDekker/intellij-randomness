@@ -27,23 +27,23 @@ final class UserDictionaryTest {
     @Test
     void testInitDoesNotExist() {
         assertThatThrownBy(() -> Dictionary.UserDictionary.get("invalid_file"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Failed to read dictionary into memory.")
-                .hasCauseInstanceOf(IOException.class);
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Failed to read dictionary into memory.")
+            .hasCauseInstanceOf(IOException.class);
     }
 
     @Test
     void testInitEmpty() {
-        final File dictionaryFile = FILE_HELPER.setUpDictionary("");
+        final File dictionaryFile = FILE_HELPER.createDictionaryFile("");
 
         assertThatThrownBy(() -> Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Dictionary must be non-empty.");
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Dictionary must be non-empty.");
     }
 
     @Test
     void testInitTwiceSame() {
-        final File dictionaryFile = FILE_HELPER.setUpDictionary("Fonded\nLustrum\nUpgale");
+        final File dictionaryFile = FILE_HELPER.createDictionaryFile("Fonded\nLustrum\nUpgale");
 
         final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
         final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
@@ -53,7 +53,7 @@ final class UserDictionaryTest {
 
     @Test
     void testInitTwiceNoCacheEqualButNotSame() {
-        final File dictionaryFile = FILE_HELPER.setUpDictionary("Dyers\nHexsub\nBookit");
+        final File dictionaryFile = FILE_HELPER.createDictionaryFile("Dyers\nHexsub\nBookit");
 
         final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
         final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath(), false);
@@ -64,7 +64,7 @@ final class UserDictionaryTest {
 
     @Test
     void testInitNoCacheStoresAnyway() {
-        final File dictionaryFile = FILE_HELPER.setUpDictionary("Pecking\nAdinole\nFlashpan");
+        final File dictionaryFile = FILE_HELPER.createDictionaryFile("Pecking\nAdinole\nFlashpan");
 
         final Dictionary dictionaryA = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath(), false);
         final Dictionary dictionaryB = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
@@ -74,7 +74,7 @@ final class UserDictionaryTest {
 
     @Test
     void testInitAfterClearCache() {
-        final File dictionaryFile = FILE_HELPER.setUpDictionary("Melamin\nPetrol\nBruckled");
+        final File dictionaryFile = FILE_HELPER.createDictionaryFile("Melamin\nPetrol\nBruckled");
         final Dictionary dictionaryBefore = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
 
         Dictionary.UserDictionary.clearCache();
@@ -89,7 +89,7 @@ final class UserDictionaryTest {
 
     @Test
     void testValidateInstanceSuccess() {
-        final File dictionaryFile = FILE_HELPER.setUpDictionary("Rhodinal\nScruff\nPibrochs");
+        final File dictionaryFile = FILE_HELPER.createDictionaryFile("Rhodinal\nScruff\nPibrochs");
         final Dictionary dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());
 
         final ValidationInfo validationInfo = dictionary.validate();
@@ -99,7 +99,7 @@ final class UserDictionaryTest {
 
     @Test
     void testValidateStaticSuccess() {
-        final File dictionaryFile = FILE_HELPER.setUpDictionary("Bbls\nOverpray\nTreeward");
+        final File dictionaryFile = FILE_HELPER.createDictionaryFile("Bbls\nOverpray\nTreeward");
 
         final ValidationInfo validationInfo = Dictionary.UserDictionary.validate(dictionaryFile.getAbsolutePath());
 
@@ -117,7 +117,7 @@ final class UserDictionaryTest {
 
     @Test
     void testValidateStaticFileEmpty() {
-        final File dictionaryFile = FILE_HELPER.setUpDictionary("");
+        final File dictionaryFile = FILE_HELPER.createDictionaryFile("");
         final String dictionaryName = dictionaryFile.getName();
 
         final ValidationInfo validationInfo = Dictionary.UserDictionary.validate(dictionaryFile.getAbsolutePath());
@@ -130,7 +130,7 @@ final class UserDictionaryTest {
 
     @Test
     void testToString() {
-        final File dictionaryFile = FILE_HELPER.setUpDictionary("Cholers\nJaloused\nStopback");
+        final File dictionaryFile = FILE_HELPER.createDictionaryFile("Cholers\nJaloused\nStopback");
         final String dictionaryName = dictionaryFile.getName();
 
         final Dictionary dictionary = Dictionary.UserDictionary.get(dictionaryFile.getAbsolutePath());

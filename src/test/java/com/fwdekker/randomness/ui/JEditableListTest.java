@@ -28,7 +28,7 @@ final class JEditableListTest {
     @Test
     void testGetEntriesEmpty() {
         assertThat(list.getEntries())
-                .isEmpty();
+            .isEmpty();
     }
 
     @Test
@@ -36,7 +36,7 @@ final class JEditableListTest {
         list.addEntry("sxTODMrLvE");
 
         assertThat(list.getEntries())
-                .containsExactly("sxTODMrLvE");
+            .containsExactly("sxTODMrLvE");
     }
 
     @Test
@@ -45,7 +45,7 @@ final class JEditableListTest {
         list.addEntry("6bqmI9JEkv");
 
         assertThat(list.getEntries())
-                .containsExactly("6bqmI9JEkv");
+            .containsExactly("6bqmI9JEkv");
     }
 
     @Test
@@ -53,7 +53,7 @@ final class JEditableListTest {
         list.setEntries(Collections.emptyList());
 
         assertThat(list.getEntries())
-                .isEmpty();
+            .isEmpty();
     }
 
     @Test
@@ -61,7 +61,7 @@ final class JEditableListTest {
         list.setEntries(Arrays.asList("[qOBxjKQ6P", "DGw{4ag(99"));
 
         assertThat(list.getEntries())
-                .containsExactly("[qOBxjKQ6P", "DGw{4ag(99");
+            .containsExactly("[qOBxjKQ6P", "DGw{4ag(99");
     }
 
     @Test
@@ -71,7 +71,7 @@ final class JEditableListTest {
         list.setEntries(Collections.emptyList());
 
         assertThat(list.getEntries())
-                .isEmpty();
+            .isEmpty();
     }
 
     @Test
@@ -82,7 +82,7 @@ final class JEditableListTest {
         list.setEntries(Arrays.asList("qKZK]8Y[vs", "cn3{[6y>de", "skE}h6H9MJ"));
 
         assertThat(list.getEntries())
-                .containsExactly("qKZK]8Y[vs", "cn3{[6y>de", "skE}h6H9MJ");
+            .containsExactly("qKZK]8Y[vs", "cn3{[6y>de", "skE}h6H9MJ");
     }
 
     @Test
@@ -93,7 +93,7 @@ final class JEditableListTest {
         list.removeEntry("X0hxkJGK)7");
 
         assertThat(list.getEntries())
-                .containsExactly("><t1wfkCLz", "TI5i9bUyLc");
+            .containsExactly("><t1wfkCLz", "TI5i9bUyLc");
     }
 
     @Test
@@ -105,7 +105,7 @@ final class JEditableListTest {
         list.removeEntry("tyFoveRt5n");
 
         assertThat(list.getEntries())
-                .containsExactly("UNIODenA]8", ">q(isDDjGx");
+            .containsExactly("UNIODenA]8", ">q(isDDjGx");
     }
 
     @Test
@@ -115,9 +115,9 @@ final class JEditableListTest {
         list.addEntry("a4BEQoJpLJ");
 
         assertThatThrownBy(() -> list.removeEntry("6uy19G<}JS"))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("No row with entry `6uy19G<}JS` found.")
-                .hasNoCause();
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage("No row with entry `6uy19G<}JS` found.")
+            .hasNoCause();
     }
 
     @Test
@@ -125,7 +125,7 @@ final class JEditableListTest {
         list.clear();
 
         assertThat(list.getEntries())
-                .isEmpty();
+            .isEmpty();
     }
 
     @Test
@@ -135,13 +135,13 @@ final class JEditableListTest {
         list.clear();
 
         assertThat(list.getEntries())
-                .isEmpty();
+            .isEmpty();
     }
 
     @Test
     void testGetEntryCountEmpty() {
         assertThat(list.getEntryCount())
-                .isEqualTo(0);
+            .isEqualTo(0);
     }
 
     @Test
@@ -150,7 +150,7 @@ final class JEditableListTest {
         list.addEntry("gXsoY21wzb");
 
         assertThat(list.getEntryCount())
-                .isEqualTo(2);
+            .isEqualTo(2);
     }
 
     @Test
@@ -160,14 +160,14 @@ final class JEditableListTest {
         list.addEntry("A>)6q<f5kT");
 
         assertThat(list.getEntryCount())
-                .isEqualTo(2);
+            .isEqualTo(2);
     }
 
 
     @Test
     void testActiveEntriesEmpty() {
         assertThat(list.getActiveEntries())
-                .isEmpty();
+            .isEmpty();
     }
 
     @Test
@@ -175,7 +175,7 @@ final class JEditableListTest {
         list.setEntries(Arrays.asList("DnqtROf4fd", "0<16CDsby2", "h0hu4XePhv"));
 
         assertThat(list.getActiveEntries())
-                .isEmpty();
+            .isEmpty();
     }
 
     @Test
@@ -185,7 +185,7 @@ final class JEditableListTest {
         list.setActiveEntries(Arrays.asList("UGuD08qUXr"));
 
         assertThat(list.getActiveEntries())
-                .containsExactly("UGuD08qUXr");
+            .containsExactly("UGuD08qUXr");
     }
 
     @Test
@@ -195,7 +195,7 @@ final class JEditableListTest {
         list.setActiveEntries(entries);
 
         assertThat(list.getActiveEntries())
-                .containsExactlyElementsOf(entries);
+            .containsExactlyElementsOf(entries);
     }
 
     @Test
@@ -205,7 +205,7 @@ final class JEditableListTest {
         list.setActiveEntries(Arrays.asList("JXIPoWsGR{", "j>NBYo}DnW", ">Jq7ILgv9]"));
 
         assertThat(list.getActiveEntries())
-                .containsExactlyElementsOf(entries);
+            .containsExactlyElementsOf(entries);
     }
 
     @Test
@@ -222,9 +222,9 @@ final class JEditableListTest {
     @Test
     void testIsActiveNonExistent() {
         assertThatThrownBy(() -> list.isActive("Vr{1zIC9iH"))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("No row with entry `Vr{1zIC9iH` found.")
-                .hasNoCause();
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage("No row with entry `Vr{1zIC9iH` found.")
+            .hasNoCause();
     }
 
     @Test
@@ -273,7 +273,7 @@ final class JEditableListTest {
         list.addRowSelectionInterval(0, 0);
 
         assertThat(list.getHighlightedEntry().get())
-                .isEqualTo("Bb]CEbJlAD");
+            .isEqualTo("Bb]CEbJlAD");
     }
 
     @Test
@@ -283,7 +283,7 @@ final class JEditableListTest {
         list.addRowSelectionInterval(2, 2);
 
         assertThat(list.getHighlightedEntry().get())
-                .isEqualTo("sCxbg}sfy(");
+            .isEqualTo("sCxbg}sfy(");
     }
 
 
@@ -293,13 +293,13 @@ final class JEditableListTest {
         assertThat(list.getColumnClass(1)).isEqualTo(String.class);
 
         assertThatThrownBy(() -> list.getColumnClass(-1))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("JEditableList only has two columns.")
-                .hasNoCause();
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("JEditableList only has two columns.")
+            .hasNoCause();
         assertThatThrownBy(() -> list.getColumnClass(2))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("JEditableList only has two columns.")
-                .hasNoCause();
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("JEditableList only has two columns.")
+            .hasNoCause();
     }
 
     @Test

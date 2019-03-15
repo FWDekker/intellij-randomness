@@ -12,7 +12,8 @@
     <rule ref="category/java/errorprone.xml/AvoidCatchingNPE"/>
     <rule ref="category/java/errorprone.xml/AvoidCatchingThrowable"/>
     <rule ref="category/java/errorprone.xml/AvoidDecimalLiteralsInBigDecimalConstructor"/>
-    <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals"/>
+    <!-- Production code only. Tests often contain duplicate magic strings.
+    <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals"/> -->
     <rule ref="category/java/errorprone.xml/AvoidEnumAsIdentifier"/>
     <rule ref="category/java/errorprone.xml/AvoidFieldNameMatchingMethodName"/>
     <rule ref="category/java/errorprone.xml/AvoidFieldNameMatchingTypeName"/>
@@ -22,7 +23,8 @@
     <rule ref="category/java/errorprone.xml/AvoidMultipleUnaryOperators"/>
     <rule ref="category/java/errorprone.xml/AvoidUsingOctalValues"/>
     <rule ref="category/java/errorprone.xml/BadComparison"/>
-    <rule ref="category/java/errorprone.xml/BeanMembersShouldSerialize"/>
+    <!-- Serialisation not used in this project. TODO: Keep track of this.
+    <rule ref="category/java/errorprone.xml/BeanMembersShouldSerialize"/> -->
     <rule ref="category/java/errorprone.xml/BrokenNullCheck"/>
     <rule ref="category/java/errorprone.xml/CallSuperFirst"/>
     <!-- CallSuperFirst is used instead.
@@ -37,7 +39,8 @@
     <rule ref="category/java/errorprone.xml/CloseResource"/>
     <rule ref="category/java/errorprone.xml/CompareObjectsWithEquals"/>
     <rule ref="category/java/errorprone.xml/ConstructorCallsOverridableMethod"/>
-    <rule ref="category/java/errorprone.xml/DataflowAnomalyAnalysis"/>
+    <!-- Too many false positives.
+    <rule ref="category/java/errorprone.xml/DataflowAnomalyAnalysis"/> -->
     <rule ref="category/java/errorprone.xml/DoNotCallGarbageCollectionExplicitly"/>
     <rule ref="category/java/errorprone.xml/DoNotCallSystemExit"/>
     <rule ref="category/java/errorprone.xml/DoNotExtendJavaLangThrowable"/>
@@ -75,7 +78,8 @@
     <rule ref="category/java/errorprone.xml/MethodWithSameNameAsEnclosingClass"/>
     <rule ref="category/java/errorprone.xml/MisplacedNullCheck"/>
     <rule ref="category/java/errorprone.xml/MissingBreakInSwitch"/>
-    <rule ref="category/java/errorprone.xml/MissingSerialVersionUID"/>
+    <!-- Serialisation not used in this project. TODO: Keep track of this.
+    <rule ref="category/java/errorprone.xml/MissingSerialVersionUID"/> -->
     <rule ref="category/java/errorprone.xml/MissingStaticMethodInNonInstantiatableClass"/>
     <rule ref="category/java/errorprone.xml/MoreThanOneLogger"/>
     <rule ref="category/java/errorprone.xml/NonCaseLabelInSwitchStatement"/>

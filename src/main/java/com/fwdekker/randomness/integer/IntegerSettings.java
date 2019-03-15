@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
  * Contains settings for generating random integers.
  */
 @State(
-        name = "IntegerSettings",
-        storages = @Storage("$APP_CONFIG$/randomness.xml")
+    name = "IntegerSettings",
+    storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class IntegerSettings implements Settings<IntegerSettings> {
     public static final int MIN_BASE = 2;

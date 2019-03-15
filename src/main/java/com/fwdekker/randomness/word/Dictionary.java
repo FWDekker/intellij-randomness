@@ -4,13 +4,12 @@ import com.intellij.openapi.ui.ValidationInfo;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 /**
  * A dictionary of English words.
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals") // Cannot reasonably be refactored
 public abstract class Dictionary {
     /**
      * The name of the default dictionary file.
@@ -119,8 +119,8 @@ public abstract class Dictionary {
      */
     public final List<String> getWordsWithLengthInRange(final int minLength, final int maxLength) {
         return words.parallelStream()
-                .filter(word -> word.length() >= minLength && word.length() <= maxLength)
-                .collect(Collectors.toList());
+            .filter(word -> word.length() >= minLength && word.length() <= maxLength)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -130,8 +130,8 @@ public abstract class Dictionary {
      */
     public final String getShortestWord() {
         return words.parallelStream()
-                .min(Comparator.comparingInt(String::length))
-                .orElseThrow(() -> new IllegalStateException("Dictionary should not be empty."));
+            .min(Comparator.comparingInt(String::length))
+            .orElseThrow(() -> new IllegalStateException("Dictionary should not be empty."));
     }
 
     /**
@@ -141,8 +141,8 @@ public abstract class Dictionary {
      */
     public final String getLongestWord() {
         return words.parallelStream()
-                .max(Comparator.comparingInt(String::length))
-                .orElseThrow(() -> new IllegalStateException("Dictionary should not be empty."));
+            .max(Comparator.comparingInt(String::length))
+            .orElseThrow(() -> new IllegalStateException("Dictionary should not be empty."));
     }
 
     /**
@@ -199,6 +199,7 @@ public abstract class Dictionary {
         /**
          * A cache of previously created {@code BundledDictionary(s)}.
          */
+        @SuppressWarnings("PMD.UseConcurrentHashMap") // No concurrent access
         private static final Map<String, BundledDictionary> CACHE = new HashMap<>();
 
 
@@ -304,6 +305,7 @@ public abstract class Dictionary {
         /**
          * A cache of previously created {@code BundledDictionary(s)}.
          */
+        @SuppressWarnings("PMD.UseConcurrentHashMap") // No concurrent access
         private static final Map<String, UserDictionary> CACHE = new HashMap<>();
 
 
@@ -402,8 +404,8 @@ public abstract class Dictionary {
          */
         private static InputStream getInputStream(final String dictionary) {
             try {
-                return new FileInputStream(dictionary);
-            } catch (final FileNotFoundException e) {
+                return Files.newInputStream(Paths.get(dictionary));
+            } catch (final IOException e) {
                 throw new IllegalArgumentException("Failed to read dictionary into memory.", e);
             }
         }
@@ -416,7 +418,7 @@ public abstract class Dictionary {
         /**
          * Constructs a new, empty {@code SimpleDictionary}.
          */
-        SimpleDictionary() {
+        /* default */ SimpleDictionary() {
             super();
         }
 

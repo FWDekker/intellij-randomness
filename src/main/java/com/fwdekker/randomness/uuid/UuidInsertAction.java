@@ -16,7 +16,9 @@ public final class UuidInsertAction extends DataInsertAction {
     /**
      * Constructs a new {@code UuidInsertAction} that uses the singleton {@code UuidSettings} instance.
      */
-    public UuidInsertAction() {
+    /* default */ UuidInsertAction() {
+        super();
+
         this.uuidSettings = UuidSettings.getInstance();
     }
 
@@ -25,7 +27,9 @@ public final class UuidInsertAction extends DataInsertAction {
      *
      * @param uuidSettings the settings to use for generating UUIDs
      */
-    UuidInsertAction(final @NotNull UuidSettings uuidSettings) {
+    /* default */ UuidInsertAction(final @NotNull UuidSettings uuidSettings) {
+        super();
+
         this.uuidSettings = uuidSettings;
     }
 

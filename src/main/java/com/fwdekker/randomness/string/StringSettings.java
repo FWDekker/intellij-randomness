@@ -17,8 +17,8 @@ import java.util.Set;
  * Contains settings for generating random strings.
  */
 @State(
-        name = "StringSettings",
-        storages = @Storage("$APP_CONFIG$/randomness.xml")
+    name = "StringSettings",
+    storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class StringSettings implements Settings<StringSettings> {
     private static final int DEFAULT_MIN_LENGTH = 3;

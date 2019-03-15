@@ -92,6 +92,8 @@ public abstract class DataInsertAction extends AnAction {
          * @param dataInsertAction the action to generate data with
          */
         public ArrayAction(final DataInsertAction dataInsertAction) {
+            super();
+
             this.arraySettings = ArraySettings.getInstance();
             this.dataInsertAction = dataInsertAction;
         }

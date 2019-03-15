@@ -36,8 +36,8 @@ public final class PopupAction extends AnAction {
         }
 
         final ListPopupImpl popup = (ListPopupImpl) JBPopupFactory.getInstance()
-                .createActionGroupPopup(TITLE, new PopupGroup(), event.getDataContext(),
-                        JBPopupFactory.ActionSelectionAid.NUMBERING, true, event.getPlace());
+            .createActionGroupPopup(TITLE, new PopupGroup(), event.getDataContext(),
+                JBPopupFactory.ActionSelectionAid.NUMBERING, true, event.getPlace());
         JBPopupHelper.disableSpeedSearch(popup);
         JBPopupHelper.registerShiftActions(popup, TITLE, SHIFT_TITLE);
         JBPopupHelper.registerCtrlActions(popup, TITLE, CTRL_TITLE);
@@ -55,13 +55,13 @@ public final class PopupAction extends AnAction {
         @Override
         public AnAction[] getChildren(final @Nullable AnActionEvent event) {
             return new AnAction[]{
-                    new IntegerGroupAction(),
-                    new DecimalGroupAction(),
-                    new StringGroupAction(),
-                    new WordGroupAction(),
-                    new UuidGroupAction(),
-                    new Separator(),
-                    new ArraySettingsAction()
+                new IntegerGroupAction(),
+                new DecimalGroupAction(),
+                new StringGroupAction(),
+                new WordGroupAction(),
+                new UuidGroupAction(),
+                new Separator(),
+                new ArraySettingsAction()
             };
         }
     }

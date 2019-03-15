@@ -14,8 +14,8 @@ import static org.assertj.swing.fixture.Containers.showInFrame;
  * GUI tests for {@link IntegerSettingsDialog}.
  */
 public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
-    private static final long DEFAULT_MIN_VALUE = 2147483883L;
-    private static final long DEFAULT_MAX_VALUE = 6442451778L;
+    private static final long DEFAULT_MIN_VALUE = 2_147_483_883L;
+    private static final long DEFAULT_MAX_VALUE = 6_442_451_778L;
     private static final long DEFAULT_BASE = 10;
 
     private IntegerSettings integerSettings;
@@ -116,8 +116,8 @@ public final class IntegerSettingsDialogTest extends AssertJSwingJUnitTestCase {
             integerSettingsDialog.saveSettings();
         });
 
-        assertThat(integerSettings.getMinValue()).isEqualTo(2147483648L);
-        assertThat(integerSettings.getMaxValue()).isEqualTo(2147483649L);
+        assertThat(integerSettings.getMinValue()).isEqualTo(2_147_483_648L);
+        assertThat(integerSettings.getMaxValue()).isEqualTo(2_147_483_649L);
         assertThat(integerSettings.getBase()).isEqualTo(14);
     }
 }

@@ -18,10 +18,7 @@ import javax.swing.JPanel;
 /**
  * Dialog for settings of random array generation.
  */
-@SuppressFBWarnings(
-        value = {"NP_NULL_ON_SOME_PATH"},
-        justification = "Initialized by UI framework"
-)
+@SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // Initialized by UI framework
 public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     private JPanel contentPane;
     private JLongSpinner countSpinner;
@@ -33,7 +30,7 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     /**
      * Constructs a new {@code StringSettingsDialog} that uses the singleton {@code StringSettings} instance.
      */
-    ArraySettingsDialog() {
+    /* default */ ArraySettingsDialog() {
         this(ArraySettings.getInstance());
     }
 
@@ -42,7 +39,7 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
      *
      * @param settings the settings to manipulate with this dialog
      */
-    ArraySettingsDialog(final @NotNull ArraySettings settings) {
+    /* default */ ArraySettingsDialog(final @NotNull ArraySettings settings) {
         super(settings);
 
         init();
@@ -75,7 +72,7 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     }
 
     @Override
-    @SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH")
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // Verified by annotation
     public void saveSettings(final @NotNull ArraySettings settings) {
         settings.setCount(Math.toIntExact(countSpinner.getValue()));
         settings.setBrackets(ButtonGroupHelper.getValue(bracketsGroup));

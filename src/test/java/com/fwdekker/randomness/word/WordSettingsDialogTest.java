@@ -88,27 +88,27 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
     public void testAddDictionary() {
         frame.button("dictionaryAdd").click();
         JFileChooserFinder.findFileChooser().using(robot())
-                .selectFile(getDictionaryFile("dictionaries/simple.dic"))
-                .approve();
+            .selectFile(getDictionaryFile("dictionaries/simple.dic"))
+            .approve();
 
         assertThat(dialogDictionaries.getEntry(1).toString().replaceAll("\\\\", "/"))
-                .endsWith("dictionaries/simple.dic");
+            .endsWith("dictionaries/simple.dic");
     }
 
     @Test
     @Ignore("Doesn't work with IntelliJ file chooser")
     public void testAddDictionaryDuplicate() {
         GuiActionRunner.execute(() -> dialogDictionaries
-                .addEntry(Dictionary.UserDictionary.get(getDictionaryFile("dictionaries/simple.dic")
-                        .getCanonicalPath())));
+            .addEntry(Dictionary.UserDictionary.get(getDictionaryFile("dictionaries/simple.dic")
+                .getCanonicalPath())));
 
         frame.button("dictionaryAdd").click();
         JFileChooserFinder.findFileChooser().using(robot())
-                .selectFile(getDictionaryFile("dictionaries/simple.dic"))
-                .approve();
+            .selectFile(getDictionaryFile("dictionaries/simple.dic"))
+            .approve();
 
         assertThat(dialogDictionaries.getEntryCount())
-                .isEqualTo(2);
+            .isEqualTo(2);
     }
 
     @Test
@@ -126,7 +126,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
     public void testRemoveUserDictionary() {
         GuiActionRunner.execute(() -> {
             dialogDictionaries.addEntry(Dictionary.UserDictionary.get(getDictionaryFile("dictionaries/simple.dic")
-                    .getCanonicalPath()));
+                .getCanonicalPath()));
             frame.table("dictionaries").target().clearSelection();
             frame.table("dictionaries").target().addRowSelectionInterval(1, 1);
             frame.button("dictionaryRemove").target().doClick();
@@ -198,7 +198,7 @@ public final class WordSettingsDialogTest extends AssertJSwingJUnitTestCase {
     @Test
     public void testValidateMaxLengthGreaterThanMinLength() {
         GuiActionRunner.execute(() -> frame.spinner("maxLength").target()
-                .setValue(DEFAULT_SETTINGS.getMinLength() - 1));
+            .setValue(DEFAULT_SETTINGS.getMinLength() - 1));
 
         final ValidationInfo validationInfo = wordSettingsDialog.doValidate();
 

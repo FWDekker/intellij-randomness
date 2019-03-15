@@ -16,7 +16,9 @@ public final class StringInsertAction extends DataInsertAction {
     /**
      * Constructs a new {@code StringInsertAction} that uses the singleton {@code StringSettings} instance.
      */
-    public StringInsertAction() {
+    /* default */ StringInsertAction() {
+        super();
+
         this.stringSettings = StringSettings.getInstance();
     }
 
@@ -25,7 +27,9 @@ public final class StringInsertAction extends DataInsertAction {
      *
      * @param stringSettings the settings to use for generating strings
      */
-    StringInsertAction(final @NotNull StringSettings stringSettings) {
+    /* default */ StringInsertAction(final @NotNull StringSettings stringSettings) {
+        super();
+
         this.stringSettings = stringSettings;
     }
 
@@ -43,7 +47,7 @@ public final class StringInsertAction extends DataInsertAction {
     @Override
     public String generateString() {
         final int length = ThreadLocalRandom.current()
-                .nextInt(stringSettings.getMinLength(), stringSettings.getMaxLength() + 1);
+            .nextInt(stringSettings.getMinLength(), stringSettings.getMaxLength() + 1);
 
         final char[] text = new char[length];
         for (int i = 0; i < length; i++) {

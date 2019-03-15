@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
  * Contains settings for generating random UUIDs.
  */
 @State(
-        name = "UuidSettings",
-        storages = @Storage("$APP_CONFIG$/randomness.xml")
+    name = "UuidSettings",
+    storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class UuidSettings implements Settings<UuidSettings> {
     /**

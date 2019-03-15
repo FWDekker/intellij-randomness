@@ -66,7 +66,7 @@ final class StringSettingsTest {
     @Test
     void testGetSetAlphabets() {
         final Set<Alphabet> alphabets
-                = new HashSet<>(Arrays.asList(Alphabet.ALPHABET, Alphabet.BRACKETS, Alphabet.MINUS));
+            = new HashSet<>(Arrays.asList(Alphabet.ALPHABET, Alphabet.BRACKETS, Alphabet.MINUS));
         stringSettings.setAlphabets(alphabets);
 
         assertThat(stringSettings.getAlphabets()).isEqualTo(alphabets);

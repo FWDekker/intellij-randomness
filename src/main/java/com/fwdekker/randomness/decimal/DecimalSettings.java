@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
  * Contains settings for generating random decimals.
  */
 @State(
-        name = "DecimalSettings",
-        storages = @Storage("$APP_CONFIG$/randomness.xml")
+    name = "DecimalSettings",
+    storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class DecimalSettings implements Settings<DecimalSettings> {
     private static final double DEFAULT_MIN_VALUE = 0.0;

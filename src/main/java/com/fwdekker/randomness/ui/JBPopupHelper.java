@@ -8,6 +8,7 @@ import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.Locale;
 import java.util.stream.IntStream;
 
 
@@ -15,6 +16,9 @@ import java.util.stream.IntStream;
  * A collection of helper methods for dealing with {@link com.intellij.openapi.ui.popup.JBPopup}s.
  */
 public final class JBPopupHelper {
+    private static final int NINE = 9;
+
+
     /**
      * Private constructor to prevent instantiation.
      */
@@ -43,41 +47,7 @@ public final class JBPopupHelper {
      */
     public static void registerShiftActions(final ListPopupImpl popup, final String normalTitle,
                                             final String shiftTitle) {
-        popup.registerAction("shiftReleased", KeyStroke.getKeyStroke("released SHIFT"), new AbstractAction() {
-            public void actionPerformed(final ActionEvent event) {
-                popup.setCaption(normalTitle);
-            }
-        });
-        popup.registerAction("shiftPressed", KeyStroke.getKeyStroke("shift pressed SHIFT"), new AbstractAction() {
-            public void actionPerformed(final ActionEvent event) {
-                popup.setCaption(shiftTitle);
-            }
-        });
-        popup.registerAction("shiftInvokeAction", KeyStroke.getKeyStroke("shift ENTER"), new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(), event.getWhen(),
-                        event.getModifiers(), KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
-                        KeyEvent.KEY_LOCATION_UNKNOWN);
-                popup.handleSelect(true, keyEvent);
-            }
-        });
-
-        final int nine = 9;
-        IntStream.range(1, nine).forEach(key -> popup
-                .registerAction("shiftInvoke" + key, KeyStroke.getKeyStroke("shift " + key),
-                        new AbstractAction() {
-                            @Override
-                            public void actionPerformed(final ActionEvent event) {
-                                final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(),
-                                        event.getWhen(), event.getModifiers(),
-                                        KeyEvent.VK_ENTER,
-                                        KeyEvent.CHAR_UNDEFINED,
-                                        KeyEvent.KEY_LOCATION_UNKNOWN);
-                                popup.getList().addSelectionInterval(key - 1, key - 1);
-                                popup.handleSelect(true, keyEvent);
-                            }
-                        }));
+        registerModifierActions(popup, ModifierKey.SHIFT, normalTitle, shiftTitle);
     }
 
     /**
@@ -89,41 +59,79 @@ public final class JBPopupHelper {
      */
     public static void registerCtrlActions(final ListPopupImpl popup, final String normalTitle,
                                            final String ctrlTitle) {
-        popup.registerAction("ctrlReleased", KeyStroke.getKeyStroke("released CONTROL"), new AbstractAction() {
-            public void actionPerformed(final ActionEvent event) {
-                popup.setCaption(normalTitle);
-            }
-        });
-        popup.registerAction("ctrlPressed", KeyStroke.getKeyStroke("control pressed CONTROL"), new AbstractAction() {
-            public void actionPerformed(final ActionEvent event) {
-                popup.setCaption(ctrlTitle);
-            }
-        });
-        popup.registerAction("ctrlInvokeAction", KeyStroke.getKeyStroke("control ENTER"), new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(), event.getWhen(),
-                        event.getModifiers(), KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
-                        KeyEvent.KEY_LOCATION_UNKNOWN);
-                popup.handleSelect(true, keyEvent);
-            }
-        });
+        registerModifierActions(popup, ModifierKey.CTRL, normalTitle, ctrlTitle);
+    }
 
-        final int nine = 9;
-        IntStream.range(1, nine).forEach(key -> popup
-                .registerAction("ctrlInvoke" + key, KeyStroke.getKeyStroke("control " + key),
-                        new AbstractAction() {
-                            @Override
-                            public void actionPerformed(final ActionEvent event) {
-                                final KeyEvent keyEvent = new KeyEvent(popup.getComponent(), event.getID(),
-                                        event.getWhen(), event.getModifiers(),
-                                        KeyEvent.VK_ENTER,
-                                        KeyEvent.CHAR_UNDEFINED,
-                                        KeyEvent.KEY_LOCATION_UNKNOWN);
-                                popup.getList().addSelectionInterval(key - 1, key - 1);
-                                popup.handleSelect(true, keyEvent);
-                            }
-                        }));
+    /**
+     * Registers actions such that actions can be selected while holding {@code Ctrl} or {@code Cmd}.
+     *
+     * @param popup         the popup to enable selecting with the modifier key for
+     * @param modifierKey   the modifier key for which actions should be registered
+     * @param normalTitle   the title of the popup while the modifier key is not pressed
+     * @param modifierTitle the title of the popup while the modifier key is pressed
+     */
+    private static void registerModifierActions(final ListPopupImpl popup, final ModifierKey modifierKey,
+                                                final String normalTitle, final String modifierTitle) {
+        final String lcShortModifierName = modifierKey.shortName.toLowerCase(Locale.getDefault());
+        final String lcLongModifierName = modifierKey.longName.toLowerCase(Locale.getDefault());
+        final String ucLongModifierName = modifierKey.longName.toUpperCase(Locale.getDefault());
+
+        popup.registerAction(
+            lcShortModifierName + "Released",
+            KeyStroke.getKeyStroke("released " + ucLongModifierName),
+            new AbstractAction() {
+                @Override
+                public void actionPerformed(final ActionEvent event) {
+                    popup.setCaption(normalTitle);
+                }
+            }
+        );
+        popup.registerAction(
+            lcShortModifierName + "Pressed",
+            KeyStroke.getKeyStroke(lcLongModifierName + " pressed " + ucLongModifierName),
+            new AbstractAction() {
+                @Override
+                public void actionPerformed(final ActionEvent event) {
+                    popup.setCaption(modifierTitle);
+                }
+            }
+        );
+        popup.registerAction(
+            lcShortModifierName + "InvokeAction",
+            KeyStroke.getKeyStroke(lcLongModifierName + " ENTER"),
+            new AbstractAction() {
+                @Override
+                public void actionPerformed(final ActionEvent event) {
+                    final KeyEvent keyEvent = new KeyEvent(
+                        popup.getComponent(), event.getID(), event.getWhen(),
+                        event.getModifiers(), KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
+                        KeyEvent.KEY_LOCATION_UNKNOWN
+                    );
+                    popup.handleSelect(true, keyEvent);
+                }
+            }
+        );
+
+        IntStream.range(1, NINE).forEach(key -> popup
+            .registerAction(
+                lcShortModifierName + "Invoke" + key,
+                KeyStroke.getKeyStroke(lcLongModifierName + " " + key),
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(final ActionEvent event) {
+                        final KeyEvent keyEvent = new KeyEvent(
+                            popup.getComponent(), event.getID(),
+                            event.getWhen(), event.getModifiers(),
+                            KeyEvent.VK_ENTER,
+                            KeyEvent.CHAR_UNDEFINED,
+                            KeyEvent.KEY_LOCATION_UNKNOWN
+                        );
+                        popup.getList().addSelectionInterval(key - 1, key - 1);
+                        popup.handleSelect(true, keyEvent);
+                    }
+                }
+            )
+        );
     }
 
     /**
@@ -138,11 +146,37 @@ public final class JBPopupHelper {
         };
 
         JBPopupFactory.getInstance().createConfirmation(
-                title,
-                messageA,
-                messageB,
-                nop,
-                1
+            title,
+            messageA,
+            messageB,
+            nop,
+            1
         ).showInFocusCenter();
+    }
+
+
+    /**
+     * Pairs the short and long name of a modifier key together.
+     */
+    private enum ModifierKey {
+        ALT("alt", "alt"),
+        CTRL("ctrl", "control"),
+        SHIFT("shift", "shift");
+
+
+        private final String shortName;
+        private final String longName;
+
+
+        /**
+         * Constructs a new modifier key.
+         *
+         * @param shortName the short name of the modifier key
+         * @param longName  the long name of the modifier key
+         */
+        ModifierKey(final String shortName, final String longName) {
+            this.shortName = shortName;
+            this.longName = longName;
+        }
     }
 }

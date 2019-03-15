@@ -14,8 +14,8 @@ import java.util.Collection;
  * Contains settings for generating random arrays of other types of random values.
  */
 @State(
-        name = "ArraySettings",
-        storages = @Storage("$APP_CONFIG$/randomness.xml")
+    name = "ArraySettings",
+    storages = @Storage("$APP_CONFIG$/randomness.xml")
 )
 public final class ArraySettings implements Settings<ArraySettings> {
     private static final int DEFAULT_COUNT = 5;

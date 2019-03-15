@@ -15,13 +15,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 final class WordInsertActionTest {
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Used as parameterized method source
     private static Collection<Object[]> provider() {
-        return Arrays.asList(new Object[][] {
-                {0, 1, ""},
-                {1, 1, ""},
-                {12, 12, ""},
-                {3, 15, "\""},
-                {3, 13, "`"},
-                {7, 9, "delim"},
+        return Arrays.asList(new Object[][]{
+            {0, 1, ""},
+            {1, 1, ""},
+            {12, 12, ""},
+            {3, 15, "\""},
+            {3, 13, "`"},
+            {7, 9, "delim"},
         });
     }
 
@@ -38,10 +38,10 @@ final class WordInsertActionTest {
         final String randomString = insertRandomWord.generateString();
 
         assertThat(randomString)
-                .startsWith(enclosure)
-                .endsWith(enclosure);
+            .startsWith(enclosure)
+            .endsWith(enclosure);
         assertThat(randomString.length())
-                .isGreaterThanOrEqualTo(minLength + 2 * enclosure.length())
-                .isLessThanOrEqualTo(maxLength + 2 * enclosure.length());
+            .isGreaterThanOrEqualTo(minLength + 2 * enclosure.length())
+            .isLessThanOrEqualTo(maxLength + 2 * enclosure.length());
     }
 }

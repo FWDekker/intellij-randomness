@@ -45,8 +45,8 @@ final class CapitalizationModeTest {
     @Test
     void testRandomTransform() {
         assertThat(CapitalizationMode.RANDOM.getTransform().apply("GHmdukhNqua"))
-                .isNotEqualTo("GHmdukhNqua") // Has a chance of 0.002% of failing
-                .isEqualToIgnoringCase("GHmdukhNqua");
+            .isNotEqualTo("GHmdukhNqua") // Has a chance of 0.002% of failing
+            .isEqualToIgnoringCase("GHmdukhNqua");
     }
 
 
@@ -145,8 +145,8 @@ final class CapitalizationModeTest {
     @Test
     void testGetModeOther() {
         assertThatThrownBy(() -> CapitalizationMode.getMode(""))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("There does not exist a capitalization mode with name ``.")
-                .hasNoCause();
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage("There does not exist a capitalization mode with name ``.")
+            .hasNoCause();
     }
 }

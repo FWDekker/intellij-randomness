@@ -14,8 +14,8 @@ final class JLongSpinnerTest {
     @Test
     void testIllegalRange() {
         assertThatThrownBy(() -> new JLongSpinner(414, 989, -339))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("(minimum <= value <= maximum) is false");
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("(minimum <= value <= maximum) is false");
     }
 
 
@@ -73,8 +73,8 @@ final class JLongSpinnerTest {
         spinner.setValue(-979);
 
         assertThatThrownBy(() -> spinner.validateValue())
-                .isInstanceOf(ValidationException.class)
-                .hasMessage("Please enter a value greater than or equal to -950.");
+            .isInstanceOf(ValidationException.class)
+            .hasMessage("Please enter a value greater than or equal to -950.");
     }
 
     @Test
@@ -84,7 +84,7 @@ final class JLongSpinnerTest {
         spinner.setValue(838);
 
         assertThatThrownBy(() -> spinner.validateValue())
-                .isInstanceOf(ValidationException.class)
-                .hasMessage("Please enter a value less than or equal to 678.");
+            .isInstanceOf(ValidationException.class)
+            .hasMessage("Please enter a value less than or equal to 678.");
     }
 }

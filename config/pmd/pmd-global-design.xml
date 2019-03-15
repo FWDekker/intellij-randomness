@@ -14,7 +14,8 @@
     <rule ref="category/java/design.xml/CollapsibleIfStatements"/>
     <rule ref="category/java/design.xml/CouplingBetweenObjects"/>
     <rule ref="category/java/design.xml/CyclomaticComplexity"/>
-    <rule ref="category/java/design.xml/DataClass"/>
+    <!-- Too many false positives.
+    <rule ref="category/java/design.xml/DataClass"/> -->
     <rule ref="category/java/design.xml/DoNotExtendJavaLangError"/>
     <rule ref="category/java/design.xml/ExceptionAsFlowControl"/>
     <rule ref="category/java/design.xml/ExcessiveClassLength"/>
@@ -25,7 +26,8 @@
     <rule ref="category/java/design.xml/FinalFieldCouldBeStatic"/>
     <rule ref="category/java/design.xml/GodClass"/>
     <rule ref="category/java/design.xml/ImmutableField"/>
-    <rule ref="category/java/design.xml/LawOfDemeter"/>
+    <!-- Too many false positives.
+    <rule ref="category/java/design.xml/LawOfDemeter"/> -->
     <rule ref="category/java/design.xml/LogicInversion"/>
     <!-- Not needed.
     <rule ref="category/java/design.xml/LoosePackageCoupling"/> -->
@@ -40,7 +42,8 @@
     <rule ref="category/java/design.xml/SingularField"/>
     <rule ref="category/java/design.xml/SwitchDensity"/>
     <rule ref="category/java/design.xml/TooManyFields"/>
-    <rule ref="category/java/design.xml/TooManyMethods"/>
+    <!-- Production code only. Many test methods per class are OK.
+    <rule ref="category/java/design.xml/TooManyMethods"/> -->
     <rule ref="category/java/design.xml/UselessOverridingMethod"/>
     <rule ref="category/java/design.xml/UseObjectForClearerAPI"/>
     <rule ref="category/java/design.xml/UseUtilityClass"/>

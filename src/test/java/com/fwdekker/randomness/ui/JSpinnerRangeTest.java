@@ -29,8 +29,8 @@ final class JSpinnerRangeTest {
     @Test
     void testIllegalMaxRange() {
         assertThatThrownBy(() -> new JSpinnerRange(min, max, -37.20))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("maxRange must be a positive number.");
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("maxRange must be a positive number.");
     }
 
 
@@ -42,8 +42,8 @@ final class JSpinnerRangeTest {
         final JSpinnerRange range = new JSpinnerRange(min, max);
 
         assertThatThrownBy(() -> range.validate())
-                .isInstanceOf(ValidationException.class)
-                .hasMessage("The maximum should be no smaller than the minimum.");
+            .isInstanceOf(ValidationException.class)
+            .hasMessage("The maximum should be no smaller than the minimum.");
     }
 
     @Test
@@ -54,8 +54,8 @@ final class JSpinnerRangeTest {
         final JSpinnerRange range = new JSpinnerRange(min, max);
 
         assertThatThrownBy(() -> range.validate())
-                .isInstanceOf(ValidationException.class)
-                .hasMessage("The range should not exceed 1.0E53.");
+            .isInstanceOf(ValidationException.class)
+            .hasMessage("The range should not exceed 1.0E53.");
     }
 
     @Test
@@ -66,7 +66,7 @@ final class JSpinnerRangeTest {
         final JSpinnerRange range = new JSpinnerRange(min, max, 793.31);
 
         assertThatThrownBy(() -> range.validate())
-                .isInstanceOf(ValidationException.class)
-                .hasMessage("The range should not exceed 793.31.");
+            .isInstanceOf(ValidationException.class)
+            .hasMessage("The range should not exceed 793.31.");
     }
 }

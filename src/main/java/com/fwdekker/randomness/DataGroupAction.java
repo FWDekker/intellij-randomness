@@ -15,15 +15,20 @@ import java.awt.event.InputEvent;
  * A group of actions for a particular type of random data that can be generated.
  */
 public abstract class DataGroupAction extends ActionGroup {
-    private final @NotNull DataInsertAction insertAction;
-    private final @NotNull DataInsertAction.ArrayAction insertArrayAction;
-    private final @NotNull SettingsAction settingsAction;
+    private final @NotNull
+    DataInsertAction insertAction;
+    private final @NotNull
+    DataInsertAction.ArrayAction insertArrayAction;
+    private final @NotNull
+    SettingsAction settingsAction;
 
 
     /**
      * Constructs a new {@code DataGroupAction}.
      */
     public DataGroupAction() {
+        super();
+
         insertAction = getInsertAction();
         insertArrayAction = getInsertArrayAction();
         settingsAction = getSettingsAction();
@@ -34,9 +39,9 @@ public abstract class DataGroupAction extends ActionGroup {
     @Override
     public final AnAction[] getChildren(final @Nullable AnActionEvent event) {
         return new AnAction[]{
-                insertAction,
-                insertArrayAction,
-                settingsAction
+            insertAction,
+            insertArrayAction,
+            settingsAction
         };
     }
 
@@ -46,10 +51,7 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
     @Override
-    @SuppressFBWarnings(
-            value = {"NP_NULL_ON_SOME_PATH"},
-            justification = "Verified by annotation"
-    )
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // Verified by annotation
     public final void actionPerformed(final @NotNull AnActionEvent event) {
         super.actionPerformed(event);
 
@@ -66,10 +68,7 @@ public abstract class DataGroupAction extends ActionGroup {
     }
 
     @Override
-    @SuppressFBWarnings(
-            value = {"NP_NULL_ON_SOME_PATH"},
-            justification = "Verified by annotation"
-    )
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // Verified by annotation
     public final void update(final @NotNull AnActionEvent event) {
         super.update(event);
 
