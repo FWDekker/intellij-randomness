@@ -22,12 +22,9 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.i
         val length = ThreadLocalRandom.current()
             .nextInt(settings.minLength, settings.maxLength + 1)
 
-        val text = CharArray(length)
-        for (i in 0 until length) {
-            text[i] = generateCharacter()
-        }
+        val text = List(length) { generateCharacter() }.joinToString("")
+        val capitalizedText = settings.capitalization.transform(text)
 
-        val capitalizedText = settings.capitalization.transform.apply(String(text))
         return settings.enclosure + capitalizedText + settings.enclosure
     }
 

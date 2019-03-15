@@ -7,7 +7,8 @@ import com.fwdekker.randomness.SettingsAction
  * Controller for random decimal generation settings.
  */
 class DecimalSettingsAction : SettingsAction() {
-    public override fun createDialog() = DecimalSettingsDialog()
+    override val title = "Decimal Settings"
 
-    public override fun getTitle() = "Decimal Settings"
+
+    public override fun createDialog() = DecimalSettingsDialog()
 }

@@ -7,7 +7,8 @@ import com.fwdekker.randomness.SettingsAction
  * Controller for random array generation settings.
  */
 class ArraySettingsAction : SettingsAction() {
-    public override fun createDialog() = ArraySettingsDialog()
+    override val title = "Array Settings"
 
-    public override fun getTitle() = "Array Settings"
+
+    public override fun createDialog() = ArraySettingsDialog()
 }

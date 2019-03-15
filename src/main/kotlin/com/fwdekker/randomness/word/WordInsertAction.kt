@@ -43,7 +43,7 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.instanc
         }
 
         val randomIndex = ThreadLocalRandom.current().nextInt(0, words.size)
-        val randomWord = settings.capitalization.transform.apply(words[randomIndex])
+        val randomWord = settings.capitalization.transform(words[randomIndex])
 
         return settings.enclosure + randomWord + settings.enclosure
     }

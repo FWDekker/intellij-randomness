@@ -103,12 +103,12 @@ class WordSettings : Settings<WordSettings> {
      * @return the list of all dictionaries in the given lists that are valid
      */
     private fun getValidDictionaries(bundledDictionaries: Collection<String>, userDictionaries: Collection<String>) =
-        emptyList<Dictionary>() +
+        mutableListOf<Dictionary>() +
             bundledDictionaries
-                .filterNot { dictionary -> Dictionary.BundledDictionary.validate(dictionary) == null }
+                .filter { dictionary -> Dictionary.BundledDictionary.validate(dictionary) == null }
                 .map { dictionary -> Dictionary.BundledDictionary.get(dictionary) } +
             userDictionaries
-                .filterNot { dictionary -> Dictionary.UserDictionary.validate(dictionary) == null }
+                .filter { dictionary -> Dictionary.UserDictionary.validate(dictionary) == null }
                 .map { Dictionary.UserDictionary.get(it) }
 
     /**

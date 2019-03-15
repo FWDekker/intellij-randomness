@@ -7,7 +7,8 @@ import com.fwdekker.randomness.SettingsAction
  * Controller for random UUID generation settings.
  */
 class UuidSettingsAction : SettingsAction() {
-    public override fun createDialog() = UuidSettingsDialog()
+    override val title = "UUID Settings"
 
-    public override fun getTitle() = "UUID Settings"
+
+    public override fun createDialog() = UuidSettingsDialog()
 }

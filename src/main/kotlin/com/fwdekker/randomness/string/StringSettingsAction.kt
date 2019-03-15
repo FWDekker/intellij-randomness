@@ -7,7 +7,8 @@ import com.fwdekker.randomness.SettingsAction
  * Controller for random string generation settings.
  */
 class StringSettingsAction : SettingsAction() {
-    public override fun createDialog() = StringSettingsDialog()
+    override val title = "String Settings"
 
-    public override fun getTitle() = "String Settings"
+
+    public override fun createDialog() = StringSettingsDialog()
 }
