@@ -30,8 +30,8 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     /**
      * Constructs a new {@code StringSettingsDialog} that uses the singleton {@code StringSettings} instance.
      */
-    /* default */ ArraySettingsDialog() {
-        this(ArraySettings.getInstance());
+    public ArraySettingsDialog() {
+        this(ArraySettings.INSTANCE);
     }
 
     /**
@@ -39,7 +39,7 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
      *
      * @param settings the settings to manipulate with this dialog
      */
-    /* default */ ArraySettingsDialog(final @NotNull ArraySettings settings) {
+    public ArraySettingsDialog(final @NotNull ArraySettings settings) {
         super(settings);
 
         init();
