@@ -15,12 +15,9 @@ import java.awt.event.InputEvent;
  * A group of actions for a particular type of random data that can be generated.
  */
 public abstract class DataGroupAction extends ActionGroup {
-    private final @NotNull
-    DataInsertAction insertAction;
-    private final @NotNull
-    DataInsertAction.ArrayAction insertArrayAction;
-    private final @NotNull
-    SettingsAction settingsAction;
+    private final @NotNull DataInsertAction insertAction;
+    private final @NotNull DataInsertAction.ArrayAction insertArrayAction;
+    private final @NotNull SettingsAction settingsAction;
 
 
     /**
