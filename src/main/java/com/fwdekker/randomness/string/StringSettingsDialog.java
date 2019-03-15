@@ -1,13 +1,12 @@
 package com.fwdekker.randomness.string;
 
+import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.SettingsDialog;
 import com.fwdekker.randomness.ValidationException;
 import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
-import com.fwdekker.randomness.CapitalizationMode;
 import com.intellij.openapi.ui.ValidationInfo;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +21,6 @@ import java.util.HashSet;
 /**
  * Dialog for settings of random string generation.
  */
-@SuppressFBWarnings({"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"}) // Initialized by UI framework
 public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     private JPanel contentPane;
     private JSpinnerRange lengthRange;
@@ -76,7 +74,6 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
 
 
     @Override
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minLength and such are always non-null
     public void loadSettings(final @NotNull StringSettings settings) {
         minLength.setValue(settings.getMinLength());
         maxLength.setValue(settings.getMaxLength());
@@ -91,7 +88,6 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     }
 
     @Override
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minLength and such are always non-null
     public void saveSettings(final @NotNull StringSettings settings) {
         settings.setMinLength(Math.toIntExact(minLength.getValue()));
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));

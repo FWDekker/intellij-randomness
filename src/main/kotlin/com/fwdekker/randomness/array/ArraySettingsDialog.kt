@@ -13,7 +13,7 @@ import javax.swing.JPanel
 /**
  * Dialog for settings of random array generation.
  *
- * @param settings the settings to manipulate with this dialog; defaults to [ArraySettings.instance]
+ * @param settings the settings to manipulate with this dialog. Defaults to [ArraySettings.instance]
  */
 class ArraySettingsDialog(settings: ArraySettings = ArraySettings.instance) : SettingsDialog<ArraySettings>(settings) {
     private lateinit var contentPane: JPanel

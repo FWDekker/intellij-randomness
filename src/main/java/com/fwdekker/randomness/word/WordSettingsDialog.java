@@ -14,7 +14,6 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.awt.RelativePoint;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 /**
  * Dialog for settings of random word generation.
  */
-@SuppressFBWarnings({"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"}) // Initialized by UI framework
 public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private JPanel contentPane;
     private JSpinnerRange lengthRange;
@@ -93,7 +91,6 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
 
     @Override
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minLength and such are always non-null
     public void loadSettings(final @NotNull WordSettings settings) {
         minLength.setValue(settings.getMinLength());
         maxLength.setValue(settings.getMaxLength());
@@ -105,7 +102,6 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     }
 
     @Override
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minLength and such are always non-null
     public void saveSettings(final @NotNull WordSettings settings) {
         settings.setMinLength(Math.toIntExact(minLength.getValue()));
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));

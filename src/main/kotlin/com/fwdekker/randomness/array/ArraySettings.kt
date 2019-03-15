@@ -26,6 +26,7 @@ class ArraySettings : Settings<ArraySettings> {
             get() = ServiceManager.getService(ArraySettings::class.java)
     }
 
+
     /**
      * The number of elements to generate.
      */
