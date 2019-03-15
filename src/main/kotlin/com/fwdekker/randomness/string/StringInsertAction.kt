@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.DataInsertAction
-import java.util.concurrent.ThreadLocalRandom
+import kotlin.random.Random
 
 
 /**
@@ -18,9 +18,8 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
      *
      * @return a random string of alphanumerical characters
      */
-    public override fun generateString(): String {
-        val length = ThreadLocalRandom.current()
-            .nextInt(settings.minLength, settings.maxLength + 1)
+    override fun generateString(): String {
+        val length = Random.nextInt(settings.minLength, settings.maxLength + 1)
 
         val text = List(length) { generateCharacter() }.joinToString("")
         val capitalizedText = settings.capitalization.transform(text)
@@ -36,7 +35,7 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
      */
     private fun generateCharacter(): Char {
         val alphabet = Alphabet.concatenate(settings.alphabets)
-        val charIndex = ThreadLocalRandom.current().nextInt(alphabet.length)
+        val charIndex = Random.nextInt(alphabet.length)
 
         return alphabet[charIndex]
     }

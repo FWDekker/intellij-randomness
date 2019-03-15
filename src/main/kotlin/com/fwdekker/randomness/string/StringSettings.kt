@@ -13,16 +13,13 @@ import java.util.HashSet
 /**
  * Contains settings for generating random strings.
  */
-@State(name = "StringSettings", storages = [Storage("\$APP_CONFIG$/randomness.xml")])
+@State(name = "StringSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 class StringSettings : Settings<StringSettings> {
     companion object {
         private const val DEFAULT_MIN_LENGTH = 3
         private const val DEFAULT_MAX_LENGTH = 8
 
 
-        /**
-         * The singleton `StringSettings` instance.
-         */
         /**
          * The singleton `StringSettings` instance.
          */

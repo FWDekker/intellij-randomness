@@ -10,7 +10,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 /**
  * Contains settings for generating random integers.
  */
-@State(name = "IntegerSettings", storages = [Storage("\$APP_CONFIG$/randomness.xml")])
+@State(name = "IntegerSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 class IntegerSettings : Settings<IntegerSettings> {
     companion object {
         const val MIN_BASE = 2
@@ -61,6 +61,7 @@ class IntegerSettings : Settings<IntegerSettings> {
      * character is used
      */
     fun setGroupingSeparator(groupingSeparator: String) {
+        // TODO Move logic...
         this.groupingSeparator =
             if (groupingSeparator.isEmpty()) '\u0000'
             else groupingSeparator[0]

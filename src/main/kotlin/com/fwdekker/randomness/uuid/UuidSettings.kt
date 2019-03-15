@@ -10,7 +10,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 /**
  * Contains settings for generating random UUIDs.
  */
-@State(name = "UuidSettings", storages = [Storage("\$APP_CONFIG$/randomness.xml")])
+@State(name = "UuidSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 class UuidSettings : Settings<UuidSettings> {
     companion object {
         /**

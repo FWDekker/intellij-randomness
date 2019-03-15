@@ -5,7 +5,7 @@ package com.fwdekker.randomness
  * A `SettingsManager` is an object that can change settings of a given type.
  *
  * @param <S> the type of settings that are changed by the implementation
-  */
+ */
 interface SettingsManager<S : Settings<*>> {
     /**
      * Loads the default settings instance into the implementing object.

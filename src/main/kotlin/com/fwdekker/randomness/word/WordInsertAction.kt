@@ -2,7 +2,7 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.ui.JBPopupHelper
-import java.util.concurrent.ThreadLocalRandom
+import kotlin.random.Random
 
 
 /**
@@ -19,8 +19,8 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
      *
      * @return a random alphanumerical English word
      */
-    public override fun generateString(): String {
-        // TODO Kotlin-ify
+    override fun generateString(): String {
+        // TODO Move error checking to caller. Return null in this method?
         val validationInfo = settings.validateActiveDictionaries()
         if (validationInfo != null) {
             JBPopupHelper.showMessagePopup(
@@ -42,7 +42,7 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
             return ""
         }
 
-        val randomIndex = ThreadLocalRandom.current().nextInt(0, words.size)
+        val randomIndex = Random.nextInt(0, words.size)
         val randomWord = settings.capitalization.transform(words[randomIndex])
 
         return settings.enclosure + randomWord + settings.enclosure

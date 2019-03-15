@@ -11,7 +11,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 /**
  * Contains settings for generating random decimals.
  */
-@State(name = "DecimalSettings", storages = [Storage("\$APP_CONFIG$/randomness.xml")])
+@State(name = "DecimalSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 class DecimalSettings : Settings<DecimalSettings> {
     companion object {
         private const val DEFAULT_MIN_VALUE = 0.0

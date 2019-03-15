@@ -31,8 +31,7 @@ class PopupAction : AnAction() {
         val project = event.project
             ?: return
 
-        val popup = JBPopupFactory
-            .getInstance()
+        val popup = JBPopupFactory.getInstance()
             .createActionGroupPopup(
                 TITLE, PopupGroup(), event.dataContext,
                 JBPopupFactory.ActionSelectionAid.NUMBERING, true, event.place

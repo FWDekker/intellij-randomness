@@ -28,11 +28,10 @@ class UuidSettingsDialog(settings: UuidSettings = UuidSettings.default) : Settin
     override fun doValidate(): ValidationInfo? = null
 
 
-    override fun loadSettings(settings: UuidSettings) {
+    override fun loadSettings(settings: UuidSettings) =
         ButtonGroupHelper.setValue(enclosureGroup, settings.enclosure)
-    }
 
     override fun saveSettings(settings: UuidSettings) {
-        settings.enclosure = ButtonGroupHelper.getValue(enclosureGroup)!!
+        settings.enclosure = ButtonGroupHelper.getValue(enclosureGroup)!! // TODO Remove !!
     }
 }

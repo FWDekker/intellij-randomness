@@ -15,8 +15,7 @@ abstract class DataGroupAction : ActionGroup() {
     abstract val settingsAction: SettingsAction
 
 
-    override fun getChildren(event: AnActionEvent?) =
-        arrayOf(insertAction, insertArrayAction, settingsAction)
+    override fun getChildren(event: AnActionEvent?) = arrayOf(insertAction, insertArrayAction, settingsAction)
 
     override fun canBePerformed(context: DataContext?) = true
 

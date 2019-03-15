@@ -2,7 +2,7 @@ package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.DataInsertAction
 import java.text.DecimalFormat
-import java.util.concurrent.ThreadLocalRandom
+import kotlin.random.Random
 
 
 /**
@@ -19,12 +19,8 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
      *
      * @return a random integer between the minimum and maximum value, inclusive
      */
-    public override fun generateString(): String {
-        val randomValue = ThreadLocalRandom.current()
-            .nextLong(settings.minValue, settings.maxValue + 1)
-
-        return convertToString(randomValue)
-    }
+    override fun generateString() =
+        convertToString(Random.nextLong(settings.minValue, settings.maxValue + 1))
 
 
     /**
@@ -34,9 +30,8 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
      * @return a nicely formatted representation of a long
      */
     private fun convertToString(integer: Long): String {
-        // TODO Kotlin-ify this
         if (settings.base != IntegerSettings.DECIMAL_BASE) {
-            return java.lang.Long.toString(integer, settings.base)
+            return integer.toString(settings.base)
         }
 
 

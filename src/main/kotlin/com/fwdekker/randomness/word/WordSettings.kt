@@ -13,7 +13,7 @@ import java.util.HashSet
 /**
  * Contains settings for generating random words.
  */
-@State(name = "WordSettings", storages = [Storage("\$APP_CONFIG$/randomness.xml")])
+@State(name = "WordSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 class WordSettings : Settings<WordSettings> {
     companion object {
         private const val DEFAULT_MIN_LENGTH = 3

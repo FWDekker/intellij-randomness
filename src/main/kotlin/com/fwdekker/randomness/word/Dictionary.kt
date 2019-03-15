@@ -20,20 +20,21 @@ import java.util.concurrent.ConcurrentHashMap
  */
 // TODO Make this whole thing more Kotlin-like
 // TODO Fix ugly exception catching and throwing
+// TODO Always disallow empty dictionaries
 abstract class Dictionary(
     val uid: String = UUID.randomUUID().toString(),
     val name: String = uid,
     val words: MutableSet<String> = HashSet() // TODO prevent outsider from changing set directly?
 ) {
     /**
-     * The shortest word in this `Dictionary`.
+     * The shortest word in this dictionary.
      */
     val shortestWord: String
         get() = words.minBy { it.length }
             ?: throw IllegalStateException("Dictionary should not be empty.")
 
     /**
-     * The longest word in this `Dictionary`.
+     * The longest word in this dictionary.
      */
     val longestWord: String
         get() = words.maxBy { it.length }
@@ -41,11 +42,11 @@ abstract class Dictionary(
 
 
     /**
-     * Returns a list of all words with a length in the given range.
+     * Returns a list of all words that have a length in the given range.
      *
      * @param minLength the minimum word length (inclusive)
      * @param maxLength the maximum word length (inclusive)
-     * @return a list of all words with a length in the given range
+     * @return a list of all words that have a length in the given range
      */
     fun getWordsWithLengthInRange(minLength: Int, maxLength: Int) =
         words.filter { word -> word.length in minLength..maxLength }
@@ -94,7 +95,7 @@ abstract class Dictionary(
 
         companion object {
             /**
-             * A cache of previously created `BundledDictionary(s)`.
+             * A cache of previously created `BundledDictionary`(s).
              */
             private val CACHE = ConcurrentHashMap<String, BundledDictionary>()
 
@@ -102,7 +103,7 @@ abstract class Dictionary(
              * Constructs a new `BundledDictionary` for the given dictionary resource, or returns the previously
              * created instance for this resource if there is one.
              *
-             * @param path     the path to the dictionary resource
+             * @param path the path to the dictionary resource
              * @param useCache `true` if a cached version of the dictionary should be returned if it exists,
              * `false` if the cache should always be updated
              * @return a new `BundledDictionary` for the given dictionary resource, or the previously created instance
@@ -259,6 +260,7 @@ abstract class Dictionary(
      * An (initially) empty `Dictionary` without a source file.
      */
     // TODO Use internal constructor?
+    // TODO Disallow empty dictionaries.
     private class SimpleDictionary : Dictionary() {
         override fun validate(): ValidationInfo? = null
     }

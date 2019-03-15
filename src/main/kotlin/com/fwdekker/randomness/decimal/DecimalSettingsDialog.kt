@@ -48,6 +48,7 @@ class DecimalSettingsDialog(settings: DecimalSettings = DecimalSettings.default)
     }
 
     override fun doValidate(): ValidationInfo? {
+        // TODO Use a different control flow.
         try {
             minValue.validateValue()
             maxValue.validateValue()
