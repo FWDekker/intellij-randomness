@@ -32,7 +32,7 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
     private lateinit var maxLength: JLongSpinner
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup
-    private lateinit var dictionaries: JEditableList<Dictionary>
+    private lateinit var dictionaries: JEditableList<Dictionary2>
     private lateinit var dictionaryAddButton: JButton
     private lateinit var dictionaryRemoveButton: JButton
 
@@ -73,8 +73,8 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
         ButtonGroupHelper.setValue(enclosureGroup, settings.enclosure)
         ButtonGroupHelper.setValue(capitalizationGroup, settings.capitalization)
 
-        dictionaries.setEntries(settings.validAllDictionaries)
-        dictionaries.setActiveEntries(settings.validActiveDictionaries)
+        dictionaries.setEntries(settings.bundledDictionaries + settings.userDictionaries)
+        dictionaries.setActiveEntries(settings.activeBundledDictionaries + settings.activeUserDictionaries)
     }
 
     override fun saveSettings(settings: WordSettings) {
@@ -84,34 +84,30 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
         settings.capitalization = CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)!!)
 
         settings.bundledDictionaries = dictionaries.entries
-            .filter { Dictionary.BundledDictionary::class.java.isInstance(it) }
-            .map { it.uid }
+            .filterIsInstance<BundledDictionary2>()
             .toSet()
         settings.activeBundledDictionaries = dictionaries.activeEntries
-            .filter { Dictionary.BundledDictionary::class.java.isInstance(it) }
-            .map { it.uid }
+            .filterIsInstance<BundledDictionary2>()
             .toSet()
         Dictionary.BundledDictionary.clearCache()
 
         settings.userDictionaries = dictionaries.entries
-            .filter { Dictionary.UserDictionary::class.java.isInstance(it) }
-            .map { it.uid }
+            .filterIsInstance<UserDictionary2>()
             .toSet()
         settings.activeUserDictionaries = dictionaries.activeEntries
-            .filter { Dictionary.UserDictionary::class.java.isInstance(it) }
-            .map { it.uid }
+            .filterIsInstance<UserDictionary2>()
             .toSet()
-        Dictionary.UserDictionary.clearCache()
     }
 
     public override fun doValidate(): ValidationInfo? {
         if (dictionaries.activeEntries.isEmpty())
             return ValidationInfo("Select at least one dictionary.", dictionaries)
 
-        dictionaries.activeEntries
-            .mapNotNull { it.validate() }
-            .firstOrNull()
-            ?.let { return ValidationInfo(it.message, dictionaries) }
+        // TODO Improve error message
+        if (dictionaries.activeEntries.any { !it.isValid() })
+            return ValidationInfo("One of these dictionaries is not valid.", dictionaries)
+
+        // TODO Add error message if there are no words in the meta-dictionary
 
         return null
             ?: minLength.validateValue()
@@ -131,16 +127,19 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
             val canonicalPath = files.firstOrNull()?.canonicalPath
                 ?: return@chooseFiles
 
-            val validationInfo = Dictionary.UserDictionary.validate(canonicalPath)
-            if (validationInfo != null) {
+            val newDictionary = UserDictionary2.cache.get(canonicalPath, false)
+            // TODO Can this check be moved elsewhere?
+            if (!newDictionary.isValid()) {
                 JBPopupFactory.getInstance()
-                    .createHtmlTextBalloonBuilder(validationInfo.message, MessageType.ERROR, null)
+                    // TODO Improve error message
+                    .createHtmlTextBalloonBuilder("Failed to read the dictionary file.", MessageType.ERROR, null)
                     .createBalloon()
                     .show(RelativePoint.getSouthOf(dictionaryAddButton), Balloon.Position.below)
                 return@chooseFiles
             }
 
-            val newDictionary = Dictionary.UserDictionary.get(canonicalPath, false)
+            // TODO Add message if dictionary is empty
+
             dictionaries.addEntry(newDictionary)
         }
     }
@@ -150,9 +149,8 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
      */
     private fun removeDictionary() {
         dictionaries.highlightedEntry?.let { dictionary ->
-            if (dictionary is Dictionary.UserDictionary) {
+            if (dictionary is UserDictionary2)
                 dictionaries.removeEntry(dictionary)
-            }
         }
     }
 
@@ -164,7 +162,7 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
     private fun onDictionaryHighlightChange(event: ListSelectionEvent) {
         if (!event.valueIsAdjusting) {
             val highlightedDictionary = dictionaries.highlightedEntry
-            val enable = highlightedDictionary is Dictionary.UserDictionary
+            val enable = highlightedDictionary is UserDictionary2
             dictionaryRemoveButton.isEnabled = enable
         }
     }
@@ -173,14 +171,15 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
      * Fires when the user (de)activates a dictionary.
      */
     private fun onDictionaryActivityChange() {
-        val dictionary = Dictionary.combine(dictionaries.activeEntries)
+        val words = dictionaries.activeEntries
+            .fold(emptySet<String>()) { acc, dictionary -> (acc + dictionary.getWords()).toSet() }
 
-        if (dictionary.words.isEmpty()) {
+        if (words.isEmpty()) {
             minLength.maxValue = 1
             maxLength.minValue = Integer.MAX_VALUE.toLong()
         } else {
-            minLength.maxValue = dictionary.longestWord.length.toLong()
-            maxLength.minValue = dictionary.shortestWord.length.toLong()
+            minLength.maxValue = words.maxBy { it.length }!!.length.toLong() // TODO Should be safe right?
+            maxLength.minValue = words.minBy { it.length }!!.length.toLong()
         }
     }
 }

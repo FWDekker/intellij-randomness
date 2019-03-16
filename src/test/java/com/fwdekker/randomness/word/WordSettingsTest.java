@@ -73,40 +73,40 @@ final class WordSettingsTest {
     @Test
     void testGetSetBundledDictionaries() {
         final Set<String> bundledDictionaries = new HashSet<>(Arrays.asList("6OE]SfZj6(", "HGeldsz2XM", "V6AhkeIKX6"));
-        wordSettings.setBundledDictionaries(bundledDictionaries);
+        wordSettings.setBundledDictionaryFiles(bundledDictionaries);
 
-        assertThat(wordSettings.getBundledDictionaries()).isEqualTo(bundledDictionaries);
+        assertThat(wordSettings.getBundledDictionaryFiles()).isEqualTo(bundledDictionaries);
     }
 
     @Test
     void testGetSetUserDictionaries() {
         final Set<String> userDictionaries = new HashSet<>(Arrays.asList(")asQAYwW[u", "Bz>GSRlNA1", "Cjsg{Olylo"));
-        wordSettings.setUserDictionaries(userDictionaries);
+        wordSettings.setUserDictionaryFiles(userDictionaries);
 
-        assertThat(wordSettings.getUserDictionaries()).isEqualTo(userDictionaries);
+        assertThat(wordSettings.getUserDictionaryFiles()).isEqualTo(userDictionaries);
     }
 
     @Test
     void testGetSetActiveBundledDictionaries() {
         final Set<String> bundledDictionaries = new HashSet<>(Arrays.asList("6QeMvZ>uHQ", "Onb]HUugM1", "008xGJhIXE"));
-        wordSettings.setActiveBundledDictionaries(bundledDictionaries);
+        wordSettings.setActiveBundledDictionaryFiles(bundledDictionaries);
 
-        assertThat(wordSettings.getActiveBundledDictionaries()).isEqualTo(bundledDictionaries);
+        assertThat(wordSettings.getActiveBundledDictionaryFiles()).isEqualTo(bundledDictionaries);
     }
 
     @Test
     void testGetSetActiveUserDictionaries() {
         final Set<String> userDictionaries = new HashSet<>(Arrays.asList("ukeB8}RLbm", "JRcuz7sm4(", "{QZGJQli36"));
-        wordSettings.setActiveUserDictionaries(userDictionaries);
+        wordSettings.setActiveUserDictionaryFiles(userDictionaries);
 
-        assertThat(wordSettings.getActiveUserDictionaries()).isEqualTo(userDictionaries);
+        assertThat(wordSettings.getActiveUserDictionaryFiles()).isEqualTo(userDictionaries);
     }
 
 
     @Test
     void testValidateAllDictionariesSuccessEmpty() {
-        wordSettings.setBundledDictionaries(Collections.emptySet());
-        wordSettings.setUserDictionaries(Collections.emptySet());
+        wordSettings.setBundledDictionaryFiles(Collections.emptySet());
+        wordSettings.setUserDictionaryFiles(Collections.emptySet());
 
         assertThat(wordSettings.validateAllDictionaries()).isNull();
     }
@@ -115,8 +115,8 @@ final class WordSettingsTest {
     void testValidateAllDictionariesSuccessNonEmpty() {
         final File userDictionary = FILE_HELPER.createDictionaryFile("Reflet\nHerniate\nBuz");
 
-        wordSettings.setBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
-        wordSettings.setUserDictionaries(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
+        wordSettings.setBundledDictionaryFiles(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
+        wordSettings.setUserDictionaryFiles(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
 
         assertThat(wordSettings.validateAllDictionaries()).isNull();
     }
@@ -125,8 +125,8 @@ final class WordSettingsTest {
     void testValidateAllDictionaryInvalidBundled() {
         final File userDictionary = FILE_HELPER.createDictionaryFile("Inblow\nImmunes\nEnteroid");
 
-        wordSettings.setBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/empty.dic")));
-        wordSettings.setUserDictionaries(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
+        wordSettings.setBundledDictionaryFiles(new HashSet<>(Arrays.asList("dictionaries/empty.dic")));
+        wordSettings.setUserDictionaryFiles(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
 
         final ValidationInfo validationInfo = wordSettings.validateAllDictionaries();
 
@@ -140,8 +140,8 @@ final class WordSettingsTest {
         final File userDictionary = FILE_HELPER.createDictionaryFile("");
         final String userDictionaryName = userDictionary.getName();
 
-        wordSettings.setBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
-        wordSettings.setUserDictionaries(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
+        wordSettings.setBundledDictionaryFiles(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
+        wordSettings.setUserDictionaryFiles(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
 
         final ValidationInfo validationInfo = wordSettings.validateAllDictionaries();
 
@@ -152,8 +152,8 @@ final class WordSettingsTest {
 
     @Test
     void testValidateActiveDictionariesSuccessEmpty() {
-        wordSettings.setActiveBundledDictionaries(Collections.emptySet());
-        wordSettings.setActiveUserDictionaries(Collections.emptySet());
+        wordSettings.setActiveBundledDictionaryFiles(Collections.emptySet());
+        wordSettings.setActiveUserDictionaryFiles(Collections.emptySet());
 
         assertThat(wordSettings.validateActiveDictionaries()).isNull();
     }
@@ -162,8 +162,8 @@ final class WordSettingsTest {
     void testValidateActiveDictionariesSuccessNonEmpty() {
         final File userDictionary = FILE_HELPER.createDictionaryFile("Dicranum\nJiffy\nChatties");
 
-        wordSettings.setActiveBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
-        wordSettings.setActiveUserDictionaries(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
+        wordSettings.setActiveBundledDictionaryFiles(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
+        wordSettings.setActiveUserDictionaryFiles(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
 
         assertThat(wordSettings.validateActiveDictionaries()).isNull();
     }
@@ -172,8 +172,8 @@ final class WordSettingsTest {
     void testValidateActiveDictionaryInvalidBundled() {
         final File userDictionary = FILE_HELPER.createDictionaryFile("Fastest\nWows\nBrimmers");
 
-        wordSettings.setActiveBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/empty.dic")));
-        wordSettings.setActiveUserDictionaries(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
+        wordSettings.setActiveBundledDictionaryFiles(new HashSet<>(Arrays.asList("dictionaries/empty.dic")));
+        wordSettings.setActiveUserDictionaryFiles(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
 
         final ValidationInfo validationInfo = wordSettings.validateActiveDictionaries();
 
@@ -187,8 +187,8 @@ final class WordSettingsTest {
         final File userDictionary = FILE_HELPER.createDictionaryFile("");
         final String userDictionaryName = userDictionary.getName();
 
-        wordSettings.setActiveBundledDictionaries(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
-        wordSettings.setActiveUserDictionaries(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
+        wordSettings.setActiveBundledDictionaryFiles(new HashSet<>(Arrays.asList("dictionaries/simple.dic")));
+        wordSettings.setActiveUserDictionaryFiles(new HashSet<>(Arrays.asList(userDictionary.getAbsolutePath())));
 
         final ValidationInfo validationInfo = wordSettings.validateActiveDictionaries();
 
@@ -200,8 +200,8 @@ final class WordSettingsTest {
 
     @Test
     void testGetValidAllDictionariesEmpty() {
-        wordSettings.setBundledDictionaries(Collections.emptySet());
-        wordSettings.setUserDictionaries(Collections.emptySet());
+        wordSettings.setBundledDictionaryFiles(Collections.emptySet());
+        wordSettings.setUserDictionaryFiles(Collections.emptySet());
 
         assertThat(wordSettings.getValidAllDictionaries()).isEmpty();
     }
@@ -211,11 +211,11 @@ final class WordSettingsTest {
         final File validUserDictionary = FILE_HELPER.createDictionaryFile("Resilium\nAncerata\nBylander");
         final File invalidUserDictionary = FILE_HELPER.createDictionaryFile("");
 
-        wordSettings.setBundledDictionaries(new HashSet<>(Arrays.asList(
+        wordSettings.setBundledDictionaryFiles(new HashSet<>(Arrays.asList(
             "dictionaries/simple.dic",
             "dictionaries/empty.dic"
         )));
-        wordSettings.setUserDictionaries(new HashSet<>(Arrays.asList(
+        wordSettings.setUserDictionaryFiles(new HashSet<>(Arrays.asList(
             validUserDictionary.getAbsolutePath(),
             invalidUserDictionary.getAbsolutePath()
         )));
@@ -230,8 +230,8 @@ final class WordSettingsTest {
 
     @Test
     void testGetValidActiveDictionariesEmpty() {
-        wordSettings.setActiveBundledDictionaries(Collections.emptySet());
-        wordSettings.setActiveUserDictionaries(Collections.emptySet());
+        wordSettings.setActiveBundledDictionaryFiles(Collections.emptySet());
+        wordSettings.setActiveUserDictionaryFiles(Collections.emptySet());
 
         assertThat(wordSettings.getValidActiveDictionaries()).isEmpty();
     }
@@ -241,11 +241,11 @@ final class WordSettingsTest {
         final File validUserDictionary = FILE_HELPER.createDictionaryFile("Resilium\nAncerata\nBylander");
         final File invalidUserDictionary = FILE_HELPER.createDictionaryFile("");
 
-        wordSettings.setActiveBundledDictionaries(new HashSet<>(Arrays.asList(
+        wordSettings.setActiveBundledDictionaryFiles(new HashSet<>(Arrays.asList(
             "dictionaries/simple.dic",
             "dictionaries/empty.dic"
         )));
-        wordSettings.setActiveUserDictionaries(new HashSet<>(Arrays.asList(
+        wordSettings.setActiveUserDictionaryFiles(new HashSet<>(Arrays.asList(
             validUserDictionary.getAbsolutePath(),
             invalidUserDictionary.getAbsolutePath()
         )));
