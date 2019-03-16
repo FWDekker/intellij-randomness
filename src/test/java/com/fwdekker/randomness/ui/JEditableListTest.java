@@ -292,16 +292,16 @@ final class JEditableListTest {
 
     @Test
     void testGetColumnClasses() {
-        assertThat(list.getColumnClass(0).getName()).isEqualTo("boolean");
+        assertThat(list.getColumnClass(0)).isEqualTo(Boolean.class);
         assertThat(list.getColumnClass(1)).isEqualTo(String.class);
 
         assertThatThrownBy(() -> list.getColumnClass(-1))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("JEditableList only has two columns.")
+            .hasMessage("JEditableList has only two columns.")
             .hasNoCause();
         assertThatThrownBy(() -> list.getColumnClass(2))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("JEditableList only has two columns.")
+            .hasMessage("JEditableList has only two columns.")
             .hasNoCause();
     }
 

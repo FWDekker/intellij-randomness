@@ -17,10 +17,42 @@ private typealias EntryActivityChangeListener = (Int) -> Any?
  * A [javax.swing.JList] in which each entry has a [javax.swing.JCheckBox] in front of it.
  *
  * @param <T> the entry type
-</T> */
+ */
 class JEditableList<T> : JTable() {
     private val model: DefaultTableModel = DefaultTableModel(0, 2)
     private val entryActivityChangeListeners: MutableList<EntryActivityChangeListener> = ArrayList()
+
+    /**
+     * Returns a list of all entries.
+     *
+     * @return a list of all entries
+     */
+    val entries: List<T>
+        get() = (0 until entryCount).map { this.getEntry(it) }.toList() // TODO Is this a copy?
+
+    /**
+     * Returns the number of entries in the list.
+     *
+     * @return the number of entries in the list
+     */
+    val entryCount: Int
+        get() = model.rowCount
+
+    /**
+     * Returns all entries of which the checkbox is checked.
+     *
+     * @return all entries of which the checkbox is checked
+     */
+    val activeEntries: List<T>
+        get() = entries.filter { this.isActive(it) }
+
+    /**
+     * Returns the entry that is currently selected by the user, if there is one.
+     *
+     * @return the entry that is currently selected by the user, if there is one
+     */
+    val highlightedEntry: T?
+        get() = selectedRows.toList().map { this.getEntry(it) }.firstOrNull()
 
 
     /**
@@ -46,41 +78,6 @@ class JEditableList<T> : JTable() {
             }
         })
     }
-
-
-    /**
-     * Returns a list of all entries.
-     *
-     * @return a list of all entries
-     */
-    val entries: List<T>
-        get() = (0 until entryCount).map { this.getEntry(it) }.toList() // TODO Is this a copy?
-
-    /**
-     * Returns the number of entries in the list.
-     *
-     * @return the number of entries in the list
-     */
-    val entryCount: Int
-        get() = model.rowCount
-
-
-    /**
-     * Returns all entries of which the checkbox is checked.
-     *
-     * @return all entries of which the checkbox is checked
-     */
-    val activeEntries: List<T>
-        get() = entries.filter { this.isActive(it) }
-
-
-    /**
-     * Returns the entry that is currently selected by the user, if there is one.
-     *
-     * @return the entry that is currently selected by the user, if there is one
-     */
-    val highlightedEntry: T?
-        get() = selectedRows.toList().map { this.getEntry(it) }.firstOrNull()
 
 
     /**
@@ -120,7 +117,8 @@ class JEditableList<T> : JTable() {
      * @param row the row to return the entry of
      * @return the entry in the given row
      */
-    fun getEntry(row: Int): T = model.getValueAt(row, 1) as T // Type guaranteed by design
+    @Suppress("UNCHECKED_CAST")  // Type guaranteed by design
+    fun getEntry(row: Int): T = model.getValueAt(row, 1) as T
 
     /**
      * Returns the row number of the given entry.
@@ -210,9 +208,10 @@ class JEditableList<T> : JTable() {
 
     override fun getColumnClass(column: Int) =
         when (column) {
-            0 -> Boolean::class.java
-            1 -> String::class.java
-            else -> throw IllegalArgumentException("JEditableList only has two columns.")
+            // Java classes MUST be used
+            0 -> java.lang.Boolean::class.java
+            1 -> java.lang.String::class.java
+            else -> throw IllegalArgumentException("JEditableList has only two columns.")
         }
 
     override fun isCellEditable(row: Int, column: Int) = column == 0
