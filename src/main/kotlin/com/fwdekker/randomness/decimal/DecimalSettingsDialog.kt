@@ -1,12 +1,10 @@
 package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.SettingsDialog
-import com.fwdekker.randomness.ValidationException
 import com.fwdekker.randomness.ui.ButtonGroupHelper
 import com.fwdekker.randomness.ui.JDoubleSpinner
 import com.fwdekker.randomness.ui.JLongSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
-import com.intellij.openapi.ui.ValidationInfo
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 
@@ -47,20 +45,12 @@ class DecimalSettingsDialog(settings: DecimalSettings = DecimalSettings.default)
         decimalCount = JLongSpinner(0, 0, Integer.MAX_VALUE.toLong())
     }
 
-    override fun doValidate(): ValidationInfo? {
-        // TODO Use a different control flow.
-        try {
-            minValue.validateValue()
-            maxValue.validateValue()
-            valueRange.validate()
-
-            decimalCount.validateValue()
-        } catch (e: ValidationException) {
-            return ValidationInfo(e.message ?: "", e.component)
-        }
-
-        return null
-    }
+    override fun doValidate() =
+        null
+            ?: minValue.validateValue()
+            ?: maxValue.validateValue()
+            ?: valueRange.validateValue()
+            ?: decimalCount.validateValue()
 
 
     override fun loadSettings(settings: DecimalSettings) {

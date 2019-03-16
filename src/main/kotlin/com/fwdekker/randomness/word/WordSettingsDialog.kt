@@ -2,7 +2,6 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.SettingsDialog
-import com.fwdekker.randomness.ValidationException
 import com.fwdekker.randomness.ui.ButtonGroupHelper
 import com.fwdekker.randomness.ui.JEditableList
 import com.fwdekker.randomness.ui.JLongSpinner
@@ -14,7 +13,6 @@ import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.awt.RelativePoint
-import java.util.Objects
 import javax.swing.ButtonGroup
 import javax.swing.JButton
 import javax.swing.JPanel
@@ -107,27 +105,18 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
     }
 
     public override fun doValidate(): ValidationInfo? {
-        if (dictionaries.activeEntries.isEmpty()) {
+        if (dictionaries.activeEntries.isEmpty())
             return ValidationInfo("Select at least one dictionary.", dictionaries)
-        }
 
-        val invalidDictionary = dictionaries.activeEntries.stream()
-            .map<ValidationInfo> { it.validate() }
-            .filter { Objects.nonNull(it) }
-            .findFirst()
-        if (invalidDictionary.isPresent) {
-            return ValidationInfo(invalidDictionary.get().message, dictionaries)
-        }
-
-        try {
-            minLength.validateValue()
-            maxLength.validateValue()
-            lengthRange.validate()
-        } catch (e: ValidationException) {
-            return ValidationInfo(e.message ?: "", e.component)
-        }
+        dictionaries.activeEntries
+            .mapNotNull { it.validate() }
+            .firstOrNull()
+            ?.let { return ValidationInfo(it.message, dictionaries) }
 
         return null
+            ?: minLength.validateValue()
+            ?: maxLength.validateValue()
+            ?: lengthRange.validateValue()
     }
 
 

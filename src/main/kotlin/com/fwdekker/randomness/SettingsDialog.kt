@@ -32,7 +32,7 @@ abstract class SettingsDialog<S : Settings<*>>(private val settings: S) : Dialog
     /**
      * Validates all input fields.
      *
-     * @return `null` if the input is valid, or `ValidationInfo` indicating the error if input is not valid
+     * @return `null` if the input is valid, or a [ValidationInfo] object explaining why the input is invalid
      */
     abstract override fun doValidate(): ValidationInfo?
 }

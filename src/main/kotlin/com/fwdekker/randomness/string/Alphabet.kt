@@ -48,6 +48,6 @@ enum class Alphabet(val description: String, val symbols: String) {
          */
         // TODO Inline this function when tests have been rewritten to Kotlin
         fun concatenate(alphabets: Collection<Alphabet>) =
-            alphabets.fold("") { acc, alphabet -> acc + alphabet }
+            alphabets.fold("") { acc, alphabet -> acc + alphabet.symbols }
     }
 }

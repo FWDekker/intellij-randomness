@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.ValidationException
 import com.fwdekker.randomness.ui.JSpinnerRange.Companion.DEFAULT_MAX_RANGE
+import com.intellij.openapi.ui.ValidationInfo
 import javax.swing.JSpinner
 
 
@@ -25,6 +25,11 @@ class JSpinnerRange(
         const val DEFAULT_MAX_RANGE = 1E53
     }
 
+    val minValue: Double
+        get() = (this.min.value as Number).toDouble()
+    val maxValue: Double
+        get() = (this.max.value as Number).toDouble()
+
 
     init {
         if (maxRange < 0)
@@ -35,16 +40,13 @@ class JSpinnerRange(
     /**
      * Validates this range.
      *
-     * @throws ValidationException if the `JSpinner`s do not form a valid range
+     * @return `null` if the current value is valid, or a [ValidationInfo] object explaining why the current value is
+     * invalid
      */
-    @Throws(ValidationException::class)
-    fun validate() {
-        val minValue = (min.value as Number).toDouble()
-        val maxValue = (max.value as Number).toDouble()
-
-        if (minValue > maxValue)
-            throw ValidationException("The maximum should be no smaller than the minimum.", max)
-        if (maxValue - minValue > maxRange)
-            throw ValidationException("The range should not exceed $maxRange.", max)
-    }
+    fun validateValue() =
+        when {
+            minValue > maxValue -> ValidationInfo("The maximum should be no smaller than the minimum.", max)
+            maxValue - minValue > maxRange -> ValidationInfo("The range should not exceed $maxRange.", max)
+            else -> null
+        }
 }

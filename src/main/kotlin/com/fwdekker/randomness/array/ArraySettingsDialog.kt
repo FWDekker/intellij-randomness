@@ -1,10 +1,8 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.SettingsDialog
-import com.fwdekker.randomness.ValidationException
 import com.fwdekker.randomness.ui.ButtonGroupHelper
 import com.fwdekker.randomness.ui.JLongSpinner
-import com.intellij.openapi.ui.ValidationInfo
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
@@ -55,13 +53,5 @@ class ArraySettingsDialog(settings: ArraySettings = ArraySettings.default) : Set
         settings.isSpaceAfterSeparator = spaceAfterSeparatorCheckBox.isSelected
     }
 
-    override fun doValidate(): ValidationInfo? {
-        try {
-            countSpinner.validateValue()
-        } catch (e: ValidationException) {
-            return ValidationInfo(e.message ?: "", e.component) // TODO remove null check
-        }
-
-        return null
-    }
+    override fun doValidate() = countSpinner.validateValue()
 }

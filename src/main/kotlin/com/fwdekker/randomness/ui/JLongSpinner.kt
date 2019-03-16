@@ -1,8 +1,8 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.ValidationException
 import com.fwdekker.randomness.ui.JLongSpinner.Companion.DEFAULT_MAX_VALUE
 import com.fwdekker.randomness.ui.JLongSpinner.Companion.DEFAULT_MIN_VALUE
+import com.intellij.openapi.ui.ValidationInfo
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 import javax.swing.JSpinner
@@ -66,19 +66,15 @@ class JLongSpinner(
     override fun getValue() = (super.getValue() as Number).toLong()
 
     /**
-     * Validates the current value and throws an exception if the value is invalid.
+     * Validates the current value.
      *
-     * @throws ValidationException if the value is not valid
+     * @return `null` if the current value is valid, or a [ValidationInfo] object explaining why the current value is
+     * invalid
      */
-    // TODO Throws annotation?
-    fun validateValue() {
-        val value = value
-
-        if (value < minValue) {
-            throw ValidationException("Please enter a value greater than or equal to $minValue.", this)
+    fun validateValue() =
+        when {
+            value < minValue -> ValidationInfo("Please enter a value greater than or equal to $minValue.", this)
+            value > maxValue -> ValidationInfo("Please enter a value less than or equal to $maxValue.", this)
+            else -> null
         }
-        if (value > maxValue) {
-            throw ValidationException("Please enter a value less than or equal to $maxValue.", this)
-        }
-    }
 }

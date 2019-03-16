@@ -1,12 +1,9 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.SettingsDialog
-import com.fwdekker.randomness.ValidationException
 import com.fwdekker.randomness.ui.ButtonGroupHelper
 import com.fwdekker.randomness.ui.JLongSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
-import com.intellij.openapi.ui.ValidationInfo
-import java.lang.Long // TODO Remove this
 import java.util.function.Consumer
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
@@ -55,18 +52,12 @@ class IntegerSettingsDialog(settings: IntegerSettings = IntegerSettings.default)
         }
     }
 
-    override fun doValidate(): ValidationInfo? {
-        try {
-            minValue.validateValue()
-            maxValue.validateValue()
-            base.validateValue()
-            valueRange.validate()
-        } catch (e: ValidationException) {
-            return ValidationInfo(e.message ?: "", e.component)
-        }
-
-        return null
-    }
+    override fun doValidate() =
+        null
+            ?: minValue.validateValue()
+            ?: maxValue.validateValue()
+            ?: base.validateValue()
+            ?: valueRange.validateValue()
 
 
     override fun loadSettings(settings: IntegerSettings) {

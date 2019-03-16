@@ -2,7 +2,6 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.SettingsDialog
-import com.fwdekker.randomness.ValidationException
 import com.fwdekker.randomness.ui.ButtonGroupHelper
 import com.fwdekker.randomness.ui.JLongSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
@@ -76,19 +75,13 @@ class StringSettingsDialog(settings: StringSettings = StringSettings.default) :
         settings.alphabets = HashSet(alphabetList.selectedValuesList)
     }
 
-    override fun doValidate(): ValidationInfo? {
-        try {
-            minLength.validateValue()
-            maxLength.validateValue()
-            lengthRange.validate()
-        } catch (e: ValidationException) {
-            return ValidationInfo(e.message ?: "", e.component)
-        }
-
-        return if (alphabetList.selectedValuesList.isEmpty()) {
+    override fun doValidate() =
+        // TODO Can this be done differently?
+        if (alphabetList.selectedValuesList.isEmpty())
             ValidationInfo("Please select at least one option.", alphabetList)
-        } else {
+        else
             null
-        }
-    }
+                ?: minLength.validateValue()
+                ?: maxLength.validateValue()
+                ?: lengthRange.validateValue()
 }

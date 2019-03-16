@@ -1,11 +1,12 @@
 package com.fwdekker.randomness.ui;
 
-import com.fwdekker.randomness.ValidationException;
+import com.intellij.openapi.ui.ValidationInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.JSpinner;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -41,9 +42,9 @@ final class JSpinnerRangeTest {
 
         final JSpinnerRange range = new JSpinnerRange(min, max, JSpinnerRange.DEFAULT_MAX_RANGE);
 
-        assertThatThrownBy(range::validate)
-            .isInstanceOf(ValidationException.class)
-            .hasMessage("The maximum should be no smaller than the minimum.");
+        final ValidationInfo info = range.validateValue();
+        assertThat(info).isNotNull();
+        assertThat(info.message).isEqualTo("The maximum should be no smaller than the minimum.");
     }
 
     @Test
@@ -53,9 +54,9 @@ final class JSpinnerRangeTest {
 
         final JSpinnerRange range = new JSpinnerRange(min, max, JSpinnerRange.DEFAULT_MAX_RANGE);
 
-        assertThatThrownBy(range::validate)
-            .isInstanceOf(ValidationException.class)
-            .hasMessage("The range should not exceed 1.0E53.");
+        final ValidationInfo info = range.validateValue();
+        assertThat(info).isNotNull();
+        assertThat(info.message).isEqualTo("The range should not exceed 1.0E53.");
     }
 
     @Test
@@ -65,8 +66,8 @@ final class JSpinnerRangeTest {
 
         final JSpinnerRange range = new JSpinnerRange(min, max, 793.31);
 
-        assertThatThrownBy(range::validate)
-            .isInstanceOf(ValidationException.class)
-            .hasMessage("The range should not exceed 793.31.");
+        final ValidationInfo info = range.validateValue();
+        assertThat(info).isNotNull();
+        assertThat(info.message).isEqualTo("The range should not exceed 793.31.");
     }
 }
