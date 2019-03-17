@@ -46,7 +46,7 @@ class WordSettings : Settings<WordSettings> {
     /**
      * The list of all dictionary files provided by the plugin.
      */
-    var bundledDictionaryFiles: MutableSet<String> = mutableSetOf(BundledDictionary2.DEFAULT_DICTIONARY_FILE)
+    var bundledDictionaryFiles: MutableSet<String> = mutableSetOf(BundledDictionary.DEFAULT_DICTIONARY_FILE)
     /**
      * The list of all dictionary files registered by the user.
      */
@@ -56,34 +56,34 @@ class WordSettings : Settings<WordSettings> {
      *
      * This is a subset of [bundledDictionaryFiles].
      */
-    var activeBundledDictionaryFiles: MutableSet<String> = mutableSetOf(BundledDictionary2.DEFAULT_DICTIONARY_FILE)
+    var activeBundledDictionaryFiles: MutableSet<String> = mutableSetOf(BundledDictionary.DEFAULT_DICTIONARY_FILE)
     /**
      * The list of user dictionary files that are currently active.
      *
      * This is a subset of [userDictionaries].
      */
     var activeUserDictionaryFiles: MutableSet<String> = mutableSetOf()
-    var bundledDictionaries: Set<BundledDictionary2>
+    var bundledDictionaries: Set<BundledDictionary>
         @Transient
-        get() = bundledDictionaryFiles.map { BundledDictionary2.cache.get(it) }.toSet()
+        get() = bundledDictionaryFiles.map { BundledDictionary.cache.get(it) }.toSet()
         set(value) {
             bundledDictionaryFiles = value.map { it.filename }.toMutableSet()
         }
-    var userDictionaries: Set<UserDictionary2>
+    var userDictionaries: Set<UserDictionary>
         @Transient
-        get() = userDictionaryFiles.map { UserDictionary2.cache.get(it) }.toSet()
+        get() = userDictionaryFiles.map { UserDictionary.cache.get(it) }.toSet()
         set(value) {
             userDictionaryFiles = value.map { it.filename }.toMutableSet()
         }
-    var activeBundledDictionaries: Set<BundledDictionary2>
+    var activeBundledDictionaries: Set<BundledDictionary>
         @Transient
-        get() = activeBundledDictionaryFiles.map { BundledDictionary2.cache.get(it) }.toSet()
+        get() = activeBundledDictionaryFiles.map { BundledDictionary.cache.get(it) }.toSet()
         set(value) {
             activeBundledDictionaryFiles = value.map { it.filename }.toMutableSet()
         }
-    var activeUserDictionaries: Set<UserDictionary2>
+    var activeUserDictionaries: Set<UserDictionary>
         @Transient
-        get() = activeUserDictionaryFiles.map { UserDictionary2.cache.get(it) }.toSet()
+        get() = activeUserDictionaryFiles.map { UserDictionary.cache.get(it) }.toSet()
         set(value) {
             activeUserDictionaryFiles = value.map { it.filename }.toMutableSet()
         }

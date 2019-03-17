@@ -32,7 +32,7 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
     private lateinit var maxLength: JLongSpinner
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup
-    private lateinit var dictionaries: JEditableList<Dictionary2>
+    private lateinit var dictionaries: JEditableList<Dictionary>
     private lateinit var dictionaryAddButton: JButton
     private lateinit var dictionaryRemoveButton: JButton
 
@@ -80,23 +80,24 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
     override fun saveSettings(settings: WordSettings) {
         settings.minLength = Math.toIntExact(minLength.value)
         settings.maxLength = Math.toIntExact(maxLength.value)
-        settings.enclosure = ButtonGroupHelper.getValue(enclosureGroup)!!
+        settings.enclosure = ButtonGroupHelper.getValue(enclosureGroup)!! // TODO Remove !!
         settings.capitalization = CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)!!)
 
         settings.bundledDictionaries = dictionaries.entries
-            .filterIsInstance<BundledDictionary2>()
+            .filterIsInstance<BundledDictionary>()
             .toSet()
         settings.activeBundledDictionaries = dictionaries.activeEntries
-            .filterIsInstance<BundledDictionary2>()
+            .filterIsInstance<BundledDictionary>()
             .toSet()
-        Dictionary.BundledDictionary.clearCache()
+        BundledDictionary.cache.clear()
 
         settings.userDictionaries = dictionaries.entries
-            .filterIsInstance<UserDictionary2>()
+            .filterIsInstance<UserDictionary>()
             .toSet()
         settings.activeUserDictionaries = dictionaries.activeEntries
-            .filterIsInstance<UserDictionary2>()
+            .filterIsInstance<UserDictionary>()
             .toSet()
+        UserDictionary.cache.clear()
     }
 
     public override fun doValidate(): ValidationInfo? {
@@ -127,7 +128,7 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
             val canonicalPath = files.firstOrNull()?.canonicalPath
                 ?: return@chooseFiles
 
-            val newDictionary = UserDictionary2.cache.get(canonicalPath, false)
+            val newDictionary = UserDictionary.cache.get(canonicalPath, false)
             // TODO Can this check be moved elsewhere?
             if (!newDictionary.isValid()) {
                 JBPopupFactory.getInstance()
@@ -149,7 +150,7 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
      */
     private fun removeDictionary() {
         dictionaries.highlightedEntry?.let { dictionary ->
-            if (dictionary is UserDictionary2)
+            if (dictionary is UserDictionary)
                 dictionaries.removeEntry(dictionary)
         }
     }
@@ -162,7 +163,7 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
     private fun onDictionaryHighlightChange(event: ListSelectionEvent) {
         if (!event.valueIsAdjusting) {
             val highlightedDictionary = dictionaries.highlightedEntry
-            val enable = highlightedDictionary is UserDictionary2
+            val enable = highlightedDictionary is UserDictionary
             dictionaryRemoveButton.isEnabled = enable
         }
     }
@@ -172,7 +173,7 @@ class WordSettingsDialog(settings: WordSettings = WordSettings.default) : Settin
      */
     private fun onDictionaryActivityChange() {
         val words = dictionaries.activeEntries
-            .fold(emptySet<String>()) { acc, dictionary -> (acc + dictionary.getWords()).toSet() }
+            .fold(emptySet<String>()) { acc, dictionary -> (acc + dictionary.words).toSet() }
 
         if (words.isEmpty()) {
             minLength.maxValue = 1

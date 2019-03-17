@@ -23,13 +23,13 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
         // TODO Move error checking to caller. Return null in this method or throw exception?
         val words: Set<String>
         try {
-            val bundledWords = settings.activeBundledDictionaries.flatMap { it.getWords() }
-            val userWords = settings.activeUserDictionaries.flatMap { it.getWords() }
+            val bundledWords = settings.activeBundledDictionaries.flatMap { it.words }
+            val userWords = settings.activeUserDictionaries.flatMap { it.words }
 
             words = (bundledWords + userWords)
                 .filter { it.length in (settings.minLength..settings.maxLength) }
                 .toSet()
-        } catch (e: InvalidDictionary2Exception) {
+        } catch (e: InvalidDictionaryException) {
             JBPopupHelper.showMessagePopup(
                 "Randomness error",
                 e.message ?: "An unknown error occurred while generating a random word.",
