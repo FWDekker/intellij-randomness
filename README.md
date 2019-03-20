@@ -42,3 +42,7 @@ The way the data is generated can be adjusted to your demands. For example, you 
 Randomness is bundled with a small English dictionary from which it chooses random words. However, you may want to add words from another language or add a small selection of relevant words. Therefore, you can register your own dictionary files with the word generator and select which dictionaries it should pick words from. You can make your own dictionary file by creating a text file and putting one word on each line, and saving the file with the `.dic` extension.
 
 <p align="center"><img src="https://user-images.githubusercontent.com/13442533/39729579-feef0dd4-525c-11e8-8a79-e51cb2d75bfc.PNG" alt="Dictionary settings" /></p>
+
+
+## Credits
+Thanks to [Georgios Andreadis](https://github.com/gandreadis) for the logo!
