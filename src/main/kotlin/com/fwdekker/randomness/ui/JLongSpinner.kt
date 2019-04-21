@@ -49,7 +49,7 @@ class JLongSpinner(
 
 
     init {
-        val editor = JSpinner.NumberEditor(this)
+        val editor = NumberEditor(this)
         editor.format.decimalFormatSymbols = DecimalFormatSymbols(Locale.US)
         setEditor(editor)
 

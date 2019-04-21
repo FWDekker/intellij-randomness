@@ -215,8 +215,8 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             minLength.setMaxValue(1);
             maxLength.setMinValue(Integer.MAX_VALUE);
         } else {
-            minLength.setMaxValue(words.stream().map(String::length).min(Comparator.comparing(Integer::valueOf)).get());
-            maxLength.setMinValue(words.stream().map(String::length).max(Comparator.comparing(Integer::valueOf)).get());
+            minLength.setMaxValue(words.stream().map(String::length).max(Comparator.comparing(Integer::valueOf)).get());
+            maxLength.setMinValue(words.stream().map(String::length).min(Comparator.comparing(Integer::valueOf)).get());
         }
 
         return null; // Return null because that's compatible with Kotlin's Any

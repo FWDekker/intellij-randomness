@@ -101,6 +101,10 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     protected ValidationInfo doValidate() {
         return Optional.ofNullable(minLength.validateValue())
             .orElse(Optional.ofNullable(maxLength.validateValue())
-                .orElse(lengthRange.validateValue()));
+                .orElse(Optional.ofNullable(lengthRange.validateValue())
+                    .orElse(alphabetList.getSelectedValuesList().isEmpty() ?
+                        new ValidationInfo("Please select at least one option.", alphabetList)
+                        : null
+                    )));
     }
 }
