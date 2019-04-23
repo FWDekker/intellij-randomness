@@ -14,37 +14,37 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 final class CapitalizationModeTest {
     @Test
     void testRetainTransform() {
-        assertThat(CapitalizationMode.RETAIN.getTransform().apply("AwfJYzzUoR")).isEqualTo("AwfJYzzUoR");
+        assertThat(CapitalizationMode.RETAIN.getTransform().invoke("AwfJYzzUoR")).isEqualTo("AwfJYzzUoR");
     }
 
     @Test
     void testSentenceTransformEmptyString() {
-        assertThat(CapitalizationMode.SENTENCE.getTransform().apply("")).isEqualTo("");
+        assertThat(CapitalizationMode.SENTENCE.getTransform().invoke("")).isEqualTo("");
     }
 
     @Test
     void testSentenceTransform() {
-        assertThat(CapitalizationMode.SENTENCE.getTransform().apply("cOoKiE")).isEqualTo("Cookie");
+        assertThat(CapitalizationMode.SENTENCE.getTransform().invoke("cOoKiE")).isEqualTo("Cookie");
     }
 
     @Test
     void testUpperTransform() {
-        assertThat(CapitalizationMode.UPPER.getTransform().apply("vAnDaLisM")).isEqualTo("VANDALISM");
+        assertThat(CapitalizationMode.UPPER.getTransform().invoke("vAnDaLisM")).isEqualTo("VANDALISM");
     }
 
     @Test
     void testLowerTransform() {
-        assertThat(CapitalizationMode.LOWER.getTransform().apply("ChAnnEl")).isEqualTo("channel");
+        assertThat(CapitalizationMode.LOWER.getTransform().invoke("ChAnnEl")).isEqualTo("channel");
     }
 
     @Test
     void testFirstLetterTransform() {
-        assertThat(CapitalizationMode.FIRST_LETTER.getTransform().apply("bgiOP SMQpR")).isEqualTo("Bgiop Smqpr");
+        assertThat(CapitalizationMode.FIRST_LETTER.getTransform().invoke("bgiOP SMQpR")).isEqualTo("Bgiop Smqpr");
     }
 
     @Test
     void testRandomTransform() {
-        assertThat(CapitalizationMode.RANDOM.getTransform().apply("GHmdukhNqua"))
+        assertThat(CapitalizationMode.RANDOM.getTransform().invoke("GHmdukhNqua"))
             .isNotEqualTo("GHmdukhNqua") // Has a chance of 0.002% of failing
             .isEqualToIgnoringCase("GHmdukhNqua");
     }
@@ -52,32 +52,32 @@ final class CapitalizationModeTest {
 
     @Test
     void testGetNameRetain() {
-        assertThat(CapitalizationMode.RETAIN.getName()).isEqualTo("retain");
+        assertThat(CapitalizationMode.RETAIN.getDescriptor()).isEqualTo("retain");
     }
 
     @Test
     void testGetNameSentence() {
-        assertThat(CapitalizationMode.SENTENCE.getName()).isEqualTo("sentence");
+        assertThat(CapitalizationMode.SENTENCE.getDescriptor()).isEqualTo("sentence");
     }
 
     @Test
     void testGetNameUpper() {
-        assertThat(CapitalizationMode.UPPER.getName()).isEqualTo("upper");
+        assertThat(CapitalizationMode.UPPER.getDescriptor()).isEqualTo("upper");
     }
 
     @Test
     void testGetNameLower() {
-        assertThat(CapitalizationMode.LOWER.getName()).isEqualTo("lower");
+        assertThat(CapitalizationMode.LOWER.getDescriptor()).isEqualTo("lower");
     }
 
     @Test
     void testGetNameFirstLetter() {
-        assertThat(CapitalizationMode.FIRST_LETTER.getName()).isEqualTo("first letter");
+        assertThat(CapitalizationMode.FIRST_LETTER.getDescriptor()).isEqualTo("first letter");
     }
 
     @Test
     void testGetNameRandom() {
-        assertThat(CapitalizationMode.RANDOM.getName()).isEqualTo("random");
+        assertThat(CapitalizationMode.RANDOM.getDescriptor()).isEqualTo("random");
     }
 
 
@@ -114,37 +114,37 @@ final class CapitalizationModeTest {
 
     @Test
     void testGetModeRetain() {
-        assertThat(CapitalizationMode.getMode("retain")).isEqualTo(CapitalizationMode.RETAIN);
+        assertThat(CapitalizationMode.Companion.getMode("retain")).isEqualTo(CapitalizationMode.RETAIN);
     }
 
     @Test
     void testGetModeSentence() {
-        assertThat(CapitalizationMode.getMode("sentence")).isEqualTo(CapitalizationMode.SENTENCE);
+        assertThat(CapitalizationMode.Companion.getMode("sentence")).isEqualTo(CapitalizationMode.SENTENCE);
     }
 
     @Test
     void testGetModeUpper() {
-        assertThat(CapitalizationMode.getMode("upper")).isEqualTo(CapitalizationMode.UPPER);
+        assertThat(CapitalizationMode.Companion.getMode("upper")).isEqualTo(CapitalizationMode.UPPER);
     }
 
     @Test
     void testGetModeLower() {
-        assertThat(CapitalizationMode.getMode("lower")).isEqualTo(CapitalizationMode.LOWER);
+        assertThat(CapitalizationMode.Companion.getMode("lower")).isEqualTo(CapitalizationMode.LOWER);
     }
 
     @Test
     void testGetModeFirstLetter() {
-        assertThat(CapitalizationMode.getMode("first letter")).isEqualTo(CapitalizationMode.FIRST_LETTER);
+        assertThat(CapitalizationMode.Companion.getMode("first letter")).isEqualTo(CapitalizationMode.FIRST_LETTER);
     }
 
     @Test
     void testGetModeRandom() {
-        assertThat(CapitalizationMode.getMode("random")).isEqualTo(CapitalizationMode.RANDOM);
+        assertThat(CapitalizationMode.Companion.getMode("random")).isEqualTo(CapitalizationMode.RANDOM);
     }
 
     @Test
     void testGetModeOther() {
-        assertThatThrownBy(() -> CapitalizationMode.getMode(""))
+        assertThatThrownBy(() -> CapitalizationMode.Companion.getMode(""))
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("There does not exist a capitalization mode with name ``.")
             .hasNoCause();

@@ -1,9 +1,8 @@
 plugins {
-    id "idea"
+    id "java"
+    id "org.jetbrains.kotlin.jvm" version "1.3.21"
 
-    id "checkstyle"
-    id "com.github.spotbugs" version "1.6.11"
-    id "pmd"
+    id "org.jetbrains.dokka" version "0.9.17"
 
     id "jacoco"
     id "io.github.ddimtirov.codacy" version "0.1.0"
@@ -17,9 +16,8 @@ repositories {
 }
 
 dependencies {
-    compile group: "com.google.code.findbugs", name: "jsr305", version: findbugsVersion
-    compile group: "com.github.spotbugs", name: "spotbugs-annotations", version: spotbugsVersion
-    compile group: "net.jcip", name: "jcip-annotations", version: jcipVersion
+    implementation group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk8"
+    implementation group: "org.jetbrains.kotlin", name: "kotlin-reflect"
 
     testCompile group: "nl.jqno.equalsverifier", name: "equalsverifier", version: equalsVerifierVersion
     testCompile group: "org.assertj", name: "assertj-core", version: assertjVersion
@@ -40,34 +38,19 @@ test {
     useJUnitPlatform()
 }
 
+dokka {
+    outputFormat = "html"
+    includes = ["packages.md"]
+
+    includeNonPublic = false
+    skipDeprecated = false
+    reportUndocumented = true
+    skipEmptyPackages = true
+}
+
 intellij {
     version = intellijVersion
     updateSinceUntilBuild = false
-}
-
-checkstyle {
-    ignoreFailures = false
-}
-
-spotbugs {
-    ignoreFailures = false
-    excludeFilter = file("$rootDir/config/spotbugs/excludeFilter.xml")
-    includeFilter = file("$rootDir/config/spotbugs/includeFilter.xml")
-}
-
-pmd {
-    toolVersion = pmdVersion
-    ignoreFailures = true
-    ruleSetFiles = files(file("$rootDir/config/pmd").listFiles())
-        .filter { File f -> f.name.startsWith("pmd-global-") || f.name.startsWith("pmd-main-") }
-    ruleSets = []
-}
-
-pmdTest {
-    ignoreFailures = true
-    ruleSetFiles = files(file("$rootDir/config/pmd").listFiles())
-        .filter { File f -> f.name.startsWith("pmd-global-") || f.name.startsWith("pmd-test-") }
-    ruleSets = []
 }
 
 jacocoTestReport {

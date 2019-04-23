@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui;
 
+import kotlin.Unit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,10 @@ final class ButtonGroupHelperTest {
     void testForEachEmpty() {
         final int[] sum = {0};
 
-        ButtonGroupHelper.forEach(group, button -> sum[0]++);
+        ButtonGroupHelper.INSTANCE.forEach(group, button -> {
+            sum[0]++;
+            return Unit.INSTANCE;
+        });
 
         assertThat(sum[0]).isEqualTo(0);
     }
@@ -46,7 +50,10 @@ final class ButtonGroupHelperTest {
 
         final int[] sum = {0};
 
-        ButtonGroupHelper.forEach(group, button -> sum[0]++);
+        ButtonGroupHelper.INSTANCE.forEach(group, button -> {
+            sum[0]++;
+            return Unit.INSTANCE;
+        });
 
         assertThat(sum[0]).isEqualTo(3);
     }
@@ -54,7 +61,7 @@ final class ButtonGroupHelperTest {
 
     @Test
     void testGetValueEmpty() {
-        assertThat(ButtonGroupHelper.getValue(group)).isNull();
+        assertThat(ButtonGroupHelper.INSTANCE.getValue(group)).isNull();
     }
 
     @Test
@@ -63,7 +70,7 @@ final class ButtonGroupHelperTest {
 
         group.add(button);
 
-        assertThat(ButtonGroupHelper.getValue(group)).isNull();
+        assertThat(ButtonGroupHelper.INSTANCE.getValue(group)).isNull();
     }
 
     @Test
@@ -77,13 +84,13 @@ final class ButtonGroupHelperTest {
         group.add(buttonA);
         group.add(buttonB);
 
-        assertThat(ButtonGroupHelper.getValue(group)).isEqualTo("Y6ddy");
+        assertThat(ButtonGroupHelper.INSTANCE.getValue(group)).isEqualTo("Y6ddy");
     }
 
 
     @Test
     void testSetValueEmpty() {
-        assertThatThrownBy(() -> ButtonGroupHelper.setValue(group, "syWR#"))
+        assertThatThrownBy(() -> ButtonGroupHelper.INSTANCE.setValue(group, "syWR#"))
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("Could not find a button with action command `syWR#`.");
     }
@@ -98,7 +105,7 @@ final class ButtonGroupHelperTest {
         group.add(buttonA);
         group.add(buttonB);
 
-        assertThatThrownBy(() -> ButtonGroupHelper.setValue(group, "OD>5&"))
+        assertThatThrownBy(() -> ButtonGroupHelper.INSTANCE.setValue(group, "OD>5&"))
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("Could not find a button with action command `OD>5&`.");
     }
@@ -116,7 +123,7 @@ final class ButtonGroupHelperTest {
         group.add(buttonB);
         group.add(buttonC);
 
-        ButtonGroupHelper.setValue(group, "2Y@2_");
+        ButtonGroupHelper.INSTANCE.setValue(group, "2Y@2_");
 
         assertThat(buttonB.isSelected()).isTrue();
     }
@@ -134,7 +141,7 @@ final class ButtonGroupHelperTest {
         group.add(buttonB);
         group.add(buttonC);
 
-        ButtonGroupHelper.setValue(group, new Object() {
+        ButtonGroupHelper.INSTANCE.setValue(group, new Object() {
             @Override
             public String toString() {
                 return "ouzioKGsKi";

@@ -1,18 +1,19 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.ValidationException;
 import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 
 /**
@@ -31,7 +32,7 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
      * Constructs a new {@code IntegerSettingsDialog} that uses the singleton {@code IntegerSettings} instance.
      */
     /* default */ IntegerSettingsDialog() {
-        this(IntegerSettings.getInstance());
+        this(IntegerSettings.Companion.getDefault());
     }
 
     /**
@@ -57,7 +58,6 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
      * <p>
      * This method is called by the scene builder at the start of the constructor.
      */
-    @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
         minValue = new JLongSpinner();
         maxValue = new JLongSpinner();
@@ -67,42 +67,47 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
         base.addChangeListener(event -> {
             final long value = ((JLongSpinner) event.getSource()).getValue();
             final boolean enabled = value == IntegerSettings.DECIMAL_BASE;
-            ButtonGroupHelper.forEach(groupingSeparatorGroup,
-                button -> button.setEnabled(enabled));
+            ButtonGroupHelper.INSTANCE.forEach(groupingSeparatorGroup,
+                button -> {
+                    button.setEnabled(enabled);
+                    return Unit.INSTANCE;
+                });
         });
     }
 
     @Override
     @Nullable
     protected ValidationInfo doValidate() {
-        try {
-            minValue.validateValue();
-            maxValue.validateValue();
-            base.validateValue();
-            valueRange.validate();
-        } catch (final ValidationException e) {
-            return new ValidationInfo(e.getMessage(), e.getComponent());
-        }
 
-        return null;
+        return Stream
+            .of(
+                minValue.validateValue(),
+                maxValue.validateValue(),
+                base.validateValue(),
+                valueRange.validateValue()
+            )
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null);
     }
 
 
     @Override
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minValue and such are always non-null
     public void loadSettings(final @NotNull IntegerSettings settings) {
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
         base.setValue((long) settings.getBase());
-        ButtonGroupHelper.setValue(groupingSeparatorGroup, String.valueOf(settings.getGroupingSeparator()));
+        ButtonGroupHelper.INSTANCE.setValue(groupingSeparatorGroup, String.valueOf(settings.getGroupingSeparator()));
     }
 
     @Override
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minValue and such are always non-null
     public void saveSettings(final @NotNull IntegerSettings settings) {
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
         settings.setBase(base.getValue().intValue());
-        settings.setGroupingSeparator(ButtonGroupHelper.getValue(groupingSeparatorGroup));
+
+        final String groupingSeparator = ButtonGroupHelper.INSTANCE.getValue(groupingSeparatorGroup);
+        settings.setGroupingSeparator(groupingSeparator == null || groupingSeparator.isEmpty()
+            ? '\0' : groupingSeparator.charAt(0));
     }
 }

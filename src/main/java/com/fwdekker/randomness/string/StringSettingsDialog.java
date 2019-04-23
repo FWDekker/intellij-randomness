@@ -1,13 +1,11 @@
 package com.fwdekker.randomness.string;
 
+import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.ValidationException;
 import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
-import com.fwdekker.randomness.CapitalizationMode;
 import com.intellij.openapi.ui.ValidationInfo;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,12 +15,13 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 
 /**
  * Dialog for settings of random string generation.
  */
-@SuppressFBWarnings({"UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD"}) // Initialized by UI framework
 public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     private JPanel contentPane;
     private JSpinnerRange lengthRange;
@@ -37,7 +36,7 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
      * Constructs a new {@code StringSettingsDialog} that uses the singleton {@code StringSettings} instance.
      */
     /* default */ StringSettingsDialog() {
-        this(StringSettings.getInstance());
+        this(StringSettings.Companion.getDefault());
     }
 
     /**
@@ -63,7 +62,6 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
      * <p>
      * This method is called by the scene builder at the start of the constructor.
      */
-    @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
         minLength = new JLongSpinner(1, 1, Integer.MAX_VALUE);
         maxLength = new JLongSpinner(1, 1, Integer.MAX_VALUE);
@@ -76,12 +74,11 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
 
 
     @Override
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minLength and such are always non-null
     public void loadSettings(final @NotNull StringSettings settings) {
         minLength.setValue(settings.getMinLength());
         maxLength.setValue(settings.getMaxLength());
-        ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
-        ButtonGroupHelper.setValue(capitalizationGroup, settings.getCapitalization());
+        ButtonGroupHelper.INSTANCE.setValue(enclosureGroup, settings.getEnclosure());
+        ButtonGroupHelper.INSTANCE.setValue(capitalizationGroup, settings.getCapitalization());
 
         for (int i = 0; i < Alphabet.values().length; i++) {
             if (settings.getAlphabets().contains(Alphabet.values()[i])) {
@@ -91,30 +88,34 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     }
 
     @Override
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // minLength and such are always non-null
     public void saveSettings(final @NotNull StringSettings settings) {
         settings.setMinLength(Math.toIntExact(minLength.getValue()));
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
-        settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
-        settings.setCapitalization(CapitalizationMode.getMode(ButtonGroupHelper.getValue(capitalizationGroup)));
+
+        final String enclosure = ButtonGroupHelper.INSTANCE.getValue(enclosureGroup);
+        settings.setEnclosure(enclosure == null ? StringSettings.DEFAULT_ENCLOSURE : enclosure);
+
+        final String capitalizationMode = ButtonGroupHelper.INSTANCE.getValue(capitalizationGroup);
+        settings.setCapitalization(capitalizationMode == null
+            ? StringSettings.Companion.getDEFAULT_CAPITALIZATION()
+            : CapitalizationMode.Companion.getMode(capitalizationMode));
         settings.setAlphabets(new HashSet<>(alphabetList.getSelectedValuesList()));
     }
 
     @Override
     @Nullable
     protected ValidationInfo doValidate() {
-        try {
-            minLength.validateValue();
-            maxLength.validateValue();
-            lengthRange.validate();
-        } catch (final ValidationException e) {
-            return new ValidationInfo(e.getMessage(), e.getComponent());
-        }
-
-        if (alphabetList.getSelectedValuesList().isEmpty()) {
-            return new ValidationInfo("Please select at least one option.", alphabetList);
-        }
-
-        return null;
+        return Stream
+            .of(
+                minLength.validateValue(),
+                maxLength.validateValue(),
+                lengthRange.validateValue()
+            )
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(alphabetList.getSelectedValuesList().isEmpty()
+                ? new ValidationInfo("Please select at least one option.", alphabetList)
+                : null
+            );
     }
 }

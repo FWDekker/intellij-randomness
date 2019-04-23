@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.ui;
 
-import com.fwdekker.randomness.ValidationException;
+import com.intellij.openapi.ui.ValidationInfo;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,9 +58,9 @@ final class JDoubleSpinnerTest {
 
         spinner.setValue(-1E55);
 
-        assertThatThrownBy(() -> spinner.validateValue())
-            .isInstanceOf(ValidationException.class)
-            .hasMessage("Please enter a value greater than or equal to -1.0E53.");
+        final ValidationInfo info = spinner.validateValue();
+        assertThat(info).isNotNull();
+        assertThat(info.message).isEqualTo("Please enter a value greater than or equal to -1.0E53.");
     }
 
     @Test
@@ -69,9 +69,9 @@ final class JDoubleSpinnerTest {
 
         spinner.setValue(1E98);
 
-        assertThatThrownBy(() -> spinner.validateValue())
-            .isInstanceOf(ValidationException.class)
-            .hasMessage("Please enter a value less than or equal to 1.0E53.");
+        final ValidationInfo info = spinner.validateValue();
+        assertThat(info).isNotNull();
+        assertThat(info.message).isEqualTo("Please enter a value less than or equal to 1.0E53.");
     }
 
     @Test
@@ -80,9 +80,9 @@ final class JDoubleSpinnerTest {
 
         spinner.setValue(-808.68);
 
-        assertThatThrownBy(() -> spinner.validateValue())
-            .isInstanceOf(ValidationException.class)
-            .hasMessage("Please enter a value greater than or equal to -738.33.");
+        final ValidationInfo info = spinner.validateValue();
+        assertThat(info).isNotNull();
+        assertThat(info.message).isEqualTo("Please enter a value greater than or equal to -738.33.");
     }
 
     @Test
@@ -91,8 +91,8 @@ final class JDoubleSpinnerTest {
 
         spinner.setValue(94.0);
 
-        assertThatThrownBy(() -> spinner.validateValue())
-            .isInstanceOf(ValidationException.class)
-            .hasMessage("Please enter a value less than or equal to -69.36.");
+        final ValidationInfo info = spinner.validateValue();
+        assertThat(info).isNotNull();
+        assertThat(info.message).isEqualTo("Please enter a value less than or equal to -69.36.");
     }
 }

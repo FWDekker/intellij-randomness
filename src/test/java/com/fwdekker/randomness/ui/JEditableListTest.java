@@ -1,5 +1,7 @@
 package com.fwdekker.randomness.ui;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -232,7 +234,10 @@ final class JEditableListTest {
         final boolean[] fired = {false};
         list.addEntry("DsX[DtA>6{");
 
-        list.addEntryActivityChangeListener(event -> fired[0] = true);
+        list.addEntryActivityChangeListener(event -> {
+            fired[0] = true;
+            return Unit.INSTANCE;
+        });
         list.setEntryActivity("DsX[DtA>6{", true);
 
         assertThat(fired[0]).isTrue();
@@ -242,7 +247,10 @@ final class JEditableListTest {
     void testActivityListenerNoChangeOnInsert() {
         final boolean[] fired = {false};
 
-        list.addEntryActivityChangeListener(event -> fired[0] = true);
+        list.addEntryActivityChangeListener(event -> {
+            fired[0] = true;
+            return Unit.INSTANCE;
+        });
         list.addEntry("DsX[DtA>6{");
 
         assertThat(fired[0]).isFalse();
@@ -253,9 +261,12 @@ final class JEditableListTest {
         final boolean[] fired = {false};
         list.addEntry("bvDAPSZFG3");
 
-        final JEditableList.EntryActivityChangeListener listener = event -> fired[0] = true;
-        list.addEntryActivityChangeListener(listener);
-        list.removeEntryActivityChangeListener(listener);
+        final Function1<Integer, Unit> changeListener = event -> {
+            fired[0] = true;
+            return Unit.INSTANCE;
+        };
+        list.addEntryActivityChangeListener(changeListener);
+        list.removeEntryActivityChangeListener(changeListener);
         list.setEntryActivity("bvDAPSZFG3", true);
 
         assertThat(fired[0]).isFalse();
@@ -264,7 +275,7 @@ final class JEditableListTest {
 
     @Test
     void testGetHighlightedEntryNone() {
-        assertThat(list.getHighlightedEntry()).isNotPresent();
+        assertThat(list.getHighlightedEntry()).isNull();
     }
 
     @Test
@@ -272,7 +283,7 @@ final class JEditableListTest {
         list.setEntries(Arrays.asList("Bb]CEbJlAD", "8QNk5l<]ln", "U5Hbo0whnn"));
         list.addRowSelectionInterval(0, 0);
 
-        assertThat(list.getHighlightedEntry().get())
+        assertThat(list.getHighlightedEntry())
             .isEqualTo("Bb]CEbJlAD");
     }
 
@@ -282,7 +293,7 @@ final class JEditableListTest {
         list.addRowSelectionInterval(0, 0);
         list.addRowSelectionInterval(2, 2);
 
-        assertThat(list.getHighlightedEntry().get())
+        assertThat(list.getHighlightedEntry())
             .isEqualTo("sCxbg}sfy(");
     }
 
@@ -294,11 +305,11 @@ final class JEditableListTest {
 
         assertThatThrownBy(() -> list.getColumnClass(-1))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("JEditableList only has two columns.")
+            .hasMessage("JEditableList has only two columns.")
             .hasNoCause();
         assertThatThrownBy(() -> list.getColumnClass(2))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("JEditableList only has two columns.")
+            .hasMessage("JEditableList has only two columns.")
             .hasNoCause();
     }
 

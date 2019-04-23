@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.editor.Editor;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -84,12 +85,14 @@ final class DataInsertActionTest {
      */
     private static class SimpleInsertAction extends DataInsertAction {
         @Override
-        protected String getName() {
+        @NotNull
+        public String getName() {
             return "Insert Simple";
         }
 
         @Override
-        protected String generateString() {
+        @NotNull
+        public String generateString() {
             return RANDOM_STRING;
         }
     }

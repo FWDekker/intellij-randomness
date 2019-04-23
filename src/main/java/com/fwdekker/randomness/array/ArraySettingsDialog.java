@@ -1,11 +1,9 @@
 package com.fwdekker.randomness.array;
 
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.ValidationException;
 import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.intellij.openapi.ui.ValidationInfo;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +16,6 @@ import javax.swing.JPanel;
 /**
  * Dialog for settings of random array generation.
  */
-@SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // Initialized by UI framework
 public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     private JPanel contentPane;
     private JLongSpinner countSpinner;
@@ -31,7 +28,7 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
      * Constructs a new {@code StringSettingsDialog} that uses the singleton {@code StringSettings} instance.
      */
     /* default */ ArraySettingsDialog() {
-        this(ArraySettings.getInstance());
+        this(ArraySettings.Companion.getDefault());
     }
 
     /**
@@ -57,7 +54,6 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
      * <p>
      * This method is called by the scene builder at the start of the constructor.
      */
-    @SuppressWarnings("PMD.UnusedPrivateMethod") // Method used by scene builder
     private void createUIComponents() {
         countSpinner = new JLongSpinner(1, 1, Integer.MAX_VALUE);
     }
@@ -66,29 +62,27 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     @Override
     public void loadSettings(final @NotNull ArraySettings settings) {
         countSpinner.setValue(settings.getCount());
-        ButtonGroupHelper.setValue(bracketsGroup, settings.getBrackets());
-        ButtonGroupHelper.setValue(separatorGroup, settings.getSeparator());
+        ButtonGroupHelper.INSTANCE.setValue(bracketsGroup, settings.getBrackets());
+        ButtonGroupHelper.INSTANCE.setValue(separatorGroup, settings.getSeparator());
         spaceAfterSeparatorCheckBox.setSelected(settings.isSpaceAfterSeparator());
     }
 
     @Override
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // Verified by annotation
     public void saveSettings(final @NotNull ArraySettings settings) {
         settings.setCount(Math.toIntExact(countSpinner.getValue()));
-        settings.setBrackets(ButtonGroupHelper.getValue(bracketsGroup));
-        settings.setSeparator(ButtonGroupHelper.getValue(separatorGroup));
+
+        final String brackets = ButtonGroupHelper.INSTANCE.getValue(bracketsGroup);
+        settings.setBrackets(brackets == null ? ArraySettings.DEFAULT_BRACKETS : brackets);
+
+        final String separator = ButtonGroupHelper.INSTANCE.getValue(separatorGroup);
+        settings.setSeparator(separator == null ? ArraySettings.DEFAULT_SEPARATOR : separator);
+
         settings.setSpaceAfterSeparator(spaceAfterSeparatorCheckBox.isSelected());
     }
 
     @Nullable
     @Override
     protected ValidationInfo doValidate() {
-        try {
-            countSpinner.validateValue();
-        } catch (final ValidationException e) {
-            return new ValidationInfo(e.getMessage(), e.getComponent());
-        }
-
-        return null;
+        return countSpinner.validateValue();
     }
 }

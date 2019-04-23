@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 /**
  * Parameterized unit tests for {@link UuidInsertAction}.
  */
-public final class UuidInsertActionTest {
+final class UuidInsertActionTest {
     @SuppressWarnings("PMD.UnusedPrivateMethod") // Used as parameterized method source
     private static Collection<Object[]> provider() {
         return Arrays.asList(new Object[][]{

@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.ui;
 
-import com.fwdekker.randomness.ValidationException;
+import com.intellij.openapi.ui.ValidationInfo;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,9 +72,9 @@ final class JLongSpinnerTest {
 
         spinner.setValue(-979);
 
-        assertThatThrownBy(() -> spinner.validateValue())
-            .isInstanceOf(ValidationException.class)
-            .hasMessage("Please enter a value greater than or equal to -950.");
+        final ValidationInfo info = spinner.validateValue();
+        assertThat(info).isNotNull();
+        assertThat(info.message).isEqualTo("Please enter a value greater than or equal to -950.");
     }
 
     @Test
@@ -83,8 +83,8 @@ final class JLongSpinnerTest {
 
         spinner.setValue(838);
 
-        assertThatThrownBy(() -> spinner.validateValue())
-            .isInstanceOf(ValidationException.class)
-            .hasMessage("Please enter a value less than or equal to 678.");
+        final ValidationInfo info = spinner.validateValue();
+        assertThat(info).isNotNull();
+        assertThat(info.message).isEqualTo("Please enter a value less than or equal to 678.");
     }
 }

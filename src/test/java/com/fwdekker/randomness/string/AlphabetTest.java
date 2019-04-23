@@ -16,13 +16,13 @@ final class AlphabetTest {
     void testConcatenate() {
         final List<Alphabet> alphabets = Arrays.asList(Alphabet.ALPHABET, Alphabet.MINUS, Alphabet.SPECIAL);
 
-        assertThat(Alphabet.concatenate(alphabets)).isEqualTo("abcdefghijklmnopqrstuvwxyz-!@#$%^&*");
+        assertThat(Alphabet.Companion.concatenate(alphabets)).isEqualTo("abcdefghijklmnopqrstuvwxyz-!@#$%^&*");
     }
 
 
     @Test
-    void testGetName() {
-        assertThat(Alphabet.ALPHABET.getName()).isEqualTo("Alphabet (a, b, c, ...)");
+    void testGetDescription() {
+        assertThat(Alphabet.ALPHABET.getDescription()).isEqualTo("Alphabet (a, b, c, ...)");
     }
 
     @Test
