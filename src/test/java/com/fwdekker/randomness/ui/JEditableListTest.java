@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui;
 
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -235,7 +236,10 @@ final class JEditableListTest {
         final boolean[] fired = {false};
         list.addEntry("DsX[DtA>6{");
 
-        list.addEntryActivityChangeListener(event -> fired[0] = true);
+        list.addEntryActivityChangeListener(event -> {
+            fired[0] = true;
+            return Unit.INSTANCE;
+        });
         list.setEntryActivity("DsX[DtA>6{", true);
 
         assertThat(fired[0]).isTrue();
@@ -245,7 +249,10 @@ final class JEditableListTest {
     void testActivityListenerNoChangeOnInsert() {
         final boolean[] fired = {false};
 
-        list.addEntryActivityChangeListener(event -> fired[0] = true);
+        list.addEntryActivityChangeListener(event -> {
+            fired[0] = true;
+            return Unit.INSTANCE;
+        });
         list.addEntry("DsX[DtA>6{");
 
         assertThat(fired[0]).isFalse();
@@ -256,7 +263,10 @@ final class JEditableListTest {
         final boolean[] fired = {false};
         list.addEntry("bvDAPSZFG3");
 
-        final Function1<Integer, Boolean> changeListener = event -> fired[0] = true;
+        final Function1<Integer, Unit> changeListener = event -> {
+            fired[0] = true;
+            return Unit.INSTANCE;
+        };
         list.addEntryActivityChangeListener(changeListener);
         list.removeEntryActivityChangeListener(changeListener);
         list.setEntryActivity("bvDAPSZFG3", true);

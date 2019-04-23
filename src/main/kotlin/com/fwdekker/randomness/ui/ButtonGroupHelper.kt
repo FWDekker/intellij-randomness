@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.ui
 
 import java.util.NoSuchElementException
-import java.util.function.Consumer
 import javax.swing.AbstractButton
 import javax.swing.ButtonGroup
 
@@ -16,10 +15,8 @@ object ButtonGroupHelper {
      * @param group    the group of buttons
      * @param consumer the function to apply to each button
      */
-    // TODO Use Kotlin lambda instead of Consumer
-    fun forEach(group: ButtonGroup, consumer: Consumer<AbstractButton>) {
-        group.elements.toList().forEach(consumer::accept)
-    }
+    // TODO Inline this method once UI is in Kotlin
+    fun forEach(group: ButtonGroup, consumer: (AbstractButton) -> Unit) = group.elements.toList().forEach(consumer)
 
     /**
      * Returns the action command of the currently selected button, or `null` if no button is selected.
@@ -27,7 +24,6 @@ object ButtonGroupHelper {
      * @param group a `ButtonGroup`
      * @return the `String` value of the currently selected button, or `null` if no button is selected
      */
-    // TODO Throw exception?
     fun getValue(group: ButtonGroup) =
         group.elements.toList()
             .filter { it.isSelected }

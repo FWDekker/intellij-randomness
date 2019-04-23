@@ -5,6 +5,7 @@ import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
+import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,7 +68,10 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
             final long value = ((JLongSpinner) event.getSource()).getValue();
             final boolean enabled = value == IntegerSettings.DECIMAL_BASE;
             ButtonGroupHelper.INSTANCE.forEach(groupingSeparatorGroup,
-                button -> button.setEnabled(enabled));
+                button -> {
+                    button.setEnabled(enabled);
+                    return Unit.INSTANCE;
+                });
         });
     }
 

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui;
 
+import kotlin.Unit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,10 @@ final class ButtonGroupHelperTest {
     void testForEachEmpty() {
         final int[] sum = {0};
 
-        ButtonGroupHelper.INSTANCE.forEach(group, button -> sum[0]++);
+        ButtonGroupHelper.INSTANCE.forEach(group, button -> {
+            sum[0]++;
+            return Unit.INSTANCE;
+        });
 
         assertThat(sum[0]).isEqualTo(0);
     }
@@ -46,7 +50,10 @@ final class ButtonGroupHelperTest {
 
         final int[] sum = {0};
 
-        ButtonGroupHelper.INSTANCE.forEach(group, button -> sum[0]++);
+        ButtonGroupHelper.INSTANCE.forEach(group, button -> {
+            sum[0]++;
+            return Unit.INSTANCE;
+        });
 
         assertThat(sum[0]).isEqualTo(3);
     }

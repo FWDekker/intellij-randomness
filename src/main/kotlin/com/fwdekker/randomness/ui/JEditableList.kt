@@ -10,7 +10,7 @@ import javax.swing.event.TableModelEvent
 import javax.swing.table.DefaultTableModel
 
 
-private typealias EntryActivityChangeListener = (Int) -> Any?
+private typealias EntryActivityChangeListener = (Int) -> Unit
 
 
 /**
@@ -28,7 +28,7 @@ class JEditableList<T> : JTable() {
      * @return a list of all entries
      */
     val entries: List<T>
-        get() = (0 until entryCount).map { this.getEntry(it) }.toList() // TODO Is this a copy?
+        get() = (0 until entryCount).map { this.getEntry(it) }.toList()
 
     /**
      * Returns the number of entries in the list.

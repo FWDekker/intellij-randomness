@@ -5,18 +5,26 @@ import java.io.File
 import java.io.IOException
 
 
-class InvalidDictionaryException(message: String?, cause: Throwable?) : Exception(message, cause)
+class InvalidDictionaryException(message: String? = null, cause: Throwable? = null) : Exception(message, cause)
+
 
 interface Dictionary {
     @get:Throws(InvalidDictionaryException::class)
     val words: Set<String>
 
-    fun isValid(): Boolean
+
+    @Throws(InvalidDictionaryException::class)
+    fun validate()
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: InvalidDictionaryException) {
+            false
+        }
 }
 
-class SimpleDictionary(override val words: Set<String>) : Dictionary {
-    override fun isValid() = true
-}
 
 class BundledDictionary private constructor(val filename: String) : Dictionary {
     companion object {
@@ -24,6 +32,7 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
 
         val cache = Cache<String, BundledDictionary> { BundledDictionary(it) }
     }
+
 
     @get:Throws(InvalidDictionaryException::class)
     override val words: Set<String> by lazy {
@@ -38,13 +47,14 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
     }
 
 
-    override fun isValid() =
+    @Throws(InvalidDictionaryException::class)
+    override fun validate() {
         try {
             getStream()
-            true
         } catch (e: IOException) {
-            false
+            throw InvalidDictionaryException("Could not read dictionary file.", e)
         }
+    }
 
     override fun toString() = "[bundled] $filename"
 
@@ -53,24 +63,32 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
     private fun getStream() = BundledDictionary::class.java.classLoader.getResourceAsStream(filename)
 }
 
+
 class UserDictionary private constructor(val filename: String) : Dictionary {
     companion object {
         val cache = Cache<String, UserDictionary> { UserDictionary(it) }
     }
 
+
     @get:Throws(InvalidDictionaryException::class)
     override val words: Set<String> by lazy {
+        validate()
         File(filename).readLines().filter { it.isNotBlank() }.toSet()
     }
 
 
-    override fun isValid() =
+    @Throws(InvalidDictionaryException::class)
+    override fun validate() =
         File(filename).let { file ->
             when {
-                !file.exists() -> false
-                !file.canRead() -> false
-                throws<IOException> { file.inputStream() } -> false
-                else -> true
+                !file.exists() ->
+                    throw InvalidDictionaryException("Dictionary file does not exist.")
+                !file.canRead() ->
+                    throw InvalidDictionaryException("Dictionary file could not be read.")
+                throws<IOException> { file.inputStream() } ->
+                    throw InvalidDictionaryException("Dictionary file could not be opened.")
+                else ->
+                    Unit
             }
         }
 

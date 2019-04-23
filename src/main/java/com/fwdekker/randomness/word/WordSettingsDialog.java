@@ -13,6 +13,7 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.awt.RelativePoint;
+import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -157,7 +158,7 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
 
     /**
-     * Fires when a new {@code Dictionary} is added to the list.
+     * Fires when a new {@code Dictionary} should be added to the list.
      */
     private void addDictionary() {
         FileChooser.chooseFiles(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null, files -> {
@@ -169,17 +170,21 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
                 return;
 
             final UserDictionary newDictionary = UserDictionary.Companion.getCache().get(canonicalPath, false);
-            // TODO Can this check be moved elsewhere?
-            if (!newDictionary.isValid()) {
+            try {
+                if (newDictionary.getWords().isEmpty()) {
+                    JBPopupFactory.getInstance()
+                        .createHtmlTextBalloonBuilder("The dictionary file is empty.", MessageType.ERROR, null)
+                        .createBalloon()
+                        .show(RelativePoint.getSouthOf(dictionaryAddButton), Balloon.Position.below);
+                    return;
+                }
+            } catch (final InvalidDictionaryException e) {
                 JBPopupFactory.getInstance()
-                    // TODO Improve error message
-                    .createHtmlTextBalloonBuilder("Failed to read the dictionary file.", MessageType.ERROR, null)
+                    .createHtmlTextBalloonBuilder(e.getMessage(), MessageType.ERROR, null)
                     .createBalloon()
                     .show(RelativePoint.getSouthOf(dictionaryAddButton), Balloon.Position.below);
                 return;
             }
-
-            // TODO Add message if dictionary is empty
 
             dictionaries.addEntry(newDictionary);
         });
@@ -211,9 +216,9 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     /**
      * Fires when the user (de)activates a dictionary.
      *
-     * @return null
+     * @return {@code Unit.INSTANCE}
      */
-    private Object onDictionaryActivityChange() {
+    private Unit onDictionaryActivityChange() {
         final Set<String> words = WordSettingsDialogKt.combineDictionaries(dictionaries.getActiveEntries());
 
         if (words.isEmpty()) {
@@ -224,6 +229,6 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             maxLength.setMinValue(words.stream().map(String::length).min(Comparator.comparing(Integer::valueOf)).get());
         }
 
-        return null; // Return null because that's compatible with Kotlin's Any
+        return Unit.INSTANCE;
     }
 }
