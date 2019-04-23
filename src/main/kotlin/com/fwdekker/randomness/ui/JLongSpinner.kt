@@ -49,17 +49,9 @@ class JLongSpinner(
 
 
     init {
-        val editor = NumberEditor(this)
-        editor.format.decimalFormatSymbols = DecimalFormatSymbols(Locale.US)
-        setEditor(editor)
-
-        val minimumSize = minimumSize
-        minimumSize.width = SPINNER_WIDTH
-        setMinimumSize(minimumSize)
-
-        val preferredSize = preferredSize
-        preferredSize.width = SPINNER_WIDTH
-        setPreferredSize(preferredSize)
+        editor = NumberEditor(this).also { it.format.decimalFormatSymbols = DecimalFormatSymbols(Locale.US) }
+        minimumSize = minimumSize.also { it.width = SPINNER_WIDTH }
+        preferredSize = preferredSize.also { it.width = SPINNER_WIDTH }
     }
 
 

@@ -35,6 +35,7 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
     override fun generateString() =
         convertToString(Random.nextDouble(settings.minValue, Math.nextUp(settings.maxValue)))
 
+
     /**
      * Returns a nicely formatted representation of a double.
      *
