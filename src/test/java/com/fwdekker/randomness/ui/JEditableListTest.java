@@ -3,7 +3,6 @@ package com.fwdekker.randomness.ui;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -202,7 +201,6 @@ final class JEditableListTest {
     }
 
     @Test
-    @Disabled // TODO Re-enable this test. Should it throw an exception or not?
     void testSetActiveEntriesNonExistent() {
         final List<String> entries = Arrays.asList("JXIPoWsGR{", ">Jq7ILgv9]");
         list.setEntries(entries);
