@@ -4,7 +4,6 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
-import com.fwdekker.randomness.ui.JBPopupHelper
 
 
 /**
@@ -23,7 +22,6 @@ class WordGroupAction : DataGroupAction() {
  * @param settings the settings to use for generating integers. Defaults to [WordSettings.default]
  */
 class WordInsertAction(private val settings: WordSettings = WordSettings.default) : DataInsertAction() {
-    // TODO Make array action name property as well by making superclass generate the subclass
     override val name = "Insert Word"
 
 
@@ -33,32 +31,20 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
      * @return a random alphanumerical English word
      */
     override fun generateString(): String {
-        // TODO Move error checking to caller. Return null in this method or throw exception?
-        val words: Set<String>
+        val bundledWords: List<String>
+        val userWords: List<String>
         try {
-            val bundledWords = settings.activeBundledDictionaries.flatMap { it.words }
-            val userWords = settings.activeUserDictionaries.flatMap { it.words }
-
-            words = (bundledWords + userWords)
-                .filter { it.length in (settings.minLength..settings.maxLength) }
-                .toSet()
+            bundledWords = settings.activeBundledDictionaries.flatMap { it.words }
+            userWords = settings.activeUserDictionaries.flatMap { it.words }
         } catch (e: InvalidDictionaryException) {
-            JBPopupHelper.showMessagePopup(
-                "Randomness error",
-                e.message ?: "An unknown error occurred while generating a random word.",
-                "Please check your Randomness `word` settings and try again."
-            )
-            return ""
+            throw StringGenerationException(e.message)
         }
 
-        if (words.isEmpty()) {
-            JBPopupHelper.showMessagePopup(
-                "Randomness error",
-                "There are no words compatible with the current settings.",
-                "Please check your Randomness `word` settings and try again."
-            )
-            return ""
-        }
+        val words = (bundledWords + userWords)
+            .filter { it.length in (settings.minLength..settings.maxLength) }
+            .toSet()
+        if (words.isEmpty())
+            throw StringGenerationException("There are no words compatible with the current settings.")
 
         val randomWord = settings.capitalization.transform(words.random())
         return settings.enclosure + randomWord + settings.enclosure

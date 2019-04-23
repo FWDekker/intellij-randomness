@@ -62,7 +62,7 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
     private void createUIComponents() {
         minValue = new JDoubleSpinner();
         maxValue = new JDoubleSpinner();
-        valueRange = new JSpinnerRange(minValue, maxValue, JSpinnerRange.DEFAULT_MAX_RANGE); // TODO remove default
+        valueRange = new JSpinnerRange(minValue, maxValue, JSpinnerRange.DEFAULT_MAX_RANGE);
         decimalCount = new JLongSpinner(0, 0, Integer.MAX_VALUE);
     }
 

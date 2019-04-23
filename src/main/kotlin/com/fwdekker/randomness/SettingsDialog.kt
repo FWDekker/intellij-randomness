@@ -7,7 +7,7 @@ import com.intellij.openapi.ui.ValidationInfo
 /**
  * Superclass for settings dialogs.
  *
- * Subclasses **MUST** call [.init] and [.loadSettings] in their constructor.
+ * Subclasses **MUST** call [init] and [loadSettings] in their constructor.
  *
  * @param settings the settings to manage
  * @param <S> the type of settings managed by the subclass
@@ -21,11 +21,11 @@ abstract class SettingsDialog<S : Settings<*>>(private val settings: S) : Dialog
     override fun getDimensionServiceKey(): String = javaClass.simpleName
 
     override fun doOKAction() {
-        processDoNotAskOnOk(DialogWrapper.OK_EXIT_CODE)
+        processDoNotAskOnOk(OK_EXIT_CODE)
 
         if (okAction.isEnabled) {
             saveSettings()
-            close(DialogWrapper.OK_EXIT_CODE)
+            close(OK_EXIT_CODE)
         }
     }
 
