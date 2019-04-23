@@ -54,30 +54,4 @@ class DecimalSettings : Settings<DecimalSettings> {
     override fun getState() = this
 
     override fun loadState(state: DecimalSettings) = XmlSerializerUtil.copyBean(state, this)
-
-    /**
-     * Sets the character that should separate groups.
-     *
-     * @param groupingSeparator a string of which the first character should separate groups. If the string is empty, no
-     * character is used
-     */
-    fun setGroupingSeparator(groupingSeparator: String) {
-        // TODO Move logic to caller so that Kotlin set() can be used above
-        this.groupingSeparator =
-            if (groupingSeparator.isEmpty()) '\u0000'
-            else groupingSeparator[0]
-    }
-
-    /**
-     * Sets the character that should separate decimals.
-     *
-     * @param decimalSeparator a string of which the first character should separate decimals. If the string is empty,
-     * no character is used
-     */
-    fun setDecimalSeparator(decimalSeparator: String) {
-        // TODO Move logic to caller so that Kotlin set() can be used above
-        this.decimalSeparator =
-            if (decimalSeparator.isEmpty()) '\u0000'
-            else decimalSeparator[0]
-    }
 }

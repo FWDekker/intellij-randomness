@@ -11,7 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 
 /**
@@ -73,10 +74,17 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
     @Override
     @Nullable
     protected ValidationInfo doValidate() {
-        return Optional.ofNullable(minValue.validateValue())
-            .orElse(Optional.ofNullable(maxValue.validateValue())
-                .orElse(Optional.ofNullable(base.validateValue())
-                    .orElse(valueRange.validateValue())));
+
+        return Stream
+            .of(
+                minValue.validateValue(),
+                maxValue.validateValue(),
+                base.validateValue(),
+                valueRange.validateValue()
+            )
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null);
     }
 
 
@@ -93,6 +101,9 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
         settings.setBase(base.getValue().intValue());
-        settings.setGroupingSeparator(ButtonGroupHelper.INSTANCE.getValue(groupingSeparatorGroup));
+
+        final String groupingSeparator = ButtonGroupHelper.INSTANCE.getValue(groupingSeparatorGroup);
+        settings.setGroupingSeparator(groupingSeparator == null || groupingSeparator.isEmpty()
+            ? '\0' : groupingSeparator.charAt(0));
     }
 }

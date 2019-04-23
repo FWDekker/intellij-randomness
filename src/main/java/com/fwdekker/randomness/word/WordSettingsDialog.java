@@ -23,10 +23,9 @@ import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -145,9 +144,15 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             return new ValidationInfo("One of these dictionaries is not valid.", dictionaries);
         }
 
-        return Optional.ofNullable(minLength.validateValue())
-            .orElse(Optional.ofNullable(maxLength.validateValue())
-                .orElse(lengthRange.validateValue()));
+        return Stream
+            .of(
+                minLength.validateValue(),
+                maxLength.validateValue(),
+                lengthRange.validateValue()
+            )
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null);
     }
 
 

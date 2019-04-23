@@ -1,10 +1,10 @@
 package com.fwdekker.randomness.string;
 
+import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.SettingsDialog;
 import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
-import com.fwdekker.randomness.CapitalizationMode;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +15,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 
 /**
@@ -99,12 +100,17 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     @Override
     @Nullable
     protected ValidationInfo doValidate() {
-        return Optional.ofNullable(minLength.validateValue())
-            .orElse(Optional.ofNullable(maxLength.validateValue())
-                .orElse(Optional.ofNullable(lengthRange.validateValue())
-                    .orElse(alphabetList.getSelectedValuesList().isEmpty() ?
-                        new ValidationInfo("Please select at least one option.", alphabetList)
-                        : null
-                    )));
+        return Stream
+            .of(
+                minLength.validateValue(),
+                maxLength.validateValue(),
+                lengthRange.validateValue()
+            )
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(alphabetList.getSelectedValuesList().isEmpty()
+                ? new ValidationInfo("Please select at least one option.", alphabetList)
+                : null
+            );
     }
 }

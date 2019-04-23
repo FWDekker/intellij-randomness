@@ -52,18 +52,4 @@ class IntegerSettings : Settings<IntegerSettings> {
     override fun getState() = this
 
     override fun loadState(state: IntegerSettings) = XmlSerializerUtil.copyBean(state, this)
-
-
-    /**
-     * Sets the character that should separate groups.
-     *
-     * @param groupingSeparator a string of which the first character should separate groups. If the string is empty, no
-     * character is used
-     */
-    fun setGroupingSeparator(groupingSeparator: String) {
-        // TODO Move logic...
-        this.groupingSeparator =
-            if (groupingSeparator.isEmpty()) '\u0000'
-            else groupingSeparator[0]
-    }
 }

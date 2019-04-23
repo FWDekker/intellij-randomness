@@ -60,18 +60,4 @@ final class IntegerSettingsTest {
 
         assertThat(integerSettings.getGroupingSeparator()).isEqualTo('6');
     }
-
-    @Test
-    void testGetSetGroupingSeparatorStringEmpty() {
-        integerSettings.setGroupingSeparator("");
-
-        assertThat(integerSettings.getGroupingSeparator()).isEqualTo('\0');
-    }
-
-    @Test
-    void testGetSetGroupingSeparatorString() {
-        integerSettings.setGroupingSeparator("tlRg}");
-
-        assertThat(integerSettings.getGroupingSeparator()).isEqualTo('t');
-    }
 }

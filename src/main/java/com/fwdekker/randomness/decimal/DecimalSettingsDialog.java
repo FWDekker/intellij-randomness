@@ -12,7 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 
 /**
@@ -68,11 +69,16 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
     @Override
     @Nullable
     protected ValidationInfo doValidate() {
-        // TODO Rewrite this in Kotlin
-        return Optional.ofNullable(minValue.validateValue())
-            .orElse(Optional.ofNullable(maxValue.validateValue())
-                .orElse(Optional.ofNullable(valueRange.validateValue())
-                    .orElse(decimalCount.validateValue())));
+        return Stream
+            .of(
+                minValue.validateValue(),
+                maxValue.validateValue(),
+                valueRange.validateValue(),
+                decimalCount.validateValue()
+            )
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null);
     }
 
 
@@ -90,7 +96,13 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
         settings.setDecimalCount(Math.toIntExact(decimalCount.getValue()));
-        settings.setGroupingSeparator(ButtonGroupHelper.INSTANCE.getValue(groupingSeparatorGroup));
-        settings.setDecimalSeparator(ButtonGroupHelper.INSTANCE.getValue(decimalSeparatorGroup));
+
+        final String groupingSeparator = ButtonGroupHelper.INSTANCE.getValue(groupingSeparatorGroup);
+        settings.setGroupingSeparator(groupingSeparator == null || groupingSeparator.isEmpty()
+            ? '\0' : groupingSeparator.charAt(0));
+
+        final String decimalSeparator = ButtonGroupHelper.INSTANCE.getValue(decimalSeparatorGroup);
+        settings.setDecimalSeparator(decimalSeparator == null || decimalSeparator.isEmpty()
+            ? '\0' : decimalSeparator.charAt(0));
     }
 }

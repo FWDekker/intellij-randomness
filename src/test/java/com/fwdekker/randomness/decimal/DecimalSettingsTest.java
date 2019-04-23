@@ -62,37 +62,9 @@ final class DecimalSettingsTest {
     }
 
     @Test
-    void testGetSetGroupingSeparatorStringEmpty() {
-        decimalSettings.setGroupingSeparator("");
-
-        assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('\0');
-    }
-
-    @Test
-    void testGetSetGroupingSeparatorString() {
-        decimalSettings.setGroupingSeparator("3lk-c");
-
-        assertThat(decimalSettings.getGroupingSeparator()).isEqualTo('3');
-    }
-
-    @Test
     void testGetSetDecimalSeparator() {
         decimalSettings.setDecimalSeparator('}');
 
         assertThat(decimalSettings.getDecimalSeparator()).isEqualTo('}');
-    }
-
-    @Test
-    void testGetSetDecimalSeparatorStringEmpty() {
-        decimalSettings.setDecimalSeparator("");
-
-        assertThat(decimalSettings.getDecimalSeparator()).isEqualTo('\0');
-    }
-
-    @Test
-    void testGetSetDecimalSeparatorString() {
-        decimalSettings.setDecimalSeparator("Px@>[");
-
-        assertThat(decimalSettings.getDecimalSeparator()).isEqualTo('P');
     }
 }
