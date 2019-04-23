@@ -17,10 +17,10 @@ class IntegerSettings : Settings<IntegerSettings> {
         const val DECIMAL_BASE = 10
         const val MAX_BASE = 36
 
-        private const val DEFAULT_MIN_VALUE = 0L
-        private const val DEFAULT_MAX_VALUE = 1000L
-        private const val DEFAULT_BASE = 10
-        private const val DEFAULT_GROUPING_SEPARATOR = '\u0000'
+        const val DEFAULT_MIN_VALUE = 0L
+        const val DEFAULT_MAX_VALUE = 1000L
+        const val DEFAULT_BASE = 10
+        const val DEFAULT_GROUPING_SEPARATOR = '\u0000'
 
 
         /**

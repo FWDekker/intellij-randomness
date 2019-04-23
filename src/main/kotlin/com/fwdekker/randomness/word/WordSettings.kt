@@ -15,8 +15,10 @@ import com.intellij.util.xmlb.annotations.Transient
 @State(name = "WordSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 class WordSettings : Settings<WordSettings> {
     companion object {
-        private const val DEFAULT_MIN_LENGTH = 3
-        private const val DEFAULT_MAX_LENGTH = 8
+        const val DEFAULT_MIN_LENGTH = 3
+        const val DEFAULT_MAX_LENGTH = 8
+        const val DEFAULT_ENCLOSURE = "\""
+        val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
 
 
         /**
@@ -38,11 +40,11 @@ class WordSettings : Settings<WordSettings> {
     /**
      * The string that encloses the generated word on both sides.
      */
-    var enclosure = "\""
+    var enclosure = DEFAULT_ENCLOSURE
     /**
      * The way in which the generated word should be capitalized.
      */
-    var capitalization = CapitalizationMode.RETAIN
+    var capitalization = DEFAULT_CAPITALIZATION
     /**
      * The list of all dictionary files provided by the plugin.
      */

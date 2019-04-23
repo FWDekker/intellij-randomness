@@ -108,9 +108,14 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     public void saveSettings(final @NotNull WordSettings settings) {
         settings.setMinLength(Math.toIntExact(minLength.getValue()));
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
-        settings.setEnclosure(ButtonGroupHelper.INSTANCE.getValue(enclosureGroup));
-        settings.setCapitalization(CapitalizationMode.Companion.getMode(
-            ButtonGroupHelper.INSTANCE.getValue(capitalizationGroup)));
+
+        final String enclosure = ButtonGroupHelper.INSTANCE.getValue(enclosureGroup);
+        settings.setEnclosure(enclosure == null ? WordSettings.DEFAULT_ENCLOSURE : enclosure);
+
+        final String capitalization = ButtonGroupHelper.INSTANCE.getValue(capitalizationGroup);
+        settings.setCapitalization(capitalization == null
+            ? WordSettings.Companion.getDEFAULT_CAPITALIZATION()
+            : CapitalizationMode.Companion.getMode(capitalization));
 
         settings.setBundledDictionaries(dictionaries.getEntries().stream()
             .filter(BundledDictionary.class::isInstance)
@@ -221,13 +226,10 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private Unit onDictionaryActivityChange() {
         final Set<String> words = WordSettingsDialogHelperKt.combineDictionaries(dictionaries.getActiveEntries());
 
-        if (words.isEmpty()) {
-            minLength.setMaxValue(1);
-            maxLength.setMinValue(Integer.MAX_VALUE);
-        } else {
-            minLength.setMaxValue(words.stream().map(String::length).max(Comparator.comparing(Integer::valueOf)).get());
-            maxLength.setMinValue(words.stream().map(String::length).min(Comparator.comparing(Integer::valueOf)).get());
-        }
+        minLength.setMaxValue(
+            words.stream().map(String::length).max(Comparator.comparing(Integer::valueOf)).orElse(1));
+        maxLength.setMinValue(
+            words.stream().map(String::length).min(Comparator.comparing(Integer::valueOf)).orElse(Integer.MAX_VALUE));
 
         return Unit.INSTANCE;
     }

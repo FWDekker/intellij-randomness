@@ -8,6 +8,7 @@ import java.io.IOException
 class InvalidDictionaryException(message: String? = null, cause: Throwable? = null) : Exception(message, cause)
 
 
+// TODO Add tests for dictionaries
 interface Dictionary {
     @get:Throws(InvalidDictionaryException::class)
     val words: Set<String>

@@ -91,9 +91,14 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     public void saveSettings(final @NotNull StringSettings settings) {
         settings.setMinLength(Math.toIntExact(minLength.getValue()));
         settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
-        settings.setEnclosure(ButtonGroupHelper.INSTANCE.getValue(enclosureGroup));
-        settings.setCapitalization(CapitalizationMode.Companion
-            .getMode(ButtonGroupHelper.INSTANCE.getValue(capitalizationGroup)));
+
+        final String enclosure = ButtonGroupHelper.INSTANCE.getValue(enclosureGroup);
+        settings.setEnclosure(enclosure == null ? StringSettings.DEFAULT_ENCLOSURE : enclosure);
+
+        final String capitalizationMode = ButtonGroupHelper.INSTANCE.getValue(capitalizationGroup);
+        settings.setCapitalization(capitalizationMode == null
+            ? StringSettings.Companion.getDEFAULT_CAPITALIZATION()
+            : CapitalizationMode.Companion.getMode(capitalizationMode));
         settings.setAlphabets(new HashSet<>(alphabetList.getSelectedValuesList()));
     }
 

@@ -14,11 +14,11 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 @State(name = "DecimalSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 class DecimalSettings : Settings<DecimalSettings> {
     companion object {
-        private const val DEFAULT_MIN_VALUE = 0.0
-        private const val DEFAULT_MAX_VALUE = 1000.0
-        private const val DEFAULT_DECIMAL_COUNT = 2
-        private const val DEFAULT_GROUPING_SEPARATOR = '\u0000'
-        private const val DEFAULT_DECIMAL_SEPARATOR = '.'
+        const val DEFAULT_MIN_VALUE = 0.0
+        const val DEFAULT_MAX_VALUE = 1000.0
+        const val DEFAULT_DECIMAL_COUNT = 2
+        const val DEFAULT_GROUPING_SEPARATOR = '\u0000'
+        const val DEFAULT_DECIMAL_SEPARATOR = '.'
 
 
         /**

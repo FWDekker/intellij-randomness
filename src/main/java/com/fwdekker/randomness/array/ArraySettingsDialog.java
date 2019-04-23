@@ -70,8 +70,13 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     @Override
     public void saveSettings(final @NotNull ArraySettings settings) {
         settings.setCount(Math.toIntExact(countSpinner.getValue()));
-        settings.setBrackets(ButtonGroupHelper.INSTANCE.getValue(bracketsGroup));
-        settings.setSeparator(ButtonGroupHelper.INSTANCE.getValue(separatorGroup));
+
+        final String brackets = ButtonGroupHelper.INSTANCE.getValue(bracketsGroup);
+        settings.setBrackets(brackets == null ? ArraySettings.DEFAULT_BRACKETS : brackets);
+
+        final String separator = ButtonGroupHelper.INSTANCE.getValue(separatorGroup);
+        settings.setSeparator(separator == null ? ArraySettings.DEFAULT_SEPARATOR : separator);
+
         settings.setSpaceAfterSeparator(spaceAfterSeparatorCheckBox.isSelected());
     }
 

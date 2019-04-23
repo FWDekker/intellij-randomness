@@ -54,7 +54,7 @@ class JDoubleSpinner(
         if (minValue > maxValue)
             throw IllegalArgumentException("minValue should be greater than maxValue.")
 
-        val editor = JSpinner.NumberEditor(this)
+        val editor = NumberEditor(this)
         editor.format.decimalFormatSymbols = DecimalFormatSymbols(Locale.US)
         setEditor(editor)
     }

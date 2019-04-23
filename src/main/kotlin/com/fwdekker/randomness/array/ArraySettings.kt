@@ -13,10 +13,10 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 @State(name = "ArraySettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 class ArraySettings : Settings<ArraySettings> {
     companion object {
-        private const val DEFAULT_COUNT = 5
-        private const val DEFAULT_BRACKETS = "[]"
-        private const val DEFAULT_SEPARATOR = ","
-        private const val DEFAULT_SPACE_AFTER_SEPARATOR = true
+        const val DEFAULT_COUNT = 5
+        const val DEFAULT_BRACKETS = "[]"
+        const val DEFAULT_SEPARATOR = ","
+        const val DEFAULT_SPACE_AFTER_SEPARATOR = true
 
 
         /**

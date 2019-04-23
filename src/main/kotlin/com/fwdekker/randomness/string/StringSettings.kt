@@ -6,8 +6,6 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
-import java.util.Arrays
-import java.util.HashSet
 
 
 /**
@@ -16,8 +14,10 @@ import java.util.HashSet
 @State(name = "StringSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 class StringSettings : Settings<StringSettings> {
     companion object {
-        private const val DEFAULT_MIN_LENGTH = 3
-        private const val DEFAULT_MAX_LENGTH = 8
+        const val DEFAULT_MIN_LENGTH = 3
+        const val DEFAULT_MAX_LENGTH = 8
+        const val DEFAULT_ENCLOSURE = "\""
+        val DEFAULT_CAPITALIZATION = CapitalizationMode.UPPER
 
 
         /**
@@ -39,15 +39,15 @@ class StringSettings : Settings<StringSettings> {
     /**
      * The string that encloses the generated string on both sides.
      */
-    var enclosure = "\""
+    var enclosure = DEFAULT_ENCLOSURE
     /**
      * The capitalization mode of the generated string.
      */
-    var capitalization = CapitalizationMode.UPPER
+    var capitalization = DEFAULT_CAPITALIZATION
     /**
      * The alphabet to be used for generating strings.
      */
-    var alphabets: Set<Alphabet> = HashSet(Arrays.asList(Alphabet.ALPHABET, Alphabet.DIGITS))
+    var alphabets = mutableSetOf(Alphabet.ALPHABET, Alphabet.DIGITS)
 
 
     override fun getState() = this

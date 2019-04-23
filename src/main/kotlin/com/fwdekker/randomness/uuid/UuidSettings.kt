@@ -13,6 +13,9 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 @State(name = "UuidSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 class UuidSettings : Settings<UuidSettings> {
     companion object {
+        const val DEFAULT_ENCLOSURE = "\""
+
+
         /**
          * The singleton `UuidSettings` instance.
          */
@@ -24,7 +27,7 @@ class UuidSettings : Settings<UuidSettings> {
     /**
      * The string that encloses the generated UUID on both sides.
      */
-    var enclosure = "\""
+    var enclosure = DEFAULT_ENCLOSURE
 
 
     override fun getState() = this

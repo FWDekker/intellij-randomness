@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Unit tests for {@link UuidSettings}.
  */
-public final class UuidSettingsTest {
+final class UuidSettingsTest {
     private UuidSettings uuidSettings;
 
 

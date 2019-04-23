@@ -7,7 +7,6 @@ import com.intellij.openapi.editor.VisualPosition;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import org.jetbrains.annotations.NotNull;
-import org.junit.AfterClass;
 
 import java.net.URL;
 
@@ -46,12 +45,6 @@ public final class DataInsertActionIntegrationTest extends LightPlatformCodeInsi
         document = myFixture.getEditor().getDocument();
         caretModel = myFixture.getEditor().getCaretModel();
         insertRandomSimple = new SimpleInsertAction();
-    }
-
-    @Override
-    @AfterClass
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     @Override

@@ -58,6 +58,7 @@ public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
 
     @Override
     public void saveSettings(final @NotNull UuidSettings settings) {
-        settings.setEnclosure(ButtonGroupHelper.INSTANCE.getValue(enclosureGroup));
+        final String enclosure = ButtonGroupHelper.INSTANCE.getValue(enclosureGroup);
+        settings.setEnclosure(enclosure == null ? UuidSettings.DEFAULT_ENCLOSURE : enclosure);
     }
 }
