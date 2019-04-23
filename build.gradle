@@ -27,6 +27,9 @@ dependencies {
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-params", version: junitVersion
     testCompile group: "org.junit.vintage", name: "junit-vintage-engine", version: junitVersion
     testCompile group: "org.mockito", name: "mockito-core", version: mockitoVersion
+
+    testImplementation group: "org.spekframework.spek2", name: "spek-dsl-jvm", version: spekVersion
+    testRuntimeOnly group: "org.spekframework.spek2", name: "spek-runner-junit5", version: spekVersion
 }
 
 configurations {
@@ -35,7 +38,9 @@ configurations {
 
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        includeEngines "junit-vintage", "junit-jupiter", "spek2"
+    }
 }
 
 dokka {
