@@ -32,11 +32,11 @@ class JLongSpinner(
         /**
          * The smallest number that can be represented by a `JDoubleSpinner`.
          */
-        private const val DEFAULT_MIN_VALUE = java.lang.Long.MIN_VALUE
+        private const val DEFAULT_MIN_VALUE = Long.MIN_VALUE
         /**
          * The largest number that can be represented by a `JDoubleSpinner`.
          */
-        private const val DEFAULT_MAX_VALUE = java.lang.Long.MAX_VALUE
+        private const val DEFAULT_MAX_VALUE = Long.MAX_VALUE
         /**
          * The default step size when decrementing or incrementing the value.
          */
