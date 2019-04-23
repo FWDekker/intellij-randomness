@@ -1,7 +1,20 @@
 package com.fwdekker.randomness.string
 
+import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
+import com.fwdekker.randomness.DataInsertArrayAction
+import com.fwdekker.randomness.SettingsAction
 import kotlin.random.Random
+
+
+/**
+ * All actions related to inserting strings.
+ */
+class StringGroupAction : DataGroupAction() {
+    override val insertAction = StringInsertAction()
+    override val insertArrayAction = StringInsertArrayAction()
+    override val settingsAction = StringSettingsAction()
+}
 
 
 /**
@@ -39,12 +52,24 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
 
         return alphabet[charIndex]
     }
+}
 
 
-    /**
-     * Inserts an array of strings.
-     */
-    inner class ArrayAction : DataInsertAction.ArrayAction(this) {
-        override val name = "Insert String Array"
-    }
+/**
+ * Inserts an array of strings.
+ */
+class StringInsertArrayAction(settings: StringSettings = StringSettings.default) :
+    DataInsertArrayAction(StringInsertAction(settings)) {
+    override val name = "Insert String Array"
+}
+
+
+/**
+ * Controller for random string generation settings.
+ */
+class StringSettingsAction : SettingsAction() {
+    override val title = "String Settings"
+
+
+    public override fun createDialog() = StringSettingsDialog()
 }

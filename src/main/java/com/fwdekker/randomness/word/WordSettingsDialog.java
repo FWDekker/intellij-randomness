@@ -98,9 +98,9 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         ButtonGroupHelper.INSTANCE.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupHelper.INSTANCE.setValue(capitalizationGroup, settings.getCapitalization());
 
-        dictionaries.setEntries(WordSettingsDialogKt.addSets(
+        dictionaries.setEntries(WordSettingsDialogHelperKt.addSets(
             settings.getBundledDictionaries(), settings.getUserDictionaries()));
-        dictionaries.setActiveEntries(WordSettingsDialogKt.addSets(
+        dictionaries.setActiveEntries(WordSettingsDialogHelperKt.addSets(
             settings.getActiveBundledDictionaries(), settings.getActiveUserDictionaries()));
     }
 
@@ -219,7 +219,7 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
      * @return {@code Unit.INSTANCE}
      */
     private Unit onDictionaryActivityChange() {
-        final Set<String> words = WordSettingsDialogKt.combineDictionaries(dictionaries.getActiveEntries());
+        final Set<String> words = WordSettingsDialogHelperKt.combineDictionaries(dictionaries.getActiveEntries());
 
         if (words.isEmpty()) {
             minLength.setMaxValue(1);

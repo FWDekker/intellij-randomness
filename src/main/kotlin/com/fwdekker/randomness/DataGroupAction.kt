@@ -11,7 +11,7 @@ import java.awt.event.InputEvent
  */
 abstract class DataGroupAction : ActionGroup() {
     abstract val insertAction: DataInsertAction
-    abstract val insertArrayAction: DataInsertAction.ArrayAction
+    abstract val insertArrayAction: DataInsertArrayAction
     abstract val settingsAction: SettingsAction
 
 

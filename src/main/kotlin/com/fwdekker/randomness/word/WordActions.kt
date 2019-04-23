@@ -1,7 +1,20 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
+import com.fwdekker.randomness.DataInsertArrayAction
+import com.fwdekker.randomness.SettingsAction
 import com.fwdekker.randomness.ui.JBPopupHelper
+
+
+/**
+ * All actions related to inserting words.
+ */
+class WordGroupAction : DataGroupAction() {
+    override val insertAction = WordInsertAction()
+    override val insertArrayAction = WordInsertArrayAction()
+    override val settingsAction = WordSettingsAction()
+}
 
 
 /**
@@ -50,12 +63,24 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
         val randomWord = settings.capitalization.transform(words.random())
         return settings.enclosure + randomWord + settings.enclosure
     }
+}
 
 
-    /**
-     * Inserts an array of words.
-     */
-    inner class ArrayAction : DataInsertAction.ArrayAction(this) {
-        override val name = "Insert Word Array"
-    }
+/**
+ * Inserts an array of words.
+ */
+class WordInsertArrayAction(settings: WordSettings = WordSettings.default) :
+    DataInsertArrayAction(WordInsertAction(settings)) {
+    override val name = "Insert Word Array"
+}
+
+
+/**
+ * Controller for random string generation settings.
+ */
+class WordSettingsAction : SettingsAction() {
+    override val title = "Word Settings"
+
+
+    public override fun createDialog() = WordSettingsDialog()
 }

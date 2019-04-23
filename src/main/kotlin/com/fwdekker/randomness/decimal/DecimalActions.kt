@@ -1,8 +1,21 @@
 package com.fwdekker.randomness.decimal
 
+import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
+import com.fwdekker.randomness.DataInsertArrayAction
+import com.fwdekker.randomness.SettingsAction
 import java.text.DecimalFormat
 import kotlin.random.Random
+
+
+/**
+ * All actions related to inserting decimals.
+ */
+class DecimalGroupAction : DataGroupAction() {
+    override val insertAction = DecimalInsertAction()
+    override val insertArrayAction = DecimalInsertArrayAction()
+    override val settingsAction = DecimalSettingsAction()
+}
 
 
 /**
@@ -41,12 +54,24 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
 
         return format.format(decimal)
     }
+}
 
 
-    /**
-     * Inserts an array of decimals.
-     */
-    inner class ArrayAction : DataInsertAction.ArrayAction(this) {
-        override val name = "Insert Decimal Array"
-    }
+/**
+ * Inserts an array of decimals.
+ */
+class DecimalInsertArrayAction(settings: DecimalSettings = DecimalSettings.default) :
+    DataInsertArrayAction(DecimalInsertAction(settings)) {
+    override val name = "Insert Decimal Array"
+}
+
+
+/**
+ * Controller for random decimal generation settings.
+ */
+class DecimalSettingsAction : SettingsAction() {
+    override val title = "Decimal Settings"
+
+
+    public override fun createDialog() = DecimalSettingsDialog()
 }

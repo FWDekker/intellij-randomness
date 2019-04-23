@@ -1,8 +1,21 @@
 package com.fwdekker.randomness.integer
 
+import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
+import com.fwdekker.randomness.DataInsertArrayAction
+import com.fwdekker.randomness.SettingsAction
 import java.text.DecimalFormat
 import kotlin.random.Random
+
+
+/**
+ * All actions related to inserting integers.
+ */
+class IntegerGroupAction : DataGroupAction() {
+    override val insertAction = IntegerInsertAction()
+    override val insertArrayAction = IntegerInsertArrayAction()
+    override val settingsAction = IntegerSettingsAction()
+}
 
 
 /**
@@ -46,12 +59,24 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
 
         return format.format(integer)
     }
+}
 
 
-    /**
-     * Inserts an array of integers.
-     */
-    inner class ArrayAction : DataInsertAction.ArrayAction(this) {
-        override val name = "Insert Integer Array"
-    }
+/**
+ * Inserts an array of integers.
+ */
+class IntegerInsertArrayAction(settings: IntegerSettings = IntegerSettings.default) :
+    DataInsertArrayAction(IntegerInsertAction(settings)) {
+    override val name = "Insert Integer Array"
+}
+
+
+/**
+ * Controller for random integer generation settings.
+ */
+class IntegerSettingsAction : SettingsAction() {
+    override val title = "Integer Settings"
+
+
+    public override fun createDialog() = IntegerSettingsDialog()
 }
