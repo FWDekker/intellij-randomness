@@ -2,6 +2,7 @@ package com.fwdekker.randomness.ui
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.swing.edt.GuiActionRunner
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -31,9 +32,9 @@ object ButtonGroupHelperTest : Spek({
         }
 
         it("iterates once for each button in a group") {
-            group.add(JButton())
-            group.add(JButton())
-            group.add(JButton())
+            group.add(createJButton())
+            group.add(createJButton())
+            group.add(createJButton())
 
             var sum = 0
             ButtonGroupHelper.forEach(group) { sum++ }
@@ -48,17 +49,15 @@ object ButtonGroupHelperTest : Spek({
         }
 
         it("returns null if no button is selected") {
-            val button = JButton()
-            button.actionCommand = "shahid"
+            val button = createJButton(actionCommand = "shahid")
 
-            group.add(JButton())
+            group.add(button)
 
             assertThat(ButtonGroupHelper.getValue(group)).isNull()
         }
 
         it("returns an empty string if the selected button does not have an action command") {
-            val button = JButton()
-            button.isSelected = true
+            val button = createJButton(isSelected = true)
 
             group.add(button)
 
@@ -66,11 +65,8 @@ object ButtonGroupHelperTest : Spek({
         }
 
         it("returns the action command of the selected button") {
-            val buttonA = JButton()
-            buttonA.actionCommand = "causing"
-            val buttonB = JButton()
-            buttonB.isSelected = true
-            buttonB.actionCommand = "spahees"
+            val buttonA = createJButton(actionCommand = "causing")
+            val buttonB = createJButton(actionCommand = "spahees", isSelected = true)
 
             group.add(buttonA)
             group.add(buttonB)
@@ -87,10 +83,8 @@ object ButtonGroupHelperTest : Spek({
         }
 
         it("throws an exception if there is no button with the action command") {
-            val buttonA = JButton()
-            buttonA.actionCommand = "phocean"
-            val buttonB = JButton()
-            buttonB.actionCommand = "pouffe"
+            val buttonA = createJButton(actionCommand = "phocean")
+            val buttonB = createJButton(actionCommand = "pouffe")
 
             group.add(buttonA)
             group.add(buttonB)
@@ -101,20 +95,26 @@ object ButtonGroupHelperTest : Spek({
         }
 
         it("selects the button with the given action command") {
-            val buttonA = JButton()
-            buttonA.actionCommand = "claps"
-            val buttonB = JButton()
-            buttonB.actionCommand = "delegati"
-            val buttonC = JButton()
-            buttonC.actionCommand = "slumming"
+            val buttonA = createJButton(actionCommand = "claps")
+            val buttonB = createJButton(actionCommand = "delegati")
+            val buttonC = createJButton(actionCommand = "slumming")
 
             group.add(buttonA)
             group.add(buttonB)
             group.add(buttonC)
 
-            ButtonGroupHelper.setValue(group, "delegati")
+            GuiActionRunner.execute { ButtonGroupHelper.setValue(group, "delegati") }
 
             assertThat(buttonB.isSelected).isTrue()
         }
     }
 })
+
+
+private fun createJButton(actionCommand: String? = null, isSelected: Boolean = false) =
+    GuiActionRunner.execute<JButton> {
+        val button = JButton()
+        button.actionCommand = actionCommand
+        button.isSelected = isSelected
+        button
+    }

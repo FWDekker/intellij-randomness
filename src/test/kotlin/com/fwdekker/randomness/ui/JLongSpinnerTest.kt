@@ -2,6 +2,7 @@ package com.fwdekker.randomness.ui
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.swing.edt.GuiActionRunner
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -13,19 +14,19 @@ import org.jetbrains.spek.api.dsl.it
 object JLongSpinnerTest : Spek({
     describe("constructor failures") {
         it("should fail if the maximum value is smaller than the minimum value") {
-            assertThatThrownBy { JLongSpinner(414, 989, -339) }
+            assertThatThrownBy { GuiActionRunner.execute<JLongSpinner> { JLongSpinner(414, 989, -339) } }
                 .isInstanceOf(IllegalArgumentException::class.java)
                 .hasMessage("(minimum <= value <= maximum) is false")
         }
 
         it("should fail if the value is below the set range") {
-            assertThatThrownBy { JLongSpinner(34, 192, 251) }
+            assertThatThrownBy { GuiActionRunner.execute<JLongSpinner> { JLongSpinner(34, 192, 251) } }
                 .isInstanceOf(IllegalArgumentException::class.java)
                 .hasMessage("(minimum <= value <= maximum) is false")
         }
 
         it("should fail if the value is above the set range") {
-            assertThatThrownBy { JLongSpinner(194, 72, 125) }
+            assertThatThrownBy { GuiActionRunner.execute<JLongSpinner> { JLongSpinner(194, 72, 125) } }
                 .isInstanceOf(IllegalArgumentException::class.java)
                 .hasMessage("(minimum <= value <= maximum) is false")
         }
@@ -33,25 +34,25 @@ object JLongSpinnerTest : Spek({
 
     describe("adjusting the value") {
         it("stores negative numbers") {
-            val spinner = JLongSpinner()
+            val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner() }
 
-            spinner.value = -583L
+            GuiActionRunner.execute { spinner.value = -583L }
 
             assertThat(spinner.value).isEqualTo(-583L)
         }
 
         it("stores positive numbers") {
-            val spinner = JLongSpinner()
+            val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner() }
 
-            spinner.value = 125
+            GuiActionRunner.execute { spinner.value = 125 }
 
             assertThat(spinner.value).isEqualTo(125L)
         }
 
         it("truncates when storing a double") {
-            val spinner = JLongSpinner()
+            val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner() }
 
-            spinner.setValue(786.79)
+            GuiActionRunner.execute { spinner.setValue(786.79) }
 
             assertThat(spinner.value).isEqualTo(786L)
         }
@@ -59,17 +60,17 @@ object JLongSpinnerTest : Spek({
 
     describe("adjusting the range") {
         it("changes the minimum value") {
-            val spinner = JLongSpinner()
+            val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner() }
 
-            spinner.minValue = 979L
+            GuiActionRunner.execute { spinner.minValue = 979L }
 
             assertThat(spinner.minValue).isEqualTo(979L)
         }
 
         it("changes the maximum value") {
-            val spinner = JLongSpinner()
+            val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner() }
 
-            spinner.maxValue = 166L
+            GuiActionRunner.execute { spinner.maxValue = 166L }
 
             assertThat(spinner.maxValue).isEqualTo(166L)
         }
@@ -77,9 +78,9 @@ object JLongSpinnerTest : Spek({
 
     describe("validation") {
         it("should fail when the value is below the set range") {
-            val spinner = JLongSpinner(-665, -950, -559)
+            val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner(-665, -950, -559) }
 
-            spinner.value = -979
+            GuiActionRunner.execute { spinner.value = -979 }
 
             val info = spinner.validateValue()
             assertThat(info).isNotNull()
@@ -87,9 +88,9 @@ object JLongSpinnerTest : Spek({
         }
 
         it("should fail when the value is above the set range") {
-            val spinner = JLongSpinner(424, 279, 678)
+            val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner(424, 279, 678) }
 
-            spinner.value = 838
+            GuiActionRunner.execute { spinner.value = 838 }
 
             val info = spinner.validateValue()
             assertThat(info).isNotNull()

@@ -2,6 +2,7 @@ package com.fwdekker.randomness.ui
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.swing.edt.GuiActionRunner
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -16,7 +17,7 @@ object JEditableListTest : Spek({
 
 
     beforeEachTest {
-        list = JEditableList()
+        list = GuiActionRunner.execute<JEditableList<String>> { JEditableList() }
     }
 
 
@@ -28,21 +29,25 @@ object JEditableListTest : Spek({
 
     describe("addEntry") {
         it("adds a given entry") {
-            list.addEntry("manscape")
+            GuiActionRunner.execute { list.addEntry("manscape") }
 
             assertThat(list.entries).containsExactly("manscape")
         }
 
         it("adds two given entries") {
-            list.addEntry("osteomas")
-            list.addEntry("imido")
+            GuiActionRunner.execute {
+                list.addEntry("osteomas")
+                list.addEntry("imido")
+            }
 
             assertThat(list.entries).containsExactly("osteomas", "imido")
         }
 
         it("does not add a given entry twice") {
-            list.addEntry("bloomed")
-            list.addEntry("bloomed")
+            GuiActionRunner.execute {
+                list.addEntry("bloomed")
+                list.addEntry("bloomed")
+            }
 
             assertThat(list.entries).containsExactly("bloomed")
         }
@@ -50,38 +55,42 @@ object JEditableListTest : Spek({
 
     describe("setEntries") {
         it("empties an empty list") {
-            list.setEntries(emptyList())
+            GuiActionRunner.execute { list.setEntries(emptyList()) }
 
             assertThat(list.entries).isEmpty()
         }
 
         it("adds two entries to an empty list") {
-            list.setEntries(listOf("gladding", "flecky"))
+            GuiActionRunner.execute { list.setEntries(listOf("gladding", "flecky")) }
 
             assertThat(list.entries).containsExactly("gladding", "flecky")
         }
 
         it("does not add duplicate entries to a list") {
-            list.setEntries(listOf("orrery", "orrery"))
+            GuiActionRunner.execute { list.setEntries(listOf("orrery", "orrery")) }
 
             assertThat(list.entries).containsExactly("orrery")
         }
 
         it("empties a non-empty list") {
-            list.addEntry("prefeast")
-            list.addEntry("strip")
+            GuiActionRunner.execute {
+                list.addEntry("prefeast")
+                list.addEntry("strip")
+            }
 
-            list.setEntries(emptyList())
+            GuiActionRunner.execute { list.setEntries(emptyList()) }
 
             assertThat(list.entries).isEmpty()
         }
 
         it("replaces the entries in a non-empty list") {
-            list.addEntry("pirates")
-            list.addEntry("underbit")
-            list.addEntry("flexured")
+            GuiActionRunner.execute {
+                list.addEntry("pirates")
+                list.addEntry("underbit")
+                list.addEntry("flexured")
+            }
 
-            list.setEntries(listOf("steevely", "qual", "wheaties"))
+            GuiActionRunner.execute { list.setEntries(listOf("steevely", "qual", "wheaties")) }
 
             assertThat(list.entries).containsExactly("steevely", "qual", "wheaties")
         }
@@ -89,19 +98,23 @@ object JEditableListTest : Spek({
 
     describe("removeEntry") {
         it("removes the given entry") {
-            list.addEntry("giftwrap")
-            list.addEntry("backbite")
-            list.addEntry("landwhin")
+            GuiActionRunner.execute {
+                list.addEntry("giftwrap")
+                list.addEntry("backbite")
+                list.addEntry("landwhin")
+            }
 
-            list.removeEntry("backbite")
+            GuiActionRunner.execute { list.removeEntry("backbite") }
 
             assertThat(list.entries).containsExactly("giftwrap", "landwhin")
         }
 
         it("throws an exception if the element to be removed cannot be found") {
-            list.addEntry("tracheid")
-            list.addEntry("cocomat")
-            list.addEntry("videotex")
+            GuiActionRunner.execute {
+                list.addEntry("tracheid")
+                list.addEntry("cocomat")
+                list.addEntry("videotex")
+            }
 
             assertThatThrownBy { list.removeEntry("unshowed") }
                 .isInstanceOf(NoSuchElementException::class.java)
@@ -112,16 +125,18 @@ object JEditableListTest : Spek({
 
     describe("clear") {
         it("clears an empty list") {
-            list.clear()
+            GuiActionRunner.execute { list.clear() }
 
             assertThat(list.entries).isEmpty()
         }
 
         it("clears a non-empty list") {
-            list.addEntry("lathered")
-            list.addEntry("aquench")
+            GuiActionRunner.execute {
+                list.addEntry("lathered")
+                list.addEntry("aquench")
+            }
 
-            list.clear()
+            GuiActionRunner.execute { list.clear() }
 
             assertThat(list.entries).isEmpty()
         }
@@ -133,8 +148,10 @@ object JEditableListTest : Spek({
         }
 
         it("counts 2 elements for a list with 2 elements") {
-            list.addEntry("musmon")
-            list.addEntry("topepo")
+            GuiActionRunner.execute {
+                list.addEntry("musmon")
+                list.addEntry("topepo")
+            }
 
             assertThat(list.entryCount).isEqualTo(2)
         }
@@ -146,33 +163,33 @@ object JEditableListTest : Spek({
         }
 
         it("has no active entries by default") {
-            list.setEntries(listOf("otxi", "chamorro", "scarab"))
+            GuiActionRunner.execute { list.setEntries(listOf("otxi", "chamorro", "scarab")) }
 
             assertThat(list.activeEntries).isEmpty()
         }
 
         it("can enable one entry") {
-            list.setEntries(listOf("disbury", "curet", "sunhat"))
+            GuiActionRunner.execute { list.setEntries(listOf("disbury", "curet", "sunhat")) }
 
-            list.setActiveEntries(listOf("curet"))
+            GuiActionRunner.execute { list.setActiveEntries(listOf("curet")) }
 
             assertThat(list.activeEntries).containsExactly("curet")
         }
 
         it("can enable all entries") {
             val entries = listOf("big", "coumaric", "hooray")
-            list.setEntries(entries)
+            GuiActionRunner.execute { list.setEntries(entries) }
 
-            list.setActiveEntries(entries)
+            GuiActionRunner.execute { list.setActiveEntries(entries) }
 
             assertThat(list.activeEntries).containsExactlyElementsOf(entries)
         }
 
         it("ignores when a non-existing element is enabled") {
             val entries = listOf("forte", "blarneys")
-            list.setEntries(entries)
+            GuiActionRunner.execute { list.setEntries(entries) }
 
-            list.setActiveEntries(listOf("forte", "pittings"))
+            GuiActionRunner.execute { list.setActiveEntries(listOf("forte", "pittings")) }
 
             assertThat(list.activeEntries).containsExactly("forte")
         }
@@ -180,9 +197,9 @@ object JEditableListTest : Spek({
 
     describe("isActive") {
         it("returns true iff an element is active") {
-            list.setEntries(listOf("overtoil", "gouramis", "abruptly"))
+            GuiActionRunner.execute { list.setEntries(listOf("overtoil", "gouramis", "abruptly")) }
 
-            list.setEntryActivity("overtoil", true)
+            GuiActionRunner.execute { list.setEntryActivity("overtoil", true) }
 
             assertThat(list.isActive("overtoil")).isTrue()
             assertThat(list.isActive("gouramis")).isFalse()
@@ -200,10 +217,10 @@ object JEditableListTest : Spek({
     describe("activityListener") {
         it("fires when an entry's activity is changed") {
             var fired = false
-            list.addEntry("scarpa")
+            GuiActionRunner.execute { list.addEntry("scarpa") }
             list.addEntryActivityChangeListener { fired = true }
 
-            list.setEntryActivity("scarpa", true)
+            GuiActionRunner.execute { list.setEntryActivity("scarpa", true) }
 
             assertThat(fired).isTrue()
         }
@@ -212,7 +229,7 @@ object JEditableListTest : Spek({
             var fired = false
             list.addEntryActivityChangeListener { fired = true }
 
-            list.addEntry("techiest")
+            GuiActionRunner.execute { list.addEntry("techiest") }
 
             assertThat(fired).isFalse()
         }
@@ -220,11 +237,11 @@ object JEditableListTest : Spek({
         it("stops firing after a listener is removed") {
             var fired = false
             val listener = { _: Int -> fired = true }
-            list.addEntry("optimum")
+            GuiActionRunner.execute { list.addEntry("optimum") }
             list.addEntryActivityChangeListener(listener)
 
             list.removeEntryActivityChangeListener(listener)
-            list.setEntryActivity("optimum", true)
+            GuiActionRunner.execute { list.setEntryActivity("optimum", true) }
 
             assertThat(fired).isFalse()
         }
@@ -236,16 +253,20 @@ object JEditableListTest : Spek({
         }
 
         it("returns the single highlighted entry") {
-            list.setEntries(listOf("bahay", "woodyard", "hussies"))
-            list.addRowSelectionInterval(0, 0)
+            GuiActionRunner.execute {
+                list.setEntries(listOf("bahay", "woodyard", "hussies"))
+                list.addRowSelectionInterval(0, 0)
+            }
 
             assertThat(list.highlightedEntry).isEqualTo("bahay")
         }
 
         it("returns the first highlighted entry") {
-            list.setEntries(listOf("shutoffs", "dentine", "scutel"))
-            list.addRowSelectionInterval(0, 0)
-            list.addRowSelectionInterval(2, 2)
+            GuiActionRunner.execute {
+                list.setEntries(listOf("shutoffs", "dentine", "scutel"))
+                list.addRowSelectionInterval(0, 0)
+                list.addRowSelectionInterval(2, 2)
+            }
 
             assertThat(list.highlightedEntry).isEqualTo("scutel")
         }
