@@ -2,8 +2,9 @@ package com.fwdekker.randomness.ui
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.jetbrains.spek.api.Spek
+import org.jetbrains.spek.api.dsl.describe
+import org.jetbrains.spek.api.dsl.it
 import java.util.NoSuchElementException
 import javax.swing.ButtonGroup
 import javax.swing.JButton
@@ -12,127 +13,108 @@ import javax.swing.JButton
 /**
  * Unit tests for [ButtonGroupHelper].
  */
-class ButtonGroupHelperTest {
-    private lateinit var group: ButtonGroup
+object ButtonGroupHelperTest : Spek({
+    lateinit var group: ButtonGroup
 
 
-    @BeforeEach
-    fun beforeEach() {
+    beforeEachTest {
         group = ButtonGroup()
     }
 
 
-    @Test
-    fun testForEachEmpty() {
-        val sum = intArrayOf(0)
+    describe("for each") {
+        it("iterates 0 times over an empty group") {
+            var sum = 0
+            ButtonGroupHelper.forEach(group) { sum++ }
 
-        ButtonGroupHelper.forEach(group) { sum[0]++ }
+            assertThat(sum).isEqualTo(0)
+        }
 
-        assertThat(sum[0]).isEqualTo(0)
+        it("iterates once for each button in a group") {
+            group.add(JButton())
+            group.add(JButton())
+            group.add(JButton())
+
+            var sum = 0
+            ButtonGroupHelper.forEach(group) { sum++ }
+
+            assertThat(sum).isEqualTo(3)
+        }
     }
 
-    @Test
-    fun testForEach() {
-        val buttonA = JButton()
-        val buttonB = JButton()
-        val buttonC = JButton()
+    describe("get value") {
+        it("returns null if the group is empty") {
+            assertThat(ButtonGroupHelper.getValue(group)).isNull()
+        }
 
-        group.add(buttonA)
-        group.add(buttonB)
-        group.add(buttonC)
+        it("returns null if no button is selected") {
+            val button = JButton()
+            button.actionCommand = "shahid"
 
-        val sum = intArrayOf(0)
+            group.add(JButton())
 
-        ButtonGroupHelper.forEach(group) { sum[0]++ }
+            assertThat(ButtonGroupHelper.getValue(group)).isNull()
+        }
 
-        assertThat(sum[0]).isEqualTo(3)
+        it("returns an empty string if the selected button does not have an action command") {
+            val button = JButton()
+            button.isSelected = true
+
+            group.add(button)
+
+            assertThat(ButtonGroupHelper.getValue(group)).isEmpty()
+        }
+
+        it("returns the action command of the selected button") {
+            val buttonA = JButton()
+            buttonA.actionCommand = "causing"
+            val buttonB = JButton()
+            buttonB.isSelected = true
+            buttonB.actionCommand = "spahees"
+
+            group.add(buttonA)
+            group.add(buttonB)
+
+            assertThat(ButtonGroupHelper.getValue(group)).isEqualTo("spahees")
+        }
     }
 
+    describe("set value") {
+        it("throws an exception if the group is empty") {
+            assertThatThrownBy { ButtonGroupHelper.setValue(group, "gobbin") }
+                .isInstanceOf(NoSuchElementException::class.java)
+                .hasMessage("Could not find a button with action command `gobbin`.")
+        }
 
-    @Test
-    fun testGetValueEmpty() {
-        assertThat(ButtonGroupHelper.getValue(group)).isNull()
+        it("throws an exception if there is no button with the action command") {
+            val buttonA = JButton()
+            buttonA.actionCommand = "phocean"
+            val buttonB = JButton()
+            buttonB.actionCommand = "pouffe"
+
+            group.add(buttonA)
+            group.add(buttonB)
+
+            assertThatThrownBy { ButtonGroupHelper.setValue(group, "cherty") }
+                .isInstanceOf(NoSuchElementException::class.java)
+                .hasMessage("Could not find a button with action command `cherty`.")
+        }
+
+        it("selects the button with the given action command") {
+            val buttonA = JButton()
+            buttonA.actionCommand = "claps"
+            val buttonB = JButton()
+            buttonB.actionCommand = "delegati"
+            val buttonC = JButton()
+            buttonC.actionCommand = "slumming"
+
+            group.add(buttonA)
+            group.add(buttonB)
+            group.add(buttonC)
+
+            ButtonGroupHelper.setValue(group, "delegati")
+
+            assertThat(buttonB.isSelected).isTrue()
+        }
     }
-
-    @Test
-    fun testGetValueNoneSelected() {
-        val button = JButton()
-
-        group.add(button)
-
-        assertThat(ButtonGroupHelper.getValue(group)).isNull()
-    }
-
-    @Test
-    fun testGetValue() {
-        val buttonA = JButton()
-        buttonA.actionCommand = "29zo4"
-        val buttonB = JButton()
-        buttonB.isSelected = true
-        buttonB.actionCommand = "Y6ddy"
-
-        group.add(buttonA)
-        group.add(buttonB)
-
-        assertThat(ButtonGroupHelper.getValue(group)).isEqualTo("Y6ddy")
-    }
-
-
-    @Test
-    fun testSetValueEmpty() {
-        assertThatThrownBy { ButtonGroupHelper.setValue(group, "syWR#") }
-            .isInstanceOf(NoSuchElementException::class.java)
-            .hasMessage("Could not find a button with action command `syWR#`.")
-    }
-
-    @Test
-    fun testSetValueNotFound() {
-        val buttonA = JButton()
-        buttonA.actionCommand = "*VgyA"
-        val buttonB = JButton()
-        buttonB.actionCommand = "s8vOP"
-
-        group.add(buttonA)
-        group.add(buttonB)
-
-        assertThatThrownBy { ButtonGroupHelper.setValue(group, "OD>5&") }
-            .isInstanceOf(NoSuchElementException::class.java)
-            .hasMessage("Could not find a button with action command `OD>5&`.")
-    }
-
-    @Test
-    fun testSetValue() {
-        val buttonA = JButton()
-        buttonA.actionCommand = "TRUaN"
-        val buttonB = JButton()
-        buttonB.actionCommand = "2Y@2_"
-        val buttonC = JButton()
-        buttonC.actionCommand = "#Oq%n"
-
-        group.add(buttonA)
-        group.add(buttonB)
-        group.add(buttonC)
-
-        ButtonGroupHelper.setValue(group, "2Y@2_")
-
-        assertThat(buttonB.isSelected).isTrue()
-    }
-
-    @Test
-    fun testSetValueObject() {
-        val buttonA = JButton()
-        buttonA.actionCommand = "iqGfVwJDLd"
-        val buttonB = JButton()
-        buttonB.actionCommand = "ouzioKGsKi"
-        val buttonC = JButton()
-        buttonC.actionCommand = "pKVEAoQzmr"
-
-        group.add(buttonA)
-        group.add(buttonB)
-        group.add(buttonC)
-
-        ButtonGroupHelper.setValue(group, "ouzioKGsKi")
-
-        assertThat(buttonB.isSelected).isTrue()
-    }
-}
+})

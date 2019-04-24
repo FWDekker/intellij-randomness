@@ -2,284 +2,285 @@ package com.fwdekker.randomness.ui
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.jetbrains.spek.api.Spek
+import org.jetbrains.spek.api.dsl.describe
+import org.jetbrains.spek.api.dsl.it
 import java.util.NoSuchElementException
 
 
 /**
  * Unit tests for [JEditableList].
  */
-class JEditableListTest {
-    private lateinit var list: JEditableList<String>
+object JEditableListTest : Spek({
+    lateinit var list: JEditableList<String>
 
 
-    @BeforeEach
-    fun beforeEach() {
+    beforeEachTest {
         list = JEditableList()
     }
 
 
-    @Test
-    fun testGetEntriesEmpty() {
-        assertThat(list.entries).isEmpty()
+    describe("getEntries") {
+        it("returns nothing if no entries are added") {
+            assertThat(list.entries).isEmpty()
+        }
     }
 
-    @Test
-    fun testAddEntry() {
-        list.addEntry("sxTODMrLvE")
+    describe("addEntry") {
+        it("adds a given entry") {
+            list.addEntry("manscape")
 
-        assertThat(list.entries).containsExactly("sxTODMrLvE")
+            assertThat(list.entries).containsExactly("manscape")
+        }
+
+        it("adds two given entries") {
+            list.addEntry("osteomas")
+            list.addEntry("imido")
+
+            assertThat(list.entries).containsExactly("osteomas", "imido")
+        }
+
+        it("does not add a given entry twice") {
+            list.addEntry("bloomed")
+            list.addEntry("bloomed")
+
+            assertThat(list.entries).containsExactly("bloomed")
+        }
     }
 
-    @Test
-    fun testAddEntryDuplicate() {
-        list.addEntry("6bqmI9JEkv")
-        list.addEntry("6bqmI9JEkv")
+    describe("setEntries") {
+        it("empties an empty list") {
+            list.setEntries(emptyList())
 
-        assertThat(list.entries).containsExactly("6bqmI9JEkv")
+            assertThat(list.entries).isEmpty()
+        }
+
+        it("adds two entries to an empty list") {
+            list.setEntries(listOf("gladding", "flecky"))
+
+            assertThat(list.entries).containsExactly("gladding", "flecky")
+        }
+
+        it("does not add duplicate entries to a list") {
+            list.setEntries(listOf("orrery", "orrery"))
+
+            assertThat(list.entries).containsExactly("orrery")
+        }
+
+        it("empties a non-empty list") {
+            list.addEntry("prefeast")
+            list.addEntry("strip")
+
+            list.setEntries(emptyList())
+
+            assertThat(list.entries).isEmpty()
+        }
+
+        it("replaces the entries in a non-empty list") {
+            list.addEntry("pirates")
+            list.addEntry("underbit")
+            list.addEntry("flexured")
+
+            list.setEntries(listOf("steevely", "qual", "wheaties"))
+
+            assertThat(list.entries).containsExactly("steevely", "qual", "wheaties")
+        }
     }
 
-    @Test
-    fun testSetEntriesEmptyToEmpty() {
-        list.setEntries(emptyList())
+    describe("removeEntry") {
+        it("removes the given entry") {
+            list.addEntry("giftwrap")
+            list.addEntry("backbite")
+            list.addEntry("landwhin")
 
-        assertThat(list.entries).isEmpty()
+            list.removeEntry("backbite")
+
+            assertThat(list.entries).containsExactly("giftwrap", "landwhin")
+        }
+
+        it("throws an exception if the element to be removed cannot be found") {
+            list.addEntry("tracheid")
+            list.addEntry("cocomat")
+            list.addEntry("videotex")
+
+            assertThatThrownBy { list.removeEntry("unshowed") }
+                .isInstanceOf(NoSuchElementException::class.java)
+                .hasMessage("No row with entry `unshowed` found.")
+                .hasNoCause()
+        }
     }
 
-    @Test
-    fun testSetEntriesEmptyToNonEmpty() {
-        list.setEntries(listOf("[qOBxjKQ6P", "DGw{4ag(99"))
+    describe("clear") {
+        it("clears an empty list") {
+            list.clear()
 
-        assertThat(list.entries).containsExactly("[qOBxjKQ6P", "DGw{4ag(99")
+            assertThat(list.entries).isEmpty()
+        }
+
+        it("clears a non-empty list") {
+            list.addEntry("lathered")
+            list.addEntry("aquench")
+
+            list.clear()
+
+            assertThat(list.entries).isEmpty()
+        }
     }
 
-    @Test
-    fun testSetEntriesNonemptyToEmpty() {
-        list.addEntry("u1}9]G<<CN")
-        list.addEntry("SV9MUxo5yM")
-        list.setEntries(emptyList())
+    describe("entryCount") {
+        it("counts 0 elements for an empty list") {
+            assertThat(list.entryCount).isEqualTo(0)
+        }
 
-        assertThat(list.entries).isEmpty()
+        it("counts 2 elements for a list with 2 elements") {
+            list.addEntry("musmon")
+            list.addEntry("topepo")
+
+            assertThat(list.entryCount).isEqualTo(2)
+        }
     }
 
-    @Test
-    fun testSetEntriesNonemptyToNonempty() {
-        list.addEntry("d>OO>rp2zJ")
-        list.addEntry("Po(tiIXnxQ")
-        list.addEntry("oq5BQYk0<7")
-        list.setEntries(listOf("qKZK]8Y[vs", "cn3{[6y>de", "skE}h6H9MJ"))
+    describe("activeEntries") {
+        it("has no active entries in an empty list") {
+            assertThat(list.activeEntries).isEmpty()
+        }
 
-        assertThat(list.entries).containsExactly("qKZK]8Y[vs", "cn3{[6y>de", "skE}h6H9MJ")
+        it("has no active entries by default") {
+            list.setEntries(listOf("otxi", "chamorro", "scarab"))
+
+            assertThat(list.activeEntries).isEmpty()
+        }
+
+        it("can enable one entry") {
+            list.setEntries(listOf("disbury", "curet", "sunhat"))
+
+            list.setActiveEntries(listOf("curet"))
+
+            assertThat(list.activeEntries).containsExactly("curet")
+        }
+
+        it("can enable all entries") {
+            val entries = listOf("big", "coumaric", "hooray")
+            list.setEntries(entries)
+
+            list.setActiveEntries(entries)
+
+            assertThat(list.activeEntries).containsExactlyElementsOf(entries)
+        }
+
+        it("ignores when a non-existing element is enabled") {
+            val entries = listOf("forte", "blarneys")
+            list.setEntries(entries)
+
+            list.setActiveEntries(listOf("forte", "pittings"))
+
+            assertThat(list.activeEntries).containsExactly("forte")
+        }
     }
 
-    @Test
-    fun testRemoveEntry() {
-        list.addEntry("><t1wfkCLz")
-        list.addEntry("X0hxkJGK)7")
-        list.addEntry("TI5i9bUyLc")
-        list.removeEntry("X0hxkJGK)7")
+    describe("isActive") {
+        it("returns true iff an element is active") {
+            list.setEntries(listOf("overtoil", "gouramis", "abruptly"))
 
-        assertThat(list.entries).containsExactly("><t1wfkCLz", "TI5i9bUyLc")
+            list.setEntryActivity("overtoil", true)
+
+            assertThat(list.isActive("overtoil")).isTrue()
+            assertThat(list.isActive("gouramis")).isFalse()
+            assertThat(list.isActive("abruptly")).isFalse()
+        }
+
+        it("throws an exception if an element is not in the list") {
+            assertThatThrownBy { list.isActive("nanism") }
+                .isInstanceOf(NoSuchElementException::class.java)
+                .hasMessage("No row with entry `nanism` found.")
+                .hasNoCause()
+        }
     }
 
-    @Test
-    fun testRemoveEntryDuplicate() {
-        list.addEntry("UNIODenA]8")
-        list.addEntry(">q(isDDjGx")
-        list.addEntry("tyFoveRt5n")
-        list.addEntry("tyFoveRt5n")
-        list.removeEntry("tyFoveRt5n")
+    describe("activityListener") {
+        it("fires when an entry's activity is changed") {
+            var fired = false
+            list.addEntry("scarpa")
+            list.addEntryActivityChangeListener { fired = true }
 
-        assertThat(list.entries).containsExactly("UNIODenA]8", ">q(isDDjGx")
+            list.setEntryActivity("scarpa", true)
+
+            assertThat(fired).isTrue()
+        }
+
+        it("does not fire when an entry is inserted") {
+            var fired = false
+            list.addEntryActivityChangeListener { fired = true }
+
+            list.addEntry("techiest")
+
+            assertThat(fired).isFalse()
+        }
+
+        it("stops firing after a listener is removed") {
+            var fired = false
+            val listener = { _: Int -> fired = true }
+            list.addEntry("optimum")
+            list.addEntryActivityChangeListener(listener)
+
+            list.removeEntryActivityChangeListener(listener)
+            list.setEntryActivity("optimum", true)
+
+            assertThat(fired).isFalse()
+        }
     }
 
-    @Test
-    fun testRemoveEntryNonExisting() {
-        list.addEntry("qiGIG5Slmn")
-        list.addEntry("uxlt{9}FeZ")
-        list.addEntry("a4BEQoJpLJ")
+    describe("getHighlightedEntry") {
+        it("returns null when no entry is highlighted") {
+            assertThat(list.highlightedEntry).isNull()
+        }
 
-        assertThatThrownBy { list.removeEntry("6uy19G<}JS") }
-            .isInstanceOf(NoSuchElementException::class.java)
-            .hasMessage("No row with entry `6uy19G<}JS` found.")
-            .hasNoCause()
+        it("returns the single highlighted entry") {
+            list.setEntries(listOf("bahay", "woodyard", "hussies"))
+            list.addRowSelectionInterval(0, 0)
+
+            assertThat(list.highlightedEntry).isEqualTo("bahay")
+        }
+
+        it("returns the first highlighted entry") {
+            list.setEntries(listOf("shutoffs", "dentine", "scutel"))
+            list.addRowSelectionInterval(0, 0)
+            list.addRowSelectionInterval(2, 2)
+
+            assertThat(list.highlightedEntry).isEqualTo("scutel")
+        }
     }
 
-    @Test
-    fun testClearEmpty() {
-        list.clear()
+    describe("getColumnClass") {
+        it("returns the right types for the columns") {
+            // Java classes MUST be used
+            assertThat(list.getColumnClass(0)).isEqualTo(java.lang.Boolean::class.java)
+            assertThat(list.getColumnClass(1)).isEqualTo(java.lang.String::class.java)
+        }
 
-        assertThat(list.entries).isEmpty()
+        it("throws an exception if a negative column index is requested") {
+            assertThatThrownBy { list.getColumnClass(-1) }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessage("JEditableList has only two columns.")
+                .hasNoCause()
+        }
+
+        it("throws an exception if column index that is too high is requested") {
+            assertThatThrownBy { list.getColumnClass(2) }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessage("JEditableList has only two columns.")
+                .hasNoCause()
+        }
     }
 
-    @Test
-    fun testClearNonempty() {
-        list.addEntry("4lbw4K>}UH")
-        list.addEntry("CMVe{rkBl[")
-        list.clear()
+    describe("isCellEditable") {
+        it("returns true iff the column is 0") {
+            assertThat(list.isCellEditable(13, 0)).isTrue()
+            assertThat(list.isCellEditable(67, 0)).isTrue()
 
-        assertThat(list.entries).isEmpty()
+            assertThat(list.isCellEditable(10, 5)).isFalse()
+            assertThat(list.isCellEditable(7, 10)).isFalse()
+            assertThat(list.isCellEditable(8, 2)).isFalse()
+        }
     }
-
-    @Test
-    fun testGetEntryCountEmpty() {
-        assertThat(list.entryCount).isEqualTo(0)
-    }
-
-    @Test
-    fun testGetEntryCount() {
-        list.addEntry("1JfHiG[CiD")
-        list.addEntry("gXsoY21wzb")
-
-        assertThat(list.entryCount).isEqualTo(2)
-    }
-
-    @Test
-    fun testGetEntryCountDuplicate() {
-        list.addEntry("jDwxzlHh]f")
-        list.addEntry("A>)6q<f5kT")
-        list.addEntry("A>)6q<f5kT")
-
-        assertThat(list.entryCount).isEqualTo(2)
-    }
-
-
-    @Test
-    fun testActiveEntriesEmpty() {
-        assertThat(list.activeEntries).isEmpty()
-    }
-
-    @Test
-    fun testActiveEntriesNone() {
-        list.setEntries(listOf("DnqtROf4fd", "0<16CDsby2", "h0hu4XePhv"))
-
-        assertThat(list.activeEntries).isEmpty()
-    }
-
-    @Test
-    fun testActiveEntriesSome() {
-        val entries = listOf("9}juZWluy}", "UGuD08qUXr", "eQA[]AdpYR")
-        list.setEntries(entries)
-        list.setActiveEntries(listOf("UGuD08qUXr"))
-
-        assertThat(list.activeEntries).containsExactly("UGuD08qUXr")
-    }
-
-    @Test
-    fun testActiveEntriesAll() {
-        val entries = listOf("o28ix>b}x(", "6Zzl>yi5LB", "XyEVdjv1VM")
-        list.setEntries(entries)
-        list.setActiveEntries(entries)
-
-        assertThat(list.activeEntries).containsExactlyElementsOf(entries)
-    }
-
-    @Test
-    fun testSetActiveEntriesNonExistent() {
-        val entries = listOf("JXIPoWsGR{", ">Jq7ILgv9]")
-        list.setEntries(entries)
-        list.setActiveEntries(listOf("JXIPoWsGR{", "j>NBYo}DnW", ">Jq7ILgv9]"))
-
-        assertThat(list.activeEntries).containsExactlyElementsOf(entries)
-    }
-
-    @Test
-    fun testIsActive() {
-        val entries = listOf("I85kO5f8}6", "qcSv3u((zE", "{jjD)iFxEr")
-        list.setEntries(entries)
-        list.setEntryActivity("I85kO5f8}6", true)
-
-        assertThat(list.isActive("I85kO5f8}6")).isTrue()
-        assertThat(list.isActive("qcSv3u((zE")).isFalse()
-        assertThat(list.isActive("{jjD)iFxEr")).isFalse()
-    }
-
-    @Test
-    fun testIsActiveNonExistent() {
-        assertThatThrownBy { list.isActive("Vr{1zIC9iH") }
-            .isInstanceOf(NoSuchElementException::class.java)
-            .hasMessage("No row with entry `Vr{1zIC9iH` found.")
-            .hasNoCause()
-    }
-
-    @Test
-    fun testActivityListenerOnUpdate() {
-        val fired = booleanArrayOf(false)
-        list.addEntry("DsX[DtA>6{")
-
-        list.addEntryActivityChangeListener { fired[0] = true }
-        list.setEntryActivity("DsX[DtA>6{", true)
-
-        assertThat(fired[0]).isTrue()
-    }
-
-    @Test
-    fun testActivityListenerNoChangeOnInsert() {
-        val fired = booleanArrayOf(false)
-
-        list.addEntryActivityChangeListener { fired[0] = true }
-        list.addEntry("DsX[DtA>6{")
-
-        assertThat(fired[0]).isFalse()
-    }
-
-    @Test
-    fun testActivityListenerRemoveNoFire() {
-        val fired = booleanArrayOf(false)
-        list.addEntry("bvDAPSZFG3")
-
-        val listener = { _: Int -> fired[0] = true }
-        list.addEntryActivityChangeListener(listener)
-        list.removeEntryActivityChangeListener(listener)
-        list.setEntryActivity("bvDAPSZFG3", true)
-
-        assertThat(fired[0]).isFalse()
-    }
-
-
-    @Test
-    fun testGetHighlightedEntryNone() {
-        assertThat(list.highlightedEntry).isNull()
-    }
-
-    @Test
-    fun testGetHighlightedEntrySingle() {
-        list.setEntries(listOf("Bb]CEbJlAD", "8QNk5l<]ln", "U5Hbo0whnn"))
-        list.addRowSelectionInterval(0, 0)
-
-        assertThat(list.highlightedEntry).isEqualTo("Bb]CEbJlAD")
-    }
-
-    @Test
-    fun testGetHighlightedEntryMultiple() {
-        list.setEntries(listOf("k<Goz2<IG9", "E4nRBR>wKG", "sCxbg}sfy("))
-        list.addRowSelectionInterval(0, 0)
-        list.addRowSelectionInterval(2, 2)
-
-        assertThat(list.highlightedEntry).isEqualTo("sCxbg}sfy(")
-    }
-
-
-    @Test
-    fun testGetColumnClasses() {
-        assertThat(list.getColumnClass(0)).isEqualTo(java.lang.Boolean::class.java)
-        assertThat(list.getColumnClass(1)).isEqualTo(java.lang.String::class.java)
-
-        assertThatThrownBy { list.getColumnClass(-1) }
-            .isInstanceOf(IllegalArgumentException::class.java)
-            .hasMessage("JEditableList has only two columns.")
-            .hasNoCause()
-        assertThatThrownBy { list.getColumnClass(2) }
-            .isInstanceOf(IllegalArgumentException::class.java)
-            .hasMessage("JEditableList has only two columns.")
-            .hasNoCause()
-    }
-
-    @Test
-    fun testIsCellEditable() {
-        assertThat(list.isCellEditable(10, 5)).isFalse()
-        assertThat(list.isCellEditable(7, 10)).isFalse()
-        assertThat(list.isCellEditable(8, 2)).isFalse()
-    }
-}
+})

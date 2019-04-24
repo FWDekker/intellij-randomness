@@ -37,7 +37,7 @@ class JSpinnerRangeTest {
         `when`(min.value).thenReturn(85.20)
         `when`(max.value).thenReturn(-636.33)
 
-        val range = JSpinnerRange(min, max, JSpinnerRange.DEFAULT_MAX_RANGE)
+        val range = JSpinnerRange(min, max)
 
         val info = range.validateValue()
         assertThat(info).isNotNull()
@@ -49,7 +49,7 @@ class JSpinnerRangeTest {
         `when`(min.value).thenReturn(-1E53)
         `when`(max.value).thenReturn(1E53)
 
-        val range = JSpinnerRange(min, max, JSpinnerRange.DEFAULT_MAX_RANGE)
+        val range = JSpinnerRange(min, max)
 
         val info = range.validateValue()
         assertThat(info).isNotNull()

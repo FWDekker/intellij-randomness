@@ -52,7 +52,7 @@ class StringInsertActionTest {
         return Pattern.compile(
             "$enclosure${
             if (alphabets.isNotEmpty())
-                "[${capitalization.transform.invoke(Alphabet.concatenate(alphabets))}]{$minLength,$maxLength}"
+                "[${capitalization.transform.invoke(alphabets.sum())}]{$minLength,$maxLength}"
             else
                 ""
             }$enclosure"
