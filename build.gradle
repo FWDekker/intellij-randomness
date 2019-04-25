@@ -19,7 +19,7 @@ dependencies {
     implementation group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk8"
     implementation group: "org.jetbrains.kotlin", name: "kotlin-reflect"
 
-    testCompile group: "nl.jqno.equalsverifier", name: "equalsverifier", version: equalsVerifierVersion
+    testCompile group: "com.nhaarman.mockitokotlin2", name: "mockito-kotlin", version: mockitoKotlinVersion
     testCompile group: "org.assertj", name: "assertj-core", version: assertjVersion
     testCompile group: "org.assertj", name: "assertj-swing-junit", version: assertjSwingVersion
     testCompile group: "org.jetbrains.spek", name: "spek-api", version: spekVersion
@@ -28,7 +28,6 @@ dependencies {
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-params", version: junitVersion
     testCompile group: "org.junit.vintage", name: "junit-vintage-engine", version: junitVersion
-    testCompile group: "org.mockito", name: "mockito-core", version: mockitoVersion
 }
 
 configurations {

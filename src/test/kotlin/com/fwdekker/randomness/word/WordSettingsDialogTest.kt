@@ -86,31 +86,26 @@ object WordSettingsDialogTest : Spek({
         }
 
         describe("adding dictionaries") {
-            // TODO Re-enable this test
             // Disabled because AssertJ Swing doesn't work with IntelliJ file chooser
             xit("adds a given user dictionary") {
                 frame.button("dictionaryAdd").click()
-//        JFileChooserFinder.findFileChooser().using(robot())
-//            .selectFile(getDictionaryFile("dictionaries/simple.dic"))
-//            .approve()
+                // TODO Find file chooser window and select a file
 
                 assertThat(dialogDictionaries.getEntry(1).toString().replace("\\\\".toRegex(), "/"))
                     .endsWith("dictionaries/simple.dic")
             }
 
-            // TODO Re-enable this test
             // Disabled because AssertJ Swing doesn't work with IntelliJ file chooser
             xit("does not add a duplicate user dictionary") {
-                GuiActionRunner.execute {
-                    val dictionary =
-                        UserDictionary.cache.get(getDictionaryFile("dictionaries/simple.dic").canonicalPath, true)
-                    dialogDictionaries.addEntry(dictionary)
-                }
+                assertThat(dialogDictionaries.entryCount).isEqualTo(1)
 
                 frame.button("dictionaryAdd").click()
+                // TODO Find file chooser window and select a file
 //        JFileChooserFinder.findFileChooser()
 //            .selectFile(getDictionaryFile("dictionaries/simple.dic"))
 //            .approve()
+
+                // Select the same file again
 
                 assertThat(dialogDictionaries.entryCount).isEqualTo(2)
             }

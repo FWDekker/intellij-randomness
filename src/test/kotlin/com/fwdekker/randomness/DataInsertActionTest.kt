@@ -3,11 +3,15 @@ package com.fwdekker.randomness
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.Presentation
-import com.intellij.openapi.editor.Editor
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.*
 
 
 /**
@@ -35,8 +39,9 @@ class DataInsertActionTest {
      */
     @Test
     fun testActionPerformedNullEditor() {
-        val event = mock(AnActionEvent::class.java)
-        `when`<Editor>(event.getData(CommonDataKeys.EDITOR)).thenReturn(null)
+        val event = mock<AnActionEvent> {
+            on { getData(CommonDataKeys.EDITOR) } doReturn null
+        }
 
         dataInsertAction.actionPerformed(event)
 
@@ -49,10 +54,11 @@ class DataInsertActionTest {
      */
     @Test
     fun testUpdateDisabled() {
-        val event = mock(AnActionEvent::class.java)
-        val presentation = spy(Presentation::class.java)
-        `when`<Editor>(event.getData(CommonDataKeys.EDITOR)).thenReturn(null)
-        `when`(event.presentation).thenReturn(presentation)
+        val presentation = spy<Presentation>()
+        val event = mock<AnActionEvent> {
+            on { getData(CommonDataKeys.EDITOR) } doReturn null
+            on { it.presentation } doReturn presentation
+        }
 
         dataInsertAction.update(event)
 
@@ -64,10 +70,11 @@ class DataInsertActionTest {
      */
     @Test
     fun testUpdateEnabled() {
-        val event = mock(AnActionEvent::class.java)
-        val presentation = spy(Presentation::class.java)
-        `when`<Editor>(event.getData(CommonDataKeys.EDITOR)).thenReturn(mock(Editor::class.java))
-        `when`(event.presentation).thenReturn(presentation)
+        val presentation = spy<Presentation>()
+        val event = mock<AnActionEvent> {
+            on { getData(CommonDataKeys.EDITOR) } doReturn mock()
+            on { it.presentation } doReturn presentation
+        }
 
         dataInsertAction.update(event)
 

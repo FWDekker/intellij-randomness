@@ -2,10 +2,8 @@ package com.fwdekker.randomness.ui
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.BeforeEach
+import org.assertj.swing.edt.GuiActionRunner
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 import javax.swing.JSpinner
 
 
@@ -13,20 +11,9 @@ import javax.swing.JSpinner
  * Unit tests for [JSpinnerRange].
  */
 class JSpinnerRangeTest {
-    private lateinit var min: JSpinner
-    private lateinit var max: JSpinner
-
-
-    @BeforeEach
-    fun beforeEach() {
-        min = mock(JSpinner::class.java)
-        max = mock(JSpinner::class.java)
-    }
-
-
     @Test
     fun testIllegalMaxRange() {
-        assertThatThrownBy { JSpinnerRange(min, max, -37.20) }
+        assertThatThrownBy { JSpinnerRange(createJSpinner(), createJSpinner(), -37.20) }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("maxRange must be a positive number.")
     }
@@ -34,10 +21,7 @@ class JSpinnerRangeTest {
 
     @Test
     fun testRangeRelative() {
-        `when`(min.value).thenReturn(85.20)
-        `when`(max.value).thenReturn(-636.33)
-
-        val range = JSpinnerRange(min, max)
+        val range = JSpinnerRange(createJSpinner(85.20), createJSpinner(-636.33))
 
         val info = range.validateValue()
         assertThat(info).isNotNull()
@@ -46,10 +30,7 @@ class JSpinnerRangeTest {
 
     @Test
     fun testRangeSize() {
-        `when`(min.value).thenReturn(-1E53)
-        `when`(max.value).thenReturn(1E53)
-
-        val range = JSpinnerRange(min, max)
+        val range = JSpinnerRange(createJSpinner(-1E53), createJSpinner(1E53))
 
         val info = range.validateValue()
         assertThat(info).isNotNull()
@@ -58,13 +39,17 @@ class JSpinnerRangeTest {
 
     @Test
     fun testRangeSizeCustomRange() {
-        `when`(min.value).thenReturn(-794.90)
-        `when`(max.value).thenReturn(769.52)
-
-        val range = JSpinnerRange(min, max, 793.31)
+        val range = JSpinnerRange(createJSpinner(-794.90), createJSpinner(759.52), 793.31)
 
         val info = range.validateValue()
         assertThat(info).isNotNull()
         assertThat(info?.message).isEqualTo("The range should not exceed 793.31.")
     }
 }
+
+
+private fun createJSpinner() =
+    GuiActionRunner.execute<JSpinner> { JSpinner() }
+
+private fun createJSpinner(value: Double) =
+    GuiActionRunner.execute<JSpinner> { JSpinner().also { it.value = value } }
