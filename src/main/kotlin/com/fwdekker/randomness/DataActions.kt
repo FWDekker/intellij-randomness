@@ -22,7 +22,7 @@ abstract class DataGroupAction : ActionGroup() {
 
     override fun getChildren(event: AnActionEvent?) = arrayOf(insertAction, insertArrayAction, settingsAction)
 
-    override fun canBePerformed(context: DataContext?) = true
+    override fun canBePerformed(context: DataContext) = true
 
     override fun actionPerformed(event: AnActionEvent) {
         super.actionPerformed(event)
@@ -37,11 +37,10 @@ abstract class DataGroupAction : ActionGroup() {
         }
     }
 
-    override fun update(event: AnActionEvent?) {
+    override fun update(event: AnActionEvent) {
         super.update(event)
 
-        if (event != null)
-            event.presentation.text = insertAction.name
+        event.presentation.text = insertAction.name
     }
 
     override fun isPopup() = true
@@ -149,11 +148,10 @@ abstract class SettingsAction : AnAction() {
     protected abstract val title: String
 
 
-    override fun update(event: AnActionEvent?) {
+    override fun update(event: AnActionEvent) {
         super.update(event)
 
-        if (event != null)
-            event.presentation.text = title
+        event.presentation.text = title
     }
 
     /**

@@ -5,7 +5,6 @@ plugins {
     id "org.jetbrains.dokka" version "0.9.17"
 
     id "jacoco"
-    id "io.github.ddimtirov.codacy" version "0.1.0"
 
     id "org.jetbrains.intellij" version "0.4.1"
 }
@@ -28,10 +27,6 @@ dependencies {
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-params", version: junitVersion
     testCompile group: "org.junit.vintage", name: "junit-vintage-engine", version: junitVersion
-}
-
-configurations {
-    codacy
 }
 
 
