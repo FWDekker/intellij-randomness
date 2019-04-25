@@ -25,7 +25,7 @@ class DecimalSettings : Settings<DecimalSettings> {
         /**
          * The default value of the [maxValue][DecimalSettings.maxValue] field.
          */
-        const val DEFAULT_MAX_VALUE = 1000.0
+        const val DEFAULT_MAX_VALUE = 1_000.0
         /**
          * The default value of the [decimalCount][DecimalSettings.decimalCount] field.
          */

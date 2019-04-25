@@ -19,6 +19,17 @@ private typealias EntryActivityChangeListener = (Int) -> Unit
  * @param <T> the entry type
  */
 class JEditableList<T> : JTable() {
+    companion object {
+        /**
+         * The relative width of the checkbox column.
+         */
+        private const val CHECKBOX_WIDTH = 20.0f
+        /**
+         * The relative width of the text column.
+         */
+        private const val TEXT_WIDTH = 80.0f
+    }
+
     private val model: DefaultTableModel = DefaultTableModel(0, 2)
     private val entryActivityChangeListeners: MutableList<EntryActivityChangeListener> = ArrayList()
 
@@ -117,7 +128,7 @@ class JEditableList<T> : JTable() {
      * @param row the row to return the entry of
      * @return the entry in the given row
      */
-    @Suppress("UNCHECKED_CAST")  // Type guaranteed by design
+    @Suppress("UNCHECKED_CAST") // Type guaranteed by design
     fun getEntry(row: Int): T = model.getValueAt(row, 1) as T
 
     /**
@@ -146,7 +157,7 @@ class JEditableList<T> : JTable() {
     /**
      * Sets whether the given entry has its checkbox checked.
      *
-     * @param entry    the entry to (un)check the checkbox of
+     * @param entry the entry to (un)check the checkbox of
      * @param selected `true` iff the entry's checkbox should be checked
      */
     private fun setActive(entry: T, selected: Boolean) = setValueAt(selected, getEntryRow(entry), 0)
@@ -162,7 +173,7 @@ class JEditableList<T> : JTable() {
     /**
      * Sets the activity of the given entry.
      *
-     * @param entry    the entry to set the activity of
+     * @param entry the entry to set the activity of
      * @param activity `true` iff the entry's checkbox should be checked
      */
     fun setEntryActivity(entry: T, activity: Boolean) = setValueAt(activity, getEntryRow(entry), 0)
@@ -198,7 +209,7 @@ class JEditableList<T> : JTable() {
      * Recalculates column widths.
      */
     private fun resizeColumns() {
-        val columnWidthPercentages = floatArrayOf(20.0f, 80.0f)
+        val columnWidthPercentages = floatArrayOf(CHECKBOX_WIDTH, TEXT_WIDTH)
 
         val columnModel = getColumnModel()
         (0 until model.columnCount).forEach { i ->

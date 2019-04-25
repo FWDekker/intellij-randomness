@@ -1,0 +1,41 @@
+autoCorrect: false
+
+console-reports:
+    active: false
+
+
+comments:
+    # Nothing wrong with documenting private methods.
+    CommentOverPrivateFunction:
+        active: false
+    # Nothing wrong with documenting private properties.
+    CommentOverPrivateProperty:
+        active: false
+
+complexity:
+    # Static analysis is not good at estimating this.
+    TooManyFunctions:
+        thresholdInClasses: 20
+
+formatting:
+    # That's part of my code style.
+    NoConsecutiveBlankLines:
+        active: false
+
+naming:
+    # Static analysis is not good at estimating this.
+    FunctionMaxLength:
+        active: false
+
+potential-bugs:
+    # The alternative is to safe cast and throw an exception, which is equally bad.
+    UnsafeCast:
+        active: false
+
+style:
+    # No braces are easier to read.
+    MandatoryBracesIfStatements:
+        active: false
+    # False positives when there are two newlines after the imports.
+    SpacingBetweenPackageAndImports:
+        active: false
