@@ -12,7 +12,7 @@ import javax.swing.SpinnerNumberModel
 /**
  * A [JSpinner] for longs.
  *
- * A `JLongSpinner` can only represent value from [DEFAULT_MIN_VALUE] (inclusive) until [DEFAULT_MAX_VALUE]
+ * A `JLongSpinner` can only represent values from [DEFAULT_MIN_VALUE] (inclusive) until [DEFAULT_MAX_VALUE]
  * (inclusive), because not all numbers outside this range can be represented as a [Double].
  *
  * @param value    the default value represented by this `JDoubleSpinner`
@@ -32,11 +32,11 @@ class JLongSpinner(
         /**
          * The smallest number that can be represented by a `JDoubleSpinner`.
          */
-        private const val DEFAULT_MIN_VALUE = java.lang.Long.MIN_VALUE
+        private const val DEFAULT_MIN_VALUE = Long.MIN_VALUE
         /**
          * The largest number that can be represented by a `JDoubleSpinner`.
          */
-        private const val DEFAULT_MAX_VALUE = java.lang.Long.MAX_VALUE
+        private const val DEFAULT_MAX_VALUE = Long.MAX_VALUE
         /**
          * The default step size when decrementing or incrementing the value.
          */

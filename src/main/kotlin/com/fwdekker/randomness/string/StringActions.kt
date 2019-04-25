@@ -47,7 +47,7 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
      * @return a random character from the alphabet
      */
     private fun generateCharacter(): Char {
-        val alphabet = Alphabet.concatenate(settings.alphabets)
+        val alphabet = settings.alphabets.sum()
         val charIndex = Random.nextInt(alphabet.length)
 
         return alphabet[charIndex]

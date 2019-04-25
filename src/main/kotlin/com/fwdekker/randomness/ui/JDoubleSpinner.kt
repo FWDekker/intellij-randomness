@@ -21,13 +21,7 @@ import javax.swing.SpinnerNumberModel
 class JDoubleSpinner(
     private val minValue: Double = DEFAULT_MIN_VALUE,
     private val maxValue: Double = DEFAULT_MAX_VALUE
-) : JSpinner(
-    SpinnerNumberModel(0.0,
-        java.lang.Double.NEGATIVE_INFINITY,
-        java.lang.Double.POSITIVE_INFINITY,
-        DEFAULT_STEP_SIZE
-    )
-) {
+) : JSpinner(SpinnerNumberModel(0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, DEFAULT_STEP_SIZE)) {
     companion object {
         /**
          * The default step size when decrementing or incrementing the value.
