@@ -215,7 +215,7 @@ object WordSettingsDialogTest : Spek({
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
 
                 if (!dictionaryFile.delete())
-                    fail("Failed to delete test file as part of test.")
+                    fail("Failed to delete file as part of test.")
 
                 GuiActionRunner.execute {
                     dictionaries.addEntry(dictionary)

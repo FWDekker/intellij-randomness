@@ -20,7 +20,6 @@ class InvalidDictionaryException(message: String? = null, cause: Throwable? = nu
 /**
  * A collection of words that may become inaccessible at any moment in time.
  */
-// TODO Add tests for dictionaries
 interface Dictionary {
     /**
      * The words in the dictionary.
@@ -80,11 +79,7 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
 
     @Throws(InvalidDictionaryException::class)
     override fun validate() {
-        try {
-            getStream()
-        } catch (e: IOException) {
-            throw InvalidDictionaryException("Could not read dictionary file.", e)
-        }
+        getStream() ?: throw InvalidDictionaryException("Failed to read bundled dictionary into memory.")
     }
 
     override fun toString() = "[bundled] $filename"
@@ -93,7 +88,6 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
     /**
      * Returns a stream to the resource file.
      */
-    @Throws(IOException::class)
     private fun getStream() = BundledDictionary::class.java.classLoader.getResourceAsStream(filename)
 }
 
@@ -117,34 +111,13 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
 
 
     @Throws(InvalidDictionaryException::class)
-    override fun validate() =
-        File(filename).let { file ->
-            when {
-                !file.exists() ->
-                    throw InvalidDictionaryException("Dictionary file does not exist.")
-                !file.canRead() ->
-                    throw InvalidDictionaryException("Dictionary file could not be read.")
-                throws<IOException> { file.inputStream() } ->
-                    throw InvalidDictionaryException("Dictionary file could not be opened.")
-                else ->
-                    Unit
-            }
+    override fun validate() {
+        try {
+            File(filename).inputStream()
+        } catch (e: IOException) {
+            throw InvalidDictionaryException("Failed to read user dictionary into memory.", e)
         }
+    }
 
     override fun toString() = "[user] $filename"
-
-
-    /**
-     * Returns `true` iff [runnable] throws an exception of type [E].
-     *
-     * @param E the exception type to check for
-     * @param runnable the function to execute
-     */
-    private inline fun <reified E : Exception> throws(runnable: () -> Any) =
-        try {
-            runnable()
-            false
-        } catch (e: Exception) {
-            e is E
-        }
 }

@@ -10,7 +10,7 @@ package com.fwdekker.randomness
  * the cache
  */
 // TODO Test this!
-class Cache<K, V>(val creator: (K) -> V) {
+class Cache<K, V>(private val creator: (K) -> V) {
     private val cache = mutableMapOf<K, V>()
 
 
