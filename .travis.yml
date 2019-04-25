@@ -19,7 +19,7 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 script:
-  - ./gradlew check codacyUpload
+  - ./gradlew check
 
 # Caching
 before_cache:
