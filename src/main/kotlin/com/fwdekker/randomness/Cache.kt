@@ -9,7 +9,6 @@ package com.fwdekker.randomness
  * @property creator a function that maps a key to a value, used to instantiate a value when it is requested and not in
  * the cache
  */
-// TODO Test this!
 class Cache<K, V>(private val creator: (K) -> V) {
     private val cache = mutableMapOf<K, V>()
 
@@ -23,9 +22,10 @@ class Cache<K, V>(private val creator: (K) -> V) {
      * @param key the key to look up the value with
      * @param useCache whether to return the existing value if it exists
      */
+    @Synchronized
     fun get(key: K, useCache: Boolean = true) =
         if (useCache)
-            cache.getOrPut(key) { creator(key) }
+            synchronized(this) { cache.getOrPut(key) { creator(key) } }
         else
             creator(key)
                 .also { cache[key] = it }
@@ -33,5 +33,6 @@ class Cache<K, V>(private val creator: (K) -> V) {
     /**
      * Removes all keys and values from the cache.
      */
+    @Synchronized
     fun clear() = cache.clear()
 }
