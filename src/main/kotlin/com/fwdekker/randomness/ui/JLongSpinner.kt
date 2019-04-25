@@ -13,7 +13,7 @@ import javax.swing.SpinnerNumberModel
  * A `JLongSpinner` can only represent values from [Long.MIN_VALUE] (inclusive) until [Long.MAX_VALUE] (inclusive)
  * because not all numbers outside this range can be represented as a double.
  *
- * @param value    the default value
+ * @param value the default value
  * @param minValue the smallest number that may be represented
  * @param maxValue the largest number that may be represented
  */

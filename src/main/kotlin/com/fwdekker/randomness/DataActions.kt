@@ -212,9 +212,9 @@ abstract class SettingsAction : AnAction() {
      */
     override fun actionPerformed(event: AnActionEvent) {
         createDialog()
-            .also {
-                it.title = title
-                it.show()
+            .also { dialog ->
+                dialog.title = title
+                dialog.show()
             }
     }
 

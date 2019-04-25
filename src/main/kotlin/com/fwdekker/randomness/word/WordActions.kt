@@ -42,11 +42,11 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
             bundledWords = settings.activeBundledDictionaries.flatMap { it.words }
             userWords = settings.activeUserDictionaries.flatMap { it.words }
         } catch (e: InvalidDictionaryException) {
-            throw DataGenerationException(e.message)
+            throw DataGenerationException(e.message, e)
         }
 
         val words = (bundledWords + userWords)
-            .filter { it.length in (settings.minLength..settings.maxLength) }
+            .filter { it.length in settings.minLength..settings.maxLength }
             .toSet()
         if (words.isEmpty())
             throw DataGenerationException("There are no words compatible with the current settings.")

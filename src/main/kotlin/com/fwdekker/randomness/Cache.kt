@@ -10,7 +10,7 @@ package com.fwdekker.randomness
  * the cache
  */
 class Cache<K, V>(private val creator: (K) -> V) {
-    private val cache = mutableMapOf<K, V>()
+    private val values = mutableMapOf<K, V>()
 
 
     /**
@@ -26,14 +26,14 @@ class Cache<K, V>(private val creator: (K) -> V) {
     @Synchronized
     fun get(key: K, useCache: Boolean = true) =
         if (useCache)
-            cache.getOrPut(key) { creator(key) }
+            values.getOrPut(key) { creator(key) }
         else
             creator(key)
-                .also { cache[key] = it }
+                .also { values[key] = it }
 
     /**
      * Removes all keys and values from the cache.
      */
     @Synchronized
-    fun clear() = cache.clear()
+    fun clear() = values.clear()
 }

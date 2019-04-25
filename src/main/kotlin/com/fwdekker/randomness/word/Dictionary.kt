@@ -41,6 +41,7 @@ interface Dictionary {
      *
      * @return `true` iff [validate] does not throw an exception
      */
+    @Suppress("SwallowedException") // That's exactly how this function should work
     fun isValid(): Boolean =
         try {
             validate()

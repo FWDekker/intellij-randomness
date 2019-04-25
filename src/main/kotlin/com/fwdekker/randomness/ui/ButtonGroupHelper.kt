@@ -12,7 +12,7 @@ object ButtonGroupHelper {
     /**
      * Executes a consumer for each button in a group.
      *
-     * @param group    the group of buttons
+     * @param group the group of buttons
      * @param consumer the function to apply to each button
      */
     // TODO Inline this method once UI is in Kotlin
