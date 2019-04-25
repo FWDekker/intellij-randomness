@@ -3,7 +3,6 @@ package com.fwdekker.randomness.uuid;
 import com.fwdekker.randomness.SettingsDialog;
 import com.fwdekker.randomness.ui.ButtonGroupHelper;
 import com.intellij.openapi.ui.ValidationInfo;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,6 +13,9 @@ import javax.swing.JPanel;
 
 /**
  * Dialog for settings of random UUID generation.
+ *
+ * @see UuidSettings
+ * @see UuidSettingsAction
  */
 public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
     private JPanel contentPane;
@@ -24,7 +26,7 @@ public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
      * Constructs a new {@code UuidSettingsDialog} that uses the singleton {@code UuidSettings} instance.
      */
     /* default */ UuidSettingsDialog() {
-        this(UuidSettings.getInstance());
+        this(UuidSettings.Companion.getDefault());
     }
 
     /**
@@ -53,14 +55,13 @@ public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
 
 
     @Override
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // Verified by annotation
     public void loadSettings(final @NotNull UuidSettings settings) {
-        ButtonGroupHelper.setValue(enclosureGroup, settings.getEnclosure());
+        ButtonGroupHelper.INSTANCE.setValue(enclosureGroup, settings.getEnclosure());
     }
 
     @Override
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // Verified by annotation
     public void saveSettings(final @NotNull UuidSettings settings) {
-        settings.setEnclosure(ButtonGroupHelper.getValue(enclosureGroup));
+        final String enclosure = ButtonGroupHelper.INSTANCE.getValue(enclosureGroup);
+        settings.setEnclosure(enclosure == null ? UuidSettings.DEFAULT_ENCLOSURE : enclosure);
     }
 }

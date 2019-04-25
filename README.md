@@ -9,8 +9,7 @@ Randomness
     <a href="https://fwdekker.github.io/intellij-randomness/"><img src="https://img.shields.io/badge/documentation-ready-blue.svg?style=for-the-badge" alt="Documentation" /></a>
     <br />
     <a href="https://travis-ci.org/FWDekker/intellij-randomness"><img src="https://img.shields.io/travis/FWDekker/intellij-randomness/master.svg?style=for-the-badge" alt="Travis build status" /></a>
-    <a href="https://www.codacy.com/app/FWDekker/intellij-randomness"><img src="https://img.shields.io/codacy/grade/bc99104953f64f7da2db9e8ff6e557f5/master.svg?style=for-the-badge" alt="Codacy grade" /></a>
-    <a href="https://www.codacy.com/app/FWDekker/intellij-randomness"><img src="https://img.shields.io/codacy/coverage/bc99104953f64f7da2db9e8ff6e557f5/master.svg?style=for-the-badge" alt="Codacy coverage" /></a>
+    <a href="https://codecov.io/gh/FWDekker/intellij-randomness"><img src="https://img.shields.io/codecov/c/github/FWDekker/intellij-randomness.svg?style=for-the-badge" alt="Branch coverage" /></a>
 </p>
 
 Rather than going to [random.org](https://www.random.org/) or making up your own random data, you can now insert random data using an IntelliJ action!
