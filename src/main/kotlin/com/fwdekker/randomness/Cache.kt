@@ -25,7 +25,7 @@ class Cache<K, V>(private val creator: (K) -> V) {
     @Synchronized
     fun get(key: K, useCache: Boolean = true) =
         if (useCache)
-            synchronized(this) { cache.getOrPut(key) { creator(key) } }
+            cache.getOrPut(key) { creator(key) }
         else
             creator(key)
                 .also { cache[key] = it }

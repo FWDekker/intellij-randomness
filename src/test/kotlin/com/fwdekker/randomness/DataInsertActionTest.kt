@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.Presentation
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
@@ -54,7 +53,7 @@ class DataInsertActionTest {
      */
     @Test
     fun testUpdateDisabled() {
-        val presentation = spy<Presentation>()
+        val presentation = Presentation()
         val event = mock<AnActionEvent> {
             on { getData(CommonDataKeys.EDITOR) } doReturn null
             on { it.presentation } doReturn presentation
@@ -70,7 +69,7 @@ class DataInsertActionTest {
      */
     @Test
     fun testUpdateEnabled() {
-        val presentation = spy<Presentation>()
+        val presentation = Presentation()
         val event = mock<AnActionEvent> {
             on { getData(CommonDataKeys.EDITOR) } doReturn mock()
             on { it.presentation } doReturn presentation
