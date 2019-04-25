@@ -10,7 +10,7 @@ import javax.swing.KeyStroke
 
 
 /**
- * A collection of helper methods for dealing with [com.intellij.openapi.ui.popup.JBPopup]s.
+ * A collection of helper methods for dealing with `JBPopup`s.
  */
 object JBPopupHelper {
     private const val NINE = 9

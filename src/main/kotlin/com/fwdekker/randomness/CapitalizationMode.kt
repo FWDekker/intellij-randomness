@@ -8,7 +8,7 @@ import java.util.NoSuchElementException
  * A mode in which a word should be capitalized.
  *
  * @param descriptor the name of the capitalization mode
- * @param transform the function which capitalizes the given word to the mode's format
+ * @param transform the function which capitalizes the given string to the mode's format
  */
 enum class CapitalizationMode(val descriptor: String, val transform: (String) -> String) {
     /**

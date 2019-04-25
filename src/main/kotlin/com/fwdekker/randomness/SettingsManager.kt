@@ -2,32 +2,32 @@ package com.fwdekker.randomness
 
 
 /**
- * A `SettingsManager` is an object that can change settings of a given type.
+ * A `SettingsManager` is an object that can save and load settings.
  *
- * @param <S> the type of settings that are changed by the implementation
+ * @param <S> the type of settings that is saved and loaded
  */
 interface SettingsManager<S : Settings<*>> {
     /**
-     * Loads the default settings instance into the implementing object.
+     * Loads the default settings object.
      */
     fun loadSettings()
 
     /**
-     * Loads the given settings instance into the implementing object.
+     * Loads `settings`.
      *
-     * @param settings a settings instance
+     * @param settings the settings to load
      */
     fun loadSettings(settings: S)
 
     /**
-     * Saves the implementing object's state into the default settings instance.
+     * Saves settings to the default settings object.
      */
     fun saveSettings()
 
     /**
-     * Saves the implementing object's state into the given settings instance.
+     * Saves settings to `settings`.
      *
-     * @param settings a settings instance
+     * @param settings the settings to save to
      */
     fun saveSettings(settings: S)
 }

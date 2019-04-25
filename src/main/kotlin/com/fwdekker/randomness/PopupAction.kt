@@ -27,6 +27,11 @@ class PopupAction : AnAction() {
     }
 
 
+    /**
+     * Displays a popup with all actions provided by Randomness.
+     *
+     * @param event carries information on the invocation place
+     */
     override fun actionPerformed(event: AnActionEvent) {
         val project = event.project
             ?: return
@@ -48,9 +53,14 @@ class PopupAction : AnAction() {
 
 
     /**
-     * The [ActionGroup] containing the popup's actions.
+     * The `ActionGroup` containing the popup's actions.
      */
     private class PopupGroup : ActionGroup() {
+        /**
+         * Returns all group actions.
+         *
+         * @param event carries information on the invocation place
+         */
         override fun getChildren(event: AnActionEvent?) =
             arrayOf(
                 IntegerGroupAction(),

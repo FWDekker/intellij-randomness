@@ -21,6 +21,9 @@ import java.util.stream.Stream;
 
 /**
  * Dialog for settings of random string generation.
+ *
+ * @see StringSettings
+ * @see StringSettingsAction
  */
 public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     private JPanel contentPane;

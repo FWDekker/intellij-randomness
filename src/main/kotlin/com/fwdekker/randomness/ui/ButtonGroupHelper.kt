@@ -47,7 +47,7 @@ object ButtonGroupHelper {
      * Sets the currently selected button to the button with the given action command.
      *
      * @param group a `ButtonGroup`
-     * @param value an `Object` of which [.toString] returns an action command
+     * @param value an `Object` of which [toString] returns an action command
      */
     fun setValue(group: ButtonGroup, value: Any) = setValue(group, value.toString())
 }

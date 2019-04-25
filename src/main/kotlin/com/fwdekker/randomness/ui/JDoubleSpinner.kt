@@ -1,7 +1,5 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.ui.JDoubleSpinner.Companion.DEFAULT_MAX_VALUE
-import com.fwdekker.randomness.ui.JDoubleSpinner.Companion.DEFAULT_MIN_VALUE
 import com.intellij.openapi.ui.ValidationInfo
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -12,11 +10,11 @@ import javax.swing.SpinnerNumberModel
 /**
  * A [JSpinner] for doubles.
  *
- * A `JDoubleSpinner` can only represent value from [DEFAULT_MIN_VALUE] (inclusive) until [DEFAULT_MAX_VALUE]
- * (inclusive), because not all numbers outside this range can be represented as a [Double].
+ * A `JDoubleSpinner` can only represent value from `-1E53` (inclusive) until `1E53` (inclusive) because not all numbers
+ * outside this range can be represented as a [Double].
  *
- * @param minValue the smallest number that may be represented by this `JDoubleSpinner`
- * @param maxValue the largest number that may be represented by this `JDoubleSpinner`
+ * @param minValue the smallest number that may be represented
+ * @param maxValue the largest number that may be represented
  */
 class JDoubleSpinner(
     private val minValue: Double = DEFAULT_MIN_VALUE,
@@ -28,16 +26,14 @@ class JDoubleSpinner(
          */
         private const val DEFAULT_STEP_SIZE = 0.1
         /**
-         * The smallest number that can be represented by a `JDoubleSpinner`.
+         * The smallest number that can be represented.
          */
         private const val DEFAULT_MIN_VALUE = -1E53
         /**
-         * The largest number that may be represented by a `JDoubleSpinner`.
+         * The largest number that can be represented.
          */
         private const val DEFAULT_MAX_VALUE = 1E53
     }
-
-    override fun getValue() = (super.getValue() as Number).toDouble()
 
 
     init {
@@ -53,9 +49,16 @@ class JDoubleSpinner(
 
 
     /**
+     * Returns the current value of the model.
+     *
+     * @return the current value of the model
+     */
+    override fun getValue() = (super.getValue() as Number).toDouble()
+
+    /**
      * Validates the current value.
      *
-     * @return `null` if the current value is valid, or a [ValidationInfo] object explaining why the current value is
+     * @return `null` if the current value is valid, or a `ValidationInfo` object explaining why the current value is
      * invalid
      */
     fun validateValue() =

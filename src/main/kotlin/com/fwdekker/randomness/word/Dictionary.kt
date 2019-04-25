@@ -29,7 +29,9 @@ interface Dictionary {
 
 
     /**
-     * Throws an [InvalidDictionaryException] iff this [Dictionary] is currently invalid.
+     * Throws an [InvalidDictionaryException] iff this dictionary is currently invalid.
+     *
+     * @throws InvalidDictionaryException if this dictionary is currently invalid
      */
     @Throws(InvalidDictionaryException::class)
     fun validate()
@@ -50,14 +52,20 @@ interface Dictionary {
 
 
 /**
- * A [Dictionary] of which the underlying file is a resource in the JAR.
+ * A `Dictionary` of which the underlying file is a resource in the JAR.
  *
  * @property filename the path to the resource file
  */
 class BundledDictionary private constructor(val filename: String) : Dictionary {
     companion object {
+        /**
+         * The default dictionary file.
+         */
         const val DEFAULT_DICTIONARY_FILE = "words_alpha.dic"
 
+        /**
+         * The cache of bundled dictionaries, used to improve word generation times.
+         */
         val cache = Cache<String, BundledDictionary> { BundledDictionary(it) }
     }
 
@@ -82,6 +90,11 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
         getStream() ?: throw InvalidDictionaryException("Failed to read bundled dictionary into memory.")
     }
 
+    /**
+     * Returns a human-readable string of the dictionary's filename.
+     *
+     * @return a human-readable string of the dictionary's filename
+     */
     override fun toString() = "[bundled] $filename"
 
 
@@ -93,12 +106,15 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
 
 
 /**
- * A [Dictionary] of which the underlying file is a regular file.
+ * A `Dictionary` of which the underlying file is a regular file.
  *
  * @property filename the path to the file
  */
 class UserDictionary private constructor(val filename: String) : Dictionary {
     companion object {
+        /**
+         * The cache of bundled dictionaries, used to improve word generation times.
+         */
         val cache = Cache<String, UserDictionary> { UserDictionary(it) }
     }
 
@@ -119,5 +135,10 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
         }
     }
 
+    /**
+     * Returns a human-readable string of the dictionary's filename.
+     *
+     * @return a human-readable string of the dictionary's filename
+     */
     override fun toString() = "[user] $filename"
 }

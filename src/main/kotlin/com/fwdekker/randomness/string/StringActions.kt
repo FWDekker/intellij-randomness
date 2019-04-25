@@ -18,18 +18,21 @@ class StringGroupAction : DataGroupAction() {
 
 
 /**
- * Generates random alphanumerical strings based on the settings in [StringSettings].
+ * Inserts random alphanumerical strings.
  *
- * @param settings the settings to use for generating integers. Defaults to [StringSettings.default]
+ * @param settings the settings to use for generating strings
+ *
+ * @see StringInsertArrayAction
+ * @see StringSettings
  */
 class StringInsertAction(private val settings: StringSettings = StringSettings.default) : DataInsertAction() {
     override val name = "Insert String"
 
 
     /**
-     * Returns a random string of alphanumerical characters.
+     * Returns a string of random alphanumerical characters.
      *
-     * @return a random string of alphanumerical characters
+     * @return a string of random alphanumerical characters
      */
     override fun generateString(): String {
         val length = Random.nextInt(settings.minLength, settings.maxLength + 1)
@@ -42,9 +45,9 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
 
 
     /**
-     * Returns a random character from the alphabet.
+     * Returns a random character from the alphabets in `settings`.
      *
-     * @return a random character from the alphabet
+     * @return a random character from the alphabets in `settings`
      */
     private fun generateCharacter(): Char {
         val alphabet = settings.alphabets.sum()
@@ -56,7 +59,11 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
 
 
 /**
- * Inserts an array of strings.
+ * Inserts an array-like string of strings.
+ *
+ * @param settings the settings to use for generating strings
+ *
+ * @see StringInsertAction
  */
 class StringInsertArrayAction(settings: StringSettings = StringSettings.default) :
     DataInsertArrayAction(StringInsertAction(settings)) {
@@ -66,6 +73,9 @@ class StringInsertArrayAction(settings: StringSettings = StringSettings.default)
 
 /**
  * Controller for random string generation settings.
+ *
+ * @see StringSettings
+ * @see StringSettingsDialog
  */
 class StringSettingsAction : SettingsAction() {
     override val title = "String Settings"

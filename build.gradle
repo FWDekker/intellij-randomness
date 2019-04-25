@@ -40,6 +40,8 @@ dokka {
     outputFormat = "html"
     includes = ["packages.md"]
 
+    jdkVersion = 8
+
     includeNonPublic = false
     skipDeprecated = false
     reportUndocumented = true
