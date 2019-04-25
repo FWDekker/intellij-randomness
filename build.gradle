@@ -54,14 +54,19 @@ test {
     }
 }
 
-jacocoTestReport {
+task codeCoverageReport(type: JacocoReport) {
     executionData file("$buildDir/jacoco/test.exec")
+
+    sourceSets sourceSets.main
 
     reports {
         csv.enabled = false
-        html.enabled = true
+        html.enabled = false
         xml.enabled = true
+        xml.destination = file("$buildDir/reports/jacoco/report.xml")
     }
+
+    dependsOn { test }
 }
 
 // Static analysis
