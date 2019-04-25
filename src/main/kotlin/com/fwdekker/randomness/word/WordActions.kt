@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
@@ -17,18 +18,22 @@ class WordGroupAction : DataGroupAction() {
 
 
 /**
- * Generates random alphanumerical English words based on the settings in [WordSettings].
+ * Inserts random words.
  *
- * @param settings the settings to use for generating integers. Defaults to [WordSettings.default]
+ * @param settings the settings to use for generating words
+ *
+ * @see WordInsertArrayAction
+ * @see WordSettings
  */
 class WordInsertAction(private val settings: WordSettings = WordSettings.default) : DataInsertAction() {
     override val name = "Insert Word"
 
 
     /**
-     * Returns a random alphanumerical English word.
+     * Returns a random word from the dictionaries in `settings`.
      *
-     * @return a random alphanumerical English word
+     * @return a random word from the dictionaries in `settings`
+     * @throws InvalidDictionaryException if no words could be found using the settings in `settings`
      */
     override fun generateString(): String {
         val bundledWords: List<String>
@@ -37,14 +42,14 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
             bundledWords = settings.activeBundledDictionaries.flatMap { it.words }
             userWords = settings.activeUserDictionaries.flatMap { it.words }
         } catch (e: InvalidDictionaryException) {
-            throw StringGenerationException(e.message)
+            throw DataGenerationException(e.message)
         }
 
         val words = (bundledWords + userWords)
             .filter { it.length in (settings.minLength..settings.maxLength) }
             .toSet()
         if (words.isEmpty())
-            throw StringGenerationException("There are no words compatible with the current settings.")
+            throw DataGenerationException("There are no words compatible with the current settings.")
 
         val randomWord = settings.capitalization.transform(words.random())
         return settings.enclosure + randomWord + settings.enclosure
@@ -53,7 +58,11 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
 
 
 /**
- * Inserts an array of words.
+ * Inserts an array-like string of words.
+ *
+ * @param settings the settings to use for generating words
+ *
+ * @see WordInsertAction
  */
 class WordInsertArrayAction(settings: WordSettings = WordSettings.default) :
     DataInsertArrayAction(WordInsertAction(settings)) {
@@ -63,6 +72,9 @@ class WordInsertArrayAction(settings: WordSettings = WordSettings.default) :
 
 /**
  * Controller for random string generation settings.
+ *
+ * @see WordSettings
+ * @see WordSettingsDialog
  */
 class WordSettingsAction : SettingsAction() {
     override val title = "Word Settings"

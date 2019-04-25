@@ -15,6 +15,9 @@ import javax.swing.JPanel;
 
 /**
  * Dialog for settings of random array generation.
+ *
+ * @see ArraySettings
+ * @see ArraySettingsAction
  */
 public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     private JPanel contentPane;

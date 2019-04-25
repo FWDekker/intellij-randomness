@@ -19,9 +19,12 @@ class IntegerGroupAction : DataGroupAction() {
 
 
 /**
- * Generates a random integer based on the settings in [IntegerSettings].
+ * Inserts random integers.
  *
- * @param settings the settings to use for generating integers. Defaults to [IntegerSettings.default]
+ * @param settings the settings to use for generating integers
+ *
+ * @see IntegerInsertArrayAction
+ * @see IntegerSettings
  */
 class IntegerInsertAction(private val settings: IntegerSettings = IntegerSettings.default) : DataInsertAction() {
     override val name = "Insert Integer"
@@ -37,16 +40,14 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
 
 
     /**
-     * Returns a nicely formatted representation of a long.
+     * Returns a nicely formatted representation of an integer.
      *
-     * @param integer a `long`
-     * @return a nicely formatted representation of a long
+     * @param value the value to format
+     * @return a nicely formatted representation of an integer
      */
-    private fun convertToString(integer: Long): String {
-        if (settings.base != IntegerSettings.DECIMAL_BASE) {
-            return integer.toString(settings.base)
-        }
-
+    private fun convertToString(value: Long): String {
+        if (settings.base != IntegerSettings.DECIMAL_BASE)
+            return value.toString(settings.base)
 
         val format = DecimalFormat()
         format.isGroupingUsed = settings.groupingSeparator != '\u0000'
@@ -57,13 +58,17 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
         format.maximumFractionDigits = 0
         format.decimalFormatSymbols = symbols
 
-        return format.format(integer)
+        return format.format(value)
     }
 }
 
 
 /**
- * Inserts an array of integers.
+ * Inserts an array-like string of integers.
+ *
+ * @param settings the settings to use for generating integers
+ *
+ * @see IntegerInsertAction
  */
 class IntegerInsertArrayAction(settings: IntegerSettings = IntegerSettings.default) :
     DataInsertArrayAction(IntegerInsertAction(settings)) {
@@ -73,6 +78,9 @@ class IntegerInsertArrayAction(settings: IntegerSettings = IntegerSettings.defau
 
 /**
  * Controller for random integer generation settings.
+ *
+ * @see IntegerSettings
+ * @see IntegerSettingsDialog
  */
 class IntegerSettingsAction : SettingsAction() {
     override val title = "Integer Settings"

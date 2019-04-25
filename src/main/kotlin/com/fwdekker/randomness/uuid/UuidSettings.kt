@@ -9,15 +9,22 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 
 /**
  * Contains settings for generating random UUIDs.
+ *
+ * @see UuidInsertAction
+ * @see UuidSettingsAction
+ * @see UuidSettingsDialog
  */
 @State(name = "UuidSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 class UuidSettings : Settings<UuidSettings> {
     companion object {
+        /**
+         * The default value of the [enclosure][UuidSettings.enclosure] field.
+         */
         const val DEFAULT_ENCLOSURE = "\""
 
 
         /**
-         * The singleton `UuidSettings` instance.
+         * The persistent `UuidSettings` instance.
          */
         val default: UuidSettings
             get() = ServiceManager.getService(UuidSettings::class.java)
@@ -30,7 +37,17 @@ class UuidSettings : Settings<UuidSettings> {
     var enclosure = DEFAULT_ENCLOSURE
 
 
+    /**
+     * Returns `this`.
+     *
+     * @return `this`
+     */
     override fun getState() = this
 
+    /**
+     * Copies the fields of [state] to `this`.
+     *
+     * @param state the state to load into `this`
+     */
     override fun loadState(state: UuidSettings) = XmlSerializerUtil.copyBean(state, this)
 }

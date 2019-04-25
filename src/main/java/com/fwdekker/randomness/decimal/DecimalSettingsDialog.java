@@ -18,6 +18,9 @@ import java.util.stream.Stream;
 
 /**
  * Dialog for settings of random decimal generation.
+ *
+ * @see DecimalSettings
+ * @see DecimalSettingsAction
  */
 public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
     private JPanel contentPane;

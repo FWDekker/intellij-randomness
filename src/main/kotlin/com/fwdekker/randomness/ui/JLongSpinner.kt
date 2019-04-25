@@ -1,7 +1,5 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.ui.JLongSpinner.Companion.DEFAULT_MAX_VALUE
-import com.fwdekker.randomness.ui.JLongSpinner.Companion.DEFAULT_MIN_VALUE
 import com.intellij.openapi.ui.ValidationInfo
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -10,14 +8,14 @@ import javax.swing.SpinnerNumberModel
 
 
 /**
- * A [JSpinner] for longs.
+ * A `JSpinner` for longs.
  *
- * A `JLongSpinner` can only represent values from [DEFAULT_MIN_VALUE] (inclusive) until [DEFAULT_MAX_VALUE]
- * (inclusive), because not all numbers outside this range can be represented as a [Double].
+ * A `JLongSpinner` can only represent values from [Long.MIN_VALUE] (inclusive) until [Long.MAX_VALUE] (inclusive)
+ * because not all numbers outside this range can be represented as a double.
  *
- * @param value    the default value represented by this `JDoubleSpinner`
- * @param minValue the smallest number that may be represented by this `JDoubleSpinner`
- * @param maxValue the largest number that may be represented by this `JDoubleSpinner`
+ * @param value    the default value
+ * @param minValue the smallest number that may be represented
+ * @param maxValue the largest number that may be represented
  */
 class JLongSpinner(
     value: Long = DEFAULT_VALUE,
@@ -26,15 +24,15 @@ class JLongSpinner(
 ) : JSpinner(SpinnerNumberModel(value, minValue, maxValue, DEFAULT_STEP_SIZE)) {
     companion object {
         /**
-         * The default value represented by a `JDoubleSpinner`.
+         * The default value.
          */
         private const val DEFAULT_VALUE = 0L
         /**
-         * The smallest number that can be represented by a `JDoubleSpinner`.
+         * The smallest number that can be represented.
          */
         private const val DEFAULT_MIN_VALUE = Long.MIN_VALUE
         /**
-         * The largest number that can be represented by a `JDoubleSpinner`.
+         * The largest number that can be represented.
          */
         private const val DEFAULT_MAX_VALUE = Long.MAX_VALUE
         /**
@@ -55,12 +53,17 @@ class JLongSpinner(
     }
 
 
+    /**
+     * Returns the current value of the model.
+     *
+     * @return the current value of the model
+     */
     override fun getValue() = (super.getValue() as Number).toLong()
 
     /**
      * Validates the current value.
      *
-     * @return `null` if the current value is valid, or a [ValidationInfo] object explaining why the current value is
+     * @return `null` if the current value is valid, or a `ValidationInfo` object explaining why the current value is
      * invalid
      */
     fun validateValue() =

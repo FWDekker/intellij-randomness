@@ -18,20 +18,32 @@ class UuidGroupAction : DataGroupAction() {
 
 
 /**
- * Generates a random type 4 UUID.
+ * Inserts random type 4 UUID.
  *
- * @param settings the settings to use for generating integers. Defaults to [UuidSettings.default]
+ * @param settings the settings to use for generating UUIDs
+ *
+ * @see UuidInsertArrayAction
+ * @see UuidSettings
  */
 class UuidInsertAction(private val settings: UuidSettings = UuidSettings.default) : DataInsertAction() {
     override val name = "Insert UUID"
 
 
+    /**
+     * Returns a random type 4 UUID.
+     *
+     * @return a random type 4 UUID
+     */
     override fun generateString() = settings.enclosure + UUID.randomUUID().toString() + settings.enclosure
 }
 
 
 /**
- * Inserts an array of UUIDs.
+ * Inserts an array-like string of UUIDs.
+ *
+ * @param settings the settings to use for generating UUIDs
+ *
+ * @see UuidInsertAction
  */
 class UuidInsertArrayAction(settings: UuidSettings = UuidSettings.default) :
     DataInsertArrayAction(UuidInsertAction(settings)) {
@@ -41,6 +53,9 @@ class UuidInsertArrayAction(settings: UuidSettings = UuidSettings.default) :
 
 /**
  * Controller for random UUID generation settings.
+ *
+ * @see UuidSettings
+ * @see UuidSettingsDialog
  */
 class UuidSettingsAction : SettingsAction() {
     override val title = "UUID Settings"
@@ -48,4 +63,3 @@ class UuidSettingsAction : SettingsAction() {
 
     public override fun createDialog() = UuidSettingsDialog()
 }
-

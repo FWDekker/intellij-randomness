@@ -10,7 +10,7 @@ import org.assertj.core.api.Assertions.assertThat
 /**
  * Integration tests for [DataInsertAction].
  *
- * Note that [LightPlatformCodeInsightFixtureTestCase] is a JUnit 3 test class.
+ * Note that `LightPlatformCodeInsightFixtureTestCase` is a JUnit 3 test class.
  */
 class DataInsertActionIntegrationTest : LightPlatformCodeInsightFixtureTestCase() {
     companion object {

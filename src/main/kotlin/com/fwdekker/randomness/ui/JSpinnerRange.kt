@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.ui.JSpinnerRange.Companion.DEFAULT_MAX_RANGE
 import com.intellij.openapi.ui.ValidationInfo
 import javax.swing.JSpinner
 
@@ -8,9 +7,9 @@ import javax.swing.JSpinner
 /**
  * A container for two [JSpinner]s that indicate a range of values.
  *
- * @param min the `JSpinner` that contains the minimum value
- * @param max the `JSpinner` that contains the maximum value
- * @param maxRange the maximum span that can may expressed by this `JSpinnerRange`. Defaults to [DEFAULT_MAX_RANGE]
+ * @param min the `JSpinner` that represents the minimum value
+ * @param max the `JSpinner` that represents the maximum value
+ * @param maxRange the maximum difference between `min` and `max`
  */
 class JSpinnerRange(
     private val min: JSpinner,
@@ -25,8 +24,14 @@ class JSpinnerRange(
         const val DEFAULT_MAX_RANGE = 1E53
     }
 
+    /**
+     * The current minimum value of the range.
+     */
     val minValue: Double
         get() = (this.min.value as Number).toDouble()
+    /**
+     * The current maximum value of the range.
+     */
     val maxValue: Double
         get() = (this.max.value as Number).toDouble()
 
@@ -40,7 +45,7 @@ class JSpinnerRange(
     /**
      * Validates this range.
      *
-     * @return `null` if the current value is valid, or a [ValidationInfo] object explaining why the current value is
+     * @return `null` if the current value is valid, or a `ValidationInfo` object explaining why the current value is
      * invalid
      */
     fun validateValue() =

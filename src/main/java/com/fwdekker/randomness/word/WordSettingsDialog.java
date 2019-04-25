@@ -31,6 +31,9 @@ import java.util.stream.Stream;
 
 /**
  * Dialog for settings of random word generation.
+ *
+ * @see WordSettings
+ * @see WordSettingsAction
  */
 public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private JPanel contentPane;

@@ -14,7 +14,7 @@ private typealias EntryActivityChangeListener = (Int) -> Unit
 
 
 /**
- * A [javax.swing.JList] in which each entry has a [javax.swing.JCheckBox] in front of it.
+ * A [JList][javax.swing.JList] in which each entry has a [JCheckBox][javax.swing.JCheckBox] in front of it.
  *
  * @param <T> the entry type
  */
@@ -104,10 +104,10 @@ class JEditableList<T> : JTable() {
     }
 
     /**
-     * Returns `true` iff. the given entry exists in the list.
+     * Returns `true` iff the given entry exists in the list.
      *
      * @param entry the entry to check for presence
-     * @return `true` iff. the given entry exists in the list
+     * @return `true` iff the given entry exists in the list
      */
     private fun hasEntry(entry: T) = entries.any { row -> row == entry }
 
@@ -147,15 +147,15 @@ class JEditableList<T> : JTable() {
      * Sets whether the given entry has its checkbox checked.
      *
      * @param entry    the entry to (un)check the checkbox of
-     * @param selected `true` iff. the entry's checkbox should be checked
+     * @param selected `true` iff the entry's checkbox should be checked
      */
     private fun setActive(entry: T, selected: Boolean) = setValueAt(selected, getEntryRow(entry), 0)
 
     /**
-     * Returns `true` iff. the given entry's checkbox is checked.
+     * Returns `true` iff the given entry's checkbox is checked.
      *
      * @param entry the entry of which to return the checkbox's status
-     * @return `true` iff. the given entry's checkbox is checked
+     * @return `true` iff the given entry's checkbox is checked
      */
     fun isActive(entry: T): Boolean = getValueAt(getEntryRow(entry), 0) as Boolean
 
@@ -163,7 +163,7 @@ class JEditableList<T> : JTable() {
      * Sets the activity of the given entry.
      *
      * @param entry    the entry to set the activity of
-     * @param activity `true` iff. the entry's checkbox should be checked
+     * @param activity `true` iff the entry's checkbox should be checked
      */
     fun setEntryActivity(entry: T, activity: Boolean) = setValueAt(activity, getEntryRow(entry), 0)
 
@@ -206,6 +206,12 @@ class JEditableList<T> : JTable() {
         }
     }
 
+    /**
+     * Returns the class of the data in the column with index `column`.
+     *
+     * @param column the index of the column to return the class of
+     * @return the class of the data in the column with index `column`
+     */
     override fun getColumnClass(column: Int) =
         when (column) {
             // Java classes MUST be used
@@ -214,5 +220,12 @@ class JEditableList<T> : JTable() {
             else -> throw IllegalArgumentException("JEditableList has only two columns.")
         }
 
+    /**
+     * Returns `true` iff `column` is 0.
+     *
+     * @param row the row whose value is to be queried
+     * @param column the columns whose value is to be queried
+     * @return `true` iff `column` is 0
+     */
     override fun isCellEditable(row: Int, column: Int) = column == 0
 }

@@ -18,6 +18,9 @@ import java.util.stream.Stream;
 
 /**
  * Dialog for settings of random integer generation.
+ *
+ * @see IntegerSettings
+ * @see IntegerSettingsAction
  */
 public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
     private JPanel contentPane;

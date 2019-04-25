@@ -14,13 +14,14 @@ class Cache<K, V>(private val creator: (K) -> V) {
 
 
     /**
-     * Returns the value that corresponds to [key].
+     * Returns the value that corresponds to `key`.
      *
-     * If it does not exist, it is instantiated and then returned. If [useCache] is set to false, a new value is always
-     * instantiated, even if there already is a value for [key].
+     * If it does not exist, it is instantiated and then returned. If `useCache` is set to false, a new value is always
+     * instantiated, even if there already is a value for `key`.
      *
      * @param key the key to look up the value with
      * @param useCache whether to return the existing value if it exists
+     * @return the value that corresponds to `key`
      */
     @Synchronized
     fun get(key: K, useCache: Boolean = true) =
