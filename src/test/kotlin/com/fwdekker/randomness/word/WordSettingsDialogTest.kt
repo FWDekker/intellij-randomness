@@ -119,20 +119,20 @@ object WordSettingsDialogTest : Spek({
                     frame.button("dictionaryRemove").target().doClick()
                 }
 
-                assertThat(frame.table("dictionaries").target().rowCount).isEqualTo(1)
+                assertThat(frame.table("dictionaries").target().rowCount).isEqualTo(2)
             }
 
             it("removes a user dictionary") {
                 GuiActionRunner.execute {
-                    dialogDictionaries.addEntry(UserDictionary.cache.get(
-                        getDictionaryFile("dictionaries/simple.dic").canonicalPath, true)
-                    )
+                    dialogDictionaries.addEntry(UserDictionary.cache.get("dictionary.dic", true))
+                    assertThat(frame.table("dictionaries").target().rowCount).isEqualTo(3)
+
                     frame.table("dictionaries").target().clearSelection()
-                    frame.table("dictionaries").target().addRowSelectionInterval(1, 1)
+                    frame.table("dictionaries").target().addRowSelectionInterval(2, 2)
                     frame.button("dictionaryRemove").target().doClick()
                 }
 
-                assertThat(frame.table("dictionaries").target().rowCount).isEqualTo(1)
+                assertThat(frame.table("dictionaries").target().rowCount).isEqualTo(2)
             }
         }
     }
@@ -223,7 +223,10 @@ object WordSettingsDialogTest : Spek({
             }
 
             it("fails if no dictionaries are selected") {
-                GuiActionRunner.execute { frame.table("dictionaries").target().setValueAt(false, 0, 0) }
+                GuiActionRunner.execute {
+                    frame.table("dictionaries").target().setValueAt(false, 0, 0)
+                    frame.table("dictionaries").target().setValueAt(false, 1, 0)
+                }
 
                 val validationInfo = wordSettingsDialog.doValidate()
 
