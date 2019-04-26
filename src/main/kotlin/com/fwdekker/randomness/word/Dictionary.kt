@@ -78,7 +78,8 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
         try {
             getStream().bufferedReader()
                 .readLines()
-                .filter { it.isNotBlank() }
+                .filterNot { it.isBlank() }
+                .filterNot { it.startsWith('#') }
                 .toSet()
         } catch (e: IOException) {
             throw InvalidDictionaryException("Failed to read bundled dictionary into memory.", e)
@@ -123,7 +124,10 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
     @get:Throws(InvalidDictionaryException::class)
     override val words: Set<String> by lazy {
         validate()
-        File(filename).readLines().filter { it.isNotBlank() }.toSet()
+        File(filename).readLines()
+            .filterNot { it.isBlank() }
+            .filterNot { it.startsWith('#') }
+            .toSet()
     }
 
 

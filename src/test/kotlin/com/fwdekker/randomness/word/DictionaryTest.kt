@@ -61,6 +61,18 @@ object DictionaryTest : Spek({
 
                 assertThat(dictionary.words).containsExactlyInAnyOrder("dog", "woof", "cat", "meow")
             }
+
+            it("ignores empty lines") {
+                val dictionary = BundledDictionary.cache.get("dictionaries/empty-lines.dic", false)
+
+                assertThat(dictionary.words).containsExactlyInAnyOrder("woof", "meow")
+            }
+
+            it("ignores commented lines") {
+                val dictionary = BundledDictionary.cache.get("dictionaries/comments.dic", false)
+
+                assertThat(dictionary.words).containsExactlyInAnyOrder("cat", "mouse", "tree")
+            }
         }
 
         describe("toString") {
@@ -150,6 +162,20 @@ object DictionaryTest : Spek({
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
 
                 assertThat(dictionary.words).containsExactlyInAnyOrder("dolphins", "mappings", "flat")
+            }
+
+            it("ignores empty lines") {
+                val dictionaryFile = tempFileHelper.createFile("\n\nwoof\nmeow\n\n\n", ".dic")
+                val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
+
+                assertThat(dictionary.words).containsExactlyInAnyOrder("woof", "meow")
+            }
+
+            it("ignores commented lines") {
+                val dictionaryFile = tempFileHelper.createFile("# Comment\nflaming\nlove\n# Destiny\n", ".dic")
+                val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
+
+                assertThat(dictionary.words).containsExactlyInAnyOrder("flaming", "love")
             }
         }
 
