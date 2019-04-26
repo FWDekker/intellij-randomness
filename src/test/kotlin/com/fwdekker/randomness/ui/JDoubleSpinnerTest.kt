@@ -58,7 +58,7 @@ object JDoubleSpinnerTest : Spek({
             GuiActionRunner.execute { spinner.value = -1E55 }
 
             val info = spinner.validateValue()
-            assertThat(info).isNotNull
+            assertThat(info).isNotNull()
             assertThat(info?.message).isEqualTo("Please enter a value greater than or equal to -1.0E53.")
         }
 
@@ -68,7 +68,7 @@ object JDoubleSpinnerTest : Spek({
             GuiActionRunner.execute { spinner.value = 1E98 }
 
             val info = spinner.validateValue()
-            assertThat(info).isNotNull
+            assertThat(info).isNotNull()
             assertThat(info?.message).isEqualTo("Please enter a value less than or equal to 1.0E53.")
         }
 
@@ -78,7 +78,7 @@ object JDoubleSpinnerTest : Spek({
             GuiActionRunner.execute { spinner.value = -808.68 }
 
             val info = spinner.validateValue()
-            assertThat(info).isNotNull
+            assertThat(info).isNotNull()
             assertThat(info?.message).isEqualTo("Please enter a value greater than or equal to -738.33.")
         }
 
@@ -88,7 +88,7 @@ object JDoubleSpinnerTest : Spek({
             GuiActionRunner.execute { spinner.value = 94.0 }
 
             val info = spinner.validateValue()
-            assertThat(info).isNotNull
+            assertThat(info).isNotNull()
             assertThat(info?.message).isEqualTo("Please enter a value less than or equal to -69.36.")
         }
     }

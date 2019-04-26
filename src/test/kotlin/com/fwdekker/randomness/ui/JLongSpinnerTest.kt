@@ -83,7 +83,7 @@ object JLongSpinnerTest : Spek({
             GuiActionRunner.execute { spinner.value = -979 }
 
             val info = spinner.validateValue()
-            assertThat(info).isNotNull
+            assertThat(info).isNotNull()
             assertThat(info?.message).isEqualTo("Please enter a value greater than or equal to -950.")
         }
 
@@ -93,7 +93,7 @@ object JLongSpinnerTest : Spek({
             GuiActionRunner.execute { spinner.value = 838 }
 
             val info = spinner.validateValue()
-            assertThat(info).isNotNull
+            assertThat(info).isNotNull()
             assertThat(info?.message).isEqualTo("Please enter a value less than or equal to 678.")
         }
     }

@@ -150,7 +150,7 @@ object WordSettingsDialogTest : Spek({
 
                 val validationInfo = wordSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull
+                assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 1.")
             }
@@ -160,7 +160,7 @@ object WordSettingsDialogTest : Spek({
 
                 val validationInfo = wordSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull
+                assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 2147483647.")
             }
@@ -172,7 +172,7 @@ object WordSettingsDialogTest : Spek({
 
                 val validationInfo = wordSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull
+                assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
                 assertThat(validationInfo?.message).isEqualTo("The maximum should be no smaller than the minimum.")
             }
@@ -183,7 +183,7 @@ object WordSettingsDialogTest : Spek({
 
                 val validationInfo = wordSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull
+                assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 1.")
             }
@@ -194,7 +194,7 @@ object WordSettingsDialogTest : Spek({
 
                 val validationInfo = wordSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull
+                assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 31.")
             }
@@ -227,7 +227,7 @@ object WordSettingsDialogTest : Spek({
 
                 val validationInfo = wordSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull
+                assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
                 assertThat(validationInfo?.message).isEqualTo("Select at least one dictionary.")
             }

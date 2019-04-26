@@ -24,7 +24,7 @@ class JSpinnerRangeTest {
         val range = JSpinnerRange(createJSpinner(85.20), createJSpinner(-636.33))
 
         val info = range.validateValue()
-        assertThat(info).isNotNull
+        assertThat(info).isNotNull()
         assertThat(info?.message).isEqualTo("The maximum should be no smaller than the minimum.")
     }
 
@@ -33,7 +33,7 @@ class JSpinnerRangeTest {
         val range = JSpinnerRange(createJSpinner(-1E53), createJSpinner(1E53))
 
         val info = range.validateValue()
-        assertThat(info).isNotNull
+        assertThat(info).isNotNull()
         assertThat(info?.message).isEqualTo("The range should not exceed 1.0E53.")
     }
 
@@ -42,7 +42,7 @@ class JSpinnerRangeTest {
         val range = JSpinnerRange(createJSpinner(-794.90), createJSpinner(759.52), 793.31)
 
         val info = range.validateValue()
-        assertThat(info).isNotNull
+        assertThat(info).isNotNull()
         assertThat(info?.message).isEqualTo("The range should not exceed 793.31.")
     }
 }

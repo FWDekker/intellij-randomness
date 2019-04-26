@@ -93,7 +93,7 @@ object StringSettingsDialogTest : Spek({
 
                 val validationInfo = stringSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull
+                assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 1.")
             }
@@ -105,7 +105,7 @@ object StringSettingsDialogTest : Spek({
 
                 val validationInfo = stringSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull
+                assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 2147483647.")
             }
@@ -115,7 +115,7 @@ object StringSettingsDialogTest : Spek({
 
                 val validationInfo = stringSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull
+                assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
                 assertThat(validationInfo?.message).isEqualTo("The maximum should be no smaller than the minimum.")
             }
@@ -127,7 +127,7 @@ object StringSettingsDialogTest : Spek({
 
                 val validationInfo = stringSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull
+                assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.list("alphabets").target())
                 assertThat(validationInfo?.message).isEqualTo("Please select at least one option.")
             }
