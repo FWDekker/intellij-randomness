@@ -131,23 +131,25 @@ abstract class DataInsertAction : AnAction() {
             ?: return
 
         WriteCommandAction.runWriteCommandAction(project) {
-            val strings = generateStrings(editor.caretModel.caretCount)
-
+            val strings: List<String>
             try {
-                editor.caretModel.allCarets.forEachIndexed { i, caret ->
-                    val start = caret.selectionStart
-                    val end = caret.selectionEnd
-                    val newEnd = start + strings[i].length
-
-                    editor.document.replaceString(start, end, strings[i])
-                    caret.setSelection(start, newEnd)
-                }
+                strings = generateStrings(editor.caretModel.caretCount)
             } catch (e: DataGenerationException) {
                 JBPopupHelper.showMessagePopup(
                     "Randomness error",
                     e.message ?: "An unknown error occurred while generating a random string.",
                     "Please check your Randomness settings and try again."
                 )
+                return@runWriteCommandAction
+            }
+
+            editor.caretModel.allCarets.forEachIndexed { i, caret ->
+                val start = caret.selectionStart
+                val end = caret.selectionEnd
+                val newEnd = start + strings[i].length
+
+                editor.document.replaceString(start, end, strings[i])
+                caret.setSelection(start, newEnd)
             }
         }
     }

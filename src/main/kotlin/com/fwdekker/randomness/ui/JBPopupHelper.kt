@@ -128,13 +128,15 @@ object JBPopupHelper {
      * @param messageB the second message
      */
     fun showMessagePopup(title: String, messageA: String, messageB: String) =
-        JBPopupFactory.getInstance().createConfirmation(
-            title,
-            messageA,
-            messageB,
-            { },
-            1
-        ).showInFocusCenter()
+        JBPopupFactory.getInstance()
+            .createConfirmation(
+                title,
+                messageA,
+                messageB,
+                {},
+                1
+            )
+            .showInFocusCenter()
 
 
     /**

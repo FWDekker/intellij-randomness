@@ -48,6 +48,21 @@ class DataInsertActionTest {
         verifyNoMoreInteractions(event)
     }
 
+    @Test
+    fun testActionPerformedNullProject() {
+        val event = mock<AnActionEvent> {
+            on { getData(CommonDataKeys.EDITOR) } doReturn mock()
+            on { getData(CommonDataKeys.PROJECT) } doReturn null
+        }
+
+        dataInsertAction.actionPerformed(event)
+
+        verify(event, times(1)).getData(CommonDataKeys.EDITOR)
+        verify(event, times(1)).getData(CommonDataKeys.PROJECT)
+        verifyNoMoreInteractions(event)
+    }
+
+
     /**
      * Tests that the action's presentation is disabled when the editor is null.
      */
@@ -85,7 +100,7 @@ class DataInsertActionTest {
      * Simple implementation of [DataInsertAction].
      */
     private class SimpleInsertAction : DataInsertAction() {
-        override val name = "Insert Simple"
+        override val name = "Insert Random Simple"
 
 
         override fun generateStrings(count: Int) = List(count) { RANDOM_STRING }
