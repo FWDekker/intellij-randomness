@@ -62,7 +62,7 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
         /**
          * The default dictionary file.
          */
-        const val DEFAULT_DICTIONARY_FILE = "words_alpha.dic"
+        val DEFAULT_DICTIONARY_FILES = listOf("english_simple.dic", "english_extended.dic")
 
         /**
          * The cache of bundled dictionaries, used to improve word generation times.
