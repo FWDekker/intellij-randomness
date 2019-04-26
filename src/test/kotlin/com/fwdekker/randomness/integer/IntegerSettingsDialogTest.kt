@@ -91,7 +91,7 @@ object IntegerSettingsDialogTest : Spek({
 
                 val validationInfo = integerSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
                 assertThat(validationInfo?.message).isEqualTo("The maximum should be no smaller than the minimum.")
             }
@@ -104,7 +104,7 @@ object IntegerSettingsDialogTest : Spek({
 
                 val validationInfo = integerSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
                 assertThat(validationInfo?.message).isEqualTo("The range should not exceed 9.223372036854776E18.")
             }
@@ -116,7 +116,7 @@ object IntegerSettingsDialogTest : Spek({
 
                 val validationInfo = integerSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 2.")
             }
@@ -126,7 +126,7 @@ object IntegerSettingsDialogTest : Spek({
 
                 val validationInfo = integerSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 2.")
             }
@@ -136,7 +136,7 @@ object IntegerSettingsDialogTest : Spek({
 
                 val validationInfo = integerSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 2.")
             }
@@ -146,7 +146,7 @@ object IntegerSettingsDialogTest : Spek({
 
                 val validationInfo = integerSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 36.")
             }

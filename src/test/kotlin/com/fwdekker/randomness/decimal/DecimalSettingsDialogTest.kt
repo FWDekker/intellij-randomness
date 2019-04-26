@@ -79,7 +79,7 @@ object DecimalSettingsDialogTest : Spek({
 
                 val validationInfo = decimalSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minValue").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to -1.0E53.")
             }
@@ -89,7 +89,7 @@ object DecimalSettingsDialogTest : Spek({
 
                 val validationInfo = decimalSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 1.0E53.")
             }
@@ -99,7 +99,7 @@ object DecimalSettingsDialogTest : Spek({
 
                 val validationInfo = decimalSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
                 assertThat(validationInfo?.message).isEqualTo("The maximum should be no smaller than the minimum.")
             }
@@ -112,7 +112,7 @@ object DecimalSettingsDialogTest : Spek({
 
                 val validationInfo = decimalSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
                 assertThat(validationInfo?.message).isEqualTo("The range should not exceed 1.0E53.")
             }
@@ -130,7 +130,7 @@ object DecimalSettingsDialogTest : Spek({
 
                 val validationInfo = decimalSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("decimalCount").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 0.")
             }
@@ -142,7 +142,7 @@ object DecimalSettingsDialogTest : Spek({
 
                 val validationInfo = decimalSettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("decimalCount").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 2147483647.")
             }

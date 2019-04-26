@@ -75,7 +75,7 @@ object ArraySettingsDialogTest : Spek({
 
                 val validationInfo = arraySettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("count").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 1.")
             }
@@ -91,7 +91,7 @@ object ArraySettingsDialogTest : Spek({
 
                 val validationInfo = arraySettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("count").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 1.")
             }
@@ -101,7 +101,7 @@ object ArraySettingsDialogTest : Spek({
 
                 val validationInfo = arraySettingsDialog.doValidate()
 
-                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo).isNotNull
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("count").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 2147483647.")
             }
