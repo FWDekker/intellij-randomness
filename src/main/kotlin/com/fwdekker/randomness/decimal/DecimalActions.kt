@@ -31,12 +31,13 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
 
 
     /**
-     * Returns a random decimal between the minimum and maximum value, inclusive.
+     * Returns random decimals between the minimum and maximum value, inclusive.
      *
-     * @return a random decimal between the minimum and maximum value, inclusive
+     * @param count the number of decimals to generate
+     * @return random decimals between the minimum and maximum value, inclusive
      */
-    override fun generateString() =
-        convertToString(Random.nextDouble(settings.minValue, Math.nextUp(settings.maxValue)))
+    override fun generateStrings(count: Int) =
+        List(count) { convertToString(Random.nextDouble(settings.minValue, Math.nextUp(settings.maxValue))) }
 
 
     /**

@@ -31,12 +31,13 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
 
 
     /**
-     * Returns a random integer between the minimum and maximum value, inclusive.
+     * Returns random integers between the minimum and maximum value, inclusive.
      *
-     * @return a random integer between the minimum and maximum value, inclusive
+     * @param count the number of integers to generate
+     * @return random integers between the minimum and maximum value, inclusive
      */
-    override fun generateString() =
-        convertToString(Random.nextLong(settings.minValue, settings.maxValue + 1))
+    override fun generateStrings(count: Int) =
+        List(count) {convertToString(Random.nextLong(settings.minValue, settings.maxValue + 1))}
 
 
     /**

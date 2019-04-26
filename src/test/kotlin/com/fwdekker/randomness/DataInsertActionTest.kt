@@ -88,6 +88,6 @@ class DataInsertActionTest {
         override val name = "Insert Simple"
 
 
-        override fun generateString() = RANDOM_STRING
+        override fun generateStrings(count: Int) = List(count) { RANDOM_STRING }
     }
 }

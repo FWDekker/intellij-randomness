@@ -30,12 +30,13 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
 
 
     /**
-     * Returns a random word from the dictionaries in `settings`.
+     * Returns random words from the dictionaries in `settings`.
      *
-     * @return a random word from the dictionaries in `settings`
+     * @param count the number of words to generate
+     * @return random words from the dictionaries in `settings`
      * @throws InvalidDictionaryException if no words could be found using the settings in `settings`
      */
-    override fun generateString(): String {
+    override fun generateStrings(count: Int): List<String> {
         val bundledWords: List<String>
         val userWords: List<String>
         try {
@@ -51,8 +52,9 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
         if (words.isEmpty())
             throw DataGenerationException("There are no words compatible with the current settings.")
 
-        val randomWord = settings.capitalization.transform(words.random())
-        return settings.enclosure + randomWord + settings.enclosure
+        return List(count) {
+            settings.enclosure + settings.capitalization.transform(words.random()) + settings.enclosure
+        }
     }
 }
 

@@ -170,6 +170,6 @@ class DataInsertActionIntegrationTest : LightPlatformCodeInsightFixtureTestCase(
         override val name = "Insert Random Simple"
 
 
-        override fun generateString() = RANDOM_STRING
+        override fun generateStrings(count: Int) = List(count) { RANDOM_STRING }
     }
 }
