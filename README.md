@@ -43,5 +43,17 @@ Randomness is bundled with a small English dictionary from which it chooses rand
 <p align="center"><img src="https://user-images.githubusercontent.com/13442533/39729579-feef0dd4-525c-11e8-8a79-e51cb2d75bfc.PNG" alt="Dictionary settings" /></p>
 
 
+## Build instructions
+This section contains instructions in case you want to build the plugin from source code.
+
+```bash
+gradlew runIde              # Open a sandbox IntelliJ instance running the plugin
+gradlew buildPlugin         # Build an installable zip of the plugin
+gradlew check               # Run tests and static analysis
+gradlew codeCoverageReport  # Run tests and calculate coverage
+gradlew dokka               # Generate documentation
+```
+
+
 ## Credits
 Thanks to [Georgios Andreadis](https://github.com/gandreadis) for the logo!
