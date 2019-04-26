@@ -4,7 +4,6 @@ import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.ui.JEditableList
 import com.intellij.openapi.ui.ValidationInfo
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Fail.fail
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
@@ -13,6 +12,7 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.xit
+import org.junit.jupiter.api.fail
 import java.io.File
 
 

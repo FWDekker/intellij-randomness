@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.word
 
-import org.assertj.core.api.Assertions.fail
+import org.junit.jupiter.api.fail
 import java.io.File
 import java.io.IOException
 
@@ -33,7 +33,6 @@ internal class TempFileHelper {
             dictionaryFile
         } catch (e: IOException) {
             fail("Could not set up dictionary file.")
-            File("") // Dead code
         }
 
     /**
