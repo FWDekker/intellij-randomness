@@ -4,6 +4,7 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
+import com.fwdekker.randomness.array.ArraySettings
 import java.text.DecimalFormat
 import kotlin.random.Random
 
@@ -65,12 +66,15 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
 /**
  * Inserts an array-like string of decimals.
  *
+ * @param arraySettings the settings to use for generating arrays
  * @param settings the settings to use for generating decimals
  *
  * @see DecimalInsertAction
  */
-class DecimalInsertArrayAction(settings: DecimalSettings = DecimalSettings.default) :
-    DataInsertArrayAction(DecimalInsertAction(settings)) {
+class DecimalInsertArrayAction(
+    arraySettings: ArraySettings = ArraySettings.default,
+    settings: DecimalSettings = DecimalSettings.default
+) : DataInsertArrayAction(arraySettings, DecimalInsertAction(settings)) {
     override val name = "Insert Decimal Array"
 }
 

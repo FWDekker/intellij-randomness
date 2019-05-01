@@ -178,12 +178,13 @@ abstract class DataInsertAction : AnAction() {
 /**
  * Inserts a randomly generated array of strings at the positions of the event's editor's carets.
  *
+ * @param arraySettings the settings to use for generating arrays
  * @param dataInsertAction the action to generate data with
  */
-abstract class DataInsertArrayAction(private val dataInsertAction: DataInsertAction) : DataInsertAction() {
-    private val arraySettings: ArraySettings = ArraySettings.default
-
-
+abstract class DataInsertArrayAction(
+    private val arraySettings: ArraySettings,
+    private val dataInsertAction: DataInsertAction
+) : DataInsertAction() {
     /**
      * Generates array-like strings of random data.
      *

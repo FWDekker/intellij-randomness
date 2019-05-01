@@ -5,6 +5,7 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
+import com.fwdekker.randomness.array.ArraySettings
 
 
 /**
@@ -62,12 +63,15 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
 /**
  * Inserts an array-like string of words.
  *
+ * @param arraySettings the settings to use for generating arrays
  * @param settings the settings to use for generating words
  *
  * @see WordInsertAction
  */
-class WordInsertArrayAction(settings: WordSettings = WordSettings.default) :
-    DataInsertArrayAction(WordInsertAction(settings)) {
+class WordInsertArrayAction(
+    arraySettings: ArraySettings = ArraySettings.default,
+    settings: WordSettings = WordSettings.default
+) : DataInsertArrayAction(arraySettings, WordInsertAction(settings)) {
     override val name = "Insert Word Array"
 }
 

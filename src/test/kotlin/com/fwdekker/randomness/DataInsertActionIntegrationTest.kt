@@ -1,5 +1,6 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.array.ArraySettings
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Document
@@ -132,12 +133,24 @@ class DataInsertActionIntegrationTest : LightPlatformCodeInsightFixtureTestCase(
             .isEqualTo("XOppz${RANDOM_STRING}V${RANDOM_STRING}j\nZhAa${RANDOM_STRING}VfQynW\nk3${RANDOM_STRING}kdAg")
     }
 
+    fun testInsertArray() {
+        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("wizard\nsirens\nvanity") }
+
+        val arraySettings = ArraySettings()
+        arraySettings.count = 2
+
+        setSelection(5, 9)
+        myFixture.testAction(SimplyArrayInsertAction(arraySettings))
+
+        assertThat(document.text).isEqualTo("wizar[$RANDOM_STRING, $RANDOM_STRING]rens\nvanity")
+    }
+
 
     /**
      * Causes the first caret to select the given interval.
      *
      * @param fromOffset the start of the selected interval
-     * @param toOffset   the end of the selected interval
+     * @param toOffset the end of the selected interval
      */
     private fun setSelection(fromOffset: Int, toOffset: Int) =
         caretModel.allCarets[0].setSelection(fromOffset, toOffset)
@@ -155,7 +168,7 @@ class DataInsertActionIntegrationTest : LightPlatformCodeInsightFixtureTestCase(
      * Adds a caret that selects the given interval.
      *
      * @param fromOffset the start of the selected interval
-     * @param toOffset   the end of the selected interval
+     * @param toOffset the end of the selected interval
      */
     private fun addSelection(fromOffset: Int, toOffset: Int) {
         caretModel.addCaret(myFixture.editor.offsetToVisualPosition(fromOffset))
@@ -171,5 +184,13 @@ class DataInsertActionIntegrationTest : LightPlatformCodeInsightFixtureTestCase(
 
 
         override fun generateStrings(count: Int) = List(count) { RANDOM_STRING }
+    }
+
+    /**
+     * Simple implementation of [DataInsertArrayAction].
+     */
+    private class SimplyArrayInsertAction(arraySettings: ArraySettings = ArraySettings.default) :
+        DataInsertArrayAction(arraySettings, SimpleInsertAction()) {
+        override val name = "Insert Random Simple Array"
     }
 }

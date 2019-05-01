@@ -4,6 +4,7 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
+import com.fwdekker.randomness.array.ArraySettings
 import kotlin.random.Random
 
 
@@ -63,12 +64,15 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
 /**
  * Inserts an array-like string of strings.
  *
+ * @param arraySettings the settings to use for generating arrays
  * @param settings the settings to use for generating strings
  *
  * @see StringInsertAction
  */
-class StringInsertArrayAction(settings: StringSettings = StringSettings.default) :
-    DataInsertArrayAction(StringInsertAction(settings)) {
+class StringInsertArrayAction(
+    arraySettings: ArraySettings = ArraySettings.default,
+    settings: StringSettings = StringSettings.default
+) : DataInsertArrayAction(arraySettings, StringInsertAction(settings)) {
     override val name = "Insert String Array"
 }
 
