@@ -4,6 +4,7 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
+import com.fwdekker.randomness.array.ArraySettings
 import java.text.DecimalFormat
 import kotlin.random.Random
 
@@ -31,12 +32,13 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
 
 
     /**
-     * Returns a random integer between the minimum and maximum value, inclusive.
+     * Returns random integers between the minimum and maximum value, inclusive.
      *
-     * @return a random integer between the minimum and maximum value, inclusive
+     * @param count the number of integers to generate
+     * @return random integers between the minimum and maximum value, inclusive
      */
-    override fun generateString() =
-        convertToString(Random.nextLong(settings.minValue, settings.maxValue + 1))
+    override fun generateStrings(count: Int) =
+        List(count) { convertToString(Random.nextLong(settings.minValue, settings.maxValue + 1)) }
 
 
     /**
@@ -66,12 +68,15 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
 /**
  * Inserts an array-like string of integers.
  *
+ * @param arraySettings the settings to use for generating arrays
  * @param settings the settings to use for generating integers
  *
  * @see IntegerInsertAction
  */
-class IntegerInsertArrayAction(settings: IntegerSettings = IntegerSettings.default) :
-    DataInsertArrayAction(IntegerInsertAction(settings)) {
+class IntegerInsertArrayAction(
+    arraySettings: ArraySettings = ArraySettings.default,
+    settings: IntegerSettings = IntegerSettings.default
+) : DataInsertArrayAction(arraySettings, IntegerInsertAction(settings)) {
     override val name = "Insert Integer Array"
 }
 

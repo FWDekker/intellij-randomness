@@ -4,6 +4,7 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
+import com.fwdekker.randomness.array.ArraySettings
 import kotlin.random.Random
 
 
@@ -30,18 +31,20 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
 
 
     /**
-     * Returns a string of random alphanumerical characters.
+     * Returns strings of random alphanumerical characters.
      *
-     * @return a string of random alphanumerical characters
+     * @param count the number of strings to generate
+     * @return strings of random alphanumerical characters
      */
-    override fun generateString(): String {
-        val length = Random.nextInt(settings.minLength, settings.maxLength + 1)
+    override fun generateStrings(count: Int) =
+        List(count) {
+            val length = Random.nextInt(settings.minLength, settings.maxLength + 1)
 
-        val text = List(length) { generateCharacter() }.joinToString("")
-        val capitalizedText = settings.capitalization.transform(text)
+            val text = List(length) { generateCharacter() }.joinToString("")
+            val capitalizedText = settings.capitalization.transform(text)
 
-        return settings.enclosure + capitalizedText + settings.enclosure
-    }
+            settings.enclosure + capitalizedText + settings.enclosure
+        }
 
 
     /**
@@ -61,12 +64,15 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
 /**
  * Inserts an array-like string of strings.
  *
+ * @param arraySettings the settings to use for generating arrays
  * @param settings the settings to use for generating strings
  *
  * @see StringInsertAction
  */
-class StringInsertArrayAction(settings: StringSettings = StringSettings.default) :
-    DataInsertArrayAction(StringInsertAction(settings)) {
+class StringInsertArrayAction(
+    arraySettings: ArraySettings = ArraySettings.default,
+    settings: StringSettings = StringSettings.default
+) : DataInsertArrayAction(arraySettings, StringInsertAction(settings)) {
     override val name = "Insert String Array"
 }
 

@@ -4,6 +4,7 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
+import com.fwdekker.randomness.array.ArraySettings
 import java.util.UUID
 
 
@@ -30,23 +31,28 @@ class UuidInsertAction(private val settings: UuidSettings = UuidSettings.default
 
 
     /**
-     * Returns a random type 4 UUID.
+     * Returns random type 4 UUIDs.
      *
-     * @return a random type 4 UUID
+     * @param count the number of type 4 UUIDs to generate
+     * @return random type 4 UUIDs
      */
-    override fun generateString() = settings.enclosure + UUID.randomUUID().toString() + settings.enclosure
+    override fun generateStrings(count: Int) =
+        List(count) { settings.enclosure + UUID.randomUUID().toString() + settings.enclosure }
 }
 
 
 /**
  * Inserts an array-like string of UUIDs.
  *
+ * @param arraySettings the settings to use for generating arrays
  * @param settings the settings to use for generating UUIDs
  *
  * @see UuidInsertAction
  */
-class UuidInsertArrayAction(settings: UuidSettings = UuidSettings.default) :
-    DataInsertArrayAction(UuidInsertAction(settings)) {
+class UuidInsertArrayAction(
+    arraySettings: ArraySettings = ArraySettings.default,
+    settings: UuidSettings = UuidSettings.default
+) : DataInsertArrayAction(arraySettings, UuidInsertAction(settings)) {
     override val name = "Insert UUID Array"
 }
 

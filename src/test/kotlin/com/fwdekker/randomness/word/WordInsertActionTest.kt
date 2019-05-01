@@ -1,6 +1,9 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.DataGenerationException
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
@@ -40,5 +43,18 @@ class WordInsertActionTest {
         assertThat(randomString.length)
             .isGreaterThanOrEqualTo(minLength + 2 * enclosure.length)
             .isLessThanOrEqualTo(maxLength + 2 * enclosure.length)
+    }
+
+    @Test
+    fun testNoValidWords() {
+        val wordSettings = WordSettings()
+        wordSettings.activeBundledDictionaries = emptySet()
+
+        val insertRandomWord = WordInsertAction(wordSettings)
+
+        assertThatThrownBy { insertRandomWord.generateString() }
+            .isInstanceOf(DataGenerationException::class.java)
+            .hasMessage("There are no words compatible with the current settings.")
+            .hasNoCause()
     }
 }

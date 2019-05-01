@@ -5,6 +5,7 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
+import com.fwdekker.randomness.array.ArraySettings
 
 
 /**
@@ -30,12 +31,13 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
 
 
     /**
-     * Returns a random word from the dictionaries in `settings`.
+     * Returns random words from the dictionaries in `settings`.
      *
-     * @return a random word from the dictionaries in `settings`
+     * @param count the number of words to generate
+     * @return random words from the dictionaries in `settings`
      * @throws InvalidDictionaryException if no words could be found using the settings in `settings`
      */
-    override fun generateString(): String {
+    override fun generateStrings(count: Int): List<String> {
         val bundledWords: List<String>
         val userWords: List<String>
         try {
@@ -51,8 +53,9 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
         if (words.isEmpty())
             throw DataGenerationException("There are no words compatible with the current settings.")
 
-        val randomWord = settings.capitalization.transform(words.random())
-        return settings.enclosure + randomWord + settings.enclosure
+        return List(count) {
+            settings.enclosure + settings.capitalization.transform(words.random()) + settings.enclosure
+        }
     }
 }
 
@@ -60,12 +63,15 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
 /**
  * Inserts an array-like string of words.
  *
+ * @param arraySettings the settings to use for generating arrays
  * @param settings the settings to use for generating words
  *
  * @see WordInsertAction
  */
-class WordInsertArrayAction(settings: WordSettings = WordSettings.default) :
-    DataInsertArrayAction(WordInsertAction(settings)) {
+class WordInsertArrayAction(
+    arraySettings: ArraySettings = ArraySettings.default,
+    settings: WordSettings = WordSettings.default
+) : DataInsertArrayAction(arraySettings, WordInsertAction(settings)) {
     override val name = "Insert Word Array"
 }
 
