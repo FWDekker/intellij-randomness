@@ -76,6 +76,36 @@ object JLongSpinnerTest : Spek({
         }
     }
 
+    describe("getting surrounding values") {
+        describe("previous value") {
+            it("returns the previous value") {
+                val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner(56L) }
+
+                assertThat(spinner.previousValue).isEqualTo(55L)
+            }
+
+            it("returns the minimum value if the current value is already at the minimum") {
+                val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner(203L, minValue = 203L) }
+
+                assertThat(spinner.previousValue).isEqualTo(203L)
+            }
+        }
+
+        describe("next value") {
+            it("returns the next value") {
+                val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner(112L) }
+
+                assertThat(spinner.nextValue).isEqualTo(113L)
+            }
+
+            it("returns the maximum value if the current value is already at the maximum") {
+                val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner(119L, minValue = 119L) }
+
+                assertThat(spinner.previousValue).isEqualTo(119L)
+            }
+        }
+    }
+
     describe("validation") {
         it("should fail when the value is below the set range") {
             val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner(-665, -950, -559) }
