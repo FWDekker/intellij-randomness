@@ -100,7 +100,7 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
         base.setValue((long) settings.getBase());
-        ButtonGroupHelper.INSTANCE.setValue(groupingSeparatorGroup, String.valueOf(settings.getGroupingSeparator()));
+        ButtonGroupHelper.INSTANCE.setValue(groupingSeparatorGroup, settings.getGroupingSeparator());
     }
 
     @Override
@@ -111,6 +111,6 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
 
         final String groupingSeparator = ButtonGroupHelper.INSTANCE.getValue(groupingSeparatorGroup);
         settings.setGroupingSeparator(groupingSeparator == null || groupingSeparator.isEmpty()
-            ? '\0' : groupingSeparator.charAt(0));
+            ? IntegerSettings.DEFAULT_GROUPING_SEPARATOR : groupingSeparator);
     }
 }

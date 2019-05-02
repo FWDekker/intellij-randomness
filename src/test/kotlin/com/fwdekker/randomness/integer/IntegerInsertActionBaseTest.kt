@@ -13,16 +13,16 @@ class IntegerInsertActionBaseTest {
         @JvmStatic
         fun provider() =
             listOf(
-                arrayOf(33360, 10, '.', "33.360"),
-                arrayOf(48345, 10, '.', "48.345"),
-                arrayOf(48345, 11, '.', "33360")
+                arrayOf(33360, 10, ".", "33.360"),
+                arrayOf(48345, 10, ".", "48.345"),
+                arrayOf(48345, 11, ".", "33360")
             )
     }
 
 
     @ParameterizedTest
     @MethodSource("provider")
-    fun testValue(value: Long, base: Int, groupingSeparator: Char, expectedString: String) {
+    fun testValue(value: Long, base: Int, groupingSeparator: String, expectedString: String) {
         val integerSettings = IntegerSettings()
         integerSettings.minValue = value
         integerSettings.maxValue = value

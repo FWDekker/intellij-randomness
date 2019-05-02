@@ -50,7 +50,7 @@ class ArraySettings : Settings<ArraySettings> {
      */
     var brackets = DEFAULT_BRACKETS
     /**
-     * The separator to place between generated elements.
+     * The string to place between generated elements.
      */
     var separator = DEFAULT_SEPARATOR
     /**

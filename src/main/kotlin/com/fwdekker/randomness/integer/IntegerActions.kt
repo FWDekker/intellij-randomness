@@ -52,10 +52,10 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
             return value.toString(settings.base)
 
         val format = DecimalFormat()
-        format.isGroupingUsed = settings.groupingSeparator != '\u0000'
+        format.isGroupingUsed = settings.groupingSeparator != "\u0000"
 
         val symbols = format.decimalFormatSymbols
-        symbols.groupingSeparator = settings.groupingSeparator
+        symbols.groupingSeparator = settings.groupingSeparator[0]
         format.minimumFractionDigits = 0
         format.maximumFractionDigits = 0
         format.decimalFormatSymbols = symbols

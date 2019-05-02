@@ -90,8 +90,8 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
         decimalCount.setValue(settings.getDecimalCount());
-        ButtonGroupHelper.INSTANCE.setValue(groupingSeparatorGroup, String.valueOf(settings.getGroupingSeparator()));
-        ButtonGroupHelper.INSTANCE.setValue(decimalSeparatorGroup, String.valueOf(settings.getDecimalSeparator()));
+        ButtonGroupHelper.INSTANCE.setValue(groupingSeparatorGroup, settings.getGroupingSeparator());
+        ButtonGroupHelper.INSTANCE.setValue(decimalSeparatorGroup, settings.getDecimalSeparator());
     }
 
     @Override
@@ -102,10 +102,10 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
 
         final String groupingSeparator = ButtonGroupHelper.INSTANCE.getValue(groupingSeparatorGroup);
         settings.setGroupingSeparator(groupingSeparator == null || groupingSeparator.isEmpty()
-            ? '\0' : groupingSeparator.charAt(0));
+            ? DecimalSettings.DEFAULT_GROUPING_SEPARATOR : groupingSeparator);
 
         final String decimalSeparator = ButtonGroupHelper.INSTANCE.getValue(decimalSeparatorGroup);
         settings.setDecimalSeparator(decimalSeparator == null || decimalSeparator.isEmpty()
-            ? '\0' : decimalSeparator.charAt(0));
+            ? DecimalSettings.DEFAULT_DECIMAL_SEPARATOR : decimalSeparator);
     }
 }
