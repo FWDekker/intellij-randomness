@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.ui
 
-import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.popup.list.ListPopupImpl
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
@@ -119,24 +118,6 @@ object JBPopupHelper {
                 )
         }
     }
-
-    /**
-     * Displays a popup with a title and two messages.
-     *
-     * @param title the title of the popup
-     * @param messageA the first message
-     * @param messageB the second message
-     */
-    fun showMessagePopup(title: String, messageA: String, messageB: String) =
-        JBPopupFactory.getInstance()
-            .createConfirmation(
-                title,
-                messageA,
-                messageB,
-                {},
-                1
-            )
-            .showInFocusCenter()
 
 
     /**

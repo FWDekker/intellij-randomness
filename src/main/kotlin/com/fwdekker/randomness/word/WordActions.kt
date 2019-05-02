@@ -38,24 +38,24 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
      * @throws InvalidDictionaryException if no words could be found using the settings in `settings`
      */
     override fun generateStrings(count: Int): List<String> {
-        val bundledWords: List<String>
-        val userWords: List<String>
-        try {
-            bundledWords = settings.activeBundledDictionaries.flatMap { it.words }
-            userWords = settings.activeUserDictionaries.flatMap { it.words }
-        } catch (e: InvalidDictionaryException) {
-            throw DataGenerationException(e.message, e)
-        }
+        val dictionaries = (settings.activeBundledDictionaries + settings.activeUserDictionaries)
+            .ifEmpty { throw DataGenerationException("There are no active dictionaries.") }
 
-        val words = (bundledWords + userWords)
-            .filter { it.length in settings.minLength..settings.maxLength }
-            .toSet()
-        if (words.isEmpty())
-            throw DataGenerationException("There are no words compatible with the current settings.")
+        val words =
+            try {
+                dictionaries.flatMap { it.words }
+            } catch (e: InvalidDictionaryException) {
+                throw DataGenerationException(e.message, e)
+            }
+                .ifEmpty { throw DataGenerationException("All dictionaries are empty.") }
+                .filter { it.length in settings.minLength..settings.maxLength }
+                .toSet()
+                .ifEmpty { throw DataGenerationException("There are no words within the configured length range.") }
 
-        return List(count) {
-            settings.enclosure + settings.capitalization.transform(words.random()) + settings.enclosure
-        }
+        return (0 until count)
+            .map { words.random() }
+            .map { settings.capitalization.transform(it) }
+            .map { settings.enclosure + it + settings.enclosure }
     }
 }
 
