@@ -1,13 +1,13 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArraySettings
-import com.fwdekker.randomness.ui.JBPopupHelper
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.ui.Messages
 import java.awt.event.InputEvent
 
 
@@ -130,25 +130,28 @@ abstract class DataInsertAction : AnAction() {
         val project = event.getData(CommonDataKeys.PROJECT)
             ?: return
 
-        WriteCommandAction.runWriteCommandAction(project) {
-            val strings: List<String>
+        val data =
             try {
-                strings = generateStrings(editor.caretModel.caretCount)
+                generateStrings(editor.caretModel.caretCount)
             } catch (e: DataGenerationException) {
-                JBPopupHelper.showMessagePopup(
-                    "Randomness error",
-                    e.message ?: "An unknown error occurred while generating a random string.",
-                    "Please check your Randomness settings and try again."
+                Messages.showErrorDialog(
+                    """
+                        Randomness was unable to generate random data.
+                        ${if (!e.message.isNullOrBlank()) "The following error was encountered: ${e.message}\n" else ""}
+                        Please check your Randomness settings and try again.
+                    """.trimIndent(),
+                    "Randomness error"
                 )
-                return@runWriteCommandAction
+                return
             }
 
+        WriteCommandAction.runWriteCommandAction(project) {
             editor.caretModel.allCarets.forEachIndexed { i, caret ->
                 val start = caret.selectionStart
                 val end = caret.selectionEnd
-                val newEnd = start + strings[i].length
+                val newEnd = start + data[i].length
 
-                editor.document.replaceString(start, end, strings[i])
+                editor.document.replaceString(start, end, data[i])
                 caret.setSelection(start, newEnd)
             }
         }
