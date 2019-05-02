@@ -47,7 +47,7 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
             } catch (e: InvalidDictionaryException) {
                 throw DataGenerationException(e.message, e)
             }
-                .ifEmpty { throw DataGenerationException("All dictionaries are empty.") }
+                .ifEmpty { throw DataGenerationException("All active dictionaries are empty.") }
                 .filter { it.length in settings.minLength..settings.maxLength }
                 .toSet()
                 .ifEmpty { throw DataGenerationException("There are no words within the configured length range.") }

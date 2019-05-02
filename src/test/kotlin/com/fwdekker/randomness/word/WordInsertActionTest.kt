@@ -103,7 +103,7 @@ class WordInsertActionTest : Spek({
 
             assertThatThrownBy { insertRandomWord.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
-                .hasMessage("All dictionaries are empty.")
+                .hasMessage("All active dictionaries are empty.")
                 .hasNoCause()
         }
 
