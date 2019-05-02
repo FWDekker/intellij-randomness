@@ -1,3 +1,6 @@
+comment:
+    layout: "reach, diff"
+
 coverage:
     status:
         project: off
