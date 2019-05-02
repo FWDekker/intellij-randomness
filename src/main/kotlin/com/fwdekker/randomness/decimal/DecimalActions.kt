@@ -49,11 +49,11 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
      */
     private fun convertToString(decimal: Double): String {
         val format = DecimalFormat()
-        format.isGroupingUsed = settings.groupingSeparator != '\u0000'
+        format.isGroupingUsed = settings.groupingSeparator != "\u0000"
 
         val symbols = format.decimalFormatSymbols
-        symbols.groupingSeparator = settings.groupingSeparator
-        symbols.decimalSeparator = settings.decimalSeparator
+        symbols.groupingSeparator = settings.groupingSeparator[0]
+        symbols.decimalSeparator = settings.decimalSeparator[0]
         format.minimumFractionDigits = settings.decimalCount
         format.maximumFractionDigits = settings.decimalCount
         format.decimalFormatSymbols = symbols

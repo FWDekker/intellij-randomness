@@ -13,15 +13,15 @@ class DecimalInsertActionSymbolTest {
         @JvmStatic
         private fun provider() =
             listOf(
-                arrayOf(4.2, 2, '.', '.', "4.20"),
-                arrayOf(4.2, 2, '.', ',', "4,20"),
-                arrayOf(4.2, 2, ',', '.', "4.20"),
-                arrayOf(4.2, 2, ',', ',', "4,20"),
-                arrayOf(67575.845, 3, '\u0000', '.', "67575.845"),
-                arrayOf(67575.845, 3, '.', '.', "67.575.845"),
-                arrayOf(67575.845, 3, '.', ',', "67.575,845"),
-                arrayOf(67575.845, 3, ',', '.', "67,575.845"),
-                arrayOf(67575.845, 3, ',', ',', "67,575,845")
+                arrayOf(4.2, 2, ".", ".", "4.20"),
+                arrayOf(4.2, 2, ".", ",", "4,20"),
+                arrayOf(4.2, 2, ",", ".", "4.20"),
+                arrayOf(4.2, 2, ",", ",", "4,20"),
+                arrayOf(67575.845, 3, "\u0000", ".", "67575.845"),
+                arrayOf(67575.845, 3, ".", ".", "67.575.845"),
+                arrayOf(67575.845, 3, ".", ",", "67.575,845"),
+                arrayOf(67575.845, 3, ",", ".", "67,575.845"),
+                arrayOf(67575.845, 3, ",", ",", "67,575,845")
             )
     }
 
@@ -29,8 +29,8 @@ class DecimalInsertActionSymbolTest {
     @ParameterizedTest
     @MethodSource("provider")
     fun testValue(
-        value: Double, decimalCount: Int, groupingSeparator: Char,
-        decimalSeparator: Char, expectedString: String
+        value: Double, decimalCount: Int, groupingSeparator: String,
+        decimalSeparator: String, expectedString: String
     ) {
         val decimalSettings = DecimalSettings()
         decimalSettings.minValue = value

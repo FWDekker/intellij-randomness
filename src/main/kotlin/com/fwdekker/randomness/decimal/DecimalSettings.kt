@@ -33,11 +33,11 @@ class DecimalSettings : Settings<DecimalSettings> {
         /**
          * The default value of the [groupingSeparator][DecimalSettings.groupingSeparator] field.
          */
-        const val DEFAULT_GROUPING_SEPARATOR = '\u0000'
+        const val DEFAULT_GROUPING_SEPARATOR = "\u0000"
         /**
          * The default value of the [decimalSeparator][DecimalSettings.decimalSeparator] field.
          */
-        const val DEFAULT_DECIMAL_SEPARATOR = '.'
+        const val DEFAULT_DECIMAL_SEPARATOR = "."
 
 
         /**
@@ -63,11 +63,19 @@ class DecimalSettings : Settings<DecimalSettings> {
     /**
      * The character that should separate groups.
      */
+    // TODO Turn this field into a char field once supported by the settings serializer
     var groupingSeparator = DEFAULT_GROUPING_SEPARATOR
+        set(value) {
+            field = value.getOrElse(0) { DEFAULT_GROUPING_SEPARATOR[0] }.toString()
+        }
     /**
      * The character that should separate decimals.
      */
+    // TODO Turn this field into a char field once supported by the settings serializer
     var decimalSeparator = DEFAULT_DECIMAL_SEPARATOR
+        set(value) {
+            field = value.getOrElse(0) { DEFAULT_DECIMAL_SEPARATOR[0] }.toString()
+        }
 
 
     /**

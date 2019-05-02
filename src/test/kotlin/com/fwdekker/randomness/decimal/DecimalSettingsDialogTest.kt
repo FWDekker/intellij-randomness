@@ -164,8 +164,8 @@ object DecimalSettingsDialogTest : Spek({
             assertThat(decimalSettings.minValue).isEqualTo(112.54)
             assertThat(decimalSettings.maxValue).isEqualTo(644.74)
             assertThat(decimalSettings.decimalCount).isEqualTo(485)
-            assertThat(decimalSettings.groupingSeparator).isEqualTo('_')
-            assertThat(decimalSettings.decimalSeparator).isEqualTo(',')
+            assertThat(decimalSettings.groupingSeparator).isEqualTo("_")
+            assertThat(decimalSettings.decimalSeparator).isEqualTo(",")
         }
     }
 })

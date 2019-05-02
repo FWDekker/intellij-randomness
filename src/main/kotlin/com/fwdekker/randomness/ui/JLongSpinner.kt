@@ -61,6 +61,20 @@ class JLongSpinner(
     override fun getValue() = (super.getValue() as Number).toLong()
 
     /**
+     * Returns the previous value of the model, equal to [getValue] minus one or [minValue], whichever is larger.
+     *
+     * @return the previous value of the model, equal to [getValue] minus one or [minValue], whichever is larger
+     */
+    override fun getPreviousValue() = Math.max(value - 1, minValue)
+
+    /**
+     * Returns the next value of the model, equal to [getValue] plus one or [maxValue], whichever is smaller.
+     *
+     * @return the next value of the model, equal to [getValue] plus one or [maxValue], whichever is smaller
+     */
+    override fun getNextValue() = Math.min(value + 1, maxValue)
+
+    /**
      * Validates the current value.
      *
      * @return `null` if the current value is valid, or a `ValidationInfo` object explaining why the current value is

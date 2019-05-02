@@ -13,16 +13,16 @@ class IntegerInsertActionSymbolTest {
         @JvmStatic
         fun provider() =
             listOf(
-                arrayOf(95713, '\u0000', "95713"),
-                arrayOf(163583, '.', "163.583"),
-                arrayOf(351426, ',', "351,426")
+                arrayOf(95713, "\u0000", "95713"),
+                arrayOf(163583, ".", "163.583"),
+                arrayOf(351426, ",", "351,426")
             )
     }
 
 
     @ParameterizedTest
     @MethodSource("provider")
-    fun testValue(value: Long, groupingSeparator: Char, expectedString: String) {
+    fun testValue(value: Long, groupingSeparator: String, expectedString: String) {
         val integerSettings = IntegerSettings()
         integerSettings.minValue = value
         integerSettings.maxValue = value
