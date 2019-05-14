@@ -46,7 +46,7 @@
           <text value="Ma&amp;ximum value"/>
         </properties>
       </component>
-      <component id="b93dd" class="com.fwdekker.randomness.ui.JLongSpinner" binding="decimalCount" custom-create="true">
+      <component id="b93dd" class="com.fwdekker.randomness.ui.JIntSpinner" binding="decimalCount" custom-create="true">
         <constraints>
           <grid row="2" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="52" height="-1"/>

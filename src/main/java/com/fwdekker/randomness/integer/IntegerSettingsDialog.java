@@ -1,7 +1,9 @@
 package com.fwdekker.randomness.integer;
 
+import com.fwdekker.randomness.JavaHelperKt;
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.ui.ButtonGroupHelper;
+import com.fwdekker.randomness.ui.ButtonGroupKt;
+import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JLongSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -12,8 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 
 /**
@@ -27,7 +27,7 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
     private JSpinnerRange valueRange;
     private JLongSpinner minValue;
     private JLongSpinner maxValue;
-    private JLongSpinner base;
+    private JIntSpinner base;
     private ButtonGroup groupingSeparatorGroup;
 
 
@@ -64,34 +64,21 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
     private void createUIComponents() {
         minValue = new JLongSpinner();
         maxValue = new JLongSpinner();
-        base = new JLongSpinner(IntegerSettings.DECIMAL_BASE, IntegerSettings.MIN_BASE, IntegerSettings.MAX_BASE);
+        base = new JIntSpinner(IntegerSettings.DECIMAL_BASE, IntegerSettings.MIN_BASE, IntegerSettings.MAX_BASE);
         valueRange = new JSpinnerRange(minValue, maxValue, Long.MAX_VALUE);
 
         base.addChangeListener(event -> {
-            final long value = ((JLongSpinner) event.getSource()).getValue();
+            final int value = ((JIntSpinner) event.getSource()).getValue();
             final boolean enabled = value == IntegerSettings.DECIMAL_BASE;
-            ButtonGroupHelper.INSTANCE.forEach(groupingSeparatorGroup,
+
+            ButtonGroupKt.forEach(
+                groupingSeparatorGroup,
                 button -> {
                     button.setEnabled(enabled);
                     return Unit.INSTANCE;
-                });
+                }
+            );
         });
-    }
-
-    @Override
-    @Nullable
-    protected ValidationInfo doValidate() {
-
-        return Stream
-            .of(
-                minValue.validateValue(),
-                maxValue.validateValue(),
-                base.validateValue(),
-                valueRange.validateValue()
-            )
-            .filter(Objects::nonNull)
-            .findFirst()
-            .orElse(null);
     }
 
 
@@ -99,18 +86,29 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
     public void loadSettings(final @NotNull IntegerSettings settings) {
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
-        base.setValue((long) settings.getBase());
-        ButtonGroupHelper.INSTANCE.setValue(groupingSeparatorGroup, settings.getGroupingSeparator());
+        base.setValue(settings.getBase());
+        ButtonGroupKt.setValue(groupingSeparatorGroup, settings.getGroupingSeparator());
     }
 
     @Override
     public void saveSettings(final @NotNull IntegerSettings settings) {
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
-        settings.setBase(base.getValue().intValue());
+        settings.setBase(base.getValue());
 
-        final String groupingSeparator = ButtonGroupHelper.INSTANCE.getValue(groupingSeparatorGroup);
+        final String groupingSeparator = ButtonGroupKt.getValue(groupingSeparatorGroup);
         settings.setGroupingSeparator(groupingSeparator == null || groupingSeparator.isEmpty()
             ? IntegerSettings.DEFAULT_GROUPING_SEPARATOR : groupingSeparator);
+    }
+
+    @Override
+    @Nullable
+    public ValidationInfo doValidate() {
+        return JavaHelperKt.firstNonNull(
+            minValue.validateValue(),
+            maxValue.validateValue(),
+            base.validateValue(),
+            valueRange.validateValue()
+        );
     }
 }

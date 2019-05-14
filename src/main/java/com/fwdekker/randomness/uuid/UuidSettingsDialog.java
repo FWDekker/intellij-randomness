@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.uuid;
 
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.ui.ButtonGroupHelper;
+import com.fwdekker.randomness.ui.ButtonGroupKt;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,21 +47,21 @@ public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
         return contentPane;
     }
 
-    @Override
-    @Nullable
-    protected ValidationInfo doValidate() {
-        return null;
-    }
-
 
     @Override
     public void loadSettings(final @NotNull UuidSettings settings) {
-        ButtonGroupHelper.INSTANCE.setValue(enclosureGroup, settings.getEnclosure());
+        ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
     }
 
     @Override
     public void saveSettings(final @NotNull UuidSettings settings) {
-        final String enclosure = ButtonGroupHelper.INSTANCE.getValue(enclosureGroup);
+        final String enclosure = ButtonGroupKt.getValue(enclosureGroup);
         settings.setEnclosure(enclosure == null ? UuidSettings.DEFAULT_ENCLOSURE : enclosure);
+    }
+
+    @Override
+    @Nullable
+    public ValidationInfo doValidate() {
+        return null;
     }
 }

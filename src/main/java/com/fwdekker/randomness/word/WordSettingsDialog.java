@@ -1,10 +1,11 @@
 package com.fwdekker.randomness.word;
 
 import com.fwdekker.randomness.CapitalizationMode;
+import com.fwdekker.randomness.JavaHelperKt;
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.ui.ButtonGroupHelper;
+import com.fwdekker.randomness.ui.ButtonGroupKt;
 import com.fwdekker.randomness.ui.JEditableList;
-import com.fwdekker.randomness.ui.JLongSpinner;
+import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
@@ -23,10 +24,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 /**
@@ -38,8 +37,8 @@ import java.util.stream.Stream;
 public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private JPanel contentPane;
     private JSpinnerRange lengthRange;
-    private JLongSpinner minLength;
-    private JLongSpinner maxLength;
+    private JIntSpinner minLength;
+    private JIntSpinner maxLength;
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
     private JEditableList<Dictionary> dictionaries;
@@ -78,8 +77,8 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
      * This method is called by the scene builder at the start of the constructor.
      */
     private void createUIComponents() {
-        minLength = new JLongSpinner(1, 1, Integer.MAX_VALUE);
-        maxLength = new JLongSpinner(1, 1, Integer.MAX_VALUE);
+        minLength = new JIntSpinner(1, 1);
+        maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
 
         dictionaries = new JEditableList<>();
@@ -98,8 +97,8 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     public void loadSettings(final @NotNull WordSettings settings) {
         minLength.setValue(settings.getMinLength());
         maxLength.setValue(settings.getMaxLength());
-        ButtonGroupHelper.INSTANCE.setValue(enclosureGroup, settings.getEnclosure());
-        ButtonGroupHelper.INSTANCE.setValue(capitalizationGroup, settings.getCapitalization());
+        ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
+        ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
         dictionaries.setEntries(WordSettingsDialogHelperKt.addSets(
             settings.getBundledDictionaries(), settings.getUserDictionaries()));
@@ -109,13 +108,13 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
     @Override
     public void saveSettings(final @NotNull WordSettings settings) {
-        settings.setMinLength(Math.toIntExact(minLength.getValue()));
-        settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
+        settings.setMinLength(minLength.getValue());
+        settings.setMaxLength(maxLength.getValue());
 
-        final String enclosure = ButtonGroupHelper.INSTANCE.getValue(enclosureGroup);
+        final String enclosure = ButtonGroupKt.getValue(enclosureGroup);
         settings.setEnclosure(enclosure == null ? WordSettings.DEFAULT_ENCLOSURE : enclosure);
 
-        final String capitalization = ButtonGroupHelper.INSTANCE.getValue(capitalizationGroup);
+        final String capitalization = ButtonGroupKt.getValue(capitalizationGroup);
         settings.setCapitalization(capitalization == null
             ? WordSettings.Companion.getDEFAULT_CAPITALIZATION()
             : CapitalizationMode.Companion.getMode(capitalization));
@@ -143,25 +142,26 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
     @Override
     @Nullable
-    protected ValidationInfo doValidate() {
+    public ValidationInfo doValidate() {
         if (dictionaries.getActiveEntries().isEmpty())
             return new ValidationInfo("Select at least one dictionary.", dictionaries);
 
-        if (dictionaries.getActiveEntries().stream()
-            .map(Dictionary::isValid)
-            .anyMatch(it -> !it)) {
-            return new ValidationInfo("One of these dictionaries is not valid.", dictionaries);
+        for (final Dictionary dictionary : dictionaries.getActiveEntries()) {
+            try {
+                dictionary.validate();
+            } catch (final InvalidDictionaryException e) {
+                return new ValidationInfo(
+                    "Dictionary " + dictionary.toString() + " is invalid: " + e.getMessage(),
+                    dictionaries
+                );
+            }
         }
 
-        return Stream
-            .of(
-                minLength.validateValue(),
-                maxLength.validateValue(),
-                lengthRange.validateValue()
-            )
-            .filter(Objects::nonNull)
-            .findFirst()
-            .orElse(null);
+        return JavaHelperKt.firstNonNull(
+            minLength.validateValue(),
+            maxLength.validateValue(),
+            lengthRange.validateValue()
+        );
     }
 
 
@@ -229,10 +229,16 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     private Unit onDictionaryActivityChange() {
         final Set<String> words = WordSettingsDialogHelperKt.combineDictionaries(dictionaries.getActiveEntries());
 
-        minLength.setMaxValue(
-            words.stream().map(String::length).max(Comparator.comparing(Integer::valueOf)).orElse(1));
-        maxLength.setMinValue(
-            words.stream().map(String::length).min(Comparator.comparing(Integer::valueOf)).orElse(Integer.MAX_VALUE));
+        minLength.setMaxValue(words.stream()
+            .map(String::length)
+            .max(Comparator.comparing(Integer::valueOf))
+            .orElse(1)
+        );
+        maxLength.setMinValue(words.stream()
+            .map(String::length)
+            .min(Comparator.comparing(Integer::valueOf))
+            .orElse(Integer.MAX_VALUE)
+        );
 
         return Unit.INSTANCE;
     }

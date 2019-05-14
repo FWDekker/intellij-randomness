@@ -42,5 +42,5 @@ abstract class SettingsDialog<S : Settings<*>>(private val settings: S) : Dialog
      *
      * @return `null` if the input is valid, or a `ValidationInfo` object explaining why the input is invalid
      */
-    abstract override fun doValidate(): ValidationInfo?
+    public abstract override fun doValidate(): ValidationInfo?
 }

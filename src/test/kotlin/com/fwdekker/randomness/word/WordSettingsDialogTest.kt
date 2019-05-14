@@ -2,7 +2,6 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.ui.JEditableList
-import com.intellij.openapi.ui.ValidationInfo
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -13,7 +12,6 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.xit
 import org.junit.jupiter.api.fail
-import java.io.File
 
 
 /**
@@ -33,6 +31,12 @@ object WordSettingsDialogTest : Spek({
     @Suppress("UNCHECKED_CAST")
     beforeEachTest {
         wordSettings = WordSettings()
+        wordSettings.minLength = 4
+        wordSettings.maxLength = 6
+        wordSettings.enclosure = ""
+        wordSettings.capitalization = CapitalizationMode.LOWER
+        wordSettings.activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.EXTENDED_DICTIONARY)
+
         wordSettingsDialog = GuiActionRunner.execute<WordSettingsDialog> { WordSettingsDialog(wordSettings) }
         frame = showInFrame(wordSettingsDialog.createCenterPanel())
 
@@ -46,27 +50,32 @@ object WordSettingsDialogTest : Spek({
 
 
     describe("loading settings") {
-        it("loads the default minimum length") {
-            frame.spinner("minLength").requireValue(WordSettings().minLength.toLong())
+        it("loads the settings' minimum length") {
+            frame.spinner("minLength").requireValue(4)
         }
 
-        it("loads the default maximum length") {
-            frame.spinner("maxLength").requireValue(WordSettings().maxLength.toLong())
+        it("loads the settings' maximum length") {
+            frame.spinner("maxLength").requireValue(6)
         }
 
-        it("loads the default enclosure") {
-            frame.radioButton("enclosureNone").requireNotSelected()
-            frame.radioButton("enclosureSingle").requireNotSelected()
-            frame.radioButton("enclosureDouble").requireSelected()
-            frame.radioButton("enclosureBacktick").requireNotSelected()
+        it("loads the settings' enclosure") {
+            frame.radioButton("enclosureNone").requireSelected(true)
+            frame.radioButton("enclosureSingle").requireSelected(false)
+            frame.radioButton("enclosureDouble").requireSelected(false)
+            frame.radioButton("enclosureBacktick").requireSelected(false)
         }
 
-        it("loads the default capitalization") {
-            frame.radioButton("capitalizationRetain").requireSelected()
-            frame.radioButton("capitalizationSentence").requireNotSelected()
-            frame.radioButton("capitalizationFirstLetter").requireNotSelected()
-            frame.radioButton("capitalizationUpper").requireNotSelected()
-            frame.radioButton("capitalizationLower").requireNotSelected()
+        it("loads the settings' capitalization") {
+            frame.radioButton("capitalizationRetain").requireSelected(false)
+            frame.radioButton("capitalizationSentence").requireSelected(false)
+            frame.radioButton("capitalizationFirstLetter").requireSelected(false)
+            frame.radioButton("capitalizationUpper").requireSelected(false)
+            frame.radioButton("capitalizationLower").requireSelected(true)
+        }
+
+        it("loads the settings' active bundled dictionaries") {
+            assertThat(dialogDictionaries.activeEntries)
+                .containsExactly(BundledDictionary.cache.get(BundledDictionary.EXTENDED_DICTIONARY))
         }
     }
 
@@ -75,13 +84,13 @@ object WordSettingsDialogTest : Spek({
             it("truncates decimals in the minimum length") {
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = 553.92f }
 
-                frame.spinner("minLength").requireValue(553L)
+                frame.spinner("minLength").requireValue(553)
             }
 
             it("truncates decimals in the maximum length") {
                 GuiActionRunner.execute { frame.spinner("maxLength").target().value = 796.01f }
 
-                frame.spinner("maxLength").requireValue(796L)
+                frame.spinner("maxLength").requireValue(796)
             }
         }
 
@@ -139,9 +148,9 @@ object WordSettingsDialogTest : Spek({
 
     describe("validation") {
         it("passes for the default settings") {
-            val validationInfo = GuiActionRunner.execute<ValidationInfo> { wordSettingsDialog.doValidate() }
+            GuiActionRunner.execute { wordSettingsDialog.loadSettings(WordSettings()) }
 
-            assertThat(validationInfo).isNull()
+            assertThat(wordSettingsDialog.doValidate()).isNull()
         }
 
         describe("length range") {
@@ -153,16 +162,6 @@ object WordSettingsDialogTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 1.")
-            }
-
-            it("fails if the maximum length overflows") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = Integer.MAX_VALUE.toLong() + 2L }
-
-                val validationInfo = wordSettingsDialog.doValidate()
-
-                assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 2147483647.")
             }
 
             it("fails if the minimum length is greater than the maximum length") {
@@ -234,6 +233,21 @@ object WordSettingsDialogTest : Spek({
                 assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
                 assertThat(validationInfo?.message).isEqualTo("Select at least one dictionary.")
             }
+
+            it("fails if one of the dictionaries is invalid") {
+                wordSettings.userDictionaryFiles = mutableSetOf("does_not_exist.dic")
+                wordSettings.activeUserDictionaryFiles = mutableSetOf("does_not_exist.dic")
+                GuiActionRunner.execute { wordSettingsDialog.loadSettings(wordSettings) }
+
+                val validationInfo = wordSettingsDialog.doValidate()
+
+                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
+                assertThat(validationInfo?.message).isEqualTo("" +
+                    "Dictionary [user] does_not_exist.dic is invalid: " +
+                    "Failed to read user dictionary into memory."
+                )
+            }
         }
     }
 
@@ -255,6 +269,3 @@ object WordSettingsDialogTest : Spek({
         }
     }
 })
-
-
-fun getDictionaryFile(path: String) = File(WordSettingsDialogTest::class.java.classLoader.getResource(path).path)

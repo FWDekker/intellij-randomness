@@ -60,9 +60,13 @@ interface Dictionary {
 class BundledDictionary private constructor(val filename: String) : Dictionary {
     companion object {
         /**
-         * The default dictionary file.
+         * The location of a simple English dictionary.
          */
-        val DEFAULT_DICTIONARY_FILES = listOf("english_simple.dic", "english_extended.dic")
+        const val SIMPLE_DICTIONARY = "english_simple.dic"
+        /**
+         * The location of an extended English dictionary.
+         */
+        const val EXTENDED_DICTIONARY = "english_extended.dic"
 
         /**
          * The cache of bundled dictionaries, used to improve word generation times.

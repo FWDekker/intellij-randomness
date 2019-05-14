@@ -11,17 +11,16 @@ import javax.swing.JSpinner
  * @param max the `JSpinner` that represents the maximum value
  * @param maxRange the maximum difference between `min` and `max`
  */
-class JSpinnerRange(
+class JSpinnerRange @JvmOverloads constructor(
     private val min: JSpinner,
     private val max: JSpinner,
     private val maxRange: Double = DEFAULT_MAX_RANGE
 ) {
     companion object {
         /**
-         * The maximum span that can be expressed by a `JSpinnerRange`.
+         * The maximum span that can be expressed.
          */
-        // TODO Make private. Currently only used in tests because Java cannot use default arguments.
-        const val DEFAULT_MAX_RANGE = 1E53
+        private const val DEFAULT_MAX_RANGE = 1E53
     }
 
     /**

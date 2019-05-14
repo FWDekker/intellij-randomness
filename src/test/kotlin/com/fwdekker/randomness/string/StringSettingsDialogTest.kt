@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.string
 
+import com.fwdekker.randomness.CapitalizationMode
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -14,11 +15,6 @@ import org.jetbrains.spek.api.dsl.it
  * GUI tests for [StringSettingsDialog].
  */
 object StringSettingsDialogTest : Spek({
-    val defaultMinValue = 144
-    val defaultMaxValue = 719
-    val defaultEnclosure = "\""
-    val defaultAlphabets = setOf(Alphabet.ALPHABET, Alphabet.ALPHABET)
-
     lateinit var stringSettings: StringSettings
     lateinit var stringSettingsDialog: StringSettingsDialog
     lateinit var frame: FrameFixture
@@ -30,13 +26,13 @@ object StringSettingsDialogTest : Spek({
 
     beforeEachTest {
         stringSettings = StringSettings()
-        stringSettings.minLength = defaultMinValue
-        stringSettings.maxLength = defaultMaxValue
-        stringSettings.enclosure = defaultEnclosure
-        stringSettings.alphabets = defaultAlphabets.toMutableSet()
+        stringSettings.minLength = 144
+        stringSettings.maxLength = 719
+        stringSettings.enclosure = "\""
+        stringSettings.capitalization = CapitalizationMode.RANDOM
+        stringSettings.alphabets = mutableSetOf(Alphabet.ALPHABET, Alphabet.HEXADECIMAL)
 
-        stringSettingsDialog =
-            GuiActionRunner.execute<StringSettingsDialog> { StringSettingsDialog(stringSettings) }
+        stringSettingsDialog = GuiActionRunner.execute<StringSettingsDialog> { StringSettingsDialog(stringSettings) }
         frame = showInFrame(stringSettingsDialog.createCenterPanel())
     }
 
@@ -46,25 +42,30 @@ object StringSettingsDialogTest : Spek({
 
 
     describe("loading settings") {
-        it("loads the default minimum value") {
-            frame.spinner("minLength").requireValue(defaultMinValue.toLong())
+        it("loads the settings' minimum value") {
+            frame.spinner("minLength").requireValue(144)
         }
 
-        it("loads the default maximum value") {
-            frame.spinner("maxLength").requireValue(defaultMaxValue.toLong())
+        it("loads the settings' maximum value") {
+            frame.spinner("maxLength").requireValue(719)
         }
 
-        it("loads the default enclosure") {
-            frame.radioButton("enclosureNone").requireNotSelected()
-            frame.radioButton("enclosureSingle").requireNotSelected()
-            frame.radioButton("enclosureDouble").requireSelected()
-            frame.radioButton("enclosureBacktick").requireNotSelected()
+        it("loads the settings' enclosure") {
+            frame.radioButton("enclosureNone").requireSelected(false)
+            frame.radioButton("enclosureSingle").requireSelected(false)
+            frame.radioButton("enclosureDouble").requireSelected(true)
+            frame.radioButton("enclosureBacktick").requireSelected(false)
         }
 
-        it("loads the default alphabets") {
-            val expectedSelected = defaultAlphabets.map { it.toString() }.toTypedArray()
+        it("loads the settings' capitalization") {
+            frame.radioButton("capitalizationLower").requireSelected(false)
+            frame.radioButton("capitalizationUpper").requireSelected(false)
+            frame.radioButton("capitalizationRandom").requireSelected(true)
+        }
 
-            frame.list("alphabets").requireSelectedItems(*expectedSelected)
+        it("loads the settings' alphabets") {
+            frame.list("alphabets")
+                .requireSelectedItems("Alphabet (a, b, c, ...)", "Hexadecimal (0, 1, 2, ..., d, e, f)")
         }
     }
 
@@ -72,18 +73,20 @@ object StringSettingsDialogTest : Spek({
         it("truncates decimals in the minimum length") {
             GuiActionRunner.execute { frame.spinner("minLength").target().value = 553.92f }
 
-            frame.spinner("minLength").requireValue(553L)
+            frame.spinner("minLength").requireValue(553)
         }
 
         it("truncates decimals in the maximum length") {
             GuiActionRunner.execute { frame.spinner("maxLength").target().value = 796.01f }
 
-            frame.spinner("maxLength").requireValue(796L)
+            frame.spinner("maxLength").requireValue(796)
         }
     }
 
     describe("validation") {
         it("passes for the default settings") {
+            GuiActionRunner.execute { stringSettingsDialog.loadSettings(StringSettings()) }
+
             assertThat(stringSettingsDialog.doValidate()).isNull()
         }
 
@@ -98,20 +101,11 @@ object StringSettingsDialogTest : Spek({
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 1.")
             }
 
-            it("fails if the maximum length overflows") {
-                GuiActionRunner.execute {
-                    frame.spinner("maxLength").target().value = Integer.MAX_VALUE.toLong() + 2L
-                }
-
-                val validationInfo = stringSettingsDialog.doValidate()
-
-                assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 2147483647.")
-            }
-
             it("fails if the minimum length is greater than the maximum length") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = defaultMinValue - 1 }
+                GuiActionRunner.execute {
+                    frame.spinner("minLength").target().value = 234
+                    frame.spinner("maxLength").target().value = 233
+                }
 
                 val validationInfo = stringSettingsDialog.doValidate()
 
@@ -129,7 +123,7 @@ object StringSettingsDialogTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.list("alphabets").target())
-                assertThat(validationInfo?.message).isEqualTo("Please select at least one option.")
+                assertThat(validationInfo?.message).isEqualTo("Please select at least one alphabet.")
             }
         }
     }
@@ -143,7 +137,8 @@ object StringSettingsDialogTest : Spek({
                 frame.spinner("minLength").target().value = 445
                 frame.spinner("maxLength").target().value = 803
                 frame.radioButton("enclosureBacktick").target().isSelected = true
-                frame.list("alphabets").target().setSelectedIndices(newAlphabetsOrdinals.toIntArray())
+                frame.radioButton("capitalizationUpper").target().isSelected = true
+                frame.list("alphabets").target().selectedIndices = newAlphabetsOrdinals.toIntArray()
             }
 
             stringSettingsDialog.saveSettings()
@@ -151,6 +146,7 @@ object StringSettingsDialogTest : Spek({
             assertThat(stringSettings.minLength).isEqualTo(445)
             assertThat(stringSettings.maxLength).isEqualTo(803)
             assertThat(stringSettings.enclosure).isEqualTo("`")
+            assertThat(stringSettings.capitalization).isEqualTo(CapitalizationMode.UPPER)
             assertThat(stringSettings.alphabets).isEqualTo(newAlphabets)
         }
     }

@@ -14,10 +14,6 @@ import org.jetbrains.spek.api.dsl.it
  * GUI tests for [DecimalSettingsDialog].
  */
 object DecimalSettingsDialogTest : Spek({
-    val defaultMinValue = 157.61
-    val defaultMaxValue = 408.68
-    val defaultDecimalCount = 5
-
     lateinit var decimalSettings: DecimalSettings
     lateinit var decimalSettingsDialog: DecimalSettingsDialog
     lateinit var frame: FrameFixture
@@ -29,9 +25,11 @@ object DecimalSettingsDialogTest : Spek({
 
     beforeEachTest {
         decimalSettings = DecimalSettings()
-        decimalSettings.minValue = defaultMinValue
-        decimalSettings.maxValue = defaultMaxValue
-        decimalSettings.decimalCount = defaultDecimalCount
+        decimalSettings.minValue = 157.61
+        decimalSettings.maxValue = 408.68
+        decimalSettings.decimalCount = 5
+        decimalSettings.groupingSeparator = "_"
+        decimalSettings.decimalSeparator = "."
 
         decimalSettingsDialog =
             GuiActionRunner.execute<DecimalSettingsDialog> { DecimalSettingsDialog(decimalSettings) }
@@ -44,16 +42,28 @@ object DecimalSettingsDialogTest : Spek({
 
 
     describe("loading settings") {
-        it("loads the default minimum value") {
-            frame.spinner("minValue").requireValue(defaultMinValue)
+        it("loads the settings' minimum value") {
+            frame.spinner("minValue").requireValue(157.61)
         }
 
-        it("loads the default maximum value") {
-            frame.spinner("maxValue").requireValue(defaultMaxValue)
+        it("loads the settings' maximum value") {
+            frame.spinner("maxValue").requireValue(408.68)
         }
 
-        it("loads the default decimal count") {
-            frame.spinner("decimalCount").requireValue(defaultDecimalCount.toLong())
+        it("loads the settings' decimal count") {
+            frame.spinner("decimalCount").requireValue(5)
+        }
+
+        it("loads the settings' grouping separator") {
+            frame.radioButton("groupingSeparatorNone").requireSelected(false)
+            frame.radioButton("groupingSeparatorPeriod").requireSelected(false)
+            frame.radioButton("groupingSeparatorComma").requireSelected(false)
+            frame.radioButton("groupingSeparatorUnderscore").requireSelected(true)
+        }
+
+        it("loads the settings' decimal separator") {
+            frame.radioButton("decimalSeparatorComma").requireSelected(false)
+            frame.radioButton("decimalSeparatorPeriod").requireSelected(true)
         }
     }
 
@@ -61,41 +71,23 @@ object DecimalSettingsDialogTest : Spek({
         it("truncates decimals in the decimal count") {
             GuiActionRunner.execute { frame.spinner("decimalCount").target().value = 693.57f }
 
-            frame.spinner("decimalCount").requireValue(693L)
+            frame.spinner("decimalCount").requireValue(693)
         }
     }
 
     describe("validation") {
         it("passes for the default settings") {
+            GuiActionRunner.execute { decimalSettingsDialog.loadSettings(DecimalSettings()) }
+
             assertThat(decimalSettingsDialog.doValidate()).isNull()
         }
 
         describe("value range") {
-            it("fails if the minimum value underflows") {
+            it("fails if the minimum value is greater than the maximum value") {
                 GuiActionRunner.execute {
-                    frame.spinner("minValue").target().value = -1E54
-                    frame.spinner("maxValue").target().value = -1E53
+                    frame.spinner("minValue").target().value = 46.16
+                    frame.spinner("maxValue").target().value = 45.16
                 }
-
-                val validationInfo = decimalSettingsDialog.doValidate()
-
-                assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.spinner("minValue").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to -1.0E53.")
-            }
-
-            it("fails if the maximum value overflows") {
-                GuiActionRunner.execute { frame.spinner("maxValue").target().value = 1E54 }
-
-                val validationInfo = decimalSettingsDialog.doValidate()
-
-                assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 1.0E53.")
-            }
-
-            it("fails if the maximum value is greater than the minimum value") {
-                GuiActionRunner.execute { frame.spinner("maxValue").target().value = defaultMinValue - 1 }
 
                 val validationInfo = decimalSettingsDialog.doValidate()
 
@@ -133,18 +125,6 @@ object DecimalSettingsDialogTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("decimalCount").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 0.")
-            }
-
-            it("fails if the decimal count overflows") {
-                GuiActionRunner.execute {
-                    frame.spinner("decimalCount").target().value = Integer.MAX_VALUE.toLong() + 1L
-                }
-
-                val validationInfo = decimalSettingsDialog.doValidate()
-
-                assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.spinner("decimalCount").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 2147483647.")
             }
         }
     }
