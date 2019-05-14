@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.integer
 
-import com.intellij.openapi.ui.ValidationInfo
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -15,10 +14,6 @@ import org.jetbrains.spek.api.dsl.it
  * GUI tests for [IntegerSettingsDialog].
  */
 object IntegerSettingsDialogTest : Spek({
-    val defaultMinValue = 2_147_483_883L
-    val defaultMaxValue = 6_442_451_778L
-    val defaultBase: Long = 10
-
     lateinit var integerSettings: IntegerSettings
     lateinit var integerSettingsDialog: IntegerSettingsDialog
     lateinit var frame: FrameFixture
@@ -30,9 +25,10 @@ object IntegerSettingsDialogTest : Spek({
 
     beforeEachTest {
         integerSettings = IntegerSettings()
-        integerSettings.minValue = defaultMinValue
-        integerSettings.maxValue = defaultMaxValue
-        integerSettings.base = defaultBase.toInt()
+        integerSettings.minValue = 2_147_483_883L
+        integerSettings.maxValue = 6_442_451_778L
+        integerSettings.base = 10
+        integerSettings.groupingSeparator = "_"
 
         integerSettingsDialog =
             GuiActionRunner.execute<IntegerSettingsDialog> { IntegerSettingsDialog(integerSettings) }
@@ -45,16 +41,23 @@ object IntegerSettingsDialogTest : Spek({
 
 
     describe("loading settings") {
-        it("loads the default minimum value") {
-            frame.spinner("minValue").requireValue(defaultMinValue)
+        it("loads the settings' minimum value") {
+            frame.spinner("minValue").requireValue(2_147_483_883L)
         }
 
-        it("loads the default maximum value") {
-            frame.spinner("maxValue").requireValue(defaultMaxValue)
+        it("loads the settings' maximum value") {
+            frame.spinner("maxValue").requireValue(6_442_451_778L)
         }
 
-        it("loads the default base value") {
-            frame.spinner("base").requireValue(defaultBase)
+        it("loads the settings' base value") {
+            frame.spinner("base").requireValue(10)
+        }
+
+        it("loads the settings' base value") {
+            frame.radioButton("groupingSeparatorNone").requireSelected(false)
+            frame.radioButton("groupingSeparatorPeriod").requireSelected(false)
+            frame.radioButton("groupingSeparatorComma").requireSelected(false)
+            frame.radioButton("groupingSeparatorUnderscore").requireSelected(true)
         }
     }
 
@@ -62,7 +65,7 @@ object IntegerSettingsDialogTest : Spek({
         it("truncates decimals in the base") {
             GuiActionRunner.execute { frame.spinner("base").target().value = 22.62f }
 
-            frame.spinner("base").requireValue(22L)
+            frame.spinner("base").requireValue(22)
         }
 
         it("truncates decimals in the minimum value") {
@@ -80,14 +83,17 @@ object IntegerSettingsDialogTest : Spek({
 
     describe("validation") {
         it("passes for the default settings") {
-            val validationInfo = GuiActionRunner.execute<ValidationInfo> { integerSettingsDialog.doValidate() }
+            GuiActionRunner.execute { integerSettingsDialog.loadSettings(IntegerSettings()) }
 
-            assertThat(validationInfo).isNull()
+            assertThat(integerSettingsDialog.doValidate()).isNull()
         }
 
         describe("value range") {
-            it("fails if the maximum value is greater than the minimum value") {
-                GuiActionRunner.execute { frame.spinner("maxValue").target().value = defaultMinValue - 1 }
+            it("fails if the minimum value is greater than the maximum value") {
+                GuiActionRunner.execute {
+                    frame.spinner("minValue").target().value = 98
+                    frame.spinner("maxValue").target().value = 97
+                }
 
                 val validationInfo = integerSettingsDialog.doValidate()
 
@@ -156,16 +162,18 @@ object IntegerSettingsDialogTest : Spek({
     describe("saving settings") {
         it("correctly saves settings to a settings object") {
             GuiActionRunner.execute {
-                frame.spinner("minValue").target().value = Integer.MAX_VALUE.toLong() + 1L
-                frame.spinner("maxValue").target().value = Integer.MAX_VALUE.toLong() + 2L
-                frame.spinner("base").target().value = 14L
-
-                integerSettingsDialog.saveSettings()
+                frame.spinner("minValue").target().value = 2147483648L
+                frame.spinner("maxValue").target().value = 2147483649L
+                frame.spinner("base").target().value = 14
+                frame.radioButton("groupingSeparatorPeriod").target().isSelected = true
             }
+
+            integerSettingsDialog.saveSettings()
 
             assertThat(integerSettings.minValue).isEqualTo(2_147_483_648L)
             assertThat(integerSettings.maxValue).isEqualTo(2_147_483_649L)
             assertThat(integerSettings.base).isEqualTo(14)
+            assertThat(integerSettings.groupingSeparator).isEqualTo(".")
         }
     }
 })

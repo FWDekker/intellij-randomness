@@ -25,6 +25,11 @@ object ArraySettingsDialogTest : Spek({
 
     beforeEachTest {
         arraySettings = ArraySettings()
+        arraySettings.count = 6
+        arraySettings.brackets = "[]"
+        arraySettings.separator = ","
+        arraySettings.isSpaceAfterSeparator = false
+
         arraySettingsDialog = GuiActionRunner.execute<ArraySettingsDialog> { ArraySettingsDialog(arraySettings) }
         frame = showInFrame(arraySettingsDialog.createCenterPanel())
     }
@@ -35,24 +40,25 @@ object ArraySettingsDialogTest : Spek({
 
 
     describe("loading settings") {
-        it("loads the default count") {
-            frame.spinner("count").requireValue(arraySettings.count.toLong())
+        it("loads the settings' count") {
+            frame.spinner("count").requireValue(6)
         }
 
-        it("loads the default brackets") {
-            frame.radioButton("bracketsSquare").requireSelected()
-            frame.radioButton("bracketsCurly").requireNotSelected()
-            frame.radioButton("bracketsRound").requireNotSelected()
+        it("loads the settings' brackets") {
+            frame.radioButton("bracketsNone").requireSelected(false)
+            frame.radioButton("bracketsSquare").requireSelected(true)
+            frame.radioButton("bracketsCurly").requireSelected(false)
+            frame.radioButton("bracketsRound").requireSelected(false)
         }
 
-        it("loads the default separator") {
-            frame.radioButton("separatorComma").requireSelected()
-            frame.radioButton("separatorSemicolon").requireNotSelected()
-            frame.radioButton("separatorNewline").requireNotSelected()
+        it("loads the settings' separator") {
+            frame.radioButton("separatorComma").requireSelected(true)
+            frame.radioButton("separatorSemicolon").requireSelected(false)
+            frame.radioButton("separatorNewline").requireSelected(false)
         }
 
-        it("loads the default settings for using a space after separator") {
-            frame.checkBox("spaceAfterSeparator").requireSelected()
+        it("loads the settings' settings for using a space after separator") {
+            frame.checkBox("spaceAfterSeparator").requireSelected(false)
         }
     }
 
@@ -60,12 +66,14 @@ object ArraySettingsDialogTest : Spek({
         it("truncates decimals in the count") {
             GuiActionRunner.execute { frame.spinner("count").target().value = 983.24f }
 
-            frame.spinner("count").requireValue(983L)
+            frame.spinner("count").requireValue(983)
         }
     }
 
     describe("validation") {
         it("passes for the default settings") {
+            GuiActionRunner.execute { arraySettingsDialog.loadSettings(ArraySettings()) }
+
             assertThat(arraySettingsDialog.doValidate()).isNull()
         }
 
@@ -94,16 +102,6 @@ object ArraySettingsDialogTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("count").target())
                 assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 1.")
-            }
-
-            it("fails for an overflowing count") {
-                GuiActionRunner.execute { frame.spinner("count").target().value = Integer.MAX_VALUE.toLong() + 2L }
-
-                val validationInfo = arraySettingsDialog.doValidate()
-
-                assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.spinner("count").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 2147483647.")
             }
         }
     }
