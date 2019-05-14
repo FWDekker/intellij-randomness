@@ -146,10 +146,15 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         if (dictionaries.getActiveEntries().isEmpty())
             return new ValidationInfo("Select at least one dictionary.", dictionaries);
 
-        if (dictionaries.getActiveEntries().stream()
-            .map(Dictionary::isValid)
-            .anyMatch(it -> !it)) {
-            return new ValidationInfo("One of these dictionaries is not valid.", dictionaries);
+        for (final Dictionary dictionary : dictionaries.getActiveEntries()) {
+            try {
+                dictionary.validate();
+            } catch (final InvalidDictionaryException e) {
+                return new ValidationInfo(
+                    "Dictionary " + dictionary.toString() + " is invalid: " + e.getMessage(),
+                    dictionaries
+                );
+            }
         }
 
         return JavaHelperKt.firstNonNull(

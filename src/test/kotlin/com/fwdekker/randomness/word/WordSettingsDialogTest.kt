@@ -233,6 +233,21 @@ object WordSettingsDialogTest : Spek({
                 assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
                 assertThat(validationInfo?.message).isEqualTo("Select at least one dictionary.")
             }
+
+            it("fails if one of the dictionaries is invalid") {
+                wordSettings.userDictionaryFiles = mutableSetOf("does_not_exist.dic")
+                wordSettings.activeUserDictionaryFiles = mutableSetOf("does_not_exist.dic")
+                GuiActionRunner.execute { wordSettingsDialog.loadSettings(wordSettings) }
+
+                val validationInfo = wordSettingsDialog.doValidate()
+
+                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
+                assertThat(validationInfo?.message).isEqualTo("" +
+                    "Dictionary [user] does_not_exist.dic is invalid: " +
+                    "Failed to read user dictionary into memory."
+                )
+            }
         }
     }
 
