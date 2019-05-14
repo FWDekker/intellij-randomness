@@ -14,7 +14,6 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.awt.RelativePoint;
-import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
-import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -83,8 +82,6 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
         dictionaries = new JEditableList<>();
         dictionaries.getSelectionModel().addListSelectionListener(this::onDictionaryHighlightChange);
-        dictionaries.addEntryActivityChangeListener(event -> onDictionaryActivityChange());
-        onDictionaryActivityChange();
 
         dictionaryAddButton = new JButton();
         dictionaryAddButton.addActionListener(event -> addDictionary());
@@ -119,30 +116,21 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             ? WordSettings.Companion.getDEFAULT_CAPITALIZATION()
             : CapitalizationMode.Companion.getMode(capitalization));
 
-        settings.setBundledDictionaries(dictionaries.getEntries().stream()
-            .filter(BundledDictionary.class::isInstance)
-            .map(it -> (BundledDictionary) it)
-            .collect(Collectors.toSet()));
-        settings.setActiveBundledDictionaries(dictionaries.getActiveEntries().stream()
-            .filter(BundledDictionary.class::isInstance)
-            .map(it -> (BundledDictionary) it)
-            .collect(Collectors.toSet()));
+        settings.setBundledDictionaries(filterIsInstance(dictionaries.getEntries(), BundledDictionary.class));
+        settings.setBundledDictionaries(filterIsInstance(dictionaries.getActiveEntries(), BundledDictionary.class));
         BundledDictionary.Companion.getCache().clear();
 
-        settings.setUserDictionaries(dictionaries.getEntries().stream()
-            .filter(UserDictionary.class::isInstance)
-            .map(it -> (UserDictionary) it)
-            .collect(Collectors.toSet()));
-        settings.setActiveUserDictionaries(dictionaries.getActiveEntries().stream()
-            .filter(UserDictionary.class::isInstance)
-            .map(it -> (UserDictionary) it)
-            .collect(Collectors.toSet()));
+        settings.setUserDictionaries(filterIsInstance(dictionaries.getEntries(), UserDictionary.class));
+        settings.setActiveUserDictionaries(filterIsInstance(dictionaries.getActiveEntries(), UserDictionary.class));
         UserDictionary.Companion.getCache().clear();
     }
 
     @Override
     @Nullable
     public ValidationInfo doValidate() {
+        BundledDictionary.Companion.getCache().clear();
+        UserDictionary.Companion.getCache().clear();
+
         if (dictionaries.getActiveEntries().isEmpty())
             return new ValidationInfo("Select at least one dictionary.", dictionaries);
 
@@ -158,6 +146,7 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         }
 
         return JavaHelperKt.firstNonNull(
+            validateWordRange(),
             minLength.validateValue(),
             maxLength.validateValue(),
             lengthRange.validateValue()
@@ -203,9 +192,8 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
      */
     private void removeDictionary() {
         final Dictionary highlightedDictionary = dictionaries.getHighlightedEntry();
-        if (highlightedDictionary instanceof UserDictionary) {
+        if (highlightedDictionary instanceof UserDictionary)
             dictionaries.removeEntry(highlightedDictionary);
-        }
     }
 
     /**
@@ -222,24 +210,47 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     }
 
     /**
-     * Fires when the user (de)activates a dictionary.
+     * Returns `null` if the selected word range overlaps with words in the chosen dictionaries, or a `ValidationInfo`
+     * object explaining which input should be changed.
      *
-     * @return {@code Unit.INSTANCE}
+     * @return `null` if the selected word range overlaps with words in the chosen dictionaries, or a `ValidationInfo`
+     * object explaining which input should be changed
      */
-    private Unit onDictionaryActivityChange() {
+    private ValidationInfo validateWordRange() {
         final Set<String> words = WordSettingsDialogHelperKt.combineDictionaries(dictionaries.getActiveEntries());
 
-        minLength.setMaxValue(words.stream()
-            .map(String::length)
-            .max(Comparator.comparing(Integer::valueOf))
-            .orElse(1)
-        );
-        maxLength.setMinValue(words.stream()
-            .map(String::length)
-            .min(Comparator.comparing(Integer::valueOf))
-            .orElse(Integer.MAX_VALUE)
-        );
+        final int maxWordLength = WordSettingsDialogHelperKt.maxLength(words);
+        if (minLength.getValue() > maxWordLength) {
+            return new ValidationInfo("" +
+                "Enter a value less than or equal to " + maxWordLength + ", " +
+                "the length of the longest word in the selected dictionaries.",
+                minLength
+            );
+        }
 
-        return Unit.INSTANCE;
+        final int minWordLength = WordSettingsDialogHelperKt.minLength(words);
+        if (maxLength.getValue() < minWordLength) {
+            return new ValidationInfo("" +
+                "Enter a value greater than or equal to " + minWordLength + ", " +
+                "the length of the shortest word in the selected dictionaries.",
+                maxLength
+            );
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Filters
+     *
+     * @param list  a list of {@code SUP} elements
+     * @param cls   the class to filter by
+     * @param <SUB> the subclass
+     * @param <SUP> the super class
+     * @return a list containing the values of {@code list} that are of class {@code cls}
+     */
+    private static <SUB extends SUP, SUP> Set<SUB> filterIsInstance(final List<SUP> list, final Class<SUB> cls) {
+        return list.stream().filter(cls::isInstance).map(cls::cast).collect(Collectors.toSet());
     }
 }

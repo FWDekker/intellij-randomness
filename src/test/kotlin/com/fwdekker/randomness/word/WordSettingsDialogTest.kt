@@ -183,8 +183,11 @@ object WordSettingsDialogTest : Spek({
                 val validationInfo = wordSettingsDialog.doValidate()
 
                 assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 1.")
+                assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
+                assertThat(validationInfo?.message).isEqualTo("" +
+                    "Enter a value greater than or equal to 1, " +
+                    "the length of the shortest word in the selected dictionaries."
+                )
             }
 
             it("fails if the length range begins too high to match any words") {
@@ -195,7 +198,9 @@ object WordSettingsDialogTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 31.")
+                assertThat(validationInfo?.message).isEqualTo("" +
+                    "Enter a value less than or equal to 31, " +
+                    "the length of the longest word in the selected dictionaries.")
             }
         }
 
