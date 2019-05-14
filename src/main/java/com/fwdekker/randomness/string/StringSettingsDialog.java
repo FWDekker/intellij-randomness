@@ -1,9 +1,10 @@
 package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.CapitalizationMode;
+import com.fwdekker.randomness.JavaHelperKt;
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.ui.ButtonGroupHelper;
-import com.fwdekker.randomness.ui.JLongSpinner;
+import com.fwdekker.randomness.ui.ButtonGroupKt;
+import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.jetbrains.annotations.NotNull;
@@ -15,8 +16,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import java.util.HashSet;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 
 /**
@@ -28,8 +27,8 @@ import java.util.stream.Stream;
 public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     private JPanel contentPane;
     private JSpinnerRange lengthRange;
-    private JLongSpinner minLength;
-    private JLongSpinner maxLength;
+    private JIntSpinner minLength;
+    private JIntSpinner maxLength;
     private ButtonGroup enclosureGroup;
     private ButtonGroup capitalizationGroup;
     private JList<Alphabet> alphabetList;
@@ -66,8 +65,8 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
      * This method is called by the scene builder at the start of the constructor.
      */
     private void createUIComponents() {
-        minLength = new JLongSpinner(1, 1, Integer.MAX_VALUE);
-        maxLength = new JLongSpinner(1, 1, Integer.MAX_VALUE);
+        minLength = new JIntSpinner(1, 1);
+        maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
 
         alphabetList = new JList<>(Alphabet.values());
@@ -80,8 +79,8 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     public void loadSettings(final @NotNull StringSettings settings) {
         minLength.setValue(settings.getMinLength());
         maxLength.setValue(settings.getMaxLength());
-        ButtonGroupHelper.INSTANCE.setValue(enclosureGroup, settings.getEnclosure());
-        ButtonGroupHelper.INSTANCE.setValue(capitalizationGroup, settings.getCapitalization());
+        ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
+        ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
         for (int i = 0; i < Alphabet.values().length; i++) {
             if (settings.getAlphabets().contains(Alphabet.values()[i])) {
@@ -92,33 +91,30 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
 
     @Override
     public void saveSettings(final @NotNull StringSettings settings) {
-        settings.setMinLength(Math.toIntExact(minLength.getValue()));
-        settings.setMaxLength(Math.toIntExact(maxLength.getValue()));
+        settings.setMinLength(minLength.getValue());
+        settings.setMaxLength(maxLength.getValue());
 
-        final String enclosure = ButtonGroupHelper.INSTANCE.getValue(enclosureGroup);
+        final String enclosure = ButtonGroupKt.getValue(enclosureGroup);
         settings.setEnclosure(enclosure == null ? StringSettings.DEFAULT_ENCLOSURE : enclosure);
 
-        final String capitalizationMode = ButtonGroupHelper.INSTANCE.getValue(capitalizationGroup);
+        final String capitalizationMode = ButtonGroupKt.getValue(capitalizationGroup);
         settings.setCapitalization(capitalizationMode == null
             ? StringSettings.Companion.getDEFAULT_CAPITALIZATION()
             : CapitalizationMode.Companion.getMode(capitalizationMode));
+
         settings.setAlphabets(new HashSet<>(alphabetList.getSelectedValuesList()));
     }
 
     @Override
     @Nullable
-    protected ValidationInfo doValidate() {
-        return Stream
-            .of(
-                minLength.validateValue(),
-                maxLength.validateValue(),
-                lengthRange.validateValue()
-            )
-            .filter(Objects::nonNull)
-            .findFirst()
-            .orElse(alphabetList.getSelectedValuesList().isEmpty()
-                ? new ValidationInfo("Please select at least one option.", alphabetList)
-                : null
-            );
+    public ValidationInfo doValidate() {
+        if (alphabetList.getSelectedValuesList().isEmpty())
+            return new ValidationInfo("Please select at least one alphabet.", alphabetList);
+
+        return JavaHelperKt.firstNonNull(
+            minLength.validateValue(),
+            maxLength.validateValue(),
+            lengthRange.validateValue()
+        );
     }
 }

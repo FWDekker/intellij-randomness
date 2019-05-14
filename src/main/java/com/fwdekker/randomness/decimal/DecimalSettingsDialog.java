@@ -1,9 +1,10 @@
 package com.fwdekker.randomness.decimal;
 
+import com.fwdekker.randomness.JavaHelperKt;
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.ui.ButtonGroupHelper;
+import com.fwdekker.randomness.ui.ButtonGroupKt;
 import com.fwdekker.randomness.ui.JDoubleSpinner;
-import com.fwdekker.randomness.ui.JLongSpinner;
+import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.jetbrains.annotations.NotNull;
@@ -12,8 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 
 /**
@@ -27,7 +26,7 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
     private JSpinnerRange valueRange;
     private JDoubleSpinner minValue;
     private JDoubleSpinner maxValue;
-    private JLongSpinner decimalCount;
+    private JIntSpinner decimalCount;
     private ButtonGroup groupingSeparatorGroup;
     private ButtonGroup decimalSeparatorGroup;
 
@@ -65,23 +64,8 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
     private void createUIComponents() {
         minValue = new JDoubleSpinner();
         maxValue = new JDoubleSpinner();
-        valueRange = new JSpinnerRange(minValue, maxValue, JSpinnerRange.DEFAULT_MAX_RANGE);
-        decimalCount = new JLongSpinner(0, 0, Integer.MAX_VALUE);
-    }
-
-    @Override
-    @Nullable
-    protected ValidationInfo doValidate() {
-        return Stream
-            .of(
-                minValue.validateValue(),
-                maxValue.validateValue(),
-                valueRange.validateValue(),
-                decimalCount.validateValue()
-            )
-            .filter(Objects::nonNull)
-            .findFirst()
-            .orElse(null);
+        valueRange = new JSpinnerRange(minValue, maxValue);
+        decimalCount = new JIntSpinner(0, 0);
     }
 
 
@@ -90,22 +74,33 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
         decimalCount.setValue(settings.getDecimalCount());
-        ButtonGroupHelper.INSTANCE.setValue(groupingSeparatorGroup, settings.getGroupingSeparator());
-        ButtonGroupHelper.INSTANCE.setValue(decimalSeparatorGroup, settings.getDecimalSeparator());
+        ButtonGroupKt.setValue(groupingSeparatorGroup, settings.getGroupingSeparator());
+        ButtonGroupKt.setValue(decimalSeparatorGroup, settings.getDecimalSeparator());
     }
 
     @Override
     public void saveSettings(final @NotNull DecimalSettings settings) {
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
-        settings.setDecimalCount(Math.toIntExact(decimalCount.getValue()));
+        settings.setDecimalCount(decimalCount.getValue());
 
-        final String groupingSeparator = ButtonGroupHelper.INSTANCE.getValue(groupingSeparatorGroup);
+        final String groupingSeparator = ButtonGroupKt.getValue(groupingSeparatorGroup);
         settings.setGroupingSeparator(groupingSeparator == null || groupingSeparator.isEmpty()
             ? DecimalSettings.DEFAULT_GROUPING_SEPARATOR : groupingSeparator);
 
-        final String decimalSeparator = ButtonGroupHelper.INSTANCE.getValue(decimalSeparatorGroup);
+        final String decimalSeparator = ButtonGroupKt.getValue(decimalSeparatorGroup);
         settings.setDecimalSeparator(decimalSeparator == null || decimalSeparator.isEmpty()
             ? DecimalSettings.DEFAULT_DECIMAL_SEPARATOR : decimalSeparator);
+    }
+
+    @Override
+    @Nullable
+    public ValidationInfo doValidate() {
+        return JavaHelperKt.firstNonNull(
+            minValue.validateValue(),
+            maxValue.validateValue(),
+            valueRange.validateValue(),
+            decimalCount.validateValue()
+        );
     }
 }

@@ -17,7 +17,7 @@
           <text value="Mi&amp;nimum length"/>
         </properties>
       </component>
-      <component id="8a66f" class="com.fwdekker.randomness.ui.JLongSpinner" binding="minLength" custom-create="true">
+      <component id="8a66f" class="com.fwdekker.randomness.ui.JIntSpinner" binding="minLength" custom-create="true">
         <constraints>
           <grid row="0" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="75" height="-1"/>
@@ -36,7 +36,7 @@
           <text value="Ma&amp;ximum length"/>
         </properties>
       </component>
-      <component id="2e2f" class="com.fwdekker.randomness.ui.JLongSpinner" binding="maxLength" custom-create="true">
+      <component id="2e2f" class="com.fwdekker.randomness.ui.JIntSpinner" binding="maxLength" custom-create="true">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="75" height="-1"/>

@@ -1,8 +1,8 @@
 package com.fwdekker.randomness.array;
 
 import com.fwdekker.randomness.SettingsDialog;
-import com.fwdekker.randomness.ui.ButtonGroupHelper;
-import com.fwdekker.randomness.ui.JLongSpinner;
+import com.fwdekker.randomness.ui.ButtonGroupKt;
+import com.fwdekker.randomness.ui.JIntSpinner;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +21,7 @@ import javax.swing.JPanel;
  */
 public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     private JPanel contentPane;
-    private JLongSpinner countSpinner;
+    private JIntSpinner countSpinner;
     private ButtonGroup bracketsGroup;
     private ButtonGroup separatorGroup;
     private JCheckBox spaceAfterSeparatorCheckBox;
@@ -58,26 +58,26 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
      * This method is called by the scene builder at the start of the constructor.
      */
     private void createUIComponents() {
-        countSpinner = new JLongSpinner(1, 1, Integer.MAX_VALUE);
+        countSpinner = new JIntSpinner(1, 1);
     }
 
 
     @Override
     public void loadSettings(final @NotNull ArraySettings settings) {
         countSpinner.setValue(settings.getCount());
-        ButtonGroupHelper.INSTANCE.setValue(bracketsGroup, settings.getBrackets());
-        ButtonGroupHelper.INSTANCE.setValue(separatorGroup, settings.getSeparator());
+        ButtonGroupKt.setValue(bracketsGroup, settings.getBrackets());
+        ButtonGroupKt.setValue(separatorGroup, settings.getSeparator());
         spaceAfterSeparatorCheckBox.setSelected(settings.isSpaceAfterSeparator());
     }
 
     @Override
     public void saveSettings(final @NotNull ArraySettings settings) {
-        settings.setCount(Math.toIntExact(countSpinner.getValue()));
+        settings.setCount(countSpinner.getValue());
 
-        final String brackets = ButtonGroupHelper.INSTANCE.getValue(bracketsGroup);
+        final String brackets = ButtonGroupKt.getValue(bracketsGroup);
         settings.setBrackets(brackets == null ? ArraySettings.DEFAULT_BRACKETS : brackets);
 
-        final String separator = ButtonGroupHelper.INSTANCE.getValue(separatorGroup);
+        final String separator = ButtonGroupKt.getValue(separatorGroup);
         settings.setSeparator(separator == null ? ArraySettings.DEFAULT_SEPARATOR : separator);
 
         settings.setSpaceAfterSeparator(spaceAfterSeparatorCheckBox.isSelected());
@@ -85,7 +85,7 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
 
     @Nullable
     @Override
-    protected ValidationInfo doValidate() {
+    public ValidationInfo doValidate() {
         return countSpinner.validateValue();
     }
 }
