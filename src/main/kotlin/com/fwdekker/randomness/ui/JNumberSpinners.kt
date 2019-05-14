@@ -14,10 +14,17 @@ import javax.swing.SpinnerNumberModel
  * @param minValue the smallest number that may be represented
  * @param maxValue the largest number that may be represented
  * @param stepSize the default value to increment and decrement by
- * @property numberToT converts a [Number] to a [T]
  */
 abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T) :
     JSpinner(SpinnerNumberModel(value, minValue, maxValue, stepSize)) where T : Number, T : Comparable<T> {
+    companion object {
+        /**
+         * The default width of a number spinner.
+         */
+        const val DEFAULT_WIDTH = 52
+    }
+
+
     /**
      * Transforms a [Number] into a [T].
      */
@@ -103,8 +110,8 @@ class JDoubleSpinner @JvmOverloads constructor(
     init {
         this.name = name
         this.editor = NumberEditor(this, "#")
-        this.minimumSize = Dimension(52, minimumSize.height)
-        this.preferredSize = Dimension(52, preferredSize.height)
+        this.minimumSize = Dimension(DEFAULT_WIDTH, minimumSize.height)
+        this.preferredSize = Dimension(DEFAULT_WIDTH, preferredSize.height)
     }
 }
 
@@ -132,8 +139,8 @@ class JLongSpinner @JvmOverloads constructor(
     init {
         this.name = name
         this.editor = NumberEditor(this, "#")
-        this.minimumSize = Dimension(52, minimumSize.height)
-        this.preferredSize = Dimension(52, preferredSize.height)
+        this.minimumSize = Dimension(DEFAULT_WIDTH, minimumSize.height)
+        this.preferredSize = Dimension(DEFAULT_WIDTH, preferredSize.height)
     }
 }
 
@@ -161,7 +168,7 @@ class JIntSpinner @JvmOverloads constructor(
     init {
         this.name = name
         this.editor = NumberEditor(this, "#")
-        this.minimumSize = Dimension(52, minimumSize.height)
-        this.preferredSize = Dimension(52, preferredSize.height)
+        this.minimumSize = Dimension(DEFAULT_WIDTH, minimumSize.height)
+        this.preferredSize = Dimension(DEFAULT_WIDTH, preferredSize.height)
     }
 }

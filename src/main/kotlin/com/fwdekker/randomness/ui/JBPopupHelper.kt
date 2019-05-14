@@ -51,7 +51,8 @@ fun ListPopupImpl.registerModifierActions(
         }
     )
 
-    (1..9).forEach { key ->
+    @Suppress("MagicNumber") // Not worth a constant
+    for (key in 1..9) {
         registerAction(
             "${modifierKey.shortName.toLowerCase()}Invoke$key",
             KeyStroke.getKeyStroke("${modifierKey.longName.toLowerCase()} $key"),

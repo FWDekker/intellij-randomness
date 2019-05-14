@@ -124,6 +124,7 @@ abstract class DataInsertAction : AnAction() {
      *
      * @param event carries information on the invocation place
      */
+    @Suppress("ReturnCount") // Result of null checks at start
     override fun actionPerformed(event: AnActionEvent) {
         val editor = event.getData(CommonDataKeys.EDITOR)
             ?: return
