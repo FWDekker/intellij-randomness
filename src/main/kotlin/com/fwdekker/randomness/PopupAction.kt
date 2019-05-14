@@ -4,7 +4,9 @@ import com.fwdekker.randomness.array.ArraySettingsAction
 import com.fwdekker.randomness.decimal.DecimalGroupAction
 import com.fwdekker.randomness.integer.IntegerGroupAction
 import com.fwdekker.randomness.string.StringGroupAction
-import com.fwdekker.randomness.ui.JBPopupHelper
+import com.fwdekker.randomness.ui.ModifierKey
+import com.fwdekker.randomness.ui.disableSpeedSearch
+import com.fwdekker.randomness.ui.registerModifierActions
 import com.fwdekker.randomness.uuid.UuidGroupAction
 import com.fwdekker.randomness.word.WordGroupAction
 import com.intellij.openapi.actionSystem.ActionGroup
@@ -43,9 +45,9 @@ class PopupAction : AnAction() {
             )
             as ListPopupImpl
 
-        JBPopupHelper.disableSpeedSearch(popup)
-        JBPopupHelper.registerShiftActions(popup, TITLE, SHIFT_TITLE)
-        JBPopupHelper.registerCtrlActions(popup, TITLE, CTRL_TITLE)
+        popup.disableSpeedSearch()
+        popup.registerModifierActions(ModifierKey.SHIFT, TITLE, SHIFT_TITLE)
+        popup.registerModifierActions(ModifierKey.CTRL, TITLE, CTRL_TITLE)
 
         popup.setAdText(AD_TEXT)
         popup.showCenteredInCurrentWindow(project)

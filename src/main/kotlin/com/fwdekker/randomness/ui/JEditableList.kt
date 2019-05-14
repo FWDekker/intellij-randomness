@@ -2,7 +2,6 @@ package com.fwdekker.randomness.ui
 
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import java.util.ArrayList
 import java.util.NoSuchElementException
 import javax.swing.JTable
 import javax.swing.ListSelectionModel
@@ -17,8 +16,9 @@ private typealias EntryActivityChangeListener = (Int) -> Unit
  * A [JList][javax.swing.JList] in which each entry has a [JCheckBox][javax.swing.JCheckBox] in front of it.
  *
  * @param <T> the entry type
+ * @param name the name of this component
  */
-class JEditableList<T> : JTable() {
+class JEditableList<T>(name: String? = null) : JTable() {
     companion object {
         /**
          * The relative width of the checkbox column.
@@ -30,8 +30,8 @@ class JEditableList<T> : JTable() {
         private const val TEXT_WIDTH = 80.0f
     }
 
-    private val model: DefaultTableModel = DefaultTableModel(0, 2)
-    private val entryActivityChangeListeners: MutableList<EntryActivityChangeListener> = ArrayList()
+    private val model = DefaultTableModel(0, 2)
+    private val entryActivityChangeListeners = mutableListOf<EntryActivityChangeListener>()
 
     /**
      * Returns a list of all entries.
@@ -66,10 +66,8 @@ class JEditableList<T> : JTable() {
         get() = selectedRows.toList().map { this.getEntry(it) }.firstOrNull()
 
 
-    /**
-     * Constructs a new empty `JEditableList`.
-     */
     init {
+        setName(name)
         setModel(model)
 
         model.addTableModelListener { event ->
