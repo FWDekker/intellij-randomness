@@ -64,7 +64,8 @@ class WordSettings : Settings<WordSettings> {
     /**
      * The list of all dictionary files provided by the plugin.
      */
-    var bundledDictionaryFiles: MutableSet<String> = BundledDictionary.DEFAULT_DICTIONARY_FILES.toMutableSet()
+    var bundledDictionaryFiles =
+        mutableSetOf(BundledDictionary.SIMPLE_DICTIONARY, BundledDictionary.EXTENDED_DICTIONARY)
     /**
      * The list of all dictionary files registered by the user.
      */
@@ -74,7 +75,7 @@ class WordSettings : Settings<WordSettings> {
      *
      * This is a subset of [bundledDictionaryFiles].
      */
-    var activeBundledDictionaryFiles: MutableSet<String> = BundledDictionary.DEFAULT_DICTIONARY_FILES.toMutableSet()
+    var activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.SIMPLE_DICTIONARY)
     /**
      * The list of user dictionary files that are currently active.
      *
