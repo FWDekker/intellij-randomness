@@ -1,8 +1,5 @@
 autoCorrect: false
 
-console-reports:
-    active: false
-
 
 comments:
     # Nothing wrong with documenting private methods.
@@ -16,6 +13,9 @@ complexity:
     # Static analysis is not good at estimating this.
     TooManyFunctions:
         thresholdInClasses: 20
+    # Acceptable if used sparingly
+    LabeledExpression:
+        active: false
 
 formatting:
     # That's part of my code style.
@@ -25,6 +25,9 @@ formatting:
 naming:
     # Static analysis is not good at estimating this.
     FunctionMaxLength:
+        active: false
+    # Cannot be suppressed in case of false positives
+    MatchingDeclarationName:
         active: false
 
 potential-bugs:
