@@ -45,7 +45,7 @@ class IntegerSettings : Settings<IntegerSettings> {
         /**
          * The default value of the [groupingSeparator][IntegerSettings.groupingSeparator] field.
          */
-        const val DEFAULT_GROUPING_SEPARATOR = "\u0000"
+        const val DEFAULT_GROUPING_SEPARATOR = ""
 
 
         /**
@@ -74,7 +74,7 @@ class IntegerSettings : Settings<IntegerSettings> {
     // TODO Turn this field into a char field once supported by the settings serializer
     var groupingSeparator = DEFAULT_GROUPING_SEPARATOR
         set(value) {
-            field = value.getOrElse(0) { DEFAULT_GROUPING_SEPARATOR[0] }.toString()
+            field = if (value.isNotEmpty()) value.substring(0, 1) else DEFAULT_GROUPING_SEPARATOR
         }
 
 
