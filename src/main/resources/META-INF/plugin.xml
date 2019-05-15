@@ -4,77 +4,71 @@
     <version>0.0.0</version>
     <vendor email="felix@fwdekker.com" url="https://fwdekker.com/">FWDekker</vendor>
 
-    <description><![CDATA[
-        Insert random strings and numbers with the press of a single key.<br><br>
-
-        Adds actions to insert random data into your editor, which can be useful when writing tests.
-    ]]></description>
-
     <depends>com.intellij.modules.lang</depends>
 
-    <idea-version since-build="145.0"/>
+    <idea-version since-build="171.0" />
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService
-                serviceImplementation="com.fwdekker.randomness.integer.IntegerSettings"
-                serviceInterface="com.fwdekker.randomness.integer.IntegerSettings"/>
+            serviceImplementation="com.fwdekker.randomness.integer.IntegerSettings"
+            serviceInterface="com.fwdekker.randomness.integer.IntegerSettings" />
         <applicationService
-                serviceImplementation="com.fwdekker.randomness.decimal.DecimalSettings"
-                serviceInterface="com.fwdekker.randomness.decimal.DecimalSettings"/>
+            serviceImplementation="com.fwdekker.randomness.decimal.DecimalSettings"
+            serviceInterface="com.fwdekker.randomness.decimal.DecimalSettings" />
         <applicationService
-                serviceImplementation="com.fwdekker.randomness.string.StringSettings"
-                serviceInterface="com.fwdekker.randomness.string.StringSettings"/>
+            serviceImplementation="com.fwdekker.randomness.string.StringSettings"
+            serviceInterface="com.fwdekker.randomness.string.StringSettings" />
         <applicationService
-                serviceImplementation="com.fwdekker.randomness.word.WordSettings"
-                serviceInterface="com.fwdekker.randomness.word.WordSettings"/>
+            serviceImplementation="com.fwdekker.randomness.word.WordSettings"
+            serviceInterface="com.fwdekker.randomness.word.WordSettings" />
         <applicationService
-                serviceImplementation="com.fwdekker.randomness.uuid.UuidSettings"
-                serviceInterface="com.fwdekker.randomness.uuid.UuidSettings"/>
+            serviceImplementation="com.fwdekker.randomness.uuid.UuidSettings"
+            serviceInterface="com.fwdekker.randomness.uuid.UuidSettings" />
         <applicationService
-                serviceImplementation="com.fwdekker.randomness.array.ArraySettings"
-                serviceInterface="com.fwdekker.randomness.array.ArraySettings"/>
+            serviceImplementation="com.fwdekker.randomness.array.ArraySettings"
+            serviceInterface="com.fwdekker.randomness.array.ArraySettings" />
     </extensions>
 
     <actions>
         <!-- Popup -->
         <action id="randomness.ShowGroup" class="com.fwdekker.randomness.PopupAction"
                 text="Randomness" description="Opens the Randomness popup.">
-            <keyboard-shortcut first-keystroke="alt R" keymap="$default"/>
-            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <keyboard-shortcut first-keystroke="alt R" keymap="$default" />
+            <add-to-group group-id="ToolsMenu" anchor="last" />
         </action>
 
         <!-- Integers -->
         <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.IntegerInsertAction"
-                text="Insert Integer" description="Inserts random integers at the carets."/>
+                text="Insert Integer" description="Inserts random integers at the carets." />
         <action id="randomness.IntegerSettings" class="com.fwdekker.randomness.integer.IntegerSettingsAction"
-                text="Integer Settings" description="Settings for the Insert Integer action."/>
+                text="Integer Settings" description="Settings for the Insert Integer action." />
 
         <!-- Decimals -->
         <action id="randomness.InsertDecimal" class="com.fwdekker.randomness.decimal.DecimalInsertAction"
-                text="Insert Decimal" description="Inserts random decimals at the carets."/>
+                text="Insert Decimal" description="Inserts random decimals at the carets." />
         <action id="randomness.DecimalSettings" class="com.fwdekker.randomness.decimal.DecimalSettingsAction"
-                text="Decimal Settings" description="Settings for the Insert Decimal action."/>
+                text="Decimal Settings" description="Settings for the Insert Decimal action." />
 
         <!-- Strings -->
         <action id="randomness.InsertString" class="com.fwdekker.randomness.string.StringInsertAction"
-                text="Insert String" description="Inserts random strings at the carets."/>
+                text="Insert String" description="Inserts random strings at the carets." />
         <action id="randomness.StringSettings" class="com.fwdekker.randomness.string.StringSettingsAction"
-                text="String Settings" description="Settings for the Insert String action."/>
+                text="String Settings" description="Settings for the Insert String action." />
 
         <!-- Words -->
         <action id="randomness.InsertWord" class="com.fwdekker.randomness.word.WordInsertAction"
-                text="Insert Word" description="Inserts random words at the carets."/>
+                text="Insert Word" description="Inserts random words at the carets." />
         <action id="randomness.WordSettings" class="com.fwdekker.randomness.word.WordSettingsAction"
-                text="Word Settings" description="Settings for the Insert Word action."/>
+                text="Word Settings" description="Settings for the Insert Word action." />
 
         <!-- UUIDs -->
         <action id="randomness.InsertUuid" class="com.fwdekker.randomness.uuid.UuidInsertAction"
-                text="Insert UUID" description="Inserts random UUIDs at the carets."/>
+                text="Insert UUID" description="Inserts random UUIDs at the carets." />
         <action id="randomness.UuidSettings" class="com.fwdekker.randomness.uuid.UuidSettingsAction"
-                text="UUID Settings" description="Settings for the Insert UUID action."/>
+                text="UUID Settings" description="Settings for the Insert UUID action." />
 
         <!-- Arrays -->
         <action id="randomness.ArraySettings" class="com.fwdekker.randomness.array.ArraySettingsAction"
-                text="Array Settings" description="Settings for inserting arrays of data."/>
+                text="Array Settings" description="Settings for inserting arrays of data." />
     </actions>
 </idea-plugin>
