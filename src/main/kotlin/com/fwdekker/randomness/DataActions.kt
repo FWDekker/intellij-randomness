@@ -1,13 +1,13 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArraySettings
+import com.intellij.codeInsight.hint.HintManager
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.ui.Messages
 import java.awt.event.InputEvent
 
 
@@ -135,13 +135,13 @@ abstract class DataInsertAction : AnAction() {
             try {
                 generateStrings(editor.caretModel.caretCount)
             } catch (e: DataGenerationException) {
-                Messages.showErrorDialog(
+                HintManager.getInstance().showErrorHint(
+                    editor,
                     """
                         Randomness was unable to generate random data.
                         ${if (!e.message.isNullOrBlank()) "The following error was encountered: ${e.message}\n" else ""}
                         Please check your Randomness settings and try again.
-                    """.trimIndent(),
-                    "Randomness error"
+                    """.trimIndent()
                 )
                 return
             }

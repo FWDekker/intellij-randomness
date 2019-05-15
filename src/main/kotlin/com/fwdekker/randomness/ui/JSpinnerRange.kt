@@ -49,7 +49,7 @@ class JSpinnerRange @JvmOverloads constructor(
      */
     fun validateValue() =
         when {
-            minValue > maxValue -> ValidationInfo("The maximum should be no smaller than the minimum.", max)
+            minValue > maxValue -> ValidationInfo("The maximum should not be smaller than the minimum.", max)
             maxValue - minValue > maxRange -> ValidationInfo("The range should not exceed $maxRange.", max)
             else -> null
         }

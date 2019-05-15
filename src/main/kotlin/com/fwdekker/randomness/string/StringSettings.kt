@@ -33,7 +33,7 @@ class StringSettings : Settings<StringSettings> {
         /**
          * The default value of the [capitalization][StringSettings.capitalization] field.
          */
-        val DEFAULT_CAPITALIZATION = CapitalizationMode.UPPER
+        val DEFAULT_CAPITALIZATION = CapitalizationMode.RANDOM
 
 
         /**
