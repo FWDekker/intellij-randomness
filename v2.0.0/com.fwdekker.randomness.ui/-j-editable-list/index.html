@@ -1,0 +1,187 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>JEditableList - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.ui</a>&nbsp;/&nbsp;<a href="./index.html">JEditableList</a><br/>
+<br/>
+<h1>JEditableList</h1>
+<code><span class="keyword">class </span><span class="identifier">JEditableList</span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JTable.html"><span class="identifier">JTable</span></a></code>
+<p>A <a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JList.html">JList</a> in which each entry has a <a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JCheckBox.html">JCheckBox</a> in front of it.</p>
+<h3>Parameters</h3>
+<p><a name="name"></a>
+<code>name</code> - the name of this component</p>
+<p><strong>Parameters</strong><br/>
+</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">JEditableList</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$<init>(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span></code>
+<p>A <a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JList.html">JList</a> in which each entry has a <a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JCheckBox.html">JCheckBox</a> in front of it.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="active-entries.html">activeEntries</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">activeEntries</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>Returns all entries of which the checkbox is checked.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="entries.html">entries</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">entries</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>Returns a list of all entries.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="entry-count.html">entryCount</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">entryCount</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Returns the number of entries in the list.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="highlighted-entry.html">highlightedEntry</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">highlightedEntry</span><span class="symbol">: </span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">?</span></code>
+<p>Returns the entry that is currently selected by the user, if there is one.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="add-entry.html">addEntry</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">addEntry</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$addEntry(com.fwdekker.randomness.ui.JEditableList.T)/entry">entry</span><span class="symbol">:</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Adds an entry to the list.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="add-entry-activity-change-listener.html">addEntryActivityChangeListener</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">addEntryActivityChangeListener</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$addEntryActivityChangeListener(kotlin.Function1((kotlin.Int, kotlin.Unit)))/listener">listener</span><span class="symbol">:</span>&nbsp;<span class="identifier">EntryActivityChangeListener</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Adds a listener that is called when a row's activity is changed by the user.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="clear.html">clear</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">clear</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Removes all entries.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-column-class.html">getColumnClass</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getColumnClass</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$getColumnClass(kotlin.Int)/column">column</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html"><span class="identifier">Class</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span></code>
+<p>Returns the class of the data in the column with index <code>column</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-entry.html">getEntry</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getEntry</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$getEntry(kotlin.Int)/row">row</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html#T"><span class="identifier">T</span></a></code>
+<p>Returns the entry in the given row.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="is-active.html">isActive</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">isActive</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$isActive(com.fwdekker.randomness.ui.JEditableList.T)/entry">entry</span><span class="symbol">:</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns <code>true</code> iff the given entry's checkbox is checked.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="is-cell-editable.html">isCellEditable</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">isCellEditable</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$isCellEditable(kotlin.Int, kotlin.Int)/row">row</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$isCellEditable(kotlin.Int, kotlin.Int)/column">column</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns <code>true</code> iff <code>column</code> is 0.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="remove-entry.html">removeEntry</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">removeEntry</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$removeEntry(com.fwdekker.randomness.ui.JEditableList.T)/entry">entry</span><span class="symbol">:</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Removes the given entry and its checkbox.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="remove-entry-activity-change-listener.html">removeEntryActivityChangeListener</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">removeEntryActivityChangeListener</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$removeEntryActivityChangeListener(kotlin.Function1((kotlin.Int, kotlin.Unit)))/listener">listener</span><span class="symbol">:</span>&nbsp;<span class="identifier">EntryActivityChangeListener</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Removes a listener that was called when a row's activity was changed by the user.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-active-entries.html">setActiveEntries</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">setActiveEntries</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$setActiveEntries(kotlin.collections.Collection((com.fwdekker.randomness.ui.JEditableList.T)))/entries">entries</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html"><span class="identifier">Collection</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Checks the checkboxes of all given entries, and unchecks all other checkboxes.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-entries.html">setEntries</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">setEntries</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$setEntries(kotlin.collections.Collection((com.fwdekker.randomness.ui.JEditableList.T)))/entries">entries</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html"><span class="identifier">Collection</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Removes all current entries, and adds the given entries.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-entry-activity.html">setEntryActivity</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">setEntryActivity</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$setEntryActivity(com.fwdekker.randomness.ui.JEditableList.T, kotlin.Boolean)/entry">entry</span><span class="symbol">:</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.ui.JEditableList$setEntryActivity(com.fwdekker.randomness.ui.JEditableList.T, kotlin.Boolean)/activity">activity</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the activity of the given entry.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

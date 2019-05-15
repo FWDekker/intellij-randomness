@@ -1,0 +1,219 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>WordSettings - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.word</a>&nbsp;/&nbsp;<a href="./index.html">WordSettings</a><br/>
+<br/>
+<h1>WordSettings</h1>
+<code><span class="keyword">class </span><span class="identifier">WordSettings</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-settings.html"><span class="identifier">Settings</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">WordSettings</span></a><span class="symbol">&gt;</span></code>
+<p>Contains settings for generating random words.</p>
+<p><strong>See Also</strong><br/>
+<p><a href="../-word-insert-action/index.html">WordInsertAction</a></p>
+<p><a href="../-word-settings-action/index.html">WordSettingsAction</a></p>
+<p><a href="../-word-settings-dialog/index.html">WordSettingsDialog</a></p>
+</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">WordSettings</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>Contains settings for generating random words.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="active-bundled-dictionaries.html">activeBundledDictionaries</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">activeBundledDictionaries</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-bundled-dictionary/index.html"><span class="identifier">BundledDictionary</span></a><span class="symbol">&gt;</span></code>
+<p>A mutable view of the filenames of the files in <a href="active-bundled-dictionary-files.html">activeBundledDictionaryFiles</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="active-bundled-dictionary-files.html">activeBundledDictionaryFiles</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">activeBundledDictionaryFiles</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html"><span class="identifier">MutableSet</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>The list of bundled dictionary files that are currently active.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="active-user-dictionaries.html">activeUserDictionaries</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">activeUserDictionaries</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-user-dictionary/index.html"><span class="identifier">UserDictionary</span></a><span class="symbol">&gt;</span></code>
+<p>A mutable view of the filenames of the files in <a href="active-user-dictionary-files.html">activeUserDictionaryFiles</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="active-user-dictionary-files.html">activeUserDictionaryFiles</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">activeUserDictionaryFiles</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html"><span class="identifier">MutableSet</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>The list of user dictionary files that are currently active.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="bundled-dictionaries.html">bundledDictionaries</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">bundledDictionaries</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-bundled-dictionary/index.html"><span class="identifier">BundledDictionary</span></a><span class="symbol">&gt;</span></code>
+<p>A mutable view of the filenames of the files in <a href="bundled-dictionary-files.html">bundledDictionaryFiles</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="bundled-dictionary-files.html">bundledDictionaryFiles</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">bundledDictionaryFiles</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html"><span class="identifier">MutableSet</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>The list of all dictionary files provided by the plugin.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="capitalization.html">capitalization</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">capitalization</span><span class="symbol">: </span><a href="../../com.fwdekker.randomness/-capitalization-mode/index.html"><span class="identifier">CapitalizationMode</span></a></code>
+<p>The way in which the generated word should be capitalized.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="enclosure.html">enclosure</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">enclosure</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The string that encloses the generated word on both sides.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="max-length.html">maxLength</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">maxLength</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The maximum length of the generated word, inclusive.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="min-length.html">minLength</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">minLength</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The minimum length of the generated word, inclusive.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="user-dictionaries.html">userDictionaries</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">userDictionaries</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-user-dictionary/index.html"><span class="identifier">UserDictionary</span></a><span class="symbol">&gt;</span></code>
+<p>A mutable view of the filenames of the files in <a href="user-dictionary-files.html">userDictionaryFiles</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="user-dictionary-files.html">userDictionaryFiles</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">userDictionaryFiles</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html"><span class="identifier">MutableSet</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>The list of all dictionary files registered by the user.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get-state.html">getState</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getState</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">WordSettings</span></a></code>
+<p>Returns <code>this</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="load-state.html">loadState</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">loadState</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.word.WordSettings$loadState(com.fwdekker.randomness.word.WordSettings)/state">state</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">WordSettings</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies the fields of <a href="load-state.html#com.fwdekker.randomness.word.WordSettings$loadState(com.fwdekker.randomness.word.WordSettings)/state">state</a> to <code>this</code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="default.html">default</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">default</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">WordSettings</span></a></code>
+<p>The persistent <code>WordSettings</code> instance.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-c-a-p-i-t-a-l-i-z-a-t-i-o-n.html">DEFAULT_CAPITALIZATION</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">DEFAULT_CAPITALIZATION</span><span class="symbol">: </span><a href="../../com.fwdekker.randomness/-capitalization-mode/index.html"><span class="identifier">CapitalizationMode</span></a></code>
+<p>The default value of the <a href="capitalization.html">capitalization</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-e-n-c-l-o-s-u-r-e.html">DEFAULT_ENCLOSURE</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_ENCLOSURE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The default value of the <a href="enclosure.html">enclosure</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-m-a-x_-l-e-n-g-t-h.html">DEFAULT_MAX_LENGTH</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_MAX_LENGTH</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The default value of the <a href="max-length.html">maxLength</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-m-i-n_-l-e-n-g-t-h.html">DEFAULT_MIN_LENGTH</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_MIN_LENGTH</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The default value of the <a href="min-length.html">minLength</a> field.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
