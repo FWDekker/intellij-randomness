@@ -93,7 +93,7 @@ object DecimalSettingsDialogTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
-                assertThat(validationInfo?.message).isEqualTo("The maximum should be no smaller than the minimum.")
+                assertThat(validationInfo?.message).isEqualTo("The maximum should not be smaller than the minimum.")
             }
 
             it("fails if the range size overflows") {

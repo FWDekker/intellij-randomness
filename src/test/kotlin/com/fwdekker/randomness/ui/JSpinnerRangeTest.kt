@@ -25,7 +25,7 @@ class JSpinnerRangeTest {
 
         val info = range.validateValue()
         assertThat(info).isNotNull()
-        assertThat(info?.message).isEqualTo("The maximum should be no smaller than the minimum.")
+        assertThat(info?.message).isEqualTo("The maximum should not be smaller than the minimum.")
     }
 
     @Test
