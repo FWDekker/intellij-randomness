@@ -47,6 +47,11 @@ intellij {
     updateSinceUntilBuild = false
 }
 
+patchPluginXml {
+    changeNotes(file("src/main/resources/META-INF/change-notes.html").getText())
+    pluginDescription(file("src/main/resources/META-INF/description.html").getText())
+}
+
 // Tests/coverage
 test {
     useJUnitPlatform {
