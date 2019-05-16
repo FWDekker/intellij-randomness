@@ -31,6 +31,10 @@ class DecimalSettings : Settings<DecimalSettings> {
          */
         const val DEFAULT_DECIMAL_COUNT = 2
         /**
+         * The default value of the [showTrailingZeroes][DecimalSettings.showTrailingZeroes] field.
+         */
+        const val DEFAULT_SHOW_TRAILING_ZEROES = true
+        /**
          * The default value of the [groupingSeparator][DecimalSettings.groupingSeparator] field.
          */
         const val DEFAULT_GROUPING_SEPARATOR = ""
@@ -60,6 +64,10 @@ class DecimalSettings : Settings<DecimalSettings> {
      * The number of decimals to display.
      */
     var decimalCount = DEFAULT_DECIMAL_COUNT
+    /**
+     * Whether to include trailing zeroes in the decimals.
+     */
+    var showTrailingZeroes = DEFAULT_SHOW_TRAILING_ZEROES
     /**
      * The character that should separate groups.
      */

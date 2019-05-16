@@ -54,7 +54,7 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
         val symbols = format.decimalFormatSymbols
         symbols.groupingSeparator = settings.groupingSeparator.getOrElse(0) { Char.MIN_VALUE }
         symbols.decimalSeparator = settings.decimalSeparator.getOrElse(0) { Char.MIN_VALUE }
-        format.minimumFractionDigits = settings.decimalCount
+        if (settings.showTrailingZeroes) format.minimumFractionDigits = settings.decimalCount
         format.maximumFractionDigits = settings.decimalCount
         format.decimalFormatSymbols = symbols
 
