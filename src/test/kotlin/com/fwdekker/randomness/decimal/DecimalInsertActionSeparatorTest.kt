@@ -6,17 +6,24 @@ import org.junit.jupiter.params.provider.MethodSource
 
 
 /**
- * Unit tests for the symbols used in [DecimalInsertAction].
+ * Parameterized unit tests for the separators used in [DecimalInsertAction].
  */
-class DecimalInsertActionSymbolTest {
+class DecimalInsertActionSeparatorTest {
     companion object {
         @JvmStatic
         private fun provider() =
             listOf(
-                arrayOf(4.2, 2, ".", ".", "4.20"),
-                arrayOf(4.2, 2, ".", ",", "4,20"),
-                arrayOf(4.2, 2, ",", ".", "4.20"),
-                arrayOf(4.2, 2, ",", ",", "4,20"),
+                // Decimal separator only
+                arrayOf(4.21, 2, ".", ".", "4.21"),
+                arrayOf(4.21, 2, ".", ",", "4,21"),
+                arrayOf(4.21, 2, ",", ".", "4.21"),
+                arrayOf(4.21, 2, ",", ",", "4,21"),
+                // Grouping separator only
+                arrayOf(15616, 0, ".", ".", "15.616"),
+                arrayOf(15616, 0, ".", ",", "15.616"),
+                arrayOf(15616, 0, ",", ".", "15,616"),
+                arrayOf(15616, 0, ",", ",", "15,616"),
+                // Both separators
                 arrayOf(67575.845, 3, "", ".", "67575.845"),
                 arrayOf(67575.845, 3, ".", ".", "67.575.845"),
                 arrayOf(67575.845, 3, ".", ",", "67.575,845"),
@@ -36,6 +43,7 @@ class DecimalInsertActionSymbolTest {
         decimalSettings.minValue = value
         decimalSettings.maxValue = value
         decimalSettings.decimalCount = decimalCount
+        decimalSettings.showTrailingZeroes = false
         decimalSettings.groupingSeparator = groupingSeparator
         decimalSettings.decimalSeparator = decimalSeparator
 
