@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -27,6 +28,7 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
     private JDoubleSpinner minValue;
     private JDoubleSpinner maxValue;
     private JIntSpinner decimalCount;
+    private JCheckBox showTrailingZeroesCheckBox;
     private ButtonGroup groupingSeparatorGroup;
     private ButtonGroup decimalSeparatorGroup;
 
@@ -66,6 +68,11 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
         maxValue = new JDoubleSpinner();
         valueRange = new JSpinnerRange(minValue, maxValue);
         decimalCount = new JIntSpinner(0, 0);
+
+        decimalCount.addChangeListener(event -> {
+            final int value = ((JIntSpinner) event.getSource()).getValue();
+            showTrailingZeroesCheckBox.setEnabled(value > 0);
+        });
     }
 
 
@@ -74,6 +81,7 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
         minValue.setValue(settings.getMinValue());
         maxValue.setValue(settings.getMaxValue());
         decimalCount.setValue(settings.getDecimalCount());
+        showTrailingZeroesCheckBox.setSelected(settings.getShowTrailingZeroes());
         ButtonGroupKt.setValue(groupingSeparatorGroup, settings.getGroupingSeparator());
         ButtonGroupKt.setValue(decimalSeparatorGroup, settings.getDecimalSeparator());
     }
@@ -83,6 +91,7 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
         settings.setDecimalCount(decimalCount.getValue());
+        settings.setShowTrailingZeroes(showTrailingZeroesCheckBox.isSelected());
 
         final String groupingSeparator = ButtonGroupKt.getValue(groupingSeparatorGroup);
         settings.setGroupingSeparator(groupingSeparator == null || groupingSeparator.isEmpty()

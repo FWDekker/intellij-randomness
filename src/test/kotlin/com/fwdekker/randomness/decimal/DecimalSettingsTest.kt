@@ -23,6 +23,9 @@ object DecimalSettingsTest : Spek({
             decimalSettings.minValue = 399.75
             decimalSettings.maxValue = 928.22
             decimalSettings.decimalCount = 205
+            decimalSettings.showTrailingZeroes = false
+            decimalSettings.groupingSeparator = "a"
+            decimalSettings.decimalSeparator = "D"
 
             val newDecimalSettings = DecimalSettings()
             newDecimalSettings.loadState(decimalSettings.state)
@@ -30,6 +33,9 @@ object DecimalSettingsTest : Spek({
             assertThat(newDecimalSettings.minValue).isEqualTo(399.75)
             assertThat(newDecimalSettings.maxValue).isEqualTo(928.22)
             assertThat(newDecimalSettings.decimalCount).isEqualTo(205)
+            assertThat(newDecimalSettings.showTrailingZeroes).isEqualTo(false)
+            assertThat(newDecimalSettings.groupingSeparator).isEqualTo("a")
+            assertThat(newDecimalSettings.decimalSeparator).isEqualTo("D")
         }
     }
 

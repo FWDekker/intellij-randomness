@@ -28,6 +28,7 @@ object DecimalSettingsDialogTest : Spek({
         decimalSettings.minValue = 157.61
         decimalSettings.maxValue = 408.68
         decimalSettings.decimalCount = 5
+        decimalSettings.showTrailingZeroes = false
         decimalSettings.groupingSeparator = "_"
         decimalSettings.decimalSeparator = "."
 
@@ -52,6 +53,10 @@ object DecimalSettingsDialogTest : Spek({
 
         it("loads the settings' decimal count") {
             frame.spinner("decimalCount").requireValue(5)
+        }
+
+        it("loads the settings' value for showing trailing zeroes") {
+            frame.checkBox("showTrailingZeroes").requireSelected(false)
         }
 
         it("loads the settings' grouping separator") {
@@ -135,6 +140,7 @@ object DecimalSettingsDialogTest : Spek({
                 frame.spinner("minValue").target().value = 112.54
                 frame.spinner("maxValue").target().value = 644.74
                 frame.spinner("decimalCount").target().value = 485
+                frame.checkBox("showTrailingZeroes").target().isSelected = false
                 frame.radioButton("groupingSeparatorUnderscore").target().isSelected = true
                 frame.radioButton("decimalSeparatorComma").target().isSelected = true
             }
@@ -144,6 +150,7 @@ object DecimalSettingsDialogTest : Spek({
             assertThat(decimalSettings.minValue).isEqualTo(112.54)
             assertThat(decimalSettings.maxValue).isEqualTo(644.74)
             assertThat(decimalSettings.decimalCount).isEqualTo(485)
+            assertThat(decimalSettings.showTrailingZeroes).isEqualTo(false)
             assertThat(decimalSettings.groupingSeparator).isEqualTo("_")
             assertThat(decimalSettings.decimalSeparator).isEqualTo(",")
         }
