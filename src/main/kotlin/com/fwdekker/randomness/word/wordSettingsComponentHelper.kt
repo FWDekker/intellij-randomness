@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.word
 
 
-// TODO Remove these methods once [WordSettingsDialog] is written in Kotlin
+// TODO Remove these methods once [WordSettingsComponent] is written in Kotlin
 
 /**
  * Returns a [Set] containing all words in `dictionaries`.

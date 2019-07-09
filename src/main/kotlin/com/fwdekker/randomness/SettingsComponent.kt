@@ -5,23 +5,22 @@ import javax.swing.JPanel
 
 
 /**
- * Superclass for settings dialogs.
+ * Superclass for settings components.
  *
  * Subclasses **MUST** call `loadSettings` in their constructor.
  *
  * @param settings the settings to manage
  * @param <S> the type of settings managed by the subclass
  */
-// TODO Change `dialog` to something else
-abstract class SettingsDialog<S : Settings<S>>(private val settings: S) : SettingsManager<S> {
+abstract class SettingsComponent<S : Settings<S>>(private val settings: S) : SettingsManager<S> {
     override fun loadSettings() = loadSettings(settings)
 
     override fun saveSettings() = saveSettings(settings)
 
     /**
-     * Returns true if this dialog contains unsaved changes.
+     * Returns true if this component contains unsaved changes.
      *
-     * @return true if this dialog contains unsaved changes
+     * @return true if this component contains unsaved changes
      */
     fun isModified() = settings.copyState().also { saveSettings(it) } != settings
 

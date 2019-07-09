@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.integer;
 
 import com.fwdekker.randomness.JavaHelperKt;
-import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.SettingsComponent;
 import com.fwdekker.randomness.ui.ButtonGroupKt;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JLongSpinner;
@@ -12,17 +12,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 
 /**
- * Dialog for settings of random integer generation.
+ * Component for settings of random integer generation.
  *
  * @see IntegerSettings
  * @see IntegerSettingsAction
  */
-public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings> {
+public final class IntegerSettingsComponent extends SettingsComponent<IntegerSettings> {
     private JPanel contentPane;
     private JSpinnerRange valueRange;
     private JLongSpinner minValue;
@@ -32,18 +31,18 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
 
 
     /**
-     * Constructs a new {@code IntegerSettingsDialog} that uses the singleton {@code IntegerSettings} instance.
+     * Constructs a new {@code IntegerSettingsComponent} that uses the singleton {@code IntegerSettings} instance.
      */
-    /* default */ IntegerSettingsDialog() {
+    /* default */ IntegerSettingsComponent() {
         this(IntegerSettings.Companion.getDefault());
     }
 
     /**
-     * Constructs a new {@code IntegerSettingsDialog} that uses the given {@code IntegerSettings} instance.
+     * Constructs a new {@code IntegerSettingsComponent} that uses the given {@code IntegerSettings} instance.
      *
-     * @param settings the settings to manipulate with this dialog
+     * @param settings the settings to manipulate with this component
      */
-    /* default */ IntegerSettingsDialog(final @NotNull IntegerSettings settings) {
+    /* default */ IntegerSettingsComponent(final @NotNull IntegerSettings settings) {
         super(settings);
 
         loadSettings();

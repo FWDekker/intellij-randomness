@@ -11,12 +11,12 @@ import org.jetbrains.spek.api.dsl.it
 
 
 /**
- * GUI tests for [IntegerSettingsDialog].
+ * GUI tests for [IntegerSettingsComponent].
  */
-object IntegerSettingsDialogTest : Spek({
+object IntegerSettingsComponentTest : Spek({
     lateinit var integerSettings: IntegerSettings
-    lateinit var integerSettingsDialog: IntegerSettingsDialog
-    lateinit var integerSettingsDialogConfigurable: IntegerSettingsConfigurable
+    lateinit var integerSettingsComponent: IntegerSettingsComponent
+    lateinit var integerSettingsComponentConfigurable: IntegerSettingsConfigurable
     lateinit var frame: FrameFixture
 
 
@@ -31,10 +31,10 @@ object IntegerSettingsDialogTest : Spek({
         integerSettings.base = 10
         integerSettings.groupingSeparator = "_"
 
-        integerSettingsDialog =
-            GuiActionRunner.execute<IntegerSettingsDialog> { IntegerSettingsDialog(integerSettings) }
-        integerSettingsDialogConfigurable = IntegerSettingsConfigurable(integerSettingsDialog)
-        frame = showInFrame(integerSettingsDialog.getRootPane())
+        integerSettingsComponent =
+            GuiActionRunner.execute<IntegerSettingsComponent> { IntegerSettingsComponent(integerSettings) }
+        integerSettingsComponentConfigurable = IntegerSettingsConfigurable(integerSettingsComponent)
+        frame = showInFrame(integerSettingsComponent.getRootPane())
     }
 
     afterEachTest {
@@ -111,9 +111,9 @@ object IntegerSettingsDialogTest : Spek({
 
     describe("validation") {
         it("passes for the default settings") {
-            GuiActionRunner.execute { integerSettingsDialog.loadSettings(IntegerSettings()) }
+            GuiActionRunner.execute { integerSettingsComponent.loadSettings(IntegerSettings()) }
 
-            assertThat(integerSettingsDialog.doValidate()).isNull()
+            assertThat(integerSettingsComponent.doValidate()).isNull()
         }
 
         describe("value range") {
@@ -123,7 +123,7 @@ object IntegerSettingsDialogTest : Spek({
                     frame.spinner("maxValue").target().value = 97
                 }
 
-                val validationInfo = integerSettingsDialog.doValidate()
+                val validationInfo = integerSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
@@ -136,7 +136,7 @@ object IntegerSettingsDialogTest : Spek({
                     frame.spinner("maxValue").target().value = Long.MAX_VALUE
                 }
 
-                val validationInfo = integerSettingsDialog.doValidate()
+                val validationInfo = integerSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
@@ -148,7 +148,7 @@ object IntegerSettingsDialogTest : Spek({
             it("fails if the base is negative") {
                 GuiActionRunner.execute { frame.spinner("base").target().value = -189 }
 
-                val validationInfo = integerSettingsDialog.doValidate()
+                val validationInfo = integerSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
@@ -158,7 +158,7 @@ object IntegerSettingsDialogTest : Spek({
             it("fails if the base is 0") {
                 GuiActionRunner.execute { frame.spinner("base").target().value = 0 }
 
-                val validationInfo = integerSettingsDialog.doValidate()
+                val validationInfo = integerSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
@@ -168,7 +168,7 @@ object IntegerSettingsDialogTest : Spek({
             it("fails if the base is 1") {
                 GuiActionRunner.execute { frame.spinner("base").target().value = 1 }
 
-                val validationInfo = integerSettingsDialog.doValidate()
+                val validationInfo = integerSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
@@ -178,7 +178,7 @@ object IntegerSettingsDialogTest : Spek({
             it("fails if the base is greater than 36") {
                 GuiActionRunner.execute { frame.spinner("base").target().value = 68 }
 
-                val validationInfo = integerSettingsDialog.doValidate()
+                val validationInfo = integerSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
@@ -196,7 +196,7 @@ object IntegerSettingsDialogTest : Spek({
                 frame.radioButton("groupingSeparatorPeriod").target().isSelected = true
             }
 
-            integerSettingsDialog.saveSettings()
+            integerSettingsComponent.saveSettings()
 
             assertThat(integerSettings.minValue).isEqualTo(2_147_483_648L)
             assertThat(integerSettings.maxValue).isEqualTo(2_147_483_649L)
@@ -207,33 +207,33 @@ object IntegerSettingsDialogTest : Spek({
 
     describe("configurable") {
         it("returns the correct display name") {
-            assertThat(integerSettingsDialogConfigurable.displayName).isEqualTo("Integers")
+            assertThat(integerSettingsComponentConfigurable.displayName).isEqualTo("Integers")
         }
 
         describe("modification detection") {
             it("is initially unmodified") {
-                assertThat(integerSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(integerSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("modifies a single detection") {
                 GuiActionRunner.execute { frame.spinner("minValue").target().value = 232 }
 
-                assertThat(integerSettingsDialogConfigurable.isModified).isTrue()
+                assertThat(integerSettingsComponentConfigurable.isModified).isTrue()
             }
 
             it("ignores an undone modification") {
                 GuiActionRunner.execute { frame.spinner("minValue").target().value = 199 }
                 GuiActionRunner.execute { frame.spinner("minValue").target().value = integerSettings.minValue }
 
-                assertThat(integerSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(integerSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("ignores saved modifications") {
                 GuiActionRunner.execute { frame.spinner("minValue").target().value = 169 }
 
-                integerSettingsDialogConfigurable.apply()
+                integerSettingsComponentConfigurable.apply()
 
-                assertThat(integerSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(integerSettingsComponentConfigurable.isModified).isFalse()
             }
         }
 
@@ -245,10 +245,10 @@ object IntegerSettingsDialogTest : Spek({
                     frame.spinner("base").target().value = 164
                     frame.radioButton("groupingSeparatorComma").target().isSelected = true
 
-                    integerSettingsDialogConfigurable.reset()
+                    integerSettingsComponentConfigurable.reset()
                 }
 
-                assertThat(integerSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(integerSettingsComponentConfigurable.isModified).isFalse()
             }
         }
     }

@@ -11,12 +11,12 @@ import org.jetbrains.spek.api.dsl.it
 
 
 /**
- * GUI tests for [UuidSettingsDialog].
+ * GUI tests for [UuidSettingsComponent].
  */
-object UuidSettingsDialogTest : Spek({
+object UuidSettingsComponentTest : Spek({
     lateinit var uuidSettings: UuidSettings
-    lateinit var uuidSettingsDialog: UuidSettingsDialog
-    lateinit var uuidSettingsDialogConfigurable: UuidSettingsConfigurable
+    lateinit var uuidSettingsComponent: UuidSettingsComponent
+    lateinit var uuidSettingsComponentConfigurable: UuidSettingsConfigurable
     lateinit var frame: FrameFixture
 
 
@@ -28,9 +28,9 @@ object UuidSettingsDialogTest : Spek({
         uuidSettings = UuidSettings()
         uuidSettings.enclosure = "'"
 
-        uuidSettingsDialog = GuiActionRunner.execute<UuidSettingsDialog> { UuidSettingsDialog(uuidSettings) }
-        uuidSettingsDialogConfigurable = UuidSettingsConfigurable(uuidSettingsDialog)
-        frame = showInFrame(uuidSettingsDialog.getRootPane())
+        uuidSettingsComponent = GuiActionRunner.execute<UuidSettingsComponent> { UuidSettingsComponent(uuidSettings) }
+        uuidSettingsComponentConfigurable = UuidSettingsConfigurable(uuidSettingsComponent)
+        frame = showInFrame(uuidSettingsComponent.getRootPane())
     }
 
     afterEachTest {
@@ -49,9 +49,9 @@ object UuidSettingsDialogTest : Spek({
 
     describe("validation") {
         it("passes for the default settings") {
-            GuiActionRunner.execute { uuidSettingsDialog.loadSettings(UuidSettings()) }
+            GuiActionRunner.execute { uuidSettingsComponent.loadSettings(UuidSettings()) }
 
-            assertThat(uuidSettingsDialog.doValidate()).isNull()
+            assertThat(uuidSettingsComponent.doValidate()).isNull()
         }
     }
 
@@ -59,7 +59,7 @@ object UuidSettingsDialogTest : Spek({
         it("correctly saves settings to a settings object") {
             GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
 
-            uuidSettingsDialog.saveSettings()
+            uuidSettingsComponent.saveSettings()
 
             assertThat(uuidSettings.enclosure).isEqualTo("`")
         }
@@ -67,33 +67,33 @@ object UuidSettingsDialogTest : Spek({
 
     describe("configurable") {
         it("returns the correct display name") {
-            assertThat(uuidSettingsDialogConfigurable.displayName).isEqualTo("UUIDs")
+            assertThat(uuidSettingsComponentConfigurable.displayName).isEqualTo("UUIDs")
         }
 
         describe("modification detection") {
             it("is initially unmodified") {
-                assertThat(uuidSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(uuidSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("modifies a single detection") {
                 GuiActionRunner.execute { frame.radioButton("enclosureDouble").target().isSelected = true }
 
-                assertThat(uuidSettingsDialogConfigurable.isModified).isTrue()
+                assertThat(uuidSettingsComponentConfigurable.isModified).isTrue()
             }
 
             it("ignores an undone modification") {
                 GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
                 GuiActionRunner.execute { frame.radioButton("enclosureSingle").target().isSelected = true }
 
-                assertThat(uuidSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(uuidSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("ignores saved modifications") {
                 GuiActionRunner.execute { frame.radioButton("enclosureNone").target().isSelected = true }
 
-                uuidSettingsDialogConfigurable.apply()
+                uuidSettingsComponentConfigurable.apply()
 
-                assertThat(uuidSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(uuidSettingsComponentConfigurable.isModified).isFalse()
             }
         }
 
@@ -102,10 +102,10 @@ object UuidSettingsDialogTest : Spek({
                 GuiActionRunner.execute {
                     GuiActionRunner.execute { frame.radioButton("enclosureNone").target().isSelected = true }
 
-                    uuidSettingsDialogConfigurable.reset()
+                    uuidSettingsComponentConfigurable.reset()
                 }
 
-                assertThat(uuidSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(uuidSettingsComponentConfigurable.isModified).isFalse()
             }
         }
     }

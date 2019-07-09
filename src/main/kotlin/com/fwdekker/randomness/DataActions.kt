@@ -232,7 +232,7 @@ abstract class SettingsAction<S : Settings<S>> : AnAction() {
     }
 
     /**
-     * Creates and displays a modal dialog for changing settings.
+     * Opens the IntelliJ settings menu at the right location to adjust the configurable of type [configurableClass].
      *
      * @param event carries information on the invocation place
      */

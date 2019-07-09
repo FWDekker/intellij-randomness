@@ -11,12 +11,12 @@ import org.jetbrains.spek.api.dsl.it
 
 
 /**
- * GUI tests for [DecimalSettingsDialog].
+ * GUI tests for [DecimalSettingsComponent].
  */
-object DecimalSettingsDialogTest : Spek({
+object DecimalSettingsComponentTest : Spek({
     lateinit var decimalSettings: DecimalSettings
-    lateinit var decimalSettingsDialog: DecimalSettingsDialog
-    lateinit var decimalSettingsDialogConfigurable: DecimalSettingsConfigurable
+    lateinit var decimalSettingsComponent: DecimalSettingsComponent
+    lateinit var decimalSettingsComponentConfigurable: DecimalSettingsConfigurable
     lateinit var frame: FrameFixture
 
 
@@ -33,10 +33,10 @@ object DecimalSettingsDialogTest : Spek({
         decimalSettings.groupingSeparator = "_"
         decimalSettings.decimalSeparator = "."
 
-        decimalSettingsDialog =
-            GuiActionRunner.execute<DecimalSettingsDialog> { DecimalSettingsDialog(decimalSettings) }
-        decimalSettingsDialogConfigurable = DecimalSettingsConfigurable(decimalSettingsDialog)
-        frame = showInFrame(decimalSettingsDialog.getRootPane())
+        decimalSettingsComponent =
+            GuiActionRunner.execute<DecimalSettingsComponent> { DecimalSettingsComponent(decimalSettings) }
+        decimalSettingsComponentConfigurable = DecimalSettingsConfigurable(decimalSettingsComponent)
+        frame = showInFrame(decimalSettingsComponent.getRootPane())
     }
 
     afterEachTest {
@@ -84,9 +84,9 @@ object DecimalSettingsDialogTest : Spek({
 
     describe("validation") {
         it("passes for the default settings") {
-            GuiActionRunner.execute { decimalSettingsDialog.loadSettings(DecimalSettings()) }
+            GuiActionRunner.execute { decimalSettingsComponent.loadSettings(DecimalSettings()) }
 
-            assertThat(decimalSettingsDialog.doValidate()).isNull()
+            assertThat(decimalSettingsComponent.doValidate()).isNull()
         }
 
         describe("value range") {
@@ -96,7 +96,7 @@ object DecimalSettingsDialogTest : Spek({
                     frame.spinner("maxValue").target().value = 45.16
                 }
 
-                val validationInfo = decimalSettingsDialog.doValidate()
+                val validationInfo = decimalSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
@@ -109,7 +109,7 @@ object DecimalSettingsDialogTest : Spek({
                     frame.spinner("maxValue").target().value = 1E53
                 }
 
-                val validationInfo = decimalSettingsDialog.doValidate()
+                val validationInfo = decimalSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
@@ -121,13 +121,13 @@ object DecimalSettingsDialogTest : Spek({
             it("passes if the decimal count is zero") {
                 GuiActionRunner.execute { frame.spinner("decimalCount").target().value = 0 }
 
-                assertThat(decimalSettingsDialog.doValidate()).isNull()
+                assertThat(decimalSettingsComponent.doValidate()).isNull()
             }
 
             it("fails if the decimal count is negative") {
                 GuiActionRunner.execute { frame.spinner("decimalCount").target().value = -851 }
 
-                val validationInfo = decimalSettingsDialog.doValidate()
+                val validationInfo = decimalSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("decimalCount").target())
@@ -147,7 +147,7 @@ object DecimalSettingsDialogTest : Spek({
                 frame.radioButton("decimalSeparatorComma").target().isSelected = true
             }
 
-            decimalSettingsDialog.saveSettings()
+            decimalSettingsComponent.saveSettings()
 
             assertThat(decimalSettings.minValue).isEqualTo(112.54)
             assertThat(decimalSettings.maxValue).isEqualTo(644.74)
@@ -160,33 +160,33 @@ object DecimalSettingsDialogTest : Spek({
 
     describe("configurable") {
         it("returns the correct display name") {
-            assertThat(decimalSettingsDialogConfigurable.displayName).isEqualTo("Decimals")
+            assertThat(decimalSettingsComponentConfigurable.displayName).isEqualTo("Decimals")
         }
 
         describe("modification detection") {
             it("is initially unmodified") {
-                assertThat(decimalSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(decimalSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("modifies a single detection") {
                 GuiActionRunner.execute { frame.spinner("decimalCount").target().value = 214 }
 
-                assertThat(decimalSettingsDialogConfigurable.isModified).isTrue()
+                assertThat(decimalSettingsComponentConfigurable.isModified).isTrue()
             }
 
             it("ignores an undone modification") {
                 GuiActionRunner.execute { frame.spinner("decimalCount").target().value = 62 }
                 GuiActionRunner.execute { frame.spinner("decimalCount").target().value = decimalSettings.decimalCount }
 
-                assertThat(decimalSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(decimalSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("ignores saved modifications") {
                 GuiActionRunner.execute { frame.spinner("decimalCount").target().value = 102 }
 
-                decimalSettingsDialogConfigurable.apply()
+                decimalSettingsComponentConfigurable.apply()
 
-                assertThat(decimalSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(decimalSettingsComponentConfigurable.isModified).isFalse()
             }
         }
 
@@ -200,10 +200,10 @@ object DecimalSettingsDialogTest : Spek({
                     frame.radioButton("groupingSeparatorPeriod").target().isSelected = true
                     frame.radioButton("decimalSeparatorComma").target().isSelected = true
 
-                    decimalSettingsDialogConfigurable.reset()
+                    decimalSettingsComponentConfigurable.reset()
                 }
 
-                assertThat(decimalSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(decimalSettingsComponentConfigurable.isModified).isFalse()
             }
         }
     }

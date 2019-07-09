@@ -61,7 +61,7 @@ class UuidInsertArrayAction(
  * Controller for random UUID generation settings.
  *
  * @see UuidSettings
- * @see UuidSettingsDialog
+ * @see UuidSettingsComponent
  */
 class UuidSettingsAction : SettingsAction<UuidSettings>() {
     override val title = "UUID Settings"

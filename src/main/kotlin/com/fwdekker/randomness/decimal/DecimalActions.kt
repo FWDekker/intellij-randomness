@@ -83,7 +83,7 @@ class DecimalInsertArrayAction(
  * Controller for random decimal generation settings.
  *
  * @see DecimalSettings
- * @see DecimalSettingsDialog
+ * @see DecimalSettingsComponent
  */
 class DecimalSettingsAction : SettingsAction<DecimalSettings>() {
     override val title = "Decimal Settings"

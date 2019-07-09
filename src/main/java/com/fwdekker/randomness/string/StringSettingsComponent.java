@@ -2,7 +2,7 @@ package com.fwdekker.randomness.string;
 
 import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.JavaHelperKt;
-import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.SettingsComponent;
 import com.fwdekker.randomness.ui.ButtonGroupKt;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
@@ -18,12 +18,12 @@ import java.util.HashSet;
 
 
 /**
- * Dialog for settings of random string generation.
+ * Component for settings of random string generation.
  *
  * @see StringSettings
  * @see StringSettingsAction
  */
-public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
+public final class StringSettingsComponent extends SettingsComponent<StringSettings> {
     private JPanel contentPane;
     private JSpinnerRange lengthRange;
     private JIntSpinner minLength;
@@ -34,18 +34,18 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
 
 
     /**
-     * Constructs a new {@code StringSettingsDialog} that uses the singleton {@code StringSettings} instance.
+     * Constructs a new {@code StringSettingsComponent} that uses the singleton {@code StringSettings} instance.
      */
-    /* default */ StringSettingsDialog() {
+    /* default */ StringSettingsComponent() {
         this(StringSettings.Companion.getDefault());
     }
 
     /**
-     * Constructs a new {@code StringSettingsDialog} that uses the given {@code StringSettings} instance.
+     * Constructs a new {@code StringSettingsComponent} that uses the given {@code StringSettings} instance.
      *
-     * @param settings the settings to manipulate with this dialog
+     * @param settings the settings to manipulate with this component
      */
-    /* default */ StringSettingsDialog(final @NotNull StringSettings settings) {
+    /* default */ StringSettingsComponent(final @NotNull StringSettings settings) {
         super(settings);
 
         loadSettings();

@@ -18,7 +18,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  *
  * @see IntegerInsertAction
  * @see IntegerSettingsAction
- * @see IntegerSettingsDialog
+ * @see IntegerSettingsComponent
  */
 // TODO Turn the separator property into a char property once supported by the settings serializer
 @State(name = "IntegerSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
@@ -95,7 +95,7 @@ data class IntegerSettings(
  * @see IntegerSettingsAction
  */
 class IntegerSettingsConfigurable(
-    override val dialog: IntegerSettingsDialog = IntegerSettingsDialog()
+    override val component: IntegerSettingsComponent = IntegerSettingsComponent()
 ) : SettingsConfigurable<IntegerSettings>() {
     override fun getDisplayName() = "Integers"
 }

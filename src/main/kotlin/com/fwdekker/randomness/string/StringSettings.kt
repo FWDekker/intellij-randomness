@@ -20,7 +20,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  *
  * @see StringInsertAction
  * @see StringSettingsAction
- * @see StringSettingsDialog
+ * @see StringSettingsComponent
  */
 @State(name = "StringSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class StringSettings(
@@ -71,7 +71,7 @@ data class StringSettings(
  * @see StringSettingsAction
  */
 class StringSettingsConfigurable(
-    override val dialog: StringSettingsDialog = StringSettingsDialog()
+    override val component: StringSettingsComponent = StringSettingsComponent()
 ) : SettingsConfigurable<StringSettings>() {
     override fun getDisplayName() = "Strings"
 }

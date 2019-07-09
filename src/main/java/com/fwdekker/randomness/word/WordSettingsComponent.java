@@ -2,7 +2,7 @@ package com.fwdekker.randomness.word;
 
 import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.JavaHelperKt;
-import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.SettingsComponent;
 import com.fwdekker.randomness.ui.ButtonGroupKt;
 import com.fwdekker.randomness.ui.JEditableList;
 import com.fwdekker.randomness.ui.JIntSpinner;
@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import java.util.List;
@@ -28,12 +27,12 @@ import java.util.stream.Collectors;
 
 
 /**
- * Dialog for settings of random word generation.
+ * Component for settings of random word generation.
  *
  * @see WordSettings
  * @see WordSettingsAction
  */
-public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
+public final class WordSettingsComponent extends SettingsComponent<WordSettings> {
     private JPanel contentPane;
     private JSpinnerRange lengthRange;
     private JIntSpinner minLength;
@@ -46,18 +45,18 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
 
     /**
-     * Constructs a new {@code WordSettingsDialog} that uses the singleton {@code WordSettings} instance.
+     * Constructs a new {@code WordSettingsComponent} that uses the singleton {@code WordSettings} instance.
      */
-    /* default */ WordSettingsDialog() {
+    /* default */ WordSettingsComponent() {
         this(WordSettings.Companion.getDefault());
     }
 
     /**
-     * Constructs a new {@code WordSettingsDialog} that uses the given {@code WordSettings} instance.
+     * Constructs a new {@code WordSettingsComponent} that uses the given {@code WordSettings} instance.
      *
-     * @param settings the settings to manipulate with this dialog
+     * @param settings the settings to manipulate with this component
      */
-    /* default */ WordSettingsDialog(final @NotNull WordSettings settings) {
+    /* default */ WordSettingsComponent(final @NotNull WordSettings settings) {
         super(settings);
 
         loadSettings();
@@ -96,9 +95,9 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
         ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
-        dictionaries.setEntries(WordSettingsDialogHelperKt.addSets(
+        dictionaries.setEntries(WordSettingsComponentHelperKt.addSets(
             settings.getBundledDictionaries(), settings.getUserDictionaries()));
-        dictionaries.setActiveEntries(WordSettingsDialogHelperKt.addSets(
+        dictionaries.setActiveEntries(WordSettingsComponentHelperKt.addSets(
             settings.getActiveBundledDictionaries(), settings.getActiveUserDictionaries()));
     }
 
@@ -216,9 +215,9 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
      * object explaining which input should be changed
      */
     private ValidationInfo validateWordRange() {
-        final Set<String> words = WordSettingsDialogHelperKt.combineDictionaries(dictionaries.getActiveEntries());
+        final Set<String> words = WordSettingsComponentHelperKt.combineDictionaries(dictionaries.getActiveEntries());
 
-        final int maxWordLength = WordSettingsDialogHelperKt.maxLength(words);
+        final int maxWordLength = WordSettingsComponentHelperKt.maxLength(words);
         if (minLength.getValue() > maxWordLength) {
             return new ValidationInfo("" +
                 "Enter a value less than or equal to " + maxWordLength + ", " +
@@ -227,7 +226,7 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             );
         }
 
-        final int minWordLength = WordSettingsDialogHelperKt.minLength(words);
+        final int minWordLength = WordSettingsComponentHelperKt.minLength(words);
         if (maxLength.getValue() < minWordLength) {
             return new ValidationInfo("" +
                 "Enter a value greater than or equal to " + minWordLength + ", " +

@@ -20,7 +20,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  *
  * @see DecimalInsertAction
  * @see DecimalSettingsAction
- * @see DecimalSettingsDialog
+ * @see DecimalSettingsComponent
  */
 // TODO Turn separator properties into char properties once supported by the settings serializer
 @State(name = "DecimalSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
@@ -104,7 +104,7 @@ data class DecimalSettings(
  * @see DecimalSettingsAction
  */
 class DecimalSettingsConfigurable(
-    override val dialog: DecimalSettingsDialog = DecimalSettingsDialog()
+    override val component: DecimalSettingsComponent = DecimalSettingsComponent()
 ) : SettingsConfigurable<DecimalSettings>() {
     override fun getDisplayName() = "Decimals"
 }

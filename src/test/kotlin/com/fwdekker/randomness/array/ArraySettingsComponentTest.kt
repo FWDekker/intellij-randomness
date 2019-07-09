@@ -11,12 +11,12 @@ import org.jetbrains.spek.api.dsl.it
 
 
 /**
- * GUI tests for [ArraySettingsDialog].
+ * GUI tests for [ArraySettingsComponent].
  */
-object ArraySettingsDialogTest : Spek({
+object ArraySettingsComponentTest : Spek({
     lateinit var arraySettings: ArraySettings
-    lateinit var arraySettingsDialog: ArraySettingsDialog
-    lateinit var arraySettingsDialogConfigurable: ArraySettingsConfigurable
+    lateinit var arraySettingsComponent: ArraySettingsComponent
+    lateinit var arraySettingsComponentConfigurable: ArraySettingsConfigurable
     lateinit var frame: FrameFixture
 
 
@@ -31,9 +31,10 @@ object ArraySettingsDialogTest : Spek({
         arraySettings.separator = ","
         arraySettings.isSpaceAfterSeparator = false
 
-        arraySettingsDialog = GuiActionRunner.execute<ArraySettingsDialog> { ArraySettingsDialog(arraySettings) }
-        arraySettingsDialogConfigurable = ArraySettingsConfigurable(arraySettingsDialog)
-        frame = showInFrame(arraySettingsDialog.getRootPane())
+        arraySettingsComponent =
+            GuiActionRunner.execute<ArraySettingsComponent> { ArraySettingsComponent(arraySettings) }
+        arraySettingsComponentConfigurable = ArraySettingsConfigurable(arraySettingsComponent)
+        frame = showInFrame(arraySettingsComponent.getRootPane())
     }
 
     afterEachTest {
@@ -74,16 +75,16 @@ object ArraySettingsDialogTest : Spek({
 
     describe("validation") {
         it("passes for the default settings") {
-            GuiActionRunner.execute { arraySettingsDialog.loadSettings(ArraySettings()) }
+            GuiActionRunner.execute { arraySettingsComponent.loadSettings(ArraySettings()) }
 
-            assertThat(arraySettingsDialog.doValidate()).isNull()
+            assertThat(arraySettingsComponent.doValidate()).isNull()
         }
 
         describe("count") {
             it("fails for a count of 0") {
                 GuiActionRunner.execute { frame.spinner("count").target().value = 0 }
 
-                val validationInfo = arraySettingsDialog.doValidate()
+                val validationInfo = arraySettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("count").target())
@@ -93,13 +94,13 @@ object ArraySettingsDialogTest : Spek({
             it("passes for a count of 1") {
                 GuiActionRunner.execute { frame.spinner("count").target().value = 1 }
 
-                assertThat(arraySettingsDialog.doValidate()).isNull()
+                assertThat(arraySettingsComponent.doValidate()).isNull()
             }
 
             it("fails for a negative count") {
                 GuiActionRunner.execute { frame.spinner("count").target().value = -172 }
 
-                val validationInfo = arraySettingsDialog.doValidate()
+                val validationInfo = arraySettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("count").target())
@@ -117,7 +118,7 @@ object ArraySettingsDialogTest : Spek({
                 frame.checkBox("spaceAfterSeparator").target().isSelected = false
             }
 
-            arraySettingsDialog.saveSettings()
+            arraySettingsComponent.saveSettings()
 
             assertThat(arraySettings.count).isEqualTo(642)
             assertThat(arraySettings.brackets).isEqualTo("{}")
@@ -128,33 +129,33 @@ object ArraySettingsDialogTest : Spek({
 
     describe("configurable") {
         it("returns the correct display name") {
-            assertThat(arraySettingsDialogConfigurable.displayName).isEqualTo("Arrays")
+            assertThat(arraySettingsComponentConfigurable.displayName).isEqualTo("Arrays")
         }
 
         describe("modification detection") {
             it("is initially unmodified") {
-                assertThat(arraySettingsDialogConfigurable.isModified).isFalse()
+                assertThat(arraySettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("modifies a single detection") {
                 GuiActionRunner.execute { frame.spinner("count").target().value = 124 }
 
-                assertThat(arraySettingsDialogConfigurable.isModified).isTrue()
+                assertThat(arraySettingsComponentConfigurable.isModified).isTrue()
             }
 
             it("ignores an undone modification") {
                 GuiActionRunner.execute { frame.spinner("count").target().value = 17 }
                 GuiActionRunner.execute { frame.spinner("count").target().value = arraySettings.count }
 
-                assertThat(arraySettingsDialogConfigurable.isModified).isFalse()
+                assertThat(arraySettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("ignores saved modifications") {
                 GuiActionRunner.execute { frame.spinner("count").target().value = 110 }
 
-                arraySettingsDialogConfigurable.apply()
+                arraySettingsComponentConfigurable.apply()
 
-                assertThat(arraySettingsDialogConfigurable.isModified).isFalse()
+                assertThat(arraySettingsComponentConfigurable.isModified).isFalse()
             }
         }
 
@@ -166,10 +167,10 @@ object ArraySettingsDialogTest : Spek({
                     frame.radioButton("separatorSemicolon").target().isSelected = true
                     frame.checkBox("spaceAfterSeparator").target().isSelected = false
 
-                    arraySettingsDialogConfigurable.reset()
+                    arraySettingsComponentConfigurable.reset()
                 }
 
-                assertThat(arraySettingsDialogConfigurable.isModified).isFalse()
+                assertThat(arraySettingsComponentConfigurable.isModified).isFalse()
             }
         }
     }

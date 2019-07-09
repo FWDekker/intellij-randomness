@@ -80,7 +80,7 @@ data class ArraySettings(
  * @see ArraySettingsAction
  */
 class ArraySettingsConfigurable(
-    override val dialog: ArraySettingsDialog = ArraySettingsDialog()
+    override val component: ArraySettingsComponent = ArraySettingsComponent()
 ) : SettingsConfigurable<ArraySettings>() {
     override fun getDisplayName() = "Arrays"
 }
