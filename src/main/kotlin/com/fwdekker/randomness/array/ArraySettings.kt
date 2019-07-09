@@ -59,6 +59,7 @@ class ArraySettings : Settings<ArraySettings> {
      */
     var isSpaceAfterSeparator = DEFAULT_SPACE_AFTER_SEPARATOR
 
+    override fun newState() = ArraySettings()
 
     override fun getState() = this
 

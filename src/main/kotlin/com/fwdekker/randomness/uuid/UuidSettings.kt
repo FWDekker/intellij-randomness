@@ -38,6 +38,8 @@ class UuidSettings : Settings<UuidSettings> {
     var enclosure = DEFAULT_ENCLOSURE
 
 
+    override fun newState() = UuidSettings()
+
     override fun getState() = this
 
     override fun loadState(state: UuidSettings) = XmlSerializerUtil.copyBean(state, this)

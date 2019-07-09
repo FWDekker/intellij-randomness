@@ -86,6 +86,8 @@ class DecimalSettings : Settings<DecimalSettings> {
         }
 
 
+    override fun newState() = DecimalSettings()
+
     override fun getState() = this
 
     override fun loadState(state: DecimalSettings) = XmlSerializerUtil.copyBean(state, this)

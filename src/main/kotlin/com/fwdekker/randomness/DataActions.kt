@@ -39,7 +39,7 @@ abstract class DataGroupAction : ActionGroup() {
     /**
      * The action used to edit the generator settings for this data type.
      */
-    abstract val settingsAction: SettingsAction
+    abstract val settingsAction: SettingsAction<*>
 
 
     /**
@@ -208,11 +208,11 @@ abstract class DataInsertArrayAction(
 /**
  * Opens the settings window for changing settings.
  */
-abstract class SettingsAction : AnAction() {
+abstract class SettingsAction<S : Settings<S>> : AnAction() {
     /**
      * The configurable to display when this action is performed.
      */
-    protected abstract val configurable: SettingsConfigurable<*>
+    protected abstract val configurable: SettingsConfigurable<S>
 
 
     /**

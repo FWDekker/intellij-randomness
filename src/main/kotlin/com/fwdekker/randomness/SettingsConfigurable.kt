@@ -39,15 +39,15 @@ class RandomnessConfigurable : Configurable {
 
 
 /**
- * A configurable to change settings of type [T].
+ * A configurable to change settings of type [S].
  *
- * @param T the type of settings the configurable changes.
+ * @param S the type of settings the configurable changes.
  */
-abstract class SettingsConfigurable<T : Settings<*>> : Configurable {
+abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
     /**
      * The user interface for changing the settings.
      */
-    protected abstract val dialog: SettingsDialog<T>
+    protected abstract val dialog: SettingsDialog<S>
 
 
     /**
@@ -62,7 +62,7 @@ abstract class SettingsConfigurable<T : Settings<*>> : Configurable {
      *
      * @return true if the settings were modified since they were loaded
      */
-    override fun isModified() = true // TODO Determine this
+    override fun isModified() = dialog.isModified()
 
     /**
      * Saves the user's changes to the default settings object.
@@ -70,11 +70,9 @@ abstract class SettingsConfigurable<T : Settings<*>> : Configurable {
     override fun apply() = dialog.saveSettings()
 
     /**
-     * Saves the user's changes to the given settings object.
-     *
-     * @param settings the settings object to save the changes to
+     * Discards unsaved changes.
      */
-    fun apply(settings: T) = dialog.saveSettings(settings)
+    override fun reset() = dialog.reset()
 
     /**
      * Returns the root pane of the settings interface.

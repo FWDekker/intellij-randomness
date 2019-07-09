@@ -79,6 +79,8 @@ class IntegerSettings : Settings<IntegerSettings> {
         }
 
 
+    override fun newState() = IntegerSettings()
+
     override fun getState() = this
 
     override fun loadState(state: IntegerSettings) = XmlSerializerUtil.copyBean(state, this)

@@ -9,6 +9,6 @@ import com.fwdekker.randomness.SettingsAction
  * @see ArraySettings
  * @see ArraySettingsDialog
  */
-class ArraySettingsAction : SettingsAction() {
+class ArraySettingsAction : SettingsAction<ArraySettings>() {
     override val configurable = ArraySettingsConfigurable()
 }

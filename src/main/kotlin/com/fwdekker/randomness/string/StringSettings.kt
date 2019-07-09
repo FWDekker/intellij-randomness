@@ -67,6 +67,8 @@ class StringSettings : Settings<StringSettings> {
     var alphabets = mutableSetOf(Alphabet.ALPHABET, Alphabet.DIGITS)
 
 
+    override fun newState() = StringSettings()
+
     override fun getState() = this
 
     override fun loadState(state: StringSettings) = XmlSerializerUtil.copyBean(state, this)

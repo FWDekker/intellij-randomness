@@ -121,6 +121,8 @@ class WordSettings : Settings<WordSettings> {
         }
 
 
+    override fun newState() = WordSettings()
+
     override fun getState() = this
 
     override fun loadState(state: WordSettings) = XmlSerializerUtil.copyBean(state, this)

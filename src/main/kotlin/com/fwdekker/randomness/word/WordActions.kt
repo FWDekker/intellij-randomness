@@ -82,6 +82,6 @@ class WordInsertArrayAction(
  * @see WordSettings
  * @see WordSettingsDialog
  */
-class WordSettingsAction : SettingsAction() {
+class WordSettingsAction : SettingsAction<WordSettings>() {
     override val configurable = WordSettingsConfigurable()
 }
