@@ -210,9 +210,14 @@ abstract class DataInsertArrayAction(
  */
 abstract class SettingsAction<S : Settings<S>> : AnAction() {
     /**
-     * The configurable to display when this action is performed.
+     * The name of the action.
      */
-    protected abstract val configurable: SettingsConfigurable<S>
+    protected abstract val title: String
+
+    /**
+     * The class of the configurable maintaining the settings.
+     */
+    protected abstract val configurableClass: Class<out SettingsConfigurable<S>>
 
 
     /**
@@ -223,7 +228,7 @@ abstract class SettingsAction<S : Settings<S>> : AnAction() {
     override fun update(event: AnActionEvent) {
         super.update(event)
 
-        event.presentation.text = configurable.displayName
+        event.presentation.text = title
     }
 
     /**
@@ -232,5 +237,5 @@ abstract class SettingsAction<S : Settings<S>> : AnAction() {
      * @param event carries information on the invocation place
      */
     override fun actionPerformed(event: AnActionEvent) =
-        ShowSettingsUtil.getInstance().showSettingsDialog(event.project, configurable.displayName)
+        ShowSettingsUtil.getInstance().showSettingsDialog(event.project, configurableClass)
 }

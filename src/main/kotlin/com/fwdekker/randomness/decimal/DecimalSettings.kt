@@ -107,5 +107,5 @@ class DecimalSettingsConfigurable : SettingsConfigurable<DecimalSettings>() {
     override val dialog by lazy { DecimalSettingsDialog() }
 
 
-    override fun getDisplayName() = "Randomness Decimals"
+    override fun getDisplayName() = "Decimals"
 }

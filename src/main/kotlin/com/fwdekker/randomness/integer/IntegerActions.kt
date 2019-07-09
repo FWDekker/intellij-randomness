@@ -88,5 +88,7 @@ class IntegerInsertArrayAction(
  * @see IntegerSettingsDialog
  */
 class IntegerSettingsAction : SettingsAction<IntegerSettings>() {
-    override val configurable = IntegerSettingsConfigurable()
+    override val title = "Integer Settings"
+
+    override val configurableClass = IntegerSettingsConfigurable::class.java
 }

@@ -86,5 +86,7 @@ class DecimalInsertArrayAction(
  * @see DecimalSettingsDialog
  */
 class DecimalSettingsAction : SettingsAction<DecimalSettings>() {
-    override val configurable = DecimalSettingsConfigurable()
+    override val title = "Decimal Settings"
+
+    override val configurableClass = DecimalSettingsConfigurable::class.java
 }

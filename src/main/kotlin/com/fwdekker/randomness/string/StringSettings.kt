@@ -74,5 +74,5 @@ class StringSettingsConfigurable : SettingsConfigurable<StringSettings>() {
     override val dialog by lazy { StringSettingsDialog() }
 
 
-    override fun getDisplayName() = "Randomness Strings"
+    override fun getDisplayName() = "Strings"
 }

@@ -98,5 +98,5 @@ class IntegerSettingsConfigurable : SettingsConfigurable<IntegerSettings>() {
     override val dialog by lazy { IntegerSettingsDialog() }
 
 
-    override fun getDisplayName() = "Randomness Integers"
+    override fun getDisplayName() = "Integers"
 }

@@ -125,5 +125,5 @@ class WordSettingsConfigurable : SettingsConfigurable<WordSettings>() {
     override val dialog by lazy { WordSettingsDialog() }
 
 
-    override fun getDisplayName() = "Randomness Words"
+    override fun getDisplayName() = "Words"
 }

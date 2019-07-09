@@ -51,5 +51,5 @@ class UuidSettingsConfigurable : SettingsConfigurable<UuidSettings>() {
     override val dialog by lazy { UuidSettingsDialog() }
 
 
-    override fun getDisplayName() = "Randomness UUIDs"
+    override fun getDisplayName() = "UUIDs"
 }

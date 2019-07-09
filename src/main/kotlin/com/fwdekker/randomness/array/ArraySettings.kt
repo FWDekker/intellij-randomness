@@ -83,5 +83,5 @@ class ArraySettingsConfigurable : SettingsConfigurable<ArraySettings>() {
     override val dialog by lazy { ArraySettingsDialog() }
 
 
-    override fun getDisplayName() = "Randomness Arrays"
+    override fun getDisplayName() = "Arrays"
 }
