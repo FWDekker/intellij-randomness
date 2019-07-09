@@ -87,7 +87,7 @@ object IntegerSettingsDialogTest : Spek({
         }
 
         describe("grouping separator") {
-            it("uses the default separator if an empty string is set") {
+            it("uses the default separator if null is set") {
                 integerSettings.safeSetGroupingSeparator(null)
 
                 assertThat(integerSettings.groupingSeparator).isEqualTo(IntegerSettings.DEFAULT_GROUPING_SEPARATOR)

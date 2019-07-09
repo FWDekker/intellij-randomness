@@ -41,7 +41,7 @@ object DecimalSettingsTest : Spek({
 
     describe("input handling") {
         describe("grouping separator") {
-            it("uses the default separator if an empty string is set") {
+            it("uses the default separator if null is set") {
                 decimalSettings.safeSetGroupingSeparator(null)
 
                 assertThat(decimalSettings.groupingSeparator).isEqualTo(DecimalSettings.DEFAULT_GROUPING_SEPARATOR)
@@ -61,7 +61,7 @@ object DecimalSettingsTest : Spek({
         }
 
         describe("decimal separator") {
-            it("uses the default separator if a null string is set") {
+            it("uses the default separator if null is set") {
                 decimalSettings.safeSetDecimalSeparator(null)
 
                 assertThat(decimalSettings.decimalSeparator).isEqualTo(DecimalSettings.DEFAULT_DECIMAL_SEPARATOR)
