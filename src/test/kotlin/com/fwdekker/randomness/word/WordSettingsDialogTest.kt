@@ -38,7 +38,7 @@ object WordSettingsDialogTest : Spek({
         wordSettings.activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.EXTENDED_DICTIONARY)
 
         wordSettingsDialog = GuiActionRunner.execute<WordSettingsDialog> { WordSettingsDialog(wordSettings) }
-        frame = showInFrame(wordSettingsDialog.createCenterPanel())
+        frame = showInFrame(wordSettingsDialog.getRootPane())
 
         dialogDictionaries = frame.table("dictionaries").target() as JEditableList<Dictionary>
     }

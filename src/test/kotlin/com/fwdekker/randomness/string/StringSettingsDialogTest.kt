@@ -33,7 +33,7 @@ object StringSettingsDialogTest : Spek({
         stringSettings.alphabets = mutableSetOf(Alphabet.ALPHABET, Alphabet.HEXADECIMAL)
 
         stringSettingsDialog = GuiActionRunner.execute<StringSettingsDialog> { StringSettingsDialog(stringSettings) }
-        frame = showInFrame(stringSettingsDialog.createCenterPanel())
+        frame = showInFrame(stringSettingsDialog.getRootPane())
     }
 
     afterEachTest {

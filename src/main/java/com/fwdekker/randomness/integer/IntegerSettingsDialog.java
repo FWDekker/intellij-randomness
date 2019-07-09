@@ -51,7 +51,7 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
 
 
     @Override
-    public JComponent getRootPane() {
+    public JPanel getRootPane() {
         return contentPane;
     }
 

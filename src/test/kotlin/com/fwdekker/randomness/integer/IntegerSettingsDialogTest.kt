@@ -32,7 +32,7 @@ object IntegerSettingsDialogTest : Spek({
 
         integerSettingsDialog =
             GuiActionRunner.execute<IntegerSettingsDialog> { IntegerSettingsDialog(integerSettings) }
-        frame = showInFrame(integerSettingsDialog.createCenterPanel())
+        frame = showInFrame(integerSettingsDialog.getRootPane())
     }
 
     afterEachTest {

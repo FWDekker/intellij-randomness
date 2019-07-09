@@ -28,7 +28,7 @@ object UuidSettingsDialogTest : Spek({
         uuidSettings.enclosure = "'"
 
         uuidSettingsDialog = GuiActionRunner.execute<UuidSettingsDialog> { UuidSettingsDialog(uuidSettings) }
-        frame = showInFrame(uuidSettingsDialog.createCenterPanel())
+        frame = showInFrame(uuidSettingsDialog.getRootPane())
     }
 
     afterEachTest {

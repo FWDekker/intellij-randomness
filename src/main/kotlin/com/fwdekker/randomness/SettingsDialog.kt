@@ -1,13 +1,13 @@
 package com.fwdekker.randomness
 
 import com.intellij.openapi.ui.ValidationInfo
-import javax.swing.JComponent
+import javax.swing.JPanel
 
 
 /**
  * Superclass for settings dialogs.
  *
- * Subclasses **MUST** call `init` and `loadSettings` in their constructor.
+ * Subclasses **MUST** call `loadSettings` in their constructor.
  *
  * @param settings the settings to manage
  * @param <S> the type of settings managed by the subclass
@@ -18,7 +18,12 @@ abstract class SettingsDialog<S : Settings<*>>(private val settings: S) : Settin
 
     override fun saveSettings() = saveSettings(settings)
 
-    abstract fun getRootPane(): JComponent?
+    /**
+     * Returns the panel containing the settings.
+     *
+     * @return the panel containing the settings
+     */
+    abstract fun getRootPane(): JPanel?
 
     /**
      * Validates all input fields.

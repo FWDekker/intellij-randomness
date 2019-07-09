@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
@@ -54,7 +53,7 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
 
 
     @Override
-    public JComponent getRootPane() {
+    public JPanel getRootPane() {
         return contentPane;
     }
 

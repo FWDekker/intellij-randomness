@@ -31,7 +31,7 @@ object ArraySettingsDialogTest : Spek({
         arraySettings.isSpaceAfterSeparator = false
 
         arraySettingsDialog = GuiActionRunner.execute<ArraySettingsDialog> { ArraySettingsDialog(arraySettings) }
-        frame = showInFrame(arraySettingsDialog.createCenterPanel())
+        frame = showInFrame(arraySettingsDialog.getRootPane())
     }
 
     afterEachTest {

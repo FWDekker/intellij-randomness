@@ -65,7 +65,7 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
 
 
     @Override
-    public JComponent getRootPane() {
+    public JPanel getRootPane() {
         return contentPane;
     }
 

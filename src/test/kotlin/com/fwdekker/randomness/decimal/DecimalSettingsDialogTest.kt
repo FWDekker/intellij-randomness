@@ -34,7 +34,7 @@ object DecimalSettingsDialogTest : Spek({
 
         decimalSettingsDialog =
             GuiActionRunner.execute<DecimalSettingsDialog> { DecimalSettingsDialog(decimalSettings) }
-        frame = showInFrame(decimalSettingsDialog.createCenterPanel())
+        frame = showInFrame(decimalSettingsDialog.getRootPane())
     }
 
     afterEachTest {
