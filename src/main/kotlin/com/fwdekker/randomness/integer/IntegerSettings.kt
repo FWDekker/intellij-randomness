@@ -79,18 +79,8 @@ class IntegerSettings : Settings<IntegerSettings> {
         }
 
 
-    /**
-     * Returns `this`.
-     *
-     * @return `this`
-     */
     override fun getState() = this
 
-    /**
-     * Copies the fields of [state] to `this`.
-     *
-     * @param state the state to load into `this`
-     */
     override fun loadState(state: IntegerSettings) = XmlSerializerUtil.copyBean(state, this)
 }
 

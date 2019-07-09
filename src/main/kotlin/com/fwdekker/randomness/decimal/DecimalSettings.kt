@@ -86,18 +86,8 @@ class DecimalSettings : Settings<DecimalSettings> {
         }
 
 
-    /**
-     * Returns `this`.
-     *
-     * @return `this`
-     */
     override fun getState() = this
 
-    /**
-     * Copies the fields of [state] to `this`.
-     *
-     * @param state the state to load into `this`
-     */
     override fun loadState(state: DecimalSettings) = XmlSerializerUtil.copyBean(state, this)
 }
 

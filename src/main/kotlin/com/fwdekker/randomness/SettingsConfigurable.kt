@@ -10,12 +10,30 @@ import javax.swing.JPanel
  */
 // TODO Populate this.
 class RandomnessConfigurable : Configurable {
+    /**
+     * Returns the name of the configurable as displayed in the settings window.
+     *
+     * @return the name of the configurable as displayed in the settings window
+     */
     override fun getDisplayName() = "Randomness"
 
+    /**
+     * Returns false because there is nothing to be modified.
+     *
+     * @return false because there is nothing to be modified
+     */
     override fun isModified() = false
 
+    /**
+     * Does nothing because nothing can be done.
+     */
     override fun apply() = Unit
 
+    /**
+     * Returns an empty panel.
+     *
+     * @return an empty panel
+     */
     override fun createComponent() = JPanel()
 }
 
@@ -31,6 +49,13 @@ abstract class SettingsConfigurable<T : Settings<*>> : Configurable {
      */
     protected abstract val dialog: SettingsDialog<T>
 
+
+    /**
+     * Returns the name of the configurable as displayed in the settings window.
+     *
+     * @return the name of the configurable as displayed in the settings window
+     */
+    abstract override fun getDisplayName(): String
 
     /**
      * Returns true if the settings were modified since they were loaded.
