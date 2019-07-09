@@ -81,7 +81,7 @@ data class IntegerSettings(
     }
 
 
-    override fun newState() = IntegerSettings()
+    override fun copyState() = IntegerSettings().also { it.loadState(this) }
 
     override fun getState() = this
 

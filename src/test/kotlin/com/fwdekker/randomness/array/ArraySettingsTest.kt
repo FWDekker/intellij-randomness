@@ -18,7 +18,15 @@ object ArraySettingsTest : Spek({
     }
 
 
-    describe("state persistence") {
+    describe("state management") {
+        it("creates an independent copy") {
+            val copy = arraySettings.copyState()
+            arraySettings.count = 44
+            copy.count = 15
+
+            assertThat(arraySettings.count).isEqualTo(44)
+        }
+
         it("copies state from another instance") {
             arraySettings.count = 997
             arraySettings.brackets = "0fWx<i6jTJ"

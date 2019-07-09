@@ -18,7 +18,15 @@ object WordSettingsTest : Spek({
     }
 
 
-    describe("state persistence") {
+    describe("state management") {
+        it("creates an independent copy") {
+            val copy = wordSettings.copyState()
+            wordSettings.minLength = 156
+            copy.minLength = 37
+
+            assertThat(wordSettings.minLength).isEqualTo(156)
+        }
+
         it("copies state from another instance") {
             wordSettings.minLength = 502
             wordSettings.maxLength = 812

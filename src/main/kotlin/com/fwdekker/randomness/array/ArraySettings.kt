@@ -52,7 +52,7 @@ data class ArraySettings(
     }
 
 
-    override fun newState() = ArraySettings()
+    override fun copyState() = ArraySettings().also { it.loadState(this) }
 
     override fun getState() = this
 

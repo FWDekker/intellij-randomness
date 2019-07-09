@@ -108,7 +108,7 @@ data class WordSettings(
         }
 
 
-    override fun newState() = WordSettings()
+    override fun copyState() = WordSettings().also { it.loadState(this) }
 
     override fun getState() = this
 

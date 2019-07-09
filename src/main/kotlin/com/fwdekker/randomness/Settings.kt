@@ -10,11 +10,11 @@ import com.intellij.openapi.components.PersistentStateComponent
  */
 interface Settings<S> : PersistentStateComponent<S> {
     /**
-     * Returns a settings instance with default settings.
+     * Returns a shallow copy of this instance.
      *
-     * @return a settings instance with default settings
+     * @return a shallow copy of this instance
      */
-    fun newState(): S
+    fun copyState(): S
 
     /**
      * Returns `this`.

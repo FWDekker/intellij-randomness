@@ -57,7 +57,7 @@ data class StringSettings(
     }
 
 
-    override fun newState() = StringSettings()
+    override fun copyState() = StringSettings().also { it.loadState(this) }
 
     override fun getState() = this
 

@@ -23,7 +23,7 @@ abstract class SettingsDialog<S : Settings<S>>(private val settings: S) : Settin
      *
      * @return true if this dialog contains unsaved changes
      */
-    fun isModified() = settings.newState().also { saveSettings(it) } != settings
+    fun isModified() = settings.copyState().also { saveSettings(it) } != settings
 
     /**
      * Discards unsaved changes.

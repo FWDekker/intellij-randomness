@@ -90,7 +90,7 @@ data class DecimalSettings(
             this.decimalSeparator = decimalSeparator.substring(0, 1)
 
 
-    override fun newState() = DecimalSettings()
+    override fun copyState() = DecimalSettings().also { it.loadState(this) }
 
     override fun getState() = this
 

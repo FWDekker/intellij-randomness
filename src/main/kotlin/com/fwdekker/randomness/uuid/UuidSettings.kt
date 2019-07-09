@@ -34,7 +34,7 @@ data class UuidSettings(var enclosure: String = DEFAULT_ENCLOSURE) : Settings<Uu
     }
 
 
-    override fun newState() = UuidSettings()
+    override fun copyState() = UuidSettings().also { it.loadState(this) }
 
     override fun getState() = this
 

@@ -18,7 +18,15 @@ object IntegerSettingsTest : Spek({
     }
 
 
-    describe("state persistence") {
+    describe("state management") {
+        it("creates an independent copy") {
+            val copy = integerSettings.copyState()
+            integerSettings.minValue = 159
+            copy.minValue = 48
+
+            assertThat(integerSettings.minValue).isEqualTo(159)
+        }
+
         it("copies state from another instance") {
             integerSettings.minValue = 742
             integerSettings.maxValue = 908
