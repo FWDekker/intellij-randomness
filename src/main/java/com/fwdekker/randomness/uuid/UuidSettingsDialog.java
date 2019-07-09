@@ -37,13 +37,12 @@ public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
     /* default */ UuidSettingsDialog(final @NotNull UuidSettings settings) {
         super(settings);
 
-        init();
         loadSettings();
     }
 
 
     @Override
-    protected JComponent createCenterPanel() {
+    public JComponent getRootPane() {
         return contentPane;
     }
 

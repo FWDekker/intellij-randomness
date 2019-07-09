@@ -42,13 +42,12 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     /* default */ ArraySettingsDialog(final @NotNull ArraySettings settings) {
         super(settings);
 
-        init();
         loadSettings();
     }
 
 
     @Override
-    protected JComponent createCenterPanel() {
+    public JComponent getRootPane() {
         return contentPane;
     }
 

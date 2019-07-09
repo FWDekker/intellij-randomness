@@ -49,13 +49,12 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     /* default */ StringSettingsDialog(final @NotNull StringSettings settings) {
         super(settings);
 
-        init();
         loadSettings();
     }
 
 
     @Override
-    protected JComponent createCenterPanel() {
+    public JComponent getRootPane() {
         return contentPane;
     }
 

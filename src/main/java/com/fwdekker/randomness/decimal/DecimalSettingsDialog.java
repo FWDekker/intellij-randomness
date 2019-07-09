@@ -48,13 +48,12 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
     /* default */ DecimalSettingsDialog(final @NotNull DecimalSettings settings) {
         super(settings);
 
-        init();
         loadSettings();
     }
 
 
     @Override
-    protected JComponent createCenterPanel() {
+    public JComponent getRootPane() {
         return contentPane;
     }
 
