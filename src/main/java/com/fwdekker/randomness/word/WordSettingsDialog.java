@@ -117,7 +117,7 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
             : CapitalizationMode.Companion.getMode(capitalization));
 
         settings.setBundledDictionaries(filterIsInstance(dictionaries.getEntries(), BundledDictionary.class));
-        settings.setBundledDictionaries(filterIsInstance(dictionaries.getActiveEntries(), BundledDictionary.class));
+        settings.setActiveBundledDictionaries(filterIsInstance(dictionaries.getActiveEntries(), BundledDictionary.class));
         BundledDictionary.Companion.getCache().clear();
 
         settings.setUserDictionaries(filterIsInstance(dictionaries.getEntries(), UserDictionary.class));
