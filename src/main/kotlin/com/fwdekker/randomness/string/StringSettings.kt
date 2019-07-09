@@ -12,12 +12,24 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 /**
  * Contains settings for generating random strings.
  *
+ * @property minLength The minimum length of the generated string, inclusive.
+ * @property maxLength The maximum length of the generated string, inclusive.
+ * @property enclosure The string that encloses the generated string on both sides.
+ * @property capitalization The capitalization mode of the generated string.
+ * @property alphabets The alphabets to be used for generating strings.
+ *
  * @see StringInsertAction
  * @see StringSettingsAction
  * @see StringSettingsDialog
  */
 @State(name = "StringSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-class StringSettings : Settings<StringSettings> {
+data class StringSettings(
+    var minLength: Int = DEFAULT_MIN_LENGTH,
+    var maxLength: Int = DEFAULT_MAX_LENGTH,
+    var enclosure: String = DEFAULT_ENCLOSURE,
+    var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
+    var alphabets: MutableSet<Alphabet> = mutableSetOf(Alphabet.ALPHABET, Alphabet.DIGITS)
+) : Settings<StringSettings> {
     companion object {
         /**
          * The default value of the [minLength][StringSettings.minLength] field.
@@ -43,28 +55,6 @@ class StringSettings : Settings<StringSettings> {
         val default: StringSettings
             get() = ServiceManager.getService(StringSettings::class.java)
     }
-
-
-    /**
-     * The minimum length of the generated string, inclusive.
-     */
-    var minLength = DEFAULT_MIN_LENGTH
-    /**
-     * The maximum length of the generated string, inclusive.
-     */
-    var maxLength = DEFAULT_MAX_LENGTH
-    /**
-     * The string that encloses the generated string on both sides.
-     */
-    var enclosure = DEFAULT_ENCLOSURE
-    /**
-     * The capitalization mode of the generated string.
-     */
-    var capitalization = DEFAULT_CAPITALIZATION
-    /**
-     * The alphabets to be used for generating strings.
-     */
-    var alphabets = mutableSetOf(Alphabet.ALPHABET, Alphabet.DIGITS)
 
 
     override fun newState() = StringSettings()

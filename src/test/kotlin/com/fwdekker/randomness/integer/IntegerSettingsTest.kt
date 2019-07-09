@@ -35,14 +35,20 @@ object IntegerSettingsTest : Spek({
 
     describe("input handling") {
         describe("grouping separator") {
+            it("uses the default separator if null is set") {
+                integerSettings.safeSetGroupingSeparator(null)
+
+                assertThat(integerSettings.groupingSeparator).isEqualTo(IntegerSettings.DEFAULT_GROUPING_SEPARATOR)
+            }
+
             it("uses the default separator if an empty string is set") {
-                integerSettings.groupingSeparator = ""
+                integerSettings.safeSetGroupingSeparator("")
 
                 assertThat(integerSettings.groupingSeparator).isEqualTo(IntegerSettings.DEFAULT_GROUPING_SEPARATOR)
             }
 
             it("uses only the first character if a multi-character string is given") {
-                integerSettings.groupingSeparator = "recited"
+                integerSettings.safeSetGroupingSeparator("recited")
 
                 assertThat(integerSettings.groupingSeparator).isEqualTo("r")
             }

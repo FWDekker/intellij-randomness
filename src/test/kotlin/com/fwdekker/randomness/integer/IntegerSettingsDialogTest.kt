@@ -62,22 +62,48 @@ object IntegerSettingsDialogTest : Spek({
     }
 
     describe("input handling") {
-        it("truncates decimals in the base") {
-            GuiActionRunner.execute { frame.spinner("base").target().value = 22.62f }
+        describe("base") {
+            it("truncates decimals in the base") {
+                GuiActionRunner.execute { frame.spinner("base").target().value = 22.62f }
 
-            frame.spinner("base").requireValue(22)
+                frame.spinner("base").requireValue(22)
+            }
         }
 
-        it("truncates decimals in the minimum value") {
-            GuiActionRunner.execute { frame.spinner("minValue").target().value = 285.21f }
+        describe("minimum value") {
+            it("truncates decimals in the minimum value") {
+                GuiActionRunner.execute { frame.spinner("minValue").target().value = 285.21f }
 
-            frame.spinner("minValue").requireValue(285L)
+                frame.spinner("minValue").requireValue(285L)
+            }
         }
 
-        it("truncates decimals in the maximum value") {
-            GuiActionRunner.execute { frame.spinner("maxValue").target().value = 490.34f }
+        describe("maximum value") {
+            it("truncates decimals in the maximum value") {
+                GuiActionRunner.execute { frame.spinner("maxValue").target().value = 490.34f }
 
-            frame.spinner("maxValue").requireValue(490L)
+                frame.spinner("maxValue").requireValue(490L)
+            }
+        }
+
+        describe("grouping separator") {
+            it("uses the default separator if null is set") {
+                integerSettings.safeSetGroupingSeparator(null)
+
+                assertThat(integerSettings.groupingSeparator).isEqualTo(IntegerSettings.DEFAULT_GROUPING_SEPARATOR)
+            }
+
+            it("uses the default separator if an empty string is set") {
+                integerSettings.safeSetGroupingSeparator("")
+
+                assertThat(integerSettings.groupingSeparator).isEqualTo(IntegerSettings.DEFAULT_GROUPING_SEPARATOR)
+            }
+
+            it("uses only the first character if a multi-character string is given") {
+                integerSettings.safeSetGroupingSeparator("mention")
+
+                assertThat(integerSettings.groupingSeparator).isEqualTo("m")
+            }
         }
     }
 

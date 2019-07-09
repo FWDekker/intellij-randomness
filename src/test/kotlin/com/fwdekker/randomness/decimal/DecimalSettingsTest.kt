@@ -41,28 +41,40 @@ object DecimalSettingsTest : Spek({
 
     describe("input handling") {
         describe("grouping separator") {
+            it("uses the default separator if null is set") {
+                decimalSettings.safeSetGroupingSeparator(null)
+
+                assertThat(decimalSettings.groupingSeparator).isEqualTo(DecimalSettings.DEFAULT_GROUPING_SEPARATOR)
+            }
+
             it("uses the default separator if an empty string is set") {
-                decimalSettings.groupingSeparator = ""
+                decimalSettings.safeSetGroupingSeparator("")
 
                 assertThat(decimalSettings.groupingSeparator).isEqualTo(DecimalSettings.DEFAULT_GROUPING_SEPARATOR)
             }
 
             it("uses only the first character if a multi-character string is given") {
-                decimalSettings.groupingSeparator = "drummer"
+                decimalSettings.safeSetGroupingSeparator("drummer")
 
                 assertThat(decimalSettings.groupingSeparator).isEqualTo("d")
             }
         }
 
         describe("decimal separator") {
+            it("uses the default separator if null is set") {
+                decimalSettings.safeSetDecimalSeparator(null)
+
+                assertThat(decimalSettings.decimalSeparator).isEqualTo(DecimalSettings.DEFAULT_DECIMAL_SEPARATOR)
+            }
+
             it("uses the default separator if an empty string is set") {
-                decimalSettings.decimalSeparator = ""
+                decimalSettings.safeSetDecimalSeparator("")
 
                 assertThat(decimalSettings.decimalSeparator).isEqualTo(DecimalSettings.DEFAULT_DECIMAL_SEPARATOR)
             }
 
             it("uses only the first character if a multi-character string is given") {
-                decimalSettings.decimalSeparator = "foolish"
+                decimalSettings.safeSetDecimalSeparator("foolish")
 
                 assertThat(decimalSettings.decimalSeparator).isEqualTo("f")
             }
