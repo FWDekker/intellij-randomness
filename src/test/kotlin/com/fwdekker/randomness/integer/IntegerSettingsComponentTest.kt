@@ -1,5 +1,7 @@
 package com.fwdekker.randomness.integer
 
+import com.intellij.openapi.options.ConfigurationException
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -210,26 +212,45 @@ object IntegerSettingsComponentTest : Spek({
             assertThat(integerSettingsComponentConfigurable.displayName).isEqualTo("Integers")
         }
 
+        describe("saving modifications") {
+            it("accepts correct settings") {
+                GuiActionRunner.execute { frame.spinner("minValue").target().value = 92 }
+
+                integerSettingsComponentConfigurable.apply()
+
+                assertThat(integerSettings.minValue).isEqualTo(92)
+            }
+
+            it("rejects incorrect settings") {
+                GuiActionRunner.execute { frame.spinner("minValue").target().value = 83 }
+                GuiActionRunner.execute { frame.spinner("maxValue").target().value = 1 }
+
+                Assertions.assertThatThrownBy { integerSettingsComponentConfigurable.apply() }
+                    .isInstanceOf(ConfigurationException::class.java)
+            }
+        }
+
         describe("modification detection") {
             it("is initially unmodified") {
                 assertThat(integerSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("modifies a single detection") {
-                GuiActionRunner.execute { frame.spinner("minValue").target().value = 232 }
+                GuiActionRunner.execute { frame.spinner("maxValue").target().value = 232 }
 
                 assertThat(integerSettingsComponentConfigurable.isModified).isTrue()
             }
 
             it("ignores an undone modification") {
-                GuiActionRunner.execute { frame.spinner("minValue").target().value = 199 }
-                GuiActionRunner.execute { frame.spinner("minValue").target().value = integerSettings.minValue }
+                GuiActionRunner.execute { frame.spinner("maxValue").target().value = 199 }
+                GuiActionRunner.execute { frame.spinner("maxValue").target().value = integerSettings.maxValue }
 
                 assertThat(integerSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("ignores saved modifications") {
-                GuiActionRunner.execute { frame.spinner("minValue").target().value = 169 }
+                GuiActionRunner.execute { frame.spinner("minValue").target().value = 70 }
+                GuiActionRunner.execute { frame.spinner("maxValue").target().value = 169 }
 
                 integerSettingsComponentConfigurable.apply()
 
@@ -240,9 +261,9 @@ object IntegerSettingsComponentTest : Spek({
         describe("resets") {
             it("resets all fields properly") {
                 GuiActionRunner.execute {
-                    frame.spinner("minValue").target().value = 181
-                    frame.spinner("maxValue").target().value = 159
-                    frame.spinner("base").target().value = 164
+                    frame.spinner("minValue").target().value = 159
+                    frame.spinner("maxValue").target().value = 181
+                    frame.spinner("base").target().value = 12
                     frame.radioButton("groupingSeparatorComma").target().isSelected = true
 
                     integerSettingsComponentConfigurable.reset()

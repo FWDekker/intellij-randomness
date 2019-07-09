@@ -1,5 +1,7 @@
 package com.fwdekker.randomness.decimal
 
+import com.intellij.openapi.options.ConfigurationException
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -163,6 +165,23 @@ object DecimalSettingsComponentTest : Spek({
             assertThat(decimalSettingsComponentConfigurable.displayName).isEqualTo("Decimals")
         }
 
+        describe("saving modifications") {
+            it("accepts correct settings") {
+                GuiActionRunner.execute { frame.spinner("decimalCount").target().value = 89 }
+
+                decimalSettingsComponentConfigurable.apply()
+
+                assertThat(decimalSettings.decimalCount).isEqualTo(89)
+            }
+
+            it("rejects incorrect settings") {
+                GuiActionRunner.execute { frame.spinner("decimalCount").target().value = -13 }
+
+                Assertions.assertThatThrownBy { decimalSettingsComponentConfigurable.apply() }
+                    .isInstanceOf(ConfigurationException::class.java)
+            }
+        }
+
         describe("modification detection") {
             it("is initially unmodified") {
                 assertThat(decimalSettingsComponentConfigurable.isModified).isFalse()
@@ -193,8 +212,8 @@ object DecimalSettingsComponentTest : Spek({
         describe("resets") {
             it("resets all fields properly") {
                 GuiActionRunner.execute {
-                    frame.spinner("minValue").target().value = 970.53
-                    frame.spinner("maxValue").target().value = 206.90
+                    frame.spinner("minValue").target().value = 206.90
+                    frame.spinner("maxValue").target().value = 970.53
                     frame.spinner("decimalCount").target().value = 130
                     frame.checkBox("showTrailingZeroes").target().isSelected = true
                     frame.radioButton("groupingSeparatorPeriod").target().isSelected = true

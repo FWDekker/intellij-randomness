@@ -70,6 +70,16 @@ object UuidSettingsComponentTest : Spek({
             assertThat(uuidSettingsComponentConfigurable.displayName).isEqualTo("UUIDs")
         }
 
+        describe("saving modifications") {
+            it("accepts correct settings") {
+                GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
+
+                uuidSettingsComponentConfigurable.apply()
+
+                assertThat(uuidSettings.enclosure).isEqualTo("`")
+            }
+        }
+
         describe("modification detection") {
             it("is initially unmodified") {
                 assertThat(uuidSettingsComponentConfigurable.isModified).isFalse()

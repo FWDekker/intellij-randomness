@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.intellij.openapi.options.ConfigurationException
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -159,26 +161,44 @@ object StringSettingsComponentTest : Spek({
             assertThat(stringSettingsComponentConfigurable.displayName).isEqualTo("Strings")
         }
 
+        describe("saving modifications") {
+            it("accepts correct settings") {
+                GuiActionRunner.execute { frame.spinner("minLength").target().value = 19 }
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 55 }
+
+                stringSettingsComponentConfigurable.apply()
+
+                assertThat(stringSettings.maxLength).isEqualTo(55)
+            }
+
+            it("rejects incorrect settings") {
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = -45 }
+
+                Assertions.assertThatThrownBy { stringSettingsComponentConfigurable.apply() }
+                    .isInstanceOf(ConfigurationException::class.java)
+            }
+        }
+
         describe("modification detection") {
             it("is initially unmodified") {
                 assertThat(stringSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("modifies a single detection") {
-                GuiActionRunner.execute { frame.spinner("minLength").target().value = 91 }
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 91 }
 
                 assertThat(stringSettingsComponentConfigurable.isModified).isTrue()
             }
 
             it("ignores an undone modification") {
-                GuiActionRunner.execute { frame.spinner("minLength").target().value = 84 }
-                GuiActionRunner.execute { frame.spinner("minLength").target().value = stringSettings.minLength }
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 84 }
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = stringSettings.maxLength }
 
                 assertThat(stringSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("ignores saved modifications") {
-                GuiActionRunner.execute { frame.spinner("minLength").target().value = 204 }
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 204 }
 
                 stringSettingsComponentConfigurable.apply()
 
@@ -192,8 +212,8 @@ object StringSettingsComponentTest : Spek({
                 val newAlphabetsOrdinals = newAlphabets.map { it.ordinal }
 
                 GuiActionRunner.execute {
-                    frame.spinner("minLength").target().value = 102
-                    frame.spinner("maxLength").target().value = 75
+                    frame.spinner("minLength").target().value = 75
+                    frame.spinner("maxLength").target().value = 102
                     frame.radioButton("enclosureSingle").target().isSelected = true
                     frame.radioButton("capitalizationLower").target().isSelected = true
                     frame.list("alphabets").target().selectedIndices = newAlphabetsOrdinals.toIntArray()
