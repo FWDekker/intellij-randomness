@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.array;
 
-import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.SettingsComponent;
 import com.fwdekker.randomness.ui.ButtonGroupKt;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -13,12 +13,12 @@ import javax.swing.JPanel;
 
 
 /**
- * Dialog for settings of random array generation.
+ * Component for settings of random array generation.
  *
  * @see ArraySettings
  * @see ArraySettingsAction
  */
-public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
+public final class ArraySettingsComponent extends SettingsComponent<ArraySettings> {
     private JPanel contentPane;
     private JIntSpinner countSpinner;
     private ButtonGroup bracketsGroup;
@@ -27,18 +27,18 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
 
 
     /**
-     * Constructs a new {@code StringSettingsDialog} that uses the singleton {@code StringSettings} instance.
+     * Constructs a new {@code StringSettingsComponent} that uses the singleton {@code StringSettings} instance.
      */
-    /* default */ ArraySettingsDialog() {
+    /* default */ ArraySettingsComponent() {
         this(ArraySettings.Companion.getDefault());
     }
 
     /**
-     * Constructs a new {@code StringSettingsDialog} that uses the given {@code StringSettings} instance.
+     * Constructs a new {@code StringSettingsComponent} that uses the given {@code StringSettings} instance.
      *
-     * @param settings the settings to manipulate with this dialog
+     * @param settings the settings to manipulate with this component
      */
-    /* default */ ArraySettingsDialog(final @NotNull ArraySettings settings) {
+    /* default */ ArraySettingsComponent(final @NotNull ArraySettings settings) {
         super(settings);
 
         loadSettings();

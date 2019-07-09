@@ -15,11 +15,11 @@ import org.junit.jupiter.api.fail
 
 
 /**
- * GUI tests for [WordSettingsDialog].
+ * GUI tests for [WordSettingsComponent].
  */
 object WordSettingsDialogTest : Spek({
     lateinit var wordSettings: WordSettings
-    lateinit var wordSettingsDialog: WordSettingsDialog
+    lateinit var wordSettingsDialog: WordSettingsComponent
     lateinit var wordSettingsDialogConfigurable: WordSettingsConfigurable
     lateinit var dialogDictionaries: JEditableList<Dictionary>
     lateinit var frame: FrameFixture
@@ -38,7 +38,7 @@ object WordSettingsDialogTest : Spek({
         wordSettings.capitalization = CapitalizationMode.LOWER
         wordSettings.activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.EXTENDED_DICTIONARY)
 
-        wordSettingsDialog = GuiActionRunner.execute<WordSettingsDialog> { WordSettingsDialog(wordSettings) }
+        wordSettingsDialog = GuiActionRunner.execute<WordSettingsComponent> { WordSettingsComponent(wordSettings) }
         wordSettingsDialogConfigurable = WordSettingsConfigurable(wordSettingsDialog)
         frame = showInFrame(wordSettingsDialog.getRootPane())
 

@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.decimal;
 
 import com.fwdekker.randomness.JavaHelperKt;
-import com.fwdekker.randomness.SettingsDialog;
+import com.fwdekker.randomness.SettingsComponent;
 import com.fwdekker.randomness.ui.ButtonGroupKt;
 import com.fwdekker.randomness.ui.JDoubleSpinner;
 import com.fwdekker.randomness.ui.JIntSpinner;
@@ -16,12 +16,12 @@ import javax.swing.JPanel;
 
 
 /**
- * Dialog for settings of random decimal generation.
+ * Component for settings of random decimal generation.
  *
  * @see DecimalSettings
  * @see DecimalSettingsAction
  */
-public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings> {
+public final class DecimalSettingsComponent extends SettingsComponent<DecimalSettings> {
     private JPanel contentPane;
     private JSpinnerRange valueRange;
     private JDoubleSpinner minValue;
@@ -33,18 +33,18 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
 
 
     /**
-     * Constructs a new {@code DecimalSettingsDialog} that uses the singleton {@code DecimalSettings} instance.
+     * Constructs a new {@code DecimalSettingsComponent} that uses the singleton {@code DecimalSettings} instance.
      */
-    /* default */ DecimalSettingsDialog() {
+    /* default */ DecimalSettingsComponent() {
         this(DecimalSettings.Companion.getDefault());
     }
 
     /**
-     * Constructs a new {@code DecimalSettingsDialog} that uses the given {@code DecimalSettings} instance.
+     * Constructs a new {@code DecimalSettingsComponent} that uses the given {@code DecimalSettings} instance.
      *
-     * @param settings the settings to manipulate with this dialog
+     * @param settings the settings to manipulate with this component
      */
-    /* default */ DecimalSettingsDialog(final @NotNull DecimalSettings settings) {
+    /* default */ DecimalSettingsComponent(final @NotNull DecimalSettings settings) {
         super(settings);
 
         loadSettings();

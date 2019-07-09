@@ -15,7 +15,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  *
  * @see UuidInsertAction
  * @see UuidSettingsAction
- * @see UuidSettingsDialog
+ * @see UuidSettingsComponent
  */
 @State(name = "UuidSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class UuidSettings(var enclosure: String = DEFAULT_ENCLOSURE) : Settings<UuidSettings> {
@@ -48,7 +48,7 @@ data class UuidSettings(var enclosure: String = DEFAULT_ENCLOSURE) : Settings<Uu
  * @see UuidSettingsAction
  */
 class UuidSettingsConfigurable(
-    override val dialog: UuidSettingsDialog = UuidSettingsDialog()
+    override val component: UuidSettingsComponent = UuidSettingsComponent()
 ) : SettingsConfigurable<UuidSettings>() {
     override fun getDisplayName() = "UUIDs"
 }

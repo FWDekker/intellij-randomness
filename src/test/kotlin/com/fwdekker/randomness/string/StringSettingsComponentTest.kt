@@ -12,12 +12,12 @@ import org.jetbrains.spek.api.dsl.it
 
 
 /**
- * GUI tests for [StringSettingsDialog].
+ * GUI tests for [StringSettingsComponent].
  */
-object StringSettingsDialogTest : Spek({
+object StringSettingsComponentTest : Spek({
     lateinit var stringSettings: StringSettings
-    lateinit var stringSettingsDialog: StringSettingsDialog
-    lateinit var stringSettingsDialogConfigurable: StringSettingsConfigurable
+    lateinit var stringSettingsComponent: StringSettingsComponent
+    lateinit var stringSettingsComponentConfigurable: StringSettingsConfigurable
     lateinit var frame: FrameFixture
 
 
@@ -33,9 +33,10 @@ object StringSettingsDialogTest : Spek({
         stringSettings.capitalization = CapitalizationMode.RANDOM
         stringSettings.alphabets = mutableSetOf(Alphabet.ALPHABET, Alphabet.HEXADECIMAL)
 
-        stringSettingsDialog = GuiActionRunner.execute<StringSettingsDialog> { StringSettingsDialog(stringSettings) }
-        stringSettingsDialogConfigurable = StringSettingsConfigurable(stringSettingsDialog)
-        frame = showInFrame(stringSettingsDialog.getRootPane())
+        stringSettingsComponent =
+            GuiActionRunner.execute<StringSettingsComponent> { StringSettingsComponent(stringSettings) }
+        stringSettingsComponentConfigurable = StringSettingsConfigurable(stringSettingsComponent)
+        frame = showInFrame(stringSettingsComponent.getRootPane())
     }
 
     afterEachTest {
@@ -87,16 +88,16 @@ object StringSettingsDialogTest : Spek({
 
     describe("validation") {
         it("passes for the default settings") {
-            GuiActionRunner.execute { stringSettingsDialog.loadSettings(StringSettings()) }
+            GuiActionRunner.execute { stringSettingsComponent.loadSettings(StringSettings()) }
 
-            assertThat(stringSettingsDialog.doValidate()).isNull()
+            assertThat(stringSettingsComponent.doValidate()).isNull()
         }
 
         describe("length range") {
             it("fails if the minimum length is negative") {
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = -161 }
 
-                val validationInfo = stringSettingsDialog.doValidate()
+                val validationInfo = stringSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
@@ -109,7 +110,7 @@ object StringSettingsDialogTest : Spek({
                     frame.spinner("maxLength").target().value = 233
                 }
 
-                val validationInfo = stringSettingsDialog.doValidate()
+                val validationInfo = stringSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
@@ -121,7 +122,7 @@ object StringSettingsDialogTest : Spek({
             it("fails if no alphabets are selected") {
                 GuiActionRunner.execute { frame.list("alphabets").target().clearSelection() }
 
-                val validationInfo = stringSettingsDialog.doValidate()
+                val validationInfo = stringSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.list("alphabets").target())
@@ -143,7 +144,7 @@ object StringSettingsDialogTest : Spek({
                 frame.list("alphabets").target().selectedIndices = newAlphabetsOrdinals.toIntArray()
             }
 
-            stringSettingsDialog.saveSettings()
+            stringSettingsComponent.saveSettings()
 
             assertThat(stringSettings.minLength).isEqualTo(445)
             assertThat(stringSettings.maxLength).isEqualTo(803)
@@ -155,33 +156,33 @@ object StringSettingsDialogTest : Spek({
 
     describe("configurable") {
         it("returns the correct display name") {
-            assertThat(stringSettingsDialogConfigurable.displayName).isEqualTo("Strings")
+            assertThat(stringSettingsComponentConfigurable.displayName).isEqualTo("Strings")
         }
 
         describe("modification detection") {
             it("is initially unmodified") {
-                assertThat(stringSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(stringSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("modifies a single detection") {
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = 91 }
 
-                assertThat(stringSettingsDialogConfigurable.isModified).isTrue()
+                assertThat(stringSettingsComponentConfigurable.isModified).isTrue()
             }
 
             it("ignores an undone modification") {
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = 84 }
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = stringSettings.minLength }
 
-                assertThat(stringSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(stringSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("ignores saved modifications") {
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = 204 }
 
-                stringSettingsDialogConfigurable.apply()
+                stringSettingsComponentConfigurable.apply()
 
-                assertThat(stringSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(stringSettingsComponentConfigurable.isModified).isFalse()
             }
         }
 
@@ -197,10 +198,10 @@ object StringSettingsDialogTest : Spek({
                     frame.radioButton("capitalizationLower").target().isSelected = true
                     frame.list("alphabets").target().selectedIndices = newAlphabetsOrdinals.toIntArray()
 
-                    stringSettingsDialogConfigurable.reset()
+                    stringSettingsComponentConfigurable.reset()
                 }
 
-                assertThat(stringSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(stringSettingsComponentConfigurable.isModified).isFalse()
             }
         }
     }

@@ -80,7 +80,7 @@ class WordInsertArrayAction(
  * Controller for random string generation settings.
  *
  * @see WordSettings
- * @see WordSettingsDialog
+ * @see WordSettingsComponent
  */
 class WordSettingsAction : SettingsAction<WordSettings>() {
     override val title = "Word Settings"

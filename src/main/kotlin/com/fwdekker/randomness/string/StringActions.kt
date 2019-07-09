@@ -81,7 +81,7 @@ class StringInsertArrayAction(
  * Controller for random string generation settings.
  *
  * @see StringSettings
- * @see StringSettingsDialog
+ * @see StringSettingsComponent
  */
 class StringSettingsAction : SettingsAction<StringSettings>() {
     override val title = "String Settings"

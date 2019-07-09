@@ -41,13 +41,15 @@ class RandomnessConfigurable : Configurable {
 /**
  * A configurable to change settings of type [S].
  *
+ * Allows the settings to be displayed in IntelliJ's settings window.
+ *
  * @param S the type of settings the configurable changes.
  */
 abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
     /**
      * The user interface for changing the settings.
      */
-    protected abstract val dialog: SettingsDialog<S>
+    protected abstract val component: SettingsComponent<S>
 
 
     /**
@@ -62,22 +64,22 @@ abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
      *
      * @return true if the settings were modified since they were loaded
      */
-    override fun isModified() = dialog.isModified()
+    override fun isModified() = component.isModified()
 
     /**
-     * Saves the user's changes to the default settings object.
+     * Saves the changes in the settings component to the default settings object.
      */
-    override fun apply() = dialog.saveSettings()
+    override fun apply() = component.saveSettings()
 
     /**
-     * Discards unsaved changes.
+     * Discards unsaved changes in the settings component.
      */
-    override fun reset() = dialog.reset()
+    override fun reset() = component.reset()
 
     /**
-     * Returns the root pane of the settings interface.
+     * Returns the root pane of the settings component.
      *
-     * @return the root pane of the settings interface
+     * @return the root pane of the settings component
      */
-    override fun createComponent(): JComponent? = dialog.getRootPane()
+    override fun createComponent(): JComponent? = component.getRootPane()
 }

@@ -85,7 +85,7 @@ class IntegerInsertArrayAction(
  * Controller for random integer generation settings.
  *
  * @see IntegerSettings
- * @see IntegerSettingsDialog
+ * @see IntegerSettingsComponent
  */
 class IntegerSettingsAction : SettingsAction<IntegerSettings>() {
     override val title = "Integer Settings"

@@ -26,7 +26,7 @@ import com.intellij.util.xmlb.annotations.Transient
  *
  * @see WordInsertAction
  * @see WordSettingsAction
- * @see WordSettingsDialog
+ * @see WordSettingsComponent
  */
 @State(name = "WordSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class WordSettings(
@@ -122,7 +122,7 @@ data class WordSettings(
  * @see WordSettingsAction
  */
 class WordSettingsConfigurable(
-    override val dialog: WordSettingsDialog = WordSettingsDialog()
+    override val component: WordSettingsComponent = WordSettingsComponent()
 ) : SettingsConfigurable<WordSettings>() {
     override fun getDisplayName() = "Words"
 }
