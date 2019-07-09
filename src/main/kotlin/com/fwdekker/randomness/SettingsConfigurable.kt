@@ -1,6 +1,7 @@
 package com.fwdekker.randomness
 
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.options.ConfigurationException
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -69,7 +70,13 @@ abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
     /**
      * Saves the changes in the settings component to the default settings object.
      */
-    override fun apply() = component.saveSettings()
+    override fun apply() {
+        val validationInfo = component.doValidate()
+        if (validationInfo != null)
+            throw ConfigurationException(validationInfo.message, "Failed to save settings")
+
+        component.saveSettings()
+    }
 
     /**
      * Discards unsaved changes in the settings component.

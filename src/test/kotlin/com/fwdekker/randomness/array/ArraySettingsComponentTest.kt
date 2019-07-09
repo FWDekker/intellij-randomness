@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.array
 
+import com.intellij.openapi.options.ConfigurationException
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
@@ -130,6 +132,23 @@ object ArraySettingsComponentTest : Spek({
     describe("configurable") {
         it("returns the correct display name") {
             assertThat(arraySettingsComponentConfigurable.displayName).isEqualTo("Arrays")
+        }
+
+        describe("saving modifications") {
+            it("accepts correct settings") {
+                GuiActionRunner.execute { frame.spinner("count").target().value = 39 }
+
+                arraySettingsComponentConfigurable.apply()
+
+                assertThat(arraySettings.count).isEqualTo(39)
+            }
+
+            it("rejects incorrect settings") {
+                GuiActionRunner.execute { frame.spinner("count").target().value = -3 }
+
+                assertThatThrownBy { arraySettingsComponentConfigurable.apply() }
+                    .isInstanceOf(ConfigurationException::class.java)
+            }
         }
 
         describe("modification detection") {

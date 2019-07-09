@@ -2,7 +2,9 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.ui.JEditableList
+import com.intellij.openapi.options.ConfigurationException
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
@@ -17,11 +19,11 @@ import org.junit.jupiter.api.fail
 /**
  * GUI tests for [WordSettingsComponent].
  */
-object WordSettingsDialogTest : Spek({
+object WordSettingsComponentTest : Spek({
     lateinit var wordSettings: WordSettings
-    lateinit var wordSettingsDialog: WordSettingsComponent
-    lateinit var wordSettingsDialogConfigurable: WordSettingsConfigurable
-    lateinit var dialogDictionaries: JEditableList<Dictionary>
+    lateinit var wordSettingsComponent: WordSettingsComponent
+    lateinit var wordSettingsComponentConfigurable: WordSettingsConfigurable
+    lateinit var componentDictionaries: JEditableList<Dictionary>
     lateinit var frame: FrameFixture
 
 
@@ -38,11 +40,11 @@ object WordSettingsDialogTest : Spek({
         wordSettings.capitalization = CapitalizationMode.LOWER
         wordSettings.activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.EXTENDED_DICTIONARY)
 
-        wordSettingsDialog = GuiActionRunner.execute<WordSettingsComponent> { WordSettingsComponent(wordSettings) }
-        wordSettingsDialogConfigurable = WordSettingsConfigurable(wordSettingsDialog)
-        frame = showInFrame(wordSettingsDialog.getRootPane())
+        wordSettingsComponent = GuiActionRunner.execute<WordSettingsComponent> { WordSettingsComponent(wordSettings) }
+        wordSettingsComponentConfigurable = WordSettingsConfigurable(wordSettingsComponent)
+        frame = showInFrame(wordSettingsComponent.getRootPane())
 
-        dialogDictionaries = frame.table("dictionaries").target() as JEditableList<Dictionary>
+        componentDictionaries = frame.table("dictionaries").target() as JEditableList<Dictionary>
     }
 
     afterEachTest {
@@ -76,7 +78,7 @@ object WordSettingsDialogTest : Spek({
         }
 
         it("loads the settings' active bundled dictionaries") {
-            assertThat(dialogDictionaries.activeEntries)
+            assertThat(componentDictionaries.activeEntries)
                 .containsExactly(BundledDictionary.cache.get(BundledDictionary.EXTENDED_DICTIONARY))
         }
     }
@@ -102,13 +104,13 @@ object WordSettingsDialogTest : Spek({
                 frame.button("dictionaryAdd").click()
                 // TODO Find file chooser window and select a file
 
-                assertThat(dialogDictionaries.getEntry(1).toString().replace("\\\\".toRegex(), "/"))
+                assertThat(componentDictionaries.getEntry(1).toString().replace("\\\\".toRegex(), "/"))
                     .endsWith("dictionaries/simple.dic")
             }
 
             // Disabled because AssertJ Swing doesn't work with IntelliJ file chooser
             xit("does not add a duplicate user dictionary") {
-                assertThat(dialogDictionaries.entryCount).isEqualTo(1)
+                assertThat(componentDictionaries.entryCount).isEqualTo(1)
 
                 frame.button("dictionaryAdd").click()
                 // TODO Find file chooser window and select a file
@@ -118,7 +120,7 @@ object WordSettingsDialogTest : Spek({
 
                 // Select the same file again
 
-                assertThat(dialogDictionaries.entryCount).isEqualTo(2)
+                assertThat(componentDictionaries.entryCount).isEqualTo(2)
             }
         }
 
@@ -135,7 +137,7 @@ object WordSettingsDialogTest : Spek({
 
             it("removes a user dictionary") {
                 GuiActionRunner.execute {
-                    dialogDictionaries.addEntry(UserDictionary.cache.get("dictionary.dic", true))
+                    componentDictionaries.addEntry(UserDictionary.cache.get("dictionary.dic", true))
                     assertThat(frame.table("dictionaries").target().rowCount).isEqualTo(3)
 
                     frame.table("dictionaries").target().clearSelection()
@@ -150,16 +152,16 @@ object WordSettingsDialogTest : Spek({
 
     describe("validation") {
         it("passes for the default settings") {
-            GuiActionRunner.execute { wordSettingsDialog.loadSettings(WordSettings()) }
+            GuiActionRunner.execute { wordSettingsComponent.loadSettings(WordSettings()) }
 
-            assertThat(wordSettingsDialog.doValidate()).isNull()
+            assertThat(wordSettingsComponent.doValidate()).isNull()
         }
 
         describe("length range") {
             it("fails if the minimum length is negative") {
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = -780 }
 
-                val validationInfo = wordSettingsDialog.doValidate()
+                val validationInfo = wordSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
@@ -171,7 +173,7 @@ object WordSettingsDialogTest : Spek({
                     frame.spinner("maxLength").target().value = WordSettings().minLength - 1
                 }
 
-                val validationInfo = wordSettingsDialog.doValidate()
+                val validationInfo = wordSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
@@ -182,7 +184,7 @@ object WordSettingsDialogTest : Spek({
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = 0 }
                 GuiActionRunner.execute { frame.spinner("maxLength").target().value = 0 }
 
-                val validationInfo = wordSettingsDialog.doValidate()
+                val validationInfo = wordSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
@@ -196,7 +198,7 @@ object WordSettingsDialogTest : Spek({
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = 1000 }
                 GuiActionRunner.execute { frame.spinner("maxLength").target().value = 1000 }
 
-                val validationInfo = wordSettingsDialog.doValidate()
+                val validationInfo = wordSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
@@ -223,7 +225,7 @@ object WordSettingsDialogTest : Spek({
                     dictionaries.setActiveEntries(listOf<Dictionary>(dictionary))
                 }
 
-                val validationInfo = wordSettingsDialog.doValidate()
+                val validationInfo = wordSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
             }
@@ -234,7 +236,7 @@ object WordSettingsDialogTest : Spek({
                     frame.table("dictionaries").target().setValueAt(false, 1, 0)
                 }
 
-                val validationInfo = wordSettingsDialog.doValidate()
+                val validationInfo = wordSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
@@ -244,9 +246,9 @@ object WordSettingsDialogTest : Spek({
             it("fails if one of the dictionaries is invalid") {
                 wordSettings.userDictionaryFiles = mutableSetOf("does_not_exist.dic")
                 wordSettings.activeUserDictionaryFiles = mutableSetOf("does_not_exist.dic")
-                GuiActionRunner.execute { wordSettingsDialog.loadSettings(wordSettings) }
+                GuiActionRunner.execute { wordSettingsComponent.loadSettings(wordSettings) }
 
-                val validationInfo = wordSettingsDialog.doValidate()
+                val validationInfo = wordSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
@@ -267,7 +269,7 @@ object WordSettingsDialogTest : Spek({
                 frame.radioButton("capitalizationLower").target().isSelected = true
             }
 
-            wordSettingsDialog.saveSettings()
+            wordSettingsComponent.saveSettings()
 
             assertThat(wordSettings.minLength).isEqualTo(840)
             assertThat(wordSettings.maxLength).isEqualTo(861)
@@ -278,48 +280,65 @@ object WordSettingsDialogTest : Spek({
 
     describe("configurable") {
         it("returns the correct display name") {
-            assertThat(wordSettingsDialogConfigurable.displayName).isEqualTo("Words")
+            assertThat(wordSettingsComponentConfigurable.displayName).isEqualTo("Words")
+        }
+
+        describe("saving modifications") {
+            it("accepts correct settings") {
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 253 }
+
+                wordSettingsComponentConfigurable.apply()
+
+                assertThat(wordSettings.maxLength).isEqualTo(253)
+            }
+
+            it("rejects incorrect settings") {
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = -82 }
+
+                assertThatThrownBy { wordSettingsComponentConfigurable.apply() }
+                    .isInstanceOf(ConfigurationException::class.java)
+            }
         }
 
         describe("modification detection") {
             it("is initially unmodified") {
-                assertThat(wordSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(wordSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("modifies a single detection") {
-                GuiActionRunner.execute { frame.spinner("minLength").target().value = 240 }
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 240 }
 
-                assertThat(wordSettingsDialogConfigurable.isModified).isTrue()
+                assertThat(wordSettingsComponentConfigurable.isModified).isTrue()
             }
 
             it("ignores an undone modification") {
-                GuiActionRunner.execute { frame.spinner("minLength").target().value = 51 }
-                GuiActionRunner.execute { frame.spinner("minLength").target().value = wordSettings.minLength }
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 51 }
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = wordSettings.maxLength }
 
-                assertThat(wordSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(wordSettingsComponentConfigurable.isModified).isFalse()
             }
 
             it("ignores saved modifications") {
-                GuiActionRunner.execute { frame.spinner("minLength").target().value = 209 }
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 209 }
 
-                wordSettingsDialogConfigurable.apply()
+                wordSettingsComponentConfigurable.apply()
 
-                assertThat(wordSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(wordSettingsComponentConfigurable.isModified).isFalse()
             }
         }
 
         describe("resets") {
             it("resets all fields properly") {
                 GuiActionRunner.execute {
-                    frame.spinner("minLength").target().value = 183
-                    frame.spinner("maxLength").target().value = 108
+                    frame.spinner("minLength").target().value = 108
+                    frame.spinner("maxLength").target().value = 183
                     frame.radioButton("enclosureBacktick").target().isSelected = true
                     frame.radioButton("capitalizationLower").target().isSelected = true
 
-                    wordSettingsDialogConfigurable.reset()
+                    wordSettingsComponentConfigurable.reset()
                 }
 
-                assertThat(wordSettingsDialogConfigurable.isModified).isFalse()
+                assertThat(wordSettingsComponentConfigurable.isModified).isFalse()
             }
         }
     }
