@@ -10,12 +10,14 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 /**
  * Contains settings for generating random UUIDs.
  *
+ * @property enclosure The string that encloses the generated UUID on both sides.
+ *
  * @see UuidInsertAction
  * @see UuidSettingsAction
  * @see UuidSettingsDialog
  */
 @State(name = "UuidSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-class UuidSettings : Settings<UuidSettings> {
+data class UuidSettings(var enclosure: String = DEFAULT_ENCLOSURE) : Settings<UuidSettings> {
     companion object {
         /**
          * The default value of the [enclosure][UuidSettings.enclosure] field.
@@ -29,12 +31,6 @@ class UuidSettings : Settings<UuidSettings> {
         val default: UuidSettings
             get() = ServiceManager.getService(UuidSettings::class.java)
     }
-
-
-    /**
-     * The string that encloses the generated UUID on both sides.
-     */
-    var enclosure = DEFAULT_ENCLOSURE
 
 
     /**

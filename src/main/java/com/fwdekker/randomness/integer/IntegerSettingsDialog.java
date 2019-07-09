@@ -95,10 +95,7 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
         settings.setMinValue(minValue.getValue());
         settings.setMaxValue(maxValue.getValue());
         settings.setBase(base.getValue());
-
-        final String groupingSeparator = ButtonGroupKt.getValue(groupingSeparatorGroup);
-        settings.setGroupingSeparator(groupingSeparator == null || groupingSeparator.isEmpty()
-            ? IntegerSettings.DEFAULT_GROUPING_SEPARATOR : groupingSeparator);
+        settings.safeSetGroupingSeparator(ButtonGroupKt.getValue(groupingSeparatorGroup));
     }
 
     @Override

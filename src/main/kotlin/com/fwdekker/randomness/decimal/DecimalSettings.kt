@@ -11,12 +11,27 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 /**
  * Contains settings for generating random decimals.
  *
+ * @property minValue The minimum value to be generated, inclusive.
+ * @property maxValue The maximum value to be generated, inclusive.
+ * @property decimalCount The number of decimals to display.
+ * @property showTrailingZeroes Whether to include trailing zeroes in the decimals.
+ * @property groupingSeparator The character that should separate groups.
+ * @property decimalSeparator The character that should separate decimals.
+ *
  * @see DecimalInsertAction
  * @see DecimalSettingsAction
  * @see DecimalSettingsDialog
  */
+// TODO Turn separator properties into char properties once supported by the settings serializer
 @State(name = "DecimalSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-class DecimalSettings : Settings<DecimalSettings> {
+data class DecimalSettings(
+    var minValue: Double = DEFAULT_MIN_VALUE,
+    var maxValue: Double = DEFAULT_MAX_VALUE,
+    var decimalCount: Int = DEFAULT_DECIMAL_COUNT,
+    var showTrailingZeroes: Boolean = DEFAULT_SHOW_TRAILING_ZEROES,
+    var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
+    var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR
+) : Settings<DecimalSettings> {
     companion object {
         /**
          * The default value of the [minValue][DecimalSettings.minValue] field.
@@ -53,37 +68,26 @@ class DecimalSettings : Settings<DecimalSettings> {
 
 
     /**
-     * The minimum value to be generated, inclusive.
+     * Sets the grouping separator safely to ensure that exactly one character is set.
+     *
+     * @param groupingSeparator the possibly-unsafe grouping separator string
      */
-    var minValue = DEFAULT_MIN_VALUE
+    fun safeSetGroupingSeparator(groupingSeparator: String?) =
+        if (groupingSeparator == null || groupingSeparator.isEmpty())
+            this.groupingSeparator = DEFAULT_GROUPING_SEPARATOR
+        else
+            this.groupingSeparator = groupingSeparator.substring(0, 1)
+
     /**
-     * The maximum value to be generated, inclusive.
+     * Sets the decimal separator safely to ensure that exactly one character is set.
+     *
+     * @param decimalSeparator the possibly-unsafe decimal separator string
      */
-    var maxValue = DEFAULT_MAX_VALUE
-    /**
-     * The number of decimals to display.
-     */
-    var decimalCount = DEFAULT_DECIMAL_COUNT
-    /**
-     * Whether to include trailing zeroes in the decimals.
-     */
-    var showTrailingZeroes = DEFAULT_SHOW_TRAILING_ZEROES
-    /**
-     * The character that should separate groups.
-     */
-    // TODO Turn this field into a char field once supported by the settings serializer
-    var groupingSeparator = DEFAULT_GROUPING_SEPARATOR
-        set(value) {
-            field = if (value.isNotEmpty()) value.substring(0, 1) else DEFAULT_GROUPING_SEPARATOR
-        }
-    /**
-     * The character that should separate decimals.
-     */
-    // TODO Turn this field into a char field once supported by the settings serializer
-    var decimalSeparator = DEFAULT_DECIMAL_SEPARATOR
-        set(value) {
-            field = if (value.isNotEmpty()) value.substring(0, 1) else DEFAULT_DECIMAL_SEPARATOR
-        }
+    fun safeSetDecimalSeparator(decimalSeparator: String?) =
+        if (decimalSeparator == null || decimalSeparator.isEmpty())
+            this.decimalSeparator = DEFAULT_DECIMAL_SEPARATOR
+        else
+            this.decimalSeparator = decimalSeparator.substring(0, 1)
 
 
     /**

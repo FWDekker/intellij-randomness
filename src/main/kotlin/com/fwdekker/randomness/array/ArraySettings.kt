@@ -10,10 +10,20 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 /**
  * Contains settings for generating arrays of other types of random values.
  *
+ * @property count The number of elements to generate.
+ * @property brackets The brackets to surround arrays with.
+ * @property separator The string to place between generated elements.
+ * @property isSpaceAfterSeparator True iff a space should be placed after each separator.
+ *
  * @see com.fwdekker.randomness.DataInsertArrayAction
  */
 @State(name = "ArraySettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-class ArraySettings : Settings<ArraySettings> {
+data class ArraySettings(
+    var count: Int = DEFAULT_COUNT,
+    var brackets: String = DEFAULT_BRACKETS,
+    var separator: String = DEFAULT_SEPARATOR,
+    var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR
+) : Settings<ArraySettings> {
     companion object {
         /**
          * The default value of the [count][ArraySettings.count] field.
@@ -39,24 +49,6 @@ class ArraySettings : Settings<ArraySettings> {
         val default: ArraySettings
             get() = ServiceManager.getService(ArraySettings::class.java)
     }
-
-
-    /**
-     * The number of elements to generate.
-     */
-    var count = DEFAULT_COUNT
-    /**
-     * The brackets to surround arrays with.
-     */
-    var brackets = DEFAULT_BRACKETS
-    /**
-     * The string to place between generated elements.
-     */
-    var separator = DEFAULT_SEPARATOR
-    /**
-     * True iff a space should be placed after each separator.
-     */
-    var isSpaceAfterSeparator = DEFAULT_SPACE_AFTER_SEPARATOR
 
 
     /**

@@ -92,14 +92,8 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
         settings.setMaxValue(maxValue.getValue());
         settings.setDecimalCount(decimalCount.getValue());
         settings.setShowTrailingZeroes(showTrailingZeroesCheckBox.isSelected());
-
-        final String groupingSeparator = ButtonGroupKt.getValue(groupingSeparatorGroup);
-        settings.setGroupingSeparator(groupingSeparator == null || groupingSeparator.isEmpty()
-            ? DecimalSettings.DEFAULT_GROUPING_SEPARATOR : groupingSeparator);
-
-        final String decimalSeparator = ButtonGroupKt.getValue(decimalSeparatorGroup);
-        settings.setDecimalSeparator(decimalSeparator == null || decimalSeparator.isEmpty()
-            ? DecimalSettings.DEFAULT_DECIMAL_SEPARATOR : decimalSeparator);
+        settings.safeSetGroupingSeparator(ButtonGroupKt.getValue(groupingSeparatorGroup));
+        settings.safeSetDecimalSeparator(ButtonGroupKt.getValue(decimalSeparatorGroup));
     }
 
     @Override

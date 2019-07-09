@@ -10,12 +10,23 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 /**
  * Contains settings for generating random integers.
  *
+ * @property minValue The minimum value to be generated, inclusive.
+ * @property maxValue The maximum value to be generated, inclusive.
+ * @property base The base the generated value should be displayed in.
+ * @property groupingSeparator The character that should separate groups.
+ *
  * @see IntegerInsertAction
  * @see IntegerSettingsAction
  * @see IntegerSettingsDialog
  */
+// TODO Turn the separator property into a char property once supported by the settings serializer
 @State(name = "IntegerSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-class IntegerSettings : Settings<IntegerSettings> {
+data class IntegerSettings(
+    var minValue: Long = DEFAULT_MIN_VALUE,
+    var maxValue: Long = DEFAULT_MAX_VALUE,
+    var base: Int = DEFAULT_BASE,
+    var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR
+) : Settings<IntegerSettings> {
     companion object {
         /**
          * The minimum value of the [base][IntegerSettings.base] field.
@@ -57,25 +68,16 @@ class IntegerSettings : Settings<IntegerSettings> {
 
 
     /**
-     * The minimum value to be generated, inclusive.
+     * Sets the grouping separator safely to ensure that exactly one character is set.
+     *
+     * @param groupingSeparator the possibly-unsafe grouping separator string
      */
-    var minValue = DEFAULT_MIN_VALUE
-    /**
-     * The maximum value to be generated, inclusive.
-     */
-    var maxValue = DEFAULT_MAX_VALUE
-    /**
-     * The base the generated value should be displayed in.
-     */
-    var base = DEFAULT_BASE
-    /**
-     * The character that should separate groups.
-     */
-    // TODO Turn this field into a char field once supported by the settings serializer
-    var groupingSeparator = DEFAULT_GROUPING_SEPARATOR
-        set(value) {
-            field = if (value.isNotEmpty()) value.substring(0, 1) else DEFAULT_GROUPING_SEPARATOR
-        }
+    fun safeSetGroupingSeparator(groupingSeparator: String?) {
+        if (groupingSeparator == null || groupingSeparator.isEmpty())
+            this.groupingSeparator = DEFAULT_GROUPING_SEPARATOR
+        else
+            this.groupingSeparator = groupingSeparator.substring(0, 1)
+    }
 
 
     /**
