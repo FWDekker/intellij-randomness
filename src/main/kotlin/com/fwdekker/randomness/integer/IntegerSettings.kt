@@ -94,9 +94,8 @@ data class IntegerSettings(
  *
  * @see IntegerSettingsAction
  */
-class IntegerSettingsConfigurable : SettingsConfigurable<IntegerSettings>() {
-    override val dialog by lazy { IntegerSettingsDialog() }
-
-
+class IntegerSettingsConfigurable(
+    override val dialog: IntegerSettingsDialog = IntegerSettingsDialog()
+) : SettingsConfigurable<IntegerSettings>() {
     override fun getDisplayName() = "Integers"
 }

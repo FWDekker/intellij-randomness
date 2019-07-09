@@ -79,9 +79,8 @@ data class ArraySettings(
  *
  * @see ArraySettingsAction
  */
-class ArraySettingsConfigurable : SettingsConfigurable<ArraySettings>() {
-    override val dialog by lazy { ArraySettingsDialog() }
-
-
+class ArraySettingsConfigurable(
+    override val dialog: ArraySettingsDialog = ArraySettingsDialog()
+) : SettingsConfigurable<ArraySettings>() {
     override fun getDisplayName() = "Arrays"
 }

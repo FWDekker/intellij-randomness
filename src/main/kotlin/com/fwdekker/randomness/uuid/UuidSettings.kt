@@ -47,9 +47,8 @@ data class UuidSettings(var enclosure: String = DEFAULT_ENCLOSURE) : Settings<Uu
  *
  * @see UuidSettingsAction
  */
-class UuidSettingsConfigurable : SettingsConfigurable<UuidSettings>() {
-    override val dialog by lazy { UuidSettingsDialog() }
-
-
+class UuidSettingsConfigurable(
+    override val dialog: UuidSettingsDialog = UuidSettingsDialog()
+) : SettingsConfigurable<UuidSettings>() {
     override fun getDisplayName() = "UUIDs"
 }

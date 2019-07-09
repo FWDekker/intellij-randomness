@@ -103,9 +103,8 @@ data class DecimalSettings(
  *
  * @see DecimalSettingsAction
  */
-class DecimalSettingsConfigurable : SettingsConfigurable<DecimalSettings>() {
-    override val dialog by lazy { DecimalSettingsDialog() }
-
-
+class DecimalSettingsConfigurable(
+    override val dialog: DecimalSettingsDialog = DecimalSettingsDialog()
+) : SettingsConfigurable<DecimalSettings>() {
     override fun getDisplayName() = "Decimals"
 }

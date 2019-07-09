@@ -17,6 +17,7 @@ import org.jetbrains.spek.api.dsl.it
 object StringSettingsDialogTest : Spek({
     lateinit var stringSettings: StringSettings
     lateinit var stringSettingsDialog: StringSettingsDialog
+    lateinit var stringSettingsDialogConfigurable: StringSettingsConfigurable
     lateinit var frame: FrameFixture
 
 
@@ -33,6 +34,7 @@ object StringSettingsDialogTest : Spek({
         stringSettings.alphabets = mutableSetOf(Alphabet.ALPHABET, Alphabet.HEXADECIMAL)
 
         stringSettingsDialog = GuiActionRunner.execute<StringSettingsDialog> { StringSettingsDialog(stringSettings) }
+        stringSettingsDialogConfigurable = StringSettingsConfigurable(stringSettingsDialog)
         frame = showInFrame(stringSettingsDialog.getRootPane())
     }
 
@@ -148,6 +150,58 @@ object StringSettingsDialogTest : Spek({
             assertThat(stringSettings.enclosure).isEqualTo("`")
             assertThat(stringSettings.capitalization).isEqualTo(CapitalizationMode.UPPER)
             assertThat(stringSettings.alphabets).isEqualTo(newAlphabets)
+        }
+    }
+
+    describe("configurable") {
+        it("returns the correct display name") {
+            assertThat(stringSettingsDialogConfigurable.displayName).isEqualTo("Strings")
+        }
+
+        describe("modification detection") {
+            it("is initially unmodified") {
+                assertThat(stringSettingsDialogConfigurable.isModified).isFalse()
+            }
+
+            it("modifies a single detection") {
+                GuiActionRunner.execute { frame.spinner("minLength").target().value = 91 }
+
+                assertThat(stringSettingsDialogConfigurable.isModified).isTrue()
+            }
+
+            it("ignores an undone modification") {
+                GuiActionRunner.execute { frame.spinner("minLength").target().value = 84 }
+                GuiActionRunner.execute { frame.spinner("minLength").target().value = stringSettings.minLength }
+
+                assertThat(stringSettingsDialogConfigurable.isModified).isFalse()
+            }
+
+            it("ignores saved modifications") {
+                GuiActionRunner.execute { frame.spinner("minLength").target().value = 204 }
+
+                stringSettingsDialogConfigurable.apply()
+
+                assertThat(stringSettingsDialogConfigurable.isModified).isFalse()
+            }
+        }
+
+        describe("resets") {
+            it("resets all fields properly") {
+                val newAlphabets = setOf(Alphabet.ALPHABET, Alphabet.SPECIAL)
+                val newAlphabetsOrdinals = newAlphabets.map { it.ordinal }
+
+                GuiActionRunner.execute {
+                    frame.spinner("minLength").target().value = 102
+                    frame.spinner("maxLength").target().value = 75
+                    frame.radioButton("enclosureSingle").target().isSelected = true
+                    frame.radioButton("capitalizationLower").target().isSelected = true
+                    frame.list("alphabets").target().selectedIndices = newAlphabetsOrdinals.toIntArray()
+
+                    stringSettingsDialogConfigurable.reset()
+                }
+
+                assertThat(stringSettingsDialogConfigurable.isModified).isFalse()
+            }
         }
     }
 })

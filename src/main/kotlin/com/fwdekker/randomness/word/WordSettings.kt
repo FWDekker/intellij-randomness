@@ -121,9 +121,8 @@ data class WordSettings(
  *
  * @see WordSettingsAction
  */
-class WordSettingsConfigurable : SettingsConfigurable<WordSettings>() {
-    override val dialog by lazy { WordSettingsDialog() }
-
-
+class WordSettingsConfigurable(
+    override val dialog: WordSettingsDialog = WordSettingsDialog()
+) : SettingsConfigurable<WordSettings>() {
     override fun getDisplayName() = "Words"
 }

@@ -70,9 +70,8 @@ data class StringSettings(
  *
  * @see StringSettingsAction
  */
-class StringSettingsConfigurable : SettingsConfigurable<StringSettings>() {
-    override val dialog by lazy { StringSettingsDialog() }
-
-
+class StringSettingsConfigurable(
+    override val dialog: StringSettingsDialog = StringSettingsDialog()
+) : SettingsConfigurable<StringSettings>() {
     override fun getDisplayName() = "Strings"
 }
