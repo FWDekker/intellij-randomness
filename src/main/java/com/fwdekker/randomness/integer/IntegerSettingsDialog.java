@@ -46,13 +46,12 @@ public final class IntegerSettingsDialog extends SettingsDialog<IntegerSettings>
     /* default */ IntegerSettingsDialog(final @NotNull IntegerSettings settings) {
         super(settings);
 
-        init();
         loadSettings();
     }
 
 
     @Override
-    protected JComponent createCenterPanel() {
+    public JPanel getRootPane() {
         return contentPane;
     }
 

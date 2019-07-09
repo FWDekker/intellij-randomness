@@ -1,46 +1,46 @@
 package com.fwdekker.randomness
 
-import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
+import javax.swing.JPanel
 
 
 /**
  * Superclass for settings dialogs.
  *
- * Subclasses **MUST** call `init` and `loadSettings` in their constructor.
+ * Subclasses **MUST** call `loadSettings` in their constructor.
  *
  * @param settings the settings to manage
  * @param <S> the type of settings managed by the subclass
  */
-abstract class SettingsDialog<S : Settings<*>>(private val settings: S) : DialogWrapper(null), SettingsManager<S> {
+// TODO Change `dialog` to something else
+abstract class SettingsDialog<S : Settings<S>>(private val settings: S) : SettingsManager<S> {
     override fun loadSettings() = loadSettings(settings)
 
     override fun saveSettings() = saveSettings(settings)
 
-
     /**
-     * Returns the key used to persist dialog dimensions.
+     * Returns true if this dialog contains unsaved changes.
      *
-     * @return the key used to persist dialog dimensions
+     * @return true if this dialog contains unsaved changes
      */
-    override fun getDimensionServiceKey(): String = javaClass.simpleName
+    fun isModified() = settings.copyState().also { saveSettings(it) } != settings
 
     /**
-     * Saves the settings and closes the dialog when the OK button is pressed.
+     * Discards unsaved changes.
      */
-    override fun doOKAction() {
-        processDoNotAskOnOk(OK_EXIT_CODE)
+    fun reset() = loadSettings()
 
-        if (okAction.isEnabled) {
-            saveSettings()
-            close(OK_EXIT_CODE)
-        }
-    }
+    /**
+     * Returns the panel containing the settings.
+     *
+     * @return the panel containing the settings
+     */
+    abstract fun getRootPane(): JPanel?
 
     /**
      * Validates all input fields.
      *
      * @return `null` if the input is valid, or a `ValidationInfo` object explaining why the input is invalid
      */
-    public abstract override fun doValidate(): ValidationInfo?
+    abstract fun doValidate(): ValidationInfo?
 }

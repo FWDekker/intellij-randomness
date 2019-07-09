@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 
@@ -37,13 +36,12 @@ public final class UuidSettingsDialog extends SettingsDialog<UuidSettings> {
     /* default */ UuidSettingsDialog(final @NotNull UuidSettings settings) {
         super(settings);
 
-        init();
         loadSettings();
     }
 
 
     @Override
-    protected JComponent createCenterPanel() {
+    public JPanel getRootPane() {
         return contentPane;
     }
 

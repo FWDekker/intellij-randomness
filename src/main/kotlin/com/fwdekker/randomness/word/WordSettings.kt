@@ -2,6 +2,7 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
@@ -107,17 +108,21 @@ data class WordSettings(
         }
 
 
-    /**
-     * Returns `this`.
-     *
-     * @return `this`
-     */
+    override fun copyState() = WordSettings().also { it.loadState(this) }
+
     override fun getState() = this
 
-    /**
-     * Copies the fields of [state] to `this`.
-     *
-     * @param state the state to load into `this`
-     */
     override fun loadState(state: WordSettings) = XmlSerializerUtil.copyBean(state, this)
+}
+
+
+/**
+ * The configurable for word settings.
+ *
+ * @see WordSettingsAction
+ */
+class WordSettingsConfigurable(
+    override val dialog: WordSettingsDialog = WordSettingsDialog()
+) : SettingsConfigurable<WordSettings>() {
+    override fun getDisplayName() = "Words"
 }

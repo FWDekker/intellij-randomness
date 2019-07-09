@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 
@@ -42,13 +41,12 @@ public final class ArraySettingsDialog extends SettingsDialog<ArraySettings> {
     /* default */ ArraySettingsDialog(final @NotNull ArraySettings settings) {
         super(settings);
 
-        init();
         loadSettings();
     }
 
 
     @Override
-    protected JComponent createCenterPanel() {
+    public JPanel getRootPane() {
         return contentPane;
     }
 

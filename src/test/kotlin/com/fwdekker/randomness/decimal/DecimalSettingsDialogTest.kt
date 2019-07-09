@@ -16,6 +16,7 @@ import org.jetbrains.spek.api.dsl.it
 object DecimalSettingsDialogTest : Spek({
     lateinit var decimalSettings: DecimalSettings
     lateinit var decimalSettingsDialog: DecimalSettingsDialog
+    lateinit var decimalSettingsDialogConfigurable: DecimalSettingsConfigurable
     lateinit var frame: FrameFixture
 
 
@@ -34,7 +35,8 @@ object DecimalSettingsDialogTest : Spek({
 
         decimalSettingsDialog =
             GuiActionRunner.execute<DecimalSettingsDialog> { DecimalSettingsDialog(decimalSettings) }
-        frame = showInFrame(decimalSettingsDialog.createCenterPanel())
+        decimalSettingsDialogConfigurable = DecimalSettingsConfigurable(decimalSettingsDialog)
+        frame = showInFrame(decimalSettingsDialog.getRootPane())
     }
 
     afterEachTest {
@@ -153,6 +155,56 @@ object DecimalSettingsDialogTest : Spek({
             assertThat(decimalSettings.showTrailingZeroes).isEqualTo(false)
             assertThat(decimalSettings.groupingSeparator).isEqualTo("_")
             assertThat(decimalSettings.decimalSeparator).isEqualTo(",")
+        }
+    }
+
+    describe("configurable") {
+        it("returns the correct display name") {
+            assertThat(decimalSettingsDialogConfigurable.displayName).isEqualTo("Decimals")
+        }
+
+        describe("modification detection") {
+            it("is initially unmodified") {
+                assertThat(decimalSettingsDialogConfigurable.isModified).isFalse()
+            }
+
+            it("modifies a single detection") {
+                GuiActionRunner.execute { frame.spinner("decimalCount").target().value = 214 }
+
+                assertThat(decimalSettingsDialogConfigurable.isModified).isTrue()
+            }
+
+            it("ignores an undone modification") {
+                GuiActionRunner.execute { frame.spinner("decimalCount").target().value = 62 }
+                GuiActionRunner.execute { frame.spinner("decimalCount").target().value = decimalSettings.decimalCount }
+
+                assertThat(decimalSettingsDialogConfigurable.isModified).isFalse()
+            }
+
+            it("ignores saved modifications") {
+                GuiActionRunner.execute { frame.spinner("decimalCount").target().value = 102 }
+
+                decimalSettingsDialogConfigurable.apply()
+
+                assertThat(decimalSettingsDialogConfigurable.isModified).isFalse()
+            }
+        }
+
+        describe("resets") {
+            it("resets all fields properly") {
+                GuiActionRunner.execute {
+                    frame.spinner("minValue").target().value = 970.53
+                    frame.spinner("maxValue").target().value = 206.90
+                    frame.spinner("decimalCount").target().value = 130
+                    frame.checkBox("showTrailingZeroes").target().isSelected = true
+                    frame.radioButton("groupingSeparatorPeriod").target().isSelected = true
+                    frame.radioButton("decimalSeparatorComma").target().isSelected = true
+
+                    decimalSettingsDialogConfigurable.reset()
+                }
+
+                assertThat(decimalSettingsDialogConfigurable.isModified).isFalse()
+            }
         }
     }
 })

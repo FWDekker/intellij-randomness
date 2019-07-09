@@ -8,4 +8,25 @@ import com.intellij.openapi.components.PersistentStateComponent
  *
  * @param <S> the type of settings that should be persisted
  */
-interface Settings<S> : PersistentStateComponent<S>
+interface Settings<S> : PersistentStateComponent<S> {
+    /**
+     * Returns a shallow copy of this instance.
+     *
+     * @return a shallow copy of this instance
+     */
+    fun copyState(): S
+
+    /**
+     * Returns `this`.
+     *
+     * @return `this`
+     */
+    override fun getState(): S
+
+    /**
+     * Copies the fields of `state` to `this`.
+     *
+     * @param state the state to load into `this`
+     */
+    override fun loadState(state: S)
+}

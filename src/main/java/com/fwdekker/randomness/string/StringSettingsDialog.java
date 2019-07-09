@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
@@ -49,13 +48,12 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
     /* default */ StringSettingsDialog(final @NotNull StringSettings settings) {
         super(settings);
 
-        init();
         loadSettings();
     }
 
 
     @Override
-    protected JComponent createCenterPanel() {
+    public JPanel getRootPane() {
         return contentPane;
     }
 
@@ -82,6 +80,7 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
         ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
+        alphabetList.clearSelection();
         for (int i = 0; i < Alphabet.values().length; i++) {
             if (settings.getAlphabets().contains(Alphabet.values()[i])) {
                 alphabetList.addSelectionInterval(i, i);

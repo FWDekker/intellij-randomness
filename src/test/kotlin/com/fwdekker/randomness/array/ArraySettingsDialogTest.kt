@@ -16,6 +16,7 @@ import org.jetbrains.spek.api.dsl.it
 object ArraySettingsDialogTest : Spek({
     lateinit var arraySettings: ArraySettings
     lateinit var arraySettingsDialog: ArraySettingsDialog
+    lateinit var arraySettingsDialogConfigurable: ArraySettingsConfigurable
     lateinit var frame: FrameFixture
 
 
@@ -31,7 +32,8 @@ object ArraySettingsDialogTest : Spek({
         arraySettings.isSpaceAfterSeparator = false
 
         arraySettingsDialog = GuiActionRunner.execute<ArraySettingsDialog> { ArraySettingsDialog(arraySettings) }
-        frame = showInFrame(arraySettingsDialog.createCenterPanel())
+        arraySettingsDialogConfigurable = ArraySettingsConfigurable(arraySettingsDialog)
+        frame = showInFrame(arraySettingsDialog.getRootPane())
     }
 
     afterEachTest {
@@ -121,6 +123,54 @@ object ArraySettingsDialogTest : Spek({
             assertThat(arraySettings.brackets).isEqualTo("{}")
             assertThat(arraySettings.separator).isEqualTo(";")
             assertThat(arraySettings.isSpaceAfterSeparator).isEqualTo(false)
+        }
+    }
+
+    describe("configurable") {
+        it("returns the correct display name") {
+            assertThat(arraySettingsDialogConfigurable.displayName).isEqualTo("Arrays")
+        }
+
+        describe("modification detection") {
+            it("is initially unmodified") {
+                assertThat(arraySettingsDialogConfigurable.isModified).isFalse()
+            }
+
+            it("modifies a single detection") {
+                GuiActionRunner.execute { frame.spinner("count").target().value = 124 }
+
+                assertThat(arraySettingsDialogConfigurable.isModified).isTrue()
+            }
+
+            it("ignores an undone modification") {
+                GuiActionRunner.execute { frame.spinner("count").target().value = 17 }
+                GuiActionRunner.execute { frame.spinner("count").target().value = arraySettings.count }
+
+                assertThat(arraySettingsDialogConfigurable.isModified).isFalse()
+            }
+
+            it("ignores saved modifications") {
+                GuiActionRunner.execute { frame.spinner("count").target().value = 110 }
+
+                arraySettingsDialogConfigurable.apply()
+
+                assertThat(arraySettingsDialogConfigurable.isModified).isFalse()
+            }
+        }
+
+        describe("resets") {
+            it("resets all fields properly") {
+                GuiActionRunner.execute {
+                    frame.spinner("count").target().value = 642
+                    frame.radioButton("bracketsCurly").target().isSelected = true
+                    frame.radioButton("separatorSemicolon").target().isSelected = true
+                    frame.checkBox("spaceAfterSeparator").target().isSelected = false
+
+                    arraySettingsDialogConfigurable.reset()
+                }
+
+                assertThat(arraySettingsDialogConfigurable.isModified).isFalse()
+            }
         }
     }
 })

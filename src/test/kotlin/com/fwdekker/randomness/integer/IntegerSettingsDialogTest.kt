@@ -16,6 +16,7 @@ import org.jetbrains.spek.api.dsl.it
 object IntegerSettingsDialogTest : Spek({
     lateinit var integerSettings: IntegerSettings
     lateinit var integerSettingsDialog: IntegerSettingsDialog
+    lateinit var integerSettingsDialogConfigurable: IntegerSettingsConfigurable
     lateinit var frame: FrameFixture
 
 
@@ -32,7 +33,8 @@ object IntegerSettingsDialogTest : Spek({
 
         integerSettingsDialog =
             GuiActionRunner.execute<IntegerSettingsDialog> { IntegerSettingsDialog(integerSettings) }
-        frame = showInFrame(integerSettingsDialog.createCenterPanel())
+        integerSettingsDialogConfigurable = IntegerSettingsConfigurable(integerSettingsDialog)
+        frame = showInFrame(integerSettingsDialog.getRootPane())
     }
 
     afterEachTest {
@@ -200,6 +202,54 @@ object IntegerSettingsDialogTest : Spek({
             assertThat(integerSettings.maxValue).isEqualTo(2_147_483_649L)
             assertThat(integerSettings.base).isEqualTo(14)
             assertThat(integerSettings.groupingSeparator).isEqualTo(".")
+        }
+    }
+
+    describe("configurable") {
+        it("returns the correct display name") {
+            assertThat(integerSettingsDialogConfigurable.displayName).isEqualTo("Integers")
+        }
+
+        describe("modification detection") {
+            it("is initially unmodified") {
+                assertThat(integerSettingsDialogConfigurable.isModified).isFalse()
+            }
+
+            it("modifies a single detection") {
+                GuiActionRunner.execute { frame.spinner("minValue").target().value = 232 }
+
+                assertThat(integerSettingsDialogConfigurable.isModified).isTrue()
+            }
+
+            it("ignores an undone modification") {
+                GuiActionRunner.execute { frame.spinner("minValue").target().value = 199 }
+                GuiActionRunner.execute { frame.spinner("minValue").target().value = integerSettings.minValue }
+
+                assertThat(integerSettingsDialogConfigurable.isModified).isFalse()
+            }
+
+            it("ignores saved modifications") {
+                GuiActionRunner.execute { frame.spinner("minValue").target().value = 169 }
+
+                integerSettingsDialogConfigurable.apply()
+
+                assertThat(integerSettingsDialogConfigurable.isModified).isFalse()
+            }
+        }
+
+        describe("resets") {
+            it("resets all fields properly") {
+                GuiActionRunner.execute {
+                    frame.spinner("minValue").target().value = 181
+                    frame.spinner("maxValue").target().value = 159
+                    frame.spinner("base").target().value = 164
+                    frame.radioButton("groupingSeparatorComma").target().isSelected = true
+
+                    integerSettingsDialogConfigurable.reset()
+                }
+
+                assertThat(integerSettingsDialogConfigurable.isModified).isFalse()
+            }
         }
     }
 })

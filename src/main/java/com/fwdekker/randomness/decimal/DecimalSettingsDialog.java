@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 
@@ -48,13 +47,12 @@ public final class DecimalSettingsDialog extends SettingsDialog<DecimalSettings>
     /* default */ DecimalSettingsDialog(final @NotNull DecimalSettings settings) {
         super(settings);
 
-        init();
         loadSettings();
     }
 
 
     @Override
-    protected JComponent createCenterPanel() {
+    public JPanel getRootPane() {
         return contentPane;
     }
 

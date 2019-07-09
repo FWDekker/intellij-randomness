@@ -18,7 +18,15 @@ object UuidSettingsTest : Spek({
     }
 
 
-    describe("state persistence") {
+    describe("state management") {
+        it("creates an independent copy") {
+            val copy = uuidSettings.copyState()
+            uuidSettings.enclosure = "D"
+            copy.enclosure = "p"
+
+            assertThat(uuidSettings.enclosure).isEqualTo("D")
+        }
+
         it("copies state from another instance") {
             uuidSettings.enclosure = "nvpB"
 

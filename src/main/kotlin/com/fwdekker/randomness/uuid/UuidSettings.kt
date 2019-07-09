@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
@@ -33,17 +34,21 @@ data class UuidSettings(var enclosure: String = DEFAULT_ENCLOSURE) : Settings<Uu
     }
 
 
-    /**
-     * Returns `this`.
-     *
-     * @return `this`
-     */
+    override fun copyState() = UuidSettings().also { it.loadState(this) }
+
     override fun getState() = this
 
-    /**
-     * Copies the fields of [state] to `this`.
-     *
-     * @param state the state to load into `this`
-     */
     override fun loadState(state: UuidSettings) = XmlSerializerUtil.copyBean(state, this)
+}
+
+
+/**
+ * The configurable for UUID settings.
+ *
+ * @see UuidSettingsAction
+ */
+class UuidSettingsConfigurable(
+    override val dialog: UuidSettingsDialog = UuidSettingsDialog()
+) : SettingsConfigurable<UuidSettings>() {
+    override fun getDisplayName() = "UUIDs"
 }

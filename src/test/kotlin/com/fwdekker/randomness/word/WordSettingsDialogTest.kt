@@ -20,6 +20,7 @@ import org.junit.jupiter.api.fail
 object WordSettingsDialogTest : Spek({
     lateinit var wordSettings: WordSettings
     lateinit var wordSettingsDialog: WordSettingsDialog
+    lateinit var wordSettingsDialogConfigurable: WordSettingsConfigurable
     lateinit var dialogDictionaries: JEditableList<Dictionary>
     lateinit var frame: FrameFixture
 
@@ -38,7 +39,8 @@ object WordSettingsDialogTest : Spek({
         wordSettings.activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.EXTENDED_DICTIONARY)
 
         wordSettingsDialog = GuiActionRunner.execute<WordSettingsDialog> { WordSettingsDialog(wordSettings) }
-        frame = showInFrame(wordSettingsDialog.createCenterPanel())
+        wordSettingsDialogConfigurable = WordSettingsConfigurable(wordSettingsDialog)
+        frame = showInFrame(wordSettingsDialog.getRootPane())
 
         dialogDictionaries = frame.table("dictionaries").target() as JEditableList<Dictionary>
     }
@@ -271,6 +273,54 @@ object WordSettingsDialogTest : Spek({
             assertThat(wordSettings.maxLength).isEqualTo(861)
             assertThat(wordSettings.enclosure).isEqualTo("'")
             assertThat(wordSettings.capitalization).isEqualTo(CapitalizationMode.LOWER)
+        }
+    }
+
+    describe("configurable") {
+        it("returns the correct display name") {
+            assertThat(wordSettingsDialogConfigurable.displayName).isEqualTo("Words")
+        }
+
+        describe("modification detection") {
+            it("is initially unmodified") {
+                assertThat(wordSettingsDialogConfigurable.isModified).isFalse()
+            }
+
+            it("modifies a single detection") {
+                GuiActionRunner.execute { frame.spinner("minLength").target().value = 240 }
+
+                assertThat(wordSettingsDialogConfigurable.isModified).isTrue()
+            }
+
+            it("ignores an undone modification") {
+                GuiActionRunner.execute { frame.spinner("minLength").target().value = 51 }
+                GuiActionRunner.execute { frame.spinner("minLength").target().value = wordSettings.minLength }
+
+                assertThat(wordSettingsDialogConfigurable.isModified).isFalse()
+            }
+
+            it("ignores saved modifications") {
+                GuiActionRunner.execute { frame.spinner("minLength").target().value = 209 }
+
+                wordSettingsDialogConfigurable.apply()
+
+                assertThat(wordSettingsDialogConfigurable.isModified).isFalse()
+            }
+        }
+
+        describe("resets") {
+            it("resets all fields properly") {
+                GuiActionRunner.execute {
+                    frame.spinner("minLength").target().value = 183
+                    frame.spinner("maxLength").target().value = 108
+                    frame.radioButton("enclosureBacktick").target().isSelected = true
+                    frame.radioButton("capitalizationLower").target().isSelected = true
+
+                    wordSettingsDialogConfigurable.reset()
+                }
+
+                assertThat(wordSettingsDialogConfigurable.isModified).isFalse()
+            }
         }
     }
 })

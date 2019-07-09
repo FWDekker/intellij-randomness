@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
@@ -51,18 +52,10 @@ data class ArraySettings(
     }
 
 
-    /**
-     * Returns `this`.
-     *
-     * @return `this`
-     */
+    override fun copyState() = ArraySettings().also { it.loadState(this) }
+
     override fun getState() = this
 
-    /**
-     * Copies the fields of `state` to `this`.
-     *
-     * @param state the state to load into `this`
-     */
     override fun loadState(state: ArraySettings) = XmlSerializerUtil.copyBean(state, this)
 
 
@@ -78,4 +71,16 @@ data class ArraySettings(
             prefix = brackets.getOrNull(0)?.toString() ?: "",
             postfix = brackets.getOrNull(1)?.toString() ?: ""
         )
+}
+
+
+/**
+ * The configurable for array settings.
+ *
+ * @see ArraySettingsAction
+ */
+class ArraySettingsConfigurable(
+    override val dialog: ArraySettingsDialog = ArraySettingsDialog()
+) : SettingsConfigurable<ArraySettings>() {
+    override fun getDisplayName() = "Arrays"
 }

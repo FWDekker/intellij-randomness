@@ -60,13 +60,12 @@ public final class WordSettingsDialog extends SettingsDialog<WordSettings> {
     /* default */ WordSettingsDialog(final @NotNull WordSettings settings) {
         super(settings);
 
-        init();
         loadSettings();
     }
 
 
     @Override
-    protected JComponent createCenterPanel() {
+    public JPanel getRootPane() {
         return contentPane;
     }
 

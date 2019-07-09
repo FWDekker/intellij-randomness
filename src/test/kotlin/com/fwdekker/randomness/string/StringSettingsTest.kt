@@ -18,7 +18,15 @@ object StringSettingsTest : Spek({
     }
 
 
-    describe("state persistence") {
+    describe("state management") {
+        it("creates an independent copy") {
+            val copy = stringSettings.copyState()
+            stringSettings.minLength = 49
+            copy.minLength = 244
+
+            assertThat(stringSettings.minLength).isEqualTo(49)
+        }
+
         it("copies state from another instance") {
             val alphabets = mutableSetOf<Alphabet>()
 

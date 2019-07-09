@@ -18,7 +18,15 @@ object DecimalSettingsTest : Spek({
     }
 
 
-    describe("state persistence") {
+    describe("state management") {
+        it("creates an independent copy") {
+            val copy = decimalSettings.copyState()
+            decimalSettings.minValue = 613.24
+            copy.minValue = 10.21
+
+            assertThat(decimalSettings.minValue).isEqualTo(613.24)
+        }
+
         it("copies state from another instance") {
             decimalSettings.minValue = 399.75
             decimalSettings.maxValue = 928.22

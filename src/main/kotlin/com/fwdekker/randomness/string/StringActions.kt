@@ -83,9 +83,8 @@ class StringInsertArrayAction(
  * @see StringSettings
  * @see StringSettingsDialog
  */
-class StringSettingsAction : SettingsAction() {
+class StringSettingsAction : SettingsAction<StringSettings>() {
     override val title = "String Settings"
 
-
-    public override fun createDialog() = StringSettingsDialog()
+    override val configurableClass = StringSettingsConfigurable::class.java
 }

@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.options.ShowSettingsUtil
 import java.awt.event.InputEvent
 
 
@@ -38,7 +39,7 @@ abstract class DataGroupAction : ActionGroup() {
     /**
      * The action used to edit the generator settings for this data type.
      */
-    abstract val settingsAction: SettingsAction
+    abstract val settingsAction: SettingsAction<*>
 
 
     /**
@@ -205,13 +206,18 @@ abstract class DataInsertArrayAction(
 
 
 /**
- * Shows a modal dialog for changing settings.
+ * Opens the settings window for changing settings.
  */
-abstract class SettingsAction : AnAction() {
+abstract class SettingsAction<S : Settings<S>> : AnAction() {
     /**
-     * The title of the dialog to display.
+     * The name of the action.
      */
     protected abstract val title: String
+
+    /**
+     * The class of the configurable maintaining the settings.
+     */
+    protected abstract val configurableClass: Class<out SettingsConfigurable<S>>
 
 
     /**
@@ -230,19 +236,6 @@ abstract class SettingsAction : AnAction() {
      *
      * @param event carries information on the invocation place
      */
-    override fun actionPerformed(event: AnActionEvent) {
-        createDialog()
-            .also { dialog ->
-                dialog.title = title
-                dialog.show()
-            }
-    }
-
-
-    /**
-     * Returns the dialog to display.
-     *
-     * @return the dialog to display
-     */
-    protected abstract fun createDialog(): SettingsDialog<*>
+    override fun actionPerformed(event: AnActionEvent) =
+        ShowSettingsUtil.getInstance().showSettingsDialog(event.project, configurableClass)
 }

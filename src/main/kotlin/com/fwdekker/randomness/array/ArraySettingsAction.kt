@@ -9,9 +9,8 @@ import com.fwdekker.randomness.SettingsAction
  * @see ArraySettings
  * @see ArraySettingsDialog
  */
-class ArraySettingsAction : SettingsAction() {
+class ArraySettingsAction : SettingsAction<ArraySettings>() {
     override val title = "Array Settings"
 
-
-    public override fun createDialog() = ArraySettingsDialog()
+    override val configurableClass = ArraySettingsConfigurable::class.java
 }
