@@ -80,6 +80,7 @@ public final class StringSettingsDialog extends SettingsDialog<StringSettings> {
         ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
+        alphabetList.clearSelection();
         for (int i = 0; i < Alphabet.values().length; i++) {
             if (settings.getAlphabets().contains(Alphabet.values()[i])) {
                 alphabetList.addSelectionInterval(i, i);
