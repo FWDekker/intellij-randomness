@@ -18,7 +18,7 @@ This plugin is also available on the [plugin repository](https://plugins.jetbrai
 
 
 ## How to use
-<img align="right" src="https://user-images.githubusercontent.com/13442533/39729805-1fae32ce-525e-11e8-9c4e-b59e16fc8ad6.PNG" alt="String settings" />
+<img align="right" src="https://user-images.githubusercontent.com/13442533/60928418-b454a980-a2ad-11e9-9611-1bfbc4d17ace.PNG" alt="String settings" />
 
 To insert random data, press `Alt + R` (or `⌥R`) and choose the type of data you want to insert. Hold `Shift` while selecting a data type to insert a whole array of values, or hold `Ctrl` (or `⌥`) while selecting to change the settings of that data type.
 
@@ -40,7 +40,7 @@ The way the data is generated can be adjusted to your demands. For example, you 
 ### Dictionaries
 Randomness is bundled with a small English dictionary from which it chooses random words. However, you may want to add words from another language or add a small selection of relevant words. Therefore, you can register your own dictionary files with the word generator and select which dictionaries it should pick words from. You can make your own dictionary file by creating a text file and putting one word on each line, and saving the file with the `.dic` extension. Lines that start with a `#` are ignored.
 
-<p align="center"><img src="https://user-images.githubusercontent.com/13442533/39729579-feef0dd4-525c-11e8-8a79-e51cb2d75bfc.PNG" alt="Dictionary settings" /></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/13442533/60928405-9edf7f80-a2ad-11e9-9623-502ce97f19f7.PNG" alt="Dictionary settings" /></p>
 
 
 ## Build instructions
