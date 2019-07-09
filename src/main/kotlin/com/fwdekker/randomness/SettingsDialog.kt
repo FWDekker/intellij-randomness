@@ -12,6 +12,7 @@ import javax.swing.JComponent
  * @param settings the settings to manage
  * @param <S> the type of settings managed by the subclass
  */
+// TODO Change `dialog` to something else
 abstract class SettingsDialog<S : Settings<*>>(private val settings: S) : SettingsManager<S> {
     override fun loadSettings() = loadSettings(settings)
 

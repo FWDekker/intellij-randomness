@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.options.ShowSettingsUtil
 import java.awt.event.InputEvent
 
 
@@ -205,13 +206,13 @@ abstract class DataInsertArrayAction(
 
 
 /**
- * Shows a modal dialog for changing settings.
+ * Opens the settings window for changing settings.
  */
 abstract class SettingsAction : AnAction() {
     /**
-     * The title of the dialog to display.
+     * The configurable to display when this action is performed.
      */
-    protected abstract val title: String
+    protected abstract val configurable: SettingsConfigurable<*>
 
 
     /**
@@ -222,7 +223,7 @@ abstract class SettingsAction : AnAction() {
     override fun update(event: AnActionEvent) {
         super.update(event)
 
-        event.presentation.text = title
+        event.presentation.text = configurable.displayName
     }
 
     /**
@@ -230,19 +231,6 @@ abstract class SettingsAction : AnAction() {
      *
      * @param event carries information on the invocation place
      */
-    override fun actionPerformed(event: AnActionEvent) {
-        createDialog()
-            .also { dialog ->
-                dialog.title = title
-                dialog.show()
-            }
-    }
-
-
-    /**
-     * Returns the dialog to display.
-     *
-     * @return the dialog to display
-     */
-    protected abstract fun createDialog(): SettingsDialog<*>
+    override fun actionPerformed(event: AnActionEvent) =
+        ShowSettingsUtil.getInstance().showSettingsDialog(event.project, configurable.displayName)
 }
