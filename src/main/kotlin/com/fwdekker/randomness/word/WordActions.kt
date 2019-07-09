@@ -83,8 +83,5 @@ class WordInsertArrayAction(
  * @see WordSettingsDialog
  */
 class WordSettingsAction : SettingsAction() {
-    override val title = "Word Settings"
-
-
-    public override fun createDialog() = WordSettingsDialog()
+    override val configurable = WordSettingsConfigurable()
 }

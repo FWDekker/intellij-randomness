@@ -2,6 +2,7 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
@@ -79,4 +80,17 @@ class StringSettings : Settings<StringSettings> {
      * @param state the state to load into `this`
      */
     override fun loadState(state: StringSettings) = XmlSerializerUtil.copyBean(state, this)
+}
+
+
+/**
+ * The configurable for string settings.
+ *
+ * @see StringSettingsAction
+ */
+class StringSettingsConfigurable : SettingsConfigurable<StringSettings>() {
+    override val dialog by lazy { StringSettingsDialog() }
+
+
+    override fun getDisplayName() = "Randomness Strings"
 }

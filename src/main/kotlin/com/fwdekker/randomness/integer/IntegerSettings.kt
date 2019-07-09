@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
@@ -91,4 +92,17 @@ class IntegerSettings : Settings<IntegerSettings> {
      * @param state the state to load into `this`
      */
     override fun loadState(state: IntegerSettings) = XmlSerializerUtil.copyBean(state, this)
+}
+
+
+/**
+ * The configurable for integer settings.
+ *
+ * @see IntegerSettingsAction
+ */
+class IntegerSettingsConfigurable : SettingsConfigurable<IntegerSettings>() {
+    override val dialog by lazy { IntegerSettingsDialog() }
+
+
+    override fun getDisplayName() = "Randomness Integers"
 }

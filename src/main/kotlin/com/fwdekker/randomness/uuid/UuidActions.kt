@@ -64,8 +64,5 @@ class UuidInsertArrayAction(
  * @see UuidSettingsDialog
  */
 class UuidSettingsAction : SettingsAction() {
-    override val title = "UUID Settings"
-
-
-    public override fun createDialog() = UuidSettingsDialog()
+    override val configurable = UuidSettingsConfigurable()
 }

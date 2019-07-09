@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
@@ -86,4 +87,17 @@ class ArraySettings : Settings<ArraySettings> {
             prefix = brackets.getOrNull(0)?.toString() ?: "",
             postfix = brackets.getOrNull(1)?.toString() ?: ""
         )
+}
+
+
+/**
+ * The configurable for array settings.
+ *
+ * @see ArraySettingsAction
+ */
+class ArraySettingsConfigurable : SettingsConfigurable<ArraySettings>() {
+    override val dialog by lazy { ArraySettingsDialog() }
+
+
+    override fun getDisplayName() = "Randomness Arrays"
 }

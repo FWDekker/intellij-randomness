@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.decimal
 
-
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
@@ -99,4 +99,17 @@ class DecimalSettings : Settings<DecimalSettings> {
      * @param state the state to load into `this`
      */
     override fun loadState(state: DecimalSettings) = XmlSerializerUtil.copyBean(state, this)
+}
+
+
+/**
+ * The configurable for decimal settings.
+ *
+ * @see DecimalSettingsAction
+ */
+class DecimalSettingsConfigurable : SettingsConfigurable<DecimalSettings>() {
+    override val dialog by lazy { DecimalSettingsDialog() }
+
+
+    override fun getDisplayName() = "Randomness Decimals"
 }
