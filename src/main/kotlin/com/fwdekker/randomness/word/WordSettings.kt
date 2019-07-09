@@ -12,12 +12,36 @@ import com.intellij.util.xmlb.annotations.Transient
 /**
  * Contains settings for generating random words.
  *
+ * @property minLength The minimum length of the generated word, inclusive.
+ * @property maxLength The maximum length of the generated word, inclusive.
+ * @property enclosure The string that encloses the generated word on both sides.
+ * @property capitalization The way in which the generated word should be capitalized.
+ * @property bundledDictionaryFiles The list of all dictionary files provided by the plugin.
+ * @property userDictionaryFiles The list of all dictionary files registered by the user.
+ * @property activeBundledDictionaryFiles The list of bundled dictionary files that are currently active; a subset of
+ * [bundledDictionaryFiles].
+ * @property activeUserDictionaryFiles The list of user dictionary files that are currently active; a subset of
+ * [userDictionaryFiles].
+ *
  * @see WordInsertAction
  * @see WordSettingsAction
  * @see WordSettingsDialog
  */
 @State(name = "WordSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-class WordSettings : Settings<WordSettings> {
+data class WordSettings(
+    var minLength: Int = DEFAULT_MIN_LENGTH,
+    var maxLength: Int = DEFAULT_MAX_LENGTH,
+    var enclosure: String = DEFAULT_ENCLOSURE,
+    var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
+    var bundledDictionaryFiles: MutableSet<String> =
+        mutableSetOf(BundledDictionary.SIMPLE_DICTIONARY, BundledDictionary.EXTENDED_DICTIONARY),
+    var userDictionaryFiles: MutableSet<String> =
+        mutableSetOf(),
+    var activeBundledDictionaryFiles: MutableSet<String> =
+        mutableSetOf(BundledDictionary.SIMPLE_DICTIONARY),
+    var activeUserDictionaryFiles: MutableSet<String> =
+        mutableSetOf()
+) : Settings<WordSettings> {
     companion object {
         /**
          * The default value of the [minLength][WordSettings.minLength] field.
@@ -45,43 +69,6 @@ class WordSettings : Settings<WordSettings> {
     }
 
 
-    /**
-     * The minimum length of the generated word, inclusive.
-     */
-    var minLength = DEFAULT_MIN_LENGTH
-    /**
-     * The maximum length of the generated word, inclusive.
-     */
-    var maxLength = DEFAULT_MAX_LENGTH
-    /**
-     * The string that encloses the generated word on both sides.
-     */
-    var enclosure = DEFAULT_ENCLOSURE
-    /**
-     * The way in which the generated word should be capitalized.
-     */
-    var capitalization = DEFAULT_CAPITALIZATION
-    /**
-     * The list of all dictionary files provided by the plugin.
-     */
-    var bundledDictionaryFiles =
-        mutableSetOf(BundledDictionary.SIMPLE_DICTIONARY, BundledDictionary.EXTENDED_DICTIONARY)
-    /**
-     * The list of all dictionary files registered by the user.
-     */
-    var userDictionaryFiles: MutableSet<String> = mutableSetOf()
-    /**
-     * The list of bundled dictionary files that are currently active.
-     *
-     * This is a subset of [bundledDictionaryFiles].
-     */
-    var activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.SIMPLE_DICTIONARY)
-    /**
-     * The list of user dictionary files that are currently active.
-     *
-     * This is a subset of [userDictionaries].
-     */
-    var activeUserDictionaryFiles: MutableSet<String> = mutableSetOf()
     /**
      * A mutable view of the filenames of the files in [bundledDictionaryFiles].
      */

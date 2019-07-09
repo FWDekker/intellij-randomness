@@ -36,6 +36,9 @@ potential-bugs:
         active: false
 
 style:
+    # Those functions are added as conscious design decisions.
+    DataClassContainsFunctions:
+        active: false
     # No braces are easier to read.
     MandatoryBracesIfStatements:
         active: false
