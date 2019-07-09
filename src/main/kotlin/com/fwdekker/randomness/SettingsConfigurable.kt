@@ -2,6 +2,22 @@ package com.fwdekker.randomness
 
 import com.intellij.openapi.options.Configurable
 import javax.swing.JComponent
+import javax.swing.JPanel
+
+
+/**
+ * Randomness' root configurable; all other configurables are its children.
+ */
+// TODO Populate this.
+class RandomnessConfigurable : Configurable {
+    override fun getDisplayName() = "Randomness"
+
+    override fun isModified() = false
+
+    override fun apply() = Unit
+
+    override fun createComponent() = JPanel()
+}
 
 
 /**
