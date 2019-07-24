@@ -193,6 +193,16 @@ object JEditableListTest : Spek({
 
             assertThat(list.activeEntries).containsExactly("forte")
         }
+
+        it("unchecks previously checked entries") {
+            val entries = listOf("rot", "possible", "harbor")
+            GuiActionRunner.execute { list.setEntries(entries) }
+            GuiActionRunner.execute { list.setActiveEntries(entries) }
+
+            GuiActionRunner.execute { list.setActiveEntries(listOf("rot", "harbor")) }
+
+            assertThat(list.activeEntries).containsExactly("rot", "harbor")
+        }
     }
 
     describe("isActive") {

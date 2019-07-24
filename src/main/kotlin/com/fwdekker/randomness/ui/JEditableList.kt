@@ -181,8 +181,7 @@ class JEditableList<T>(name: String? = null) : JTable() {
      *
      * @param entries exactly those entries of which the checkboxes should be checked
      */
-    fun setActiveEntries(entries: Collection<T>) =
-        entries.filter { hasEntry(it) }.forEach { entry -> setActive(entry, entries.contains(entry)) }
+    fun setActiveEntries(entries: Collection<T>) = this.entries.forEach { setActive(it, entries.contains(it)) }
 
     /**
      * Adds a listener that is called when a row's activity is changed by the user.
