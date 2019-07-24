@@ -16,7 +16,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  * @property maxLength The maximum length of the generated string, inclusive.
  * @property enclosure The string that encloses the generated string on both sides.
  * @property capitalization The capitalization mode of the generated string.
- * @property alphabets The alphabets to be used for generating strings.
+ * @property symbolSets The symbol sets to be used for generating strings.
  *
  * @see StringInsertAction
  * @see StringSettingsAction
@@ -28,7 +28,7 @@ data class StringSettings(
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var alphabets: MutableSet<Alphabet> = mutableSetOf(Alphabet.ALPHABET, Alphabet.DIGITS)
+    var symbolSets: MutableSet<SymbolSet> = mutableSetOf(SymbolSet.ALPHABET, SymbolSet.DIGITS)
 ) : Settings<StringSettings> {
     companion object {
         /**

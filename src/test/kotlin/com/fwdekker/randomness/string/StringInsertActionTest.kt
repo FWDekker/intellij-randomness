@@ -15,12 +15,12 @@ class StringInsertActionTest {
         @JvmStatic
         fun provider() =
             listOf(
-                arrayOf(0, 0, "", CapitalizationMode.RETAIN, setOf<Alphabet>()),
-                arrayOf(0, 0, "'", CapitalizationMode.UPPER, setOf<Alphabet>()),
-                arrayOf(0, 0, "a", CapitalizationMode.LOWER, setOf<Alphabet>()),
-                arrayOf(0, 0, "2Rv", CapitalizationMode.FIRST_LETTER, setOf<Alphabet>()),
-                arrayOf(723, 723, "", CapitalizationMode.UPPER, setOf(Alphabet.ALPHABET)),
-                arrayOf(466, 466, "z", CapitalizationMode.LOWER, setOf(Alphabet.ALPHABET, Alphabet.UNDERSCORE))
+                arrayOf(0, 0, "", CapitalizationMode.RETAIN, setOf<SymbolSet>()),
+                arrayOf(0, 0, "'", CapitalizationMode.UPPER, setOf<SymbolSet>()),
+                arrayOf(0, 0, "a", CapitalizationMode.LOWER, setOf<SymbolSet>()),
+                arrayOf(0, 0, "2Rv", CapitalizationMode.FIRST_LETTER, setOf<SymbolSet>()),
+                arrayOf(723, 723, "", CapitalizationMode.UPPER, setOf(SymbolSet.ALPHABET)),
+                arrayOf(466, 466, "z", CapitalizationMode.LOWER, setOf(SymbolSet.ALPHABET, SymbolSet.UNDERSCORE))
             )
     }
 
@@ -29,17 +29,17 @@ class StringInsertActionTest {
     @MethodSource("provider")
     fun testValue(
         minLength: Int, maxLength: Int, enclosure: String,
-        capitalization: CapitalizationMode, alphabets: Set<Alphabet>
+        capitalization: CapitalizationMode, symbolSets: Set<SymbolSet>
     ) {
         val stringSettings = StringSettings()
         stringSettings.minLength = minLength
         stringSettings.maxLength = maxLength
         stringSettings.enclosure = enclosure
         stringSettings.capitalization = capitalization
-        stringSettings.alphabets = alphabets.toMutableSet()
+        stringSettings.symbolSets = symbolSets.toMutableSet()
 
         val insertRandomString = StringInsertAction(stringSettings)
-        val expectedPattern = buildExpectedPattern(minLength, maxLength, enclosure, capitalization, alphabets)
+        val expectedPattern = buildExpectedPattern(minLength, maxLength, enclosure, capitalization, symbolSets)
 
         assertThat(insertRandomString.generateString()).containsPattern(expectedPattern)
     }
@@ -47,12 +47,12 @@ class StringInsertActionTest {
 
     private fun buildExpectedPattern(
         minLength: Int, maxLength: Int, enclosure: String,
-        capitalization: CapitalizationMode, alphabets: Set<Alphabet>
+        capitalization: CapitalizationMode, symbolSets: Set<SymbolSet>
     ): Pattern {
         return Pattern.compile(
             "$enclosure${
-            if (alphabets.isNotEmpty())
-                "[${capitalization.transform.invoke(alphabets.sum())}]{$minLength,$maxLength}"
+            if (symbolSets.isNotEmpty())
+                "[${capitalization.transform.invoke(symbolSets.sum())}]{$minLength,$maxLength}"
             else
                 ""
             }$enclosure"

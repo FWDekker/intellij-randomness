@@ -33,7 +33,7 @@ object StringSettingsComponentTest : Spek({
         stringSettings.maxLength = 719
         stringSettings.enclosure = "\""
         stringSettings.capitalization = CapitalizationMode.RANDOM
-        stringSettings.alphabets = mutableSetOf(Alphabet.ALPHABET, Alphabet.HEXADECIMAL)
+        stringSettings.symbolSets = mutableSetOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
 
         stringSettingsComponent =
             GuiActionRunner.execute<StringSettingsComponent> { StringSettingsComponent(stringSettings) }
@@ -68,8 +68,8 @@ object StringSettingsComponentTest : Spek({
             frame.radioButton("capitalizationRandom").requireSelected(true)
         }
 
-        it("loads the settings' alphabets") {
-            frame.list("alphabets")
+        it("loads the settings' symbol sets") {
+            frame.list("symbolSets")
                 .requireSelectedItems("Alphabet (a, b, c, ...)", "Hexadecimal (0, 1, 2, ..., d, e, f)")
         }
     }
@@ -121,14 +121,14 @@ object StringSettingsComponentTest : Spek({
             }
         }
 
-        describe("alphabets") {
-            it("fails if no alphabets are selected") {
-                GuiActionRunner.execute { frame.list("alphabets").target().clearSelection() }
+        describe("symbol sets") {
+            it("fails if no symbol sets are selected") {
+                GuiActionRunner.execute { frame.list("symbolSets").target().clearSelection() }
 
                 val validationInfo = stringSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.list("alphabets").target())
+                assertThat(validationInfo?.component).isEqualTo(frame.list("symbolSets").target())
                 assertThat(validationInfo?.message).isEqualTo("Select at least one symbol set.")
             }
         }
@@ -136,15 +136,15 @@ object StringSettingsComponentTest : Spek({
 
     describe("saving settings") {
         it("correctly saves settings to a settings object") {
-            val newAlphabets = setOf(Alphabet.DIGITS, Alphabet.ALPHABET, Alphabet.SPECIAL)
-            val newAlphabetsOrdinals = newAlphabets.map { Alphabet.defaultAlphabets.indexOf(it) }
+            val newSymbolSets = setOf(SymbolSet.DIGITS, SymbolSet.ALPHABET, SymbolSet.SPECIAL)
+            val newSymbolSetsOrdinals = newSymbolSets.map { SymbolSet.defaultSymbolSets.indexOf(it) }
 
             GuiActionRunner.execute {
                 frame.spinner("minLength").target().value = 445
                 frame.spinner("maxLength").target().value = 803
                 frame.radioButton("enclosureBacktick").target().isSelected = true
                 frame.radioButton("capitalizationUpper").target().isSelected = true
-                frame.list("alphabets").target().selectedIndices = newAlphabetsOrdinals.toIntArray()
+                frame.list("symbolSets").target().selectedIndices = newSymbolSetsOrdinals.toIntArray()
             }
 
             stringSettingsComponent.saveSettings()
@@ -153,7 +153,7 @@ object StringSettingsComponentTest : Spek({
             assertThat(stringSettings.maxLength).isEqualTo(803)
             assertThat(stringSettings.enclosure).isEqualTo("`")
             assertThat(stringSettings.capitalization).isEqualTo(CapitalizationMode.UPPER)
-            assertThat(stringSettings.alphabets).isEqualTo(newAlphabets)
+            assertThat(stringSettings.symbolSets).isEqualTo(newSymbolSets)
         }
     }
 
@@ -209,15 +209,15 @@ object StringSettingsComponentTest : Spek({
 
         describe("resets") {
             it("resets all fields properly") {
-                val newAlphabets = setOf(Alphabet.ALPHABET, Alphabet.SPECIAL)
-                val newAlphabetsOrdinals = newAlphabets.map { Alphabet.defaultAlphabets.indexOf(it) }
+                val newSymbolSets = setOf(SymbolSet.ALPHABET, SymbolSet.SPECIAL)
+                val newSymbolSetsOrdinals = newSymbolSets.map { SymbolSet.defaultSymbolSets.indexOf(it) }
 
                 GuiActionRunner.execute {
                     frame.spinner("minLength").target().value = 75
                     frame.spinner("maxLength").target().value = 102
                     frame.radioButton("enclosureSingle").target().isSelected = true
                     frame.radioButton("capitalizationLower").target().isSelected = true
-                    frame.list("alphabets").target().selectedIndices = newAlphabetsOrdinals.toIntArray()
+                    frame.list("symbolSets").target().selectedIndices = newSymbolSetsOrdinals.toIntArray()
 
                     stringSettingsComponentConfigurable.reset()
                 }
