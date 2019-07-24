@@ -137,7 +137,7 @@ object StringSettingsComponentTest : Spek({
     describe("saving settings") {
         it("correctly saves settings to a settings object") {
             val newAlphabets = setOf(Alphabet.DIGITS, Alphabet.ALPHABET, Alphabet.SPECIAL)
-            val newAlphabetsOrdinals = newAlphabets.map { it.ordinal }
+            val newAlphabetsOrdinals = newAlphabets.map { Alphabet.defaultAlphabets.indexOf(it) }
 
             GuiActionRunner.execute {
                 frame.spinner("minLength").target().value = 445
@@ -210,7 +210,7 @@ object StringSettingsComponentTest : Spek({
         describe("resets") {
             it("resets all fields properly") {
                 val newAlphabets = setOf(Alphabet.ALPHABET, Alphabet.SPECIAL)
-                val newAlphabetsOrdinals = newAlphabets.map { it.ordinal }
+                val newAlphabetsOrdinals = newAlphabets.map { Alphabet.defaultAlphabets.indexOf(it) }
 
                 GuiActionRunner.execute {
                     frame.spinner("minLength").target().value = 75

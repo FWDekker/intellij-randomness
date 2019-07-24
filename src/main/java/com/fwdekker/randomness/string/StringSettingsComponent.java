@@ -7,6 +7,7 @@ import com.fwdekker.randomness.ui.ButtonGroupKt;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,7 +68,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
-        alphabetList = new JList<>(Alphabet.values());
+        alphabetList = new JBList<>((Alphabet[]) Alphabet.Companion.getDefaultAlphabets().toArray());
         alphabetList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         alphabetList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     }
@@ -81,10 +82,12 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
         alphabetList.clearSelection();
-        for (int i = 0; i < Alphabet.values().length; i++) {
-            if (settings.getAlphabets().contains(Alphabet.values()[i])) {
+        int i = 0;
+        for (final Alphabet alphabet : Alphabet.Companion.getDefaultAlphabets()) {
+            if (settings.getAlphabets().contains(alphabet)) {
                 alphabetList.addSelectionInterval(i, i);
             }
+            i++;
         }
     }
 

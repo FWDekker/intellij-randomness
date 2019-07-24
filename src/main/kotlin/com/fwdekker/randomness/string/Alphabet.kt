@@ -7,39 +7,46 @@ package com.fwdekker.randomness.string
  * @param description the description of the alphabet
  * @param symbols the symbols in the alphabet
  */
-enum class Alphabet(val description: String, val symbols: String) {
-    /**
-     * The lowercase English alphabet.
-     */
-    ALPHABET("Alphabet (a, b, c, ...)", "abcdefghijklmnopqrstuvwxyz"),
-    /**
-     * The digits 0 through 9.
-     */
-    DIGITS("Digits (0, 1, 2, ...)", "0123456789"),
-    /**
-     * The hexadecimal digits 0 through f.
-     */
-    HEXADECIMAL("Hexadecimal (0, 1, 2, ..., d, e, f)", "0123456789abcdef"),
-    /**
-     * A minus (`-`).
-     */
-    MINUS("Minus (-)", "-"),
-    /**
-     * An underscore (`_`).
-     */
-    UNDERSCORE("Underscore (_)", "_"),
-    /**
-     * A whitespace (` `).
-     */
-    SPACE("Space ( )", " "),
-    /**
-     * A collection of special characters.
-     */
-    SPECIAL("Special (!, @, #, $, %, ^, &, *)", "!@#$%^&*"),
-    /**
-     * A collection of brackets and parentheses.
-     */
-    BRACKETS("Brackets ((, ), [, ], {, }, <, >)", "()[]{}<>");
+data class Alphabet(val description: String, val symbols: String) {
+    companion object {
+        /**
+         * The lowercase English alphabet.
+         */
+        val ALPHABET = Alphabet("Alphabet (a, b, c, ...)", "abcdefghijklmnopqrstuvwxyz")
+        /**
+         * The digits 0 through 9.
+         */
+        val DIGITS = Alphabet("Digits (0, 1, 2, ...)", "0123456789")
+        /**
+         * The hexadecimal digits 0 through f.
+         */
+        val HEXADECIMAL = Alphabet("Hexadecimal (0, 1, 2, ..., d, e, f)", "0123456789abcdef")
+        /**
+         * A minus (`-`).
+         */
+        val MINUS = Alphabet("Minus (-)", "-")
+        /**
+         * An underscore (`_`).
+         */
+        val UNDERSCORE = Alphabet("Underscore (_)", "_")
+        /**
+         * A whitespace (` `).
+         */
+        val SPACE = Alphabet("Space ( )", " ")
+        /**
+         * A collection of special characters.
+         */
+        val SPECIAL = Alphabet("Special (!, @, #, $, %, ^, &, *)", "!@#$%^&*")
+        /**
+         * A collection of brackets and parentheses.
+         */
+        val BRACKETS = Alphabet("Brackets ((, ), [, ], {, }, <, >)", "()[]{}<>")
+
+        /**
+         * List of default alphabets.
+         */
+        val defaultAlphabets = listOf(ALPHABET, DIGITS, HEXADECIMAL, MINUS, UNDERSCORE, SPACE, SPECIAL, BRACKETS)
+    }
 
 
     /**
