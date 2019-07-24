@@ -70,7 +70,7 @@ object JNumberSpinnerTest : Spek({
 
             val info = spinner.validateValue()
             assertThat(info).isNotNull()
-            assertThat(info?.message).isEqualTo("Please enter a value greater than or equal to -24.8.")
+            assertThat(info?.message).isEqualTo("Enter a value greater than or equal to -24.8.")
         }
 
         it("should fail if the value is higher than the maximum value") {
@@ -80,7 +80,7 @@ object JNumberSpinnerTest : Spek({
 
             val info = spinner.validateValue()
             assertThat(info).isNotNull()
-            assertThat(info?.message).isEqualTo("Please enter a value less than or equal to 32.03.")
+            assertThat(info?.message).isEqualTo("Enter a value less than or equal to 32.03.")
         }
 
         it("should pass if the minimum value was adjusted") {

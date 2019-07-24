@@ -108,7 +108,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     @Nullable
     public ValidationInfo doValidate() {
         if (alphabetList.getSelectedValuesList().isEmpty())
-            return new ValidationInfo("Please select at least one symbol set.", alphabetList);
+            return new ValidationInfo("Select at least one symbol set.", alphabetList);
 
         return JavaHelperKt.firstNonNull(
             minLength.validateValue(),

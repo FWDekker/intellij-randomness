@@ -134,7 +134,7 @@ object DecimalSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("decimalCount").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 0.")
+                assertThat(validationInfo?.message).isEqualTo("Enter a value greater than or equal to 0.")
             }
         }
     }

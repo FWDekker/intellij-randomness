@@ -165,7 +165,7 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 1.")
+                assertThat(validationInfo?.message).isEqualTo("Enter a value greater than or equal to 1.")
             }
 
             it("fails if the minimum length is greater than the maximum length") {
