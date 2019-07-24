@@ -10,11 +10,13 @@ import javax.swing.JSpinner
  * @param min the `JSpinner` that represents the minimum value
  * @param max the `JSpinner` that represents the maximum value
  * @param maxRange the maximum difference between `min` and `max`
+ * @param name the name used in error messages
  */
 class JSpinnerRange @JvmOverloads constructor(
     private val min: JSpinner,
     private val max: JSpinner,
-    private val maxRange: Double = DEFAULT_MAX_RANGE
+    private val maxRange: Double = DEFAULT_MAX_RANGE,
+    name: String? = null
 ) {
     companion object {
         /**
@@ -23,6 +25,10 @@ class JSpinnerRange @JvmOverloads constructor(
         private const val DEFAULT_MAX_RANGE = 1E53
     }
 
+    /**
+     * The `name` parameter preceded by a whitespace if it was not null, or an empty string otherwise.
+     */
+    val name = if (name != null) " $name" else ""
     /**
      * The current minimum value of the range.
      */
@@ -34,6 +40,14 @@ class JSpinnerRange @JvmOverloads constructor(
     val maxValue: Double
         get() = (this.max.value as Number).toDouble()
 
+
+    /**
+     * A container for two [JSpinner]s that indicate a range of values, using a default range.
+     *
+     * Used for compatibility with Java.
+     */
+    // TODO Remove this after migrating UI to Kotlin.
+    constructor(min: JSpinner, max: JSpinner, name: String?) : this(min, max, DEFAULT_MAX_RANGE, name)
 
     init {
         if (maxRange < 0)
@@ -49,8 +63,11 @@ class JSpinnerRange @JvmOverloads constructor(
      */
     fun validateValue() =
         when {
-            minValue > maxValue -> ValidationInfo("The maximum should not be smaller than the minimum.", max)
-            maxValue - minValue > maxRange -> ValidationInfo("The range should not exceed $maxRange.", max)
-            else -> null
+            minValue > maxValue ->
+                ValidationInfo("The maximum$name should not be smaller than the minimum$name.", max)
+            maxValue - minValue > maxRange ->
+                ValidationInfo("The range should not exceed $maxRange.", max)
+            else ->
+                null
         }
 }

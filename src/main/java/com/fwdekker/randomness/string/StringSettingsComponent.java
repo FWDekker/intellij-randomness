@@ -65,7 +65,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     private void createUIComponents() {
         minLength = new JIntSpinner(1, 1);
         maxLength = new JIntSpinner(1, 1);
-        lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
+        lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
         alphabetList = new JList<>(Alphabet.values());
         alphabetList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -108,7 +108,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     @Nullable
     public ValidationInfo doValidate() {
         if (alphabetList.getSelectedValuesList().isEmpty())
-            return new ValidationInfo("Please select at least one alphabet.", alphabetList);
+            return new ValidationInfo("Select at least one symbol set.", alphabetList);
 
         return JavaHelperKt.firstNonNull(
             minLength.validateValue(),

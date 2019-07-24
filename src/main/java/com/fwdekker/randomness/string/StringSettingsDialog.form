@@ -93,7 +93,7 @@
         </constraints>
         <properties>
           <labelFor value="9ade9"/>
-          <text value="Symbols"/>
+          <text value="Symbol sets"/>
         </properties>
       </component>
       <scrollpane id="9ade9">

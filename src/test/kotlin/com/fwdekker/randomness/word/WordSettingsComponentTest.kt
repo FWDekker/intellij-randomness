@@ -165,7 +165,7 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 1.")
+                assertThat(validationInfo?.message).isEqualTo("Enter a value greater than or equal to 1.")
             }
 
             it("fails if the minimum length is greater than the maximum length") {
@@ -177,7 +177,8 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
-                assertThat(validationInfo?.message).isEqualTo("The maximum should not be smaller than the minimum.")
+                assertThat(validationInfo?.message)
+                    .isEqualTo("The maximum length should not be smaller than the minimum length.")
             }
 
             it("fails if the length range ends too low to match any words") {
@@ -189,8 +190,8 @@ object WordSettingsComponentTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
                 assertThat(validationInfo?.message).isEqualTo("" +
-                    "Enter a value greater than or equal to 1, " +
-                    "the length of the shortest word in the selected dictionaries."
+                    "The shortest word in the selected dictionaries is 1 characters. " +
+                    "Set the maximum length to a value less than or equal to 1."
                 )
             }
 
@@ -203,8 +204,9 @@ object WordSettingsComponentTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
                 assertThat(validationInfo?.message).isEqualTo("" +
-                    "Enter a value less than or equal to 31, " +
-                    "the length of the longest word in the selected dictionaries.")
+                    "The longest word in the selected dictionaries is 31 characters. " +
+                    "Set the minimum length to a value less than or equal to 31."
+                )
             }
         }
 

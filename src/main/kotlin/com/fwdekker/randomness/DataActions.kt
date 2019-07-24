@@ -141,7 +141,7 @@ abstract class DataInsertAction : AnAction() {
                     """
                         Randomness was unable to generate random data.
                         ${if (!e.message.isNullOrBlank()) "The following error was encountered: ${e.message}\n" else ""}
-                        Please check your Randomness settings and try again.
+                        Check your Randomness settings and try again.
                     """.trimIndent()
                 )
                 return

@@ -64,7 +64,7 @@ public final class DecimalSettingsComponent extends SettingsComponent<DecimalSet
     private void createUIComponents() {
         minValue = new JDoubleSpinner();
         maxValue = new JDoubleSpinner();
-        valueRange = new JSpinnerRange(minValue, maxValue);
+        valueRange = new JSpinnerRange(minValue, maxValue, "value");
         decimalCount = new JIntSpinner(0, 0);
 
         decimalCount.addChangeListener(event -> {

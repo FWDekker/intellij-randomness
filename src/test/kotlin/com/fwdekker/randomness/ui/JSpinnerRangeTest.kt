@@ -12,6 +12,13 @@ import javax.swing.JSpinner
  */
 class JSpinnerRangeTest {
     @Test
+    fun testValidRange() {
+        val range = JSpinnerRange(createJSpinner(287.01), createJSpinner(448.50), 758.34)
+
+        assertThat(range.validateValue()).isNull()
+    }
+
+    @Test
     fun testIllegalMaxRange() {
         assertThatThrownBy { JSpinnerRange(createJSpinner(), createJSpinner(), -37.20) }
             .isInstanceOf(IllegalArgumentException::class.java)
@@ -44,6 +51,15 @@ class JSpinnerRangeTest {
         val info = range.validateValue()
         assertThat(info).isNotNull()
         assertThat(info?.message).isEqualTo("The range should not exceed 793.31.")
+    }
+
+    @Test
+    fun testName() {
+        val range = JSpinnerRange(createJSpinner(459.18), createJSpinner(214.93), "name")
+
+        val info = range.validateValue()
+        assertThat(info).isNotNull()
+        assertThat(info?.message).isEqualTo("The maximum name should not be smaller than the minimum name.")
     }
 }
 

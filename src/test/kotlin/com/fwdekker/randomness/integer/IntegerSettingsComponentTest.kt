@@ -129,7 +129,8 @@ object IntegerSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
-                assertThat(validationInfo?.message).isEqualTo("The maximum should not be smaller than the minimum.")
+                assertThat(validationInfo?.message)
+                    .isEqualTo("The maximum value should not be smaller than the minimum value.")
             }
 
             it("fails if the range size overflows") {
@@ -154,7 +155,7 @@ object IntegerSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 2.")
+                assertThat(validationInfo?.message).isEqualTo("Enter a value greater than or equal to 2.")
             }
 
             it("fails if the base is 0") {
@@ -164,7 +165,7 @@ object IntegerSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 2.")
+                assertThat(validationInfo?.message).isEqualTo("Enter a value greater than or equal to 2.")
             }
 
             it("fails if the base is 1") {
@@ -174,7 +175,7 @@ object IntegerSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value greater than or equal to 2.")
+                assertThat(validationInfo?.message).isEqualTo("Enter a value greater than or equal to 2.")
             }
 
             it("fails if the base is greater than 36") {
@@ -184,7 +185,7 @@ object IntegerSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
-                assertThat(validationInfo?.message).isEqualTo("Please enter a value less than or equal to 36.")
+                assertThat(validationInfo?.message).isEqualTo("Enter a value less than or equal to 36.")
             }
         }
     }
