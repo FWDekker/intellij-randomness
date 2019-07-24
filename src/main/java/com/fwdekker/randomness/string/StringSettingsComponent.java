@@ -4,18 +4,15 @@ import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.JavaHelperKt;
 import com.fwdekker.randomness.SettingsComponent;
 import com.fwdekker.randomness.ui.ButtonGroupKt;
+import com.fwdekker.randomness.ui.JEditableList;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
-import java.util.HashSet;
 
 
 /**
@@ -31,7 +28,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     private JIntSpinner maxLength;
     private ButtonGroup enclosureGroup;
     private ButtonGroup capitalizationGroup;
-    private JList<SymbolSet> symbolSetList;
+    private JEditableList<SymbolSet> symbolSets;
 
 
     /**
@@ -67,10 +64,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         minLength = new JIntSpinner(1, 1);
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
-
-        symbolSetList = new JBList<>((SymbolSet[]) SymbolSet.Companion.getDefaultSymbolSets().toArray());
-        symbolSetList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        symbolSetList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        symbolSets = new JEditableList<>("symbolSets");
     }
 
 
@@ -81,14 +75,8 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
-        symbolSetList.clearSelection();
-        int i = 0;
-        for (final SymbolSet symbolSet : SymbolSet.Companion.getDefaultSymbolSets()) {
-            if (settings.getSymbolSetList().contains(symbolSet)) {
-                symbolSetList.addSelectionInterval(i, i);
-            }
-            i++;
-        }
+        symbolSets.setEntries(settings.getSymbolSetList());
+        symbolSets.setActiveEntries(settings.getActiveSymbolSetList());
     }
 
     @Override
@@ -104,14 +92,15 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
             ? StringSettings.Companion.getDEFAULT_CAPITALIZATION()
             : CapitalizationMode.Companion.getMode(capitalizationMode));
 
-        settings.setSymbolSetList(new HashSet<>(symbolSetList.getSelectedValuesList()));
+        settings.setSymbolSetList(symbolSets.getEntries());
+        settings.setActiveSymbolSetList(symbolSets.getActiveEntries());
     }
 
     @Override
     @Nullable
     public ValidationInfo doValidate() {
-        if (symbolSetList.getSelectedValuesList().isEmpty())
-            return new ValidationInfo("Select at least one symbol set.", symbolSetList);
+        if (symbolSets.getActiveEntries().isEmpty())
+            return new ValidationInfo("Select at least one symbol set.", symbolSets);
 
         return JavaHelperKt.firstNonNull(
             minLength.validateValue(),

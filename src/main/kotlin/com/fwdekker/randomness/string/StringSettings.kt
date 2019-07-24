@@ -28,7 +28,8 @@ data class StringSettings(
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var symbolSets: Map<String, String> = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
+    var symbolSets: Map<String, String> = SymbolSet.defaultSymbolSets.toMap(),
+    var activeSymbolSets: Map<String, String> = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
 ) : Settings<StringSettings> {
     companion object {
         /**
@@ -64,6 +65,14 @@ data class StringSettings(
         get() = symbolSets.toSymbolSets()
         set(value) {
             symbolSets = value.toMap()
+        }
+    /**
+     * A list view of the `SymbolSet` objects described by [activeSymbolSets].
+     */
+    var activeSymbolSetList: Collection<SymbolSet>
+        get() = activeSymbolSets.toSymbolSets()
+        set(value) {
+            activeSymbolSets = value.toMap()
         }
 
 
