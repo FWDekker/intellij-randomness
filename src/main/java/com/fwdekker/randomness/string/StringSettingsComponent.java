@@ -84,7 +84,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         symbolSetList.clearSelection();
         int i = 0;
         for (final SymbolSet symbolSet : SymbolSet.Companion.getDefaultSymbolSets()) {
-            if (settings.getSymbolSets().contains(symbolSet)) {
+            if (settings.getSymbolSetList().contains(symbolSet)) {
                 symbolSetList.addSelectionInterval(i, i);
             }
             i++;
@@ -104,7 +104,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
             ? StringSettings.Companion.getDEFAULT_CAPITALIZATION()
             : CapitalizationMode.Companion.getMode(capitalizationMode));
 
-        settings.setSymbolSets(new HashSet<>(symbolSetList.getSelectedValuesList()));
+        settings.setSymbolSetList(new HashSet<>(symbolSetList.getSelectedValuesList()));
     }
 
     @Override

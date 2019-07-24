@@ -28,12 +28,12 @@ object StringSettingsTest : Spek({
         }
 
         it("copies state from another instance") {
-            val symbolSets = mutableSetOf<SymbolSet>()
+            val symbolSets = listOf(SymbolSet.BRACKETS)
 
             stringSettings.minLength = 730
             stringSettings.maxLength = 891
             stringSettings.enclosure = "Qh7"
-            stringSettings.symbolSets = symbolSets
+            stringSettings.symbolSetList = symbolSets
 
             val newStringSettings = StringSettings()
             newStringSettings.loadState(stringSettings.state)
@@ -41,7 +41,7 @@ object StringSettingsTest : Spek({
             assertThat(newStringSettings.minLength).isEqualTo(730)
             assertThat(newStringSettings.maxLength).isEqualTo(891)
             assertThat(newStringSettings.enclosure).isEqualTo("Qh7")
-            assertThat(newStringSettings.symbolSets).isEqualTo(symbolSets)
+            assertThat(newStringSettings.symbolSetList).isEqualTo(symbolSets)
         }
     }
 })

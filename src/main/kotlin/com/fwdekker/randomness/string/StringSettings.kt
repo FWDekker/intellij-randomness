@@ -28,7 +28,7 @@ data class StringSettings(
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var symbolSets: MutableSet<SymbolSet> = mutableSetOf(SymbolSet.ALPHABET, SymbolSet.DIGITS)
+    var symbolSets: Map<String, String> = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
 ) : Settings<StringSettings> {
     companion object {
         /**
@@ -55,6 +55,16 @@ data class StringSettings(
         val default: StringSettings
             get() = ServiceManager.getService(StringSettings::class.java)
     }
+
+
+    /**
+     * A list view of the `SymbolSet` objects described by [symbolSets].
+     */
+    var symbolSetList: Collection<SymbolSet>
+        get() = symbolSets.toSymbolSets()
+        set(value) {
+            symbolSets = value.toMap()
+        }
 
 
     override fun copyState() = StringSettings().also { it.loadState(this) }

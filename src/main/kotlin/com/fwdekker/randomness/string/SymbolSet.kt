@@ -59,6 +59,20 @@ data class SymbolSet(val name: String, val symbols: String) {
 
 
 /**
+ * Converts a collection of symbol sets to a map from the symbol sets' names to the respective symbols.
+ *
+ * @return a map from the symbol sets' names to the respective symbols
+ */
+fun Collection<SymbolSet>.toMap() = this.map { (name, symbols) -> name to symbols }.toMap()
+
+/**
+ * Converts a map to a list of symbol sets, using the key as the name and the value as the symbols.
+ *
+ * @return a list of symbol sets
+ */
+fun Map<String, String>.toSymbolSets() = this.map { (name, symbols) -> SymbolSet(name, symbols) }.toList()
+
+/**
  * Concatenates the symbols of all the symbol sets, removing duplicate characters.
  *
  * @return the concatenation of all symbols of all the symbol sets, excluding duplicate characters

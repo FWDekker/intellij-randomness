@@ -33,7 +33,7 @@ object StringSettingsComponentTest : Spek({
         stringSettings.maxLength = 719
         stringSettings.enclosure = "\""
         stringSettings.capitalization = CapitalizationMode.RANDOM
-        stringSettings.symbolSets = mutableSetOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
+        stringSettings.symbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
 
         stringSettingsComponent =
             GuiActionRunner.execute<StringSettingsComponent> { StringSettingsComponent(stringSettings) }
@@ -136,7 +136,7 @@ object StringSettingsComponentTest : Spek({
 
     describe("saving settings") {
         it("correctly saves settings to a settings object") {
-            val newSymbolSets = setOf(SymbolSet.DIGITS, SymbolSet.ALPHABET, SymbolSet.SPECIAL)
+            val newSymbolSets = listOf(SymbolSet.ALPHABET, SymbolSet.SPECIAL, SymbolSet.DIGITS)
             val newSymbolSetsOrdinals = newSymbolSets.map { SymbolSet.defaultSymbolSets.indexOf(it) }
 
             GuiActionRunner.execute {
@@ -153,7 +153,7 @@ object StringSettingsComponentTest : Spek({
             assertThat(stringSettings.maxLength).isEqualTo(803)
             assertThat(stringSettings.enclosure).isEqualTo("`")
             assertThat(stringSettings.capitalization).isEqualTo(CapitalizationMode.UPPER)
-            assertThat(stringSettings.symbolSets).isEqualTo(newSymbolSets)
+            assertThat(stringSettings.symbolSetList).isEqualTo(newSymbolSets)
         }
     }
 
