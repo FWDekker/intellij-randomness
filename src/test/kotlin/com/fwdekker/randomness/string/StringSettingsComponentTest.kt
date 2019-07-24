@@ -116,7 +116,8 @@ object StringSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
-                assertThat(validationInfo?.message).isEqualTo("The maximum should not be smaller than the minimum.")
+                assertThat(validationInfo?.message)
+                    .isEqualTo("The maximum length should not be smaller than the minimum length.")
             }
         }
 
@@ -128,7 +129,7 @@ object StringSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.list("alphabets").target())
-                assertThat(validationInfo?.message).isEqualTo("Please select at least one alphabet.")
+                assertThat(validationInfo?.message).isEqualTo("Please select at least one symbol set.")
             }
         }
     }
