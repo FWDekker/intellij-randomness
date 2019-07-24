@@ -76,7 +76,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     private void createUIComponents() {
         minLength = new JIntSpinner(1, 1);
         maxLength = new JIntSpinner(1, 1);
-        lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE);
+        lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
         dictionaries = new JEditableList<>();
         dictionaries.getSelectionModel().addListSelectionListener(this::onDictionaryHighlightChange);
@@ -220,8 +220,8 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         final int maxWordLength = WordSettingsComponentHelperKt.maxLength(words);
         if (minLength.getValue() > maxWordLength) {
             return new ValidationInfo("" +
-                "Enter a value less than or equal to " + maxWordLength + ", " +
-                "the length of the longest word in the selected dictionaries.",
+                "The longest word in the selected dictionaries is " + maxWordLength + " characters. " +
+                "Set the minimum length to a value less than or equal to " + maxWordLength + ".",
                 minLength
             );
         }
@@ -229,8 +229,8 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         final int minWordLength = WordSettingsComponentHelperKt.minLength(words);
         if (maxLength.getValue() < minWordLength) {
             return new ValidationInfo("" +
-                "Enter a value greater than or equal to " + minWordLength + ", " +
-                "the length of the shortest word in the selected dictionaries.",
+                "The shortest word in the selected dictionaries is " + minWordLength + " characters. " +
+                "Set the maximum length to a value less than or equal to " + minWordLength + ".",
                 maxLength
             );
         }

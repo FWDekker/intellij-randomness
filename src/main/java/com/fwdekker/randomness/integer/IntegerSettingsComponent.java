@@ -63,7 +63,7 @@ public final class IntegerSettingsComponent extends SettingsComponent<IntegerSet
         minValue = new JLongSpinner();
         maxValue = new JLongSpinner();
         base = new JIntSpinner(IntegerSettings.DECIMAL_BASE, IntegerSettings.MIN_BASE, IntegerSettings.MAX_BASE);
-        valueRange = new JSpinnerRange(minValue, maxValue, Long.MAX_VALUE);
+        valueRange = new JSpinnerRange(minValue, maxValue, Long.MAX_VALUE, "value");
 
         base.addChangeListener(event -> {
             final int value = ((JIntSpinner) event.getSource()).getValue();
