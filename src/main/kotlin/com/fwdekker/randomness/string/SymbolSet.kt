@@ -4,10 +4,10 @@ package com.fwdekker.randomness.string
 /**
  * A `SymbolSet` represents a named collection of symbols.
  *
- * @param description the description of the symbol set
+ * @param name the name of the symbol set
  * @param symbols the symbols in the symbol set
  */
-data class SymbolSet(val description: String, val symbols: String) {
+data class SymbolSet(val name: String, val symbols: String) {
     companion object {
         /**
          * The lowercase English alphabet.
@@ -50,11 +50,11 @@ data class SymbolSet(val description: String, val symbols: String) {
 
 
     /**
-     * Returns the `description` field.
+     * Returns the `name` field.
      *
-     * @return the `description` field
+     * @return the `name` field
      */
-    override fun toString() = description
+    override fun toString() = name
 }
 
 

@@ -25,9 +25,9 @@ object SymbolSetTest : Spek({
         }
     }
 
-    describe("description") {
-        it("returns the description of a symbol set") {
-            assertThat(SymbolSet.ALPHABET.description).isEqualTo("Alphabet (a, b, c, ...)")
+    describe("name") {
+        it("returns the name of a symbol set") {
+            assertThat(SymbolSet.ALPHABET.name).isEqualTo("Alphabet (a, b, c, ...)")
         }
     }
 
@@ -38,7 +38,7 @@ object SymbolSetTest : Spek({
     }
 
     describe("toString") {
-        it("returns the description as the string representation of a symbol set") {
+        it("returns the name as the string representation of a symbol set") {
             assertThat(SymbolSet.ALPHABET.toString()).isEqualTo("Alphabet (a, b, c, ...)")
         }
     }
