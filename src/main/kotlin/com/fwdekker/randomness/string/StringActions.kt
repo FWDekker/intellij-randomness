@@ -48,15 +48,15 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
 
 
     /**
-     * Returns a random character from the alphabets in `settings`.
+     * Returns a random character from the symbol sets in `settings`.
      *
-     * @return a random character from the alphabets in `settings`
+     * @return a random character from the symbol sets in `settings`
      */
     private fun generateCharacter(): Char {
-        val alphabet = settings.alphabets.sum()
-        val charIndex = Random.nextInt(alphabet.length)
+        val symbolSet = settings.symbolSetList.sum()
+        val charIndex = Random.nextInt(symbolSet.length)
 
-        return alphabet[charIndex]
+        return symbolSet[charIndex]
     }
 }
 

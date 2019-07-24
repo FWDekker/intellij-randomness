@@ -7,6 +7,7 @@ import com.fwdekker.randomness.ui.ButtonGroupKt;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +31,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     private JIntSpinner maxLength;
     private ButtonGroup enclosureGroup;
     private ButtonGroup capitalizationGroup;
-    private JList<Alphabet> alphabetList;
+    private JList<SymbolSet> symbolSetList;
 
 
     /**
@@ -67,9 +68,9 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
-        alphabetList = new JList<>(Alphabet.values());
-        alphabetList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        alphabetList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        symbolSetList = new JBList<>((SymbolSet[]) SymbolSet.Companion.getDefaultSymbolSets().toArray());
+        symbolSetList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        symbolSetList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     }
 
 
@@ -80,11 +81,13 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
-        alphabetList.clearSelection();
-        for (int i = 0; i < Alphabet.values().length; i++) {
-            if (settings.getAlphabets().contains(Alphabet.values()[i])) {
-                alphabetList.addSelectionInterval(i, i);
+        symbolSetList.clearSelection();
+        int i = 0;
+        for (final SymbolSet symbolSet : SymbolSet.Companion.getDefaultSymbolSets()) {
+            if (settings.getSymbolSetList().contains(symbolSet)) {
+                symbolSetList.addSelectionInterval(i, i);
             }
+            i++;
         }
     }
 
@@ -101,14 +104,14 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
             ? StringSettings.Companion.getDEFAULT_CAPITALIZATION()
             : CapitalizationMode.Companion.getMode(capitalizationMode));
 
-        settings.setAlphabets(new HashSet<>(alphabetList.getSelectedValuesList()));
+        settings.setSymbolSetList(new HashSet<>(symbolSetList.getSelectedValuesList()));
     }
 
     @Override
     @Nullable
     public ValidationInfo doValidate() {
-        if (alphabetList.getSelectedValuesList().isEmpty())
-            return new ValidationInfo("Select at least one symbol set.", alphabetList);
+        if (symbolSetList.getSelectedValuesList().isEmpty())
+            return new ValidationInfo("Select at least one symbol set.", symbolSetList);
 
         return JavaHelperKt.firstNonNull(
             minLength.validateValue(),

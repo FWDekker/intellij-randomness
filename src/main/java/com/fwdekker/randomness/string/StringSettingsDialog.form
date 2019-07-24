@@ -103,10 +103,10 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="b2d90" class="javax.swing.JList" binding="alphabetList" custom-create="true" default-binding="true">
+          <component id="b2d90" class="javax.swing.JList" binding="symbolSetList" custom-create="true">
             <constraints/>
             <properties>
-              <name value="alphabets"/>
+              <name value="symbolSets"/>
             </properties>
           </component>
         </children>
