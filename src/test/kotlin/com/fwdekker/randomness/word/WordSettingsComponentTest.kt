@@ -114,9 +114,9 @@ object WordSettingsComponentTest : Spek({
 
                 frame.button("dictionaryAdd").click()
                 // TODO Find file chooser window and select a file
-//        JFileChooserFinder.findFileChooser()
-//            .selectFile(getDictionaryFile("dictionaries/simple.dic"))
-//            .approve()
+//                JFileChooserFinder.findFileChooser()
+//                    .selectFile(getDictionaryFile("dictionaries/simple.dic"))
+//                    .approve()
 
                 // Select the same file again
 
@@ -146,6 +146,23 @@ object WordSettingsComponentTest : Spek({
                 }
 
                 assertThat(frame.table("dictionaries").target().rowCount).isEqualTo(2)
+            }
+
+            it("disables the remove button when no dictionary is highlighted") {
+                GuiActionRunner.execute { frame.table("dictionaries").target().clearSelection() }
+
+                frame.button("dictionaryRemove").requireDisabled()
+            }
+
+            it("removes nothing when no dictionary is highlighted") {
+                val initialEntries = componentDictionaries.entries
+
+                GuiActionRunner.execute {
+                    frame.table("dictionaries").target().clearSelection()
+                    frame.button("dictionaryRemove").target().doClick()
+                }
+
+                assertThat(componentDictionaries.entries).isEqualTo(initialEntries)
             }
         }
     }
