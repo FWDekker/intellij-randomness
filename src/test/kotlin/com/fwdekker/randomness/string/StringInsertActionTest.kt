@@ -36,7 +36,7 @@ class StringInsertActionTest {
         stringSettings.maxLength = maxLength
         stringSettings.enclosure = enclosure
         stringSettings.capitalization = capitalization
-        stringSettings.symbolSetList = symbolSets
+        stringSettings.activeSymbolSetList = symbolSets
 
         val insertRandomString = StringInsertAction(stringSettings)
         val expectedPattern = buildExpectedPattern(minLength, maxLength, enclosure, capitalization, symbolSets)

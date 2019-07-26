@@ -12,7 +12,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -29,6 +33,9 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     private ButtonGroup enclosureGroup;
     private ButtonGroup capitalizationGroup;
     private JEditableList<SymbolSet> symbolSets;
+    private JButton symbolSetAddButton;
+    private JButton symbolSetRemoveButton;
+    private JButton symbolSetEditButton;
 
 
     /**
@@ -64,7 +71,16 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         minLength = new JIntSpinner(1, 1);
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
+
         symbolSets = new JEditableList<>("symbolSets");
+        symbolSets.getSelectionModel().addListSelectionListener(this::onSymbolSetHighlightChange);
+
+        symbolSetAddButton = new JButton();
+        symbolSetAddButton.addActionListener(event -> addSymbolSet());
+        symbolSetEditButton = new JButton();
+        symbolSetEditButton.addActionListener(event -> editSymbolSet());
+        symbolSetRemoveButton = new JButton();
+        symbolSetRemoveButton.addActionListener(event -> removeSymbolSet());
     }
 
 
@@ -77,6 +93,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
 
         symbolSets.setEntries(settings.getSymbolSetList());
         symbolSets.setActiveEntries(settings.getActiveSymbolSetList());
+        onSymbolSetHighlightChange(null);
     }
 
     @Override
@@ -107,5 +124,69 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
             maxLength.validateValue(),
             lengthRange.validateValue()
         );
+    }
+
+
+    /**
+     * Fires when a new {@code Dictionary} should be added to the list.
+     */
+    private void addSymbolSet() {
+        final List<String> reservedNames = symbolSets.getEntries().stream()
+            .map(SymbolSet::getName)
+            .collect(Collectors.toList());
+
+        final SymbolSetDialog dialog = new SymbolSetDialog(reservedNames);
+        if (dialog.showAndGet()) {
+            symbolSets.addEntry(new SymbolSet(dialog.getName(), dialog.getSymbols()));
+        }
+    }
+
+    /**
+     * Fires when the currently-highlighted {@code Dictionary} should be edited.
+     */
+    private void editSymbolSet() {
+        final SymbolSet highlightedSymbolSet = symbolSets.getHighlightedEntry();
+        if (highlightedSymbolSet == null) {
+            return;
+        }
+
+        final List<String> reservedNames = symbolSets.getEntries().stream()
+            .map(SymbolSet::getName)
+            .filter(it -> !it.equals(highlightedSymbolSet.getName()))
+            .collect(Collectors.toList());
+
+        final SymbolSetDialog dialog = new SymbolSetDialog(reservedNames, highlightedSymbolSet);
+        if (dialog.showAndGet()) {
+            highlightedSymbolSet.setName(dialog.getName());
+            highlightedSymbolSet.setSymbols(dialog.getSymbols());
+
+            symbolSets.revalidate();
+            symbolSets.repaint();
+        }
+    }
+
+    /**
+     * Fires when the currently-highlighted {@code SymbolSet} should be removed the list.
+     */
+    private void removeSymbolSet() {
+        final SymbolSet highlightedSymbolSet = symbolSets.getHighlightedEntry();
+        if (highlightedSymbolSet == null) {
+            return;
+        }
+
+        symbolSets.removeEntry(highlightedSymbolSet);
+    }
+
+    /**
+     * Fires when the user (un)highlights a symbol set.
+     *
+     * @param event the triggering event
+     */
+    private void onSymbolSetHighlightChange(final ListSelectionEvent event) {
+        if (event == null || !event.getValueIsAdjusting()) {
+            final boolean enabled = symbolSets.getHighlightedEntry() != null;
+            symbolSetEditButton.setEnabled(enabled);
+            symbolSetRemoveButton.setEnabled(enabled);
+        }
     }
 }

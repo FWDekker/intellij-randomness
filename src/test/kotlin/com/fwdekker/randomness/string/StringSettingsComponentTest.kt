@@ -5,13 +5,18 @@ import com.fwdekker.randomness.ui.JEditableList
 import com.intellij.openapi.options.ConfigurationException
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.swing.core.GenericTypeMatcher
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
+import org.assertj.swing.finder.WindowFinder
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.jetbrains.spek.api.dsl.xdescribe
+import java.awt.Dialog
+import javax.swing.JButton
 
 
 /**
@@ -83,16 +88,141 @@ object StringSettingsComponentTest : Spek({
     }
 
     describe("input handling") {
-        it("truncates decimals in the minimum length") {
-            GuiActionRunner.execute { frame.spinner("minLength").target().value = 553.92f }
+        describe("length range") {
+            it("truncates decimals in the minimum length") {
+                GuiActionRunner.execute { frame.spinner("minLength").target().value = 553.92f }
 
-            frame.spinner("minLength").requireValue(553)
+                frame.spinner("minLength").requireValue(553)
+            }
+
+            it("truncates decimals in the maximum length") {
+                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 796.01f }
+
+                frame.spinner("maxLength").requireValue(796)
+            }
         }
 
-        it("truncates decimals in the maximum length") {
-            GuiActionRunner.execute { frame.spinner("maxLength").target().value = 796.01f }
+        describe("symbol set manipulation") {
+            val subDialogMatcher = object : GenericTypeMatcher<Dialog>(Dialog::class.java) {
+                override fun isMatching(component: Dialog?) = component?.title?.startsWith("Randomness - ") ?: false
+            }
+            val okButtonMatcher = object : GenericTypeMatcher<JButton>(JButton::class.java) {
+                override fun isMatching(component: JButton?) = component?.text == "OK"
+            }
 
-            frame.spinner("maxLength").requireValue(796)
+            xdescribe("adding symbol sets") {
+                it("adds a new symbol set") {
+                    frame.button("symbolSetAdd").click()
+                    val fixture = WindowFinder.findDialog(subDialogMatcher).using(frame.robot())
+                    fixture.textBox("name").setText("glad")
+                    fixture.textBox("symbols").setText("sorry")
+                    fixture.button(okButtonMatcher).click()
+
+                    assertThat(componentSymbolSets.entries).contains(SymbolSet("glad", "sorry"))
+                }
+
+                it("does not add a new symbol set with a name that is already in use") {
+                    val duplicateName = componentSymbolSets.entries.first().name
+
+                    frame.button("symbolSetAdd").click()
+                    val fixture = WindowFinder.findDialog(subDialogMatcher).using(frame.robot())
+                    fixture.textBox("name").setText(duplicateName)
+                    fixture.textBox("symbols").setText("clear")
+                    fixture.button(okButtonMatcher).click()
+
+                    assertThat(componentSymbolSets.entries).doesNotContain(SymbolSet(duplicateName, "clear"))
+                }
+            }
+
+            xdescribe("editing symbol sets") {
+                it("changes the name of a symbol set") {
+                    componentSymbolSets.entries.first().apply {
+                        name = "old name"
+                        symbols = "old symbols"
+                    }
+
+                    GuiActionRunner.execute { frame.table("symbolSets").target().addRowSelectionInterval(0, 0)}
+                    frame.button("symbolSetEdit").click()
+
+                    val fixture = WindowFinder.findDialog(subDialogMatcher).using(frame.robot())
+                    fixture.textBox("name").setText("new name")
+                    fixture.button(okButtonMatcher).click()
+
+                    assertThat(componentSymbolSets.entries.first().name).isEqualTo("new name")
+                    assertThat(componentSymbolSets.entries.first().symbols).isEqualTo("old symbols")
+                }
+
+                it("does not change the name if the name is already in use") {
+                    val duplicateName = componentSymbolSets.entries.first().name
+                    val initialEntries = componentSymbolSets.entries
+                    GuiActionRunner.execute { frame.table("symbolSets").target().addRowSelectionInterval(1, 1) }
+
+                    frame.button("symbolSetEdit").click()
+                    val fixture = WindowFinder.findDialog(subDialogMatcher).using(frame.robot())
+                    fixture.textBox("name").setText(duplicateName)
+                    fixture.button(okButtonMatcher).click()
+
+                    assertThat(componentSymbolSets.entries).isEqualTo(initialEntries)
+                }
+
+                it("changes the symbols of a symbol set") {
+                    componentSymbolSets.entries.first().apply {
+                        name = "old name"
+                        symbols = "old symbols"
+                    }
+                    GuiActionRunner.execute { frame.table("symbolSets").target().addRowSelectionInterval(0, 0) }
+
+                    frame.button("symbolSetEdit").click()
+                    val fixture = WindowFinder.findDialog(subDialogMatcher).using(frame.robot())
+                    fixture.textBox("symbols").setText("new symbols")
+                    fixture.button(okButtonMatcher).click()
+
+                    assertThat(componentSymbolSets.entries.first().name).isEqualTo("old name")
+                    assertThat(componentSymbolSets.entries.first().symbols).isEqualTo("new symbols")
+                }
+
+                it("changes nothing when no symbol sets are highlighted") {
+                    val initialEntries = componentSymbolSets.entries
+
+                    GuiActionRunner.execute {
+                        frame.table("symbolSets").target().clearSelection()
+                        frame.button("symbolSetEdit").target().doClick()
+                    }
+
+                    assertThat(componentSymbolSets.entries).isEqualTo(initialEntries)
+                }
+            }
+
+            describe("removing symbol sets") {
+                it("removes the highlighted symbol set") {
+                    val initialEntries = componentSymbolSets.entries
+
+                    GuiActionRunner.execute {
+                        frame.table("symbolSets").target().addRowSelectionInterval(2, 2)
+                        frame.button("symbolSetRemove").target().doClick()
+                    }
+
+                    assertThat(componentSymbolSets.entries).isEqualTo(initialEntries.minus(initialEntries.last()))
+                }
+
+                it("removes nothing when no symbol sets are highlighted") {
+                    val initialEntries = componentSymbolSets.entries
+
+                    GuiActionRunner.execute {
+                        frame.table("symbolSets").target().clearSelection()
+                        frame.button("symbolSetRemove").target().doClick()
+                    }
+
+                    assertThat(componentSymbolSets.entries).isEqualTo(initialEntries)
+                }
+            }
+
+            it("disables the edit and remove buttons when no symbol sets are highlighted") {
+                GuiActionRunner.execute { frame.table("symbolSets").target().clearSelection() }
+
+                frame.button("symbolSetEdit").requireDisabled()
+                frame.button("symbolSetRemove").requireDisabled()
+            }
         }
     }
 

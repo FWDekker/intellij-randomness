@@ -53,7 +53,7 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
      * @return a random character from the symbol sets in `settings`
      */
     private fun generateCharacter(): Char {
-        val symbolSet = settings.symbolSetList.sum()
+        val symbolSet = settings.activeSymbolSetList.sum()
         val charIndex = Random.nextInt(symbolSet.length)
 
         return symbolSet[charIndex]

@@ -7,7 +7,7 @@ package com.fwdekker.randomness.string
  * @param name the name of the symbol set
  * @param symbols the symbols in the symbol set
  */
-data class SymbolSet(val name: String, val symbols: String) {
+data class SymbolSet(var name: String, var symbols: String) {
     companion object {
         /**
          * The lowercase English alphabet.
