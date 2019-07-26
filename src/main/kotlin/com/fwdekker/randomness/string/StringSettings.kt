@@ -7,6 +7,7 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.util.xmlb.annotations.Transient
 
 
 /**
@@ -62,6 +63,7 @@ data class StringSettings(
      * A list view of the `SymbolSet` objects described by [symbolSets].
      */
     var symbolSetList: Collection<SymbolSet>
+        @Transient
         get() = symbolSets.toSymbolSets()
         set(value) {
             symbolSets = value.toMap()
@@ -70,6 +72,7 @@ data class StringSettings(
      * A list view of the `SymbolSet` objects described by [activeSymbolSets].
      */
     var activeSymbolSetList: Collection<SymbolSet>
+        @Transient
         get() = activeSymbolSets.toSymbolSets()
         set(value) {
             activeSymbolSets = value.toMap()

@@ -186,7 +186,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     }
 
     /**
-     * Fires when the currently highlighted {@code Dictionary} should be removed the list.
+     * Fires when the currently-highlighted {@code Dictionary} should be removed the list.
      */
     private void removeDictionary() {
         final Dictionary highlightedDictionary = dictionaries.getHighlightedEntry();
