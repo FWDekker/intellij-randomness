@@ -17,7 +17,8 @@ import com.intellij.util.xmlb.annotations.Transient
  * @property maxLength The maximum length of the generated string, inclusive.
  * @property enclosure The string that encloses the generated string on both sides.
  * @property capitalization The capitalization mode of the generated string.
- * @property symbolSets The symbol sets to be used for generating strings.
+ * @property symbolSets The symbol sets that are available for generating strings.
+ * @property activeSymbolSets The symbol sets that are actually used for generating strings; a subset of [symbolSets].
  *
  * @see StringInsertAction
  * @see StringSettingsAction
