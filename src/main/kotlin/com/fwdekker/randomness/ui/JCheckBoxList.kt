@@ -18,7 +18,7 @@ private typealias EntryActivityChangeListener = (Int) -> Unit
  * @param <T> the entry type
  * @param name the name of this component
  */
-class JEditableList<T>(name: String? = null) : JBTable() {
+class JCheckBoxList<T>(name: String? = null) : JBTable() {
     companion object {
         /**
          * The relative width of the checkbox column.

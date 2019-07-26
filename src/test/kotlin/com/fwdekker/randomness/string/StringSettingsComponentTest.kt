@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.ui.JEditableList
+import com.fwdekker.randomness.ui.JCheckBoxList
 import com.intellij.openapi.options.ConfigurationException
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
@@ -26,7 +26,7 @@ object StringSettingsComponentTest : Spek({
     lateinit var stringSettings: StringSettings
     lateinit var stringSettingsComponent: StringSettingsComponent
     lateinit var stringSettingsComponentConfigurable: StringSettingsConfigurable
-    lateinit var componentSymbolSets: JEditableList<SymbolSet>
+    lateinit var componentSymbolSets: JCheckBoxList<SymbolSet>
     lateinit var frame: FrameFixture
 
 
@@ -49,7 +49,7 @@ object StringSettingsComponentTest : Spek({
         stringSettingsComponentConfigurable = StringSettingsConfigurable(stringSettingsComponent)
         frame = showInFrame(stringSettingsComponent.getRootPane())
 
-        componentSymbolSets = frame.table("symbolSets").target() as JEditableList<SymbolSet>
+        componentSymbolSets = frame.table("symbolSets").target() as JCheckBoxList<SymbolSet>
     }
 
     afterEachTest {

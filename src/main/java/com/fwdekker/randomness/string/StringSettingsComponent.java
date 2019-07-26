@@ -4,7 +4,7 @@ import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.JavaHelperKt;
 import com.fwdekker.randomness.SettingsComponent;
 import com.fwdekker.randomness.ui.ButtonGroupKt;
-import com.fwdekker.randomness.ui.JEditableList;
+import com.fwdekker.randomness.ui.JCheckBoxList;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -32,7 +32,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     private JIntSpinner maxLength;
     private ButtonGroup enclosureGroup;
     private ButtonGroup capitalizationGroup;
-    private JEditableList<SymbolSet> symbolSets;
+    private JCheckBoxList<SymbolSet> symbolSets;
     private JButton symbolSetAddButton;
     private JButton symbolSetRemoveButton;
     private JButton symbolSetEditButton;
@@ -72,7 +72,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
-        symbolSets = new JEditableList<>("symbolSets");
+        symbolSets = new JCheckBoxList<>("symbolSets");
         symbolSets.getSelectionModel().addListSelectionListener(this::onSymbolSetHighlightChange);
 
         symbolSetAddButton = new JButton();

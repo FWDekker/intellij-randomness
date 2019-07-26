@@ -103,7 +103,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="b362d" class="com.fwdekker.randomness.ui.JEditableList" binding="symbolSets" custom-create="true">
+          <component id="b362d" class="com.fwdekker.randomness.ui.JCheckBoxList" binding="symbolSets" custom-create="true">
             <constraints/>
             <properties>
               <name value="symbolSets"/>

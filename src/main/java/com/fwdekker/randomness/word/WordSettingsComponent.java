@@ -4,7 +4,7 @@ import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.JavaHelperKt;
 import com.fwdekker.randomness.SettingsComponent;
 import com.fwdekker.randomness.ui.ButtonGroupKt;
-import com.fwdekker.randomness.ui.JEditableList;
+import com.fwdekker.randomness.ui.JCheckBoxList;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -39,7 +39,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     private JIntSpinner maxLength;
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
-    private JEditableList<Dictionary> dictionaries;
+    private JCheckBoxList<Dictionary> dictionaries;
     private JButton dictionaryAddButton;
     private JButton dictionaryRemoveButton;
 
@@ -78,7 +78,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
-        dictionaries = new JEditableList<>();
+        dictionaries = new JCheckBoxList<>();
         dictionaries.getSelectionModel().addListSelectionListener(this::onDictionaryHighlightChange);
 
         dictionaryAddButton = new JButton();

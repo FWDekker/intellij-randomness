@@ -10,14 +10,14 @@ import java.util.NoSuchElementException
 
 
 /**
- * Unit tests for [JEditableList].
+ * Unit tests for [JCheckBoxList].
  */
 object JEditableListTest : Spek({
-    lateinit var list: JEditableList<String>
+    lateinit var list: JCheckBoxList<String>
 
 
     beforeEachTest {
-        list = GuiActionRunner.execute<JEditableList<String>> { JEditableList() }
+        list = GuiActionRunner.execute<JCheckBoxList<String>> { JCheckBoxList() }
     }
 
 

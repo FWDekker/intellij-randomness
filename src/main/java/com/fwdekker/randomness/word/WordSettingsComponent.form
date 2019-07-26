@@ -84,7 +84,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="2c67a" class="com.fwdekker.randomness.ui.JEditableList" binding="dictionaries" custom-create="true">
+          <component id="2c67a" class="com.fwdekker.randomness.ui.JCheckBoxList" binding="dictionaries" custom-create="true">
             <constraints/>
             <properties>
               <name value="dictionaries"/>
