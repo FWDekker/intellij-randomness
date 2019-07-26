@@ -7,6 +7,7 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.util.xmlb.annotations.Transient
 
 
 /**
@@ -16,7 +17,8 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  * @property maxLength The maximum length of the generated string, inclusive.
  * @property enclosure The string that encloses the generated string on both sides.
  * @property capitalization The capitalization mode of the generated string.
- * @property symbolSets The symbol sets to be used for generating strings.
+ * @property symbolSets The symbol sets that are available for generating strings.
+ * @property activeSymbolSets The symbol sets that are actually used for generating strings; a subset of [symbolSets].
  *
  * @see StringInsertAction
  * @see StringSettingsAction
@@ -28,7 +30,8 @@ data class StringSettings(
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var symbolSets: Map<String, String> = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
+    var symbolSets: Map<String, String> = SymbolSet.defaultSymbolSets.toMap(),
+    var activeSymbolSets: Map<String, String> = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
 ) : Settings<StringSettings> {
     companion object {
         /**
@@ -61,9 +64,19 @@ data class StringSettings(
      * A list view of the `SymbolSet` objects described by [symbolSets].
      */
     var symbolSetList: Collection<SymbolSet>
+        @Transient
         get() = symbolSets.toSymbolSets()
         set(value) {
             symbolSets = value.toMap()
+        }
+    /**
+     * A list view of the `SymbolSet` objects described by [activeSymbolSets].
+     */
+    var activeSymbolSetList: Collection<SymbolSet>
+        @Transient
+        get() = activeSymbolSets.toSymbolSets()
+        set(value) {
+            activeSymbolSets = value.toMap()
         }
 
 

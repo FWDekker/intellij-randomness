@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.ui
 
+import com.intellij.ui.table.JBTable
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.util.NoSuchElementException
-import javax.swing.JTable
 import javax.swing.ListSelectionModel
 import javax.swing.event.TableModelEvent
 import javax.swing.table.DefaultTableModel
@@ -18,7 +18,7 @@ private typealias EntryActivityChangeListener = (Int) -> Unit
  * @param <T> the entry type
  * @param name the name of this component
  */
-class JEditableList<T>(name: String? = null) : JTable() {
+class JEditableList<T>(name: String? = null) : JBTable() {
     companion object {
         /**
          * The relative width of the checkbox column.
