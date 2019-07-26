@@ -99,6 +99,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
             settings.getBundledDictionaries(), settings.getUserDictionaries()));
         dictionaries.setActiveEntries(WordSettingsComponentHelperKt.addSets(
             settings.getActiveBundledDictionaries(), settings.getActiveUserDictionaries()));
+        onDictionaryHighlightChange(null);
     }
 
     @Override
@@ -199,8 +200,8 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
      *
      * @param event the triggering event
      */
-    private void onDictionaryHighlightChange(final ListSelectionEvent event) {
-        if (!event.getValueIsAdjusting()) {
+    private void onDictionaryHighlightChange(final @Nullable ListSelectionEvent event) {
+        if (event == null || !event.getValueIsAdjusting()) {
             final Dictionary highlightedDictionary = dictionaries.getHighlightedEntry();
             final boolean enable = highlightedDictionary instanceof UserDictionary;
             dictionaryRemoveButton.setEnabled(enable);
