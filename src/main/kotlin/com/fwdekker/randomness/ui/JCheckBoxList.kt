@@ -247,18 +247,27 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
  * A decorated version of a [JCheckBoxList], including buttons for adding, editing, and removing entries as desired.
  *
  * @param <T> the entry type
- * @param name the name of the inner [JCheckBoxList]
+ * @param innerName the name of the inner [JCheckBoxList]
  * @param addAction the action to perform when the add button is clicked; `null` hides the button
  * @param editAction the action to perform on the currently-highlighted entry when the edit button is clicked; `null`
  * hides the button
  * @param removeAction the action to perform on the currently-highlighted entry when the remove button is clicked;
  * `null` hides the button
+ * @param addActionUpdater given the currently-highlighted entry, returns {@code true} iff the add button should be
+ * enabled
+ * @param editActionUpdater given the currently-highlighted entry, returns {@code true} iff the edit button should be
+ * enabled
+ * @param removeActionUpdater given the currently-highlighted entry, returns {@code true} iff the remove button should
+ * be enabled
  */
 class JEditableCheckBoxList<T>(
     innerName: String? = null,
     addAction: (() -> Unit)? = null,
     editAction: ((T) -> Unit)? = null,
-    removeAction: ((T) -> Unit)? = null
+    removeAction: ((T) -> Unit)? = null,
+    addActionUpdater: ((T?) -> Boolean) = { true },
+    editActionUpdater: ((T?) -> Boolean) = { it != null },
+    removeActionUpdater: ((T?) -> Boolean) = { it != null }
 ) : JPanel(BorderLayout()) {
     /**
      * The inner list of entries that is to be decorated.
@@ -271,17 +280,18 @@ class JEditableCheckBoxList<T>(
 
 
     init {
-        val decorator = ToolbarDecorator.createDecorator(list)
-        if (addAction != null)
-            decorator.setAddAction { addAction() }
-        if (editAction != null)
-            decorator.setEditAction { list.highlightedEntry?.let { editAction(it) } }
-        if (removeAction != null)
-            decorator.setRemoveAction { list.highlightedEntry?.let { removeAction(it) } }
-
-        val panel = decorator.createPanel()
-        add(panel)
-
-        actionsPanel = decorator.actionsPanel
+        ToolbarDecorator.createDecorator(list)
+            .apply {
+                if (addAction != null) setAddAction { addAction() }
+                setAddActionUpdater { addActionUpdater(list.highlightedEntry) }
+                if (editAction != null) setEditAction { list.highlightedEntry?.let { editAction(it) } }
+                setEditActionUpdater { editActionUpdater(list.highlightedEntry) }
+                if (removeAction != null) setRemoveAction { list.highlightedEntry?.let { removeAction(it) } }
+                setRemoveActionUpdater { removeActionUpdater(list.highlightedEntry) }
+            }
+            .also { decorator ->
+                add(decorator.createPanel())
+                actionsPanel = decorator.actionsPanel
+            }
     }
 }

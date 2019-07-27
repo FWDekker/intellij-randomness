@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -72,7 +73,10 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
         final JEditableCheckBoxList<SymbolSet> symbolSetsPanel =
-            new JEditableCheckBoxList<>("symbolSets", this::addSymbolSet, this::editSymbolSet, this::removeSymbolSet);
+            new JEditableCheckBoxList<>("symbolSets",
+                this::addSymbolSet, this::editSymbolSet, this::removeSymbolSet,
+                it -> true, Objects::nonNull, Objects::nonNull
+            );
         this.symbolSetPanel = symbolSetsPanel;
         symbolSets = symbolSetsPanel.getList();
     }
