@@ -190,9 +190,10 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     }
 
     /**
-     * Fires when the currently-highlighted {@code Dictionary} should be removed the list.
+     * Fires when the currently-highlighted {@code Dictionary} should be removed from the list.
      *
      * @param dictionary the dictionary to be removed
+     * @return {@link Unit}
      */
     private Unit removeDictionary(final Dictionary dictionary) {
         if (dictionary instanceof UserDictionary)
@@ -234,7 +235,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
 
 
     /**
-     * Filters
+     * Filters instances of {@code SUP} to only return instances of {@code SUB}.
      *
      * @param list  a list of {@code SUP} elements
      * @param cls   the class to filter by

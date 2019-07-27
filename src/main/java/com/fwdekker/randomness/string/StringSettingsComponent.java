@@ -167,7 +167,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     }
 
     /**
-     * Fires when the currently-highlighted {@code SymbolSet} should be removed the list.
+     * Fires when the currently-highlighted {@code SymbolSet} should be removed from the list.
      *
      * @param symbolSet the symbol set to be removed
      * @return {@link Unit}
