@@ -5,16 +5,16 @@ import com.fwdekker.randomness.JavaHelperKt;
 import com.fwdekker.randomness.SettingsComponent;
 import com.fwdekker.randomness.ui.ButtonGroupKt;
 import com.fwdekker.randomness.ui.JCheckBoxList;
+import com.fwdekker.randomness.ui.JEditableCheckBoxList;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.ui.ValidationInfo;
+import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.event.ListSelectionEvent;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,10 +32,9 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     private JIntSpinner maxLength;
     private ButtonGroup enclosureGroup;
     private ButtonGroup capitalizationGroup;
+    @SuppressWarnings("unused") // Used by scene builder
+    private JPanel symbolSetPanel;
     private JCheckBoxList<SymbolSet> symbolSets;
-    private JButton symbolSetAddButton;
-    private JButton symbolSetRemoveButton;
-    private JButton symbolSetEditButton;
 
 
     /**
@@ -72,15 +71,10 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
-        symbolSets = new JCheckBoxList<>("symbolSets");
-        symbolSets.getSelectionModel().addListSelectionListener(this::onSymbolSetHighlightChange);
-
-        symbolSetAddButton = new JButton();
-        symbolSetAddButton.addActionListener(event -> addSymbolSet());
-        symbolSetEditButton = new JButton();
-        symbolSetEditButton.addActionListener(event -> editSymbolSet());
-        symbolSetRemoveButton = new JButton();
-        symbolSetRemoveButton.addActionListener(event -> removeSymbolSet());
+        final JEditableCheckBoxList<SymbolSet> symbolSetsPanel =
+            new JEditableCheckBoxList<>("symbolSets", this::addSymbolSet, this::editSymbolSet, this::removeSymbolSet);
+        this.symbolSetPanel = symbolSetsPanel;
+        symbolSets = symbolSetsPanel.getList();
     }
 
 
@@ -93,7 +87,6 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
 
         symbolSets.setEntries(settings.getSymbolSetList());
         symbolSets.setActiveEntries(settings.getActiveSymbolSetList());
-        onSymbolSetHighlightChange(null);
     }
 
     @Override
@@ -129,8 +122,10 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
 
     /**
      * Fires when a new {@code Dictionary} should be added to the list.
+     *
+     * @return {@link Unit}
      */
-    private void addSymbolSet() {
+    private Unit addSymbolSet() {
         final List<String> reservedNames = symbolSets.getEntries().stream()
             .map(SymbolSet::getName)
             .collect(Collectors.toList());
@@ -139,54 +134,42 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         if (dialog.showAndGet()) {
             symbolSets.addEntry(new SymbolSet(dialog.getName(), dialog.getSymbols()));
         }
+
+        return Unit.INSTANCE;
     }
 
     /**
      * Fires when the currently-highlighted {@code Dictionary} should be edited.
+     *
+     * @param symbolSet the symbol set to be edited
+     * @return {@link Unit}
      */
-    private void editSymbolSet() {
-        final SymbolSet highlightedSymbolSet = symbolSets.getHighlightedEntry();
-        if (highlightedSymbolSet == null) {
-            return;
-        }
-
+    private Unit editSymbolSet(final SymbolSet symbolSet) {
         final List<String> reservedNames = symbolSets.getEntries().stream()
             .map(SymbolSet::getName)
-            .filter(it -> !it.equals(highlightedSymbolSet.getName()))
+            .filter(it -> !it.equals(symbolSet.getName()))
             .collect(Collectors.toList());
 
-        final SymbolSetDialog dialog = new SymbolSetDialog(reservedNames, highlightedSymbolSet);
+        final SymbolSetDialog dialog = new SymbolSetDialog(reservedNames, symbolSet);
         if (dialog.showAndGet()) {
-            highlightedSymbolSet.setName(dialog.getName());
-            highlightedSymbolSet.setSymbols(dialog.getSymbols());
+            symbolSet.setName(dialog.getName());
+            symbolSet.setSymbols(dialog.getSymbols());
 
             symbolSets.revalidate();
             symbolSets.repaint();
         }
+
+        return Unit.INSTANCE;
     }
 
     /**
      * Fires when the currently-highlighted {@code SymbolSet} should be removed the list.
-     */
-    private void removeSymbolSet() {
-        final SymbolSet highlightedSymbolSet = symbolSets.getHighlightedEntry();
-        if (highlightedSymbolSet == null) {
-            return;
-        }
-
-        symbolSets.removeEntry(highlightedSymbolSet);
-    }
-
-    /**
-     * Fires when the user (un)highlights a symbol set.
      *
-     * @param event the triggering event
+     * @param symbolSet the symbol set to be removed
+     * @return {@link Unit}
      */
-    private void onSymbolSetHighlightChange(final ListSelectionEvent event) {
-        if (event == null || !event.getValueIsAdjusting()) {
-            final boolean enabled = symbolSets.getHighlightedEntry() != null;
-            symbolSetEditButton.setEnabled(enabled);
-            symbolSetRemoveButton.setEnabled(enabled);
-        }
+    private Unit removeSymbolSet(final SymbolSet symbolSet) {
+        symbolSets.removeEntry(symbolSet);
+        return Unit.INSTANCE;
     }
 }
