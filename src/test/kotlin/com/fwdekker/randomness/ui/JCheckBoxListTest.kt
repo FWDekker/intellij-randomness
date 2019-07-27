@@ -1,5 +1,9 @@
 package com.fwdekker.randomness.ui
 
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import com.intellij.ui.CommonActionsPanel
+import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.GuiActionRunner
@@ -312,6 +316,109 @@ object JEditableListTest : Spek({
             assertThat(list.isCellEditable(10, 5)).isFalse()
             assertThat(list.isCellEditable(7, 10)).isFalse()
             assertThat(list.isCellEditable(8, 2)).isFalse()
+        }
+    }
+})
+
+
+/**
+ * Unit tests for [JEditableCheckBoxList].
+ */
+object JEditableCheckBoxListTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
+
+
+    beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+    }
+
+    afterEachTest {
+        ideaFixture.tearDown()
+    }
+
+
+    fun createList(query: () -> JEditableCheckBoxList<Any>) = GuiActionRunner.execute(query)
+
+
+    describe("appearance") {
+        it("assigns the given name to the inner list") {
+            val list = createList { JEditableCheckBoxList("thirst") }
+
+            assertThat(list.list.name).isEqualTo("thirst")
+        }
+
+        it("does not add any buttons by default") {
+            val list = createList { JEditableCheckBoxList() }
+
+            assertThat(list.actionsPanel.actionMap.size()).isZero()
+        }
+    }
+
+    describe("executes the desired actions") {
+        fun <T> JEditableCheckBoxList<T>.pressButton(button: CommonActionsPanel.Buttons) =
+            this.actionsPanel.getAnActionButton(button).actionPerformed(mock {})
+
+
+        it("executes the add function if the add button is clicked") {
+            var isCalled = false
+            val list = createList { JEditableCheckBoxList(addAction = { isCalled = true }) }
+
+            GuiActionRunner.execute { list.pressButton(CommonActionsPanel.Buttons.ADD) }
+
+            assertThat(isCalled).isTrue()
+        }
+
+        it("executes the edit function if the edit button is clicked") {
+            var editedEntry: Any? = null
+            val list = createList { JEditableCheckBoxList(editAction = { editedEntry = it }) }
+            GuiActionRunner.execute { list.list.addEntry("collar") }
+
+            GuiActionRunner.execute {
+                list.list.addRowSelectionInterval(0, 0)
+                list.pressButton(CommonActionsPanel.Buttons.EDIT)
+            }
+
+            assertThat(editedEntry).isEqualTo("collar")
+        }
+
+        it("does nothing if the edit button is clicked but no entry is highlighted") {
+            var editedEntry: Any? = null
+            val list = createList { JEditableCheckBoxList(editAction = { editedEntry = "arrive" }) }
+            GuiActionRunner.execute { list.list.addEntry("water") }
+
+            GuiActionRunner.execute {
+                list.list.clearSelection()
+                list.pressButton(CommonActionsPanel.Buttons.EDIT)
+            }
+
+            assertThat(editedEntry).isNull()
+        }
+
+        it("executes the remove function if the remove button is clicked") {
+            var removedEntry: Any? = null
+            val list = createList { JEditableCheckBoxList(removeAction = { removedEntry = it }) }
+            GuiActionRunner.execute { list.list.addEntry("dip") }
+
+            GuiActionRunner.execute {
+                list.list.addRowSelectionInterval(0, 0)
+                list.pressButton(CommonActionsPanel.Buttons.REMOVE)
+            }
+
+            assertThat(removedEntry).isEqualTo("dip")
+        }
+
+        it("does nothing if the remove button is clicked but no entry is highlighted") {
+            var removedEntry: Any? = null
+            val list = createList { JEditableCheckBoxList(removeAction = { removedEntry = it }) }
+            GuiActionRunner.execute { list.list.addEntry("tax") }
+
+            GuiActionRunner.execute {
+                list.list.clearSelection()
+                list.pressButton(CommonActionsPanel.Buttons.REMOVE)
+            }
+
+            assertThat(removedEntry).isNull()
         }
     }
 })
