@@ -3,6 +3,8 @@ package com.fwdekker.randomness.word
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.ui.JCheckBoxList
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -12,7 +14,7 @@ import org.assertj.swing.fixture.FrameFixture
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.xit
+import org.jetbrains.spek.api.dsl.xdescribe
 import org.junit.jupiter.api.fail
 
 
@@ -20,6 +22,7 @@ import org.junit.jupiter.api.fail
  * GUI tests for [WordSettingsComponent].
  */
 object WordSettingsComponentTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
     lateinit var wordSettings: WordSettings
     lateinit var wordSettingsComponent: WordSettingsComponent
     lateinit var wordSettingsComponentConfigurable: WordSettingsConfigurable
@@ -33,6 +36,9 @@ object WordSettingsComponentTest : Spek({
 
     @Suppress("UNCHECKED_CAST")
     beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         wordSettings = WordSettings()
         wordSettings.minLength = 4
         wordSettings.maxLength = 6
@@ -49,8 +55,8 @@ object WordSettingsComponentTest : Spek({
 
     afterEachTest {
         frame.cleanUp()
+        ideaFixture.tearDown()
     }
-
 
 
     describe("loading settings") {
@@ -98,9 +104,9 @@ object WordSettingsComponentTest : Spek({
             }
         }
 
-        describe("adding dictionaries") {
-            // Disabled because AssertJ Swing doesn't work with IntelliJ file chooser
-            xit("adds a given user dictionary") {
+        // Disabled because AssertJ Swing doesn't work with IntelliJ file chooser
+        xdescribe("adding dictionaries") {
+            it("adds a given user dictionary") {
                 frame.button("dictionaryAdd").click()
                 // TODO Find file chooser window and select a file
 
@@ -109,7 +115,7 @@ object WordSettingsComponentTest : Spek({
             }
 
             // Disabled because AssertJ Swing doesn't work with IntelliJ file chooser
-            xit("does not add a duplicate user dictionary") {
+            it("does not add a duplicate user dictionary") {
                 assertThat(componentDictionaries.entryCount).isEqualTo(1)
 
                 frame.button("dictionaryAdd").click()
@@ -124,7 +130,8 @@ object WordSettingsComponentTest : Spek({
             }
         }
 
-        describe("removing dictionaries") {
+        // Add/remove buttons not addressable from AssertJ Swing
+        xdescribe("removing dictionaries") {
             it("does not remove a bundled dictionary") {
                 GuiActionRunner.execute {
                     frame.table("dictionaries").target().clearSelection()
@@ -146,12 +153,6 @@ object WordSettingsComponentTest : Spek({
                 }
 
                 assertThat(frame.table("dictionaries").target().rowCount).isEqualTo(2)
-            }
-
-            it("disables the remove button when no dictionary is highlighted") {
-                GuiActionRunner.execute { frame.table("dictionaries").target().clearSelection() }
-
-                frame.button("dictionaryRemove").requireDisabled()
             }
 
             it("removes nothing when no dictionary is highlighted") {

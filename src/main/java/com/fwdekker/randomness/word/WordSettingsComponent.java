@@ -5,6 +5,7 @@ import com.fwdekker.randomness.JavaHelperKt;
 import com.fwdekker.randomness.SettingsComponent;
 import com.fwdekker.randomness.ui.ButtonGroupKt;
 import com.fwdekker.randomness.ui.JCheckBoxList;
+import com.fwdekker.randomness.ui.JEditableCheckBoxList;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -14,14 +15,14 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.awt.RelativePoint;
+import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.event.ListSelectionEvent;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,9 +40,8 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     private JIntSpinner maxLength;
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
+    private JPanel dictionaryPanel;
     private JCheckBoxList<Dictionary> dictionaries;
-    private JButton dictionaryAddButton;
-    private JButton dictionaryRemoveButton;
 
 
     /**
@@ -78,13 +78,13 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
-        dictionaries = new JCheckBoxList<>();
-        dictionaries.getSelectionModel().addListSelectionListener(this::onDictionaryHighlightChange);
-
-        dictionaryAddButton = new JButton();
-        dictionaryAddButton.addActionListener(event -> addDictionary());
-        dictionaryRemoveButton = new JButton();
-        dictionaryRemoveButton.addActionListener(event -> removeDictionary());
+        final JEditableCheckBoxList<Dictionary> dictionaryPanel =
+            new JEditableCheckBoxList<>("dictionaries",
+                this::addDictionary, null, this::removeDictionary,
+                it -> true, Objects::nonNull, UserDictionary.class::isInstance
+            );
+        this.dictionaryPanel = dictionaryPanel;
+        dictionaries = dictionaryPanel.getList();
     }
 
 
@@ -99,7 +99,6 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
             settings.getBundledDictionaries(), settings.getUserDictionaries()));
         dictionaries.setActiveEntries(WordSettingsComponentHelperKt.addSets(
             settings.getActiveBundledDictionaries(), settings.getActiveUserDictionaries()));
-        onDictionaryHighlightChange(null);
     }
 
     @Override
@@ -155,8 +154,10 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
 
     /**
      * Fires when a new {@code Dictionary} should be added to the list.
+     *
+     * @return {@link Unit}
      */
-    private void addDictionary() {
+    private Unit addDictionary() {
         FileChooser.chooseFiles(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null, files -> {
             if (files.isEmpty())
                 return;
@@ -171,41 +172,33 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
                     JBPopupFactory.getInstance()
                         .createHtmlTextBalloonBuilder("The dictionary file is empty.", MessageType.ERROR, null)
                         .createBalloon()
-                        .show(RelativePoint.getSouthOf(dictionaryAddButton), Balloon.Position.below);
+                        .show(RelativePoint.getSouthOf(dictionaryPanel), Balloon.Position.below);
                     return;
                 }
             } catch (final InvalidDictionaryException e) {
                 JBPopupFactory.getInstance()
                     .createHtmlTextBalloonBuilder(e.getMessage(), MessageType.ERROR, null)
                     .createBalloon()
-                    .show(RelativePoint.getSouthOf(dictionaryAddButton), Balloon.Position.below);
+                    .show(RelativePoint.getSouthOf(dictionaryPanel), Balloon.Position.below);
                 return;
             }
 
             dictionaries.addEntry(newDictionary);
         });
+
+        return Unit.INSTANCE;
     }
 
     /**
      * Fires when the currently-highlighted {@code Dictionary} should be removed the list.
-     */
-    private void removeDictionary() {
-        final Dictionary highlightedDictionary = dictionaries.getHighlightedEntry();
-        if (highlightedDictionary instanceof UserDictionary)
-            dictionaries.removeEntry(highlightedDictionary);
-    }
-
-    /**
-     * Fires when the user (un)highlights a dictionary.
      *
-     * @param event the triggering event
+     * @param dictionary the dictionary to be removed
      */
-    private void onDictionaryHighlightChange(final @Nullable ListSelectionEvent event) {
-        if (event == null || !event.getValueIsAdjusting()) {
-            final Dictionary highlightedDictionary = dictionaries.getHighlightedEntry();
-            final boolean enable = highlightedDictionary instanceof UserDictionary;
-            dictionaryRemoveButton.setEnabled(enable);
-        }
+    private Unit removeDictionary(final Dictionary dictionary) {
+        if (dictionary instanceof UserDictionary)
+            dictionaries.removeEntry(dictionary);
+
+        return Unit.INSTANCE;
     }
 
     /**
