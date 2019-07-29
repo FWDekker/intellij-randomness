@@ -54,8 +54,8 @@ object WordSettingsComponentTest : Spek({
     }
 
     afterEachTest {
-        frame.cleanUp()
         ideaFixture.tearDown()
+        frame.cleanUp()
     }
 
 
