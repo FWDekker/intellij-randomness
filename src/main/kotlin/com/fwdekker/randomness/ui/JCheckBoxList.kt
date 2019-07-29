@@ -67,8 +67,8 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
      *
      * @return the entry that is currently selected by the user, if there is one
      */
-    val highlightedEntry: T?
-        get() = selectedRows.toList().map { this.getEntry(it) }.firstOrNull()
+    val highlightedEntries: List<T>
+        get() = selectedRows.toList().map { this.getEntry(it) }
 
 
     init {
@@ -81,7 +81,7 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
             }
         }
 
-        setSelectionMode(ListSelectionModel.SINGLE_SELECTION)
+        setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION)
         setTableHeader(null)
 
         addComponentListener(object : ComponentAdapter() {
@@ -249,26 +249,27 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
  *
  * @param <T> the entry type
  * @param innerName the name of the inner [JCheckBoxList]
- * @param addAction the action to perform when the add button is clicked; `null` hides the button
- * @param editAction the action to perform on the currently-highlighted entry when the edit button is clicked; `null`
+ * @param addAction the action to perform on the currently-highlighted entries when the add button is clicked; `null`
  * hides the button
- * @param removeAction the action to perform on the currently-highlighted entry when the remove button is clicked;
+ * @param editAction the action to perform on the currently-highlighted entries when the edit button is clicked; `null`
+ * hides the button
+ * @param removeAction the action to perform on the currently-highlighted entries when the remove button is clicked;
  * `null` hides the button
- * @param addActionUpdater given the currently-highlighted entry, returns {@code true} iff the add button should be
+ * @param addActionUpdater given the currently-highlighted entries, returns {@code true} iff the add button should be
  * enabled
- * @param editActionUpdater given the currently-highlighted entry, returns {@code true} iff the edit button should be
+ * @param editActionUpdater given the currently-highlighted entries, returns {@code true} iff the edit button should be
  * enabled
- * @param removeActionUpdater given the currently-highlighted entry, returns {@code true} iff the remove button should
+ * @param removeActionUpdater given the currently-highlighted entries, returns {@code true} iff the remove button should
  * be enabled
  */
 class JEditableCheckBoxList<T>(
     innerName: String? = null,
-    addAction: (() -> Unit)? = null,
-    editAction: ((T) -> Unit)? = null,
-    removeAction: ((T) -> Unit)? = null,
-    addActionUpdater: ((T?) -> Boolean) = { true },
-    editActionUpdater: ((T?) -> Boolean) = { it != null },
-    removeActionUpdater: ((T?) -> Boolean) = { it != null }
+    addAction: ((List<T>) -> Unit)? = null,
+    editAction: ((List<T>) -> Unit)? = null,
+    removeAction: ((List<T>) -> Unit)? = null,
+    addActionUpdater: ((List<T>) -> Boolean) = { true },
+    editActionUpdater: ((List<T>) -> Boolean) = { it.size == 1 },
+    removeActionUpdater: ((List<T>) -> Boolean) = { it.isNotEmpty() }
 ) : JPanel(BorderLayout()) {
     /**
      * The inner list of entries that is to be decorated.
@@ -283,12 +284,12 @@ class JEditableCheckBoxList<T>(
     init {
         ToolbarDecorator.createDecorator(list)
             .apply {
-                if (addAction != null) setAddAction { addAction() }
-                setAddActionUpdater { addActionUpdater(list.highlightedEntry) }
-                if (editAction != null) setEditAction { list.highlightedEntry?.let { editAction(it) } }
-                setEditActionUpdater { editActionUpdater(list.highlightedEntry) }
-                if (removeAction != null) setRemoveAction { list.highlightedEntry?.let { removeAction(it) } }
-                setRemoveActionUpdater { removeActionUpdater(list.highlightedEntry) }
+                if (addAction != null) setAddAction { addAction(list.highlightedEntries) }
+                setAddActionUpdater { addActionUpdater(list.highlightedEntries) }
+                if (editAction != null) setEditAction { editAction(list.highlightedEntries) }
+                setEditActionUpdater { editActionUpdater(list.highlightedEntries) }
+                if (removeAction != null) setRemoveAction { removeAction(list.highlightedEntries) }
+                setRemoveActionUpdater { removeActionUpdater(list.highlightedEntries) }
             }
             .also { decorator ->
                 add(decorator.createPanel())
