@@ -14,7 +14,7 @@ import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.ui.awt.RelativePoint;
+import com.intellij.ui.CommonActionsPanel;
 import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +40,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     private JIntSpinner maxLength;
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
-    private JPanel dictionaryPanel;
+    private JEditableCheckBoxList<Dictionary> dictionaryPanel;
     private JCheckBoxList<Dictionary> dictionaries;
 
 
@@ -78,12 +78,11 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
-        final JEditableCheckBoxList<Dictionary> dictionaryPanel =
+        dictionaryPanel =
             new JEditableCheckBoxList<>("dictionaries",
                 this::addDictionary, null, this::removeDictionary,
                 it -> true, Objects::nonNull, UserDictionary.class::isInstance
             );
-        this.dictionaryPanel = dictionaryPanel;
         dictionaries = dictionaryPanel.getList();
     }
 

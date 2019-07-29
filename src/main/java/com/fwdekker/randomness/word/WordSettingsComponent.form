@@ -167,7 +167,12 @@
           <grid row="3" column="6" row-span="1" col-span="2" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
-      <grid id="be122" binding="dictionaryPanel" custom-create="true" layout-manager="BorderLayout" hgap="0" vgap="0">
+      <vspacer id="2126">
+        <constraints>
+          <grid row="6" column="0" row-span="1" col-span="8" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <grid id="ed62b" class="com.fwdekker.randomness.ui.JEditableCheckBoxList" binding="dictionaryPanel" custom-create="true" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints>
           <grid row="4" column="1" row-span="2" col-span="7" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -175,11 +180,6 @@
         <border type="none"/>
         <children/>
       </grid>
-      <vspacer id="2126">
-        <constraints>
-          <grid row="6" column="0" row-span="1" col-span="8" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </vspacer>
     </children>
   </grid>
   <buttonGroups>

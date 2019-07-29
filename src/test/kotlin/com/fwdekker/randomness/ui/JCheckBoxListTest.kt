@@ -357,7 +357,7 @@ object JEditableCheckBoxListTest : Spek({
 
     describe("executes the desired actions") {
         fun <T> JEditableCheckBoxList<T>.pressButton(button: CommonActionsPanel.Buttons) =
-            this.actionsPanel.getAnActionButton(button).actionPerformed(mock {})
+            this.getButton(button)!!.actionPerformed(mock {})
 
 
         it("executes the add function if the add button is clicked") {
@@ -419,6 +419,20 @@ object JEditableCheckBoxListTest : Spek({
             }
 
             assertThat(removedEntry).isNull()
+        }
+    }
+
+    describe("getting buttons") {
+        it("returns null if the button was not added") {
+            val list = createList { JEditableCheckBoxList(editAction = {}) }
+
+            assertThat(list.getButton(CommonActionsPanel.Buttons.ADD)).isNull()
+        }
+
+        it("returns the appropriate button") {
+            val list = createList { JEditableCheckBoxList(addAction = {}, removeAction = {}) }
+
+            assertThat(list.getButton(CommonActionsPanel.Buttons.ADD)).isNotNull()
         }
     }
 })

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.intellij.ui.AnActionButton
 import com.intellij.ui.CommonActionsPanel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
@@ -294,4 +295,13 @@ class JEditableCheckBoxList<T>(
                 actionsPanel = decorator.actionsPanel
             }
     }
+
+
+    /**
+     * Returns the specified button, or `null` if it is not present in this list.
+     *
+     * @param button the type of the button to return
+     * @return the specified button, or `null` if it is not present in this list
+     */
+    fun getButton(button: CommonActionsPanel.Buttons): AnActionButton? = actionsPanel.getAnActionButton(button)
 }

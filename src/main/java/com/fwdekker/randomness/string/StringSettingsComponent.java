@@ -33,8 +33,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     private JIntSpinner maxLength;
     private ButtonGroup enclosureGroup;
     private ButtonGroup capitalizationGroup;
-    @SuppressWarnings("unused") // Used by scene builder
-    private JPanel symbolSetPanel;
+    private JEditableCheckBoxList<SymbolSet> symbolSetPanel;
     private JCheckBoxList<SymbolSet> symbolSets;
 
 
@@ -72,13 +71,12 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
-        final JEditableCheckBoxList<SymbolSet> symbolSetsPanel =
+        symbolSetPanel =
             new JEditableCheckBoxList<>("symbolSets",
                 this::addSymbolSet, this::editSymbolSet, this::removeSymbolSet,
                 it -> true, Objects::nonNull, Objects::nonNull
             );
-        this.symbolSetPanel = symbolSetsPanel;
-        symbolSets = symbolSetsPanel.getList();
+        symbolSets = symbolSetPanel.getList();
     }
 
 
