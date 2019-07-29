@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,7 +40,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
     private JEditableCheckBoxList<Dictionary> dictionaryPanel;
-    private JCheckBoxList<Dictionary> dictionaries;
+    private JCheckBoxList<Dictionary> dictionaryJList;
 
 
     /**
@@ -79,11 +78,11 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
         dictionaryPanel =
-            new JEditableCheckBoxList<>("dictionaries",
-                this::addDictionary, null, this::removeDictionary,
-                it -> true, Objects::nonNull, UserDictionary.class::isInstance
+            new JEditableCheckBoxList<Dictionary>("dictionaries",
+                this::addDictionaries, null, this::removeDictionaries,
+                it -> true, it -> false, it -> it.stream().allMatch(UserDictionary.class::isInstance)
             );
-        dictionaries = dictionaryPanel.getList();
+        dictionaryJList = dictionaryPanel.getList();
     }
 
 
@@ -94,9 +93,9 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
-        dictionaries.setEntries(WordSettingsComponentHelperKt.addSets(
+        dictionaryJList.setEntries(WordSettingsComponentHelperKt.addSets(
             settings.getBundledDictionaries(), settings.getUserDictionaries()));
-        dictionaries.setActiveEntries(WordSettingsComponentHelperKt.addSets(
+        dictionaryJList.setActiveEntries(WordSettingsComponentHelperKt.addSets(
             settings.getActiveBundledDictionaries(), settings.getActiveUserDictionaries()));
     }
 
@@ -113,12 +112,12 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
             ? WordSettings.Companion.getDEFAULT_CAPITALIZATION()
             : CapitalizationMode.Companion.getMode(capitalization));
 
-        settings.setBundledDictionaries(filterIsInstance(dictionaries.getEntries(), BundledDictionary.class));
-        settings.setActiveBundledDictionaries(filterIsInstance(dictionaries.getActiveEntries(), BundledDictionary.class));
+        settings.setBundledDictionaries(filterIsInstance(dictionaryJList.getEntries(), BundledDictionary.class));
+        settings.setActiveBundledDictionaries(filterIsInstance(dictionaryJList.getActiveEntries(), BundledDictionary.class));
         BundledDictionary.Companion.getCache().clear();
 
-        settings.setUserDictionaries(filterIsInstance(dictionaries.getEntries(), UserDictionary.class));
-        settings.setActiveUserDictionaries(filterIsInstance(dictionaries.getActiveEntries(), UserDictionary.class));
+        settings.setUserDictionaries(filterIsInstance(dictionaryJList.getEntries(), UserDictionary.class));
+        settings.setActiveUserDictionaries(filterIsInstance(dictionaryJList.getActiveEntries(), UserDictionary.class));
         UserDictionary.Companion.getCache().clear();
     }
 
@@ -128,16 +127,16 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         BundledDictionary.Companion.getCache().clear();
         UserDictionary.Companion.getCache().clear();
 
-        if (dictionaries.getActiveEntries().isEmpty())
-            return new ValidationInfo("Select at least one dictionary.", dictionaries);
+        if (dictionaryJList.getActiveEntries().isEmpty())
+            return new ValidationInfo("Select at least one dictionary.", dictionaryJList);
 
-        for (final Dictionary dictionary : dictionaries.getActiveEntries()) {
+        for (final Dictionary dictionary : dictionaryJList.getActiveEntries()) {
             try {
                 dictionary.validate();
             } catch (final InvalidDictionaryException e) {
                 return new ValidationInfo(
                     "Dictionary " + dictionary.toString() + " is invalid: " + e.getMessage(),
-                    dictionaries
+                    dictionaryJList
                 );
             }
         }
@@ -154,9 +153,10 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     /**
      * Fires when a new {@code Dictionary} should be added to the list.
      *
+     * @param dictionaries the symbol sets that are highlighted when the add button is pressed; ignored
      * @return {@link Unit}
      */
-    private Unit addDictionary() {
+    private Unit addDictionaries(final List<? extends Dictionary> dictionaries) {
         FileChooser.chooseFiles(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null, files -> {
             if (files.isEmpty())
                 return;
@@ -188,7 +188,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
                 return;
             }
 
-            dictionaries.addEntry(newDictionary);
+            dictionaryJList.addEntry(newDictionary);
         });
 
         return Unit.INSTANCE;
@@ -197,13 +197,11 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     /**
      * Fires when the currently-highlighted {@code Dictionary} should be removed from the list.
      *
-     * @param dictionary the dictionary to be removed
+     * @param dictionaries the dictionaries to be removed; only {@code UserDictionary} instances are removed
      * @return {@link Unit}
      */
-    private Unit removeDictionary(final Dictionary dictionary) {
-        if (dictionary instanceof UserDictionary)
-            dictionaries.removeEntry(dictionary);
-
+    private Unit removeDictionaries(final List<? extends Dictionary> dictionaries) {
+        filterIsInstance(dictionaries, UserDictionary.class).forEach(dictionaryJList::removeEntry);
         return Unit.INSTANCE;
     }
 
@@ -215,7 +213,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
      * object explaining which input should be changed
      */
     private ValidationInfo validateWordRange() {
-        final Set<String> words = WordSettingsComponentHelperKt.combineDictionaries(dictionaries.getActiveEntries());
+        final Set<String> words = WordSettingsComponentHelperKt.combineDictionaries(dictionaryJList.getActiveEntries());
 
         final int maxWordLength = WordSettingsComponentHelperKt.maxLength(words);
         if (minLength.getValue() > maxWordLength) {
@@ -248,7 +246,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
      * @param <SUP> the super class
      * @return a list containing the values of {@code list} that are of class {@code cls}
      */
-    private static <SUB extends SUP, SUP> Set<SUB> filterIsInstance(final List<SUP> list, final Class<SUB> cls) {
+    private static <SUB, SUP> Set<SUB> filterIsInstance(final List<SUP> list, final Class<SUB> cls) {
         return list.stream().filter(cls::isInstance).map(cls::cast).collect(Collectors.toSet());
     }
 }

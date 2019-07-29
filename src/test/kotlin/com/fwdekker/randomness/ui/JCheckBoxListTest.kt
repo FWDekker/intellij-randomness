@@ -263,7 +263,7 @@ object JCheckBoxListTest : Spek({
 
     describe("getHighlightedEntry") {
         it("returns null when no entry is highlighted") {
-            assertThat(list.highlightedEntry).isNull()
+            assertThat(list.highlightedEntries).isEmpty()
         }
 
         it("returns the single highlighted entry") {
@@ -272,17 +272,17 @@ object JCheckBoxListTest : Spek({
                 list.addRowSelectionInterval(0, 0)
             }
 
-            assertThat(list.highlightedEntry).isEqualTo("bahay")
+            assertThat(list.highlightedEntries).containsExactly("bahay")
         }
 
-        it("returns the first highlighted entry") {
+        it("returns all highlighted entries") {
             GuiActionRunner.execute {
                 list.setEntries(listOf("shutoffs", "dentine", "scutel"))
                 list.addRowSelectionInterval(0, 0)
                 list.addRowSelectionInterval(2, 2)
             }
 
-            assertThat(list.highlightedEntry).isEqualTo("scutel")
+            assertThat(list.highlightedEntries).containsExactly("shutoffs", "scutel")
         }
     }
 
@@ -361,30 +361,40 @@ object JEditableCheckBoxListTest : Spek({
 
 
         it("executes the add function if the add button is clicked") {
-            var isCalled = false
-            val list = createList { JEditableCheckBoxList(addAction = { isCalled = true }) }
+            var addedEntries: List<Any> = emptyList()
+            val list = createList { JEditableCheckBoxList(addAction = { addedEntries = it }) }
+            GuiActionRunner.execute {
+                list.list.addEntry("debt")
+                list.list.addEntry("common")
+            }
 
-            GuiActionRunner.execute { list.pressButton(CommonActionsPanel.Buttons.ADD) }
+            GuiActionRunner.execute {
+                list.list.addRowSelectionInterval(0, 1)
+                list.pressButton(CommonActionsPanel.Buttons.ADD)
+            }
 
-            assertThat(isCalled).isTrue()
+            assertThat(addedEntries).containsExactly("debt", "common")
         }
 
         it("executes the edit function if the edit button is clicked") {
-            var editedEntry: Any? = null
-            val list = createList { JEditableCheckBoxList(editAction = { editedEntry = it }) }
-            GuiActionRunner.execute { list.list.addEntry("collar") }
+            var editedEntries: List<Any> = emptyList()
+            val list = createList { JEditableCheckBoxList(editAction = { editedEntries = it }) }
+            GuiActionRunner.execute {
+                list.list.addEntry("collar")
+                list.list.addEntry("neck")
+            }
 
             GuiActionRunner.execute {
-                list.list.addRowSelectionInterval(0, 0)
+                list.list.addRowSelectionInterval(0, 1)
                 list.pressButton(CommonActionsPanel.Buttons.EDIT)
             }
 
-            assertThat(editedEntry).isEqualTo("collar")
+            assertThat(editedEntries).containsExactly("collar", "neck")
         }
 
         it("does nothing if the edit button is clicked but no entry is highlighted") {
-            var editedEntry: Any? = null
-            val list = createList { JEditableCheckBoxList(editAction = { editedEntry = "arrive" }) }
+            var editedEntries: List<Any> = emptyList()
+            val list = createList { JEditableCheckBoxList(editAction = { editedEntries = it }) }
             GuiActionRunner.execute { list.list.addEntry("water") }
 
             GuiActionRunner.execute {
@@ -392,12 +402,12 @@ object JEditableCheckBoxListTest : Spek({
                 list.pressButton(CommonActionsPanel.Buttons.EDIT)
             }
 
-            assertThat(editedEntry).isNull()
+            assertThat(editedEntries).isEmpty()
         }
 
         it("executes the remove function if the remove button is clicked") {
-            var removedEntry: Any? = null
-            val list = createList { JEditableCheckBoxList(removeAction = { removedEntry = it }) }
+            var removedEntries: List<Any> = emptyList()
+            val list = createList { JEditableCheckBoxList(removeAction = { removedEntries = it }) }
             GuiActionRunner.execute { list.list.addEntry("dip") }
 
             GuiActionRunner.execute {
@@ -405,12 +415,12 @@ object JEditableCheckBoxListTest : Spek({
                 list.pressButton(CommonActionsPanel.Buttons.REMOVE)
             }
 
-            assertThat(removedEntry).isEqualTo("dip")
+            assertThat(removedEntries).containsExactly("dip")
         }
 
         it("does nothing if the remove button is clicked but no entry is highlighted") {
-            var removedEntry: Any? = null
-            val list = createList { JEditableCheckBoxList(removeAction = { removedEntry = it }) }
+            var removedEntries: List<Any> = emptyList()
+            val list = createList { JEditableCheckBoxList(removeAction = { removedEntries = it }) }
             GuiActionRunner.execute { list.list.addEntry("tax") }
 
             GuiActionRunner.execute {
@@ -418,7 +428,7 @@ object JEditableCheckBoxListTest : Spek({
                 list.pressButton(CommonActionsPanel.Buttons.REMOVE)
             }
 
-            assertThat(removedEntry).isNull()
+            assertThat(removedEntries).isEmpty()
         }
     }
 

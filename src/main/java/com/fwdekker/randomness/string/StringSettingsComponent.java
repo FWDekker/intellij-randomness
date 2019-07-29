@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -34,7 +33,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     private ButtonGroup enclosureGroup;
     private ButtonGroup capitalizationGroup;
     private JEditableCheckBoxList<SymbolSet> symbolSetPanel;
-    private JCheckBoxList<SymbolSet> symbolSets;
+    private JCheckBoxList<SymbolSet> symbolSetJList;
 
 
     /**
@@ -72,11 +71,11 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
         symbolSetPanel =
-            new JEditableCheckBoxList<>("symbolSets",
-                this::addSymbolSet, this::editSymbolSet, this::removeSymbolSet,
-                it -> true, Objects::nonNull, Objects::nonNull
+            new JEditableCheckBoxList<SymbolSet>("symbolSets",
+                this::addSymbolSets, this::editSymbolSets, this::removeSymbolSets,
+                it -> true, it -> it.size() == 1, it -> !it.isEmpty()
             );
-        symbolSets = symbolSetPanel.getList();
+        symbolSetJList = symbolSetPanel.getList();
     }
 
 
@@ -87,8 +86,8 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
-        symbolSets.setEntries(settings.getSymbolSetList());
-        symbolSets.setActiveEntries(settings.getActiveSymbolSetList());
+        symbolSetJList.setEntries(settings.getSymbolSetList());
+        symbolSetJList.setActiveEntries(settings.getActiveSymbolSetList());
     }
 
     @Override
@@ -104,15 +103,15 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
             ? StringSettings.Companion.getDEFAULT_CAPITALIZATION()
             : CapitalizationMode.Companion.getMode(capitalizationMode));
 
-        settings.setSymbolSetList(symbolSets.getEntries());
-        settings.setActiveSymbolSetList(symbolSets.getActiveEntries());
+        settings.setSymbolSetList(symbolSetJList.getEntries());
+        settings.setActiveSymbolSetList(symbolSetJList.getActiveEntries());
     }
 
     @Override
     @Nullable
     public ValidationInfo doValidate() {
-        if (symbolSets.getActiveEntries().isEmpty())
-            return new ValidationInfo("Select at least one symbol set.", symbolSets);
+        if (symbolSetJList.getActiveEntries().isEmpty())
+            return new ValidationInfo("Select at least one symbol set.", symbolSetJList);
 
         return JavaHelperKt.firstNonNull(
             minLength.validateValue(),
@@ -125,16 +124,17 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     /**
      * Fires when a new {@code Dictionary} should be added to the list.
      *
+     * @param symbolSets the symbol sets that are highlighted when the add button is pressed; ignored
      * @return {@link Unit}
      */
-    private Unit addSymbolSet() {
-        final List<String> reservedNames = symbolSets.getEntries().stream()
+    private Unit addSymbolSets(final List<? extends SymbolSet> symbolSets) {
+        final List<String> reservedNames = symbolSetJList.getEntries().stream()
             .map(SymbolSet::getName)
             .collect(Collectors.toList());
 
         final SymbolSetDialog dialog = new SymbolSetDialog(reservedNames);
         if (dialog.showAndGet()) {
-            symbolSets.addEntry(new SymbolSet(dialog.getName(), dialog.getSymbols()));
+            symbolSetJList.addEntry(new SymbolSet(dialog.getName(), dialog.getSymbols()));
         }
 
         return Unit.INSTANCE;
@@ -143,11 +143,14 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     /**
      * Fires when the currently-highlighted {@code Dictionary} should be edited.
      *
-     * @param symbolSet the symbol set to be edited
+     * @param symbolSets the symbol sets to be edited; only the first element is used; an exception is thrown if this
+     *                   list is empty
      * @return {@link Unit}
      */
-    private Unit editSymbolSet(final SymbolSet symbolSet) {
-        final List<String> reservedNames = symbolSets.getEntries().stream()
+    private Unit editSymbolSets(final List<? extends SymbolSet> symbolSets) {
+        final SymbolSet symbolSet = symbolSets.get(0);
+
+        final List<String> reservedNames = symbolSetJList.getEntries().stream()
             .map(SymbolSet::getName)
             .filter(it -> !it.equals(symbolSet.getName()))
             .collect(Collectors.toList());
@@ -157,21 +160,21 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
             symbolSet.setName(dialog.getName());
             symbolSet.setSymbols(dialog.getSymbols());
 
-            symbolSets.revalidate();
-            symbolSets.repaint();
+            symbolSetJList.revalidate();
+            symbolSetJList.repaint();
         }
 
         return Unit.INSTANCE;
     }
 
     /**
-     * Fires when the currently-highlighted {@code SymbolSet} should be removed from the list.
+     * Fires when the currently-highlighted {@code SymbolSet}s should be removed from the list.
      *
-     * @param symbolSet the symbol set to be removed
+     * @param symbolSets the symbol sets to be removed
      * @return {@link Unit}
      */
-    private Unit removeSymbolSet(final SymbolSet symbolSet) {
-        symbolSets.removeEntry(symbolSet);
+    private Unit removeSymbolSets(final List<? extends SymbolSet> symbolSets) {
+        symbolSets.forEach(symbolSetJList::removeEntry);
         return Unit.INSTANCE;
     }
 }
