@@ -171,14 +171,20 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
                     JBPopupFactory.getInstance()
                         .createHtmlTextBalloonBuilder("The dictionary file is empty.", MessageType.ERROR, null)
                         .createBalloon()
-                        .show(RelativePoint.getSouthOf(dictionaryPanel), Balloon.Position.below);
+                        .show(
+                            dictionaryPanel.getButton(CommonActionsPanel.Buttons.ADD).getPreferredPopupPoint(),
+                            Balloon.Position.atRight
+                        );
                     return;
                 }
             } catch (final InvalidDictionaryException e) {
                 JBPopupFactory.getInstance()
                     .createHtmlTextBalloonBuilder(e.getMessage(), MessageType.ERROR, null)
                     .createBalloon()
-                    .show(RelativePoint.getSouthOf(dictionaryPanel), Balloon.Position.below);
+                    .show(
+                        dictionaryPanel.getButton(CommonActionsPanel.Buttons.ADD).getPreferredPopupPoint(),
+                        Balloon.Position.atRight
+                    );
                 return;
             }
 
