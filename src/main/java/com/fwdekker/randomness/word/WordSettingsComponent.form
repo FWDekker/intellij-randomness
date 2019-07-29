@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.fwdekker.randomness.word.WordSettingsComponent">
-  <grid id="27dc6" binding="contentPane" layout-manager="GridLayoutManager" row-count="8" column-count="8" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="contentPane" layout-manager="GridLayoutManager" row-count="7" column-count="8" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
       <xy x="20" y="20" width="698" height="400"/>
@@ -77,22 +77,6 @@
           <text value="Capitalization"/>
         </properties>
       </component>
-      <scrollpane id="c5804">
-        <constraints>
-          <grid row="4" column="1" row-span="3" col-span="6" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <component id="2c67a" class="com.fwdekker.randomness.ui.JEditableList" binding="dictionaries" custom-create="true">
-            <constraints/>
-            <properties>
-              <name value="dictionaries"/>
-              <preferredScrollableViewportSize width="220" height="80"/>
-            </properties>
-          </component>
-        </children>
-      </scrollpane>
       <component id="fb562" class="javax.swing.JLabel">
         <constraints>
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -168,51 +152,34 @@
           <text value="`"/>
         </properties>
       </component>
-      <vspacer id="2126">
-        <constraints>
-          <grid row="7" column="0" row-span="1" col-span="8" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </vspacer>
       <vspacer id="d8e18">
         <constraints>
-          <grid row="5" column="0" row-span="2" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
       <hspacer id="7e6ae">
         <constraints>
-          <grid row="2" column="6" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="6" row-span="1" col-span="2" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
       <hspacer id="175d1">
         <constraints>
-          <grid row="3" column="6" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="6" row-span="1" col-span="2" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
-      <component id="6090f" class="javax.swing.JButton" binding="dictionaryAddButton" custom-create="true">
+      <vspacer id="2126">
         <constraints>
-          <grid row="4" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <actionCommand value="add"/>
-          <name value="dictionaryAdd"/>
-          <text value="Add"/>
-        </properties>
-      </component>
-      <component id="21b61" class="javax.swing.JButton" binding="dictionaryRemoveButton" custom-create="true">
-        <constraints>
-          <grid row="5" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <actionCommand value="remove"/>
-          <name value="dictionaryRemove"/>
-          <text value="Remove"/>
-        </properties>
-      </component>
-      <vspacer id="f49c8">
-        <constraints>
-          <grid row="6" column="7" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="6" column="0" row-span="1" col-span="8" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
+      <grid id="ed62b" class="com.fwdekker.randomness.ui.JEditableCheckBoxList" binding="dictionaryPanel" custom-create="true" layout-manager="BorderLayout" hgap="0" vgap="0">
+        <constraints>
+          <grid row="4" column="1" row-span="2" col-span="7" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children/>
+      </grid>
     </children>
   </grid>
   <buttonGroups>

@@ -1,9 +1,14 @@
 package com.fwdekker.randomness.ui
 
+import com.intellij.ui.AnActionButton
+import com.intellij.ui.CommonActionsPanel
+import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
+import java.awt.BorderLayout
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.util.NoSuchElementException
+import javax.swing.JPanel
 import javax.swing.ListSelectionModel
 import javax.swing.event.TableModelEvent
 import javax.swing.table.DefaultTableModel
@@ -18,7 +23,7 @@ private typealias EntryActivityChangeListener = (Int) -> Unit
  * @param <T> the entry type
  * @param name the name of this component
  */
-class JEditableList<T>(name: String? = null) : JBTable() {
+class JCheckBoxList<T>(name: String? = null) : JBTable() {
     companion object {
         /**
          * The relative width of the checkbox column.
@@ -236,4 +241,67 @@ class JEditableList<T>(name: String? = null) : JBTable() {
      * @return `true` iff `column` is 0
      */
     override fun isCellEditable(row: Int, column: Int) = column == 0
+}
+
+
+/**
+ * A decorated version of a [JCheckBoxList], including buttons for adding, editing, and removing entries as desired.
+ *
+ * @param <T> the entry type
+ * @param innerName the name of the inner [JCheckBoxList]
+ * @param addAction the action to perform when the add button is clicked; `null` hides the button
+ * @param editAction the action to perform on the currently-highlighted entry when the edit button is clicked; `null`
+ * hides the button
+ * @param removeAction the action to perform on the currently-highlighted entry when the remove button is clicked;
+ * `null` hides the button
+ * @param addActionUpdater given the currently-highlighted entry, returns {@code true} iff the add button should be
+ * enabled
+ * @param editActionUpdater given the currently-highlighted entry, returns {@code true} iff the edit button should be
+ * enabled
+ * @param removeActionUpdater given the currently-highlighted entry, returns {@code true} iff the remove button should
+ * be enabled
+ */
+class JEditableCheckBoxList<T>(
+    innerName: String? = null,
+    addAction: (() -> Unit)? = null,
+    editAction: ((T) -> Unit)? = null,
+    removeAction: ((T) -> Unit)? = null,
+    addActionUpdater: ((T?) -> Boolean) = { true },
+    editActionUpdater: ((T?) -> Boolean) = { it != null },
+    removeActionUpdater: ((T?) -> Boolean) = { it != null }
+) : JPanel(BorderLayout()) {
+    /**
+     * The inner list of entries that is to be decorated.
+     */
+    val list: JCheckBoxList<T> = JCheckBoxList(innerName)
+    /**
+     * The panel that contains the decorating buttons.
+     */
+    val actionsPanel: CommonActionsPanel
+
+
+    init {
+        ToolbarDecorator.createDecorator(list)
+            .apply {
+                if (addAction != null) setAddAction { addAction() }
+                setAddActionUpdater { addActionUpdater(list.highlightedEntry) }
+                if (editAction != null) setEditAction { list.highlightedEntry?.let { editAction(it) } }
+                setEditActionUpdater { editActionUpdater(list.highlightedEntry) }
+                if (removeAction != null) setRemoveAction { list.highlightedEntry?.let { removeAction(it) } }
+                setRemoveActionUpdater { removeActionUpdater(list.highlightedEntry) }
+            }
+            .also { decorator ->
+                add(decorator.createPanel())
+                actionsPanel = decorator.actionsPanel
+            }
+    }
+
+
+    /**
+     * Returns the specified button, or `null` if it is not present in this list.
+     *
+     * @param button the type of the button to return
+     * @return the specified button, or `null` if it is not present in this list
+     */
+    fun getButton(button: CommonActionsPanel.Buttons): AnActionButton? = actionsPanel.getAnActionButton(button)
 }

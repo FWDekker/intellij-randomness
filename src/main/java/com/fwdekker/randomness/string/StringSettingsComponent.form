@@ -92,25 +92,9 @@
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <labelFor value="9ade9"/>
           <text value="Symbol sets"/>
         </properties>
       </component>
-      <scrollpane id="9ade9">
-        <constraints>
-          <grid row="4" column="1" row-span="4" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <component id="b362d" class="com.fwdekker.randomness.ui.JEditableList" binding="symbolSets" custom-create="true">
-            <constraints/>
-            <properties>
-              <name value="symbolSets"/>
-            </properties>
-          </component>
-        </children>
-      </scrollpane>
       <vspacer id="935f7">
         <constraints>
           <grid row="5" column="0" row-span="3" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
@@ -158,41 +142,6 @@
           <grid row="8" column="0" row-span="1" col-span="6" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
-      <component id="e7417" class="javax.swing.JButton" binding="symbolSetAddButton" custom-create="true">
-        <constraints>
-          <grid row="4" column="4" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <actionCommand value="add"/>
-          <name value="symbolSetAdd"/>
-          <text value="Add"/>
-        </properties>
-      </component>
-      <component id="edb62" class="javax.swing.JButton" binding="symbolSetRemoveButton" custom-create="true">
-        <constraints>
-          <grid row="6" column="4" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <actionCommand value="remove"/>
-          <name value="symbolSetRemove"/>
-          <text value="Remove"/>
-        </properties>
-      </component>
-      <vspacer id="d27ec">
-        <constraints>
-          <grid row="7" column="4" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </vspacer>
-      <component id="c1e06" class="javax.swing.JButton" binding="symbolSetEditButton" custom-create="true">
-        <constraints>
-          <grid row="5" column="4" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <actionCommand value="edit"/>
-          <name value="symbolSetEdit"/>
-          <text value="Edit"/>
-        </properties>
-      </component>
       <hspacer id="378b5">
         <constraints>
           <grid row="2" column="5" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
@@ -203,6 +152,14 @@
           <grid row="3" column="5" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
+      <grid id="6235e" class="com.fwdekker.randomness.ui.JEditableCheckBoxList" binding="symbolSetPanel" custom-create="true" layout-manager="BorderLayout" hgap="0" vgap="0">
+        <constraints>
+          <grid row="4" column="1" row-span="4" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children/>
+      </grid>
     </children>
   </grid>
   <buttonGroups>
