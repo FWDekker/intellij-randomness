@@ -9,24 +9,12 @@
     <idea-version since-build="171.0" />
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService
-            serviceImplementation="com.fwdekker.randomness.integer.IntegerSettings"
-            serviceInterface="com.fwdekker.randomness.integer.IntegerSettings" />
-        <applicationService
-            serviceImplementation="com.fwdekker.randomness.decimal.DecimalSettings"
-            serviceInterface="com.fwdekker.randomness.decimal.DecimalSettings" />
-        <applicationService
-            serviceImplementation="com.fwdekker.randomness.string.StringSettings"
-            serviceInterface="com.fwdekker.randomness.string.StringSettings" />
-        <applicationService
-            serviceImplementation="com.fwdekker.randomness.word.WordSettings"
-            serviceInterface="com.fwdekker.randomness.word.WordSettings" />
-        <applicationService
-            serviceImplementation="com.fwdekker.randomness.uuid.UuidSettings"
-            serviceInterface="com.fwdekker.randomness.uuid.UuidSettings" />
-        <applicationService
-            serviceImplementation="com.fwdekker.randomness.array.ArraySettings"
-            serviceInterface="com.fwdekker.randomness.array.ArraySettings" />
+        <applicationService serviceImplementation="com.fwdekker.randomness.integer.IntegerSettings" />
+        <applicationService serviceImplementation="com.fwdekker.randomness.decimal.DecimalSettings" />
+        <applicationService serviceImplementation="com.fwdekker.randomness.string.StringSettings" />
+        <applicationService serviceImplementation="com.fwdekker.randomness.word.WordSettings" />
+        <applicationService serviceImplementation="com.fwdekker.randomness.uuid.UuidSettings" />
+        <applicationService serviceImplementation="com.fwdekker.randomness.array.ArraySettings" />
 
         <applicationConfigurable instance="com.fwdekker.randomness.RandomnessConfigurable"
                                  id="randomness.MainConfigurable"

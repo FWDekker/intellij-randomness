@@ -16,7 +16,7 @@ import java.util.NoSuchElementException
 /**
  * Unit tests for [JCheckBoxList].
  */
-object JEditableListTest : Spek({
+object JCheckBoxListTest : Spek({
     lateinit var list: JCheckBoxList<String>
 
 
