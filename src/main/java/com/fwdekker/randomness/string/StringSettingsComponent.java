@@ -164,8 +164,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
 
         final SymbolSetDialog dialog = new SymbolSetDialog(reservedNames, symbolSet);
         if (dialog.showAndGet()) {
-            symbolSet.setName(dialog.getName());
-            symbolSet.setSymbols(dialog.getSymbols());
+            symbolSetTable.setEntry(symbolSetTable.getEntryRow(symbolSet), dialog.getSymbolSet());
 
             symbolSetTable.revalidate();
             symbolSetTable.repaint();

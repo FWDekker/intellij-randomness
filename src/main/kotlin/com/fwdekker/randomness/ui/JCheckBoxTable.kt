@@ -124,6 +124,22 @@ class JCheckBoxTable<T>(
     }
 
     /**
+     * Replaces the entry in the given row with the given entry.
+     *
+     * @param row the row to replace the entry in
+     * @param entry the entry that should overwrite the current entry
+     */
+    fun setEntry(row: Int, entry: T) {
+        val list = entryToList(entry)
+        var listHead = 0
+
+        (0 until model.columnCount).minus(CHECKBOX_COL).forEach { col ->
+            setValueAt(list[listHead], row, col)
+            listHead++
+        }
+    }
+
+    /**
      * Removes all current entries, and adds the given entries.
      *
      * @param entries the entries to add
@@ -158,7 +174,7 @@ class JCheckBoxTable<T>(
      * @param entry the entry to return the row number of
      * @return the row number of the given entry
      */
-    private fun getEntryRow(entry: T) =
+    fun getEntryRow(entry: T) =
         (0 until entryCount)
             .firstOrNull { getEntry(it) == entry }
             ?: throw NoSuchElementException("No row with entry `$entry` found.")
