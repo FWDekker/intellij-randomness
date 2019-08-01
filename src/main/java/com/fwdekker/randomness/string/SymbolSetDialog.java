@@ -94,4 +94,14 @@ final class SymbolSetDialog extends DialogWrapper {
     String getSymbols() {
         return symbols.getText();
     }
+
+    /**
+     * Returns the symbol set described by the values currently in the text fields.
+     *
+     * @return the symbol set described by the values currently in the text fields
+     */
+    @NotNull
+    SymbolSet getSymbolSet() {
+        return new SymbolSet(getName(), getSymbols());
+    }
 }

@@ -4,8 +4,8 @@ import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.JavaHelperKt;
 import com.fwdekker.randomness.SettingsComponent;
 import com.fwdekker.randomness.ui.ButtonGroupKt;
-import com.fwdekker.randomness.ui.JCheckBoxList;
-import com.fwdekker.randomness.ui.JEditableCheckBoxList;
+import com.fwdekker.randomness.ui.JCheckBoxTable;
+import com.fwdekker.randomness.ui.JDecoratedCheckBoxTablePanel;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,8 +40,8 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     private JIntSpinner maxLength;
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
-    private JEditableCheckBoxList<Dictionary> dictionaryPanel;
-    private JCheckBoxList<Dictionary> dictionaryJList;
+    private JDecoratedCheckBoxTablePanel<Dictionary> dictionaryPanel;
+    private JCheckBoxTable<Dictionary> dictionaryTable;
 
 
     /**
@@ -78,11 +79,21 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
         dictionaryPanel =
-            new JEditableCheckBoxList<Dictionary>("dictionaries",
+            new JDecoratedCheckBoxTablePanel<Dictionary>(
+                new JCheckBoxTable<>(
+                    2,
+                    it -> it.get(0).equals("bundled")
+                        ? BundledDictionary.Companion.getCache().get(it.get(1), true)
+                        : UserDictionary.Companion.getCache().get(it.get(1), true),
+                    it -> it instanceof BundledDictionary
+                        ? Arrays.asList("bundled", ((BundledDictionary) it).getFilename())
+                        : Arrays.asList("user", ((UserDictionary) it).getFilename()),
+                    "dictionaries"
+                ),
                 this::addDictionaries, null, this::removeDictionaries,
                 it -> true, it -> false, it -> it.stream().allMatch(UserDictionary.class::isInstance)
             );
-        dictionaryJList = dictionaryPanel.getList();
+        dictionaryTable = dictionaryPanel.getTable();
     }
 
 
@@ -93,9 +104,9 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
-        dictionaryJList.setEntries(WordSettingsComponentHelperKt.addSets(
+        dictionaryTable.setEntries(WordSettingsComponentHelperKt.addSets(
             settings.getBundledDictionaries(), settings.getUserDictionaries()));
-        dictionaryJList.setActiveEntries(WordSettingsComponentHelperKt.addSets(
+        dictionaryTable.setActiveEntries(WordSettingsComponentHelperKt.addSets(
             settings.getActiveBundledDictionaries(), settings.getActiveUserDictionaries()));
     }
 
@@ -112,12 +123,12 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
             ? WordSettings.Companion.getDEFAULT_CAPITALIZATION()
             : CapitalizationMode.Companion.getMode(capitalization));
 
-        settings.setBundledDictionaries(filterIsInstance(dictionaryJList.getEntries(), BundledDictionary.class));
-        settings.setActiveBundledDictionaries(filterIsInstance(dictionaryJList.getActiveEntries(), BundledDictionary.class));
+        settings.setBundledDictionaries(filterIsInstance(dictionaryTable.getEntries(), BundledDictionary.class));
+        settings.setActiveBundledDictionaries(filterIsInstance(dictionaryTable.getActiveEntries(), BundledDictionary.class));
         BundledDictionary.Companion.getCache().clear();
 
-        settings.setUserDictionaries(filterIsInstance(dictionaryJList.getEntries(), UserDictionary.class));
-        settings.setActiveUserDictionaries(filterIsInstance(dictionaryJList.getActiveEntries(), UserDictionary.class));
+        settings.setUserDictionaries(filterIsInstance(dictionaryTable.getEntries(), UserDictionary.class));
+        settings.setActiveUserDictionaries(filterIsInstance(dictionaryTable.getActiveEntries(), UserDictionary.class));
         UserDictionary.Companion.getCache().clear();
     }
 
@@ -127,16 +138,16 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         BundledDictionary.Companion.getCache().clear();
         UserDictionary.Companion.getCache().clear();
 
-        if (dictionaryJList.getActiveEntries().isEmpty())
-            return new ValidationInfo("Select at least one dictionary.", dictionaryJList);
+        if (dictionaryTable.getActiveEntries().isEmpty())
+            return new ValidationInfo("Select at least one dictionary.", dictionaryTable);
 
-        for (final Dictionary dictionary : dictionaryJList.getActiveEntries()) {
+        for (final Dictionary dictionary : dictionaryTable.getActiveEntries()) {
             try {
                 dictionary.validate();
             } catch (final InvalidDictionaryException e) {
                 return new ValidationInfo(
                     "Dictionary " + dictionary.toString() + " is invalid: " + e.getMessage(),
-                    dictionaryJList
+                    dictionaryTable
                 );
             }
         }
@@ -188,7 +199,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
                 return;
             }
 
-            dictionaryJList.addEntry(newDictionary);
+            dictionaryTable.addEntry(newDictionary);
         });
 
         return Unit.INSTANCE;
@@ -201,7 +212,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
      * @return {@link Unit}
      */
     private Unit removeDictionaries(final List<? extends Dictionary> dictionaries) {
-        filterIsInstance(dictionaries, UserDictionary.class).forEach(dictionaryJList::removeEntry);
+        filterIsInstance(dictionaries, UserDictionary.class).forEach(dictionaryTable::removeEntry);
         return Unit.INSTANCE;
     }
 
@@ -213,7 +224,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
      * object explaining which input should be changed
      */
     private ValidationInfo validateWordRange() {
-        final Set<String> words = WordSettingsComponentHelperKt.combineDictionaries(dictionaryJList.getActiveEntries());
+        final Set<String> words = WordSettingsComponentHelperKt.combineDictionaries(dictionaryTable.getActiveEntries());
 
         final int maxWordLength = WordSettingsComponentHelperKt.maxLength(words);
         if (minLength.getValue() > maxWordLength) {

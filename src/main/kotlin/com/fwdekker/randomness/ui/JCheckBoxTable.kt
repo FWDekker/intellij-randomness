@@ -18,24 +18,33 @@ private typealias EntryActivityChangeListener = (Int) -> Unit
 
 
 /**
- * A [JList][javax.swing.JList] in which each entry has a [JCheckBox][javax.swing.JCheckBox] in front of it.
+ * A [JList][javax.swing.JTable] in which each row has a [JCheckBox][javax.swing.JCheckBox] in front of it.
  *
  * @param <T> the entry type
+ * @param columnCount the number of columns in the table, excluding the checkbox column
+ * @param listToEntry a function to convert a list of strings to the object to be stored in the table
+ * @param entryToList a function to convert an object to be stored in the table to a list of strings
  * @param name the name of this component
  */
-class JCheckBoxList<T>(name: String? = null) : JBTable() {
+class JCheckBoxTable<T>(
+    columnCount: Int,
+    val listToEntry: ((List<String>) -> T),
+    val entryToList: ((T) -> List<String>),
+    name: String? = null
+) : JBTable() {
     companion object {
         /**
-         * The relative width of the checkbox column.
+         * The column index of the checkbox column.
          */
-        private const val CHECKBOX_WIDTH = 20.0f
+        private const val CHECKBOX_COL = 0
+
         /**
-         * The relative width of the text column.
+         * The width of the table that should be taken up by the checkbox column, expressed as a percentage.
          */
-        private const val TEXT_WIDTH = 80.0f
+        private const val CHECKBOX_WIDTH_PERCENTAGE = 0.1
     }
 
-    private val model = DefaultTableModel(0, 2)
+    private val model = DefaultTableModel(0, columnCount + 1)
     private val entryActivityChangeListeners = mutableListOf<EntryActivityChangeListener>()
 
     /**
@@ -72,13 +81,14 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
 
 
     init {
+        require(columnCount >= 1) { "`columnCount` must be at least 1." }
+
         setName(name)
         setModel(model)
 
         model.addTableModelListener { event ->
-            if (event.type == TableModelEvent.UPDATE && event.column == 0) {
+            if (event.type == TableModelEvent.UPDATE && event.column == CHECKBOX_COL)
                 entryActivityChangeListeners.forEach { listener -> listener(event.firstRow) }
-            }
         }
 
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION)
@@ -103,8 +113,30 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
      * @param entry the entry to add
      */
     fun addEntry(entry: T) {
-        if (!hasEntry(entry))
-            model.addRow(arrayOf(false, entry))
+        if (!hasEntry(entry)) {
+            model.addRow(
+                mutableListOf<Any>().also { list ->
+                    list.addAll(entryToList(entry))
+                    list.add(CHECKBOX_COL, false)
+                }.toTypedArray()
+            )
+        }
+    }
+
+    /**
+     * Replaces the entry in the given row with the given entry.
+     *
+     * @param row the row to replace the entry in
+     * @param entry the entry that should overwrite the current entry
+     */
+    fun setEntry(row: Int, entry: T) {
+        val list = entryToList(entry)
+        var listHead = 0
+
+        (0 until model.columnCount).minus(CHECKBOX_COL).forEach { col ->
+            setValueAt(list[listHead], row, col)
+            listHead++
+        }
     }
 
     /**
@@ -123,7 +155,7 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
      * @param entry the entry to check for presence
      * @return `true` iff the given entry exists in the list
      */
-    private fun hasEntry(entry: T) = entries.any { row -> row == entry }
+    private fun hasEntry(entry: T) = entries.any { it == entry }
 
     /**
      * Returns the entry in the given row.
@@ -131,8 +163,10 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
      * @param row the row to return the entry of
      * @return the entry in the given row
      */
-    @Suppress("UNCHECKED_CAST") // Type guaranteed by design
-    fun getEntry(row: Int): T = model.getValueAt(row, 1) as T
+    fun getEntry(row: Int): T =
+        listToEntry((0 until model.columnCount)
+            .minus(CHECKBOX_COL)
+            .map { getValueAt(row, it) as String })
 
     /**
      * Returns the row number of the given entry.
@@ -140,9 +174,9 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
      * @param entry the entry to return the row number of
      * @return the row number of the given entry
      */
-    private fun getEntryRow(entry: T) =
+    fun getEntryRow(entry: T) =
         (0 until entryCount)
-            .firstOrNull { row -> getEntry(row) == entry }
+            .firstOrNull { getEntry(it) == entry }
             ?: throw NoSuchElementException("No row with entry `$entry` found.")
 
     /**
@@ -155,7 +189,7 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
     /**
      * Removes all entries.
      */
-    fun clear() = repeat(entryCount) { model.removeRow(0) }
+    fun clear() = repeat(model.rowCount) { model.removeRow(0) }
 
     /**
      * Sets whether the given entry has its checkbox checked.
@@ -163,7 +197,7 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
      * @param entry the entry to (un)check the checkbox of
      * @param selected `true` iff the entry's checkbox should be checked
      */
-    private fun setActive(entry: T, selected: Boolean) = setValueAt(selected, getEntryRow(entry), 0)
+    private fun setActive(entry: T, selected: Boolean) = setValueAt(selected, getEntryRow(entry), CHECKBOX_COL)
 
     /**
      * Returns `true` iff the given entry's checkbox is checked.
@@ -171,7 +205,7 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
      * @param entry the entry of which to return the checkbox's status
      * @return `true` iff the given entry's checkbox is checked
      */
-    fun isActive(entry: T): Boolean = getValueAt(getEntryRow(entry), 0) as Boolean
+    fun isActive(entry: T): Boolean = getValueAt(getEntryRow(entry), CHECKBOX_COL) as Boolean
 
     /**
      * Sets the activity of the given entry.
@@ -179,7 +213,7 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
      * @param entry the entry to set the activity of
      * @param activity `true` iff the entry's checkbox should be checked
      */
-    fun setEntryActivity(entry: T, activity: Boolean) = setValueAt(activity, getEntryRow(entry), 0)
+    fun setEntryActivity(entry: T, activity: Boolean) = setValueAt(activity, getEntryRow(entry), CHECKBOX_COL)
 
     /**
      * Checks the checkboxes of all given entries, and unchecks all other checkboxes.
@@ -211,12 +245,7 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
      * Recalculates column widths.
      */
     private fun resizeColumns() {
-        val columnWidthPercentages = floatArrayOf(CHECKBOX_WIDTH, TEXT_WIDTH)
-
-        val columnModel = getColumnModel()
-        (0 until model.columnCount).forEach { i ->
-            columnModel.getColumn(i).preferredWidth = (columnWidthPercentages[i] * width).toInt()
-        }
+        columnModel.getColumn(CHECKBOX_COL).maxWidth = (CHECKBOX_WIDTH_PERCENTAGE * width).toInt()
     }
 
     /**
@@ -229,26 +258,26 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
         when (column) {
             // Java classes MUST be used
             0 -> java.lang.Boolean::class.java
-            1 -> java.lang.String::class.java
+            in 1 until model.columnCount -> java.lang.String::class.java
             else -> throw IllegalArgumentException("JEditableList has only two columns.")
         }
 
     /**
-     * Returns `true` iff `column` is 0.
+     * Returns `true` iff `column` is CHECKBOX_COL.
      *
      * @param row the row whose value is to be queried
      * @param column the columns whose value is to be queried
-     * @return `true` iff `column` is 0
+     * @return `true` iff `column` is CHECKBOX_COL
      */
-    override fun isCellEditable(row: Int, column: Int) = column == 0
+    override fun isCellEditable(row: Int, column: Int) = column == CHECKBOX_COL
 }
 
 
 /**
- * A decorated version of a [JCheckBoxList], including buttons for adding, editing, and removing entries as desired.
+ * A decorated version of a [JCheckBoxTable], including buttons for adding, editing, and removing entries as desired.
  *
  * @param <T> the entry type
- * @param innerName the name of the inner [JCheckBoxList]
+ * @param table the table to be decorated
  * @param addAction the action to perform on the currently-highlighted entries when the add button is clicked; `null`
  * hides the button
  * @param editAction the action to perform on the currently-highlighted entries when the edit button is clicked; `null`
@@ -262,8 +291,8 @@ class JCheckBoxList<T>(name: String? = null) : JBTable() {
  * @param removeActionUpdater given the currently-highlighted entries, returns {@code true} iff the remove button should
  * be enabled
  */
-class JEditableCheckBoxList<T>(
-    innerName: String? = null,
+class JDecoratedCheckBoxTablePanel<T>(
+    val table: JCheckBoxTable<T>,
     addAction: ((List<T>) -> Unit)? = null,
     editAction: ((List<T>) -> Unit)? = null,
     removeAction: ((List<T>) -> Unit)? = null,
@@ -272,24 +301,20 @@ class JEditableCheckBoxList<T>(
     removeActionUpdater: ((List<T>) -> Boolean) = { it.isNotEmpty() }
 ) : JPanel(BorderLayout()) {
     /**
-     * The inner list of entries that is to be decorated.
-     */
-    val list: JCheckBoxList<T> = JCheckBoxList(innerName)
-    /**
      * The panel that contains the decorating buttons.
      */
     val actionsPanel: CommonActionsPanel
 
 
     init {
-        ToolbarDecorator.createDecorator(list)
+        ToolbarDecorator.createDecorator(table)
             .apply {
-                if (addAction != null) setAddAction { addAction(list.highlightedEntries) }
-                setAddActionUpdater { addActionUpdater(list.highlightedEntries) }
-                if (editAction != null) setEditAction { editAction(list.highlightedEntries) }
-                setEditActionUpdater { editActionUpdater(list.highlightedEntries) }
-                if (removeAction != null) setRemoveAction { removeAction(list.highlightedEntries) }
-                setRemoveActionUpdater { removeActionUpdater(list.highlightedEntries) }
+                if (addAction != null) setAddAction { addAction(table.highlightedEntries) }
+                setAddActionUpdater { addActionUpdater(table.highlightedEntries) }
+                if (editAction != null) setEditAction { editAction(table.highlightedEntries) }
+                setEditActionUpdater { editActionUpdater(table.highlightedEntries) }
+                if (removeAction != null) setRemoveAction { removeAction(table.highlightedEntries) }
+                setRemoveActionUpdater { removeActionUpdater(table.highlightedEntries) }
             }
             .also { decorator ->
                 add(decorator.createPanel())
