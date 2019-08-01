@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.ui.JCheckBoxList
+import com.fwdekker.randomness.ui.JCheckBoxTable
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -29,7 +29,7 @@ object StringSettingsComponentTest : Spek({
     lateinit var stringSettings: StringSettings
     lateinit var stringSettingsComponent: StringSettingsComponent
     lateinit var stringSettingsComponentConfigurable: StringSettingsConfigurable
-    lateinit var componentSymbolSets: JCheckBoxList<SymbolSet>
+    lateinit var componentSymbolSets: JCheckBoxTable<SymbolSet>
     lateinit var frame: FrameFixture
 
 
@@ -55,7 +55,7 @@ object StringSettingsComponentTest : Spek({
         stringSettingsComponentConfigurable = StringSettingsConfigurable(stringSettingsComponent)
         frame = showInFrame(stringSettingsComponent.getRootPane())
 
-        componentSymbolSets = frame.table("symbolSets").target() as JCheckBoxList<SymbolSet>
+        componentSymbolSets = frame.table("symbolSets").target() as JCheckBoxTable<SymbolSet>
     }
 
     afterEachTest {

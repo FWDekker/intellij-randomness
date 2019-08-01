@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.ui.JCheckBoxList
+import com.fwdekker.randomness.ui.JCheckBoxTable
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -26,7 +26,7 @@ object WordSettingsComponentTest : Spek({
     lateinit var wordSettings: WordSettings
     lateinit var wordSettingsComponent: WordSettingsComponent
     lateinit var wordSettingsComponentConfigurable: WordSettingsConfigurable
-    lateinit var componentDictionaries: JCheckBoxList<Dictionary>
+    lateinit var componentDictionaries: JCheckBoxTable<Dictionary>
     lateinit var frame: FrameFixture
 
 
@@ -50,7 +50,7 @@ object WordSettingsComponentTest : Spek({
         wordSettingsComponentConfigurable = WordSettingsConfigurable(wordSettingsComponent)
         frame = showInFrame(wordSettingsComponent.getRootPane())
 
-        componentDictionaries = frame.table("dictionaries").target() as JCheckBoxList<Dictionary>
+        componentDictionaries = frame.table("dictionaries").target() as JCheckBoxTable<Dictionary>
     }
 
     afterEachTest {
@@ -231,7 +231,7 @@ object WordSettingsComponentTest : Spek({
         describe("dictionaries") {
             @Suppress("UNCHECKED_CAST")
             it("fails if a dictionary of a now-deleted file is given") {
-                val dictionaries = frame.table("dictionaries").target() as JCheckBoxList<Dictionary>
+                val dictionaries = frame.table("dictionaries").target() as JCheckBoxTable<Dictionary>
 
                 val dictionaryFile = createTempFile("test", "dic")
                 dictionaryFile.writeText("Limbas\nOstiary\nHackee")
