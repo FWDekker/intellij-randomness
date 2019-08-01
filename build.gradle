@@ -31,6 +31,7 @@ dependencies {
     testCompile group: "org.assertj", name: "assertj-swing-junit", version: assertjSwingVersion
     testCompile group: "org.jetbrains.spek", name: "spek-api", version: spekVersion
     testCompile group: "org.jetbrains.spek", name: "spek-junit-platform-engine", version: spekVersion
+    testCompile group: "org.junit.platform", name: "junit-platform-runner", version: junitRunnerVersion
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-api", version: junitVersion
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-params", version: junitVersion
