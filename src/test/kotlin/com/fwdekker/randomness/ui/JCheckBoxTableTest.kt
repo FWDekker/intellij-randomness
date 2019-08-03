@@ -23,9 +23,10 @@ object JCheckBoxTableTest : Spek({
     beforeEachTest {
         table = GuiActionRunner.execute<JCheckBoxTable<String>> {
             JCheckBoxTable(
-                2,
-                { it.joinToString(",") },
-                { it.split(",") }
+                columnCount = 2,
+                listToEntry = { it.joinToString(",") },
+                entryToList = { it.split(",") },
+                isEntryEditable = { true }
             )
         }
     }
@@ -316,12 +317,19 @@ object JCheckBoxTableTest : Spek({
 
     describe("isCellEditable") {
         it("returns true iff the column is 0") {
-            assertThat(table.isCellEditable(13, 0)).isTrue()
-            assertThat(table.isCellEditable(67, 0)).isTrue()
+            GuiActionRunner.execute {
+                table.addEntry("threaten,future")
+                table.addEntry("pleasure,frequent")
+                table.addEntry("gate,name")
+            }
 
-            assertThat(table.isCellEditable(10, 5)).isFalse()
-            assertThat(table.isCellEditable(7, 10)).isFalse()
-            assertThat(table.isCellEditable(8, 2)).isFalse()
+            assertThat(table.isCellEditable(0, 0)).isTrue()
+            assertThat(table.isCellEditable(1, 0)).isTrue()
+            assertThat(table.isCellEditable(2, 0)).isTrue()
+
+            assertThat(table.isCellEditable(0, 5)).isFalse()
+            assertThat(table.isCellEditable(1, 10)).isFalse()
+            assertThat(table.isCellEditable(2, 2)).isFalse()
         }
     }
 })
@@ -350,11 +358,12 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
     describe("appearance") {
         it("assigns the given name to the inner list") {
             val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(JCheckBoxTable(2,
-                    { it.joinToString(",") },
-                    { it.split(",") },
-                    "thirst")
-                )
+                JDecoratedCheckBoxTablePanel(JCheckBoxTable(
+                    columnCount = 2,
+                    listToEntry = { it.joinToString(",") },
+                    entryToList = { it.split(",") },
+                    name = "thirst"
+                ))
             }
 
             assertThat(table.table.name).isEqualTo("thirst")
@@ -362,9 +371,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
 
         it("does not add any buttons by default") {
             val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(JCheckBoxTable(2,
-                    { it.joinToString(",") },
-                    { it.split(",") }))
+                JDecoratedCheckBoxTablePanel(JCheckBoxTable(
+                    columnCount = 2,
+                    listToEntry = { it.joinToString(",") },
+                    entryToList = { it.split(",") }
+                ))
             }
 
             assertThat(table.actionsPanel.actionMap.size()).isZero()
@@ -380,7 +391,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
             var addedEntries: List<String> = emptyList()
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     addAction = { addedEntries = it }
                 )
             }
@@ -401,7 +416,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
             var editedEntries: List<String> = emptyList()
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     editAction = { editedEntries = it }
                 )
             }
@@ -422,7 +441,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
             var editedEntries: List<String> = emptyList()
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     editAction = { editedEntries = it }
                 )
             }
@@ -440,7 +463,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
             var removedEntries: List<String> = emptyList()
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     removeAction = { removedEntries = it }
                 )
             }
@@ -458,7 +485,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
             var removedEntries: List<String> = emptyList()
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     removeAction = { removedEntries = it }
                 )
             }
@@ -477,7 +508,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
         it("returns null if the button was not added") {
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     editAction = {}
                 )
             }
@@ -488,7 +523,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
         it("returns the appropriate button") {
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     addAction = {},
                     removeAction = {}
                 )

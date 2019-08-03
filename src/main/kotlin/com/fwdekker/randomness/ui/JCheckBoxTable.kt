@@ -22,12 +22,17 @@ private typealias EntryActivityChangeListener = (Int) -> Unit
  *
  * @param <T> the entry type
  * @param columnCount the number of columns in the table, excluding the checkbox column
+ * @param editableColumns the indices of the columns that can be edited, ignoring the checkbox column
+ * @param columnNames the names of the columns, excluding the checkbox column
  * @param listToEntry a function to convert a list of strings to the object to be stored in the table
  * @param entryToList a function to convert an object to be stored in the table to a list of strings
  * @param name the name of this component
  */
 class JCheckBoxTable<T>(
     columnCount: Int,
+    editableColumns: Collection<Int> = emptyList(),
+    columnNames: Collection<String> = emptyList(),
+    val isEntryEditable: ((T) -> Boolean) = { false },
     val listToEntry: ((List<String>) -> T),
     val entryToList: ((T) -> List<String>),
     name: String? = null
@@ -37,15 +42,12 @@ class JCheckBoxTable<T>(
          * The column index of the checkbox column.
          */
         private const val CHECKBOX_COL = 0
-
-        /**
-         * The width of the table that should be taken up by the checkbox column, expressed as a percentage.
-         */
-        private const val CHECKBOX_WIDTH_PERCENTAGE = 0.1
     }
 
     private val model = DefaultTableModel(0, columnCount + 1)
     private val entryActivityChangeListeners = mutableListOf<EntryActivityChangeListener>()
+    private val editableColumns = editableColumns.map { if (it < CHECKBOX_COL) it else it + 1 }.plus(CHECKBOX_COL)
+    private val columnNames = columnNames.toMutableList().also { if (it.isNotEmpty()) it.add(CHECKBOX_COL, "") }
 
     /**
      * Returns a list of all entries.
@@ -92,14 +94,13 @@ class JCheckBoxTable<T>(
         }
 
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION)
-        setTableHeader(null)
+        if (columnNames.isEmpty())
+            setTableHeader(null)
+        else
+            model.setColumnIdentifiers(this.columnNames.toTypedArray())
 
         addComponentListener(object : ComponentAdapter() {
-            override fun componentResized(event: ComponentEvent?) {
-                super.componentResized(event)
-
-                resizeColumns()
-            }
+            override fun componentResized(event: ComponentEvent?) = resizeColumns()
         })
     }
 
@@ -120,22 +121,6 @@ class JCheckBoxTable<T>(
                     list.add(CHECKBOX_COL, false)
                 }.toTypedArray()
             )
-        }
-    }
-
-    /**
-     * Replaces the entry in the given row with the given entry.
-     *
-     * @param row the row to replace the entry in
-     * @param entry the entry that should overwrite the current entry
-     */
-    fun setEntry(row: Int, entry: T) {
-        val list = entryToList(entry)
-        var listHead = 0
-
-        (0 until model.columnCount).minus(CHECKBOX_COL).forEach { col ->
-            setValueAt(list[listHead], row, col)
-            listHead++
         }
     }
 
@@ -174,7 +159,7 @@ class JCheckBoxTable<T>(
      * @param entry the entry to return the row number of
      * @return the row number of the given entry
      */
-    fun getEntryRow(entry: T) =
+    private fun getEntryRow(entry: T) =
         (0 until entryCount)
             .firstOrNull { getEntry(it) == entry }
             ?: throw NoSuchElementException("No row with entry `$entry` found.")
@@ -245,8 +230,15 @@ class JCheckBoxTable<T>(
      * Recalculates column widths.
      */
     private fun resizeColumns() {
-        columnModel.getColumn(CHECKBOX_COL).maxWidth = (CHECKBOX_WIDTH_PERCENTAGE * width).toInt()
+        columnModel.getColumn(CHECKBOX_COL).apply { maxWidth = minWidth }
     }
+
+    /**
+     * Returns the name of the [column]th column.
+     *
+     * @param column the index of the column to return the name of
+     */
+    override fun getColumnName(column: Int) = columnNames[column]
 
     /**
      * Returns the class of the data in the column with index `column`.
@@ -265,11 +257,13 @@ class JCheckBoxTable<T>(
     /**
      * Returns `true` iff `column` is CHECKBOX_COL.
      *
+     * Behavior is undefined if the row or column does not exist.
+     *
      * @param row the row whose value is to be queried
      * @param column the columns whose value is to be queried
      * @return `true` iff `column` is CHECKBOX_COL
      */
-    override fun isCellEditable(row: Int, column: Int) = column == CHECKBOX_COL
+    override fun isCellEditable(row: Int, column: Int) = column in editableColumns && isEntryEditable(getEntry(row))
 }
 
 

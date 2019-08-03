@@ -268,7 +268,7 @@ object StringSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.table("symbolSets").target())
-                assertThat(validationInfo?.message).isEqualTo("Select at least one symbol set.")
+                assertThat(validationInfo?.message).isEqualTo("Activate at least one symbol set.")
             }
         }
     }
