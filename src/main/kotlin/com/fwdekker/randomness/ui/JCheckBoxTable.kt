@@ -10,11 +10,7 @@ import java.awt.event.ComponentEvent
 import java.util.NoSuchElementException
 import javax.swing.JPanel
 import javax.swing.ListSelectionModel
-import javax.swing.event.TableModelEvent
 import javax.swing.table.DefaultTableModel
-
-
-private typealias EntryActivityChangeListener = (Int) -> Unit
 
 
 /**
@@ -45,7 +41,6 @@ class JCheckBoxTable<T>(
     }
 
     private val model = DefaultTableModel(0, columnCount + 1)
-    private val entryActivityChangeListeners = mutableListOf<EntryActivityChangeListener>()
     private val editableColumns = editableColumns.map { if (it < CHECKBOX_COL) it else it + 1 }.plus(CHECKBOX_COL)
     private val columnNames = columnNames.toMutableList().also { if (it.isNotEmpty()) it.add(CHECKBOX_COL, "") }
 
@@ -87,11 +82,6 @@ class JCheckBoxTable<T>(
 
         setName(name)
         setModel(model)
-
-        model.addTableModelListener { event ->
-            if (event.type == TableModelEvent.UPDATE && event.column == CHECKBOX_COL)
-                entryActivityChangeListeners.forEach { listener -> listener(event.firstRow) }
-        }
 
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION)
         if (columnNames.isEmpty())
@@ -207,24 +197,6 @@ class JCheckBoxTable<T>(
      */
     fun setActiveEntries(entries: Collection<T>) = this.entries.forEach { setActive(it, entries.contains(it)) }
 
-    /**
-     * Adds a listener that is called when a row's activity is changed by the user.
-     *
-     * @param listener the listener to be added
-     */
-    fun addEntryActivityChangeListener(listener: EntryActivityChangeListener) {
-        entryActivityChangeListeners.add(listener)
-    }
-
-    /**
-     * Removes a listener that was called when a row's activity was changed by the user.
-     *
-     * @param listener the listener to be removed
-     */
-    fun removeEntryActivityChangeListener(listener: EntryActivityChangeListener) {
-        entryActivityChangeListeners.remove(listener)
-    }
-
 
     /**
      * Recalculates column widths.
@@ -263,7 +235,9 @@ class JCheckBoxTable<T>(
      * @param column the columns whose value is to be queried
      * @return `true` iff `column` is CHECKBOX_COL
      */
-    override fun isCellEditable(row: Int, column: Int) = column in editableColumns && isEntryEditable(getEntry(row))
+    @Suppress("UnnecessaryParentheses") // Helpful around boolean conditions. See arturbosch/detekt#1592
+    override fun isCellEditable(row: Int, column: Int) =
+        column == CHECKBOX_COL || (column in editableColumns && isEntryEditable(getEntry(row)))
 }
 
 

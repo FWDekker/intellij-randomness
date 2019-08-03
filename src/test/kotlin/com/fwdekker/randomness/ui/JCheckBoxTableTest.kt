@@ -235,39 +235,6 @@ object JCheckBoxTableTest : Spek({
         }
     }
 
-    describe("activityListener") {
-        it("fires when an entry's activity is changed") {
-            var fired = false
-            GuiActionRunner.execute { table.addEntry("scarpa,nothing") }
-            table.addEntryActivityChangeListener { fired = true }
-
-            GuiActionRunner.execute { table.setEntryActivity("scarpa,nothing", true) }
-
-            assertThat(fired).isTrue()
-        }
-
-        it("does not fire when an entry is inserted") {
-            var fired = false
-            table.addEntryActivityChangeListener { fired = true }
-
-            GuiActionRunner.execute { table.addEntry("techiest,harbor") }
-
-            assertThat(fired).isFalse()
-        }
-
-        it("stops firing after a listener is removed") {
-            var fired = false
-            val listener = { _: Int -> fired = true }
-            GuiActionRunner.execute { table.addEntry("optimum,middle") }
-            table.addEntryActivityChangeListener(listener)
-
-            table.removeEntryActivityChangeListener(listener)
-            GuiActionRunner.execute { table.setEntryActivity("optimum,middle", true) }
-
-            assertThat(fired).isFalse()
-        }
-    }
-
     describe("getHighlightedEntry") {
         it("returns null when no entry is highlighted") {
             assertThat(table.highlightedEntries).isEmpty()
