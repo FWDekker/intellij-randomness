@@ -30,8 +30,7 @@ class JCheckBoxTable<T>(
     columnNames: Collection<String> = emptyList(),
     val isEntryEditable: ((T) -> Boolean) = { false },
     val listToEntry: ((List<String>) -> T),
-    val entryToList: ((T) -> List<String>),
-    name: String? = null
+    val entryToList: ((T) -> List<String>)
 ) : JBTable() {
     companion object {
         /**
@@ -80,7 +79,6 @@ class JCheckBoxTable<T>(
     init {
         require(columnCount >= 1) { "`columnCount` must be at least 1." }
 
-        setName(name)
         setModel(model)
 
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION)
@@ -260,7 +258,7 @@ class JCheckBoxTable<T>(
  * be enabled
  */
 class JDecoratedCheckBoxTablePanel<T>(
-    val table: JCheckBoxTable<T>,
+    table: JCheckBoxTable<T>,
     addAction: ((List<T>) -> Unit)? = null,
     editAction: ((List<T>) -> Unit)? = null,
     removeAction: ((List<T>) -> Unit)? = null,

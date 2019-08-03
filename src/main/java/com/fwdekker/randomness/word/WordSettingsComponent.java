@@ -79,25 +79,25 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
-        dictionaryPanel =
-            new JDecoratedCheckBoxTablePanel<Dictionary>(
-                new JCheckBoxTable<>(
-                    2,
-                    Collections.emptyList(),
-                    Arrays.asList("Type", "Location"),
-                    UserDictionary.class::isInstance,
-                    it -> it.get(0).equals("bundled")
-                        ? BundledDictionary.Companion.getCache().get(it.get(1), true)
-                        : UserDictionary.Companion.getCache().get(it.get(1), true),
-                    it -> it instanceof BundledDictionary
-                        ? Arrays.asList("bundled", ((BundledDictionary) it).getFilename())
-                        : Arrays.asList("user", ((UserDictionary) it).getFilename()),
-                    "dictionaries"
-                ),
-                this::addDictionaries, null, this::removeDictionaries,
-                it -> true, it -> false, it -> it.stream().allMatch(UserDictionary.class::isInstance)
-            );
-        dictionaryTable = dictionaryPanel.getTable();
+        dictionaryTable = new JCheckBoxTable<>(
+            2,
+            Collections.emptyList(),
+            Arrays.asList("Type", "Location"),
+            UserDictionary.class::isInstance,
+            it -> it.get(0).equals("bundled")
+                ? BundledDictionary.Companion.getCache().get(it.get(1), true)
+                : UserDictionary.Companion.getCache().get(it.get(1), true),
+            it -> it instanceof BundledDictionary
+                ? Arrays.asList("bundled", ((BundledDictionary) it).getFilename())
+                : Arrays.asList("user", ((UserDictionary) it).getFilename())
+        );
+        dictionaryTable.setName("dictionaries");
+
+        dictionaryPanel = new JDecoratedCheckBoxTablePanel<Dictionary>(
+            dictionaryTable,
+            this::addDictionaries, null, this::removeDictionaries,
+            it -> true, it -> false, it -> it.stream().allMatch(UserDictionary.class::isInstance)
+        );
     }
 
 

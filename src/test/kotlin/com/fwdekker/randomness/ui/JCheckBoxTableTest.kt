@@ -318,33 +318,23 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
     }
 
 
-    fun createTablePanel(query: () -> JDecoratedCheckBoxTablePanel<String>) = GuiActionRunner.execute(query)
+    fun createTable(query: () -> JCheckBoxTable<String>) = GuiActionRunner.execute(query)
+
+    fun createPanel(query: () -> JDecoratedCheckBoxTablePanel<String>) = GuiActionRunner.execute(query)
 
 
     describe("appearance") {
-        it("assigns the given name to the inner list") {
-            val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(JCheckBoxTable(
-                    columnCount = 2,
-                    listToEntry = { it.joinToString(",") },
-                    entryToList = { it.split(",") },
-                    name = "thirst"
-                ))
-            }
-
-            assertThat(table.table.name).isEqualTo("thirst")
-        }
-
         it("does not add any buttons by default") {
-            val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(JCheckBoxTable(
+            val table = createTable {
+                JCheckBoxTable(
                     columnCount = 2,
                     listToEntry = { it.joinToString(",") },
                     entryToList = { it.split(",") }
-                ))
+                )
             }
+            val panel = createPanel { JDecoratedCheckBoxTablePanel(table) }
 
-            assertThat(table.actionsPanel.actionMap.size()).isZero()
+            assertThat(panel.actionsPanel.actionMap.size()).isZero()
         }
     }
 
@@ -355,24 +345,22 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
 
         it("executes the add function if the add button is clicked") {
             var addedEntries: List<String> = emptyList()
-            val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(
-                        columnCount = 2,
-                        listToEntry = { it.joinToString(",") },
-                        entryToList = { it.split(",") }
-                    ),
-                    addAction = { addedEntries = it }
+            val table = createTable {
+                JCheckBoxTable(
+                    columnCount = 2,
+                    listToEntry = { it.joinToString(",") },
+                    entryToList = { it.split(",") }
                 )
             }
+            val panel = createPanel { JDecoratedCheckBoxTablePanel(table, addAction = { addedEntries = it }) }
             GuiActionRunner.execute {
-                table.table.addEntry("debt,promise")
-                table.table.addEntry("common,gallon")
+                table.addEntry("debt,promise")
+                table.addEntry("common,gallon")
             }
 
             GuiActionRunner.execute {
-                table.table.addRowSelectionInterval(0, 1)
-                table.pressButton(CommonActionsPanel.Buttons.ADD)
+                table.addRowSelectionInterval(0, 1)
+                panel.pressButton(CommonActionsPanel.Buttons.ADD)
             }
 
             assertThat(addedEntries).containsExactly("debt,promise", "common,gallon")
@@ -380,24 +368,22 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
 
         it("executes the edit function if the edit button is clicked") {
             var editedEntries: List<String> = emptyList()
-            val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(
-                        columnCount = 2,
-                        listToEntry = { it.joinToString(",") },
-                        entryToList = { it.split(",") }
-                    ),
-                    editAction = { editedEntries = it }
+            val table = createTable {
+                JCheckBoxTable(
+                    columnCount = 2,
+                    listToEntry = { it.joinToString(",") },
+                    entryToList = { it.split(",") }
                 )
             }
+            val panel = createPanel { JDecoratedCheckBoxTablePanel(table, editAction = { editedEntries = it }) }
             GuiActionRunner.execute {
-                table.table.addEntry("collar,lend")
-                table.table.addEntry("neck,language")
+                table.addEntry("collar,lend")
+                table.addEntry("neck,language")
             }
 
             GuiActionRunner.execute {
-                table.table.addRowSelectionInterval(0, 1)
-                table.pressButton(CommonActionsPanel.Buttons.EDIT)
+                table.addRowSelectionInterval(0, 1)
+                panel.pressButton(CommonActionsPanel.Buttons.EDIT)
             }
 
             assertThat(editedEntries).containsExactly("collar,lend", "neck,language")
@@ -405,21 +391,19 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
 
         it("does nothing if the edit button is clicked but no entry is highlighted") {
             var editedEntries: List<String> = emptyList()
-            val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(
-                        columnCount = 2,
-                        listToEntry = { it.joinToString(",") },
-                        entryToList = { it.split(",") }
-                    ),
-                    editAction = { editedEntries = it }
+            val table = createTable {
+                JCheckBoxTable(
+                    columnCount = 2,
+                    listToEntry = { it.joinToString(",") },
+                    entryToList = { it.split(",") }
                 )
             }
-            GuiActionRunner.execute { table.table.addEntry("water,least") }
+            val panel = createPanel { JDecoratedCheckBoxTablePanel(table, editAction = { editedEntries = it }) }
+            GuiActionRunner.execute { table.addEntry("water,least") }
 
             GuiActionRunner.execute {
-                table.table.clearSelection()
-                table.pressButton(CommonActionsPanel.Buttons.EDIT)
+                table.clearSelection()
+                panel.pressButton(CommonActionsPanel.Buttons.EDIT)
             }
 
             assertThat(editedEntries).isEmpty()
@@ -427,21 +411,19 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
 
         it("executes the remove function if the remove button is clicked") {
             var removedEntries: List<String> = emptyList()
-            val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(
-                        columnCount = 2,
-                        listToEntry = { it.joinToString(",") },
-                        entryToList = { it.split(",") }
-                    ),
-                    removeAction = { removedEntries = it }
+            val table = createTable {
+                JCheckBoxTable(
+                    columnCount = 2,
+                    listToEntry = { it.joinToString(",") },
+                    entryToList = { it.split(",") }
                 )
             }
-            GuiActionRunner.execute { table.table.addEntry("dip,duck") }
+            val panel = createPanel { JDecoratedCheckBoxTablePanel(table, removeAction = { removedEntries = it }) }
+            GuiActionRunner.execute { table.addEntry("dip,duck") }
 
             GuiActionRunner.execute {
-                table.table.addRowSelectionInterval(0, 0)
-                table.pressButton(CommonActionsPanel.Buttons.REMOVE)
+                table.addRowSelectionInterval(0, 0)
+                panel.pressButton(CommonActionsPanel.Buttons.REMOVE)
             }
 
             assertThat(removedEntries).containsExactly("dip,duck")
@@ -449,21 +431,19 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
 
         it("does nothing if the remove button is clicked but no entry is highlighted") {
             var removedEntries: List<String> = emptyList()
-            val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(
-                        columnCount = 2,
-                        listToEntry = { it.joinToString(",") },
-                        entryToList = { it.split(",") }
-                    ),
-                    removeAction = { removedEntries = it }
+            val table = createTable {
+                JCheckBoxTable(
+                    columnCount = 2,
+                    listToEntry = { it.joinToString(",") },
+                    entryToList = { it.split(",") }
                 )
             }
-            GuiActionRunner.execute { table.table.addEntry("tax,applause") }
+            val panel = createPanel { JDecoratedCheckBoxTablePanel(table, removeAction = { removedEntries = it }) }
+            GuiActionRunner.execute { table.addEntry("tax,applause") }
 
             GuiActionRunner.execute {
-                table.table.clearSelection()
-                table.pressButton(CommonActionsPanel.Buttons.REMOVE)
+                table.clearSelection()
+                panel.pressButton(CommonActionsPanel.Buttons.REMOVE)
             }
 
             assertThat(removedEntries).isEmpty()
@@ -472,34 +452,29 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
 
     describe("getting buttons") {
         it("returns null if the button was not added") {
-            val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(
-                        columnCount = 2,
-                        listToEntry = { it.joinToString(",") },
-                        entryToList = { it.split(",") }
-                    ),
-                    editAction = {}
+            val table = createTable {
+                JCheckBoxTable(
+                    columnCount = 2,
+                    listToEntry = { it.joinToString(",") },
+                    entryToList = { it.split(",") }
                 )
             }
+            val panel = createPanel { JDecoratedCheckBoxTablePanel(table, editAction = {}) }
 
-            assertThat(table.getButton(CommonActionsPanel.Buttons.ADD)).isNull()
+            assertThat(panel.getButton(CommonActionsPanel.Buttons.ADD)).isNull()
         }
 
         it("returns the appropriate button") {
-            val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(
-                        columnCount = 2,
-                        listToEntry = { it.joinToString(",") },
-                        entryToList = { it.split(",") }
-                    ),
-                    addAction = {},
-                    removeAction = {}
+            val table = createTable {
+                JCheckBoxTable(
+                    columnCount = 2,
+                    listToEntry = { it.joinToString(",") },
+                    entryToList = { it.split(",") }
                 )
             }
+            val panel = createPanel { JDecoratedCheckBoxTablePanel(table, addAction = {}, removeAction = {}) }
 
-            assertThat(table.getButton(CommonActionsPanel.Buttons.ADD)).isNotNull()
+            assertThat(panel.getButton(CommonActionsPanel.Buttons.ADD)).isNotNull()
         }
     }
 })
