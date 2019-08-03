@@ -20,7 +20,7 @@ object CacheTest : Spek({
     describe("get") {
         it("returns the same value if requested twice") {
             val a1 = cache.get("a")
-            val a2 = cache.get("a")
+            val a2 = cache.get("b")
 
             assertThat(a2).isSameAs(a1)
         }
