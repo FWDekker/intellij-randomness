@@ -29,8 +29,8 @@ dependencies {
     testCompile group: "com.nhaarman.mockitokotlin2", name: "mockito-kotlin", version: mockitoKotlinVersion
     testCompile group: "org.assertj", name: "assertj-core", version: assertjVersion
     testCompile group: "org.assertj", name: "assertj-swing-junit", version: assertjSwingVersion
-    testCompile group: "org.jetbrains.spek", name: "spek-api", version: spekVersion
-    testCompile group: "org.jetbrains.spek", name: "spek-junit-platform-engine", version: spekVersion
+    testCompile group: "org.spekframework.spek2", name: "spek-dsl-jvm", version: spekVersion
+    testCompile group: "org.spekframework.spek2", name: "spek-runner-junit5", version: spekVersion
     testCompile group: "org.junit.platform", name: "junit-platform-runner", version: junitRunnerVersion
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-api", version: junitVersion
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
@@ -56,8 +56,10 @@ patchPluginXml {
 // Tests/coverage
 test {
     useJUnitPlatform {
-        includeEngines "junit-vintage", "junit-jupiter", "spek"
+        includeEngines "junit-vintage", "junit-jupiter", "spek2"
     }
+
+    failFast = false
 }
 
 task codeCoverageReport(type: JacocoReport) {
