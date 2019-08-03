@@ -23,9 +23,9 @@ object JCheckBoxTableTest : Spek({
     beforeEachTest {
         table = GuiActionRunner.execute<JCheckBoxTable<String>> {
             JCheckBoxTable(
-                2,
-                { it.joinToString(",") },
-                { it.split(",") }
+                columnCount = 2,
+                listToEntry = { it.joinToString(",") },
+                entryToList = { it.split(",") }
             )
         }
     }
@@ -350,11 +350,12 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
     describe("appearance") {
         it("assigns the given name to the inner list") {
             val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(JCheckBoxTable(2,
-                    { it.joinToString(",") },
-                    { it.split(",") },
-                    "thirst")
-                )
+                JDecoratedCheckBoxTablePanel(JCheckBoxTable(
+                    columnCount = 2,
+                    listToEntry = { it.joinToString(",") },
+                    entryToList = { it.split(",") },
+                    name = "thirst"
+                ))
             }
 
             assertThat(table.table.name).isEqualTo("thirst")
@@ -362,9 +363,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
 
         it("does not add any buttons by default") {
             val table = createTablePanel {
-                JDecoratedCheckBoxTablePanel(JCheckBoxTable(2,
-                    { it.joinToString(",") },
-                    { it.split(",") }))
+                JDecoratedCheckBoxTablePanel(JCheckBoxTable(
+                    columnCount = 2,
+                    listToEntry = { it.joinToString(",") },
+                    entryToList = { it.split(",") }
+                ))
             }
 
             assertThat(table.actionsPanel.actionMap.size()).isZero()
@@ -380,7 +383,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
             var addedEntries: List<String> = emptyList()
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     addAction = { addedEntries = it }
                 )
             }
@@ -401,7 +408,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
             var editedEntries: List<String> = emptyList()
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     editAction = { editedEntries = it }
                 )
             }
@@ -422,7 +433,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
             var editedEntries: List<String> = emptyList()
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     editAction = { editedEntries = it }
                 )
             }
@@ -440,7 +455,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
             var removedEntries: List<String> = emptyList()
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     removeAction = { removedEntries = it }
                 )
             }
@@ -458,7 +477,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
             var removedEntries: List<String> = emptyList()
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     removeAction = { removedEntries = it }
                 )
             }
@@ -477,7 +500,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
         it("returns null if the button was not added") {
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     editAction = {}
                 )
             }
@@ -488,7 +515,11 @@ object JDecoratedCheckBoxTablePanelTest : Spek({
         it("returns the appropriate button") {
             val table = createTablePanel {
                 JDecoratedCheckBoxTablePanel(
-                    JCheckBoxTable(2, { it.joinToString(",") }, { it.split(",") }),
+                    JCheckBoxTable(
+                        columnCount = 2,
+                        listToEntry = { it.joinToString(",") },
+                        entryToList = { it.split(",") }
+                    ),
                     addAction = {},
                     removeAction = {}
                 )
