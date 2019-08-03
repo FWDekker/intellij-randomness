@@ -71,12 +71,13 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
         symbolSetTable = new JCheckBoxTable<>(
-            2,
-            Arrays.asList(0, 1),
-            Arrays.asList("Name", "Symbols"),
-            it -> true,
+            Arrays.asList(
+                new JCheckBoxTable.Column("Name", true),
+                new JCheckBoxTable.Column("Symbols", true)
+            ),
             it -> new SymbolSet(it.get(0), it.get(1)),
-            it -> Arrays.asList(it.getName(), it.getSymbols())
+            it -> Arrays.asList(it.getName(), it.getSymbols()),
+            it -> true
         );
         symbolSetTable.setName("symbolSets");
 

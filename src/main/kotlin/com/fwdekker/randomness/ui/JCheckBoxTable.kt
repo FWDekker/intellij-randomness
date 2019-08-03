@@ -25,23 +25,12 @@ import javax.swing.table.DefaultTableModel
  * @param name the name of this component
  */
 class JCheckBoxTable<T>(
-    columnCount: Int,
-    editableColumns: Collection<Int> = emptyList(),
-    columnNames: Collection<String> = emptyList(),
-    val isEntryEditable: ((T) -> Boolean) = { false },
+    val columns: List<Column>,
     val listToEntry: ((List<String>) -> T),
-    val entryToList: ((T) -> List<String>)
+    val entryToList: ((T) -> List<String>),
+    val isEntryEditable: ((T) -> Boolean) = { false }
 ) : JBTable() {
-    companion object {
-        /**
-         * The column index of the checkbox column.
-         */
-        private const val CHECKBOX_COL = 0
-    }
-
-    private val model = DefaultTableModel(0, columnCount + 1)
-    private val editableColumns = editableColumns.map { if (it < CHECKBOX_COL) it else it + 1 }.plus(CHECKBOX_COL)
-    private val columnNames = columnNames.toMutableList().also { if (it.isNotEmpty()) it.add(CHECKBOX_COL, "") }
+    private val model = DefaultTableModel(0, columns.size + 1)
 
     /**
      * Returns a list of all entries.
@@ -77,15 +66,15 @@ class JCheckBoxTable<T>(
 
 
     init {
-        require(columnCount >= 1) { "`columnCount` must be at least 1." }
+        require(columns.isNotEmpty()) { "`JCheckBoxTable` must contain at least one column." }
 
         setModel(model)
-
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION)
-        if (columnNames.isEmpty())
+
+        if (columns.all { it.name == null })
             setTableHeader(null)
         else
-            model.setColumnIdentifiers(this.columnNames.toTypedArray())
+            model.setColumnIdentifiers(listOf("").plus(columns.map { it.name }).toTypedArray())
 
         addComponentListener(object : ComponentAdapter() {
             override fun componentResized(event: ComponentEvent?) = resizeColumns()
@@ -102,14 +91,8 @@ class JCheckBoxTable<T>(
      * @param entry the entry to add
      */
     fun addEntry(entry: T) {
-        if (!hasEntry(entry)) {
-            model.addRow(
-                mutableListOf<Any>().also { list ->
-                    list.addAll(entryToList(entry))
-                    list.add(CHECKBOX_COL, false)
-                }.toTypedArray()
-            )
-        }
+        if (!hasEntry(entry))
+            model.addRow(listOf<Any>(false).plus(entryToList(entry)).toTypedArray())
     }
 
     /**
@@ -136,10 +119,7 @@ class JCheckBoxTable<T>(
      * @param row the row to return the entry of
      * @return the entry in the given row
      */
-    fun getEntry(row: Int): T =
-        listToEntry((0 until model.columnCount)
-            .minus(CHECKBOX_COL)
-            .map { getValueAt(row, it) as String })
+    fun getEntry(row: Int): T = listToEntry((1 until model.columnCount).map { getValueAt(row, it) as String })
 
     /**
      * Returns the row number of the given entry.
@@ -164,13 +144,6 @@ class JCheckBoxTable<T>(
      */
     fun clear() = repeat(model.rowCount) { model.removeRow(0) }
 
-    /**
-     * Sets whether the given entry has its checkbox checked.
-     *
-     * @param entry the entry to (un)check the checkbox of
-     * @param selected `true` iff the entry's checkbox should be checked
-     */
-    private fun setActive(entry: T, selected: Boolean) = setValueAt(selected, getEntryRow(entry), CHECKBOX_COL)
 
     /**
      * Returns `true` iff the given entry's checkbox is checked.
@@ -178,15 +151,15 @@ class JCheckBoxTable<T>(
      * @param entry the entry of which to return the checkbox's status
      * @return `true` iff the given entry's checkbox is checked
      */
-    fun isActive(entry: T): Boolean = getValueAt(getEntryRow(entry), CHECKBOX_COL) as Boolean
+    fun isActive(entry: T): Boolean = getValueAt(getEntryRow(entry), 0) as Boolean
 
     /**
-     * Sets the activity of the given entry.
+     * Sets whether the given entry has its checkbox checked.
      *
-     * @param entry the entry to set the activity of
-     * @param activity `true` iff the entry's checkbox should be checked
+     * @param entry the entry to (un)check the checkbox of
+     * @param isActive `true` iff the entry's checkbox should be checked
      */
-    fun setEntryActivity(entry: T, activity: Boolean) = setValueAt(activity, getEntryRow(entry), CHECKBOX_COL)
+    fun setActive(entry: T, isActive: Boolean) = setValueAt(isActive, getEntryRow(entry), 0)
 
     /**
      * Checks the checkboxes of all given entries, and unchecks all other checkboxes.
@@ -200,7 +173,7 @@ class JCheckBoxTable<T>(
      * Recalculates column widths.
      */
     private fun resizeColumns() {
-        columnModel.getColumn(CHECKBOX_COL).apply { maxWidth = minWidth }
+        columnModel.getColumn(0).apply { maxWidth = minWidth }
     }
 
     /**
@@ -208,7 +181,7 @@ class JCheckBoxTable<T>(
      *
      * @param column the index of the column to return the name of
      */
-    override fun getColumnName(column: Int) = columnNames[column]
+    override fun getColumnName(column: Int) = columns[column].name
 
     /**
      * Returns the class of the data in the column with index `column`.
@@ -221,7 +194,7 @@ class JCheckBoxTable<T>(
             // Java classes MUST be used
             0 -> java.lang.Boolean::class.java
             in 1 until model.columnCount -> java.lang.String::class.java
-            else -> throw IllegalArgumentException("JEditableList has only two columns.")
+            else -> throw IndexOutOfBoundsException("columns=${model.columnCount}, index=$column")
         }
 
     /**
@@ -233,9 +206,18 @@ class JCheckBoxTable<T>(
      * @param column the columns whose value is to be queried
      * @return `true` iff `column` is CHECKBOX_COL
      */
-    @Suppress("UnnecessaryParentheses") // Helpful around boolean conditions. See arturbosch/detekt#1592
+    @Suppress("UnnecessaryParentheses") // TODO: See arturbosch/detekt#1592. Helpful around boolean conditions.
     override fun isCellEditable(row: Int, column: Int) =
-        column == CHECKBOX_COL || (column in editableColumns && isEntryEditable(getEntry(row)))
+        column == 0 || (columns[column - 1].isEditable && isEntryEditable(getEntry(row)))
+
+
+    /**
+     * A column in a [JCheckBoxTable].
+     *
+     * @property name the name of the column, if any
+     * @property isEditable `true` iff the column's value can be edited
+     */
+    data class Column(val name: String?, val isEditable: Boolean)
 }
 
 

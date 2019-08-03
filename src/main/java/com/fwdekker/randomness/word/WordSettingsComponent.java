@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -80,16 +79,17 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
         dictionaryTable = new JCheckBoxTable<>(
-            2,
-            Collections.emptyList(),
-            Arrays.asList("Type", "Location"),
-            UserDictionary.class::isInstance,
-            it -> it.get(0).equals("bundled")
+            Arrays.asList(
+                new JCheckBoxTable.Column("Type", false),
+                new JCheckBoxTable.Column("Location", false)
+            ),
+            it -> "bundled".equals(it.get(0))
                 ? BundledDictionary.Companion.getCache().get(it.get(1), true)
                 : UserDictionary.Companion.getCache().get(it.get(1), true),
             it -> it instanceof BundledDictionary
                 ? Arrays.asList("bundled", ((BundledDictionary) it).getFilename())
-                : Arrays.asList("user", ((UserDictionary) it).getFilename())
+                : Arrays.asList("user", ((UserDictionary) it).getFilename()),
+            UserDictionary.class::isInstance
         );
         dictionaryTable.setName("dictionaries");
 
