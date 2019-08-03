@@ -58,6 +58,8 @@ test {
     useJUnitPlatform {
         includeEngines "junit-vintage", "junit-jupiter", "spek2"
     }
+
+    failFast = false
 }
 
 task codeCoverageReport(type: JacocoReport) {
