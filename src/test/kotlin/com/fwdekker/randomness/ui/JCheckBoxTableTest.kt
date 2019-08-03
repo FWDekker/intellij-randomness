@@ -25,7 +25,8 @@ object JCheckBoxTableTest : Spek({
             JCheckBoxTable(
                 columnCount = 2,
                 listToEntry = { it.joinToString(",") },
-                entryToList = { it.split(",") }
+                entryToList = { it.split(",") },
+                isEntryEditable = { true }
             )
         }
     }
@@ -316,12 +317,19 @@ object JCheckBoxTableTest : Spek({
 
     describe("isCellEditable") {
         it("returns true iff the column is 0") {
-            assertThat(table.isCellEditable(13, 0)).isTrue()
-            assertThat(table.isCellEditable(67, 0)).isTrue()
+            GuiActionRunner.execute {
+                table.addEntry("threaten,future")
+                table.addEntry("pleasure,frequent")
+                table.addEntry("gate,name")
+            }
 
-            assertThat(table.isCellEditable(10, 5)).isFalse()
-            assertThat(table.isCellEditable(7, 10)).isFalse()
-            assertThat(table.isCellEditable(8, 2)).isFalse()
+            assertThat(table.isCellEditable(0, 0)).isTrue()
+            assertThat(table.isCellEditable(1, 0)).isTrue()
+            assertThat(table.isCellEditable(2, 0)).isTrue()
+
+            assertThat(table.isCellEditable(0, 5)).isFalse()
+            assertThat(table.isCellEditable(1, 10)).isFalse()
+            assertThat(table.isCellEditable(2, 2)).isFalse()
         }
     }
 })

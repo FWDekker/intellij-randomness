@@ -30,9 +30,9 @@ private typealias EntryActivityChangeListener = (Int) -> Unit
  */
 class JCheckBoxTable<T>(
     columnCount: Int,
-    editableColumns: Collection<Int> = IntRange(0, columnCount).toList(),
+    editableColumns: Collection<Int> = emptyList(),
     columnNames: Collection<String> = emptyList(),
-    val isEntryEditable: ((T) -> Boolean) = { true },
+    val isEntryEditable: ((T) -> Boolean) = { false },
     val listToEntry: ((List<String>) -> T),
     val entryToList: ((T) -> List<String>),
     name: String? = null
@@ -256,6 +256,8 @@ class JCheckBoxTable<T>(
 
     /**
      * Returns `true` iff `column` is CHECKBOX_COL.
+     *
+     * Behavior is undefined if the row or column does not exist.
      *
      * @param row the row whose value is to be queried
      * @param column the columns whose value is to be queried
