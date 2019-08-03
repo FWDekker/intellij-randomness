@@ -42,11 +42,6 @@ class JCheckBoxTable<T>(
          * The column index of the checkbox column.
          */
         private const val CHECKBOX_COL = 0
-
-        /**
-         * The width of the table that should be taken up by the checkbox column, expressed as a percentage.
-         */
-        private const val CHECKBOX_WIDTH_PERCENTAGE = 0.1
     }
 
     private val model = DefaultTableModel(0, columnCount + 1)
