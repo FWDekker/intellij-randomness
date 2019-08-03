@@ -263,7 +263,8 @@ class JCheckBoxTable<T>(
      * @param column the columns whose value is to be queried
      * @return `true` iff `column` is CHECKBOX_COL
      */
-    override fun isCellEditable(row: Int, column: Int) = column in editableColumns && isEntryEditable(getEntry(row))
+    override fun isCellEditable(row: Int, column: Int) =
+        column == CHECKBOX_COL || (column in editableColumns && isEntryEditable(getEntry(row)))
 }
 
 
