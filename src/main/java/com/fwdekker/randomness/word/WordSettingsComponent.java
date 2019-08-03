@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -82,6 +83,9 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
             new JDecoratedCheckBoxTablePanel<Dictionary>(
                 new JCheckBoxTable<>(
                     2,
+                    Collections.emptyList(),
+                    Arrays.asList("Type", "Location"),
+                    UserDictionary.class::isInstance,
                     it -> it.get(0).equals("bundled")
                         ? BundledDictionary.Companion.getCache().get(it.get(1), true)
                         : UserDictionary.Companion.getCache().get(it.get(1), true),

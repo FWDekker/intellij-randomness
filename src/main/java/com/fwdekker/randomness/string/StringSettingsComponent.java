@@ -17,7 +17,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -75,12 +74,15 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
             new JDecoratedCheckBoxTablePanel<SymbolSet>(
                 new JCheckBoxTable<>(
                     2,
+                    Arrays.asList(0, 1),
+                    Arrays.asList("Name", "Symbols"),
+                    it -> true,
                     it -> new SymbolSet(it.get(0), it.get(1)),
                     it -> Arrays.asList(it.getName(), it.getSymbols()),
                     "symbolSets"
                 ),
-                this::addSymbolSets, this::editSymbolSets, this::removeSymbolSets,
-                it -> true, it -> it.size() == 1, it -> !it.isEmpty()
+                this::addSymbolSets, null, this::removeSymbolSets,
+                it -> true, it -> false, it -> !it.isEmpty()
             );
         symbolSetTable = symbolSetPanel.getTable();
     }
@@ -117,8 +119,17 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     @Override
     @Nullable
     public ValidationInfo doValidate() {
+        if (symbolSetTable.getEntries().stream().anyMatch(it -> it.getName().isEmpty()))
+            return new ValidationInfo("All symbol sets must have a name.", symbolSetTable);
+
+        if (symbolSetTable.getEntries().stream().map(SymbolSet::getName).distinct().count() != symbolSetTable.getEntryCount())
+            return new ValidationInfo("Symbol sets must have unique names.", symbolSetTable);
+
+        if (symbolSetTable.getEntries().stream().anyMatch(it -> it.getSymbols().isEmpty()))
+            return new ValidationInfo("Symbol sets must have at least one symbol each.", symbolSetTable);
+
         if (symbolSetTable.getActiveEntries().isEmpty())
-            return new ValidationInfo("Select at least one symbol set.", symbolSetTable);
+            return new ValidationInfo("Activate at least one symbol set.", symbolSetTable);
 
         return JavaHelperKt.firstNonNull(
             minLength.validateValue(),
@@ -135,41 +146,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
      * @return {@link Unit}
      */
     private Unit addSymbolSets(final List<? extends SymbolSet> symbolSets) {
-        final List<String> reservedNames = symbolSetTable.getEntries().stream()
-            .map(SymbolSet::getName)
-            .collect(Collectors.toList());
-
-        final SymbolSetDialog dialog = new SymbolSetDialog(reservedNames);
-        if (dialog.showAndGet()) {
-            symbolSetTable.addEntry(new SymbolSet(dialog.getName(), dialog.getSymbols()));
-        }
-
-        return Unit.INSTANCE;
-    }
-
-    /**
-     * Fires when the currently-highlighted {@code Dictionary} should be edited.
-     *
-     * @param symbolSets the symbol sets to be edited; only the first element is used; an exception is thrown if this
-     *                   list is empty
-     * @return {@link Unit}
-     */
-    private Unit editSymbolSets(final List<? extends SymbolSet> symbolSets) {
-        final SymbolSet symbolSet = symbolSets.get(0);
-
-        final List<String> reservedNames = symbolSetTable.getEntries().stream()
-            .map(SymbolSet::getName)
-            .filter(it -> !it.equals(symbolSet.getName()))
-            .collect(Collectors.toList());
-
-        final SymbolSetDialog dialog = new SymbolSetDialog(reservedNames, symbolSet);
-        if (dialog.showAndGet()) {
-            symbolSetTable.setEntry(symbolSetTable.getEntryRow(symbolSet), dialog.getSymbolSet());
-
-            symbolSetTable.revalidate();
-            symbolSetTable.repaint();
-        }
-
+        symbolSetTable.addEntry(new SymbolSet("", ""));
         return Unit.INSTANCE;
     }
 
