@@ -17,18 +17,16 @@ import javax.swing.table.DefaultTableModel
  * A [JList][javax.swing.JTable] in which each row has a [JCheckBox][javax.swing.JCheckBox] in front of it.
  *
  * @param <T> the entry type
- * @param columnCount the number of columns in the table, excluding the checkbox column
- * @param editableColumns the indices of the columns that can be edited, ignoring the checkbox column
- * @param columnNames the names of the columns, excluding the checkbox column
+ * @param columns the columns in the table, excluding the checkbox column
  * @param listToEntry a function to convert a list of strings to the object to be stored in the table
  * @param entryToList a function to convert an object to be stored in the table to a list of strings
- * @param name the name of this component
+ * @param isEntryEditable returns `true` iff the given entry should be editable inline
  */
 class JCheckBoxTable<T>(
-    val columns: List<Column>,
-    val listToEntry: ((List<String>) -> T),
-    val entryToList: ((T) -> List<String>),
-    val isEntryEditable: ((T) -> Boolean) = { false }
+    private val columns: List<Column>,
+    private val listToEntry: ((List<String>) -> T),
+    private val entryToList: ((T) -> List<String>),
+    private val isEntryEditable: ((T) -> Boolean) = { false }
 ) : JBTable() {
     private val model = DefaultTableModel(0, columns.size + 1)
 
@@ -85,14 +83,31 @@ class JCheckBoxTable<T>(
     /**
      * Adds an entry to the list.
      *
-     *
-     * If the given entry is already in the list, nothing happens.
-     *
-     * @param entry the entry to add
+     * @param entry the entry to add; must not already be in the table
      */
     fun addEntry(entry: T) {
-        if (!hasEntry(entry))
-            model.addRow(listOf<Any>(false).plus(entryToList(entry)).toTypedArray())
+        require(!hasEntry(entry)) { "Cannot " }
+
+        model.addRow(listOf<Any>(false).plus(entryToList(entry)).toTypedArray())
+    }
+
+    /**
+     * Replaces the entry in the given row with the given entry, optionally changing its activity.
+     *
+     * This method should only be used to overwrite existing
+     *
+     * @param row the row to set the entry in
+     * @param entry the entry to overwrite the current entry with; must not already be present in another row
+     * @param active `null` if the activity should be untouched, or the value to set it to otherwise
+     */
+    fun setEntry(row: Int, entry: T, active: Boolean? = null) {
+        require(row >= 0 && row < model.rowCount) { "Cannot create new row. Use `addEntry` instead." }
+        require(!hasEntry(entry) || getEntryRow(entry) == row) { "Cannot add duplicate entry." }
+
+        entryToList(entry).forEachIndexed { i, s -> setValueAt(s, row, i + 1) }
+
+        if (active != null)
+            setActive(entry, active)
     }
 
     /**
