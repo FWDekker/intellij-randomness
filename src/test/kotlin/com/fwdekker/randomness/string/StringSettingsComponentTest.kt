@@ -259,6 +259,39 @@ object StringSettingsComponentTest : Spek({
         }
 
         describe("symbol sets") {
+            it("fails if a symbol set does not have a name") {
+                GuiActionRunner.execute { componentSymbolSets.entries = listOf(SymbolSet("", "abc")) }
+
+                val validationInfo = stringSettingsComponent.doValidate()
+
+                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo?.component).isEqualTo(frame.table("symbolSets").target())
+                assertThat(validationInfo?.message).isEqualTo("All symbol sets must have a name.")
+            }
+
+            it("fails if two symbol sets have the same name") {
+                GuiActionRunner.execute {
+                    componentSymbolSets.entries = listOf(SymbolSet("name1", "abc"), SymbolSet("name2", "abc"))
+                    componentSymbolSets.setValueAt("name1", 1, 1)
+                }
+
+                val validationInfo = stringSettingsComponent.doValidate()
+
+                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo?.component).isEqualTo(frame.table("symbolSets").target())
+                assertThat(validationInfo?.message).isEqualTo("Symbol sets must have unique names.")
+            }
+
+            it("fails if a symbol set does not have symbols") {
+                GuiActionRunner.execute { componentSymbolSets.entries = listOf(SymbolSet("name", "")) }
+
+                val validationInfo = stringSettingsComponent.doValidate()
+
+                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo?.component).isEqualTo(frame.table("symbolSets").target())
+                assertThat(validationInfo?.message).isEqualTo("Symbol sets must have at least one symbol each.")
+            }
+
             it("fails if no symbol sets are selected") {
                 GuiActionRunner.execute { componentSymbolSets.activeEntries = emptyList() }
 
