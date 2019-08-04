@@ -260,7 +260,7 @@ object StringSettingsComponentTest : Spek({
 
         describe("symbol sets") {
             it("fails if no symbol sets are selected") {
-                GuiActionRunner.execute { componentSymbolSets.setActiveEntries(emptyList()) }
+                GuiActionRunner.execute { componentSymbolSets.activeEntries = emptyList() }
 
                 val validationInfo = stringSettingsComponent.doValidate()
 
@@ -278,8 +278,8 @@ object StringSettingsComponentTest : Spek({
                 frame.spinner("maxLength").target().value = 803
                 frame.radioButton("enclosureBacktick").target().isSelected = true
                 frame.radioButton("capitalizationUpper").target().isSelected = true
-                componentSymbolSets.setEntries(listOf(SymbolSet.BRACKETS, SymbolSet.MINUS))
-                componentSymbolSets.setActiveEntries(listOf(SymbolSet.MINUS))
+                componentSymbolSets.entries = listOf(SymbolSet.BRACKETS, SymbolSet.MINUS)
+                componentSymbolSets.activeEntries = listOf(SymbolSet.MINUS)
             }
 
             stringSettingsComponent.saveSettings()
@@ -352,7 +352,7 @@ object StringSettingsComponentTest : Spek({
                     frame.spinner("maxLength").target().value = 102
                     frame.radioButton("enclosureSingle").target().isSelected = true
                     frame.radioButton("capitalizationLower").target().isSelected = true
-                    componentSymbolSets.setActiveEntries(newSymbolSets)
+                    componentSymbolSets.activeEntries = newSymbolSets
 
                     stringSettingsComponentConfigurable.reset()
                 }

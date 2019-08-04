@@ -239,8 +239,8 @@ object WordSettingsComponentTest : Spek({
                     fail("Failed to delete file as part of test.")
 
                 GuiActionRunner.execute {
-                    dictionaries.addEntry(dictionary)
-                    dictionaries.setActiveEntries(listOf<Dictionary>(dictionary))
+                    dictionaries.entries = listOf(dictionary)
+                    dictionaries.activeEntries = listOf(dictionary)
                 }
 
                 val validationInfo = wordSettingsComponent.doValidate()
