@@ -195,8 +195,8 @@ class JCheckBoxTable<T>(
     /**
      * Returns the name of the [column]th column.
      *
-     * The index uses the model's indexing rather than the indexing of [columns]. Therefore, an index of `0` refers to
-     * the checkbox column.
+     * The index uses the model's indexing rather than the indexing of the user-supplied columns. Therefore, an index of
+     * `0` refers to the checkbox column.
      *
      * @param column the index of the column to return the name of
      */
