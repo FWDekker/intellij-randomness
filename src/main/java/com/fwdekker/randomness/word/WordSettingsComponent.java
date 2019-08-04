@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -203,7 +204,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
                 return;
             }
 
-            dictionaryTable.addEntry(newDictionary);
+            dictionaryTable.addEntry(newDictionary, false);
         });
 
         return Unit.INSTANCE;
@@ -255,13 +256,13 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     /**
      * Filters instances of {@code SUP} to only return instances of {@code SUB}.
      *
-     * @param list  a list of {@code SUP} elements
+     * @param list  a collection of {@code SUP} elements
      * @param cls   the class to filter by
      * @param <SUB> the subclass
      * @param <SUP> the super class
      * @return a list containing the values of {@code list} that are of class {@code cls}
      */
-    private static <SUB, SUP> Set<SUB> filterIsInstance(final List<SUP> list, final Class<SUB> cls) {
+    private static <SUB, SUP> Set<SUB> filterIsInstance(final Collection<SUP> list, final Class<SUB> cls) {
         return list.stream().filter(cls::isInstance).map(cls::cast).collect(Collectors.toSet());
     }
 }

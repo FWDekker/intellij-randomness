@@ -148,7 +148,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
      * @return {@link Unit}
      */
     private Unit addSymbolSets(final List<? extends SymbolSet> symbolSets) {
-        symbolSetTable.addEntry(new SymbolSet("", ""));
+        symbolSetTable.addEntry(new SymbolSet("", ""), false);
         return Unit.INSTANCE;
     }
 
