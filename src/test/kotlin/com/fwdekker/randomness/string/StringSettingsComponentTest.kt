@@ -147,7 +147,7 @@ object StringSettingsComponentTest : Spek({
                         symbols = "old symbols"
                     }
 
-                    GuiActionRunner.execute { frame.table("symbolSets").target().addRowSelectionInterval(0, 0)}
+                    GuiActionRunner.execute { frame.table("symbolSets").target().addRowSelectionInterval(0, 0) }
                     frame.button("symbolSetEdit").click()
 
                     val fixture = WindowFinder.findDialog(subDialogMatcher).using(frame.robot())

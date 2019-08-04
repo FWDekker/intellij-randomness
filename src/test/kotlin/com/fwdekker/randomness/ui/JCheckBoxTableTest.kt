@@ -82,7 +82,7 @@ object JCheckBoxTableTest : Spek({
         it("does not add a given entry twice") {
             GuiActionRunner.execute { table.addEntry("bloomed,dull") }
 
-            assertThatThrownBy { table.addEntry("bloomed,dull") }
+            assertThatThrownBy { GuiActionRunner.execute { table.addEntry("bloomed,dull") } }
                 .isInstanceOf(IllegalArgumentException::class.java)
                 .hasMessage("Cannot add duplicate entry.")
         }
@@ -106,13 +106,13 @@ object JCheckBoxTableTest : Spek({
         }
 
         it("does not set negative out-of-bounds indices") {
-            assertThatThrownBy { table.setEntry(-4, "splendid,lift") }
+            assertThatThrownBy { GuiActionRunner.execute { table.setEntry(-4, "splendid,lift") } }
                 .isInstanceOf(IllegalArgumentException::class.java)
                 .hasMessage("Index out of bounds. rows=0, index=-4.")
         }
 
         it("does not set positive out-of-bounds indices") {
-            GuiActionRunner.execute { table.addEntry("misery,laugh") }
+            GuiActionRunner.execute { GuiActionRunner.execute { table.addEntry("misery,laugh") } }
 
             assertThatThrownBy { table.setEntry(1, "hat,bowl") }
                 .isInstanceOf(IllegalArgumentException::class.java)
@@ -120,7 +120,7 @@ object JCheckBoxTableTest : Spek({
         }
 
         it("does not cause duplicate entries") {
-            GuiActionRunner.execute { table.entries = listOf("whip,actor", "wine,sympathy") }
+            GuiActionRunner.execute { GuiActionRunner.execute { table.entries = listOf("whip,actor", "wine,advise") } }
 
             assertThatThrownBy { GuiActionRunner.execute { table.setEntry(1, "whip,actor") } }
                 .isInstanceOf(IllegalArgumentException::class.java)
@@ -133,7 +133,7 @@ object JCheckBoxTableTest : Spek({
                 table.activeEntries = listOf("stretch,ready")
             }
 
-            GuiActionRunner.execute { table.setEntry(0, "swear,loyal", null) }
+            GuiActionRunner.execute { GuiActionRunner.execute { table.setEntry(0, "swear,loyal", null) } }
 
             assertThat(table.isActive("swear,loyal")).isTrue()
         }
@@ -168,7 +168,7 @@ object JCheckBoxTableTest : Spek({
         }
 
         it("does not add duplicate entries to a list") {
-            assertThatThrownBy { table.entries = listOf("soap,northern", "soap,northern") }
+            assertThatThrownBy { GuiActionRunner.execute { table.entries = listOf("soap,northern", "soap,northern") } }
                 .isInstanceOf(IllegalArgumentException::class.java)
                 .hasMessage("Cannot add duplicate entry.")
         }
@@ -249,7 +249,7 @@ object JCheckBoxTableTest : Spek({
         it("throws an exception if the element to be removed cannot be found") {
             GuiActionRunner.execute { table.entries = listOf("heighten,dear", "videotex,clear") }
 
-            assertThatThrownBy { table.removeEntry("strict,general") }
+            assertThatThrownBy { GuiActionRunner.execute { table.removeEntry("strict,general") } }
                 .isInstanceOf(NoSuchElementException::class.java)
                 .hasMessage("No row with entry `strict,general` found.")
                 .hasNoCause()
@@ -345,8 +345,7 @@ object JCheckBoxTableTest : Spek({
         }
 
         it("ignores when a non-existing element is enabled") {
-            val entries = listOf("forte,dine", "blarneys,lead")
-            GuiActionRunner.execute { table.entries = entries }
+            GuiActionRunner.execute { table.entries = listOf("forte,dine", "blarneys,lead") }
 
             GuiActionRunner.execute { table.activeEntries = listOf("forte,dine", "lamp,being") }
 
@@ -354,9 +353,10 @@ object JCheckBoxTableTest : Spek({
         }
 
         it("unchecks previously-checked entries") {
-            val entries = listOf("rot,victory", "possible,umbrella", "harbor,heavenly")
-            GuiActionRunner.execute { table.entries = entries }
-            GuiActionRunner.execute { table.activeEntries = entries }
+            GuiActionRunner.execute {
+                table.entries = listOf("rot,victory", "possible,umbrella", "harbor,heavenly")
+                table.activeEntries = table.entries
+            }
 
             GuiActionRunner.execute { table.activeEntries = listOf("rot,victory", "harbor,heavenly") }
 
