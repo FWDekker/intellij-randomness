@@ -1,10 +1,10 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.ui.JCheckBoxTable
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import com.intellij.ui.table.TableView
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -14,7 +14,6 @@ import org.assertj.swing.fixture.FrameFixture
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.xdescribe
 import org.junit.jupiter.api.fail
 
 
@@ -26,7 +25,7 @@ object WordSettingsComponentTest : Spek({
     lateinit var wordSettings: WordSettings
     lateinit var wordSettingsComponent: WordSettingsComponent
     lateinit var wordSettingsComponentConfigurable: WordSettingsConfigurable
-    lateinit var componentDictionaries: JCheckBoxTable<Dictionary>
+    lateinit var dictionaryTable: TableView<DictionaryTable.EditableDictionary>
     lateinit var frame: FrameFixture
 
 
@@ -50,7 +49,7 @@ object WordSettingsComponentTest : Spek({
         wordSettingsComponentConfigurable = WordSettingsConfigurable(wordSettingsComponent)
         frame = showInFrame(wordSettingsComponent.getRootPane())
 
-        componentDictionaries = frame.table("dictionaries").target() as JCheckBoxTable<Dictionary>
+        dictionaryTable = frame.table().target() as TableView<DictionaryTable.EditableDictionary>
     }
 
     afterEachTest {
@@ -84,7 +83,7 @@ object WordSettingsComponentTest : Spek({
         }
 
         it("loads the settings' active bundled dictionaries") {
-            assertThat(componentDictionaries.activeEntries)
+            assertThat(dictionaryTable.items.filter { it.active }.map { it.dictionary })
                 .containsExactly(BundledDictionary.cache.get(BundledDictionary.EXTENDED_DICTIONARY))
         }
     }
@@ -101,49 +100,6 @@ object WordSettingsComponentTest : Spek({
                 GuiActionRunner.execute { frame.spinner("maxLength").target().value = 796.01f }
 
                 frame.spinner("maxLength").requireValue(796)
-            }
-        }
-
-        // TODO: Add/remove buttons not addressable from AssertJ Swing
-        xdescribe("adding dictionaries") {
-            it("adds a new, empty row when the add button is pressed") {
-            }
-        }
-
-        // TODO: Add/remove buttons not addressable from AssertJ Swing
-        xdescribe("removing dictionaries") {
-            it("does not remove a bundled dictionary") {
-                GuiActionRunner.execute {
-                    frame.table("dictionaries").target().clearSelection()
-                    frame.table("dictionaries").target().addRowSelectionInterval(0, 0)
-                    frame.button("dictionaryRemove").target().doClick()
-                }
-
-                assertThat(frame.table("dictionaries").target().rowCount).isEqualTo(2)
-            }
-
-            it("removes a user dictionary") {
-                GuiActionRunner.execute {
-                    componentDictionaries.addEntry(UserDictionary.cache.get("dictionary.dic", true))
-                    assertThat(frame.table("dictionaries").target().rowCount).isEqualTo(3)
-
-                    frame.table("dictionaries").target().clearSelection()
-                    frame.table("dictionaries").target().addRowSelectionInterval(2, 2)
-                    frame.button("dictionaryRemove").target().doClick()
-                }
-
-                assertThat(frame.table("dictionaries").target().rowCount).isEqualTo(2)
-            }
-
-            it("removes nothing when no dictionary is highlighted") {
-                val initialEntries = componentDictionaries.entries
-
-                GuiActionRunner.execute {
-                    frame.table("dictionaries").target().clearSelection()
-                    frame.button("dictionaryRemove").target().doClick()
-                }
-
-                assertThat(componentDictionaries.entries).isEqualTo(initialEntries)
             }
         }
     }
@@ -218,28 +174,27 @@ object WordSettingsComponentTest : Spek({
                     fail("Failed to delete file as part of test.")
 
                 GuiActionRunner.execute {
-                    componentDictionaries.entries = listOf(dictionary)
-                    componentDictionaries.activeEntries = listOf(dictionary)
+                    dictionaryTable.listTableModel.addRow(DictionaryTable.EditableDictionary(true, dictionary))
                 }
 
                 val validationInfo = wordSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
+                assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
                 assertThat(validationInfo?.message)
                     .matches("Dictionary `.*\\.dic` is invalid: Failed to read user dictionary into memory\\.")
             }
 
             it("fails if no dictionaries are selected") {
                 GuiActionRunner.execute {
-                    frame.table("dictionaries").target().setValueAt(false, 0, 0)
-                    frame.table("dictionaries").target().setValueAt(false, 1, 0)
+                    dictionaryTable.setValueAt(false, 0, 0)
+                    dictionaryTable.setValueAt(false, 1, 0)
                 }
 
                 val validationInfo = wordSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
+                assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
                 assertThat(validationInfo?.message).isEqualTo("Select at least one dictionary.")
             }
 
@@ -251,7 +206,7 @@ object WordSettingsComponentTest : Spek({
                 val validationInfo = wordSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
+                assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
                 assertThat(validationInfo?.message).isEqualTo("" +
                     "Dictionary `[user] does_not_exist.dic` is invalid: " +
                     "Failed to read user dictionary into memory."
@@ -259,7 +214,7 @@ object WordSettingsComponentTest : Spek({
             }
 
             it("fails if one the dictionaries is empty") {
-                val dictionaryFile = createTempFile("test", ".dic")
+                val dictionaryFile = createTempFile("randomness", ".dic")
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
 
                 wordSettings.userDictionaries = setOf(dictionary)
@@ -271,8 +226,29 @@ object WordSettingsComponentTest : Spek({
                 dictionaryFile.delete()
 
                 assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
+                assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
                 assertThat(validationInfo?.message).matches("Dictionary `.*\\.dic` is empty\\.")
+            }
+
+            it("fails if a dictionary is added twice") {
+                val dictionaryFile = createTempFile("randomness", ".dic")
+                val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
+
+                wordSettings.userDictionaries = setOf(dictionary)
+                wordSettings.activeUserDictionaries = wordSettings.userDictionaries
+                GuiActionRunner.execute {
+                    wordSettingsComponent.loadSettings(wordSettings)
+                    dictionaryTable.listTableModel.addRow(DictionaryTable.EditableDictionary(true, dictionary))
+                    dictionaryTable.listTableModel.addRow(DictionaryTable.EditableDictionary(true, dictionary))
+                }
+
+                val validationInfo = wordSettingsComponent.doValidate()
+
+                dictionaryFile.delete()
+
+                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
+                assertThat(validationInfo?.message).matches("Dictionaries must be unique.")
             }
         }
     }

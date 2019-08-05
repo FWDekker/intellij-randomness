@@ -4,22 +4,15 @@ import com.fwdekker.randomness.CapitalizationMode;
 import com.fwdekker.randomness.JavaHelperKt;
 import com.fwdekker.randomness.SettingsComponent;
 import com.fwdekker.randomness.ui.ButtonGroupKt;
-import com.fwdekker.randomness.ui.JCheckBoxTable;
-import com.fwdekker.randomness.ui.JDecoratedCheckBoxTablePanel;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.util.ui.LocalPathCellEditor;
-import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,9 +30,8 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     private JIntSpinner maxLength;
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
-    @SuppressWarnings("unused") // Used by GUI builder
-    private JDecoratedCheckBoxTablePanel<Dictionary> dictionaryPanel;
-    private JCheckBoxTable<Dictionary> dictionaryTable;
+    private JPanel dictionaryPanel;
+    private DictionaryTable dictionaryTable;
 
 
     /**
@@ -75,31 +67,8 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         minLength = new JIntSpinner(1, 1);
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
-
-        dictionaryTable = new JCheckBoxTable<>(
-            Arrays.asList(
-                new JCheckBoxTable.Column("Type", false, null),
-                new JCheckBoxTable.Column("Location", true,
-                    new LocalPathCellEditor()
-                        .fileChooserDescriptor(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"))
-                        .normalizePath(true)
-                )
-            ),
-            it -> "bundled".equals(it.get(0))
-                ? BundledDictionary.Companion.getCache().get(it.get(1), true)
-                : UserDictionary.Companion.getCache().get(it.get(1), true),
-            it -> it instanceof BundledDictionary
-                ? Arrays.asList("bundled", ((BundledDictionary) it).getFilename())
-                : Arrays.asList("user", ((UserDictionary) it).getFilename()),
-            UserDictionary.class::isInstance
-        );
-        dictionaryTable.setName("dictionaries");
-
-        dictionaryPanel = new JDecoratedCheckBoxTablePanel<Dictionary>(
-            dictionaryTable,
-            this::addDictionaries, null, this::removeDictionaries,
-            it -> true, it -> false, it -> it.stream().allMatch(UserDictionary.class::isInstance)
-        );
+        dictionaryTable = new DictionaryTable();
+        dictionaryPanel = dictionaryTable.createComponent();
     }
 
 
@@ -110,9 +79,9 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
-        dictionaryTable.setEntries(WordSettingsComponentHelperKt.addSets(
+        dictionaryTable.setDictionaries(WordSettingsComponentHelperKt.addSets(
             settings.getBundledDictionaries(), settings.getUserDictionaries()));
-        dictionaryTable.setActiveEntries(WordSettingsComponentHelperKt.addSets(
+        dictionaryTable.setActiveDictionaries(WordSettingsComponentHelperKt.addSets(
             settings.getActiveBundledDictionaries(), settings.getActiveUserDictionaries()));
     }
 
@@ -129,12 +98,12 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
             ? WordSettings.Companion.getDEFAULT_CAPITALIZATION()
             : CapitalizationMode.Companion.getMode(capitalization));
 
-        settings.setBundledDictionaries(filterIsInstance(dictionaryTable.getEntries(), BundledDictionary.class));
-        settings.setActiveBundledDictionaries(filterIsInstance(dictionaryTable.getActiveEntries(), BundledDictionary.class));
+        settings.setBundledDictionaries(filterIsInstance(dictionaryTable.getDictionaries(), BundledDictionary.class));
+        settings.setActiveBundledDictionaries(filterIsInstance(dictionaryTable.getActiveDictionaries(), BundledDictionary.class));
         BundledDictionary.Companion.getCache().clear();
 
-        settings.setUserDictionaries(filterIsInstance(dictionaryTable.getEntries(), UserDictionary.class));
-        settings.setActiveUserDictionaries(filterIsInstance(dictionaryTable.getActiveEntries(), UserDictionary.class));
+        settings.setUserDictionaries(filterIsInstance(dictionaryTable.getDictionaries(), UserDictionary.class));
+        settings.setActiveUserDictionaries(filterIsInstance(dictionaryTable.getActiveDictionaries(), UserDictionary.class));
         UserDictionary.Companion.getCache().clear();
     }
 
@@ -144,26 +113,26 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         BundledDictionary.Companion.getCache().clear();
         UserDictionary.Companion.getCache().clear();
 
-        if (dictionaryTable.getActiveEntries().isEmpty())
-            return new ValidationInfo("Select at least one dictionary.", dictionaryTable);
+        if (dictionaryTable.getDictionaries().stream().distinct().count() != dictionaryTable.getDictionaries().size())
+            return new ValidationInfo("Dictionaries must be unique.", dictionaryPanel);
 
-        for (final Dictionary dictionary : dictionaryTable.getEntries()) {
+        for (final Dictionary dictionary : dictionaryTable.getDictionaries()) {
             try {
                 dictionary.validate();
 
                 if (dictionary.getWords().isEmpty()) {
-                    return new ValidationInfo(
-                        "Dictionary `" + dictionary.toString() + "` is empty.",
-                        dictionaryTable
-                    );
+                    return new ValidationInfo("Dictionary `" + dictionary.toString() + "` is empty.", dictionaryPanel);
                 }
             } catch (final InvalidDictionaryException e) {
                 return new ValidationInfo(
                     "Dictionary `" + dictionary.toString() + "` is invalid: " + e.getMessage(),
-                    dictionaryTable
+                    dictionaryPanel
                 );
             }
         }
+
+        if (dictionaryTable.getActiveDictionaries().isEmpty())
+            return new ValidationInfo("Select at least one dictionary.", dictionaryPanel);
 
         return JavaHelperKt.firstNonNull(
             validateWordRange(),
@@ -175,28 +144,6 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
 
 
     /**
-     * Fires when a new {@code Dictionary} should be added to the list.
-     *
-     * @param dictionaries the symbol sets that are highlighted when the add button is pressed; ignored
-     * @return {@link Unit}
-     */
-    private Unit addDictionaries(final List<? extends Dictionary> dictionaries) {
-        dictionaryTable.addEntry(UserDictionary.Companion.getCache().get("", true), false);
-        return Unit.INSTANCE;
-    }
-
-    /**
-     * Fires when the currently-highlighted {@code Dictionary} should be removed from the list.
-     *
-     * @param dictionaries the dictionaries to be removed; only {@code UserDictionary} instances are removed
-     * @return {@link Unit}
-     */
-    private Unit removeDictionaries(final List<? extends Dictionary> dictionaries) {
-        filterIsInstance(dictionaries, UserDictionary.class).forEach(dictionaryTable::removeEntry);
-        return Unit.INSTANCE;
-    }
-
-    /**
      * Returns `null` if the selected word range overlaps with words in the chosen dictionaries, or a `ValidationInfo`
      * object explaining which input should be changed.
      *
@@ -204,7 +151,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
      * object explaining which input should be changed
      */
     private ValidationInfo validateWordRange() {
-        final Set<String> words = WordSettingsComponentHelperKt.combineDictionaries(dictionaryTable.getActiveEntries());
+        final Set<String> words = WordSettingsComponentHelperKt.combineDictionaries(dictionaryTable.getActiveDictionaries());
 
         final int maxWordLength = WordSettingsComponentHelperKt.maxLength(words);
         if (minLength.getValue() > maxWordLength) {
