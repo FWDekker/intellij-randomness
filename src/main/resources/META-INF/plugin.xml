@@ -18,7 +18,8 @@
 
         <applicationConfigurable instance="com.fwdekker.randomness.RandomnessConfigurable"
                                  id="randomness.MainConfigurable"
-                                 groupId="tools">
+                                 groupId="tools"
+                                 bundle="randomness">
             <configurable instance="com.fwdekker.randomness.integer.IntegerSettingsConfigurable"
                           id="randomness.IntegerSettingsConfigurable"
                           groupId="randomness.MainConfigurable" />
