@@ -22,22 +22,22 @@
                                  bundle="randomness">
             <configurable instance="com.fwdekker.randomness.integer.IntegerSettingsConfigurable"
                           id="randomness.IntegerSettingsConfigurable"
-                          groupId="randomness.MainConfigurable" />
+                          parentId="randomness.MainConfigurable" />
             <configurable instance="com.fwdekker.randomness.decimal.DecimalSettingsConfigurable"
                           id="randomness.DecimalSettingsConfigurable"
-                          groupId="randomness.MainConfigurable" />
+                          parentId="randomness.MainConfigurable" />
             <configurable instance="com.fwdekker.randomness.string.StringSettingsConfigurable"
                           id="randomness.StringSettingsConfigurable"
-                          groupId="randomness.MainConfigurable" />
+                          parentId="randomness.MainConfigurable" />
             <configurable instance="com.fwdekker.randomness.word.WordSettingsConfigurable"
                           id="randomness.WordSettingsConfigurable"
-                          groupId="randomness.MainConfigurable" />
+                          parentId="randomness.MainConfigurable" />
             <configurable instance="com.fwdekker.randomness.uuid.UuidSettingsConfigurable"
                           id="randomness.UuidSettingsConfigurable"
-                          groupId="randomness.MainConfigurable" />
+                          parentId="randomness.MainConfigurable" />
             <configurable instance="com.fwdekker.randomness.array.ArraySettingsConfigurable"
                           id="randomness.ArraySettingsConfigurable"
-                          groupId="randomness.MainConfigurable" />
+                          parentId="randomness.MainConfigurable" />
         </applicationConfigurable>
     </extensions>
 
