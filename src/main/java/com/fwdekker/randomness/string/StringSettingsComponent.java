@@ -32,6 +32,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     private JIntSpinner maxLength;
     private ButtonGroup enclosureGroup;
     private ButtonGroup capitalizationGroup;
+    @SuppressWarnings("unused") // Used by GUI builder
     private JDecoratedCheckBoxTablePanel<SymbolSet> symbolSetPanel;
     private JCheckBoxTable<SymbolSet> symbolSetTable;
 
@@ -72,8 +73,8 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
 
         symbolSetTable = new JCheckBoxTable<>(
             Arrays.asList(
-                new JCheckBoxTable.Column("Name", true),
-                new JCheckBoxTable.Column("Symbols", true)
+                new JCheckBoxTable.Column("Name", true, null),
+                new JCheckBoxTable.Column("Symbols", true, null)
             ),
             it -> new SymbolSet(it.get(0), it.get(1)),
             it -> Arrays.asList(it.getName(), it.getSymbols()),

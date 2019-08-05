@@ -8,13 +8,9 @@ import com.fwdekker.randomness.ui.JCheckBoxTable;
 import com.fwdekker.randomness.ui.JDecoratedCheckBoxTablePanel;
 import com.fwdekker.randomness.ui.JIntSpinner;
 import com.fwdekker.randomness.ui.JSpinnerRange;
-import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
-import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.openapi.ui.popup.Balloon;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.ui.CommonActionsPanel;
+import com.intellij.util.ui.LocalPathCellEditor;
 import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +37,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     private JIntSpinner maxLength;
     private ButtonGroup capitalizationGroup;
     private ButtonGroup enclosureGroup;
+    @SuppressWarnings("unused") // Used by GUI builder
     private JDecoratedCheckBoxTablePanel<Dictionary> dictionaryPanel;
     private JCheckBoxTable<Dictionary> dictionaryTable;
 
@@ -81,8 +78,12 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
 
         dictionaryTable = new JCheckBoxTable<>(
             Arrays.asList(
-                new JCheckBoxTable.Column("Type", false),
-                new JCheckBoxTable.Column("Location", false)
+                new JCheckBoxTable.Column("Type", false, null),
+                new JCheckBoxTable.Column("Location", true,
+                    new LocalPathCellEditor()
+                        .fileChooserDescriptor(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"))
+                        .normalizePath(true)
+                )
             ),
             it -> "bundled".equals(it.get(0))
                 ? BundledDictionary.Companion.getCache().get(it.get(1), true)
@@ -146,12 +147,19 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         if (dictionaryTable.getActiveEntries().isEmpty())
             return new ValidationInfo("Select at least one dictionary.", dictionaryTable);
 
-        for (final Dictionary dictionary : dictionaryTable.getActiveEntries()) {
+        for (final Dictionary dictionary : dictionaryTable.getEntries()) {
             try {
                 dictionary.validate();
+
+                if (dictionary.getWords().isEmpty()) {
+                    return new ValidationInfo(
+                        "Dictionary `" + dictionary.toString() + "` is empty.",
+                        dictionaryTable
+                    );
+                }
             } catch (final InvalidDictionaryException e) {
                 return new ValidationInfo(
-                    "Dictionary " + dictionary.toString() + " is invalid: " + e.getMessage(),
+                    "Dictionary `" + dictionary.toString() + "` is invalid: " + e.getMessage(),
                     dictionaryTable
                 );
             }
@@ -173,40 +181,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
      * @return {@link Unit}
      */
     private Unit addDictionaries(final List<? extends Dictionary> dictionaries) {
-        FileChooser.chooseFiles(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"), null, null, files -> {
-            if (files.isEmpty())
-                return;
-
-            final String canonicalPath = files.get(0).getCanonicalPath();
-            if (canonicalPath == null)
-                return;
-
-            final UserDictionary newDictionary = UserDictionary.Companion.getCache().get(canonicalPath, false);
-            try {
-                if (newDictionary.getWords().isEmpty()) {
-                    JBPopupFactory.getInstance()
-                        .createHtmlTextBalloonBuilder("The dictionary file is empty.", MessageType.ERROR, null)
-                        .createBalloon()
-                        .show(
-                            dictionaryPanel.getButton(CommonActionsPanel.Buttons.ADD).getPreferredPopupPoint(),
-                            Balloon.Position.atRight
-                        );
-                    return;
-                }
-            } catch (final InvalidDictionaryException e) {
-                JBPopupFactory.getInstance()
-                    .createHtmlTextBalloonBuilder(e.getMessage(), MessageType.ERROR, null)
-                    .createBalloon()
-                    .show(
-                        dictionaryPanel.getButton(CommonActionsPanel.Buttons.ADD).getPreferredPopupPoint(),
-                        Balloon.Position.atRight
-                    );
-                return;
-            }
-
-            dictionaryTable.addEntry(newDictionary, false);
-        });
-
+        dictionaryTable.addEntry(UserDictionary.Companion.getCache().get("", true), false);
         return Unit.INSTANCE;
     }
 
