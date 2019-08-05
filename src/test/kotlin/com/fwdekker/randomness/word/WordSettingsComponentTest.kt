@@ -82,9 +82,14 @@ object WordSettingsComponentTest : Spek({
             frame.radioButton("capitalizationLower").requireSelected(true)
         }
 
-        it("loads the settings' active bundled dictionaries") {
-            assertThat(dictionaryTable.items.filter { it.active }.map { it.dictionary })
-                .containsExactly(BundledDictionary.cache.get(BundledDictionary.EXTENDED_DICTIONARY))
+        it("loads the settings' bundled dictionaries") {
+            assertThat(dictionaryTable.items.map { it.dictionary }).containsExactly(
+                BundledDictionary.cache.get(BundledDictionary.SIMPLE_DICTIONARY),
+                BundledDictionary.cache.get(BundledDictionary.EXTENDED_DICTIONARY)
+            )
+            assertThat(dictionaryTable.items.filter { it.active }.map { it.dictionary }).containsExactly(
+                BundledDictionary.cache.get(BundledDictionary.EXTENDED_DICTIONARY)
+            )
         }
     }
 

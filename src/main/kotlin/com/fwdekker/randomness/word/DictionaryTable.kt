@@ -131,8 +131,8 @@ class DictionaryTable : TableModelEditor<DictionaryTable.EditableDictionary>(
     /**
      * An entry in the table.
      *
-     * Contains a reference to a dictionary that can be swapped with another reference, effectively allowing one to
-     * edit the dictionary.
+     * Contains a reference to a dictionary that can be swapped with another reference, effectively allowing one to edit
+     * the dictionary.
      *
      * @property active whether the dictionary is active
      * @property dictionary a reference to a dictionary
