@@ -11,6 +11,8 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import java.util.NoSuchElementException
+import javax.swing.DefaultCellEditor
+import javax.swing.table.TableCellEditor
 
 
 /**
@@ -488,6 +490,38 @@ object JCheckBoxTableTest : Spek({
 
         it("returns true if both the column and the entry are editable") {
             assertThat(table.isCellEditable(1, 1)).isTrue()
+        }
+    }
+
+    describe("getCellEditor") {
+        lateinit var customEditor: TableCellEditor
+
+        beforeEachTest {
+            customEditor = mock {}
+            table = GuiActionRunner.execute<JCheckBoxTable<String>> {
+                JCheckBoxTable(
+                    listOf(JCheckBoxTable.Column(cellEditor = null), JCheckBoxTable.Column(cellEditor = customEditor)),
+                    { it.joinToString(",") },
+                    { it.split(",") }
+                )
+            }
+        }
+
+
+        fun getCellEditor(row: Int, col: Int) =
+            GuiActionRunner.execute<TableCellEditor> { table.getCellEditor(row, col) }
+
+
+        it("returns a default editor for the checkbox column") {
+            assertThat(getCellEditor(0, 0)).isInstanceOf(DefaultCellEditor::class.java)
+        }
+
+        it("returns a default editor for a column with a `null` editor") {
+            assertThat(getCellEditor(0, 1)).isInstanceOf(DefaultCellEditor::class.java)
+        }
+
+        it("returns the custom editor for a column with a custom editor") {
+            assertThat(getCellEditor(0, 2)).isEqualTo(customEditor)
         }
     }
 })

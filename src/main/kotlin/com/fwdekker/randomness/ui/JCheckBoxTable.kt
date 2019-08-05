@@ -11,6 +11,7 @@ import java.util.NoSuchElementException
 import javax.swing.JPanel
 import javax.swing.ListSelectionModel
 import javax.swing.table.DefaultTableModel
+import javax.swing.table.TableCellEditor
 
 
 /**
@@ -236,6 +237,19 @@ class JCheckBoxTable<T>(
     override fun isCellEditable(row: Int, column: Int) =
         column == 0 || (columns[column - 1].isEditable && isEntryEditable(getEntry(row)))
 
+    /**
+     * Returns the editor of the cell at the given location.
+     *
+     * @param row the row of the cell to edit; ignored
+     * @param column the column of the cell to edit; used to look up the editor in the user-supplied columns
+     * @return the editor of the cell at the given location
+     */
+    override fun getCellEditor(row: Int, column: Int): TableCellEditor =
+        if (column == 0)
+            super.getCellEditor(row, column)
+        else
+            columns[column - 1].cellEditor ?: super.getCellEditor(row, column)
+
 
     /**
      * Recalculates column widths.
@@ -250,8 +264,13 @@ class JCheckBoxTable<T>(
      *
      * @property name the name of the column, if any
      * @property isEditable `true` iff the column's value can be edited
+     * @property cellEditor the editor of the cells in the column, or `null` if the default editor should be used
      */
-    data class Column(val name: String? = null, val isEditable: Boolean = false)
+    data class Column(
+        val name: String? = null,
+        val isEditable: Boolean = false,
+        val cellEditor: TableCellEditor? = null
+    )
 }
 
 
@@ -295,7 +314,12 @@ class JDecoratedCheckBoxTablePanel<T>(
                 setAddActionUpdater { addActionUpdater(table.highlightedEntries) }
                 if (editAction != null) setEditAction { editAction(table.highlightedEntries) }
                 setEditActionUpdater { editActionUpdater(table.highlightedEntries) }
-                if (removeAction != null) setRemoveAction { removeAction(table.highlightedEntries) }
+                if (removeAction != null) setRemoveAction {
+                    if (table.isEditing)
+                        table.cellEditor.stopCellEditing()
+
+                    removeAction(table.highlightedEntries)
+                }
                 setRemoveActionUpdater { removeActionUpdater(table.highlightedEntries) }
             }
             .also { decorator ->

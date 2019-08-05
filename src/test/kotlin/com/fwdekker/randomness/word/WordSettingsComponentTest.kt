@@ -104,33 +104,13 @@ object WordSettingsComponentTest : Spek({
             }
         }
 
-        // Disabled because AssertJ Swing doesn't work with IntelliJ file chooser
+        // TODO: Add/remove buttons not addressable from AssertJ Swing
         xdescribe("adding dictionaries") {
-            it("adds a given user dictionary") {
-                frame.button("dictionaryAdd").click()
-                // TODO Find file chooser window and select a file
-
-                assertThat(componentDictionaries.getEntry(1).toString().replace("\\\\".toRegex(), "/"))
-                    .endsWith("dictionaries/simple.dic")
-            }
-
-            // Disabled because AssertJ Swing doesn't work with IntelliJ file chooser
-            it("does not add a duplicate user dictionary") {
-                assertThat(componentDictionaries.entryCount).isEqualTo(1)
-
-                frame.button("dictionaryAdd").click()
-                // TODO Find file chooser window and select a file
-//                JFileChooserFinder.findFileChooser()
-//                    .selectFile(getDictionaryFile("dictionaries/simple.dic"))
-//                    .approve()
-
-                // Select the same file again
-
-                assertThat(componentDictionaries.entryCount).isEqualTo(2)
+            it("adds a new, empty row when the add button is pressed") {
             }
         }
 
-        // Add/remove buttons not addressable from AssertJ Swing
+        // TODO: Add/remove buttons not addressable from AssertJ Swing
         xdescribe("removing dictionaries") {
             it("does not remove a bundled dictionary") {
                 GuiActionRunner.execute {
@@ -229,25 +209,25 @@ object WordSettingsComponentTest : Spek({
         }
 
         describe("dictionaries") {
-            @Suppress("UNCHECKED_CAST")
             it("fails if a dictionary of a now-deleted file is given") {
-                val dictionaries = frame.table("dictionaries").target() as JCheckBoxTable<Dictionary>
-
-                val dictionaryFile = createTempFile("test", "dic")
-                dictionaryFile.writeText("Limbas\nOstiary\nHackee")
+                val dictionaryFile = createTempFile("test", ".dic")
+                dictionaryFile.writeText("explore\nworm\ndamp")
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
 
                 if (!dictionaryFile.delete())
                     fail("Failed to delete file as part of test.")
 
                 GuiActionRunner.execute {
-                    dictionaries.entries = listOf(dictionary)
-                    dictionaries.activeEntries = listOf(dictionary)
+                    componentDictionaries.entries = listOf(dictionary)
+                    componentDictionaries.activeEntries = listOf(dictionary)
                 }
 
                 val validationInfo = wordSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
+                assertThat(validationInfo?.message)
+                    .matches("Dictionary `.*\\.dic` is invalid: Failed to read user dictionary into memory\\.")
             }
 
             it("fails if no dictionaries are selected") {
@@ -265,7 +245,7 @@ object WordSettingsComponentTest : Spek({
 
             it("fails if one of the dictionaries is invalid") {
                 wordSettings.userDictionaryFiles = mutableSetOf("does_not_exist.dic")
-                wordSettings.activeUserDictionaryFiles = mutableSetOf("does_not_exist.dic")
+                wordSettings.activeUserDictionaryFiles = wordSettings.userDictionaryFiles
                 GuiActionRunner.execute { wordSettingsComponent.loadSettings(wordSettings) }
 
                 val validationInfo = wordSettingsComponent.doValidate()
@@ -273,9 +253,26 @@ object WordSettingsComponentTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
                 assertThat(validationInfo?.message).isEqualTo("" +
-                    "Dictionary [user] does_not_exist.dic is invalid: " +
+                    "Dictionary `[user] does_not_exist.dic` is invalid: " +
                     "Failed to read user dictionary into memory."
                 )
+            }
+
+            it("fails if one the dictionaries is empty") {
+                val dictionaryFile = createTempFile("test", ".dic")
+                val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
+
+                wordSettings.userDictionaries = setOf(dictionary)
+                wordSettings.activeUserDictionaries = wordSettings.userDictionaries
+                GuiActionRunner.execute { wordSettingsComponent.loadSettings(wordSettings) }
+
+                val validationInfo = wordSettingsComponent.doValidate()
+
+                dictionaryFile.delete()
+
+                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo?.component).isEqualTo(frame.table("dictionaries").target())
+                assertThat(validationInfo?.message).matches("Dictionary `.*\\.dic` is empty\\.")
             }
         }
     }
