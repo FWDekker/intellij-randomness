@@ -3,13 +3,11 @@ package com.fwdekker.randomness
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurationException
 import javax.swing.JComponent
-import javax.swing.JPanel
 
 
 /**
  * Randomness' root configurable; all other configurables are its children.
  */
-// TODO Populate this.
 class RandomnessConfigurable : Configurable {
     /**
      * Returns the name of the configurable as displayed in the settings window.
@@ -31,11 +29,11 @@ class RandomnessConfigurable : Configurable {
     override fun apply() = Unit
 
     /**
-     * Returns an empty panel.
+     * Returns `null`.
      *
-     * @return an empty panel
+     * @return `null`
      */
-    override fun createComponent() = JPanel()
+    override fun createComponent(): JComponent? = null
 }
 
 
