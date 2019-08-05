@@ -39,6 +39,9 @@ style:
     # Those functions are added as conscious design decisions.
     DataClassContainsFunctions:
         active: false
+    # Such comments are OK.
+    ForbiddenComment:
+        active: false
     # No braces are easier to read.
     MandatoryBracesIfStatements:
         active: false

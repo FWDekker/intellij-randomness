@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -79,25 +79,26 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
-        dictionaryPanel =
-            new JDecoratedCheckBoxTablePanel<Dictionary>(
-                new JCheckBoxTable<>(
-                    2,
-                    Collections.emptyList(),
-                    Arrays.asList("Type", "Location"),
-                    UserDictionary.class::isInstance,
-                    it -> it.get(0).equals("bundled")
-                        ? BundledDictionary.Companion.getCache().get(it.get(1), true)
-                        : UserDictionary.Companion.getCache().get(it.get(1), true),
-                    it -> it instanceof BundledDictionary
-                        ? Arrays.asList("bundled", ((BundledDictionary) it).getFilename())
-                        : Arrays.asList("user", ((UserDictionary) it).getFilename()),
-                    "dictionaries"
-                ),
-                this::addDictionaries, null, this::removeDictionaries,
-                it -> true, it -> false, it -> it.stream().allMatch(UserDictionary.class::isInstance)
-            );
-        dictionaryTable = dictionaryPanel.getTable();
+        dictionaryTable = new JCheckBoxTable<>(
+            Arrays.asList(
+                new JCheckBoxTable.Column("Type", false),
+                new JCheckBoxTable.Column("Location", false)
+            ),
+            it -> "bundled".equals(it.get(0))
+                ? BundledDictionary.Companion.getCache().get(it.get(1), true)
+                : UserDictionary.Companion.getCache().get(it.get(1), true),
+            it -> it instanceof BundledDictionary
+                ? Arrays.asList("bundled", ((BundledDictionary) it).getFilename())
+                : Arrays.asList("user", ((UserDictionary) it).getFilename()),
+            UserDictionary.class::isInstance
+        );
+        dictionaryTable.setName("dictionaries");
+
+        dictionaryPanel = new JDecoratedCheckBoxTablePanel<Dictionary>(
+            dictionaryTable,
+            this::addDictionaries, null, this::removeDictionaries,
+            it -> true, it -> false, it -> it.stream().allMatch(UserDictionary.class::isInstance)
+        );
     }
 
 
@@ -203,7 +204,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
                 return;
             }
 
-            dictionaryTable.addEntry(newDictionary);
+            dictionaryTable.addEntry(newDictionary, false);
         });
 
         return Unit.INSTANCE;
@@ -255,13 +256,13 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     /**
      * Filters instances of {@code SUP} to only return instances of {@code SUB}.
      *
-     * @param list  a list of {@code SUP} elements
+     * @param list  a collection of {@code SUP} elements
      * @param cls   the class to filter by
      * @param <SUB> the subclass
      * @param <SUP> the super class
      * @return a list containing the values of {@code list} that are of class {@code cls}
      */
-    private static <SUB, SUP> Set<SUB> filterIsInstance(final List<SUP> list, final Class<SUB> cls) {
+    private static <SUB, SUP> Set<SUB> filterIsInstance(final Collection<SUP> list, final Class<SUB> cls) {
         return list.stream().filter(cls::isInstance).map(cls::cast).collect(Collectors.toSet());
     }
 }

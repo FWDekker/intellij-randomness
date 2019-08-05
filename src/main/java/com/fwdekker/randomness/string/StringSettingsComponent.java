@@ -70,21 +70,23 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         maxLength = new JIntSpinner(1, 1);
         lengthRange = new JSpinnerRange(minLength, maxLength, Integer.MAX_VALUE, "length");
 
+        symbolSetTable = new JCheckBoxTable<>(
+            Arrays.asList(
+                new JCheckBoxTable.Column("Name", true),
+                new JCheckBoxTable.Column("Symbols", true)
+            ),
+            it -> new SymbolSet(it.get(0), it.get(1)),
+            it -> Arrays.asList(it.getName(), it.getSymbols()),
+            it -> true
+        );
+        symbolSetTable.setName("symbolSets");
+
         symbolSetPanel =
             new JDecoratedCheckBoxTablePanel<SymbolSet>(
-                new JCheckBoxTable<>(
-                    2,
-                    Arrays.asList(0, 1),
-                    Arrays.asList("Name", "Symbols"),
-                    it -> true,
-                    it -> new SymbolSet(it.get(0), it.get(1)),
-                    it -> Arrays.asList(it.getName(), it.getSymbols()),
-                    "symbolSets"
-                ),
+                symbolSetTable,
                 this::addSymbolSets, null, this::removeSymbolSets,
                 it -> true, it -> false, it -> !it.isEmpty()
             );
-        symbolSetTable = symbolSetPanel.getTable();
     }
 
 
@@ -146,7 +148,7 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
      * @return {@link Unit}
      */
     private Unit addSymbolSets(final List<? extends SymbolSet> symbolSets) {
-        symbolSetTable.addEntry(new SymbolSet("", ""));
+        symbolSetTable.addEntry(new SymbolSet("", ""), false);
         return Unit.INSTANCE;
     }
 
