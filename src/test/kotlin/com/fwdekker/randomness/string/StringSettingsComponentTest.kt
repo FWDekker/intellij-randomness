@@ -1,24 +1,20 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.ui.JCheckBoxTable
+import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import com.intellij.ui.table.TableView
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.swing.core.GenericTypeMatcher
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
-import org.assertj.swing.finder.WindowFinder
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.xdescribe
-import java.awt.Dialog
-import javax.swing.JButton
 
 
 /**
@@ -29,7 +25,7 @@ object StringSettingsComponentTest : Spek({
     lateinit var stringSettings: StringSettings
     lateinit var stringSettingsComponent: StringSettingsComponent
     lateinit var stringSettingsComponentConfigurable: StringSettingsConfigurable
-    lateinit var componentSymbolSets: JCheckBoxTable<SymbolSet>
+    lateinit var symbolSetTable: TableView<EditableDatum<SymbolSet>>
     lateinit var frame: FrameFixture
 
 
@@ -55,7 +51,7 @@ object StringSettingsComponentTest : Spek({
         stringSettingsComponentConfigurable = StringSettingsConfigurable(stringSettingsComponent)
         frame = showInFrame(stringSettingsComponent.getRootPane())
 
-        componentSymbolSets = frame.table("symbolSets").target() as JCheckBoxTable<SymbolSet>
+        symbolSetTable = frame.table().target() as TableView<EditableDatum<SymbolSet>>
     }
 
     afterEachTest {
@@ -87,9 +83,9 @@ object StringSettingsComponentTest : Spek({
         }
 
         it("loads the settings' symbol sets") {
-            assertThat(componentSymbolSets.entries)
+            assertThat(symbolSetTable.items.map { it.datum })
                 .containsExactly(SymbolSet.ALPHABET, SymbolSet.DIGITS, SymbolSet.HEXADECIMAL)
-            assertThat(componentSymbolSets.activeEntries)
+            assertThat(symbolSetTable.items.filter { it.active }.map { it.datum })
                 .containsExactly(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
         }
     }
@@ -106,123 +102,6 @@ object StringSettingsComponentTest : Spek({
                 GuiActionRunner.execute { frame.spinner("maxLength").target().value = 796.01f }
 
                 frame.spinner("maxLength").requireValue(796)
-            }
-        }
-
-        // Add/edit/remove buttons not addressable from AssertJ Swing
-        xdescribe("symbol set manipulation") {
-            val subDialogMatcher = object : GenericTypeMatcher<Dialog>(Dialog::class.java) {
-                override fun isMatching(component: Dialog?) = component?.title?.startsWith("Randomness - ") ?: false
-            }
-            val okButtonMatcher = object : GenericTypeMatcher<JButton>(JButton::class.java) {
-                override fun isMatching(component: JButton?) = component?.text == "OK"
-            }
-
-            describe("adding symbol sets") {
-                it("adds a new symbol set") {
-                    frame.button("symbolSetAdd").click()
-                    val fixture = WindowFinder.findDialog(subDialogMatcher).using(frame.robot())
-                    fixture.textBox("name").setText("glad")
-                    fixture.textBox("symbols").setText("sorry")
-                    fixture.button(okButtonMatcher).click()
-
-                    assertThat(componentSymbolSets.entries).contains(SymbolSet("glad", "sorry"))
-                }
-
-                it("does not add a new symbol set with a name that is already in use") {
-                    val duplicateName = componentSymbolSets.entries.first().name
-
-                    frame.button("symbolSetAdd").click()
-                    val fixture = WindowFinder.findDialog(subDialogMatcher).using(frame.robot())
-                    fixture.textBox("name").setText(duplicateName)
-                    fixture.textBox("symbols").setText("clear")
-                    fixture.button(okButtonMatcher).click()
-
-                    assertThat(componentSymbolSets.entries).doesNotContain(SymbolSet(duplicateName, "clear"))
-                }
-            }
-
-            describe("editing symbol sets") {
-                it("changes the name of a symbol set") {
-                    componentSymbolSets.entries.first().apply {
-                        name = "old name"
-                        symbols = "old symbols"
-                    }
-
-                    GuiActionRunner.execute { frame.table("symbolSets").target().addRowSelectionInterval(0, 0) }
-                    frame.button("symbolSetEdit").click()
-
-                    val fixture = WindowFinder.findDialog(subDialogMatcher).using(frame.robot())
-                    fixture.textBox("name").setText("new name")
-                    fixture.button(okButtonMatcher).click()
-
-                    assertThat(componentSymbolSets.entries.first().name).isEqualTo("new name")
-                    assertThat(componentSymbolSets.entries.first().symbols).isEqualTo("old symbols")
-                }
-
-                it("does not change the name if the name is already in use") {
-                    val duplicateName = componentSymbolSets.entries.first().name
-                    val initialEntries = componentSymbolSets.entries
-                    GuiActionRunner.execute { frame.table("symbolSets").target().addRowSelectionInterval(1, 1) }
-
-                    frame.button("symbolSetEdit").click()
-                    val fixture = WindowFinder.findDialog(subDialogMatcher).using(frame.robot())
-                    fixture.textBox("name").setText(duplicateName)
-                    fixture.button(okButtonMatcher).click()
-
-                    assertThat(componentSymbolSets.entries).isEqualTo(initialEntries)
-                }
-
-                it("changes the symbols of a symbol set") {
-                    componentSymbolSets.entries.first().apply {
-                        name = "old name"
-                        symbols = "old symbols"
-                    }
-                    GuiActionRunner.execute { frame.table("symbolSets").target().addRowSelectionInterval(0, 0) }
-
-                    frame.button("symbolSetEdit").click()
-                    val fixture = WindowFinder.findDialog(subDialogMatcher).using(frame.robot())
-                    fixture.textBox("symbols").setText("new symbols")
-                    fixture.button(okButtonMatcher).click()
-
-                    assertThat(componentSymbolSets.entries.first().name).isEqualTo("old name")
-                    assertThat(componentSymbolSets.entries.first().symbols).isEqualTo("new symbols")
-                }
-
-                it("changes nothing when no symbol sets are highlighted") {
-                    val initialEntries = componentSymbolSets.entries
-
-                    GuiActionRunner.execute {
-                        frame.table("symbolSets").target().clearSelection()
-                        frame.button("symbolSetEdit").target().doClick()
-                    }
-
-                    assertThat(componentSymbolSets.entries).isEqualTo(initialEntries)
-                }
-            }
-
-            describe("removing symbol sets") {
-                it("removes the highlighted symbol set") {
-                    val initialEntries = componentSymbolSets.entries
-
-                    GuiActionRunner.execute {
-                        frame.table("symbolSets").target().addRowSelectionInterval(2, 2)
-                        frame.button("symbolSetRemove").target().doClick()
-                    }
-
-                    assertThat(componentSymbolSets.entries).isEqualTo(initialEntries.minus(initialEntries.last()))
-                }
-
-                it("removes nothing when no symbol sets are highlighted") {
-                    val initialEntries = componentSymbolSets.entries
-
-                    GuiActionRunner.execute {
-                        frame.table("symbolSets").target().clearSelection()
-                        frame.button("symbolSetRemove").target().doClick()
-                    }
-
-                    assertThat(componentSymbolSets.entries).isEqualTo(initialEntries)
-                }
             }
         }
     }
@@ -262,45 +141,51 @@ object StringSettingsComponentTest : Spek({
 
         describe("symbol sets") {
             it("fails if a symbol set does not have a name") {
-                GuiActionRunner.execute { componentSymbolSets.entries = listOf(SymbolSet("", "abc")) }
+                val symbolSet = EditableDatum(false, SymbolSet("", "abc"))
+                GuiActionRunner.execute { symbolSetTable.listTableModel.addRow(symbolSet) }
 
                 val validationInfo = stringSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.table("symbolSets").target())
+                assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
                 assertThat(validationInfo?.message).isEqualTo("All symbol sets must have a name.")
             }
 
             it("fails if two symbol sets have the same name") {
+                val symbolSet1 = EditableDatum(false, SymbolSet("name1", "abc"))
+                val symbolSet2 = EditableDatum(false, SymbolSet("name1", "abc"))
                 GuiActionRunner.execute {
-                    componentSymbolSets.entries = listOf(SymbolSet("name1", "abc"), SymbolSet("name2", "abc"))
-                    componentSymbolSets.setValueAt("name1", 1, 1)
+                    symbolSetTable.listTableModel.addRow(symbolSet1)
+                    symbolSetTable.listTableModel.addRow(symbolSet2)
                 }
 
                 val validationInfo = stringSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.table("symbolSets").target())
+                assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
                 assertThat(validationInfo?.message).isEqualTo("Symbol sets must have unique names.")
             }
 
             it("fails if a symbol set does not have symbols") {
-                GuiActionRunner.execute { componentSymbolSets.entries = listOf(SymbolSet("name", "")) }
+                val symbolSet = EditableDatum(false, SymbolSet("name", ""))
+                GuiActionRunner.execute { symbolSetTable.listTableModel.addRow(symbolSet) }
 
                 val validationInfo = stringSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.table("symbolSets").target())
+                assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
                 assertThat(validationInfo?.message).isEqualTo("Symbol sets must have at least one symbol each.")
             }
 
             it("fails if no symbol sets are selected") {
-                GuiActionRunner.execute { componentSymbolSets.activeEntries = emptyList() }
+                GuiActionRunner.execute {
+                    symbolSetTable.items.forEachIndexed { i, _ -> symbolSetTable.model.setValueAt(false, i, 0) }
+                }
 
                 val validationInfo = stringSettingsComponent.doValidate()
 
                 assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.table("symbolSets").target())
+                assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
                 assertThat(validationInfo?.message).isEqualTo("Activate at least one symbol set.")
             }
         }
@@ -313,8 +198,10 @@ object StringSettingsComponentTest : Spek({
                 frame.spinner("maxLength").target().value = 803
                 frame.radioButton("enclosureBacktick").target().isSelected = true
                 frame.radioButton("capitalizationUpper").target().isSelected = true
-                componentSymbolSets.entries = listOf(SymbolSet.BRACKETS, SymbolSet.MINUS)
-                componentSymbolSets.activeEntries = listOf(SymbolSet.MINUS)
+
+                repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
+                symbolSetTable.listTableModel.addRow(EditableDatum(false, SymbolSet.BRACKETS))
+                symbolSetTable.listTableModel.addRow(EditableDatum(true, SymbolSet.MINUS))
             }
 
             stringSettingsComponent.saveSettings()
@@ -380,14 +267,12 @@ object StringSettingsComponentTest : Spek({
 
         describe("resets") {
             it("resets all fields properly") {
-                val newSymbolSets = setOf(SymbolSet.ALPHABET, SymbolSet.SPECIAL)
-
                 GuiActionRunner.execute {
                     frame.spinner("minLength").target().value = 75
                     frame.spinner("maxLength").target().value = 102
                     frame.radioButton("enclosureSingle").target().isSelected = true
                     frame.radioButton("capitalizationLower").target().isSelected = true
-                    componentSymbolSets.activeEntries = newSymbolSets
+                    symbolSetTable.listTableModel.addRow(EditableDatum(true, SymbolSet.MINUS))
 
                     stringSettingsComponentConfigurable.reset()
                 }
