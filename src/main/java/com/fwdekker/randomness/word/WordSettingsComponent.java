@@ -12,7 +12,10 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -110,8 +113,12 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
 
     @Override
     public boolean isModified(@NotNull WordSettings settings) {
-        return dictionaryTable.getData().size() !=
-            settings.getBundledDictionaries().size() + settings.getUserDictionaries().size();
+        final List<Dictionary> tableDictionaries = new ArrayList<>(dictionaryTable.getData());
+        final List<Dictionary> settingsDictionaries = new ArrayList<>(
+            WordSettingsComponentHelperKt.addSets(settings.getBundledDictionaries(), settings.getUserDictionaries())
+        );
+
+        return !JavaHelperKt.orderedEquals(tableDictionaries, settingsDictionaries);
     }
 
     @Override
@@ -192,6 +199,9 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
      * @return a list containing the values of {@code list} that are of class {@code cls}
      */
     private static <SUB, SUP> Set<SUB> filterIsInstance(final Collection<SUP> list, final Class<SUB> cls) {
-        return list.stream().filter(cls::isInstance).map(cls::cast).collect(Collectors.toSet());
+        return list.stream()
+            .filter(cls::isInstance)
+            .map(cls::cast)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

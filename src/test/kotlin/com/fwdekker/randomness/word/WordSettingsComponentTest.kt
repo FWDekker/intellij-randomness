@@ -15,13 +15,13 @@ import org.assertj.swing.fixture.FrameFixture
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.junit.jupiter.api.fail
 
 
 /**
  * GUI tests for [WordSettingsComponent].
  */
 object WordSettingsComponentTest : Spek({
+    lateinit var tempFileHelper: TempFileHelper
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var wordSettings: WordSettings
     lateinit var wordSettingsComponent: WordSettingsComponent
@@ -36,6 +36,8 @@ object WordSettingsComponentTest : Spek({
 
     @Suppress("UNCHECKED_CAST")
     beforeEachTest {
+        tempFileHelper = TempFileHelper()
+
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -56,6 +58,7 @@ object WordSettingsComponentTest : Spek({
     afterEachTest {
         ideaFixture.tearDown()
         frame.cleanUp()
+        tempFileHelper.cleanUp()
     }
 
 
@@ -172,12 +175,9 @@ object WordSettingsComponentTest : Spek({
 
         describe("dictionaries") {
             it("fails if a dictionary of a now-deleted file is given") {
-                val dictionaryFile = createTempFile("test", ".dic")
-                dictionaryFile.writeText("explore\nworm\ndamp")
+                val dictionaryFile = tempFileHelper.createFile("explore\nworm\ndamp", ".dic")
+                    .also { it.delete() }
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
-
-                if (!dictionaryFile.delete())
-                    fail("Failed to delete file as part of test.")
 
                 GuiActionRunner.execute {
                     dictionaryTable.listTableModel.addRow(EditableDatum(true, dictionary))
@@ -220,7 +220,7 @@ object WordSettingsComponentTest : Spek({
             }
 
             it("fails if one the dictionaries is empty") {
-                val dictionaryFile = createTempFile("randomness", ".dic")
+                val dictionaryFile = tempFileHelper.createFile("", ".dic")
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
 
                 wordSettings.userDictionaries = setOf(dictionary)
@@ -229,15 +229,13 @@ object WordSettingsComponentTest : Spek({
 
                 val validationInfo = wordSettingsComponent.doValidate()
 
-                dictionaryFile.delete()
-
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
                 assertThat(validationInfo?.message).matches("Dictionary `.*\\.dic` is empty\\.")
             }
 
             it("fails if a dictionary is added twice") {
-                val dictionaryFile = createTempFile("randomness", ".dic")
+                val dictionaryFile = tempFileHelper.createFile("whistle", ".dic")
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
 
                 wordSettings.userDictionaries = setOf(dictionary)
@@ -249,8 +247,6 @@ object WordSettingsComponentTest : Spek({
                 }
 
                 val validationInfo = wordSettingsComponent.doValidate()
-
-                dictionaryFile.delete()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
@@ -324,12 +320,9 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(wordSettingsComponentConfigurable.isModified).isFalse()
             }
-        }
 
-        describe("duplication detection") {
             it("detects a copy of a dictionary") {
-                val dictionaryFile = createTempFile("test", ".dic")
-                dictionaryFile.writeText("somehow")
+                val dictionaryFile = tempFileHelper.createFile("somehow", ".dic")
                 val dictionary1 = UserDictionary.cache.get(dictionaryFile.absolutePath)
                 val dictionary2 = UserDictionary.cache.get(dictionaryFile.absolutePath)
 
@@ -337,7 +330,26 @@ object WordSettingsComponentTest : Spek({
                 wordSettingsComponentConfigurable.apply()
                 GuiActionRunner.execute { dictionaryTable.listTableModel.addRow(EditableDatum(false, dictionary2)) }
 
-                dictionaryFile.delete()
+                assertThat(wordSettingsComponentConfigurable.isModified).isTrue()
+            }
+
+            it("detects reordering of the entries") {
+                val dictionaryFile1 = tempFileHelper.createFile("harvest", ".dic")
+                val dictionary1 =
+                    EditableDatum<Dictionary>(false, UserDictionary.cache.get(dictionaryFile1.absolutePath))
+                val dictionaryFile2 = tempFileHelper.createFile("music", ".dic")
+                val dictionary2 =
+                    EditableDatum<Dictionary>(false, UserDictionary.cache.get(dictionaryFile2.absolutePath))
+
+                GuiActionRunner.execute {
+                    dictionaryTable.listTableModel.addRow(dictionary1)
+                    dictionaryTable.listTableModel.addRow(dictionary2)
+                }
+                wordSettingsComponentConfigurable.apply()
+                GuiActionRunner.execute {
+                    dictionaryTable.listTableModel.removeRow(0)
+                    dictionaryTable.listTableModel.addRow(dictionary1)
+                }
 
                 assertThat(wordSettingsComponentConfigurable.isModified).isTrue()
             }
