@@ -50,7 +50,7 @@ object DictionaryTableTest : Spek({
         it("throws an exception for unknown dictionary types") {
             assertThatThrownBy { GuiActionRunner.execute { dictionaryTable.data = listOf(mock {}) } }
                 .isInstanceOf(IllegalStateException::class.java)
-                .hasMessage("Unexpected dictionary implementation.")
+                .hasMessage(DictionaryTable.DICTIONARY_CAST_EXCEPTION)
         }
     }
 
@@ -72,7 +72,7 @@ object DictionaryTableTest : Spek({
         it("throws an exception for unknown dictionary types") {
             assertThatThrownBy { GuiActionRunner.execute { dictionaryTable.data = listOf(mock {}) } }
                 .isInstanceOf(IllegalStateException::class.java)
-                .hasMessage("Unexpected dictionary implementation.")
+                .hasMessage(DictionaryTable.DICTIONARY_CAST_EXCEPTION)
         }
 
         it("changes the location of a user dictionary") {
@@ -106,6 +106,8 @@ object DictionaryTableTest : Spek({
             it("copies a bundled dictionary to a user dictionary") {}
 
             it("copies a user dictionary to a user dictionary") {}
+
+            it("cannot copy a different type of dictionary") {}
         }
     }
 })

@@ -330,11 +330,12 @@ object WordSettingsComponentTest : Spek({
             it("detects a copy of a dictionary") {
                 val dictionaryFile = createTempFile("test", ".dic")
                 dictionaryFile.writeText("somehow")
-                val dictionary = EditableDatum<Dictionary>(false, UserDictionary.cache.get(dictionaryFile.absolutePath))
+                val dictionary1 = UserDictionary.cache.get(dictionaryFile.absolutePath)
+                val dictionary2 = UserDictionary.cache.get(dictionaryFile.absolutePath)
 
-                GuiActionRunner.execute { dictionaryTable.listTableModel.addRow(dictionary) }
+                GuiActionRunner.execute { dictionaryTable.listTableModel.addRow(EditableDatum(false, dictionary1)) }
                 wordSettingsComponentConfigurable.apply()
-                GuiActionRunner.execute { dictionaryTable.listTableModel.addRow(dictionary) }
+                GuiActionRunner.execute { dictionaryTable.listTableModel.addRow(EditableDatum(false, dictionary2)) }
 
                 dictionaryFile.delete()
 
