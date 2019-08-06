@@ -40,7 +40,7 @@ abstract class ActivityTableModelEditor<T>(
         /**
          * Whether newly added data are active by default.
          */
-        private const val DEFAULT_STATE = false
+        const val DEFAULT_STATE = true
 
 
         /**

@@ -88,6 +88,37 @@ object DictionaryTest : Spek({
                 assertThat(dictionary.toString()).isEqualTo("[bundled] does_not_exist.dic")
             }
         }
+
+        describe("equals + hash code") {
+            it("equals itself") {
+                val dictionary = BundledDictionary.cache.get("dictionary.dic")
+
+                assertThat(dictionary).isEqualTo(dictionary)
+                assertThat(dictionary.hashCode()).isEqualTo(dictionary.hashCode())
+            }
+
+            it("equals a dictionary with the same filename") {
+                val dictionary1 = BundledDictionary.cache.get("dictionary.dic")
+                val dictionary2 = BundledDictionary.cache.get("dictionary.dic")
+
+                assertThat(dictionary1).isEqualTo(dictionary2)
+                assertThat(dictionary1.hashCode()).isEqualTo(dictionary2.hashCode())
+            }
+
+            it("does not equal a user dictionary with the same filename") {
+                val dictionary1 = BundledDictionary.cache.get("dictionary.dic")
+                val dictionary2 = UserDictionary.cache.get("dictionary.dic")
+
+                assertThat(dictionary1).isNotEqualTo(dictionary2)
+            }
+
+            it("does not equal a different object") {
+                val dictionary = BundledDictionary.cache.get("dictionary.dic")
+                val other = Any()
+
+                assertThat(dictionary).isNotEqualTo(other)
+            }
+        }
     }
 
     describe("UserDictionary") {
@@ -193,6 +224,37 @@ object DictionaryTest : Spek({
                 val dictionary = UserDictionary.cache.get("does_not_exist.dic", false)
 
                 assertThat(dictionary.toString()).isEqualTo("[user] does_not_exist.dic")
+            }
+        }
+
+        describe("equals + hash code") {
+            it("equals itself") {
+                val dictionary = UserDictionary.cache.get("dictionary.dic")
+
+                assertThat(dictionary).isEqualTo(dictionary)
+                assertThat(dictionary.hashCode()).isEqualTo(dictionary.hashCode())
+            }
+
+            it("equals a dictionary with the same filename") {
+                val dictionary1 = UserDictionary.cache.get("dictionary.dic")
+                val dictionary2 = UserDictionary.cache.get("dictionary.dic")
+
+                assertThat(dictionary1).isEqualTo(dictionary2)
+                assertThat(dictionary1.hashCode()).isEqualTo(dictionary2.hashCode())
+            }
+
+            it("does not equal a user dictionary with the same filename") {
+                val dictionary1 = UserDictionary.cache.get("dictionary.dic")
+                val dictionary2 = BundledDictionary.cache.get("dictionary.dic")
+
+                assertThat(dictionary1).isNotEqualTo(dictionary2)
+            }
+
+            it("does not equal a different object") {
+                val dictionary = UserDictionary.cache.get("dictionary.dic")
+                val other = Any()
+
+                assertThat(dictionary).isNotEqualTo(other)
             }
         }
     }

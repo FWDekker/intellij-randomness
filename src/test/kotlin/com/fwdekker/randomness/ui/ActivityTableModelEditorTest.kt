@@ -47,7 +47,8 @@ object ActivityTableModelEditorTest : Spek({
         it("adds entries to the underlying model") {
             GuiActionRunner.execute { modelEditor.data = listOf("overflow") }
 
-            Assertions.assertThat(modelEditor.model.items).containsExactly(EditableDatum(false, "overflow"))
+            Assertions.assertThat(modelEditor.model.items)
+                .containsExactly(EditableDatum(ActivityTableModelEditor.DEFAULT_STATE, "overflow"))
         }
 
         it("removes entries from the underlying model") {
