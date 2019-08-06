@@ -265,6 +265,18 @@ object StringSettingsComponentTest : Spek({
             }
         }
 
+        describe("duplication detection") {
+            it("detects a copy of a dictionary") {
+                val symbolSet = EditableDatum(false, SymbolSet("name", "symbols"))
+
+                GuiActionRunner.execute { symbolSetTable.listTableModel.addRow(symbolSet) }
+                stringSettingsComponentConfigurable.apply()
+                GuiActionRunner.execute { symbolSetTable.listTableModel.addRow(symbolSet) }
+
+                assertThat(stringSettingsComponentConfigurable.isModified).isTrue()
+            }
+        }
+
         describe("resets") {
             it("resets all fields properly") {
                 GuiActionRunner.execute {

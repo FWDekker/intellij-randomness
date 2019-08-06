@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
  *
  * @see WordSettings
  * @see WordSettingsAction
+ * @see DictionaryTable
  */
 public final class WordSettingsComponent extends SettingsComponent<WordSettings> {
     private JPanel contentPane;
@@ -105,6 +106,12 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         settings.setUserDictionaries(filterIsInstance(dictionaryTable.getData(), UserDictionary.class));
         settings.setActiveUserDictionaries(filterIsInstance(dictionaryTable.getActiveData(), UserDictionary.class));
         UserDictionary.Companion.getCache().clear();
+    }
+
+    @Override
+    public boolean isModified(@NotNull WordSettings settings) {
+        return dictionaryTable.getData().size() !=
+            settings.getBundledDictionaries().size() + settings.getUserDictionaries().size();
     }
 
     @Override

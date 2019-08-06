@@ -19,6 +19,7 @@ import javax.swing.JPanel;
  *
  * @see StringSettings
  * @see StringSettingsAction
+ * @see SymbolSetTable
  */
 public final class StringSettingsComponent extends SettingsComponent<StringSettings> {
     private JPanel contentPane;
@@ -96,6 +97,11 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
 
         settings.setSymbolSetList(symbolSetTable.getData());
         settings.setActiveSymbolSetList(symbolSetTable.getActiveData());
+    }
+
+    @Override
+    public boolean isModified(final @NotNull StringSettings settings) {
+        return symbolSetTable.getData().size() != settings.getSymbolSets().size();
     }
 
     @Override

@@ -326,6 +326,22 @@ object WordSettingsComponentTest : Spek({
             }
         }
 
+        describe("duplication detection") {
+            it("detects a copy of a dictionary") {
+                val dictionaryFile = createTempFile("test", ".dic")
+                dictionaryFile.writeText("somehow")
+                val dictionary = EditableDatum<Dictionary>(false, UserDictionary.cache.get(dictionaryFile.absolutePath))
+
+                GuiActionRunner.execute { dictionaryTable.listTableModel.addRow(dictionary) }
+                wordSettingsComponentConfigurable.apply()
+                GuiActionRunner.execute { dictionaryTable.listTableModel.addRow(dictionary) }
+
+                dictionaryFile.delete()
+
+                assertThat(wordSettingsComponentConfigurable.isModified).isTrue()
+            }
+        }
+
         describe("resets") {
             it("resets all fields properly") {
                 GuiActionRunner.execute {

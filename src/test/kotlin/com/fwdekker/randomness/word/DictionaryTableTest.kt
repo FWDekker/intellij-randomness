@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.word
 
-import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.nhaarman.mockitokotlin2.mock
@@ -95,12 +94,18 @@ object DictionaryTableTest : Spek({
         }
     }
 
-    // TODO: Remove button not accessible from tests
+    // TODO: Remove and copy buttons not accessible from tests
     xdescribe("itemEditor") {
-        it("does not remove a bundled dictionary") {
+        describe("remove") {
+            it("does not remove a bundled dictionary") {}
+
+            it("removes a user dictionary") {}
         }
 
-        it("removes a user dictionary") {
+        describe("copy") {
+            it("copies a bundled dictionary to a user dictionary") {}
+
+            it("copies a user dictionary to a user dictionary") {}
         }
     }
 })
