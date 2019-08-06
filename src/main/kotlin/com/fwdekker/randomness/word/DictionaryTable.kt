@@ -71,6 +71,7 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
 
             override fun isRemovable(item: EditableDictionary) = item.datum is UserDictionary
 
+            // TODO #185 Conditionally disable copy button
             override fun clone(item: EditableDictionary, forInPlaceEditing: Boolean): EditableDatum<Dictionary> =
                 if (item.datum is BundledDictionary)
                     EditableDatum(item.active, UserDictionary.cache.get(""))

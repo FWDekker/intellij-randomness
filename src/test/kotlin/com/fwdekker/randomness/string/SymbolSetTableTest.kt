@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.string
 
-import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
