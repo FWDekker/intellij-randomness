@@ -12,6 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -101,7 +103,10 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
 
     @Override
     public boolean isModified(final @NotNull StringSettings settings) {
-        return symbolSetTable.getData().size() != settings.getSymbolSets().size();
+        final List<SymbolSet> tableSymbolSets = new ArrayList<>(symbolSetTable.getData());
+        final List<SymbolSet> settingsSymbolSets = new ArrayList<>(settings.getSymbolSetList());
+
+        return !JavaHelperKt.orderedEquals(tableSymbolSets, settingsSymbolSets);
     }
 
     @Override

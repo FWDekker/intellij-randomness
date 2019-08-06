@@ -324,9 +324,7 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(wordSettingsComponentConfigurable.isModified).isFalse()
             }
-        }
 
-        describe("duplication detection") {
             it("detects a copy of a dictionary") {
                 val dictionaryFile = createTempFile("test", ".dic")
                 dictionaryFile.writeText("somehow")
@@ -338,6 +336,33 @@ object WordSettingsComponentTest : Spek({
                 GuiActionRunner.execute { dictionaryTable.listTableModel.addRow(EditableDatum(false, dictionary2)) }
 
                 dictionaryFile.delete()
+
+                assertThat(wordSettingsComponentConfigurable.isModified).isTrue()
+            }
+
+            // TODO Use `TempFileHelper`
+            it("detects reordering of the entries") {
+                val dictionaryFile1 = createTempFile("test", ".dic")
+                    .also { it.writeText("harvest") }
+                val dictionary1 =
+                    EditableDatum<Dictionary>(false, UserDictionary.cache.get(dictionaryFile1.absolutePath))
+                val dictionaryFile2 = createTempFile("test", ".dic")
+                    .also { it.writeText("music") }
+                val dictionary2 =
+                    EditableDatum<Dictionary>(false, UserDictionary.cache.get(dictionaryFile2.absolutePath))
+
+                GuiActionRunner.execute {
+                    dictionaryTable.listTableModel.addRow(dictionary1)
+                    dictionaryTable.listTableModel.addRow(dictionary2)
+                }
+                wordSettingsComponentConfigurable.apply()
+                GuiActionRunner.execute {
+                    dictionaryTable.listTableModel.removeRow(0)
+                    dictionaryTable.listTableModel.addRow(dictionary1)
+                }
+
+                dictionaryFile1.delete()
+                dictionaryFile2.delete()
 
                 assertThat(wordSettingsComponentConfigurable.isModified).isTrue()
             }
