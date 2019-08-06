@@ -77,8 +77,8 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
         ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
-        symbolSetTable.setSymbolSets(settings.getSymbolSetList());
-        symbolSetTable.setActiveSymbolSets(settings.getActiveSymbolSetList());
+        symbolSetTable.setData(settings.getSymbolSetList());
+        symbolSetTable.setActiveData(settings.getActiveSymbolSetList());
     }
 
     @Override
@@ -94,23 +94,23 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
             ? StringSettings.Companion.getDEFAULT_CAPITALIZATION()
             : CapitalizationMode.Companion.getMode(capitalizationMode));
 
-        settings.setSymbolSetList(symbolSetTable.getSymbolSets());
-        settings.setActiveSymbolSetList(symbolSetTable.getActiveSymbolSets());
+        settings.setSymbolSetList(symbolSetTable.getData());
+        settings.setActiveSymbolSetList(symbolSetTable.getActiveData());
     }
 
     @Override
     @Nullable
     public ValidationInfo doValidate() {
-        if (symbolSetTable.getSymbolSets().stream().anyMatch(it -> it.getName().isEmpty()))
+        if (symbolSetTable.getData().stream().anyMatch(it -> it.getName().isEmpty()))
             return new ValidationInfo("All symbol sets must have a name.", symbolSetPanel);
 
-        if (symbolSetTable.getSymbolSets().stream().map(SymbolSet::getName).distinct().count() != symbolSetTable.getSymbolSets().size())
+        if (symbolSetTable.getData().stream().map(SymbolSet::getName).distinct().count() != symbolSetTable.getData().size())
             return new ValidationInfo("Symbol sets must have unique names.", symbolSetPanel);
 
-        if (symbolSetTable.getSymbolSets().stream().anyMatch(it -> it.getSymbols().isEmpty()))
+        if (symbolSetTable.getData().stream().anyMatch(it -> it.getSymbols().isEmpty()))
             return new ValidationInfo("Symbol sets must have at least one symbol each.", symbolSetPanel);
 
-        if (symbolSetTable.getActiveSymbolSets().isEmpty())
+        if (symbolSetTable.getActiveData().isEmpty())
             return new ValidationInfo("Activate at least one symbol set.", symbolSetPanel);
 
         return JavaHelperKt.firstNonNull(

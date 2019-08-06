@@ -79,9 +79,9 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         ButtonGroupKt.setValue(enclosureGroup, settings.getEnclosure());
         ButtonGroupKt.setValue(capitalizationGroup, settings.getCapitalization());
 
-        dictionaryTable.setDictionaries(WordSettingsComponentHelperKt.addSets(
+        dictionaryTable.setData(WordSettingsComponentHelperKt.addSets(
             settings.getBundledDictionaries(), settings.getUserDictionaries()));
-        dictionaryTable.setActiveDictionaries(WordSettingsComponentHelperKt.addSets(
+        dictionaryTable.setActiveData(WordSettingsComponentHelperKt.addSets(
             settings.getActiveBundledDictionaries(), settings.getActiveUserDictionaries()));
     }
 
@@ -98,12 +98,12 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
             ? WordSettings.Companion.getDEFAULT_CAPITALIZATION()
             : CapitalizationMode.Companion.getMode(capitalization));
 
-        settings.setBundledDictionaries(filterIsInstance(dictionaryTable.getDictionaries(), BundledDictionary.class));
-        settings.setActiveBundledDictionaries(filterIsInstance(dictionaryTable.getActiveDictionaries(), BundledDictionary.class));
+        settings.setBundledDictionaries(filterIsInstance(dictionaryTable.getData(), BundledDictionary.class));
+        settings.setActiveBundledDictionaries(filterIsInstance(dictionaryTable.getActiveData(), BundledDictionary.class));
         BundledDictionary.Companion.getCache().clear();
 
-        settings.setUserDictionaries(filterIsInstance(dictionaryTable.getDictionaries(), UserDictionary.class));
-        settings.setActiveUserDictionaries(filterIsInstance(dictionaryTable.getActiveDictionaries(), UserDictionary.class));
+        settings.setUserDictionaries(filterIsInstance(dictionaryTable.getData(), UserDictionary.class));
+        settings.setActiveUserDictionaries(filterIsInstance(dictionaryTable.getActiveData(), UserDictionary.class));
         UserDictionary.Companion.getCache().clear();
     }
 
@@ -113,10 +113,10 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
         BundledDictionary.Companion.getCache().clear();
         UserDictionary.Companion.getCache().clear();
 
-        if (dictionaryTable.getDictionaries().stream().distinct().count() != dictionaryTable.getDictionaries().size())
+        if (dictionaryTable.getData().stream().distinct().count() != dictionaryTable.getData().size())
             return new ValidationInfo("Dictionaries must be unique.", dictionaryPanel);
 
-        for (final Dictionary dictionary : dictionaryTable.getDictionaries()) {
+        for (final Dictionary dictionary : dictionaryTable.getData()) {
             try {
                 dictionary.validate();
 
@@ -131,7 +131,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
             }
         }
 
-        if (dictionaryTable.getActiveDictionaries().isEmpty())
+        if (dictionaryTable.getActiveData().isEmpty())
             return new ValidationInfo("Select at least one dictionary.", dictionaryPanel);
 
         return JavaHelperKt.firstNonNull(
@@ -151,7 +151,7 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
      * object explaining which input should be changed
      */
     private ValidationInfo validateWordRange() {
-        final Set<String> words = WordSettingsComponentHelperKt.combineDictionaries(dictionaryTable.getActiveDictionaries());
+        final Set<String> words = WordSettingsComponentHelperKt.combineDictionaries(dictionaryTable.getActiveData());
 
         final int maxWordLength = WordSettingsComponentHelperKt.maxLength(words);
         if (minLength.getValue() > maxWordLength) {

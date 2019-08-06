@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -24,7 +25,7 @@ object StringSettingsComponentTest : Spek({
     lateinit var stringSettings: StringSettings
     lateinit var stringSettingsComponent: StringSettingsComponent
     lateinit var stringSettingsComponentConfigurable: StringSettingsConfigurable
-    lateinit var symbolSetTable: TableView<SymbolSetTable.EditableSymbolSet>
+    lateinit var symbolSetTable: TableView<EditableDatum<SymbolSet>>
     lateinit var frame: FrameFixture
 
 
@@ -50,7 +51,7 @@ object StringSettingsComponentTest : Spek({
         stringSettingsComponentConfigurable = StringSettingsConfigurable(stringSettingsComponent)
         frame = showInFrame(stringSettingsComponent.getRootPane())
 
-        symbolSetTable = frame.table().target() as TableView<SymbolSetTable.EditableSymbolSet>
+        symbolSetTable = frame.table().target() as TableView<EditableDatum<SymbolSet>>
     }
 
     afterEachTest {
@@ -82,9 +83,9 @@ object StringSettingsComponentTest : Spek({
         }
 
         it("loads the settings' symbol sets") {
-            assertThat(symbolSetTable.items.map { it.symbolSet })
+            assertThat(symbolSetTable.items.map { it.datum })
                 .containsExactly(SymbolSet.ALPHABET, SymbolSet.DIGITS, SymbolSet.HEXADECIMAL)
-            assertThat(symbolSetTable.items.filter { it.active }.map { it.symbolSet })
+            assertThat(symbolSetTable.items.filter { it.active }.map { it.datum })
                 .containsExactly(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
         }
     }
@@ -140,7 +141,7 @@ object StringSettingsComponentTest : Spek({
 
         describe("symbol sets") {
             it("fails if a symbol set does not have a name") {
-                val symbolSet = SymbolSetTable.EditableSymbolSet(false, SymbolSet("", "abc"))
+                val symbolSet = EditableDatum(false, SymbolSet("", "abc"))
                 GuiActionRunner.execute { symbolSetTable.listTableModel.addRow(symbolSet) }
 
                 val validationInfo = stringSettingsComponent.doValidate()
@@ -151,8 +152,8 @@ object StringSettingsComponentTest : Spek({
             }
 
             it("fails if two symbol sets have the same name") {
-                val symbolSet1 = SymbolSetTable.EditableSymbolSet(false, SymbolSet("name1", "abc"))
-                val symbolSet2 = SymbolSetTable.EditableSymbolSet(false, SymbolSet("name1", "abc"))
+                val symbolSet1 = EditableDatum(false, SymbolSet("name1", "abc"))
+                val symbolSet2 = EditableDatum(false, SymbolSet("name1", "abc"))
                 GuiActionRunner.execute {
                     symbolSetTable.listTableModel.addRow(symbolSet1)
                     symbolSetTable.listTableModel.addRow(symbolSet2)
@@ -166,7 +167,7 @@ object StringSettingsComponentTest : Spek({
             }
 
             it("fails if a symbol set does not have symbols") {
-                val symbolSet = SymbolSetTable.EditableSymbolSet(false, SymbolSet("name", ""))
+                val symbolSet = EditableDatum(false, SymbolSet("name", ""))
                 GuiActionRunner.execute { symbolSetTable.listTableModel.addRow(symbolSet) }
 
                 val validationInfo = stringSettingsComponent.doValidate()
@@ -199,8 +200,8 @@ object StringSettingsComponentTest : Spek({
                 frame.radioButton("capitalizationUpper").target().isSelected = true
 
                 repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
-                symbolSetTable.listTableModel.addRow(SymbolSetTable.EditableSymbolSet(false, SymbolSet.BRACKETS))
-                symbolSetTable.listTableModel.addRow(SymbolSetTable.EditableSymbolSet(true, SymbolSet.MINUS))
+                symbolSetTable.listTableModel.addRow(EditableDatum(false, SymbolSet.BRACKETS))
+                symbolSetTable.listTableModel.addRow(EditableDatum(true, SymbolSet.MINUS))
             }
 
             stringSettingsComponent.saveSettings()
@@ -271,7 +272,7 @@ object StringSettingsComponentTest : Spek({
                     frame.spinner("maxLength").target().value = 102
                     frame.radioButton("enclosureSingle").target().isSelected = true
                     frame.radioButton("capitalizationLower").target().isSelected = true
-                    symbolSetTable.listTableModel.addRow(SymbolSetTable.EditableSymbolSet(true, SymbolSet.MINUS))
+                    symbolSetTable.listTableModel.addRow(EditableDatum(true, SymbolSet.MINUS))
 
                     stringSettingsComponentConfigurable.reset()
                 }

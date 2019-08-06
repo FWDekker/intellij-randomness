@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -25,7 +26,7 @@ object WordSettingsComponentTest : Spek({
     lateinit var wordSettings: WordSettings
     lateinit var wordSettingsComponent: WordSettingsComponent
     lateinit var wordSettingsComponentConfigurable: WordSettingsConfigurable
-    lateinit var dictionaryTable: TableView<DictionaryTable.EditableDictionary>
+    lateinit var dictionaryTable: TableView<EditableDatum<Dictionary>>
     lateinit var frame: FrameFixture
 
 
@@ -49,7 +50,7 @@ object WordSettingsComponentTest : Spek({
         wordSettingsComponentConfigurable = WordSettingsConfigurable(wordSettingsComponent)
         frame = showInFrame(wordSettingsComponent.getRootPane())
 
-        dictionaryTable = frame.table().target() as TableView<DictionaryTable.EditableDictionary>
+        dictionaryTable = frame.table().target() as TableView<EditableDatum<Dictionary>>
     }
 
     afterEachTest {
@@ -83,11 +84,11 @@ object WordSettingsComponentTest : Spek({
         }
 
         it("loads the settings' bundled dictionaries") {
-            assertThat(dictionaryTable.items.map { it.dictionary }).containsExactly(
+            assertThat(dictionaryTable.items.map { it.datum }).containsExactly(
                 BundledDictionary.cache.get(BundledDictionary.SIMPLE_DICTIONARY),
                 BundledDictionary.cache.get(BundledDictionary.EXTENDED_DICTIONARY)
             )
-            assertThat(dictionaryTable.items.filter { it.active }.map { it.dictionary }).containsExactly(
+            assertThat(dictionaryTable.items.filter { it.active }.map { it.datum }).containsExactly(
                 BundledDictionary.cache.get(BundledDictionary.EXTENDED_DICTIONARY)
             )
         }
@@ -179,7 +180,7 @@ object WordSettingsComponentTest : Spek({
                     fail("Failed to delete file as part of test.")
 
                 GuiActionRunner.execute {
-                    dictionaryTable.listTableModel.addRow(DictionaryTable.EditableDictionary(true, dictionary))
+                    dictionaryTable.listTableModel.addRow(EditableDatum(true, dictionary))
                 }
 
                 val validationInfo = wordSettingsComponent.doValidate()
@@ -243,8 +244,8 @@ object WordSettingsComponentTest : Spek({
                 wordSettings.activeUserDictionaries = wordSettings.userDictionaries
                 GuiActionRunner.execute {
                     wordSettingsComponent.loadSettings(wordSettings)
-                    dictionaryTable.listTableModel.addRow(DictionaryTable.EditableDictionary(true, dictionary))
-                    dictionaryTable.listTableModel.addRow(DictionaryTable.EditableDictionary(true, dictionary))
+                    dictionaryTable.listTableModel.addRow(EditableDatum(true, dictionary))
+                    dictionaryTable.listTableModel.addRow(EditableDatum(true, dictionary))
                 }
 
                 val validationInfo = wordSettingsComponent.doValidate()
