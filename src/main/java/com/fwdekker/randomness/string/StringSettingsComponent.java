@@ -19,6 +19,7 @@ import javax.swing.JPanel;
  *
  * @see StringSettings
  * @see StringSettingsAction
+ * @see SymbolSetTable
  */
 public final class StringSettingsComponent extends SettingsComponent<StringSettings> {
     private JPanel contentPane;

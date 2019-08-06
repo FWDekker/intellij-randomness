@@ -7,6 +7,7 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.Transient
 
 
@@ -34,14 +35,14 @@ data class WordSettings(
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var bundledDictionaryFiles: MutableSet<String> =
-        mutableSetOf(BundledDictionary.SIMPLE_DICTIONARY, BundledDictionary.EXTENDED_DICTIONARY),
-    var userDictionaryFiles: MutableSet<String> =
-        mutableSetOf(),
-    var activeBundledDictionaryFiles: MutableSet<String> =
-        mutableSetOf(BundledDictionary.SIMPLE_DICTIONARY),
-    var activeUserDictionaryFiles: MutableSet<String> =
-        mutableSetOf()
+    @MapAnnotation(sortBeforeSave = false)
+    var bundledDictionaryFiles: MutableSet<String> = DEFAULT_BUNDLED_DICTIONARY_FILES.toMutableSet(),
+    @MapAnnotation(sortBeforeSave = false)
+    var activeBundledDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES.toMutableSet(),
+    @MapAnnotation(sortBeforeSave = false)
+    var userDictionaryFiles: MutableSet<String> = DEFAULT_USER_DICTIONARY_FILES.toMutableSet(),
+    @MapAnnotation(sortBeforeSave = false)
+    var activeUserDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES.toMutableSet()
 ) : Settings<WordSettings> {
     companion object {
         /**
@@ -60,6 +61,23 @@ data class WordSettings(
          * The default value of the [capitalization][WordSettings.capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
+        /**
+         * The default value of the [bundledDictionaryFiles][WordSettings.bundledDictionaryFiles] field.
+         */
+        val DEFAULT_BUNDLED_DICTIONARY_FILES =
+            setOf(BundledDictionary.SIMPLE_DICTIONARY, BundledDictionary.EXTENDED_DICTIONARY)
+        /**
+         * The default value of the [activeBundledDictionaryFiles][WordSettings.activeBundledDictionaryFiles] field.
+         */
+        val DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES = setOf(BundledDictionary.SIMPLE_DICTIONARY)
+        /**
+         * The default value of the [userDictionaryFiles][WordSettings.userDictionaryFiles] field.
+         */
+        val DEFAULT_USER_DICTIONARY_FILES = setOf<String>()
+        /**
+         * The default value of the [activeUserDictionaryFiles][WordSettings.activeUserDictionaryFiles] field.
+         */
+        val DEFAULT_ACTIVE_USER_DICTIONARY_FILES = setOf<String>()
 
 
         /**

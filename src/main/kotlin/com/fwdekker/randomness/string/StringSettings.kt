@@ -7,6 +7,7 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.Transient
 
 
@@ -30,8 +31,10 @@ data class StringSettings(
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var symbolSets: Map<String, String> = SymbolSet.defaultSymbolSets.toMap(),
-    var activeSymbolSets: Map<String, String> = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
+    @MapAnnotation(sortBeforeSave = false)
+    var symbolSets: Map<String, String> = DEFAULT_SYMBOL_SETS.toMap(),
+    @MapAnnotation(sortBeforeSave = false)
+    var activeSymbolSets: Map<String, String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMap()
 ) : Settings<StringSettings> {
     companion object {
         /**
@@ -50,6 +53,14 @@ data class StringSettings(
          * The default value of the [capitalization][StringSettings.capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RANDOM
+        /**
+         * The default value of the [symbolSets][StringSettings.symbolSets] field.
+         */
+        val DEFAULT_SYMBOL_SETS = SymbolSet.defaultSymbolSets.toMap()
+        /**
+         * The default value of the [activeSymbolSets][StringSettings.activeSymbolSets] field.
+         */
+        val DEFAULT_ACTIVE_SYMBOL_SETS = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
 
 
         /**

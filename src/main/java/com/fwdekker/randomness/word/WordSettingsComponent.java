@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
  *
  * @see WordSettings
  * @see WordSettingsAction
+ * @see DictionaryTable
  */
 public final class WordSettingsComponent extends SettingsComponent<WordSettings> {
     private JPanel contentPane;
