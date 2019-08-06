@@ -97,6 +97,21 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
     }
 
     /**
+     * Returns `true` iff this dictionary's filename equals [other]'s filename.
+     *
+     * @param other an object
+     * @return `true` iff this dictionary's filename equals [other]'s filename
+     */
+    override fun equals(other: Any?) = other is BundledDictionary && this.filename == other.filename
+
+    /**
+     * Returns the hash code of the filename.
+     *
+     * @return the hash code of the filename
+     */
+    override fun hashCode() = filename.hashCode()
+
+    /**
      * Returns a human-readable string of the dictionary's filename.
      *
      * @return a human-readable string of the dictionary's filename
@@ -150,4 +165,19 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
      * @return a human-readable string of the dictionary's filename
      */
     override fun toString() = "[user] $filename"
+
+    /**
+     * Returns `true` iff this dictionary's filename equals [other]'s filename.
+     *
+     * @param other an object
+     * @return `true` iff this dictionary's filename equals [other]'s filename
+     */
+    override fun equals(other: Any?) = other is UserDictionary && this.filename == other.filename
+
+    /**
+     * Returns the hash code of the filename.
+     *
+     * @return the hash code of the filename
+     */
+    override fun hashCode() = filename.hashCode()
 }
