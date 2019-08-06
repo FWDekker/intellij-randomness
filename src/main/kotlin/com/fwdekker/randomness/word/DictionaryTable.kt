@@ -91,5 +91,5 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
      *
      * @return a new placeholder [Dictionary] instance
      */
-    override fun createElement() = EditableDictionary(false, UserDictionary.cache.get("", true))
+    override fun createElement() = EditableDictionary(DEFAULT_STATE, UserDictionary.cache.get("", true))
 }

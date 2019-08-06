@@ -50,7 +50,7 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
             override fun getItemClass() = EditableSymbolSet(false, SymbolSet("", ""))::class.java
 
             override fun clone(item: EditableSymbolSet, forInPlaceEditing: Boolean) =
-                EditableSymbolSet(item.active, item.datum)
+                EditableSymbolSet(item.active, SymbolSet(item.datum.name, item.datum.symbols))
         }
 
         /**
@@ -65,5 +65,5 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
      *
      * @return a new placeholder [SymbolSet] instance
      */
-    override fun createElement() = EditableSymbolSet(false, SymbolSet("", ""))
+    override fun createElement() = EditableSymbolSet(DEFAULT_STATE, SymbolSet("", ""))
 }
