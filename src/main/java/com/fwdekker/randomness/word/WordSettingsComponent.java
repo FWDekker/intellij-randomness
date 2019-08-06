@@ -109,6 +109,12 @@ public final class WordSettingsComponent extends SettingsComponent<WordSettings>
     }
 
     @Override
+    public boolean isModified(@NotNull WordSettings settings) {
+        return dictionaryTable.getData().size() !=
+            settings.getBundledDictionaries().size() + settings.getUserDictionaries().size();
+    }
+
+    @Override
     @Nullable
     public ValidationInfo doValidate() {
         BundledDictionary.Companion.getCache().clear();

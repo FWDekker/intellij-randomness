@@ -22,7 +22,18 @@ abstract class SettingsComponent<S : Settings<S>>(private val settings: S) : Set
      *
      * @return true if this component contains unsaved changes
      */
-    fun isModified() = settings.copyState().also { saveSettings(it) } != settings
+    fun isModified() = settings.copyState().also { saveSettings(it) } != settings || isModified(settings)
+
+    /**
+     * Returns true if this component contains unsaved changes.
+     *
+     * Implement this method if the user should be able to reset their changes even if saving would not actually change
+     * the settings object.
+     *
+     * @param settings the settings as they were loaded into the component
+     * @return true if this component contains unsaved changes
+     */
+    open fun isModified(settings: S): Boolean = false
 
     /**
      * Discards unsaved changes.

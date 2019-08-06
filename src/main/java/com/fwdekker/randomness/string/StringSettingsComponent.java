@@ -100,6 +100,11 @@ public final class StringSettingsComponent extends SettingsComponent<StringSetti
     }
 
     @Override
+    public boolean isModified(final @NotNull StringSettings settings) {
+        return symbolSetTable.getData().size() != settings.getSymbolSets().size();
+    }
+
+    @Override
     @Nullable
     public ValidationInfo doValidate() {
         if (symbolSetTable.getData().stream().anyMatch(it -> it.getName().isEmpty()))

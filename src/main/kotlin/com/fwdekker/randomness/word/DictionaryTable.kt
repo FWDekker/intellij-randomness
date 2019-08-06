@@ -71,8 +71,11 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
 
             override fun isRemovable(item: EditableDictionary) = item.datum is UserDictionary
 
-            override fun clone(item: EditableDictionary, forInPlaceEditing: Boolean) =
-                EditableDatum(item.active, item.datum)
+            override fun clone(item: EditableDictionary, forInPlaceEditing: Boolean): EditableDatum<Dictionary> =
+                if (item.datum is BundledDictionary)
+                    EditableDatum(item.active, UserDictionary.cache.get(""))
+                else
+                    EditableDatum(item.active, item.datum)
         }
 
         /**
