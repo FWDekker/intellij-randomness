@@ -1,0 +1,123 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>CapitalizationMode - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness</a>&nbsp;/&nbsp;<a href="./index.html">CapitalizationMode</a><br/>
+<br/>
+<h1>CapitalizationMode</h1>
+<code><span class="keyword">enum</span> <span class="keyword">class </span><span class="identifier">CapitalizationMode</span></code>
+<p>A mode in which a word should be capitalized.</p>
+<h3>Parameters</h3>
+<p><a name="descriptor"></a>
+<code>descriptor</code> - the name of the capitalization mode</p>
+<p><a name="transform"></a>
+<code>transform</code> - the function which capitalizes the given string to the mode's format</p>
+<h3>Enum Values</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-r-e-t-a-i-n.html">RETAIN</a></p>
+</td>
+<td>
+<p>Does not change the string.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-s-e-n-t-e-n-c-e.html">SENTENCE</a></p>
+</td>
+<td>
+<p>Makes the first character uppercase and all characters after that lowercase.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-u-p-p-e-r.html">UPPER</a></p>
+</td>
+<td>
+<p>Makes all characters uppercase.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-l-o-w-e-r.html">LOWER</a></p>
+</td>
+<td>
+<p>Makes all characters lowercase.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-f-i-r-s-t_-l-e-t-t-e-r.html">FIRST_LETTER</a></p>
+</td>
+<td>
+<p>Makes the first letter of each word uppercase.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-r-a-n-d-o-m.html">RANDOM</a></p>
+</td>
+<td>
+<p>Makes each letter randomly uppercase or lowercase.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="descriptor.html">descriptor</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">descriptor</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>the name of the capitalization mode</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="transform.html">transform</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">transform</span><span class="symbol">: </span><span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>the function which capitalizes the given string to the mode's format</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="to-string.html">toString</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">toString</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Returns the descriptor of the capitalization mode.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get-mode.html">getMode</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getMode</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.CapitalizationMode.Companion$getMode(kotlin.String)/descriptor">descriptor</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">CapitalizationMode</span></a></code>
+<p>Returns the capitalization mode with the given name.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

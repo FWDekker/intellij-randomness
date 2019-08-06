@@ -1,0 +1,21 @@
+$dokka.format:html
+$dokka.linkExtension:html
+$dokka.location:com.fwdekker.randomness$orderedEquals(kotlin.collections.Collection((com.fwdekker.randomness.orderedEquals.T)), kotlin.collections.Collection((com.fwdekker.randomness.orderedEquals.T)))com.fwdekker.randomness/kotlin.collections.-collection/ordered-equals.html
+$dokka.location:com.fwdekker.randomness.string$sum(kotlin.collections.Iterable((com.fwdekker.randomness.string.SymbolSet)))com.fwdekker.randomness.string/kotlin.collections.-iterable/sum.html
+$dokka.location:com.fwdekker.randomness.string$toMap(kotlin.collections.Collection((com.fwdekker.randomness.string.SymbolSet)))com.fwdekker.randomness.string/kotlin.collections.-collection/to-map.html
+$dokka.location:com.fwdekker.randomness.string$toSymbolSets(kotlin.collections.Map((kotlin.String, )))com.fwdekker.randomness.string/kotlin.collections.-map/to-symbol-sets.html
+$dokka.location:com.fwdekker.randomness.ui$disableSpeedSearch(com.intellij.ui.popup.list.ListPopupImpl)com.fwdekker.randomness.ui/com.intellij.ui.popup.list.-list-popup-impl/disable-speed-search.html
+$dokka.location:com.fwdekker.randomness.ui$forEach(javax.swing.ButtonGroup, kotlin.Function1((javax.swing.AbstractButton, kotlin.Unit)))com.fwdekker.randomness.ui/javax.swing.-button-group/for-each.html
+$dokka.location:com.fwdekker.randomness.ui$getValue(javax.swing.ButtonGroup)com.fwdekker.randomness.ui/javax.swing.-button-group/get-value.html
+$dokka.location:com.fwdekker.randomness.ui$registerModifierActions(com.intellij.ui.popup.list.ListPopupImpl, com.fwdekker.randomness.ui.ModifierKey, kotlin.String, kotlin.String)com.fwdekker.randomness.ui/com.intellij.ui.popup.list.-list-popup-impl/register-modifier-actions.html
+$dokka.location:com.fwdekker.randomness.ui$setValue(javax.swing.ButtonGroup, kotlin.Any)com.fwdekker.randomness.ui/javax.swing.-button-group/set-value.html
+$dokka.location:com.fwdekker.randomness.word$maxLength(kotlin.collections.Set((kotlin.String)))com.fwdekker.randomness.word/kotlin.collections.-set/max-length.html
+$dokka.location:com.fwdekker.randomness.word$minLength(kotlin.collections.Set((kotlin.String)))com.fwdekker.randomness.word/kotlin.collections.-set/min-length.html
+com.fwdekker.randomness
+com.fwdekker.randomness.array
+com.fwdekker.randomness.decimal
+com.fwdekker.randomness.integer
+com.fwdekker.randomness.string
+com.fwdekker.randomness.ui
+com.fwdekker.randomness.uuid
+com.fwdekker.randomness.word
