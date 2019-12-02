@@ -57,3 +57,7 @@ gradlew dokka               # Generate documentation
 
 ## Credits
 Thanks to [Georgios Andreadis](https://github.com/gandreadis) for the logo!
+
+
+## Test
+This is a test.
