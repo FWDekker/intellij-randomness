@@ -50,8 +50,7 @@ class JSpinnerRange @JvmOverloads constructor(
     constructor(min: JSpinner, max: JSpinner, name: String?) : this(min, max, DEFAULT_MAX_RANGE, name)
 
     init {
-        if (maxRange < 0)
-            throw IllegalArgumentException("maxRange must be a positive number.")
+        require(maxRange >= 0) { "maxRange must be a positive number." }
     }
 
 

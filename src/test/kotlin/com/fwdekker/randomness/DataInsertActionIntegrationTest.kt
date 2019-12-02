@@ -4,16 +4,14 @@ import com.fwdekker.randomness.array.ArraySettings
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Document
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.assertj.core.api.Assertions.assertThat
 
 
 /**
  * Integration tests for [DataInsertAction].
- *
- * Note that `LightPlatformCodeInsightFixtureTestCase` is a JUnit 3 test class.
  */
-class DataInsertActionIntegrationTest : LightPlatformCodeInsightFixtureTestCase() {
+class DataInsertActionIntegrationTest : BasePlatformTestCase() {
     companion object {
         /**
          * The recognizable string that is inserted by the insertion action.

@@ -1,6 +1,3 @@
-autoCorrect: false
-
-
 comments:
     # Nothing wrong with documenting private methods.
     CommentOverPrivateFunction:
@@ -21,6 +18,9 @@ formatting:
     # That's part of my code style.
     NoConsecutiveBlankLines:
         active: false
+    # Acceptable because of auto-formatting.
+    MultiLineIfElse:
+        active: false
 
 naming:
     # Static analysis is not good at estimating this.
@@ -38,6 +38,9 @@ potential-bugs:
 style:
     # Those functions are added as conscious design decisions.
     DataClassContainsFunctions:
+        active: false
+    # Not if they're settings objects.
+    DataClassShouldBeImmutable:
         active: false
     # Such comments are OK.
     ForbiddenComment:
