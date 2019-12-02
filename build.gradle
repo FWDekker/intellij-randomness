@@ -26,16 +26,16 @@ dependencies {
     implementation group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk8"
     implementation group: "org.jetbrains.kotlin", name: "kotlin-reflect"
 
-    testCompile group: "com.nhaarman.mockitokotlin2", name: "mockito-kotlin", version: mockitoKotlinVersion
-    testCompile group: "org.assertj", name: "assertj-core", version: assertjVersion
-    testCompile group: "org.assertj", name: "assertj-swing-junit", version: assertjSwingVersion
-    testCompile group: "org.jetbrains.spek", name: "spek-api", version: spekVersion
-    testCompile group: "org.jetbrains.spek", name: "spek-junit-platform-engine", version: spekVersion
-    testCompile group: "org.junit.platform", name: "junit-platform-runner", version: junitRunnerVersion
-    testCompile group: "org.junit.jupiter", name: "junit-jupiter-api", version: junitVersion
-    testCompile group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
-    testCompile group: "org.junit.jupiter", name: "junit-jupiter-params", version: junitVersion
-    testCompile group: "org.junit.vintage", name: "junit-vintage-engine", version: junitVersion
+    testImplementation group: "com.nhaarman.mockitokotlin2", name: "mockito-kotlin", version: mockitoKotlinVersion
+    testImplementation group: "org.assertj", name: "assertj-core", version: assertjVersion
+    testImplementation group: "org.assertj", name: "assertj-swing-junit", version: assertjSwingVersion
+    testImplementation group: "org.jetbrains.spek", name: "spek-api", version: spekVersion
+    testImplementation group: "org.jetbrains.spek", name: "spek-junit-platform-engine", version: spekVersion
+    testImplementation group: "org.junit.platform", name: "junit-platform-runner", version: junitRunnerVersion
+    testImplementation group: "org.junit.jupiter", name: "junit-jupiter-api", version: junitVersion
+    testImplementation group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
+    testImplementation group: "org.junit.jupiter", name: "junit-jupiter-params", version: junitVersion
+    testImplementation group: "org.junit.vintage", name: "junit-vintage-engine", version: junitVersion
 
     detektPlugins group: "io.gitlab.arturbosch.detekt", name: "detekt-formatting", version: detektVersion
 }
@@ -43,6 +43,13 @@ dependencies {
 
 /// Configuration
 // Compilation
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
 intellij {
     version = intellijVersion
     updateSinceUntilBuild = false
