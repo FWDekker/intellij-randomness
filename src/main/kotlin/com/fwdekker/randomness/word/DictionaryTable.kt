@@ -19,6 +19,9 @@ private typealias EditableDictionary = EditableDatum<Dictionary>
 class DictionaryTable : ActivityTableModelEditor<Dictionary>(
     arrayOf(TYPE_COLUMN, LOCATION_COLUMN), ITEM_EDITOR, EMPTY_TEXT) {
     companion object {
+        /**
+         * The error message that is displayed if an unknown dictionary implementation is used.
+         */
         const val DICTIONARY_CAST_EXCEPTION = "Unexpected dictionary implementation."
 
         /**
@@ -32,7 +35,7 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
                     when (dictionary) {
                         is BundledDictionary -> "bundled"
                         is UserDictionary -> "user"
-                        else -> throw IllegalStateException(DICTIONARY_CAST_EXCEPTION)
+                        else -> error(DICTIONARY_CAST_EXCEPTION)
                     }
                 }
         }
@@ -48,7 +51,7 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
                     when (dictionary) {
                         is BundledDictionary -> dictionary.filename
                         is UserDictionary -> dictionary.filename
-                        else -> throw IllegalStateException(DICTIONARY_CAST_EXCEPTION)
+                        else -> error(DICTIONARY_CAST_EXCEPTION)
                     }
                 }
 
@@ -79,7 +82,7 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
                     when (dictionary) {
                         is BundledDictionary -> EditableDatum(item.active, UserDictionary.cache.get(""))
                         is UserDictionary -> EditableDatum(item.active, UserDictionary.cache.get(dictionary.filename))
-                        else -> throw IllegalStateException(DICTIONARY_CAST_EXCEPTION)
+                        else -> error(DICTIONARY_CAST_EXCEPTION)
                     }
                 }
         }
