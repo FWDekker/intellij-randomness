@@ -20,7 +20,7 @@ This plugin is also available on the [plugin repository](https://plugins.jetbrai
 ## How to use
 <img align="right" src=".github/string-settings-cropped.png" alt="String settings" />
 
-To insert random data, press `Alt + R` (or `⌥R`) and choose the type of data you want to insert. Hold `Shift` while selecting a data type to insert a whole array of values, or hold `Ctrl` (or `⌥`) while selecting to change the settings of that data type.
+To insert random data, press <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) and choose the type of data you want to insert. Hold <kbd>Shift</kbd> while selecting a data type to insert a whole array of values, or hold <kbd>Ctrl</kbd> (or <kbd>⌥</kbd>) while selecting to change the settings of that data type.
 
 
 ## Features
