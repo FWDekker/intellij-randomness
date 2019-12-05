@@ -102,7 +102,7 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
  * @param stepSize the default value to increment and decrement by
  * @param name the name of this component
  */
-class JDoubleSpinner @JvmOverloads constructor(
+class JDoubleSpinner(
     value: Double = 0.0,
     minValue: Double = -Double.MAX_VALUE,
     maxValue: Double = Double.MAX_VALUE,
@@ -131,7 +131,7 @@ class JDoubleSpinner @JvmOverloads constructor(
  * @param stepSize the default value to increment and decrement by
  * @param name the name of this component
  */
-class JLongSpinner @JvmOverloads constructor(
+class JLongSpinner(
     value: Long = 0L,
     minValue: Long = Long.MIN_VALUE,
     maxValue: Long = Long.MAX_VALUE,
@@ -160,7 +160,7 @@ class JLongSpinner @JvmOverloads constructor(
  * @param stepSize the default value to increment and decrement by
  * @param name the name of this component
  */
-class JIntSpinner @JvmOverloads constructor(
+class JIntSpinner(
     value: Int = 0,
     minValue: Int = Int.MIN_VALUE,
     maxValue: Int = Int.MAX_VALUE,

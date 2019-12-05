@@ -76,15 +76,12 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
 
             override fun isRemovable(item: EditableDictionary) = item.datum is UserDictionary
 
-            // TODO #185 Conditionally disable copy button
-            override fun clone(item: EditableDictionary, forInPlaceEditing: Boolean): EditableDatum<Dictionary> =
-                item.datum.let { dictionary ->
-                    when (dictionary) {
-                        is BundledDictionary -> EditableDatum(item.active, UserDictionary.cache.get(""))
-                        is UserDictionary -> EditableDatum(item.active, UserDictionary.cache.get(dictionary.filename))
-                        else -> error(DICTIONARY_CAST_EXCEPTION)
-                    }
-                }
+            override fun clone(item: EditableDictionary, forInPlaceEditing: Boolean): EditableDatum<Dictionary> {
+                val dictionary = item.datum
+                require(dictionary is UserDictionary) { "Cannot copy non-user dictionary." }
+
+                return EditableDatum(item.active, UserDictionary.cache.get(dictionary.filename))
+            }
         }
 
         /**

@@ -15,7 +15,7 @@
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Quotation marks"/>
+          <text resource-bundle="randomness" key="settings.quotation_marks"/>
         </properties>
       </component>
       <component id="eedf3" class="javax.swing.JRadioButton" default-binding="true">
@@ -25,7 +25,7 @@
         <properties>
           <actionCommand value=""/>
           <name value="enclosureNone"/>
-          <text value="None"/>
+          <text resource-bundle="randomness" key="settings.none"/>
         </properties>
       </component>
       <component id="1b72d" class="javax.swing.JRadioButton" default-binding="true">
