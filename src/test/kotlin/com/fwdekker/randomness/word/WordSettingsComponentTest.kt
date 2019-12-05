@@ -50,7 +50,7 @@ object WordSettingsComponentTest : Spek({
 
         wordSettingsComponent = GuiActionRunner.execute<WordSettingsComponent> { WordSettingsComponent(wordSettings) }
         wordSettingsComponentConfigurable = WordSettingsConfigurable(wordSettingsComponent)
-        frame = showInFrame(wordSettingsComponent.getRootPane())
+        frame = showInFrame(wordSettingsComponent.rootPane)
 
         dictionaryTable = frame.table().target() as TableView<EditableDatum<Dictionary>>
     }

@@ -36,7 +36,7 @@ object ArraySettingsComponentTest : Spek({
         arraySettingsComponent =
             GuiActionRunner.execute<ArraySettingsComponent> { ArraySettingsComponent(arraySettings) }
         arraySettingsComponentConfigurable = ArraySettingsConfigurable(arraySettingsComponent)
-        frame = showInFrame(arraySettingsComponent.getRootPane())
+        frame = showInFrame(arraySettingsComponent.rootPane)
     }
 
     afterEachTest {

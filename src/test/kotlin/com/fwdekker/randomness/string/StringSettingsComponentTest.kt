@@ -49,7 +49,7 @@ object StringSettingsComponentTest : Spek({
         stringSettingsComponent =
             GuiActionRunner.execute<StringSettingsComponent> { StringSettingsComponent(stringSettings) }
         stringSettingsComponentConfigurable = StringSettingsConfigurable(stringSettingsComponent)
-        frame = showInFrame(stringSettingsComponent.getRootPane())
+        frame = showInFrame(stringSettingsComponent.rootPane)
 
         symbolSetTable = frame.table().target() as TableView<EditableDatum<SymbolSet>>
     }
