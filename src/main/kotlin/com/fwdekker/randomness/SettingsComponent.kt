@@ -13,6 +13,11 @@ import javax.swing.JPanel
  * @param <S> the type of settings managed by the subclass
  */
 abstract class SettingsComponent<S : Settings<S>>(private val settings: S) : SettingsManager<S> {
+    /**
+     * The panel containing the settings.
+     */
+    abstract val rootPane: JPanel?
+
     override fun loadSettings() = loadSettings(settings)
 
     override fun saveSettings() = saveSettings(settings)
@@ -39,13 +44,6 @@ abstract class SettingsComponent<S : Settings<S>>(private val settings: S) : Set
      * Discards unsaved changes.
      */
     fun reset() = loadSettings()
-
-    /**
-     * Returns the panel containing the settings.
-     *
-     * @return the panel containing the settings
-     */
-    abstract fun getRootPane(): JPanel?
 
     /**
      * Validates all input fields.

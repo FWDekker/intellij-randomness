@@ -86,5 +86,5 @@ abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
      *
      * @return the root pane of the settings component
      */
-    override fun createComponent(): JComponent? = component.getRootPane()
+    override fun createComponent(): JComponent? = component.rootPane
 }

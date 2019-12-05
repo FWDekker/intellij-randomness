@@ -41,14 +41,6 @@ class JSpinnerRange @JvmOverloads constructor(
         get() = (this.max.value as Number).toDouble()
 
 
-    /**
-     * A container for two [JSpinner]s that indicate a range of values, using a default range.
-     *
-     * Used for compatibility with Java.
-     */
-    // TODO Remove this after migrating UI to Kotlin.
-    constructor(min: JSpinner, max: JSpinner, name: String?) : this(min, max, DEFAULT_MAX_RANGE, name)
-
     init {
         require(maxRange >= 0) { "maxRange must be a positive number." }
     }

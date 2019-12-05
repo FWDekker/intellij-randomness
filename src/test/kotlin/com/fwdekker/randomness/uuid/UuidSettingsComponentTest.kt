@@ -30,7 +30,7 @@ object UuidSettingsComponentTest : Spek({
 
         uuidSettingsComponent = GuiActionRunner.execute<UuidSettingsComponent> { UuidSettingsComponent(uuidSettings) }
         uuidSettingsComponentConfigurable = UuidSettingsConfigurable(uuidSettingsComponent)
-        frame = showInFrame(uuidSettingsComponent.getRootPane())
+        frame = showInFrame(uuidSettingsComponent.rootPane)
     }
 
     afterEachTest {

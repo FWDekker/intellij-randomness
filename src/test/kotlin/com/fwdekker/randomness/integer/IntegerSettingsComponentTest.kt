@@ -36,7 +36,7 @@ object IntegerSettingsComponentTest : Spek({
         integerSettingsComponent =
             GuiActionRunner.execute<IntegerSettingsComponent> { IntegerSettingsComponent(integerSettings) }
         integerSettingsComponentConfigurable = IntegerSettingsConfigurable(integerSettingsComponent)
-        frame = showInFrame(integerSettingsComponent.getRootPane())
+        frame = showInFrame(integerSettingsComponent.rootPane)
     }
 
     afterEachTest {

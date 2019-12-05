@@ -55,7 +55,7 @@ class JSpinnerRangeTest {
 
     @Test
     fun testName() {
-        val range = JSpinnerRange(createJSpinner(459.18), createJSpinner(214.93), "name")
+        val range = JSpinnerRange(createJSpinner(459.18), createJSpinner(214.93), name="name")
 
         val info = range.validateValue()
         assertThat(info).isNotNull()

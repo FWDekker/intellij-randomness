@@ -38,7 +38,7 @@ object DecimalSettingsComponentTest : Spek({
         decimalSettingsComponent =
             GuiActionRunner.execute<DecimalSettingsComponent> { DecimalSettingsComponent(decimalSettings) }
         decimalSettingsComponentConfigurable = DecimalSettingsConfigurable(decimalSettingsComponent)
-        frame = showInFrame(decimalSettingsComponent.getRootPane())
+        frame = showInFrame(decimalSettingsComponent.rootPane)
     }
 
     afterEachTest {
