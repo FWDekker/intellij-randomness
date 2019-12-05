@@ -17,7 +17,7 @@ private typealias EditableDictionary = EditableDatum<Dictionary>
  * @see WordSettingsComponent
  */
 class DictionaryTable : ActivityTableModelEditor<Dictionary>(
-    arrayOf(TYPE_COLUMN, LOCATION_COLUMN), ITEM_EDITOR, EMPTY_TEXT) {
+    arrayOf(TYPE_COLUMN, LOCATION_COLUMN), ITEM_EDITOR, EMPTY_TEXT, { it is UserDictionary }) {
     companion object {
         /**
          * The error message that is displayed if an unknown dictionary implementation is used.
