@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.intellij.ui.ToolbarDecorator
 import com.intellij.util.ui.CollectionItemEditor
 import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.table.TableModelEditor
@@ -84,5 +85,8 @@ abstract class ActivityTableModelEditor<T>(
      *
      * @return a new `JPanel` with the table and the corresponding buttons
      */
-    override fun createComponent() = super.createComponent() as JPanel
+    override fun createComponent(): JPanel =
+        TableModelEditor::class.java.getDeclaredField("toolbarDecorator")
+            .apply { isAccessible = true }
+            .let { (it.get(this) as ToolbarDecorator).createPanel() }
 }
