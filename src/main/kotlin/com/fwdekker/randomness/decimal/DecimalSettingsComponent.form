@@ -30,7 +30,7 @@
         </constraints>
         <properties>
           <labelFor value="6a447"/>
-          <text value="Mi&amp;nimum value"/>
+          <text resource-bundle="randomness" key="settings.minimum_value"/>
         </properties>
       </component>
       <component id="d8024" class="javax.swing.JLabel">
@@ -39,7 +39,7 @@
         </constraints>
         <properties>
           <labelFor value="7daea"/>
-          <text value="Ma&amp;ximum value"/>
+          <text resource-bundle="randomness" key="settings.maximum_value"/>
         </properties>
       </component>
       <component id="b93dd" class="com.fwdekker.randomness.ui.JIntSpinner" binding="decimalCount" custom-create="true">
@@ -56,7 +56,7 @@
         </constraints>
         <properties>
           <labelFor value="b93dd"/>
-          <text value="Number of &amp;decimals"/>
+          <text resource-bundle="randomness" key="settings.number_of_decimals"/>
         </properties>
       </component>
       <component id="baa64" class="javax.swing.JRadioButton">
@@ -66,7 +66,7 @@
         <properties>
           <actionCommand value=""/>
           <name value="groupingSeparatorNone"/>
-          <text value="None"/>
+          <text resource-bundle="randomness" key="settings.none"/>
         </properties>
       </component>
       <component id="4dd9" class="javax.swing.JRadioButton">
@@ -101,7 +101,7 @@
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Grouping separator"/>
+          <text resource-bundle="randomness" key="settings.grouping_separator"/>
         </properties>
       </component>
       <component id="c137c" class="javax.swing.JRadioButton">
@@ -127,7 +127,7 @@
           <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Decimal separator"/>
+          <text resource-bundle="randomness" key="settings.decimal_separator"/>
         </properties>
       </component>
       <component id="600de" class="javax.swing.JCheckBox" binding="showTrailingZeroesCheckBox" default-binding="true">
@@ -136,7 +136,7 @@
         </constraints>
         <properties>
           <name value="showTrailingZeroes"/>
-          <text value="&amp;Show trailing zeroes"/>
+          <text resource-bundle="randomness" key="settings.show_trailing_zeroes"/>
         </properties>
       </component>
       <vspacer id="3f22d">

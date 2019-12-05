@@ -8,9 +8,6 @@ import java.io.IOException
 /**
  * Thrown when a [Dictionary] is found to be invalid and cannot be used in the intended way.
  *
- * @constructor
- * Constructs a new exception.
- *
  * @param message the detail message
  * @param cause the cause
  */

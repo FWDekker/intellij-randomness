@@ -15,9 +15,6 @@ import java.awt.event.InputEvent
 /**
  * Thrown if a random datum could not be generated.
  *
- * @constructor
- * Constructs a new exception.
- *
  * @param message the detail message
  * @param cause the cause
  */

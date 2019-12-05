@@ -12,7 +12,7 @@ import javax.swing.JSpinner
  * @param maxRange the maximum difference between `min` and `max`
  * @param name the name used in error messages
  */
-class JSpinnerRange @JvmOverloads constructor(
+class JSpinnerRange(
     private val min: JSpinner,
     private val max: JSpinner,
     private val maxRange: Double = DEFAULT_MAX_RANGE,

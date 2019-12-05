@@ -14,7 +14,7 @@
         </constraints>
         <properties>
           <labelFor value="38ced"/>
-          <text value="&amp;Count"/>
+          <text resource-bundle="randomness" key="settings.count"/>
         </properties>
       </component>
       <vspacer id="dc630">
@@ -35,7 +35,7 @@
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Separator"/>
+          <text resource-bundle="randomness" key="settings.separator"/>
         </properties>
       </component>
       <component id="6b534" class="javax.swing.JRadioButton" default-binding="true">
@@ -53,7 +53,7 @@
         </constraints>
         <properties>
           <name value="spaceAfterSeparator"/>
-          <text value="&amp;Space after separator"/>
+          <text resource-bundle="randomness" key="settings.space_after_separator"/>
         </properties>
       </component>
       <component id="37af5" class="javax.swing.JLabel">
@@ -61,7 +61,7 @@
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Brackets"/>
+          <text resource-bundle="randomness" key="settings.brackets"/>
         </properties>
       </component>
       <component id="39bc6" class="javax.swing.JRadioButton" default-binding="true">
@@ -98,7 +98,7 @@
         <properties>
           <actionCommand value=""/>
           <name value="bracketsNone"/>
-          <text value="None"/>
+          <text resource-bundle="randomness" key="settings.none"/>
         </properties>
       </component>
       <component id="61c87" class="javax.swing.JRadioButton" default-binding="true">
