@@ -1,5 +1,12 @@
 package com.fwdekker.randomness.ui
 
+import com.intellij.ide.IdeBundle
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.wm.IdeFocusManager
+import com.intellij.ui.TableUtil
+import com.intellij.ui.ToolbarDecorator
+import com.intellij.ui.table.TableView
+import com.intellij.util.PlatformIcons
 import com.intellij.util.ui.CollectionItemEditor
 import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.table.TableModelEditor
@@ -26,11 +33,13 @@ data class EditableDatum<T>(var active: Boolean, var datum: T)
  * @param columns the columns of the table, excluding the activity column
  * @param itemEditor describes what happens when a row is edited
  * @param emptyText the text to display when the table is empty
+ * @param isCopyable returns `true` if and only if the given datum can be copied
  */
 abstract class ActivityTableModelEditor<T>(
     columns: Array<ColumnInfo<EditableDatum<T>, *>>,
     itemEditor: CollectionItemEditor<EditableDatum<T>>,
-    emptyText: String
+    emptyText: String,
+    private val isCopyable: (T) -> Boolean = { true }
 ) : TableModelEditor<EditableDatum<T>>(
     arrayOf<ColumnInfo<EditableDatum<T>, *>>(createActivityColumn()).plus(columns),
     itemEditor,
@@ -84,5 +93,33 @@ abstract class ActivityTableModelEditor<T>(
      *
      * @return a new `JPanel` with the table and the corresponding buttons
      */
-    override fun createComponent() = super.createComponent() as JPanel
+    override fun createComponent(): JPanel {
+        @Suppress("UNCHECKED_CAST") // Reflection, see superclass for correctness
+        val table = TableModelEditor::class.java.getDeclaredField("table")
+            .apply { isAccessible = true }
+            .get(this) as TableView<EditableDatum<T>>
+
+        return TableModelEditor::class.java.getDeclaredField("toolbarDecorator")
+            .apply { isAccessible = true }
+            .let { it.get(this) as ToolbarDecorator }
+            .addExtraAction(object :
+                ToolbarDecorator.ElementActionButton(IdeBundle.message("button.copy"), PlatformIcons.COPY_ICON) {
+                // Implementation copied from superclass' `createComponent` method
+                override fun actionPerformed(e: AnActionEvent) {
+                    TableUtil.stopEditing(table)
+
+                    table.selectedObjects
+                        .also { if (it.isEmpty()) return }
+                        .forEach { model.addRow(itemEditor.clone(it, false)) }
+
+                    IdeFocusManager
+                        .getGlobalInstance()
+                        .doWhenFocusSettlesDown { IdeFocusManager.getGlobalInstance().requestFocus(table, true) }
+                    TableUtil.updateScroller(table)
+                }
+
+                override fun isEnabled() = table.selection.all { isCopyable(it.datum) }
+            })
+            .createPanel()
+    }
 }

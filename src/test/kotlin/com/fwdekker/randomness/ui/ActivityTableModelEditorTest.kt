@@ -8,6 +8,7 @@ import org.assertj.swing.edt.GuiActionRunner
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.jetbrains.spek.api.dsl.xdescribe
 
 
 /**
@@ -118,5 +119,18 @@ object ActivityTableModelEditorTest : Spek({
 
             Assertions.assertThat(modelEditor.model.items[0].active).isTrue()
         }
+    }
+
+    // TODO: Copy functionality not accessible from tests
+    xdescribe("copying") {
+        it("copies a copyable element") {}
+
+        it("copies copyable elements") {}
+
+        it("does not copy an uncopyable element") {}
+
+        it("does not copy uncopyable elements") {}
+
+        it("does not copy a mixture of copyable and uncopyable elements") {}
     }
 })
