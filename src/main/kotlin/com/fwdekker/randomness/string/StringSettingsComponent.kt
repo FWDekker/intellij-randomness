@@ -3,6 +3,7 @@ package com.fwdekker.randomness.string
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.string.StringSettings.Companion.DEFAULT_CAPITALIZATION
+import com.fwdekker.randomness.string.StringSettings.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.string.StringSettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
@@ -66,7 +67,7 @@ class StringSettingsComponent(settings: StringSettings = default) : SettingsComp
     override fun saveSettings(settings: StringSettings) {
         settings.minLength = minLength.value
         settings.maxLength = maxLength.value
-        settings.enclosure = enclosureGroup.getValue() ?: StringSettings.DEFAULT_ENCLOSURE
+        settings.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
         settings.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
         settings.symbolSetList = symbolSetTable.data
         settings.activeSymbolSetList = symbolSetTable.activeData

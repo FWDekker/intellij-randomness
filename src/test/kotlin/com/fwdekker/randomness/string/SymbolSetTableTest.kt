@@ -39,7 +39,7 @@ object SymbolSetTableTest : Spek({
         it("updates the name of the symbol set") {
             GuiActionRunner.execute { symbolSetTable.data = listOf(SymbolSet("explode", "narrow")) }
 
-            GuiActionRunner.execute {symbolSetTable.model.setValueAt("salary", 0, 1)}
+            GuiActionRunner.execute { symbolSetTable.model.setValueAt("salary", 0, 1) }
 
             assertThat(symbolSetTable.data.first().name).isEqualTo("salary")
         }
@@ -55,7 +55,7 @@ object SymbolSetTableTest : Spek({
         it("updates the symbols of the symbol set") {
             GuiActionRunner.execute { symbolSetTable.data = listOf(SymbolSet("test", "extra")) }
 
-            GuiActionRunner.execute {symbolSetTable.model.setValueAt("drum", 0, 2)}
+            GuiActionRunner.execute { symbolSetTable.model.setValueAt("drum", 0, 2) }
 
             assertThat(symbolSetTable.data.first().symbols).isEqualTo("drum")
         }

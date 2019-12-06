@@ -37,7 +37,16 @@ class UuidInsertAction(private val settings: UuidSettings = UuidSettings.default
      * @return random type 4 UUIDs
      */
     override fun generateStrings(count: Int) =
-        List(count) { settings.enclosure + UUID.randomUUID().toString() + settings.enclosure }
+        List(count) {
+            val uuid = UUID.randomUUID().toString()
+            val formattedUuid = settings.capitalization.transform(uuid)
+                .let {
+                    if (settings.addDashes) it
+                    else it.replace("-", "")
+                }
+
+            settings.enclosure + formattedUuid + settings.enclosure
+        }
 }
 
 
