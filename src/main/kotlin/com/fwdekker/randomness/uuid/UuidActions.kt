@@ -27,7 +27,7 @@ class UuidGroupAction : DataGroupAction() {
  * @see UuidSettings
  */
 class UuidInsertAction(private val settings: UuidSettings = UuidSettings.default) : DataInsertAction() {
-    override val name = "Insert UUID"
+    override val name = "Random UUID"
 
 
     /**
@@ -62,7 +62,7 @@ class UuidInsertArrayAction(
     arraySettings: ArraySettings = ArraySettings.default,
     settings: UuidSettings = UuidSettings.default
 ) : DataInsertArrayAction(arraySettings, UuidInsertAction(settings)) {
-    override val name = "Insert UUID Array"
+    override val name = "Random UUID Array"
 }
 
 

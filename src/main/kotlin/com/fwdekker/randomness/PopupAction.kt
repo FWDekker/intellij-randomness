@@ -22,9 +22,9 @@ import com.intellij.ui.popup.list.ListPopupImpl
  */
 class PopupAction : AnAction() {
     companion object {
-        private const val TITLE = "Insert Random Data"
-        private const val SHIFT_TITLE = "Insert Random Array"
-        private const val CTRL_TITLE = "Insert Random Settings"
+        private const val TITLE = "Insert Data"
+        private const val SHIFT_TITLE = "Insert Array"
+        private const val CTRL_TITLE = "Change Settings"
         private const val AD_TEXT = "Shift = Array. Ctrl = Settings."
     }
 

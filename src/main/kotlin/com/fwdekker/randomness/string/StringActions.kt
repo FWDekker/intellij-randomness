@@ -27,7 +27,7 @@ class StringGroupAction : DataGroupAction() {
  * @see StringSettings
  */
 class StringInsertAction(private val settings: StringSettings = StringSettings.default) : DataInsertAction() {
-    override val name = "Insert String"
+    override val name = "Random String"
 
 
     /**
@@ -73,7 +73,7 @@ class StringInsertArrayAction(
     arraySettings: ArraySettings = ArraySettings.default,
     settings: StringSettings = StringSettings.default
 ) : DataInsertArrayAction(arraySettings, StringInsertAction(settings)) {
-    override val name = "Insert String Array"
+    override val name = "Random String Array"
 }
 
 
