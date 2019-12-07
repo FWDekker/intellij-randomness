@@ -29,7 +29,7 @@ class DecimalGroupAction : DataGroupAction() {
  * @see DecimalSettings
  */
 class DecimalInsertAction(private val settings: DecimalSettings = DecimalSettings.default) : DataInsertAction() {
-    override val name = "Insert Decimal"
+    override val name = "Random Decimal"
 
 
     /**
@@ -76,7 +76,7 @@ class DecimalInsertArrayAction(
     arraySettings: ArraySettings = ArraySettings.default,
     settings: DecimalSettings = DecimalSettings.default
 ) : DataInsertArrayAction(arraySettings, DecimalInsertAction(settings)) {
-    override val name = "Insert Decimal Array"
+    override val name = "Random Decimal Array"
 }
 
 

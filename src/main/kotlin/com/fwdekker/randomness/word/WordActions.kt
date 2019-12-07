@@ -27,7 +27,7 @@ class WordGroupAction : DataGroupAction() {
  * @see WordSettings
  */
 class WordInsertAction(private val settings: WordSettings = WordSettings.default) : DataInsertAction() {
-    override val name = "Insert Word"
+    override val name = "Random Word"
 
 
     /**
@@ -72,7 +72,7 @@ class WordInsertArrayAction(
     arraySettings: ArraySettings = ArraySettings.default,
     settings: WordSettings = WordSettings.default
 ) : DataInsertArrayAction(arraySettings, WordInsertAction(settings)) {
-    override val name = "Insert Word Array"
+    override val name = "Random Word Array"
 }
 
 

@@ -9,6 +9,7 @@
     <idea-version since-build="171.0" />
 
     <extensions defaultExtensionNs="com.intellij">
+        <!-- Persistence -->
         <applicationService serviceImplementation="com.fwdekker.randomness.integer.IntegerSettings" />
         <applicationService serviceImplementation="com.fwdekker.randomness.decimal.DecimalSettings" />
         <applicationService serviceImplementation="com.fwdekker.randomness.string.StringSettings" />
@@ -16,6 +17,7 @@
         <applicationService serviceImplementation="com.fwdekker.randomness.uuid.UuidSettings" />
         <applicationService serviceImplementation="com.fwdekker.randomness.array.ArraySettings" />
 
+        <!-- Settings window -->
         <applicationConfigurable instance="com.fwdekker.randomness.RandomnessConfigurable"
                                  id="randomness.MainConfigurable"
                                  groupId="tools"
@@ -46,38 +48,49 @@
         <action id="randomness.ShowGroup" class="com.fwdekker.randomness.PopupAction"
                 text="Randomness" description="Opens the Randomness popup.">
             <keyboard-shortcut first-keystroke="alt R" keymap="$default" />
+            <add-to-group group-id="GenerateGroup" anchor="last" />
             <add-to-group group-id="ToolsMenu" anchor="last" />
         </action>
 
         <!-- Integers -->
         <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.IntegerInsertAction"
-                text="Insert Integer" description="Inserts random integers at the carets." />
+                text="Random Integer" description="Inserts a random integer at each caret." />
+        <action id="randomness.InsertIntegerArray" class="com.fwdekker.randomness.integer.IntegerInsertArrayAction"
+                text="Random Integer Array" description="Inserts an array of random integers at each caret." />
         <action id="randomness.IntegerSettings" class="com.fwdekker.randomness.integer.IntegerSettingsAction"
-                text="Integer Settings" description="Settings for the Insert Integer action." />
+                text="Integer Settings" description="Settings for the Random Integer action." />
 
         <!-- Decimals -->
         <action id="randomness.InsertDecimal" class="com.fwdekker.randomness.decimal.DecimalInsertAction"
-                text="Insert Decimal" description="Inserts random decimals at the carets." />
+                text="Random Decimal" description="Inserts a random decimal at each caret." />
+        <action id="randomness.InsertDecimalArray" class="com.fwdekker.randomness.decimal.DecimalInsertArrayAction"
+                text="Random Decimal Array" description="Inserts an array of random decimals at each caret." />
         <action id="randomness.DecimalSettings" class="com.fwdekker.randomness.decimal.DecimalSettingsAction"
-                text="Decimal Settings" description="Settings for the Insert Decimal action." />
+                text="Decimal Settings" description="Settings for the Random Decimal action." />
 
         <!-- Strings -->
         <action id="randomness.InsertString" class="com.fwdekker.randomness.string.StringInsertAction"
-                text="Insert String" description="Inserts random strings at the carets." />
+                text="Random String" description="Inserts a random string at each caret." />
+        <action id="randomness.InsertStringArray" class="com.fwdekker.randomness.string.StringInsertArrayAction"
+                text="Random String Array" description="Insert an array of random strings at each caret." />
         <action id="randomness.StringSettings" class="com.fwdekker.randomness.string.StringSettingsAction"
-                text="String Settings" description="Settings for the Insert String action." />
+                text="String Settings" description="Settings for the Random String action." />
 
         <!-- Words -->
         <action id="randomness.InsertWord" class="com.fwdekker.randomness.word.WordInsertAction"
-                text="Insert Word" description="Inserts random words at the carets." />
+                text="Random Word" description="Inserts a random word at each caret." />
+        <action id="randomness.InsertWordArray" class="com.fwdekker.randomness.word.WordInsertArrayAction"
+                text="Random Word Array" description="Inserts an array of random words at each caret." />
         <action id="randomness.WordSettings" class="com.fwdekker.randomness.word.WordSettingsAction"
-                text="Word Settings" description="Settings for the Insert Word action." />
+                text="Word Settings" description="Settings for the Random Word action." />
 
         <!-- UUIDs -->
         <action id="randomness.InsertUuid" class="com.fwdekker.randomness.uuid.UuidInsertAction"
-                text="Insert UUID" description="Inserts random UUIDs at the carets." />
+                text="Random UUID" description="Inserts a random UUID at each caret." />
+        <action id="randomness.InsertUuidArray" class="com.fwdekker.randomness.uuid.UuidInsertArrayAction"
+                text="Random UUID Array" description="Inserts an array of random UUIDs at each caret." />
         <action id="randomness.UuidSettings" class="com.fwdekker.randomness.uuid.UuidSettingsAction"
-                text="UUID Settings" description="Settings for the Insert UUID action." />
+                text="UUID Settings" description="Settings for the Random UUID action." />
 
         <!-- Arrays -->
         <action id="randomness.ArraySettings" class="com.fwdekker.randomness.array.ArraySettingsAction"

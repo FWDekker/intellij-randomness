@@ -28,7 +28,7 @@ class IntegerGroupAction : DataGroupAction() {
  * @see IntegerSettings
  */
 class IntegerInsertAction(private val settings: IntegerSettings = IntegerSettings.default) : DataInsertAction() {
-    override val name = "Insert Integer"
+    override val name = "Random Integer"
 
 
     /**
@@ -77,7 +77,7 @@ class IntegerInsertArrayAction(
     arraySettings: ArraySettings = ArraySettings.default,
     settings: IntegerSettings = IntegerSettings.default
 ) : DataInsertArrayAction(arraySettings, IntegerInsertAction(settings)) {
-    override val name = "Insert Integer Array"
+    override val name = "Random Integer Array"
 }
 
 
