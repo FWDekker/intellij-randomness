@@ -10,6 +10,7 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.options.ShowSettingsUtil
 import java.awt.event.InputEvent
+import kotlin.random.Random
 
 
 /**
@@ -102,6 +103,10 @@ abstract class DataInsertAction : AnAction() {
      * The name of the action to display.
      */
     abstract val name: String
+    /**
+     * The random generator used to generate random values.
+     */
+    var random: Random = Random.Default
 
 
     /**

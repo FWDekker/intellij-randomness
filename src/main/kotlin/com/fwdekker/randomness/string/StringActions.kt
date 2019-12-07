@@ -38,7 +38,7 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
      */
     override fun generateStrings(count: Int) =
         List(count) {
-            val length = Random.nextInt(settings.minLength, settings.maxLength + 1)
+            val length = random.nextInt(settings.minLength, settings.maxLength + 1)
 
             val text = List(length) { generateCharacter() }.joinToString("")
             val capitalizedText = settings.capitalization.transform(text)

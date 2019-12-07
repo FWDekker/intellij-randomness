@@ -17,19 +17,12 @@ import org.junit.jupiter.api.Test
  * Unit tests for [DataInsertAction].
  */
 class DataInsertActionTest {
-    companion object {
-        /**
-         * The recognizable string that is inserted by the insertion action.
-         */
-        private const val RANDOM_STRING = "random_string"
-    }
-
     private lateinit var dataInsertAction: DataInsertAction
 
 
     @BeforeEach
     fun beforeEach() {
-        dataInsertAction = SimpleInsertAction()
+        dataInsertAction = DummyInsertAction()
     }
 
 
@@ -93,16 +86,5 @@ class DataInsertActionTest {
         dataInsertAction.update(event)
 
         assertThat(presentation.isEnabled).isTrue()
-    }
-
-
-    /**
-     * Simple implementation of [DataInsertAction].
-     */
-    private class SimpleInsertAction : DataInsertAction() {
-        override val name = "Insert Random Simple"
-
-
-        override fun generateStrings(count: Int) = List(count) { RANDOM_STRING }
     }
 }

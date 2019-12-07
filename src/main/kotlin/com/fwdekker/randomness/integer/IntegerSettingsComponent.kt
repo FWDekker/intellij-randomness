@@ -5,6 +5,7 @@ import com.fwdekker.randomness.integer.IntegerSettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JLongSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
+import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.forEach
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
@@ -23,6 +24,8 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class IntegerSettingsComponent(settings: IntegerSettings = default) : SettingsComponent<IntegerSettings>(settings) {
     private lateinit var contentPane: JPanel
+    private lateinit var previewPanelHolder: PreviewPanel<IntegerInsertAction>
+    private lateinit var previewPanel: JPanel
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JLongSpinner
     private lateinit var maxValue: JLongSpinner
@@ -34,6 +37,9 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) : SettingsCo
 
     init {
         loadSettings()
+
+        previewPanelHolder.updatePreviewOnUpdateOf(minValue, maxValue, base, groupingSeparatorGroup)
+        previewPanelHolder.updatePreview()
     }
 
 
@@ -44,6 +50,9 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) : SettingsCo
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        previewPanelHolder = PreviewPanel { IntegerInsertAction(IntegerSettings().also { saveSettings(it) }) }
+        previewPanel = previewPanelHolder.rootPanel
+
         minValue = JLongSpinner()
         maxValue = JLongSpinner()
         base = JIntSpinner(IntegerSettings.DECIMAL_BASE, IntegerSettings.MIN_BASE, IntegerSettings.MAX_BASE)

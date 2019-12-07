@@ -5,6 +5,7 @@ import com.fwdekker.randomness.decimal.DecimalSettings.Companion.default
 import com.fwdekker.randomness.ui.JDoubleSpinner
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
+import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import javax.swing.ButtonGroup
@@ -22,6 +23,8 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class DecimalSettingsComponent(settings: DecimalSettings = default) : SettingsComponent<DecimalSettings>(settings) {
     private lateinit var contentPane: JPanel
+    private lateinit var previewPanelHolder: PreviewPanel<DecimalInsertAction>
+    private lateinit var previewPanel: JPanel
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JDoubleSpinner
     private lateinit var maxValue: JDoubleSpinner
@@ -35,6 +38,10 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) : SettingsCo
 
     init {
         loadSettings()
+
+        previewPanelHolder.updatePreviewOnUpdateOf(
+            minValue, maxValue, decimalCount, showTrailingZeroesCheckBox, groupingSeparatorGroup, decimalSeparatorGroup)
+        previewPanelHolder.updatePreview()
     }
 
 
@@ -45,6 +52,9 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) : SettingsCo
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        previewPanelHolder = PreviewPanel { DecimalInsertAction(DecimalSettings().also { saveSettings(it) }) }
+        previewPanel = previewPanelHolder.rootPanel
+
         minValue = JDoubleSpinner()
         maxValue = JDoubleSpinner()
         valueRange = JSpinnerRange(minValue, maxValue, name = "value")

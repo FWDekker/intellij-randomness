@@ -7,6 +7,7 @@ import com.fwdekker.randomness.string.StringSettings.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.string.StringSettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
+import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.openapi.ui.ValidationInfo
@@ -25,6 +26,8 @@ import javax.swing.JPanel
 @Suppress("LateinitUsage") // Initialized by scene builder
 class StringSettingsComponent(settings: StringSettings = default) : SettingsComponent<StringSettings>(settings) {
     private lateinit var contentPane: JPanel
+    private lateinit var previewPanelHolder: PreviewPanel<StringInsertAction>
+    private lateinit var previewPanel: JPanel
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -38,6 +41,10 @@ class StringSettingsComponent(settings: StringSettings = default) : SettingsComp
 
     init {
         loadSettings()
+
+        previewPanelHolder.updatePreviewOnUpdateOf(
+            minLength, maxLength, enclosureGroup, capitalizationGroup, symbolSetTable)
+        previewPanelHolder.updatePreview()
     }
 
 
@@ -48,6 +55,9 @@ class StringSettingsComponent(settings: StringSettings = default) : SettingsComp
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        previewPanelHolder = PreviewPanel { StringInsertAction(StringSettings().also { saveSettings(it) }) }
+        previewPanel = previewPanelHolder.rootPanel
+
         minLength = JIntSpinner(1, 1)
         maxLength = JIntSpinner(1, 1)
         lengthRange = JSpinnerRange(minLength, maxLength, Int.MAX_VALUE.toDouble(), "length")

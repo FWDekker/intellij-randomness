@@ -6,7 +6,6 @@ import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
 import com.fwdekker.randomness.array.ArraySettings
 import java.text.DecimalFormat
-import kotlin.random.Random
 
 
 /**
@@ -38,7 +37,7 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
      * @return random integers between the minimum and maximum value, inclusive
      */
     override fun generateStrings(count: Int) =
-        List(count) { convertToString(Random.nextLong(settings.minValue, settings.maxValue + 1)) }
+        List(count) { convertToString(random.nextLong(settings.minValue, settings.maxValue + 1)) }
 
 
     /**

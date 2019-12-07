@@ -16,10 +16,10 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         /**
          * The recognizable string that is inserted by the insertion action.
          */
-        private const val RANDOM_STRING = "random_string"
+        private const val RANDOM_STRING = DummyInsertAction.dummyValue
     }
 
-    private lateinit var insertRandomSimple: SimpleInsertAction
+    private lateinit var insertRandomSimple: DummyInsertAction
     private lateinit var document: Document
     private lateinit var caretModel: CaretModel
 
@@ -32,7 +32,7 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
 
         document = myFixture.editor.document
         caretModel = myFixture.editor.caretModel
-        insertRandomSimple = SimpleInsertAction()
+        insertRandomSimple = DummyInsertAction()
     }
 
     override fun getTestDataPath() = javaClass.classLoader.getResource("integration-project/")?.path
@@ -138,7 +138,7 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         arraySettings.count = 2
 
         setSelection(5, 9)
-        myFixture.testAction(SimplyArrayInsertAction(arraySettings))
+        myFixture.testAction(DummyInsertArrayAction(arraySettings))
 
         assertThat(document.text).isEqualTo("wizar[$RANDOM_STRING, $RANDOM_STRING]rens\nvanity")
     }
@@ -171,24 +171,5 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
     private fun addSelection(fromOffset: Int, toOffset: Int) {
         caretModel.addCaret(myFixture.editor.offsetToVisualPosition(fromOffset))
         caretModel.allCarets[caretModel.caretCount - 1].setSelection(fromOffset, toOffset)
-    }
-
-
-    /**
-     * Simple implementation of [DataInsertAction].
-     */
-    private class SimpleInsertAction : DataInsertAction() {
-        override val name = "Insert Random Simple"
-
-
-        override fun generateStrings(count: Int) = List(count) { RANDOM_STRING }
-    }
-
-    /**
-     * Simple implementation of [DataInsertArrayAction].
-     */
-    private class SimplyArrayInsertAction(arraySettings: ArraySettings = ArraySettings.default) :
-        DataInsertArrayAction(arraySettings, SimpleInsertAction()) {
-        override val name = "Insert Random Simple Array"
     }
 }
