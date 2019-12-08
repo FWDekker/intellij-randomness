@@ -9,7 +9,6 @@ import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.forEach
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
-import javax.swing.AbstractButton
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 import javax.swing.event.ChangeEvent
@@ -38,6 +37,11 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) : SettingsCo
     init {
         loadSettings()
 
+        base.addChangeListener {
+            groupingSeparatorGroup.forEach { it.isEnabled = base.value == IntegerSettings.DECIMAL_BASE }
+        }
+        base.changeListeners.forEach { it.stateChanged(ChangeEvent(base)) }
+
         previewPanelHolder.updatePreviewOnUpdateOf(minValue, maxValue, base, groupingSeparatorGroup)
         previewPanelHolder.updatePreview()
     }
@@ -57,13 +61,6 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) : SettingsCo
         maxValue = JLongSpinner()
         base = JIntSpinner(IntegerSettings.DECIMAL_BASE, IntegerSettings.MIN_BASE, IntegerSettings.MAX_BASE)
         valueRange = JSpinnerRange(minValue, maxValue, Long.MAX_VALUE.toDouble(), "value")
-        base.addChangeListener { event: ChangeEvent ->
-            val value = (event.source as JIntSpinner).value
-            val enabled = value == IntegerSettings.DECIMAL_BASE
-            groupingSeparatorGroup.forEach { button: AbstractButton ->
-                button.isEnabled = enabled
-            }
-        }
     }
 
     override fun loadSettings(settings: IntegerSettings) {
