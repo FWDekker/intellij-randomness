@@ -1,8 +1,10 @@
 package com.fwdekker.randomness.array
 
+import com.fwdekker.randomness.DummyInsertArrayAction
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.array.ArraySettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
+import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import javax.swing.ButtonGroup
@@ -18,7 +20,14 @@ import javax.swing.JPanel
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
 class ArraySettingsComponent(settings: ArraySettings = default) : SettingsComponent<ArraySettings>(settings) {
+    companion object {
+        private const val previewPlaceholder = "17"
+    }
+
+
     private lateinit var contentPane: JPanel
+    private lateinit var previewPanelHolder: PreviewPanel<DummyInsertArrayAction>
+    private lateinit var previewPanel: JPanel
     private lateinit var countSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
     private lateinit var separatorGroup: ButtonGroup
@@ -29,6 +38,10 @@ class ArraySettingsComponent(settings: ArraySettings = default) : SettingsCompon
 
     init {
         loadSettings()
+
+        previewPanelHolder.updatePreviewOnUpdateOf(
+            countSpinner, bracketsGroup, separatorGroup, spaceAfterSeparatorCheckBox)
+        previewPanelHolder.updatePreview()
     }
 
 
@@ -39,7 +52,12 @@ class ArraySettingsComponent(settings: ArraySettings = default) : SettingsCompon
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        countSpinner = JIntSpinner(1, 1)
+        previewPanelHolder = PreviewPanel {
+            DummyInsertArrayAction(ArraySettings().also { saveSettings(it) }, previewPlaceholder)
+        }
+        previewPanel = previewPanelHolder.rootPane
+
+        countSpinner = JIntSpinner(value = 1, minValue = 1)
     }
 
     override fun loadSettings(settings: ArraySettings) {

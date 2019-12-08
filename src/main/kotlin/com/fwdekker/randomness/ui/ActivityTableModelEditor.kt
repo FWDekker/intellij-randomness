@@ -122,4 +122,15 @@ abstract class ActivityTableModelEditor<T>(
             })
             .createPanel()
     }
+
+    /**
+     * Adds a listener that is called whenever this table is updated.
+     *
+     * @param listener the listener to invoke
+     */
+    fun addChangeListener(listener: () -> Unit) {
+        modelListener(object : DataChangedListener<EditableDatum<T>>() {
+            override fun dataChanged(columnInfo: ColumnInfo<EditableDatum<T>, *>, rowIndex: Int) = listener()
+        })
+    }
 }

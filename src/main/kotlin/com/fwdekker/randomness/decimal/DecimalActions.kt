@@ -7,7 +7,6 @@ import com.fwdekker.randomness.SettingsAction
 import com.fwdekker.randomness.array.ArraySettings
 import java.text.DecimalFormat
 import kotlin.math.nextUp
-import kotlin.random.Random
 
 
 /**
@@ -39,7 +38,7 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
      * @return random decimals between the minimum and maximum value, inclusive
      */
     override fun generateStrings(count: Int) =
-        List(count) { convertToString(Random.nextDouble(settings.minValue, settings.maxValue.nextUp())) }
+        List(count) { convertToString(random.nextDouble(settings.minValue, settings.maxValue.nextUp())) }
 
 
     /**

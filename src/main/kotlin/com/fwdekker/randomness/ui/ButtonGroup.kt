@@ -30,3 +30,10 @@ fun ButtonGroup.setValue(value: Any?) {
     selection?.isSelected = false
     elements.toList().firstOrNull { it.actionCommand == value?.toString() }?.isSelected = true
 }
+
+/**
+ * Returns the buttons in this button group as a typed array.
+ *
+ * @return the buttons in this button group as a typed array
+ */
+fun ButtonGroup.buttons() = elements.toList().toTypedArray()

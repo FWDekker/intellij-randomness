@@ -2,6 +2,7 @@ package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.SettingsComponent
+import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.uuid.UuidSettings.Companion.DEFAULT_CAPITALIZATION
@@ -22,6 +23,8 @@ import javax.swing.JPanel
 @Suppress("LateinitUsage") // Initialized by scene builder
 class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponent<UuidSettings>(settings) {
     private lateinit var contentPane: JPanel
+    private lateinit var previewPanelHolder: PreviewPanel<UuidInsertAction>
+    private lateinit var previewPanel: JPanel
     private lateinit var enclosureGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var addDashesCheckBox: JCheckBox
@@ -31,6 +34,21 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
 
     init {
         loadSettings()
+
+        previewPanelHolder.updatePreviewOnUpdateOf(enclosureGroup, capitalizationGroup, addDashesCheckBox)
+        previewPanelHolder.updatePreview()
+    }
+
+
+    /**
+     * Initialises custom UI components.
+     *
+     * This method is called by the scene builder at the start of the constructor.
+     */
+    @Suppress("UnusedPrivateMember") // Used by scene builder
+    private fun createUIComponents() {
+        previewPanelHolder = PreviewPanel { UuidInsertAction(UuidSettings().also { saveSettings(it) }) }
+        previewPanel = previewPanelHolder.rootPane
     }
 
 

@@ -4,6 +4,7 @@ import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
+import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.word.WordSettings.Companion.DEFAULT_CAPITALIZATION
@@ -23,6 +24,8 @@ import javax.swing.JPanel
 @Suppress("LateinitUsage") // Initialized by scene builder
 class WordSettingsComponent(settings: WordSettings = default) : SettingsComponent<WordSettings>(settings) {
     private lateinit var contentPane: JPanel
+    private lateinit var previewPanelHolder: PreviewPanel<WordInsertAction>
+    private lateinit var previewPanel: JPanel
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -36,6 +39,10 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
 
     init {
         loadSettings()
+
+        previewPanelHolder.updatePreviewOnUpdateOf(
+            minLength, maxLength, capitalizationGroup, enclosureGroup, dictionaryTable)
+        previewPanelHolder.updatePreview()
     }
 
 
@@ -46,6 +53,9 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        previewPanelHolder = PreviewPanel { WordInsertAction(WordSettings().also { saveSettings(it) }) }
+        previewPanel = previewPanelHolder.rootPane
+
         minLength = JIntSpinner(1, 1)
         maxLength = JIntSpinner(1, 1)
         lengthRange = JSpinnerRange(minLength, maxLength, Int.MAX_VALUE.toDouble(), "length")
