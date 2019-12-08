@@ -66,5 +66,23 @@ object ArraySettingsTest : Spek({
 
             assertThat(arraySettings.arrayify(listOf("Elvish", "Stride", "Bills"))).isEqualTo("ElvishhStridehBills")
         }
+
+        it("does not place a space after separator if that option is false") {
+            arraySettings.count = 3
+            arraySettings.brackets = "<>"
+            arraySettings.separator = "-"
+            arraySettings.isSpaceAfterSeparator = false
+
+            assertThat(arraySettings.arrayify(listOf("Remain", "Pound"))).isEqualTo("<Remain-Pound>")
+        }
+
+        it("ignores space after separator if newline separator is used") {
+            arraySettings.count = 2
+            arraySettings.brackets = "[]"
+            arraySettings.separator = "\n"
+            arraySettings.isSpaceAfterSeparator = true
+
+            assertThat(arraySettings.arrayify(listOf("Union", "Bell"))).isEqualTo("[Union\nBell]")
+        }
     }
 })

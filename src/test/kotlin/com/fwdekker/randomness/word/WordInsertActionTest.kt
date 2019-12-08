@@ -52,7 +52,7 @@ class WordInsertActionParamTest {
 /**
  * Unit tests for [WordInsertAction].
  */
-class WordInsertActionTest : Spek({
+object WordInsertActionTest : Spek({
     val tempFileHelper = TempFileHelper()
 
 

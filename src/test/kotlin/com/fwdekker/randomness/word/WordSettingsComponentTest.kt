@@ -131,19 +131,6 @@ object WordSettingsComponentTest : Spek({
                 assertThat(validationInfo?.message).isEqualTo("Enter a value greater than or equal to 1.")
             }
 
-            it("fails if the minimum length is greater than the maximum length") {
-                GuiActionRunner.execute {
-                    frame.spinner("maxLength").target().value = WordSettings().minLength - 1
-                }
-
-                val validationInfo = wordSettingsComponent.doValidate()
-
-                assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
-                assertThat(validationInfo?.message)
-                    .isEqualTo("The maximum length should not be smaller than the minimum length.")
-            }
-
             it("fails if the length range ends too low to match any words") {
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = 0 }
                 GuiActionRunner.execute { frame.spinner("maxLength").target().value = 0 }

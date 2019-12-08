@@ -10,6 +10,8 @@ import com.fwdekker.randomness.ui.setValue
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
+import javax.swing.JRadioButton
+import javax.swing.event.ChangeEvent
 
 
 /**
@@ -31,6 +33,7 @@ class ArraySettingsComponent(settings: ArraySettings = default) : SettingsCompon
     private lateinit var countSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
     private lateinit var separatorGroup: ButtonGroup
+    private lateinit var newlineSeparatorButton: JRadioButton
     private lateinit var spaceAfterSeparatorCheckBox: JCheckBox
 
     override val rootPane get() = contentPane
@@ -38,6 +41,11 @@ class ArraySettingsComponent(settings: ArraySettings = default) : SettingsCompon
 
     init {
         loadSettings()
+
+        newlineSeparatorButton.addChangeListener {
+            spaceAfterSeparatorCheckBox.isEnabled = !newlineSeparatorButton.isSelected
+        }
+        newlineSeparatorButton.changeListeners.forEach { it.stateChanged(ChangeEvent(newlineSeparatorButton)) }
 
         previewPanelHolder.updatePreviewOnUpdateOf(
             countSpinner, bracketsGroup, separatorGroup, spaceAfterSeparatorCheckBox)

@@ -39,6 +39,9 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) : SettingsCo
     init {
         loadSettings()
 
+        decimalCount.addChangeListener { showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0 }
+        decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
+
         previewPanelHolder.updatePreviewOnUpdateOf(
             minValue, maxValue, decimalCount, showTrailingZeroesCheckBox, groupingSeparatorGroup, decimalSeparatorGroup)
         previewPanelHolder.updatePreview()
@@ -60,10 +63,6 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) : SettingsCo
         valueRange = JSpinnerRange(minValue, maxValue, name = "value")
 
         decimalCount = JIntSpinner(0, 0)
-        decimalCount.addChangeListener { event: ChangeEvent ->
-            val value = (event.source as JIntSpinner).value
-            showTrailingZeroesCheckBox.isEnabled = value > 0
-        }
     }
 
     override fun loadSettings(settings: DecimalSettings) {

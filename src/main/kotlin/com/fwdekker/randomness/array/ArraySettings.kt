@@ -67,7 +67,7 @@ data class ArraySettings(
      */
     fun arrayify(strings: Collection<String>) =
         strings.joinToString(
-            separator = this.separator + if (isSpaceAfterSeparator) " " else "",
+            separator = this.separator + if (isSpaceAfterSeparator && this.separator !== "\n") " " else "",
             prefix = brackets.getOrNull(0)?.toString() ?: "",
             postfix = brackets.getOrNull(1)?.toString() ?: ""
         )

@@ -53,7 +53,7 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
                 .ifEmpty { throw DataGenerationException("There are no words within the configured length range.") }
 
         return (0 until count)
-            .map { words.random() }
+            .map { words.random(random) }
             .map { settings.capitalization.transform(it) }
             .map { settings.enclosure + it + settings.enclosure }
     }
