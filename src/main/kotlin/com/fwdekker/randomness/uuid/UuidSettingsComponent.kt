@@ -7,6 +7,7 @@ import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.uuid.UuidSettings.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.uuid.UuidSettings.Companion.DEFAULT_ENCLOSURE
+import com.fwdekker.randomness.uuid.UuidSettings.Companion.DEFAULT_VERSION
 import com.fwdekker.randomness.uuid.UuidSettings.Companion.default
 import com.intellij.openapi.ui.ValidationInfo
 import javax.swing.ButtonGroup
@@ -25,6 +26,7 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
     private lateinit var contentPane: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<UuidInsertAction>
     private lateinit var previewPanel: JPanel
+    private lateinit var versionGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var addDashesCheckBox: JCheckBox
@@ -35,7 +37,7 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
     init {
         loadSettings()
 
-        previewPanelHolder.updatePreviewOnUpdateOf(enclosureGroup, capitalizationGroup, addDashesCheckBox)
+        previewPanelHolder.updatePreviewOnUpdateOf(versionGroup, enclosureGroup, capitalizationGroup, addDashesCheckBox)
         previewPanelHolder.updatePreview()
     }
 
@@ -53,12 +55,14 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
 
 
     override fun loadSettings(settings: UuidSettings) {
+        versionGroup.setValue(settings.version.toString())
         enclosureGroup.setValue(settings.enclosure)
         capitalizationGroup.setValue(settings.capitalization)
         addDashesCheckBox.isSelected = settings.addDashes
     }
 
     override fun saveSettings(settings: UuidSettings) {
+        settings.version = versionGroup.getValue()?.toInt() ?: DEFAULT_VERSION
         settings.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
         settings.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
         settings.addDashes = addDashesCheckBox.isSelected

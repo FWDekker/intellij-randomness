@@ -1,11 +1,15 @@
 package com.fwdekker.randomness.uuid
 
+import com.fasterxml.uuid.EthernetAddress
+import com.fasterxml.uuid.Generators
+import com.fasterxml.uuid.UUIDTimer
+import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
 import com.fwdekker.randomness.array.ArraySettings
-import java.util.UUID
+import kotlin.random.asJavaRandom
 
 
 /**
@@ -36,17 +40,27 @@ class UuidInsertAction(private val settings: UuidSettings = UuidSettings.default
      * @param count the number of type 4 UUIDs to generate
      * @return random type 4 UUIDs
      */
-    override fun generateStrings(count: Int) =
-        List(count) {
-            val uuid = UUID.randomUUID().toString()
-            val formattedUuid = settings.capitalization.transform(uuid)
-                .let {
-                    if (settings.addDashes) it
-                    else it.replace("-", "")
-                }
-
-            settings.enclosure + formattedUuid + settings.enclosure
+    override fun generateStrings(count: Int): List<String> {
+        @Suppress("MagicNumber") // UUID version is not magic
+        val generator = when (settings.version) {
+            1 ->
+                Generators.timeBasedGenerator(
+                    EthernetAddress(random.nextLong()),
+                    UUIDTimer(random.asJavaRandom(), null)
+                )
+            4 -> Generators.randomBasedGenerator(random.asJavaRandom())
+            else -> throw DataGenerationException("Unknown UUID version `${settings.version}`.")
         }
+
+        return (0 until count)
+            .map { generator.generate().toString() }
+            .map { settings.capitalization.transform(it) }
+            .map {
+                if (settings.addDashes) it
+                else it.replace("-", "")
+            }
+            .map { settings.enclosure + it + settings.enclosure }
+    }
 }
 
 

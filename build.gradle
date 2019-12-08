@@ -22,6 +22,7 @@ repositories {
 }
 
 dependencies {
+    implementation group: "com.fasterxml.uuid", name: "java-uuid-generator", version: uuidGeneratorVersion
     implementation group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk8"
     implementation group: "org.jetbrains.kotlin", name: "kotlin-reflect"
 

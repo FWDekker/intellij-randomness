@@ -22,11 +22,16 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  */
 @State(name = "UuidSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class UuidSettings(
+    var version: Int = DEFAULT_VERSION,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var addDashes: Boolean = DEFAULT_ADD_DASHES
 ) : Settings<UuidSettings> {
     companion object {
+        /**
+         * The default value of the [version][UuidSettings.version] field.
+         */
+        const val DEFAULT_VERSION = 4
         /**
          * The default value of the [enclosure][UuidSettings.enclosure] field.
          */
