@@ -27,6 +27,7 @@ object UuidSettingsComponentTest : Spek({
 
     beforeEachTest {
         uuidSettings = UuidSettings()
+        uuidSettings.version = 4
         uuidSettings.enclosure = "'"
         uuidSettings.capitalization = CapitalizationMode.UPPER
         uuidSettings.addDashes = false
@@ -42,6 +43,11 @@ object UuidSettingsComponentTest : Spek({
 
 
     describe("loading settings") {
+        it("loads the settings' version") {
+            frame.radioButton("version1").requireSelected(false)
+            frame.radioButton("version4").requireSelected(true)
+        }
+
         it("loads the settings' enclosure") {
             frame.radioButton("enclosureNone").requireSelected(false)
             frame.radioButton("enclosureSingle").requireSelected(true)
@@ -69,12 +75,14 @@ object UuidSettingsComponentTest : Spek({
 
     describe("saving settings") {
         it("correctly saves settings to a settings object") {
+            GuiActionRunner.execute { frame.radioButton("version1").target().isSelected = true }
             GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
             GuiActionRunner.execute { frame.radioButton("capitalizationUpper").target().isSelected = true }
             GuiActionRunner.execute { frame.checkBox("addDashesCheckBox").target().isSelected = true }
 
             uuidSettingsComponent.saveSettings()
 
+            assertThat(uuidSettings.version).isEqualTo(1)
             assertThat(uuidSettings.enclosure).isEqualTo("`")
             assertThat(uuidSettings.capitalization).isEqualTo(CapitalizationMode.UPPER)
             assertThat(uuidSettings.addDashes).isEqualTo(true)
@@ -88,12 +96,14 @@ object UuidSettingsComponentTest : Spek({
 
         describe("saving modifications") {
             it("accepts correct settings") {
+                GuiActionRunner.execute { frame.radioButton("version1").target().isSelected = true }
                 GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
                 GuiActionRunner.execute { frame.radioButton("capitalizationLower").target().isSelected = true }
                 GuiActionRunner.execute { frame.checkBox("addDashesCheckBox").target().isSelected = false }
 
                 uuidSettingsComponentConfigurable.apply()
 
+                assertThat(uuidSettings.version).isEqualTo(1)
                 assertThat(uuidSettings.enclosure).isEqualTo("`")
                 assertThat(uuidSettings.capitalization).isEqualTo(CapitalizationMode.LOWER)
                 assertThat(uuidSettings.addDashes).isEqualTo(false)
@@ -130,6 +140,7 @@ object UuidSettingsComponentTest : Spek({
         describe("resets") {
             it("resets all fields properly") {
                 GuiActionRunner.execute {
+                    GuiActionRunner.execute { frame.radioButton("version1").target().isSelected = true }
                     GuiActionRunner.execute { frame.radioButton("enclosureNone").target().isSelected = true }
                     GuiActionRunner.execute { frame.radioButton("capitalizationLower").target().isSelected = true }
                     GuiActionRunner.execute { frame.checkBox("addDashesCheckBox").target().isSelected = true }

@@ -1,6 +1,9 @@
 package com.fwdekker.randomness.uuid
 
+import com.fasterxml.uuid.EthernetAddress
 import com.fasterxml.uuid.Generators
+import com.fasterxml.uuid.UUIDTimer
+import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
@@ -38,7 +41,16 @@ class UuidInsertAction(private val settings: UuidSettings = UuidSettings.default
      * @return random type 4 UUIDs
      */
     override fun generateStrings(count: Int): List<String> {
-        val generator = Generators.randomBasedGenerator(random.asJavaRandom())
+        @Suppress("MagicNumber") // UUID version is not magic
+        val generator = when (settings.version) {
+            1 ->
+                Generators.timeBasedGenerator(
+                    EthernetAddress(random.nextLong()),
+                    UUIDTimer(random.asJavaRandom(), null)
+                )
+            4 -> Generators.randomBasedGenerator(random.asJavaRandom())
+            else -> throw DataGenerationException("Unknown UUID version `${settings.version}`.")
+        }
 
         return (0 until count)
             .map { generator.generate().toString() }
