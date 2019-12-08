@@ -1,11 +1,12 @@
 package com.fwdekker.randomness.uuid
 
+import com.fasterxml.uuid.Generators
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
 import com.fwdekker.randomness.array.ArraySettings
-import java.util.UUID
+import kotlin.random.asJavaRandom
 
 
 /**
@@ -36,17 +37,18 @@ class UuidInsertAction(private val settings: UuidSettings = UuidSettings.default
      * @param count the number of type 4 UUIDs to generate
      * @return random type 4 UUIDs
      */
-    override fun generateStrings(count: Int) =
-        List(count) {
-            val uuid = UUID.randomUUID().toString()
-            val formattedUuid = settings.capitalization.transform(uuid)
-                .let {
-                    if (settings.addDashes) it
-                    else it.replace("-", "")
-                }
+    override fun generateStrings(count: Int): List<String> {
+        val generator = Generators.randomBasedGenerator(random.asJavaRandom())
 
-            settings.enclosure + formattedUuid + settings.enclosure
-        }
+        return (0 until count)
+            .map { generator.generate().toString() }
+            .map { settings.capitalization.transform(it) }
+            .map {
+                if (settings.addDashes) it
+                else it.replace("-", "")
+            }
+            .map { settings.enclosure + it + settings.enclosure }
+    }
 }
 
 
