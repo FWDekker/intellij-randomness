@@ -48,7 +48,7 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         previewPanelHolder = PreviewPanel { UuidInsertAction(UuidSettings().also { saveSettings(it) }) }
-        previewPanel = previewPanelHolder.rootPanel
+        previewPanel = previewPanelHolder.rootPane
     }
 
 

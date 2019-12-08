@@ -22,7 +22,7 @@ class DataInsertActionTest {
 
     @BeforeEach
     fun beforeEach() {
-        dataInsertAction = DummyInsertAction()
+        dataInsertAction = DummyInsertAction("random_value")
     }
 
 

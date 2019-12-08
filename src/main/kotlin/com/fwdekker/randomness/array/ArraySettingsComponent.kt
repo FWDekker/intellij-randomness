@@ -20,6 +20,11 @@ import javax.swing.JPanel
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
 class ArraySettingsComponent(settings: ArraySettings = default) : SettingsComponent<ArraySettings>(settings) {
+    companion object {
+        private const val previewPlaceholder = "17"
+    }
+
+
     private lateinit var contentPane: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<DummyInsertArrayAction>
     private lateinit var previewPanel: JPanel
@@ -47,8 +52,10 @@ class ArraySettingsComponent(settings: ArraySettings = default) : SettingsCompon
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        previewPanelHolder = PreviewPanel { DummyInsertArrayAction(ArraySettings().also { saveSettings(it) }) }
-        previewPanel = previewPanelHolder.rootPanel
+        previewPanelHolder = PreviewPanel {
+            DummyInsertArrayAction(ArraySettings().also { saveSettings(it) }, previewPlaceholder)
+        }
+        previewPanel = previewPanelHolder.rootPane
 
         countSpinner = JIntSpinner(value = 1, minValue = 1)
     }

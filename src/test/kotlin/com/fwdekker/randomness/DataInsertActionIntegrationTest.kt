@@ -16,7 +16,7 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         /**
          * The recognizable string that is inserted by the insertion action.
          */
-        private const val RANDOM_STRING = DummyInsertAction.dummyValue
+        private const val RANDOM_STRING = "random_value"
     }
 
     private lateinit var insertRandomSimple: DummyInsertAction
@@ -32,7 +32,7 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
 
         document = myFixture.editor.document
         caretModel = myFixture.editor.caretModel
-        insertRandomSimple = DummyInsertAction()
+        insertRandomSimple = DummyInsertAction(RANDOM_STRING)
     }
 
     override fun getTestDataPath() = javaClass.classLoader.getResource("integration-project/")?.path
@@ -138,7 +138,7 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         arraySettings.count = 2
 
         setSelection(5, 9)
-        myFixture.testAction(DummyInsertArrayAction(arraySettings))
+        myFixture.testAction(DummyInsertArrayAction(arraySettings, RANDOM_STRING))
 
         assertThat(document.text).isEqualTo("wizar[$RANDOM_STRING, $RANDOM_STRING]rens\nvanity")
     }

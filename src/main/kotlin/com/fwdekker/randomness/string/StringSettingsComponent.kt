@@ -56,7 +56,7 @@ class StringSettingsComponent(settings: StringSettings = default) : SettingsComp
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         previewPanelHolder = PreviewPanel { StringInsertAction(StringSettings().also { saveSettings(it) }) }
-        previewPanel = previewPanelHolder.rootPanel
+        previewPanel = previewPanelHolder.rootPane
 
         minLength = JIntSpinner(1, 1)
         maxLength = JIntSpinner(1, 1)

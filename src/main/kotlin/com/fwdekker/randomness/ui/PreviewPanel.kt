@@ -30,7 +30,7 @@ class PreviewPanel<T : DataInsertAction>(private val getGenerator: () -> T) {
     /**
      * The root panel containing the preview elements.
      */
-    lateinit var rootPanel: JPanel
+    lateinit var rootPane: JPanel
     private lateinit var refreshButton: JButton
     private lateinit var previewLabel: JLabel
 
@@ -89,7 +89,7 @@ class PreviewPanel<T : DataInsertAction>(private val getGenerator: () -> T) {
                 is JCheckBox -> component.addItemListener { updatePreview() }
                 is ActivityTableModelEditor<*> -> component.addChangeListener { updatePreview() }
                 is ButtonGroup -> updatePreviewOnUpdateOf(*component.buttons())
-                else -> error("Unknown component type.")
+                else -> throw IllegalArgumentException("Unknown component type ${component.javaClass.canonicalName}.")
             }
         }
     }

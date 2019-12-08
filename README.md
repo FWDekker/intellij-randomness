@@ -49,6 +49,8 @@ This section contains instructions in case you want to build the plugin from sou
 ```bash
 gradlew runIde              # Open a sandbox IntelliJ instance running the plugin
 gradlew buildPlugin         # Build an installable zip of the plugin
+gradlew test                # Run tests
+gradlew test --tests X      # Run tests in class X
 gradlew check               # Run tests and static analysis
 gradlew codeCoverageReport  # Run tests and calculate coverage
 gradlew dokka               # Generate documentation
