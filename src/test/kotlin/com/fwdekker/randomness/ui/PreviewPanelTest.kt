@@ -22,7 +22,7 @@ import javax.swing.JSpinner
 /**
  * Unit tests for [PreviewPanel].
  */
-class PreviewPanelTest : Spek({
+object PreviewPanelTest : Spek({
     var action: DummyInsertAction? = null
 
     val placeholder = ResourceBundle.getBundle("randomness").getString("settings.placeholder")

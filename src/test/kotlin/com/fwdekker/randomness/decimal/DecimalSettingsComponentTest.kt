@@ -92,20 +92,6 @@ object DecimalSettingsComponentTest : Spek({
         }
 
         describe("value range") {
-            it("fails if the minimum value is greater than the maximum value") {
-                GuiActionRunner.execute {
-                    frame.spinner("minValue").target().value = 46.16
-                    frame.spinner("maxValue").target().value = 45.16
-                }
-
-                val validationInfo = decimalSettingsComponent.doValidate()
-
-                assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
-                assertThat(validationInfo?.message)
-                    .isEqualTo("The maximum value should not be smaller than the minimum value.")
-            }
-
             it("fails if the range size overflows") {
                 GuiActionRunner.execute {
                     frame.spinner("minValue").target().value = -1E53

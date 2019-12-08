@@ -43,6 +43,9 @@ class JSpinnerRange(
 
     init {
         require(maxRange >= 0) { "maxRange must be a positive number." }
+
+        min.addChangeListener { if (minValue > maxValue) max.value = minValue }
+        max.addChangeListener { if (maxValue < minValue) min.value = maxValue }
     }
 
 

@@ -119,20 +119,6 @@ object IntegerSettingsComponentTest : Spek({
         }
 
         describe("value range") {
-            it("fails if the minimum value is greater than the maximum value") {
-                GuiActionRunner.execute {
-                    frame.spinner("minValue").target().value = 98
-                    frame.spinner("maxValue").target().value = 97
-                }
-
-                val validationInfo = integerSettingsComponent.doValidate()
-
-                assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
-                assertThat(validationInfo?.message)
-                    .isEqualTo("The maximum value should not be smaller than the minimum value.")
-            }
-
             it("fails if the range size overflows") {
                 GuiActionRunner.execute {
                     frame.spinner("minValue").target().value = Long.MIN_VALUE
@@ -223,8 +209,7 @@ object IntegerSettingsComponentTest : Spek({
             }
 
             it("rejects incorrect settings") {
-                GuiActionRunner.execute { frame.spinner("minValue").target().value = 83 }
-                GuiActionRunner.execute { frame.spinner("maxValue").target().value = 1 }
+                GuiActionRunner.execute { frame.spinner("base").target().value = -2 }
 
                 Assertions.assertThatThrownBy { integerSettingsComponentConfigurable.apply() }
                     .isInstanceOf(ConfigurationException::class.java)
@@ -243,7 +228,7 @@ object IntegerSettingsComponentTest : Spek({
             }
 
             it("ignores an undone modification") {
-                GuiActionRunner.execute { frame.spinner("maxValue").target().value = 199 }
+                GuiActionRunner.execute { frame.spinner("maxValue").target().value = integerSettings.minValue }
                 GuiActionRunner.execute { frame.spinner("maxValue").target().value = integerSettings.maxValue }
 
                 assertThat(integerSettingsComponentConfigurable.isModified).isFalse()
