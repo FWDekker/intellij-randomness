@@ -1,0 +1,122 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>ActivityTableModelEditor - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.ui</a>&nbsp;/&nbsp;<a href="./index.html">ActivityTableModelEditor</a><br/>
+<br/>
+<h1>ActivityTableModelEditor</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ActivityTableModelEditor</span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">TableModelEditor</span><span class="symbol">&lt;</span><a href="../-editable-datum/index.html"><span class="identifier">EditableDatum</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code>
+<p>A table that associates a certain data type with a checkbox.</p>
+<h3>Parameters</h3>
+<p><a name="T"></a>
+<code>T</code> - the data type</p>
+<p><a name="columns"></a>
+<code>columns</code> - the columns of the table, excluding the activity column</p>
+<p><a name="itemEditor"></a>
+<code>itemEditor</code> - describes what happens when a row is edited</p>
+<p><a name="emptyText"></a>
+<code>emptyText</code> - the text to display when the table is empty</p>
+<p><a name="isCopyable"></a>
+<code>isCopyable</code> - returns <code>true</code> if and only if the given datum can be copied</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">ActivityTableModelEditor</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.ActivityTableModelEditor$<init>(kotlin.Array((com.intellij.util.ui.ColumnInfo((com.fwdekker.randomness.ui.EditableDatum((com.fwdekker.randomness.ui.ActivityTableModelEditor.T)), kotlin.Any)))), com.intellij.util.ui.CollectionItemEditor((com.fwdekker.randomness.ui.EditableDatum((com.fwdekker.randomness.ui.ActivityTableModelEditor.T)))), kotlin.String, kotlin.Function1((com.fwdekker.randomness.ui.ActivityTableModelEditor.T, kotlin.Boolean)))/columns">columns</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><span class="identifier">ColumnInfo</span><span class="symbol">&lt;</span><a href="../-editable-datum/index.html"><span class="identifier">EditableDatum</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">,</span>&nbsp;<span class="identifier">*</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.ui.ActivityTableModelEditor$<init>(kotlin.Array((com.intellij.util.ui.ColumnInfo((com.fwdekker.randomness.ui.EditableDatum((com.fwdekker.randomness.ui.ActivityTableModelEditor.T)), kotlin.Any)))), com.intellij.util.ui.CollectionItemEditor((com.fwdekker.randomness.ui.EditableDatum((com.fwdekker.randomness.ui.ActivityTableModelEditor.T)))), kotlin.String, kotlin.Function1((com.fwdekker.randomness.ui.ActivityTableModelEditor.T, kotlin.Boolean)))/itemEditor">itemEditor</span><span class="symbol">:</span>&nbsp;<span class="identifier">CollectionItemEditor</span><span class="symbol">&lt;</span><a href="../-editable-datum/index.html"><span class="identifier">EditableDatum</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.ui.ActivityTableModelEditor$<init>(kotlin.Array((com.intellij.util.ui.ColumnInfo((com.fwdekker.randomness.ui.EditableDatum((com.fwdekker.randomness.ui.ActivityTableModelEditor.T)), kotlin.Any)))), com.intellij.util.ui.CollectionItemEditor((com.fwdekker.randomness.ui.EditableDatum((com.fwdekker.randomness.ui.ActivityTableModelEditor.T)))), kotlin.String, kotlin.Function1((com.fwdekker.randomness.ui.ActivityTableModelEditor.T, kotlin.Boolean)))/emptyText">emptyText</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.ui.ActivityTableModelEditor$<init>(kotlin.Array((com.intellij.util.ui.ColumnInfo((com.fwdekker.randomness.ui.EditableDatum((com.fwdekker.randomness.ui.ActivityTableModelEditor.T)), kotlin.Any)))), com.intellij.util.ui.CollectionItemEditor((com.fwdekker.randomness.ui.EditableDatum((com.fwdekker.randomness.ui.ActivityTableModelEditor.T)))), kotlin.String, kotlin.Function1((com.fwdekker.randomness.ui.ActivityTableModelEditor.T, kotlin.Boolean)))/isCopyable">isCopyable</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;{ true }<span class="symbol">)</span></code>
+<p>A table that associates a certain data type with a checkbox.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="active-data.html">activeData</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">activeData</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html"><span class="identifier">Collection</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>All data of which the checkbox is currently checked.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="data.html">data</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">data</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html"><span class="identifier">Collection</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>All data currently in the table.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="add-change-listener.html">addChangeListener</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">addChangeListener</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.ActivityTableModelEditor$addChangeListener(kotlin.Function0((kotlin.Unit)))/listener">listener</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Adds a listener that is called whenever this table is updated.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="create-component.html">createComponent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">createComponent</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JPanel.html"><span class="identifier">JPanel</span></a></code>
+<p>Creates a new <code>JPanel</code> with the table and the corresponding buttons.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-s-t-a-t-e.html">DEFAULT_STATE</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_STATE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Whether newly added data are active by default.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.word/-dictionary-table/index.html">DictionaryTable</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DictionaryTable</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ActivityTableModelEditor</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.word/-dictionary/index.html"><span class="identifier">Dictionary</span></a><span class="symbol">&gt;</span></code>
+<p>An editable table for selecting and editing <a href="../../com.fwdekker.randomness.word/-dictionary/index.html">Dictionaries</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.string/-symbol-set-table/index.html">SymbolSetTable</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">SymbolSetTable</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ActivityTableModelEditor</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.string/-symbol-set/index.html"><span class="identifier">SymbolSet</span></a><span class="symbol">&gt;</span></code>
+<p>An editable table for selecting and editing <a href="../../com.fwdekker.randomness.string/-symbol-set/index.html">SymbolSet</a>s.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
