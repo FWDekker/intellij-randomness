@@ -1,10 +1,32 @@
-Please note that symbol set settings will be reset when updating to v2.2.0 because of changes in how settings are stored. You can re-add your custom symbol sets after updating.<br />
-<br />
 <b>New features</b>
 <ul>
-    <li>Custom symbol sets for generating strings.</li>
-    <li>Inline editing of symbol sets and dictionaries.</li>
-    <li>Persistent order of symbol sets and dictionaries.</li>
-    <li>Improved error messages.</li>
-    <li>More consistent settings layouts.</li>
+    <li>
+        <b>Previews</b>.
+        To help you decide what settings to choose, a preview of the data that is generated with your current settings
+        is shown at the bottom of the settings window.
+    </li>
+    <li>
+        <b>New UUID settings</b>.
+        You can now choose between time-based (version 1) and random (version 4) UUIDs.
+        Additionally, you can change the capitalisation and remove the dashes if you want.
+    </li>
+    <li>
+        <b>Layout</b>.
+        The improved layout adds vertical space in between groups to make it easier to find settings quickly.
+    </li>
+    <li>
+        <b>Easier range controls</b>.
+        When you set the minimum value to be higher than the maximum value, the maximum value will automatically be
+        increased as well&#8212;and vice versa for changing the maximum value.
+    </li>
+    <li>Randomness can now also be found in the <a href="https://www.jetbrains.com/help/idea/generating-code.html"><kbd>Generate</kbd> menu</a>.</li>
+    <li>The "space after separator" option in arrays is now disabled if the newline separator is set.</li>
+    <li>Random capitalisation mode is now available for words as well.</li>
+</ul>
+
+<b>Bug fixes</b>
+<ul>
+    <li>The copy button is now disabled when a bundled dictionary is selected in the word settings.</li>
+    <li>Invalid controls are now disabled when you open the settings dialog.</li>
+    <li>Exceptions caused by corrupted settings are now handled properly.</li>
 </ul>

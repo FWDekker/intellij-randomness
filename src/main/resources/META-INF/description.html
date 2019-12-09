@@ -1,3 +1,42 @@
-Insert random data with the press of a single key.<br />
-<br />
-Adds actions to insert random data into your editor, which can be useful when writing tests.
+Rather than going to <a href="https://www.random.org/">random.org</a> or making up your own random data, you can now
+insert random numbers, strings, and UUIDs using an IntelliJ action!<br />
+
+<h3>Features</h3>
+<h4>Data Types</h4>
+There are five types of data that can be inserted:
+<ol>
+    <li><b>Integers</b>, such as <tt>7,826,922</tt>, in any base from binary to hexatrigesimal.</li>
+    <li><b>Decimals</b>, such as <tt>8,816,573.10</tt>, using customisable separators.</li>
+    <li><b>Strings</b>, such as <tt>"PaQDQqSBEH"</tt>, with custom symbol lists.</li>
+    <li><b>Words</b>, such as <tt>"Imporous"</tt>, with custom word lists.</li>
+    <li><b>UUIDs</b>, such as <tt>0caa7b28-fe58-4ba6-a25a-9e5beaaf8f4b</tt>, with or without dashes.</li>
+</ol>
+
+In addition to these data types, it's also possible to generate entire <b>arrays</b> of a data type.
+For example, an array of integers might look like <tt>[978, 881, 118, 286, 288]</tt>.
+
+<h4>Settings</h4>
+The way the data is generated can be adjusted to your demands.
+You can customise the smallest integer to generate, the quotation marks to surround strings with, the number of elements
+to put in an array, the decimal separator to use, the capitalisation of strings and UUIDs, and much more.
+
+<h4>Previews</h4>
+To help you decide what settings to choose, a preview of the data that is generated with your current settings is shown
+at the bottom of the settings window.
+
+<h4>Shortcuts</h4>
+Instead of using up all your shortcuts, Randomness only uses the <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) shortcut by
+default.
+However, you have the option to assign a unique shortcut to each individual data type and each settings window to
+streamline your workflow.
+
+<h4>Symbol sets</h4>
+While Randomness comes with a varied selection of symbols to use for generating strings, it also gives you the option to
+add your own symbols, with support for Chinese and mathematical symbols.
+
+<h4>Dictionaries</h4>
+Randomness is bundled with a small English dictionary from which it chooses random words.
+However, you may want to add random words from another language or insert random movie quotes.
+You can create your own dictionaries by creating a text file and putting one option on each line, and saving the file
+with the <tt>.dic</tt> extension.
+Empty lines and lines that start with a <tt>#</tt> are ignored.
