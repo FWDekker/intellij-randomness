@@ -10,6 +10,8 @@ import org.assertj.core.api.Assertions.assertThat
 
 /**
  * Integration tests for [DataInsertAction].
+ *
+ * @see DataInsertAction
  */
 class DataInsertActionIntegrationTest : BasePlatformTestCase() {
     companion object {

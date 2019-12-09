@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.decimal
 
+import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
@@ -38,7 +39,12 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
      * @return random decimals between the minimum and maximum value, inclusive
      */
     override fun generateStrings(count: Int) =
-        List(count) { convertToString(random.nextDouble(settings.minValue, settings.maxValue.nextUp())) }
+        List(count) {
+            if (settings.minValue > settings.maxValue)
+                throw DataGenerationException("Minimum value is larger than maximum value.")
+
+            convertToString(random.nextDouble(settings.minValue, settings.maxValue.nextUp()))
+        }
 
 
     /**

@@ -1,6 +1,9 @@
 package com.fwdekker.randomness.decimal
 
+import com.fwdekker.randomness.DataGenerationException
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
@@ -62,5 +65,13 @@ class DecimalInsertActionTest {
         val randomString = insertRandomDecimal.generateString()
 
         assertThat(randomString).isEqualTo(expectedString)
+    }
+
+    @Test
+    fun testInvalidRange() {
+        val action = DecimalInsertAction(DecimalSettings(365.85, 241.54))
+        assertThatThrownBy { action.generateString() }
+            .isInstanceOf(DataGenerationException::class.java)
+            .hasMessage("Minimum value is larger than maximum value.")
     }
 }

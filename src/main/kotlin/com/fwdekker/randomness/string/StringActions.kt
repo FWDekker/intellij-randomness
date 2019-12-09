@@ -1,11 +1,11 @@
 package com.fwdekker.randomness.string
 
+import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
 import com.fwdekker.randomness.array.ArraySettings
-import kotlin.random.Random
 
 
 /**
@@ -38,6 +38,9 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
      */
     override fun generateStrings(count: Int) =
         List(count) {
+            if (settings.minLength > settings.maxLength)
+                throw DataGenerationException("Minimum length is larger than maximum length.")
+
             val length = random.nextInt(settings.minLength, settings.maxLength + 1)
 
             val text = List(length) { generateCharacter() }.joinToString("")
@@ -51,10 +54,15 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
      * Returns a random character from the symbol sets in `settings`.
      *
      * @return a random character from the symbol sets in `settings`
+     * @throws DataGenerationException if a random character could not be generated
      */
+    @Throws(DataGenerationException::class)
     private fun generateCharacter(): Char {
         val symbolSet = settings.activeSymbolSetList.sum()
-        val charIndex = Random.nextInt(symbolSet.length)
+        if (symbolSet.isEmpty())
+            throw DataGenerationException("No active symbol sets.")
+
+        val charIndex = random.nextInt(symbolSet.length)
 
         return symbolSet[charIndex]
     }

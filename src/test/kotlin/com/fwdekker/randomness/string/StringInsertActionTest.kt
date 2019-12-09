@@ -1,7 +1,10 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.DataGenerationException
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.regex.Pattern
@@ -42,6 +45,22 @@ class StringInsertActionTest {
         val expectedPattern = buildExpectedPattern(minLength, maxLength, enclosure, capitalization, symbolSets)
 
         assertThat(insertRandomString.generateString()).containsPattern(expectedPattern)
+    }
+
+    @Test
+    fun testInvalidRange() {
+        val action = StringInsertAction(StringSettings(99, 21))
+        Assertions.assertThatThrownBy { action.generateString() }
+            .isInstanceOf(DataGenerationException::class.java)
+            .hasMessage("Minimum length is larger than maximum length.")
+    }
+
+    @Test
+    fun testNoSymbols() {
+        val action = StringInsertAction(StringSettings(activeSymbolSets = emptyMap()))
+        Assertions.assertThatThrownBy { action.generateString() }
+            .isInstanceOf(DataGenerationException::class.java)
+            .hasMessage("No active symbol sets.")
     }
 
 
