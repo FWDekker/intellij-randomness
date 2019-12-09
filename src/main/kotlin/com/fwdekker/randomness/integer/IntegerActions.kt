@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.integer
 
+import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
@@ -37,7 +38,12 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
      * @return random integers between the minimum and maximum value, inclusive
      */
     override fun generateStrings(count: Int) =
-        List(count) { convertToString(random.nextLong(settings.minValue, settings.maxValue + 1)) }
+        List(count) {
+            if (settings.minValue > settings.maxValue)
+                throw DataGenerationException("Minimum value is larger than maximum value.")
+
+            convertToString(random.nextLong(settings.minValue, settings.maxValue + 1))
+        }
 
 
     /**
@@ -52,12 +58,10 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
 
         val format = DecimalFormat()
         format.isGroupingUsed = settings.groupingSeparator.isNotEmpty()
-
-        val symbols = format.decimalFormatSymbols
-        symbols.groupingSeparator = settings.groupingSeparator.getOrElse(0) { Char.MIN_VALUE }
         format.minimumFractionDigits = 0
         format.maximumFractionDigits = 0
-        format.decimalFormatSymbols = symbols
+        format.decimalFormatSymbols = format.decimalFormatSymbols
+            .also { it.groupingSeparator = settings.groupingSeparator.getOrElse(0) { Char.MIN_VALUE } }
 
         return format.format(value)
     }

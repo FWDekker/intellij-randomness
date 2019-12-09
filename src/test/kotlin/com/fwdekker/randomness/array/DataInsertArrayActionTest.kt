@@ -1,0 +1,37 @@
+package com.fwdekker.randomness.array
+
+import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.DummyInsertArrayAction
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.jetbrains.spek.api.Spek
+import org.jetbrains.spek.api.dsl.it
+
+
+/**
+ * Unit tests for [com.fwdekker.randomness.DataInsertArrayAction].
+ */
+object DataInsertArrayActionTest : Spek({
+    val randomValue = "random_value"
+
+
+    it("throws an exception if the count is empty") {
+        val action = DummyInsertArrayAction(ArraySettings(0), randomValue)
+        assertThatThrownBy {action.generateString()}
+            .isInstanceOf(DataGenerationException::class.java)
+            .hasMessage("Array cannot have fewer than 1 element.")
+    }
+
+    it("throws an exception if the count is negative") {
+        val action = DummyInsertArrayAction(ArraySettings(-3), randomValue)
+        assertThatThrownBy {action.generateString()}
+            .isInstanceOf(DataGenerationException::class.java)
+            .hasMessage("Array cannot have fewer than 1 element.")
+    }
+
+    it("chunks the values according to the settings") {
+        val randomArray = "[$randomValue, $randomValue]"
+        assertThat(DummyInsertArrayAction(ArraySettings(2), randomValue).generateStrings(4))
+            .containsExactly(randomArray, randomArray, randomArray, randomArray)
+    }
+})

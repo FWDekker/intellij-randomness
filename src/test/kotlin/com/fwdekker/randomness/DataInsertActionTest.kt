@@ -9,82 +9,74 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.jetbrains.spek.api.Spek
+import org.jetbrains.spek.api.dsl.describe
+import org.jetbrains.spek.api.dsl.it
 
 
 /**
  * Unit tests for [DataInsertAction].
+ *
+ * @see DataInsertActionIntegrationTest
  */
-class DataInsertActionTest {
-    private lateinit var dataInsertAction: DataInsertAction
+object DataInsertActionTest : Spek({
+    lateinit var dataInsertAction: DataInsertAction
 
 
-    @BeforeEach
-    fun beforeEach() {
+    beforeEachTest {
         dataInsertAction = DummyInsertAction("random_value")
     }
 
 
-    /**
-     * Tests that no further actions are taken when the editor is `null`.
-     */
-    @Test
-    fun testActionPerformedNullEditor() {
-        val event = mock<AnActionEvent> {
-            on { getData(CommonDataKeys.EDITOR) } doReturn null
+    describe("actionPerformed") {
+        it("takes no further actions when the editor is null") {
+            val event = mock<AnActionEvent> {
+                on { getData(CommonDataKeys.EDITOR) } doReturn null
+            }
+
+            dataInsertAction.actionPerformed(event)
+
+            verify(event, times(1)).getData(CommonDataKeys.EDITOR)
+            verifyNoMoreInteractions(event)
         }
 
-        dataInsertAction.actionPerformed(event)
+        it("takes no further action when the project is null") {
+            val event = mock<AnActionEvent> {
+                on { getData(CommonDataKeys.EDITOR) } doReturn mock()
+                on { getData(CommonDataKeys.PROJECT) } doReturn null
+            }
 
-        verify(event, times(1)).getData(CommonDataKeys.EDITOR)
-        verifyNoMoreInteractions(event)
+            dataInsertAction.actionPerformed(event)
+
+            verify(event, times(1)).getData(CommonDataKeys.EDITOR)
+            verify(event, times(1)).getData(CommonDataKeys.PROJECT)
+            verifyNoMoreInteractions(event)
+        }
     }
 
-    @Test
-    fun testActionPerformedNullProject() {
-        val event = mock<AnActionEvent> {
-            on { getData(CommonDataKeys.EDITOR) } doReturn mock()
-            on { getData(CommonDataKeys.PROJECT) } doReturn null
+    describe("update") {
+        it("disables the presentation when the editor is null") {
+            val presentation = Presentation()
+            val event = mock<AnActionEvent> {
+                on { getData(CommonDataKeys.EDITOR) } doReturn null
+                on { it.presentation } doReturn presentation
+            }
+
+            dataInsertAction.update(event)
+
+            assertThat(presentation.isEnabled).isFalse()
         }
 
-        dataInsertAction.actionPerformed(event)
+        it("enables the presentation when the editor is not null") {
+            val presentation = Presentation()
+            val event = mock<AnActionEvent> {
+                on { getData(CommonDataKeys.EDITOR) } doReturn mock()
+                on { it.presentation } doReturn presentation
+            }
 
-        verify(event, times(1)).getData(CommonDataKeys.EDITOR)
-        verify(event, times(1)).getData(CommonDataKeys.PROJECT)
-        verifyNoMoreInteractions(event)
-    }
+            dataInsertAction.update(event)
 
-
-    /**
-     * Tests that the action's presentation is disabled when the editor is null.
-     */
-    @Test
-    fun testUpdateDisabled() {
-        val presentation = Presentation()
-        val event = mock<AnActionEvent> {
-            on { getData(CommonDataKeys.EDITOR) } doReturn null
-            on { it.presentation } doReturn presentation
+            assertThat(presentation.isEnabled).isTrue()
         }
-
-        dataInsertAction.update(event)
-
-        assertThat(presentation.isEnabled).isFalse()
     }
-
-    /**
-     * Tests that the action's presentation is enabled when the editor is not null.
-     */
-    @Test
-    fun testUpdateEnabled() {
-        val presentation = Presentation()
-        val event = mock<AnActionEvent> {
-            on { getData(CommonDataKeys.EDITOR) } doReturn mock()
-            on { it.presentation } doReturn presentation
-        }
-
-        dataInsertAction.update(event)
-
-        assertThat(presentation.isEnabled).isTrue()
-    }
-}
+})

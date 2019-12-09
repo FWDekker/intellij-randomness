@@ -1,6 +1,9 @@
 package com.fwdekker.randomness.integer
 
+import com.fwdekker.randomness.DataGenerationException
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
@@ -33,5 +36,13 @@ class IntegerInsertActionTest {
         val randomString = insertRandomInteger.generateString()
 
         assertThat(randomString).isEqualTo(expectedString)
+    }
+
+    @Test
+    fun testInvalidRange() {
+        val action = IntegerInsertAction(IntegerSettings(65, 24))
+        Assertions.assertThatThrownBy { action.generateString() }
+            .isInstanceOf(DataGenerationException::class.java)
+            .hasMessage("Minimum value is larger than maximum value.")
     }
 }
