@@ -8,7 +8,7 @@
     <a href="https://plugins.jetbrains.com/plugin/9836-randomness"><img src="https://img.shields.io/github/release/FWDekker/intellij-randomness.svg?style=for-the-badge" alt="Release" /></a>
     <a href="https://fwdekker.github.io/intellij-randomness/"><img src="https://img.shields.io/badge/documentation-ready-blue.svg?style=for-the-badge" alt="Documentation" /></a>
     <br />
-    <a href="https://travis-ci.org/FWDekker/intellij-randomness"><img src="https://img.shields.io/travis/FWDekker/intellij-randomness/master.svg?style=for-the-badge" alt="Travis build status" /></a>
+    <a href="https://travis-ci.com/FWDekker/intellij-randomness"><img src="https://img.shields.io/travis/com/FWDekker/intellij-randomness/master?style=for-the-badge" alt="Travis build status" /></a>
     <a href="https://codecov.io/gh/FWDekker/intellij-randomness"><img src="https://img.shields.io/codecov/c/github/FWDekker/intellij-randomness.svg?style=for-the-badge" alt="Branch coverage" /></a>
 </p>
 
