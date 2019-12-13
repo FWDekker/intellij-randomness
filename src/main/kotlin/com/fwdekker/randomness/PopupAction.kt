@@ -23,9 +23,10 @@ import com.intellij.ui.popup.list.ListPopupImpl
 class PopupAction : AnAction() {
     companion object {
         private const val TITLE = "Insert Data"
-        private const val SHIFT_TITLE = "Insert Array"
+        private const val ALT_TITLE = "Insert Data"
         private const val CTRL_TITLE = "Change Settings"
-        private const val AD_TEXT = "Shift = Array. Ctrl = Settings."
+        private const val SHIFT_TITLE = "Insert Array"
+        private const val AD_TEXT = "Shift = Array. Ctrl = Settings. Alt = Repeat."
     }
 
 
@@ -46,8 +47,9 @@ class PopupAction : AnAction() {
             as ListPopupImpl
 
         popup.disableSpeedSearch()
-        popup.registerModifierActions(ModifierKey.SHIFT, TITLE, SHIFT_TITLE)
+        popup.registerModifierActions(ModifierKey.ALT, TITLE, ALT_TITLE)
         popup.registerModifierActions(ModifierKey.CTRL, TITLE, CTRL_TITLE)
+        popup.registerModifierActions(ModifierKey.SHIFT, TITLE, SHIFT_TITLE)
 
         popup.setAdText(AD_TEXT)
         popup.showCenteredInCurrentWindow(project)

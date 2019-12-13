@@ -21,11 +21,13 @@ This plugin is also available on the [plugin repository](https://plugins.jetbrai
 ## How to use
 <img align="right" src=".github/screenshots/decimal-settings-cropped.png" alt="String settings" />
 
-To insert random data, press <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) and choose the type of data you want to insert.
+To insert random data, press <kbd>Alt + R</kbd> (<kbd>⌥R</kbd>) and choose the type of data you want to insert.
 A different value will be inserted at each caret.
 
-Hold <kbd>Shift</kbd> while selecting a data type to insert a whole array of values, or hold <kbd>Ctrl</kbd> (or
-<kbd>⌥</kbd>) while selecting a data type to open the settings of that data type.
+You can modify this by holding a key while selecting the type of data to insert:
+* Hold <kbd>Shift</kbd> to insert a whole array of values.
+* Hold <kbd>Ctrl</kbd> to open the settings of that data type.
+* Hold <kbd>Alt</kbd> (<kbd>⌥</kbd>) to insert the same value at each caret.
 
 Randomness can also be found in the main menu under <kbd>Tools</kbd> or in the
 [<kbd>Generate</kbd> menu](https://www.jetbrains.com/help/idea/generating-code.html).
