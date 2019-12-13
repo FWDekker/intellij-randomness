@@ -63,14 +63,13 @@ abstract class DataGroupAction : ActionGroup() {
      * @param event carries information on the invocation place
      */
     override fun actionPerformed(event: AnActionEvent) {
-        super.actionPerformed(event)
-
-        val shiftPressed = event.modifiers and (InputEvent.SHIFT_MASK or InputEvent.SHIFT_DOWN_MASK) != 0
+        // alt behavior is handled by implementation of `actionPerformed`
         val ctrlPressed = event.modifiers and (InputEvent.CTRL_MASK or InputEvent.CTRL_DOWN_MASK) != 0
+        val shiftPressed = event.modifiers and (InputEvent.SHIFT_MASK or InputEvent.SHIFT_DOWN_MASK) != 0
 
         when {
-            shiftPressed -> insertArrayAction.actionPerformed(event)
             ctrlPressed -> settingsAction.actionPerformed(event)
+            shiftPressed -> insertArrayAction.actionPerformed(event)
             else -> insertAction.actionPerformed(event)
         }
     }
@@ -136,7 +135,11 @@ abstract class DataInsertAction : AnAction() {
 
         val data =
             try {
-                generateStrings(editor.caretModel.caretCount)
+                val altPressed = event.modifiers and (InputEvent.ALT_MASK or InputEvent.ALT_DOWN_MASK) != 0
+                if (altPressed)
+                    generateString().let { string -> List(editor.caretModel.caretCount) { string } }
+                else
+                    generateStrings(editor.caretModel.caretCount)
             } catch (e: DataGenerationException) {
                 HintManager.getInstance().showErrorHint(
                     editor,
