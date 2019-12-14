@@ -50,8 +50,7 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
      * @param event carries information on the invocation place
      * @return the insert action, array insert action, and settings action
      */
-    override fun getChildren(event: AnActionEvent?) =
-        arrayOf(insertAction, insertArrayAction, settingsAction)
+    override fun getChildren(event: AnActionEvent?) = arrayOf(insertArrayAction, settingsAction)
 
     /**
      * Returns `true`.
