@@ -9,13 +9,14 @@ import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
 import com.fwdekker.randomness.array.ArraySettings
+import icons.RandomnessIcons
 import kotlin.random.asJavaRandom
 
 
 /**
  * All actions related to inserting UUIDs.
  */
-class UuidGroupAction : DataGroupAction() {
+class UuidGroupAction : DataGroupAction(RandomnessIcons.Uuid.Base) {
     override val insertAction = UuidInsertAction()
     override val insertArrayAction = UuidInsertArrayAction()
     override val settingsAction = UuidSettingsAction()
@@ -30,7 +31,8 @@ class UuidGroupAction : DataGroupAction() {
  * @see UuidInsertArrayAction
  * @see UuidSettings
  */
-class UuidInsertAction(private val settings: UuidSettings = UuidSettings.default) : DataInsertAction() {
+class UuidInsertAction(private val settings: UuidSettings = UuidSettings.default) :
+    DataInsertAction(RandomnessIcons.Uuid.Base) {
     override val name = "Random UUID"
 
 
@@ -75,7 +77,7 @@ class UuidInsertAction(private val settings: UuidSettings = UuidSettings.default
 class UuidInsertArrayAction(
     arraySettings: ArraySettings = ArraySettings.default,
     settings: UuidSettings = UuidSettings.default
-) : DataInsertArrayAction(arraySettings, UuidInsertAction(settings)) {
+) : DataInsertArrayAction(arraySettings, UuidInsertAction(settings), RandomnessIcons.Uuid.Array) {
     override val name = "Random UUID Array"
 }
 
@@ -86,7 +88,7 @@ class UuidInsertArrayAction(
  * @see UuidSettings
  * @see UuidSettingsComponent
  */
-class UuidSettingsAction : SettingsAction<UuidSettings>() {
+class UuidSettingsAction : SettingsAction<UuidSettings>(RandomnessIcons.Uuid.Settings) {
     override val title = "UUID Settings"
 
     override val configurableClass = UuidSettingsConfigurable::class.java

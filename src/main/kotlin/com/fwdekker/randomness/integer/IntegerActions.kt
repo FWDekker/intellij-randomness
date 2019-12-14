@@ -6,13 +6,14 @@ import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
 import com.fwdekker.randomness.array.ArraySettings
+import icons.RandomnessIcons
 import java.text.DecimalFormat
 
 
 /**
  * All actions related to inserting integers.
  */
-class IntegerGroupAction : DataGroupAction() {
+class IntegerGroupAction : DataGroupAction(RandomnessIcons.Integer.Base) {
     override val insertAction = IntegerInsertAction()
     override val insertArrayAction = IntegerInsertArrayAction()
     override val settingsAction = IntegerSettingsAction()
@@ -27,7 +28,8 @@ class IntegerGroupAction : DataGroupAction() {
  * @see IntegerInsertArrayAction
  * @see IntegerSettings
  */
-class IntegerInsertAction(private val settings: IntegerSettings = IntegerSettings.default) : DataInsertAction() {
+class IntegerInsertAction(private val settings: IntegerSettings = IntegerSettings.default) :
+    DataInsertAction(RandomnessIcons.Integer.Base) {
     override val name = "Random Integer"
 
 
@@ -79,7 +81,7 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
 class IntegerInsertArrayAction(
     arraySettings: ArraySettings = ArraySettings.default,
     settings: IntegerSettings = IntegerSettings.default
-) : DataInsertArrayAction(arraySettings, IntegerInsertAction(settings)) {
+) : DataInsertArrayAction(arraySettings, IntegerInsertAction(settings), RandomnessIcons.Integer.Array) {
     override val name = "Random Integer Array"
 }
 
@@ -90,7 +92,7 @@ class IntegerInsertArrayAction(
  * @see IntegerSettings
  * @see IntegerSettingsComponent
  */
-class IntegerSettingsAction : SettingsAction<IntegerSettings>() {
+class IntegerSettingsAction : SettingsAction<IntegerSettings>(RandomnessIcons.Integer.Settings) {
     override val title = "Integer Settings"
 
     override val configurableClass = IntegerSettingsConfigurable::class.java

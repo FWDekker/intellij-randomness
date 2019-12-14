@@ -9,13 +9,13 @@ import com.fwdekker.randomness.ui.disableSpeedSearch
 import com.fwdekker.randomness.ui.registerModifierActions
 import com.fwdekker.randomness.uuid.UuidGroupAction
 import com.fwdekker.randomness.word.WordGroupAction
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.popup.list.ListPopupImpl
+import icons.RandomnessIcons
 
 
 /**
@@ -37,7 +37,7 @@ class PopupAction : AnAction() {
      * @param event carries information on the invocation place
      */
     override fun update(event: AnActionEvent) {
-        event.presentation.icon = AllIcons.Modules.Output
+        event.presentation.icon = RandomnessIcons.Data.Base
     }
 
     /**

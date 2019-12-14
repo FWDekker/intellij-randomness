@@ -6,12 +6,13 @@ import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
 import com.fwdekker.randomness.array.ArraySettings
+import icons.RandomnessIcons
 
 
 /**
  * All actions related to inserting words.
  */
-class WordGroupAction : DataGroupAction() {
+class WordGroupAction : DataGroupAction(RandomnessIcons.Word.Base) {
     override val insertAction = WordInsertAction()
     override val insertArrayAction = WordInsertArrayAction()
     override val settingsAction = WordSettingsAction()
@@ -26,7 +27,8 @@ class WordGroupAction : DataGroupAction() {
  * @see WordInsertArrayAction
  * @see WordSettings
  */
-class WordInsertAction(private val settings: WordSettings = WordSettings.default) : DataInsertAction() {
+class WordInsertAction(private val settings: WordSettings = WordSettings.default) :
+    DataInsertAction(RandomnessIcons.Word.Base) {
     override val name = "Random Word"
 
 
@@ -71,7 +73,7 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
 class WordInsertArrayAction(
     arraySettings: ArraySettings = ArraySettings.default,
     settings: WordSettings = WordSettings.default
-) : DataInsertArrayAction(arraySettings, WordInsertAction(settings)) {
+) : DataInsertArrayAction(arraySettings, WordInsertAction(settings), RandomnessIcons.Word.Array) {
     override val name = "Random Word Array"
 }
 
@@ -82,7 +84,7 @@ class WordInsertArrayAction(
  * @see WordSettings
  * @see WordSettingsComponent
  */
-class WordSettingsAction : SettingsAction<WordSettings>() {
+class WordSettingsAction : SettingsAction<WordSettings>(RandomnessIcons.Word.Settings) {
     override val title = "Word Settings"
 
     override val configurableClass = WordSettingsConfigurable::class.java

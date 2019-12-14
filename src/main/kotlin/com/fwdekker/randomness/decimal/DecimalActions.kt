@@ -6,6 +6,7 @@ import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
 import com.fwdekker.randomness.array.ArraySettings
+import icons.RandomnessIcons
 import java.text.DecimalFormat
 import kotlin.math.nextUp
 
@@ -13,7 +14,7 @@ import kotlin.math.nextUp
 /**
  * All actions related to inserting decimals.
  */
-class DecimalGroupAction : DataGroupAction() {
+class DecimalGroupAction : DataGroupAction(RandomnessIcons.Decimal.Base) {
     override val insertAction = DecimalInsertAction()
     override val insertArrayAction = DecimalInsertArrayAction()
     override val settingsAction = DecimalSettingsAction()
@@ -28,7 +29,8 @@ class DecimalGroupAction : DataGroupAction() {
  * @see DecimalInsertArrayAction
  * @see DecimalSettings
  */
-class DecimalInsertAction(private val settings: DecimalSettings = DecimalSettings.default) : DataInsertAction() {
+class DecimalInsertAction(private val settings: DecimalSettings = DecimalSettings.default) :
+    DataInsertAction(RandomnessIcons.Decimal.Base) {
     override val name = "Random Decimal"
 
 
@@ -80,7 +82,7 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
 class DecimalInsertArrayAction(
     arraySettings: ArraySettings = ArraySettings.default,
     settings: DecimalSettings = DecimalSettings.default
-) : DataInsertArrayAction(arraySettings, DecimalInsertAction(settings)) {
+) : DataInsertArrayAction(arraySettings, DecimalInsertAction(settings), RandomnessIcons.Decimal.Array) {
     override val name = "Random Decimal Array"
 }
 
@@ -91,7 +93,7 @@ class DecimalInsertArrayAction(
  * @see DecimalSettings
  * @see DecimalSettingsComponent
  */
-class DecimalSettingsAction : SettingsAction<DecimalSettings>() {
+class DecimalSettingsAction : SettingsAction<DecimalSettings>(RandomnessIcons.Decimal.Settings) {
     override val title = "Decimal Settings"
 
     override val configurableClass = DecimalSettingsConfigurable::class.java
