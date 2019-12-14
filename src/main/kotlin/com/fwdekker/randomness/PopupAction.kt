@@ -46,13 +46,10 @@ class PopupAction : AnAction() {
      * @param event carries information on the invocation place
      */
     override fun actionPerformed(event: AnActionEvent) {
-        val project = event.project
-            ?: return
-
         val popup = JBPopupFactory.getInstance()
             .createActionGroupPopup(
                 TITLE, PopupGroup(), event.dataContext,
-                JBPopupFactory.ActionSelectionAid.NUMBERING, true, event.place
+                JBPopupFactory.ActionSelectionAid.NUMBERING, true
             )
             as ListPopupImpl
 
@@ -62,7 +59,7 @@ class PopupAction : AnAction() {
         popup.registerModifierActions(ModifierKey.SHIFT, TITLE, SHIFT_TITLE)
 
         popup.setAdText(AD_TEXT)
-        popup.showCenteredInCurrentWindow(project)
+        popup.showInBestPositionFor(event.dataContext)
     }
 
 
