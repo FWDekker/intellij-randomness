@@ -4,7 +4,7 @@ import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
-import com.fwdekker.randomness.SettingsAction
+import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArraySettings
 import icons.RandomnessIcons
 
@@ -93,7 +93,7 @@ class StringInsertArrayAction(
  * @see StringSettings
  * @see StringSettingsComponent
  */
-class StringSettingsAction : SettingsAction<StringSettings>(RandomnessIcons.String.Settings) {
+class StringSettingsAction : DataSettingsAction<StringSettings>(RandomnessIcons.String.Settings) {
     override val title = "String Settings"
 
     override val configurableClass = StringSettingsConfigurable::class.java
