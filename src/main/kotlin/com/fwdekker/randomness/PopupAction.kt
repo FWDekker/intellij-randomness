@@ -12,6 +12,7 @@ import com.fwdekker.randomness.word.WordGroupAction
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.popup.list.ListPopupImpl
@@ -38,6 +39,7 @@ class PopupAction : AnAction() {
      */
     override fun update(event: AnActionEvent) {
         event.presentation.icon = RandomnessIcons.Data.Base
+        event.presentation.isEnabled = event.getData(CommonDataKeys.EDITOR) != null
     }
 
     /**
