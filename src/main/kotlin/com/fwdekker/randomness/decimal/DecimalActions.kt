@@ -4,7 +4,7 @@ import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
-import com.fwdekker.randomness.SettingsAction
+import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArraySettings
 import icons.RandomnessIcons
 import java.text.DecimalFormat
@@ -93,7 +93,7 @@ class DecimalInsertArrayAction(
  * @see DecimalSettings
  * @see DecimalSettingsComponent
  */
-class DecimalSettingsAction : SettingsAction<DecimalSettings>(RandomnessIcons.Decimal.Settings) {
+class DecimalSettingsAction : DataSettingsAction<DecimalSettings>(RandomnessIcons.Decimal.Settings) {
     override val title = "Decimal Settings"
 
     override val configurableClass = DecimalSettingsConfigurable::class.java

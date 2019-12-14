@@ -4,7 +4,7 @@ import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
-import com.fwdekker.randomness.SettingsAction
+import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArraySettings
 import icons.RandomnessIcons
 
@@ -84,7 +84,7 @@ class WordInsertArrayAction(
  * @see WordSettings
  * @see WordSettingsComponent
  */
-class WordSettingsAction : SettingsAction<WordSettings>(RandomnessIcons.Word.Settings) {
+class WordSettingsAction : DataSettingsAction<WordSettings>(RandomnessIcons.Word.Settings) {
     override val title = "Word Settings"
 
     override val configurableClass = WordSettingsConfigurable::class.java

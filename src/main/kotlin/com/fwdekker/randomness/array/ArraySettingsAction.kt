@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.SettingsAction
+import com.fwdekker.randomness.DataSettingsAction
 
 
 /**
@@ -9,7 +9,7 @@ import com.fwdekker.randomness.SettingsAction
  * @see ArraySettings
  * @see ArraySettingsComponent
  */
-class ArraySettingsAction : SettingsAction<ArraySettings>() {
+class ArraySettingsAction : DataSettingsAction<ArraySettings>() {
     override val title = "Array Settings"
 
     override val configurableClass = ArraySettingsConfigurable::class.java
