@@ -1,6 +1,7 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArraySettings
+import icons.RandomnessIcons
 
 
 /**
@@ -10,7 +11,7 @@ import com.fwdekker.randomness.array.ArraySettings
  *
  * @property dummyValue the dummy value that is inserted
  */
-class DummyInsertAction(val dummyValue: String) : DataInsertAction() {
+class DummyInsertAction(val dummyValue: String) : DataInsertAction(RandomnessIcons.Data.Base) {
     override val name = "Random Dummy"
 
     override fun generateStrings(count: Int) = List(count) { dummyValue }
@@ -24,6 +25,6 @@ class DummyInsertAction(val dummyValue: String) : DataInsertAction() {
  * @param arraySettings the settings to use for generating arrays
  */
 class DummyInsertArrayAction(arraySettings: ArraySettings = ArraySettings.default, dummyValue: String) :
-    DataInsertArrayAction(arraySettings, DummyInsertAction(dummyValue)) {
+    DataInsertArrayAction(arraySettings, DummyInsertAction(dummyValue), RandomnessIcons.Data.Array) {
     override val name = "Random Dummy Array"
 }

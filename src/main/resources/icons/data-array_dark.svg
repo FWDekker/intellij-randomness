@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <desc>Created with Lunacy</desc>
+  <g id="data-array_dark">
+    <path d="M0 10L0 8.5L2.5 8.5L2.5 1.5L0 1.5L0 0L4 0L4 10L0 10L0 10Z" transform="translate(10 3)" id="Right" fill="#AFB1B3" stroke="none" />
+    <path d="M0 10L0 0L4 0L4 1.5L1.5 1.5L1.5 8.5L4 8.5L4 10L0 10L0 10Z" transform="translate(2 3)" id="Left" fill="#AFB1B3" stroke="none" />
+  </g>
+</svg>

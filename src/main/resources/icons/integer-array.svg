@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <desc>Created with Lunacy</desc>
+  <g id="integer-array">
+    <path d="M7 0C3.13401 0 0 3.13401 0 7C0 10.5265 2.60771 13.4439 6 13.9291L6 7L14 7C14 3.13401 10.866 0 7 0Z" transform="translate(1 1)" id="Oval-Difference" fill="#40B6E0" fill-opacity="0.6" fill-rule="evenodd" stroke="none" />
+    <path d="M9.20225 2.352L7.308 2.352L7.308 2.01L8.172 1.032L6.384 1.032L6.384 0.252001L9.324 0.252001L9.324 0.882001L8.376 1.962Q8.90973 2.04902 9.20225 2.352ZM4.01 4.452L2.838 4.452L2.838 3.822L4.01 2.71511L4.01 4.452ZM4.39447 2.352L4.458 2.292Q4.716 2.046 4.806 1.869Q4.896 1.692 4.896 1.518Q4.896 1.266 4.725 1.131Q4.554 0.996001 4.224 0.996001Q3.948 0.996001 3.726 1.101Q3.504 1.206 3.354 1.416L2.646 0.960001Q2.892 0.594002 3.324 0.387002Q3.756 0.180001 4.314 0.180001Q4.782 0.180001 5.133 0.333002Q5.484 0.486001 5.679 0.765001Q5.874 1.044 5.874 1.422Q5.874 1.764 5.73 2.064Q5.66499 2.19944 5.54495 2.352L4.39447 2.352ZM2.142 4.452L2.142 0.252001L0.329998 0.252001L0.329998 1.032L1.17 1.032L1.17 4.452L2.142 4.452Z" transform="translate(2.990002 5.647995)" id="Text-Difference" fill="#000000" fill-opacity="0.8980392" fill-rule="evenodd" stroke="none" />
+    <g id="Array" transform="translate(7 7.000004)">
+      <path d="M0 5.625L0 4.78125L1.40625 4.78125L1.40625 0.84375L0 0.84375L0 0L2.25 0L2.25 5.625L0 5.625L0 5.625Z" transform="translate(5.625 1.6875)" id="Right" fill="#6E6E6E" stroke="none" />
+      <path d="M0 5.625L0 0L2.25 0L2.25 0.84375L0.84375 0.84375L0.84375 4.78125L2.25 4.78125L2.25 5.625L0 5.625L0 5.625Z" transform="translate(1.125 1.6875)" id="Left" fill="#6E6E6E" stroke="none" />
+    </g>
+  </g>
+</svg>

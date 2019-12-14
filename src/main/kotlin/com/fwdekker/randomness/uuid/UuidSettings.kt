@@ -12,6 +12,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 /**
  * Contains settings for generating random UUIDs.
  *
+ * @property version The version of UUIDs to generate.
  * @property enclosure The string that encloses the generated UUID on both sides.
  * @property capitalization The capitalization mode of the generated UUID.
  * @property addDashes True if and only if the UUID should have dashes in it.

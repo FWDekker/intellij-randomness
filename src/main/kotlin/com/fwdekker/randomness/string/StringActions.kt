@@ -6,12 +6,13 @@ import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.SettingsAction
 import com.fwdekker.randomness.array.ArraySettings
+import icons.RandomnessIcons
 
 
 /**
  * All actions related to inserting strings.
  */
-class StringGroupAction : DataGroupAction() {
+class StringGroupAction : DataGroupAction(RandomnessIcons.String.Base) {
     override val insertAction = StringInsertAction()
     override val insertArrayAction = StringInsertArrayAction()
     override val settingsAction = StringSettingsAction()
@@ -26,7 +27,8 @@ class StringGroupAction : DataGroupAction() {
  * @see StringInsertArrayAction
  * @see StringSettings
  */
-class StringInsertAction(private val settings: StringSettings = StringSettings.default) : DataInsertAction() {
+class StringInsertAction(private val settings: StringSettings = StringSettings.default) :
+    DataInsertAction(RandomnessIcons.String.Base) {
     override val name = "Random String"
 
 
@@ -80,7 +82,7 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
 class StringInsertArrayAction(
     arraySettings: ArraySettings = ArraySettings.default,
     settings: StringSettings = StringSettings.default
-) : DataInsertArrayAction(arraySettings, StringInsertAction(settings)) {
+) : DataInsertArrayAction(arraySettings, StringInsertAction(settings), RandomnessIcons.String.Array) {
     override val name = "Random String Array"
 }
 
@@ -91,7 +93,7 @@ class StringInsertArrayAction(
  * @see StringSettings
  * @see StringSettingsComponent
  */
-class StringSettingsAction : SettingsAction<StringSettings>() {
+class StringSettingsAction : SettingsAction<StringSettings>(RandomnessIcons.String.Settings) {
     override val title = "String Settings"
 
     override val configurableClass = StringSettingsConfigurable::class.java

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <desc>Created with Lunacy</desc>
+  <g id="uuid-array">
+    <path d="M7 0C3.13401 0 0 3.13401 0 7C0 10.5265 2.60771 13.4439 6 13.9291L6 7L14 7C14 3.13401 10.866 0 7 0Z" transform="translate(1 1)" id="Oval-Difference" fill="#B99BF8" fill-opacity="0.6" fill-rule="evenodd" stroke="none" />
+    <path d="M2.511 0.624002Q2.673 0.774001 2.931 0.774001Q3.189 0.774001 3.351 0.621001Q3.513 0.468002 3.513 0.234002Q3.513 0.0180016 3.351 -0.125998Q3.189 -0.269999 2.931 -0.269999Q2.673 -0.269999 2.511 -0.119998Q2.349 0.0300012 2.349 0.252001Q2.349 0.474002 2.511 0.624002ZM7.557 2.352L7.557 0L6.621 0L6.621 1.566Q6.273 1.176 5.655 1.176Q5.199 1.176 4.83 1.38Q4.461 1.584 4.251 1.962Q4.15032 2.14321 4.09791 2.352L5.10124 2.352Q5.15106 2.2617 5.223 2.187Q5.457 1.944 5.817 1.944Q6.171 1.944 6.405 2.187Q6.47693 2.2617 6.52676 2.352L7.557 2.352ZM3.399 4.452L3.399 1.224L2.463 1.224L2.463 4.452L3.399 4.452Z" transform="translate(2.990002 5.647995)" id="Text-Difference" fill="#000000" fill-opacity="0.8980392" fill-rule="evenodd" stroke="none" />
+    <g id="Array" transform="translate(7 7.000004)">
+      <path d="M0 5.625L0 4.78125L1.40625 4.78125L1.40625 0.84375L0 0.84375L0 0L2.25 0L2.25 5.625L0 5.625L0 5.625Z" transform="translate(5.625 1.6875)" id="Right" fill="#6E6E6E" stroke="none" />
+      <path d="M0 5.625L0 0L2.25 0L2.25 0.84375L0.84375 0.84375L0.84375 4.78125L2.25 4.78125L2.25 5.625L0 5.625L0 5.625Z" transform="translate(1.125 1.6875)" id="Left" fill="#6E6E6E" stroke="none" />
+    </g>
+  </g>
+</svg>

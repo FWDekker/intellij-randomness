@@ -9,7 +9,9 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.options.ShowSettingsUtil
+import icons.RandomnessIcons
 import java.awt.event.InputEvent
+import javax.swing.Icon
 import kotlin.random.Random
 
 
@@ -24,8 +26,10 @@ class DataGenerationException(message: String? = null, cause: Throwable? = null)
 
 /**
  * A group of actions for a particular type of random data that can be generated.
+ *
+ * @param icon the icon to display with the action
  */
-abstract class DataGroupAction : ActionGroup() {
+abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Base) : ActionGroup() {
     /**
      * The action used to insert a single datum.
      */
@@ -83,6 +87,7 @@ abstract class DataGroupAction : ActionGroup() {
         super.update(event)
 
         event.presentation.text = insertAction.name
+        event.presentation.icon = icon
     }
 
     /**
@@ -96,12 +101,15 @@ abstract class DataGroupAction : ActionGroup() {
 
 /**
  * Inserts a randomly generated string at the positions of the event's editor's carets.
+ *
+ * @param icon the icon to display with the action
  */
-abstract class DataInsertAction : AnAction() {
+abstract class DataInsertAction(private val icon: Icon) : AnAction() {
     /**
      * The name of the action to display.
      */
     abstract val name: String
+
     /**
      * The random generator used to generate random values.
      */
@@ -118,6 +126,7 @@ abstract class DataInsertAction : AnAction() {
         val editor = event.getData(CommonDataKeys.EDITOR)
 
         presentation.text = name
+        presentation.icon = icon
         presentation.isEnabled = editor != null
     }
 
@@ -190,11 +199,13 @@ abstract class DataInsertAction : AnAction() {
  *
  * @param arraySettings the settings to use for generating arrays
  * @param dataInsertAction the action to generate data with
+ * @param icon the icon to display with the action
  */
 abstract class DataInsertArrayAction(
     private val arraySettings: ArraySettings,
-    private val dataInsertAction: DataInsertAction
-) : DataInsertAction() {
+    private val dataInsertAction: DataInsertAction,
+    icon: Icon = RandomnessIcons.Data.Array
+) : DataInsertAction(icon) {
     /**
      * Generates array-like strings of random data.
      *
@@ -216,8 +227,10 @@ abstract class DataInsertArrayAction(
 
 /**
  * Opens the settings window for changing settings.
+ *
+ * @param icon the icon to display with the action
  */
-abstract class SettingsAction<S : Settings<S>> : AnAction() {
+abstract class SettingsAction<S : Settings<S>>(private val icon: Icon = RandomnessIcons.Data.Settings) : AnAction() {
     /**
      * The name of the action.
      */
@@ -238,6 +251,7 @@ abstract class SettingsAction<S : Settings<S>> : AnAction() {
         super.update(event)
 
         event.presentation.text = title
+        event.presentation.icon = icon
     }
 
     /**
