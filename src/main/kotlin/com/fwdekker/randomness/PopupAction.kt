@@ -12,6 +12,7 @@ import com.fwdekker.randomness.word.WordGroupAction
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.popup.list.ListPopupImpl
@@ -38,6 +39,7 @@ class PopupAction : AnAction() {
      */
     override fun update(event: AnActionEvent) {
         event.presentation.icon = RandomnessIcons.Data.Base
+        event.presentation.isEnabled = event.getData(CommonDataKeys.EDITOR) != null
     }
 
     /**
@@ -46,13 +48,10 @@ class PopupAction : AnAction() {
      * @param event carries information on the invocation place
      */
     override fun actionPerformed(event: AnActionEvent) {
-        val project = event.project
-            ?: return
-
         val popup = JBPopupFactory.getInstance()
             .createActionGroupPopup(
                 TITLE, PopupGroup(), event.dataContext,
-                JBPopupFactory.ActionSelectionAid.NUMBERING, true, event.place
+                JBPopupFactory.ActionSelectionAid.NUMBERING, true
             )
             as ListPopupImpl
 
@@ -62,7 +61,7 @@ class PopupAction : AnAction() {
         popup.registerModifierActions(ModifierKey.SHIFT, TITLE, SHIFT_TITLE)
 
         popup.setAdText(AD_TEXT)
-        popup.showCenteredInCurrentWindow(project)
+        popup.showInBestPositionFor(event.dataContext)
     }
 
 
