@@ -9,6 +9,7 @@ import com.fwdekker.randomness.ui.disableSpeedSearch
 import com.fwdekker.randomness.ui.registerModifierActions
 import com.fwdekker.randomness.uuid.UuidGroupAction
 import com.fwdekker.randomness.word.WordGroupAction
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -23,12 +24,21 @@ import com.intellij.ui.popup.list.ListPopupImpl
 class PopupAction : AnAction() {
     companion object {
         private const val TITLE = "Insert Data"
-        private const val ALT_TITLE = "Insert Data"
+        private const val ALT_TITLE = "Insert Repeated Data"
         private const val CTRL_TITLE = "Change Settings"
         private const val SHIFT_TITLE = "Insert Array"
         private const val AD_TEXT = "Shift = Array. Ctrl = Settings. Alt = Repeat."
     }
 
+
+    /**
+     * Sets the icon of this action.
+     *
+     * @param event carries information on the invocation place
+     */
+    override fun update(event: AnActionEvent) {
+        event.presentation.icon = AllIcons.Modules.Output
+    }
 
     /**
      * Displays a popup with all actions provided by Randomness.

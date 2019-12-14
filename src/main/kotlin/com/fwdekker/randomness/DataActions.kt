@@ -2,6 +2,7 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArraySettings
 import com.intellij.codeInsight.hint.HintManager
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -10,6 +11,7 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.options.ShowSettingsUtil
 import java.awt.event.InputEvent
+import javax.swing.Icon
 import kotlin.random.Random
 
 
@@ -96,12 +98,15 @@ abstract class DataGroupAction : ActionGroup() {
 
 /**
  * Inserts a randomly generated string at the positions of the event's editor's carets.
+ *
+ * @property icon The icon to display with the action.
  */
-abstract class DataInsertAction : AnAction() {
+abstract class DataInsertAction(val icon: Icon = AllIcons.Modules.Output) : AnAction() {
     /**
      * The name of the action to display.
      */
     abstract val name: String
+
     /**
      * The random generator used to generate random values.
      */
@@ -118,6 +123,7 @@ abstract class DataInsertAction : AnAction() {
         val editor = event.getData(CommonDataKeys.EDITOR)
 
         presentation.text = name
+        presentation.icon = icon
         presentation.isEnabled = editor != null
     }
 
@@ -194,7 +200,7 @@ abstract class DataInsertAction : AnAction() {
 abstract class DataInsertArrayAction(
     private val arraySettings: ArraySettings,
     private val dataInsertAction: DataInsertAction
-) : DataInsertAction() {
+) : DataInsertAction(AllIcons.Json.Array) {
     /**
      * Generates array-like strings of random data.
      *
@@ -218,6 +224,14 @@ abstract class DataInsertArrayAction(
  * Opens the settings window for changing settings.
  */
 abstract class SettingsAction<S : Settings<S>> : AnAction() {
+    companion object {
+        /**
+         * The icon displayed for settings actions.
+         */
+        val icon: Icon = AllIcons.General.Settings
+    }
+
+
     /**
      * The name of the action.
      */
@@ -238,6 +252,7 @@ abstract class SettingsAction<S : Settings<S>> : AnAction() {
         super.update(event)
 
         event.presentation.text = title
+        event.presentation.icon = icon
     }
 
     /**
