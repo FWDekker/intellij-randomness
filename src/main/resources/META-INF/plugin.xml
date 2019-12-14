@@ -6,7 +6,7 @@
 
     <depends>com.intellij.modules.lang</depends>
 
-    <idea-version since-build="171.0" />
+    <idea-version since-build="181.0" />
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Persistence -->

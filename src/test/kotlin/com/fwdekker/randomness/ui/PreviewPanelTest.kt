@@ -90,7 +90,7 @@ object PreviewPanelTest : Spek({
                     override fun clone(item: EditableDatum<String>, forInPlaceEditing: Boolean) =
                         EditableDatum(item.active, item.datum)
                 }
-                val table = object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, "") {}
+                val table = object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, {}) {}
 
                 panel.updatePreviewOnUpdateOf(table)
                 table.data = listOf("a")

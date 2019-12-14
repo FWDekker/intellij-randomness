@@ -31,7 +31,7 @@ object ActivityTableModelEditorTest : Spek({
                 EditableDatum(item.active, item.datum)
         }
         modelEditor = GuiActionRunner.execute<ActivityTableModelEditor<String>> {
-            object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, "") {}
+            object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, {}) {}
         }
     }
 

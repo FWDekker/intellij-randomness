@@ -17,7 +17,7 @@ private typealias EditableDictionary = EditableDatum<Dictionary>
  * @see WordSettingsComponent
  */
 class DictionaryTable : ActivityTableModelEditor<Dictionary>(
-    arrayOf(TYPE_COLUMN, LOCATION_COLUMN), ITEM_EDITOR, EMPTY_TEXT, { it is UserDictionary }) {
+    arrayOf(TYPE_COLUMN, LOCATION_COLUMN), ITEM_EDITOR, EMPTY_TEXT, EMPTY_SUB_TEXT, { it is UserDictionary }) {
     companion object {
         /**
          * The error message that is displayed if an unknown dictionary implementation is used.
@@ -71,8 +71,7 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
          * Describes how table rows are edited.
          */
         private val ITEM_EDITOR = object : CollectionItemEditor<EditableDictionary> {
-            // TODO Do not instantiate instance of `EditableDictionary`
-            override fun getItemClass() = EditableDictionary(false, UserDictionary.cache.get(""))::class.java
+            override fun getItemClass() = createElement()::class.java
 
             override fun isRemovable(item: EditableDictionary) = item.datum is UserDictionary
 
@@ -88,6 +87,19 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
          * The text that is displayed when the table is empty.
          */
         private const val EMPTY_TEXT = "No dictionaries configured."
+
+        /**
+         * The instruction that is displayed when the table is empty.
+         */
+        private const val EMPTY_SUB_TEXT = "Add dictionary"
+
+
+        /**
+         * Creates a new placeholder [Dictionary] instance.
+         *
+         * @return a new placeholder [Dictionary] instance
+         */
+        private fun createElement() = EditableDictionary(DEFAULT_STATE, UserDictionary.cache.get("", true))
     }
 
 
@@ -96,5 +108,5 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
      *
      * @return a new placeholder [Dictionary] instance
      */
-    override fun createElement() = EditableDictionary(DEFAULT_STATE, UserDictionary.cache.get("", true))
+    override fun createElement() = Companion.createElement()
 }
