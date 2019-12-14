@@ -2,13 +2,18 @@ package com.fwdekker.randomness.ui
 
 import com.intellij.ide.IdeBundle
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonShortcuts
+import com.intellij.openapi.keymap.KeymapUtil
 import com.intellij.openapi.wm.IdeFocusManager
+import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TableUtil
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.TableView
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ui.CollectionItemEditor
 import com.intellij.util.ui.ColumnInfo
+import com.intellij.util.ui.JBUI
+import com.intellij.util.ui.StatusText
 import com.intellij.util.ui.table.TableModelEditor
 import javax.swing.JPanel
 
@@ -33,12 +38,14 @@ data class EditableDatum<T>(var active: Boolean, var datum: T)
  * @param columns the columns of the table, excluding the activity column
  * @param itemEditor describes what happens when a row is edited
  * @param emptyText the text to display when the table is empty
+ * @param emptySubText the instruction to display when the table is empty
  * @param isCopyable returns `true` if and only if the given datum can be copied
  */
 abstract class ActivityTableModelEditor<T>(
     columns: Array<ColumnInfo<EditableDatum<T>, *>>,
     itemEditor: CollectionItemEditor<EditableDatum<T>>,
     emptyText: String,
+    val emptySubText: String,
     private val isCopyable: (T) -> Boolean = { true }
 ) : TableModelEditor<EditableDatum<T>>(
     arrayOf<ColumnInfo<EditableDatum<T>, *>>(createActivityColumn()).plus(columns),
@@ -98,6 +105,23 @@ abstract class ActivityTableModelEditor<T>(
         val table = TableModelEditor::class.java.getDeclaredField("table")
             .apply { isAccessible = true }
             .get(this) as TableView<EditableDatum<T>>
+
+        // TODO (#209) Use `LINK_PLAIN_ATTRIBUTES` instead of custom `SimpleTextAttributes`
+        val style = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBUI.CurrentTheme.Link.linkColor())
+        table.emptyText.apply {
+            appendSecondaryText(emptySubText, style) {
+                model.addRow(createElement())
+
+                table.setRowSelectionInterval(0, 0)
+                table.setColumnSelectionInterval(0, 0)
+                table.editCellAt(0, 0)
+            }
+            appendSecondaryText(
+                " (${KeymapUtil.getFirstKeyboardShortcutText(CommonShortcuts.getNew())})",
+                StatusText.DEFAULT_ATTRIBUTES,
+                null
+            )
+        }
 
         return TableModelEditor::class.java.getDeclaredField("toolbarDecorator")
             .apply { isAccessible = true }

@@ -14,7 +14,7 @@ private typealias EditableSymbolSet = EditableDatum<SymbolSet>
  * @see StringSettingsComponent
  */
 class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
-    arrayOf(NAME_COLUMN, SYMBOLS_COLUMN), ITEM_EDITOR, EMPTY_TEXT) {
+    arrayOf(NAME_COLUMN, SYMBOLS_COLUMN), ITEM_EDITOR, EMPTY_TEXT, EMPTY_SUB_TEXT) {
     companion object {
         /**
          * The column showing the names of the symbol sets.
@@ -46,8 +46,7 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
          * Describes how table rows are edited.
          */
         private val ITEM_EDITOR = object : CollectionItemEditor<EditableSymbolSet> {
-            // TODO Do not instantiate instance of `EditableSymbolSet`
-            override fun getItemClass() = EditableSymbolSet(false, SymbolSet("", ""))::class.java
+            override fun getItemClass() = createElement()::class.java
 
             override fun clone(item: EditableSymbolSet, forInPlaceEditing: Boolean) =
                 EditableSymbolSet(item.active, SymbolSet(item.datum.name, item.datum.symbols))
@@ -57,6 +56,19 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
          * The text that is displayed when the table is empty.
          */
         private const val EMPTY_TEXT = "No symbol sets configured."
+
+        /**
+         * The instruction that is displayed when the table is empty.
+         */
+        private const val EMPTY_SUB_TEXT = "Add symbol set"
+
+
+        /**
+         * Creates a new placeholder [SymbolSet] instance.
+         *
+         * @return a new placeholder [SymbolSet] instance
+         */
+        private fun createElement() = EditableSymbolSet(DEFAULT_STATE, SymbolSet("", ""))
     }
 
 
@@ -65,5 +77,5 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
      *
      * @return a new placeholder [SymbolSet] instance
      */
-    override fun createElement() = EditableSymbolSet(DEFAULT_STATE, SymbolSet("", ""))
+    override fun createElement() = Companion.createElement()
 }
