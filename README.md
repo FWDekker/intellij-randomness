@@ -24,10 +24,11 @@ This plugin is also available on the [plugin repository](https://plugins.jetbrai
 To insert random data, press <kbd>Alt + R</kbd> (<kbd>⌥R</kbd>) and choose the type of data you want to insert.
 A different value will be inserted at each caret.
 
-You can modify this by holding a key while selecting the type of data to insert:
+You can modify this behavior by holding a key while selecting the type of data to insert:
 * Hold <kbd>Shift</kbd> to insert a whole array of values.
 * Hold <kbd>Ctrl</kbd> to open the settings of that data type.
 * Hold <kbd>Alt</kbd> (<kbd>⌥</kbd>) to insert the same value at each caret.
+You can also hold multiple modifier keys to combine their effects.
 
 Randomness can also be found in the main menu under <kbd>Tools</kbd> or in the
 [<kbd>Generate</kbd> menu](https://www.jetbrains.com/help/idea/generating-code.html).

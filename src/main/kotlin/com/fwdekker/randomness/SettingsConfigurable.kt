@@ -6,38 +6,6 @@ import javax.swing.JComponent
 
 
 /**
- * Randomness' root configurable; all other configurables are its children.
- */
-class RandomnessConfigurable : Configurable {
-    /**
-     * Returns the name of the configurable as displayed in the settings window.
-     *
-     * @return the name of the configurable as displayed in the settings window
-     */
-    override fun getDisplayName() = "Randomness"
-
-    /**
-     * Returns false because there is nothing to be modified.
-     *
-     * @return false because there is nothing to be modified
-     */
-    override fun isModified() = false
-
-    /**
-     * Does nothing because nothing can be done.
-     */
-    override fun apply() = Unit
-
-    /**
-     * Returns `null`.
-     *
-     * @return `null`
-     */
-    override fun createComponent(): JComponent? = null
-}
-
-
-/**
  * A configurable to change settings of type [S].
  *
  * Allows the settings to be displayed in IntelliJ's settings window.
@@ -87,4 +55,36 @@ abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
      * @return the root pane of the settings component
      */
     override fun createComponent(): JComponent? = component.rootPane
+}
+
+
+/**
+ * Randomness' root configurable; all other configurables are its children.
+ */
+class RandomnessConfigurable : Configurable {
+    /**
+     * Returns the name of the configurable as displayed in the settings window.
+     *
+     * @return the name of the configurable as displayed in the settings window
+     */
+    override fun getDisplayName() = "Randomness"
+
+    /**
+     * Returns false because there is nothing to be modified.
+     *
+     * @return false because there is nothing to be modified
+     */
+    override fun isModified() = false
+
+    /**
+     * Does nothing because nothing can be done.
+     */
+    override fun apply() = Unit
+
+    /**
+     * Returns `null`.
+     *
+     * @return `null`
+     */
+    override fun createComponent(): JComponent? = null
 }
