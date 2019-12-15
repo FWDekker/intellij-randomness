@@ -29,10 +29,9 @@ fun ListPopupImpl.disableSpeedSearch() {
  */
 fun ListPopupImpl.registerModifierActions(captionModifier: (ActionEvent?) -> String) {
     val modifiers = listOf(listOf("alt"), listOf("control"), listOf("shift"))
-    val modifiers2 = listOf(listOf("")) + modifiers
+    val optionalModifiers = listOf(listOf("")) + modifiers
 
-    (modifiers * modifiers2 * modifiers2).forEach { (a, b, c) ->
-        println("$a, $b, $c")
+    (modifiers * optionalModifiers * optionalModifiers).forEach { (a, b, c) ->
         registerAction(
             "${a}${b}${c}Released",
             KeyStroke.getKeyStroke("$b $c released ${a.toUpperCase()}"),
@@ -61,7 +60,7 @@ fun ListPopupImpl.registerModifierActions(captionModifier: (ActionEvent?) -> Str
         for (key in 1..9) {
             registerAction(
                 "${a}${b}${c}invokeAction$key",
-                KeyStroke.getKeyStroke("$a $b $c typed $key"),
+                KeyStroke.getKeyStroke("$a $b $c pressed $key"),
                 actionListener { event ->
                     event ?: return@actionListener
 
@@ -105,8 +104,5 @@ private fun actionListener(actionPerformed: (ActionEvent?) -> Unit) =
  * @param other the list to multiply with
  * @return the cartesian product of `this` and [other]
  */
-private operator fun <E> List<List<E>>.times(other: List<List<E>>): List<List<E>> {
-    val newList = mutableListOf<List<E>>()
-    this.forEach { t1 -> other.forEach { t2 -> newList.add(t1 + t2) } }
-    return newList
-}
+private operator fun <E> List<List<E>>.times(other: List<List<E>>) =
+    this.flatMap { t1 -> other.map { t2 -> t1 + t2 } }
