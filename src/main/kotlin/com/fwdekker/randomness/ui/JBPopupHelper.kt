@@ -16,50 +16,39 @@ fun ListPopupImpl.disableSpeedSearch() {
 }
 
 /**
- * Registers actions such that actions can be selected while holding `Ctrl` or `Cmd`.
+ * Registers actions such that actions can be selected while holding (combinations of) modifier keys.
  *
- * @param modifierKey the modifier key for which actions should be registered
- * @param normalTitle the title of the popup while the modifier key is not pressed
- * @param modifierTitle the title of the popup while the modifier key is pressed
+ * All combinations of modifier keys are registered for events. Additionally, the [captionModifier] function is invoked
+ * every time the user presses or releases any modifier key, even while holding other modifier keys.
+ *
+ * Events are also registered for pressing the Enter key (with or without modifier keys) to invoke the action that is
+ * currently highlighted, and for pressing one of the numbers 1-9 (with or without modifier keys) to invoke the action
+ * at that index in the popup.
+ *
+ * @param captionModifier returns the caption to set based on the event
  */
-fun ListPopupImpl.registerModifierActions(
-    modifierKey: ModifierKey,
-    normalTitle: String,
-    modifierTitle: String
-) {
-    registerAction(
-        "${modifierKey.shortName.toLowerCase()}Released",
-        KeyStroke.getKeyStroke("released ${modifierKey.longName.toUpperCase()}"),
-        actionListener { setCaption(normalTitle) }
-    )
-    registerAction(
-        "${modifierKey.shortName.toLowerCase()}Pressed",
-        KeyStroke.getKeyStroke("${modifierKey.longName.toLowerCase()} pressed ${modifierKey.longName.toUpperCase()}"),
-        actionListener { setCaption(modifierTitle) }
-    )
-    registerAction(
-        "${modifierKey.shortName.toLowerCase()}InvokeAction",
-        KeyStroke.getKeyStroke("${modifierKey.longName.toLowerCase()} ENTER"),
-        actionListener { event ->
-            event ?: return@actionListener
+fun ListPopupImpl.registerModifierActions(captionModifier: (ActionEvent?) -> String) {
+    val modifiers = listOf(listOf("alt"), listOf("control"), listOf("shift"))
+    val modifiers2 = listOf(listOf("")) + modifiers
 
-            handleSelect(true, KeyEvent(
-                component, event.id, event.getWhen(),
-                event.modifiers, KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
-                KeyEvent.KEY_LOCATION_UNKNOWN
-            ))
-        }
-    )
-
-    @Suppress("MagicNumber") // Not worth a constant
-    for (key in 1..9) {
+    (modifiers * modifiers2 * modifiers2).forEach { (a, b, c) ->
+        println("$a, $b, $c")
         registerAction(
-            "${modifierKey.shortName.toLowerCase()}Invoke$key",
-            KeyStroke.getKeyStroke("${modifierKey.longName.toLowerCase()} $key"),
+            "${a}${b}${c}Released",
+            KeyStroke.getKeyStroke("$b $c released ${a.toUpperCase()}"),
+            actionListener { setCaption(captionModifier(it)) }
+        )
+        registerAction(
+            "${a}${b}${c}Pressed",
+            KeyStroke.getKeyStroke("$a $b $c pressed ${a.toUpperCase()}"),
+            actionListener { setCaption(captionModifier(it)) }
+        )
+        registerAction(
+            "${a}${b}${c}invokeAction",
+            KeyStroke.getKeyStroke("$a $b $c pressed ENTER"),
             actionListener { event ->
                 event ?: return@actionListener
 
-                list.addSelectionInterval(key - 1, key - 1)
                 handleSelect(true, KeyEvent(
                     component, event.id, event.getWhen(),
                     event.modifiers, KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
@@ -67,6 +56,24 @@ fun ListPopupImpl.registerModifierActions(
                 ))
             }
         )
+
+        @Suppress("MagicNumber") // Not worth a constant
+        for (key in 1..9) {
+            registerAction(
+                "${a}${b}${c}invokeAction$key",
+                KeyStroke.getKeyStroke("$a $b $c typed $key"),
+                actionListener { event ->
+                    event ?: return@actionListener
+
+                    list.addSelectionInterval(key - 1, key - 1)
+                    handleSelect(true, KeyEvent(
+                        component, event.id, event.getWhen(),
+                        event.modifiers, KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
+                        KeyEvent.KEY_LOCATION_UNKNOWN
+                    ))
+                }
+            )
+        }
     }
 }
 
@@ -78,29 +85,28 @@ fun ListPopupImpl.registerModifierActions(
  */
 private fun actionListener(actionPerformed: (ActionEvent?) -> Unit) =
     object : AbstractAction() {
-        override fun actionPerformed(event: ActionEvent?) {
-            actionPerformed(event)
-        }
+        override fun actionPerformed(event: ActionEvent?) = actionPerformed(event)
     }
 
-
 /**
- * Pairs the short and long name of a modifier key together.
+ * Returns the cartesian product of two lists.
  *
- * @param shortName the short name of the modifier key
- * @param longName the long name of the modifier key
+ * By requiring both lists to actually be lists of lists, this method can be chained. Consider the following examples,
+ * using a simplified notation for lists for readability.
+ * ```
+ * $ [[1, 2]] * [[3, 4]]
+ * [[1, 3], [1, 4], [2, 3], [2, 4]]
+ *
+ * $ [[1, 2]] * [[3, 4]] * [[5, 6]]
+ * [[1, 3, 5], [1, 3, 6], [1, 4, 5], [1, 4, 6], [2, 3, 5], [2, 3, 6], [2, 4, 5], [2, 4, 6]]
+ * ```
+ *
+ * @param E the type of inner element
+ * @param other the list to multiply with
+ * @return the cartesian product of `this` and [other]
  */
-enum class ModifierKey(val shortName: String, val longName: String) {
-    /**
-     * The ⎇ (Alt or Opt) key.
-     */
-    ALT("alt", "alt"),
-    /**
-     * The control (Ctrl or ⌘) key.
-     */
-    CTRL("ctrl", "control"),
-    /**
-     * The ⇧ (Shift) key).
-     */
-    SHIFT("shift", "shift")
+private operator fun <E> List<List<E>>.times(other: List<List<E>>): List<List<E>> {
+    val newList = mutableListOf<List<E>>()
+    this.forEach { t1 -> other.forEach { t2 -> newList.add(t1 + t2) } }
+    return newList
 }

@@ -1,6 +1,7 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.array.ArraySettingsAction
 import com.intellij.codeInsight.hint.HintManager
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
@@ -71,6 +72,7 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
         val shiftPressed = event.modifiers and (InputEvent.SHIFT_MASK or InputEvent.SHIFT_DOWN_MASK) != 0
 
         when {
+            ctrlPressed && shiftPressed -> ArraySettingsAction().actionPerformed(event)
             ctrlPressed -> settingsAction.actionPerformed(event)
             shiftPressed -> insertArrayAction.actionPerformed(event)
             else -> insertAction.actionPerformed(event)
