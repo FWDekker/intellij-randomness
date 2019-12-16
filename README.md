@@ -1,5 +1,5 @@
 <h1 align="center">
-    <img src=".github/logo.png" width="150"/>
+    <img src=".github/img/logo.png" width="150"/>
     <br />
     Randomness
 </h1>
@@ -18,8 +18,8 @@ numbers, strings, and UUIDs using an IntelliJ action!
 This plugin is also available on the [plugin repository](https://plugins.jetbrains.com/plugin/9836-randomness).
 
 
-## How to use
-<img align="right" src=".github/screenshots/decimal-settings-cropped.png" alt="String settings" />
+## 📖 How to use
+<img align="right" src=".github/img/decimal-settings-cropped.png" alt="String settings" />
 
 To insert random data, press <kbd>Alt + R</kbd> (<kbd>⌥R</kbd>) and choose the type of data you want to insert.
 A different value will be inserted at each caret.
@@ -33,8 +33,8 @@ You can also hold multiple modifier keys to combine their effects.
 Randomness can also be found in the main menu under <kbd>Tools</kbd> or in the
 [<kbd>Generate</kbd> menu](https://www.jetbrains.com/help/idea/generating-code.html).
 
-## Features
-* **Data Types**<br />
+## ✨ Features
+* 🔢 **Data Types**<br />
   There are five types of data that can be inserted:
   1. **Integers**, such as `7,826,922`, in any base from binary to hexatrigesimal.
   2. **Decimals**, such as `8,816,573.10`, using customisable separators.
@@ -44,41 +44,42 @@ Randomness can also be found in the main menu under <kbd>Tools</kbd> or in the
 
   In addition to these data types, it's also possible to generate entire **arrays** of a data type.
   For example, an array of integers might look like `[978, 881, 118, 286, 288]`.
-* **Settings**<br />
+* ⚙ **Settings**<br />
   The way the data is generated can be adjusted to your demands.
   You can customise the smallest integer to generate, the quotation marks to surround strings with, the number of
   elements to put in an array, the decimal separator to use, the capitalisation of strings and UUIDs, and much more.
-* **Previews**<br />
+* 👀 **Previews**<br />
   To help you decide what settings to choose, a preview of the data that is generated with your current settings is
   shown at the bottom of the settings window.
-* **Shortcuts**<br />
+* ⏭️ **Shortcuts**<br />
   Instead of using up all your shortcuts, Randomness only uses the <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) shortcut by
   default.
   However, you have the option to assign a unique shortcut to each individual data type and each settings window to
   streamline your workflow.
-* **Symbol sets**<br />
+* 🔡 **Symbol sets**<br />
   While Randomness comes with a varied selection of symbols to use for generating strings, it also gives you the option
   to add your own symbols, with support for Chinese and mathematical symbols.
-* **Dictionaries**<br />
+* 📚 **Dictionaries**<br />
   Randomness is bundled with a small English dictionary from which it chooses random words.
   However, you may want to add random words from another language or insert random movie quotes.
   You can create your own dictionaries by creating a text file and putting one option on each line, and saving the file
   with the `.dic` extension.
   Empty lines and lines that start with a `#` are ignored.
 
-  <p align="center"><img src=".github/screenshots/word-settings.png" alt="Dictionary settings" /></p>
+  <p align="center"><img src=".github/img/word-settings.png" alt="Dictionary settings" /></p>
 
 
-## Development
+## 💻 Development
 This section contains instructions in case you want to build the plugin from source or want to help with development.
+Please also check the [contribution guidelines](.github/CONTRIBUTING.md).
 
-### Build/run
+### 🔨 Build/run
 ```bash
 $ gradlew runIde       # Open a sandbox IntelliJ instance running the plugin
 $ gradlew buildPlugin  # Build an installable zip of the plugin
 ```
 
-### Quality assurance
+### 🧪 Quality assurance
 ```bash
 $ gradlew test                # Run tests
 $ gradlew test --tests X      # Run tests in class X
@@ -86,11 +87,17 @@ $ gradlew check               # Run tests and static analysis
 $ gradlew codeCoverageReport  # Run tests and calculate coverage
 ```
 
-### Miscellaneous
+### ❓ Miscellaneous
 ```bash
 $ gradlew dokka  # Generate documentation
 ```
 
+### 🖼 Icons
+The icons used by the plugin are found in the [.sketch](.github/img/icons.sketch) file.
+You can open this file with [Sketch](https://www.sketch.com/) (macOS), [Lunacy](https://icons8.com/lunacy) (Windows), or
+[Figma](https://github.com/Figma-Linux/figma-linux) (Linux).
 
-## Credits
-Thanks to [Georgios Andreadis](https://github.com/gandreadis) for the logo!
+
+## 🙏 Credits
+Thanks to [Georgios Andreadis](https://github.com/gandreadis) for the logo!<br />
+Thanks to [Meilina Reksoprodjo](https://github.com/meilinar) for help with macOS user testing!
