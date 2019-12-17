@@ -34,7 +34,7 @@ Randomness can also be found in the main menu under <kbd>Tools</kbd> or in the
 [<kbd>Generate</kbd> menu](https://www.jetbrains.com/help/idea/generating-code.html).
 
 ## ✨ Features
-* 🔢 **Data Types**<br />
+* 🕸 **Data Types**<br />
   There are five types of data that can be inserted:
   1. **Integers**, such as `7,826,922`, in any base from binary to hexatrigesimal.
   2. **Decimals**, such as `8,816,573.10`, using customisable separators.
@@ -51,12 +51,12 @@ Randomness can also be found in the main menu under <kbd>Tools</kbd> or in the
 * 👀 **Previews**<br />
   To help you decide what settings to choose, a preview of the data that is generated with your current settings is
   shown at the bottom of the settings window.
-* ⏭️ **Shortcuts**<br />
+* 💨 **Shortcuts**<br />
   Instead of using up all your shortcuts, Randomness only uses the <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) shortcut by
   default.
   However, you have the option to assign a unique shortcut to each individual data type and each settings window to
   streamline your workflow.
-* 🔡 **Symbol sets**<br />
+* 💤 **Symbol sets**<br />
   While Randomness comes with a varied selection of symbols to use for generating strings, it also gives you the option
   to add your own symbols, with support for Chinese and mathematical symbols.
 * 📚 **Dictionaries**<br />
@@ -87,7 +87,7 @@ $ gradlew check               # Run tests and static analysis
 $ gradlew codeCoverageReport  # Run tests and calculate coverage
 ```
 
-### ❓ Miscellaneous
+### 📚 Documentation
 ```bash
 $ gradlew dokka  # Generate documentation
 ```
