@@ -58,11 +58,11 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) : SettingsCo
         previewPanelHolder = PreviewPanel { DecimalInsertAction(DecimalSettings().also { saveSettings(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
-        minValue = JDoubleSpinner()
-        maxValue = JDoubleSpinner()
+        minValue = JDoubleSpinner(description = "minimum value")
+        maxValue = JDoubleSpinner(description = "maximum value")
         valueRange = JSpinnerRange(minValue, maxValue, name = "value")
 
-        decimalCount = JIntSpinner(0, 0)
+        decimalCount = JIntSpinner(0, 0, description = "decimal count")
     }
 
     override fun loadSettings(settings: DecimalSettings) {

@@ -10,7 +10,7 @@ import javax.swing.JSpinner
  * @param min the `JSpinner` that represents the minimum value
  * @param max the `JSpinner` that represents the maximum value
  * @param maxRange the maximum difference between `min` and `max`
- * @param name the name used in error messages
+ * @param name the name to use in error messages
  */
 class JSpinnerRange(
     private val min: JSpinner,
@@ -60,7 +60,7 @@ class JSpinnerRange(
             minValue > maxValue ->
                 ValidationInfo("The maximum$name should not be smaller than the minimum$name.", max)
             maxValue - minValue > maxRange ->
-                ValidationInfo("The range should not exceed $maxRange.", max)
+                ValidationInfo("The$name range should not exceed $maxRange.", max)
             else ->
                 null
         }

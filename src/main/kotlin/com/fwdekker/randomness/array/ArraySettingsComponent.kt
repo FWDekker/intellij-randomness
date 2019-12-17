@@ -65,7 +65,7 @@ class ArraySettingsComponent(settings: ArraySettings = default) : SettingsCompon
         }
         previewPanel = previewPanelHolder.rootPane
 
-        countSpinner = JIntSpinner(value = 1, minValue = 1)
+        countSpinner = JIntSpinner(value = 1, minValue = 1, description = "count")
     }
 
     override fun loadSettings(settings: ArraySettings) {

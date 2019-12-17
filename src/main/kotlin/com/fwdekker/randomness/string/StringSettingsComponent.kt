@@ -58,8 +58,8 @@ class StringSettingsComponent(settings: StringSettings = default) : SettingsComp
         previewPanelHolder = PreviewPanel { StringInsertAction(StringSettings().also { saveSettings(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
-        minLength = JIntSpinner(1, 1)
-        maxLength = JIntSpinner(1, 1)
+        minLength = JIntSpinner(1, 1, description = "minimum length")
+        maxLength = JIntSpinner(1, 1, description = "maximum length")
         lengthRange = JSpinnerRange(minLength, maxLength, Int.MAX_VALUE.toDouble(), "length")
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.createComponent()
