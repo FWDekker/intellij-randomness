@@ -16,11 +16,15 @@ import javax.swing.SpinnerNumberModel
  * @param minValue the smallest number that may be represented
  * @param maxValue the largest number that may be represented
  * @param stepSize the default value to increment and decrement by
- * @param description the name to use in error messages
+ * @param description the description to use in error messages; defaults to [DEFAULT_DESCRIPTION] if `null` is given
  */
 abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T, description: String? = null) :
     JSpinner(SpinnerNumberModel(value, minValue, maxValue, stepSize)) where T : Number, T : Comparable<T> {
     companion object {
+        /**
+         * The default description to use in error messages.
+         */
+        const val DEFAULT_DESCRIPTION = "value"
         /**
          * The default width of a number spinner.
          */
@@ -38,9 +42,9 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
     abstract val numberToT: (Number) -> T
 
     /**
-     * The `description` parameter preceded by a whitespace if it was not null, or an empty string otherwise.
+     * The description to use in error messages.
      */
-    val description = if (description != null) " $description" else ""
+    private val description = description ?: DEFAULT_DESCRIPTION
 
     /**
      * A helper function to return the super class's model as an instance of [SpinnerNumberModel].
@@ -93,9 +97,9 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
     fun validateValue() =
         when {
             value < minValue ->
-                ValidationInfo("The$description value should be greater than or equal to $minValue.", this)
+                ValidationInfo("The $description should be greater than or equal to $minValue.", this)
             value > maxValue ->
-                ValidationInfo("The$description value should be less than or equal to $maxValue.", this)
+                ValidationInfo("The $description should be less than or equal to $maxValue.", this)
             else ->
                 null
         }
@@ -109,7 +113,7 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
  * @param minValue the smallest number that may be represented
  * @param maxValue the largest number that may be represented
  * @param stepSize the default value to increment and decrement by
- * @param description the name to use in error messages
+ * @param description the description to use in error messages
  */
 class JDoubleSpinner(
     value: Double = 0.0,
@@ -137,7 +141,7 @@ class JDoubleSpinner(
  * @param minValue the smallest number that may be represented
  * @param maxValue the largest number that may be represented
  * @param stepSize the default value to increment and decrement by
- * @param description the name to use in error messages
+ * @param description the description to use in error messages
  */
 class JLongSpinner(
     value: Long = 0L,
@@ -165,7 +169,7 @@ class JLongSpinner(
  * @param minValue the smallest number that may be represented
  * @param maxValue the largest number that may be represented
  * @param stepSize the default value to increment and decrement by
- * @param description the name to use in error messages
+ * @param description the description to use in error messages
  */
 class JIntSpinner(
     value: Int = 0,

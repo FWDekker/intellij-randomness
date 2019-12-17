@@ -128,7 +128,8 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
-                assertThat(validationInfo?.message).isEqualTo("Enter a value greater than or equal to 1.")
+                assertThat(validationInfo?.message)
+                    .isEqualTo("The minimum length should be greater than or equal to 1.")
             }
 
             it("fails if the length range ends too low to match any words") {

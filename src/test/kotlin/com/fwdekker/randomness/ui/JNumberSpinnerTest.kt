@@ -16,8 +16,9 @@ object JNumberSpinnerTest : Spek({
     class JFloatSpinner(
         value: Float = 0.0f,
         minValue: Float = -Float.MAX_VALUE,
-        maxValue: Float = Float.MAX_VALUE
-    ) : JNumberSpinner<Float>(value, minValue, maxValue, 0.1f) {
+        maxValue: Float = Float.MAX_VALUE,
+        description: String? = null
+    ) : JNumberSpinner<Float>(value, minValue, maxValue, 0.1f, description = description) {
         override val numberToT: (Number) -> Float
             get() = { it.toFloat() }
     }
@@ -26,8 +27,8 @@ object JNumberSpinnerTest : Spek({
     fun createJFloatSpinner() =
         GuiActionRunner.execute<JFloatSpinner> { JFloatSpinner() }
 
-    fun createJFloatSpinner(value: Float, minValue: Float, maxValue: Float) =
-        GuiActionRunner.execute<JFloatSpinner> { JFloatSpinner(value, minValue, maxValue) }
+    fun createJFloatSpinner(value: Float, minValue: Float, maxValue: Float, description: String? = null) =
+        GuiActionRunner.execute<JFloatSpinner> { JFloatSpinner(value, minValue, maxValue, description) }
 
 
     describe("constructor failures") {
@@ -64,9 +65,9 @@ object JNumberSpinnerTest : Spek({
 
     describe("validation") {
         it("should fail if the value is lower than the minimum value") {
-            val spinner = createJFloatSpinner(value = 0.0f, minValue = -24.80f, maxValue = 31.51f)
+            val spinner = createJFloatSpinner(value = 0.0f, minValue = -24.8f, maxValue = 31.5f)
 
-            GuiActionRunner.execute { spinner.value = -88.59f }
+            GuiActionRunner.execute { spinner.value = -88.5f }
 
             val info = spinner.validateValue()
             assertThat(info).isNotNull()
@@ -74,17 +75,17 @@ object JNumberSpinnerTest : Spek({
         }
 
         it("should fail if the value is higher than the maximum value") {
-            val spinner = createJFloatSpinner(value = 26.74f, minValue = 16.89f, maxValue = 32.03f)
+            val spinner = createJFloatSpinner(value = 26.7f, minValue = 16.8f, maxValue = 32.3f)
 
-            GuiActionRunner.execute { spinner.value = 93.83f }
+            GuiActionRunner.execute { spinner.value = 93.8f }
 
             val info = spinner.validateValue()
             assertThat(info).isNotNull()
-            assertThat(info?.message).isEqualTo("The value should be less than or equal to 32.03.")
+            assertThat(info?.message).isEqualTo("The value should be less than or equal to 32.3.")
         }
 
         it("should pass if the minimum value was adjusted") {
-            val spinner = createJFloatSpinner(value = 169.92f, minValue = 139.65f, maxValue = 597.87f)
+            val spinner = createJFloatSpinner(value = 169.9f, minValue = 139.6f, maxValue = 597.8f)
 
             GuiActionRunner.execute {
                 spinner.minValue = 5.83f
@@ -95,7 +96,7 @@ object JNumberSpinnerTest : Spek({
         }
 
         it("should pass if the maximum value was adjusted") {
-            val spinner = createJFloatSpinner(value = -234.80f, minValue = -493.17f, maxValue = 202.87f)
+            val spinner = createJFloatSpinner(value = -234.8f, minValue = -493.1f, maxValue = 202.8f)
 
             GuiActionRunner.execute {
                 spinner.maxValue = 474.77f
@@ -103,6 +104,15 @@ object JNumberSpinnerTest : Spek({
             }
 
             assertThat(spinner.validateValue()).isNull()
+        }
+
+        it("returns validation information with the custom range name if the range is exceeded") {
+            val spinner = createJFloatSpinner(value = 59.1f, minValue = 49.8f, maxValue = 83.3f, description = "desc")
+            GuiActionRunner.execute { spinner.value = -76.4f }
+
+            val info = spinner.validateValue()
+            assertThat(info).isNotNull()
+            assertThat(info?.message).isEqualTo("The desc should be greater than or equal to 49.8.")
         }
     }
 })
@@ -125,13 +135,13 @@ object JDoubleSpinnerTest : Spek({
     describe("getting surrounding values") {
         describe("previous value") {
             it("returns the previous value") {
-                val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner(741.45) }
+                val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner(741.4) }
 
-                assertThat(spinner.previousValue).isEqualTo(741.35)
+                assertThat(spinner.previousValue).isEqualTo(741.3)
             }
 
             it("returns null if the current value is already at the minimum") {
-                val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner(-637.85, minValue = -637.85) }
+                val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner(-637.8, minValue = -637.8) }
 
                 assertThat(spinner.previousValue).isNull()
             }
@@ -139,13 +149,13 @@ object JDoubleSpinnerTest : Spek({
 
         describe("next value") {
             it("returns the next value") {
-                val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner(629.90) }
+                val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner(629.9) }
 
-                assertThat(spinner.nextValue).isEqualTo(630.00)
+                assertThat(spinner.nextValue).isEqualTo(630.0)
             }
 
             it("returns null if the current value is already at the maximum") {
-                val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner(-28.31, maxValue = -28.31) }
+                val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner(-28.3, maxValue = -28.3) }
 
                 assertThat(spinner.nextValue).isNull()
             }

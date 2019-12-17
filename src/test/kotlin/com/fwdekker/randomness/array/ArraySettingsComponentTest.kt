@@ -90,7 +90,7 @@ object ArraySettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("count").target())
-                assertThat(validationInfo?.message).isEqualTo("Enter a value greater than or equal to 1.")
+                assertThat(validationInfo?.message).isEqualTo("The count should be greater than or equal to 1.")
             }
 
             it("passes for a count of 1") {
@@ -106,7 +106,7 @@ object ArraySettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("count").target())
-                assertThat(validationInfo?.message).isEqualTo("Enter a value greater than or equal to 1.")
+                assertThat(validationInfo?.message).isEqualTo("The count should be greater than or equal to 1.")
             }
         }
     }
