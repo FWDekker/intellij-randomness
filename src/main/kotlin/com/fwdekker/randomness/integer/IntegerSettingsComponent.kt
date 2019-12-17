@@ -57,9 +57,13 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) : SettingsCo
         previewPanelHolder = PreviewPanel { IntegerInsertAction(IntegerSettings().also { saveSettings(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
-        minValue = JLongSpinner()
-        maxValue = JLongSpinner()
-        base = JIntSpinner(IntegerSettings.DECIMAL_BASE, IntegerSettings.MIN_BASE, IntegerSettings.MAX_BASE)
+        minValue = JLongSpinner(description = "minimum value")
+        maxValue = JLongSpinner(description = "maximum value")
+        base = JIntSpinner(
+            IntegerSettings.DECIMAL_BASE,
+            IntegerSettings.MIN_BASE, IntegerSettings.MAX_BASE,
+            description = "base"
+        )
         valueRange = JSpinnerRange(minValue, maxValue, Long.MAX_VALUE.toDouble(), "value")
     }
 

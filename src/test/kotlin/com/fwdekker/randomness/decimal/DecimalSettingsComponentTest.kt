@@ -102,7 +102,7 @@ object DecimalSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
-                assertThat(validationInfo?.message).isEqualTo("The range should not exceed 1.0E53.")
+                assertThat(validationInfo?.message).isEqualTo("The value range should not exceed 1.0E53.")
             }
         }
 
@@ -120,7 +120,7 @@ object DecimalSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("decimalCount").target())
-                assertThat(validationInfo?.message).isEqualTo("Enter a value greater than or equal to 0.")
+                assertThat(validationInfo?.message).isEqualTo("The decimal count should be greater than or equal to 0.")
             }
         }
     }

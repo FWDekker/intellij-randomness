@@ -30,7 +30,7 @@ If you need help writing tests you can open a pull request with your work in pro
 
 Always run tests and static analysis before opening a pull request.
 
-### 📏 Coding conventions
+### 🗃️ Coding conventions
 This project maintains the [Kotlin coding conventions](https://kotlinlang.org/docs/reference/coding-conventions.html).
 [Detekt](https://github.com/arturbosch/detekt/) will, amongst others, check these coding conventions.
 Check the [README](../README.md) for instructions on using tools such as Detekt.
