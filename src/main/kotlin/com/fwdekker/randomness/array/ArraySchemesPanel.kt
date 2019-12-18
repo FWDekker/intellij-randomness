@@ -36,7 +36,7 @@ class ArraySchemesPanel(private val settings: ArraySettings) :
 
         println("${start()} Removing scheme `${scheme.name}`")
         if (scheme == settings.currentScheme)
-            settings.currentSchemeName = ArraySettings.DEFAULT_CURRENT_SCHEME_NAME
+            settings.currentSchemeName = ArrayScheme.DEFAULT_NAME
         settings.schemes.remove(scheme)
 
         updateComboBoxList()
@@ -80,7 +80,8 @@ class ArraySchemesPanel(private val settings: ArraySettings) :
         }
 
         override fun resetScheme(scheme: ArrayScheme) {
-            // TODO
+            require(scheme.name == ArrayScheme.DEFAULT_NAME) { "Cannot reset non-default scheme." }
+            scheme.copyFrom(ArrayScheme(myName = scheme.myName))
         }
 
         override fun duplicateScheme(scheme: ArrayScheme, newName: String) {
@@ -103,7 +104,7 @@ class ArraySchemesPanel(private val settings: ArraySettings) :
 
     override fun getModel() = this
 
-    override fun differsFromDefault(scheme: ArrayScheme) = scheme != ArrayScheme()
+    override fun differsFromDefault(scheme: ArrayScheme) = scheme.name != ArrayScheme.DEFAULT_NAME
 
     override fun supportsProjectSchemes() = false
 
@@ -119,7 +120,7 @@ class ArraySchemesPanel(private val settings: ArraySettings) :
 
     override fun canRenameScheme(scheme: ArrayScheme) = differsFromDefault(scheme)
 
-    override fun canResetScheme(scheme: ArrayScheme) = differsFromDefault(scheme)
+    override fun canResetScheme(scheme: ArrayScheme) = !differsFromDefault(scheme)
 
 
     interface Listener {

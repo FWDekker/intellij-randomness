@@ -17,17 +17,13 @@ import com.intellij.util.xmlb.annotations.Transient
 data class ArraySettings(
     @MapAnnotation(sortBeforeSave = false)
     var schemes: MutableList<ArrayScheme> = DEFAULT_SCHEMES.toMutableList(),
-    var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
+    var currentSchemeName: String = ArrayScheme.DEFAULT_NAME
 ) : Settings<ArraySettings> {
     companion object {
         /**
          * The default value of the [schemes][ArraySettings.schemes] field.
          */
         val DEFAULT_SCHEMES = listOf(ArrayScheme())
-        /**
-         * The default value of the [currentSchemeName][ArraySettings.currentSchemeName] field.
-         */
-        const val DEFAULT_CURRENT_SCHEME_NAME = ArrayScheme.DEFAULT_NAME
 
         /**
          * The persistent `ArraySettings` instance.
@@ -99,6 +95,14 @@ data class ArrayScheme(
      * Same as [myName][ArrayScheme.myName].
      */
     override fun getName() = myName
+
+    fun copyFrom(other: ArrayScheme) {
+        this.myName = other.myName
+        this.count = other.count
+        this.brackets = other.brackets
+        this.separator = other.separator
+        this.isSpaceAfterSeparator = other.isSpaceAfterSeparator
+    }
 
 
     /**
