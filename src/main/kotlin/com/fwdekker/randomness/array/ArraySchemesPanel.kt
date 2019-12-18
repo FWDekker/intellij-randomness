@@ -32,12 +32,15 @@ class ArraySchemesPanel(private val settings: ArraySettings) :
 
     override fun removeScheme(scheme: ArrayScheme) {
         require(differsFromDefault(scheme)) { "Cannot remove default scheme." }
-        require(settings.schemes.size > 1) { "Cannot remove only scheme." }
 
         println("${start()} Removing scheme `${scheme.name}`")
         if (scheme == settings.currentScheme)
             settings.currentSchemeName = ArrayScheme.DEFAULT_NAME
         settings.schemes.remove(scheme)
+        if (settings.schemes.isEmpty()) {
+            settings.schemes.add(ArrayScheme())
+            settings.currentSchemeName = ArrayScheme.DEFAULT_NAME
+        }
 
         updateComboBoxList()
 
