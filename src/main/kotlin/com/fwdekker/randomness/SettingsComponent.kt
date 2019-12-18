@@ -18,9 +18,11 @@ abstract class SettingsComponent<S : Settings<S>>(private val settings: S) : Set
      */
     abstract val rootPane: JPanel?
 
+
     override fun loadSettings() = loadSettings(settings)
 
     override fun saveSettings() = saveSettings(settings)
+
 
     /**
      * Returns true if this component contains unsaved changes.
@@ -44,6 +46,7 @@ abstract class SettingsComponent<S : Settings<S>>(private val settings: S) : Set
      * Discards unsaved changes.
      */
     fun reset() = loadSettings()
+
 
     /**
      * Validates all input fields.

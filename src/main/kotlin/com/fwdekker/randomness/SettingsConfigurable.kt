@@ -35,6 +35,8 @@ abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
 
     /**
      * Saves the changes in the settings component to the default settings object.
+     *
+     * @throws ConfigurationException if the changes cannot be saved
      */
     override fun apply() {
         val validationInfo = component.doValidate()

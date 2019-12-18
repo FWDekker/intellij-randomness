@@ -216,12 +216,13 @@ abstract class DataInsertArrayAction(
      */
     @Throws(DataGenerationException::class)
     override fun generateStrings(count: Int): List<String> {
-        if (arraySettings.count <= 0)
+        val arrayScheme = arraySettings.currentScheme
+        if (arrayScheme.count <= 0)
             throw DataGenerationException("Array cannot have fewer than 1 element.")
 
-        return dataInsertAction.generateStrings(count * arraySettings.count)
-            .chunked(arraySettings.count)
-            .map { arraySettings.arrayify(it) }
+        return dataInsertAction.generateStrings(count * arrayScheme.count)
+            .chunked(arrayScheme.count)
+            .map { arrayScheme.arrayify(it) }
     }
 }
 
