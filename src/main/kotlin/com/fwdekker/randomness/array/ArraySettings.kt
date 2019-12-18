@@ -1,29 +1,33 @@
 package com.fwdekker.randomness.array
 
+import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import com.intellij.openapi.options.Scheme
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
-import com.intellij.util.xmlb.annotations.Transient
 
 
+/**
+ * The user-configurable collection of schemes applicable to generating arrays.
+ *
+ * @property schemes the schemes that the user can choose from
+ * @property currentSchemeName the scheme that is currently active
+ */
 @State(name = "ArraySettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-// TODO Do not store the default schemes in the XML because the whole point is that the user can always fall back on the
-// defaults even when the configuration is corrupted.
 data class ArraySettings(
     @MapAnnotation(sortBeforeSave = false)
-    var schemes: MutableList<ArrayScheme> = DEFAULT_SCHEMES.toMutableList(),
-    var currentSchemeName: String = ArrayScheme.DEFAULT_NAME
-) : Settings<ArraySettings> {
+    override var schemes: MutableList<ArrayScheme> = DEFAULT_SCHEMES.toMutableList(),
+    override var currentSchemeName: String = ArrayScheme.DEFAULT_NAME
+) : Settings<ArraySettings, ArrayScheme> {
     companion object {
         /**
          * The default value of the [schemes][ArraySettings.schemes] field.
          */
-        val DEFAULT_SCHEMES = listOf(ArrayScheme())
+        val DEFAULT_SCHEMES
+            get() = listOf(ArrayScheme())
 
         /**
          * The persistent `ArraySettings` instance.
@@ -33,15 +37,7 @@ data class ArraySettings(
     }
 
 
-    var currentScheme: ArrayScheme
-        @Transient
-        get() = schemes.first { it.name == currentSchemeName }
-        set(value) {
-            currentSchemeName = value.name
-        }
-
-
-    override fun copyState() = copy(schemes = schemes.map { it.copy() }.toMutableList())
+    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
 
     override fun getState() = this
 
@@ -61,12 +57,12 @@ data class ArraySettings(
  * @see com.fwdekker.randomness.DataInsertArrayAction
  */
 data class ArrayScheme(
-    var myName: String = DEFAULT_NAME,
+    override var myName: String = DEFAULT_NAME,
     var count: Int = DEFAULT_COUNT,
     var brackets: String = DEFAULT_BRACKETS,
     var separator: String = DEFAULT_SEPARATOR,
     var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR
-) : Scheme {
+) : Scheme<ArrayScheme> {
     companion object {
         /**
          * The default value of the [myName][ArrayScheme.myName] field.
@@ -91,18 +87,15 @@ data class ArrayScheme(
     }
 
 
-    /**
-     * Same as [myName][ArrayScheme.myName].
-     */
-    override fun getName() = myName
-
-    fun copyFrom(other: ArrayScheme) {
+    override fun copyFrom(other: ArrayScheme) {
         this.myName = other.myName
         this.count = other.count
         this.brackets = other.brackets
         this.separator = other.separator
         this.isSpaceAfterSeparator = other.isSpaceAfterSeparator
     }
+
+    override fun copyAs(name: String) = this.copy(myName = name)
 
 
     /**
@@ -125,8 +118,7 @@ data class ArrayScheme(
  *
  * @see ArraySettingsAction
  */
-class ArraySettingsConfigurable(
-    override val component: ArraySettingsComponent = ArraySettingsComponent()
-) : SettingsConfigurable<ArraySettings>() {
+class ArraySettingsConfigurable(override val component: ArraySettingsComponent = ArraySettingsComponent()) :
+    SettingsConfigurable<ArraySettings, ArrayScheme>() {
     override fun getDisplayName() = "Arrays"
 }

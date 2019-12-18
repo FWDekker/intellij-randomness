@@ -20,7 +20,7 @@ object ArraySettingsTest : Spek({
 
     describe("state management") {
         it("creates an independent copy") {
-            val copy = arraySettings.copyState()
+            val copy = arraySettings.deepCopy()
             arraySettings.count = 44
             copy.count = 15
 

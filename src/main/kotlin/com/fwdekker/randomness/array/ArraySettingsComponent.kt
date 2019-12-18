@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.DummyInsertArrayAction
+import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.array.ArrayScheme.Companion.DEFAULT_BRACKETS
 import com.fwdekker.randomness.array.ArrayScheme.Companion.DEFAULT_SEPARATOR
@@ -23,16 +24,20 @@ import javax.swing.event.ChangeEvent
  * @see ArraySettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class ArraySettingsComponent(settings: ArraySettings = default) : SettingsComponent<ArraySettings>(settings) {
+class ArraySettingsComponent(settings: ArraySettings = default) :
+    SettingsComponent<ArraySettings, ArrayScheme>(settings) {
     companion object {
         private const val previewPlaceholder = "17"
     }
 
 
-    private lateinit var tempSettings: ArraySettings
+    @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
+    override val schemesPanel: SchemesPanel<ArraySettings, ArrayScheme>
+        get() = schemesPanelImpl as SchemesPanel<ArraySettings, ArrayScheme>
+    override lateinit var unsavedSettings: ArraySettings
 
     private lateinit var contentPane: JPanel
-    private lateinit var schemesPanel: JPanel
+    private lateinit var schemesPanelImpl: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<DummyInsertArrayAction>
     private lateinit var previewPanel: JPanel
     private lateinit var countSpinner: JIntSpinner
@@ -65,13 +70,13 @@ class ArraySettingsComponent(settings: ArraySettings = default) : SettingsCompon
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        tempSettings = ArraySettings()
-        schemesPanel = ArraySchemesPanel(tempSettings)
+        unsavedSettings = ArraySettings()
+        schemesPanelImpl = ArraySchemesPanel(unsavedSettings)
             .also { panel ->
-                panel.addListener(object : ArraySchemesPanel.Listener {
-                    override fun onSchemeWillSwitch(scheme: ArrayScheme) = saveScheme(scheme)
+                panel.addListener(object : SchemesPanel.Listener<ArrayScheme> {
+                    override fun onCurrentSchemeWillChange(scheme: ArrayScheme) = saveScheme(scheme)
 
-                    override fun onSchemeSwitched(scheme: ArrayScheme) = loadScheme(scheme)
+                    override fun onCurrentSchemeHasChanged(scheme: ArrayScheme) = loadScheme(scheme)
                 })
             }
 
@@ -83,29 +88,14 @@ class ArraySettingsComponent(settings: ArraySettings = default) : SettingsCompon
         countSpinner = JIntSpinner(value = 1, minValue = 1, description = "count")
     }
 
-    override fun loadSettings(settings: ArraySettings) {
-        println("! Loading settings")
-        tempSettings.loadState(settings.copyState())
-        println("! Loaded states into field")
-        loadScheme(tempSettings.currentScheme)
-        println("! Loaded scheme into UI")
-        (schemesPanel as ArraySchemesPanel).updateComboBoxList()
-        println("! Loaded settings")
-    }
-
-    private fun loadScheme(scheme: ArrayScheme) {
+    override fun loadScheme(scheme: ArrayScheme) {
         countSpinner.value = scheme.count
         bracketsGroup.setValue(scheme.brackets)
         separatorGroup.setValue(scheme.separator)
         spaceAfterSeparatorCheckBox.isSelected = scheme.isSpaceAfterSeparator
     }
 
-    override fun saveSettings(settings: ArraySettings) {
-        saveScheme(tempSettings.currentScheme)
-        settings.loadState(tempSettings.copyState())
-    }
-
-    private fun saveScheme(scheme: ArrayScheme) {
+    override fun saveScheme(scheme: ArrayScheme) {
         scheme.count = countSpinner.value
         scheme.brackets = bracketsGroup.getValue() ?: DEFAULT_BRACKETS
         scheme.separator = separatorGroup.getValue() ?: DEFAULT_SEPARATOR
@@ -113,4 +103,12 @@ class ArraySettingsComponent(settings: ArraySettings = default) : SettingsCompon
     }
 
     override fun doValidate() = countSpinner.validateValue()
+
+
+    private class ArraySchemesPanel(settings: ArraySettings) :
+        SchemesPanel<ArraySettings, ArrayScheme>(settings, ArrayScheme.DEFAULT_NAME) {
+        override val type: Class<ArrayScheme> = ArrayScheme::class.java
+
+        override fun createDefaultInstance() = ArrayScheme()
+    }
 }

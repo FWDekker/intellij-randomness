@@ -4,9 +4,10 @@ package com.fwdekker.randomness
 /**
  * A `SettingsManager` is an object that can save and load settings.
  *
- * @param <S> the type of settings that is saved and loaded
+ * @param S the type of settings that is saved and loaded
+ * @param T the type of scheme that is contained within the settings
  */
-interface SettingsManager<S : Settings<*>> {
+interface SettingsManager<S : Settings<*, T>, T : Scheme<T>> {
     /**
      * Loads the default settings object.
      */
