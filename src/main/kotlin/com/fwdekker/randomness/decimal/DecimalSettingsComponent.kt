@@ -110,7 +110,8 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
 
     private class DecimalSchemesPanel(settings: DecimalSettings) :
         SchemesPanel<DecimalSettings, DecimalScheme>(settings, Scheme.DEFAULT_NAME) {
-        override val type: Class<DecimalScheme> = DecimalScheme::class.java
+        override val type: Class<DecimalScheme>
+            get() = DecimalScheme::class.java
 
         override fun createDefaultInstance() = DecimalScheme()
     }

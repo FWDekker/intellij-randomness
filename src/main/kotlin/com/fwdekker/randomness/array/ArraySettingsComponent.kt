@@ -107,7 +107,8 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
 
     private class ArraySchemesPanel(settings: ArraySettings) :
         SchemesPanel<ArraySettings, ArrayScheme>(settings, DEFAULT_NAME) {
-        override val type: Class<ArrayScheme> = ArrayScheme::class.java
+        override val type: Class<ArrayScheme>
+            get() = ArrayScheme::class.java
 
         override fun createDefaultInstance() = ArrayScheme()
     }

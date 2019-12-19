@@ -232,8 +232,9 @@ abstract class DataInsertArrayAction(
  *
  * @param icon the icon to display with the action
  */
-abstract class DataSettingsAction<S : Settings<S, T>, T : Scheme<T>>(private val icon: Icon = RandomnessIcons.Data.Settings) :
-    AnAction() {
+abstract class DataSettingsAction<S : Settings<S, T>, T : Scheme<T>>(
+    private val icon: Icon = RandomnessIcons.Data.Settings
+) : AnAction() {
     /**
      * The name of the action.
      */

@@ -107,7 +107,8 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
 
     private class IntegerSchemesPanel(settings: IntegerSettings) :
         SchemesPanel<IntegerSettings, IntegerScheme>(settings, Scheme.DEFAULT_NAME) {
-        override val type: Class<IntegerScheme> = IntegerScheme::class.java
+        override val type: Class<IntegerScheme>
+            get() = IntegerScheme::class.java
 
         override fun createDefaultInstance() = IntegerScheme()
     }

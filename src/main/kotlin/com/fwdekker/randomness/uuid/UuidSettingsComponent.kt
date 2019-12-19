@@ -90,7 +90,8 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
 
     private class UuidSchemesPanel(settings: UuidSettings) :
         SchemesPanel<UuidSettings, UuidScheme>(settings, Scheme.DEFAULT_NAME) {
-        override val type: Class<UuidScheme> = UuidScheme::class.java
+        override val type: Class<UuidScheme>
+            get() = UuidScheme::class.java
 
         override fun createDefaultInstance() = UuidScheme()
     }

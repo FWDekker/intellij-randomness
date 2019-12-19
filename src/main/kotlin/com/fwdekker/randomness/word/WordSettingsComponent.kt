@@ -183,7 +183,8 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
 
     private class WordSchemesPanel(settings: WordSettings) :
         SchemesPanel<WordSettings, WordScheme>(settings, Scheme.DEFAULT_NAME) {
-        override val type: Class<WordScheme> = WordScheme::class.java
+        override val type: Class<WordScheme>
+            get() = WordScheme::class.java
 
         override fun createDefaultInstance() = WordScheme()
     }

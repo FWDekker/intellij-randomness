@@ -25,7 +25,8 @@ import javax.swing.JPanel
  * @see SymbolSetTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class StringSettingsComponent(settings: StringSettings = default) : SettingsComponent<StringSettings, StringScheme>(settings) {
+class StringSettingsComponent(settings: StringSettings = default) :
+    SettingsComponent<StringSettings, StringScheme>(settings) {
     @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
     override val schemesPanel: SchemesPanel<StringSettings, StringScheme>
         get() = schemesPanelImpl as SchemesPanel<StringSettings, StringScheme>
@@ -127,7 +128,8 @@ class StringSettingsComponent(settings: StringSettings = default) : SettingsComp
 
     private class StringSchemesPanel(settings: StringSettings) :
         SchemesPanel<StringSettings, StringScheme>(settings, Scheme.DEFAULT_NAME) {
-        override val type: Class<StringScheme> = StringScheme::class.java
+        override val type: Class<StringScheme>
+            get() = StringScheme::class.java
 
         override fun createDefaultInstance() = StringScheme()
     }
