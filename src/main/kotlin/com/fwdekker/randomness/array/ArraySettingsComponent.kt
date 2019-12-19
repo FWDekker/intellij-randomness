@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.DummyInsertArrayAction
+import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.array.ArrayScheme.Companion.DEFAULT_BRACKETS
@@ -20,7 +21,6 @@ import javax.swing.event.ChangeEvent
 /**
  * Component for settings of random array generation.
  *
- * @see ArraySettings
  * @see ArraySettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
@@ -106,7 +106,7 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
 
 
     private class ArraySchemesPanel(settings: ArraySettings) :
-        SchemesPanel<ArraySettings, ArrayScheme>(settings, ArrayScheme.DEFAULT_NAME) {
+        SchemesPanel<ArraySettings, ArrayScheme>(settings, DEFAULT_NAME) {
         override val type: Class<ArrayScheme> = ArrayScheme::class.java
 
         override fun createDefaultInstance() = ArrayScheme()

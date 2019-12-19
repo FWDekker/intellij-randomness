@@ -66,6 +66,14 @@ interface Settings<SELF, SCHEME : Scheme<SCHEME>> : PersistentStateComponent<SEL
  * @see Settings
  */
 interface Scheme<SELF> : com.intellij.openapi.options.Scheme {
+    companion object {
+        /**
+         * The name of the default scheme.
+         */
+        const val DEFAULT_NAME = "Default"
+    }
+
+
     /**
      * The name of the scheme, used to identify it.
      */
@@ -79,7 +87,7 @@ interface Scheme<SELF> : com.intellij.openapi.options.Scheme {
 
 
     /**
-     * Copies the state of [other] into `this`.
+     * Shallowly copies the state of [other] into `this`.
      *
      * @param other the state to copy into `this`
      */

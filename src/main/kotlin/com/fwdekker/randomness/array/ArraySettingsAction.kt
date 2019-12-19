@@ -9,7 +9,7 @@ import com.fwdekker.randomness.DataSettingsAction
  * @see ArraySettings
  * @see ArraySettingsComponent
  */
-class ArraySettingsAction : DataSettingsAction<ArraySettings>() {
+class ArraySettingsAction : DataSettingsAction<ArraySettings, ArrayScheme>() {
     override val title = "Array Settings"
 
     override val configurableClass = ArraySettingsConfigurable::class.java

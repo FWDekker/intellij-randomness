@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
@@ -20,11 +21,11 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
 data class ArraySettings(
     @MapAnnotation(sortBeforeSave = false)
     override var schemes: MutableList<ArrayScheme> = DEFAULT_SCHEMES.toMutableList(),
-    override var currentSchemeName: String = ArrayScheme.DEFAULT_NAME
+    override var currentSchemeName: String = DEFAULT_NAME
 ) : Settings<ArraySettings, ArrayScheme> {
     companion object {
         /**
-         * The default value of the [schemes][ArraySettings.schemes] field.
+         * The default value of the [schemes][schemes] field.
          */
         val DEFAULT_SCHEMES
             get() = listOf(ArrayScheme())
@@ -65,23 +66,19 @@ data class ArrayScheme(
 ) : Scheme<ArrayScheme> {
     companion object {
         /**
-         * The default value of the [myName][ArrayScheme.myName] field.
-         */
-        const val DEFAULT_NAME = "Default"
-        /**
-         * The default value of the [count][ArrayScheme.count] field.
+         * The default value of the [count][count] field.
          */
         const val DEFAULT_COUNT = 5
         /**
-         * The default value of the [brackets][ArrayScheme.brackets] field.
+         * The default value of the [brackets][brackets] field.
          */
         const val DEFAULT_BRACKETS = "[]"
         /**
-         * The default value of the [separator][ArrayScheme.separator] field.
+         * The default value of the [separator][separator] field.
          */
         const val DEFAULT_SEPARATOR = ","
         /**
-         * The default value of the [isSpaceAfterSeparator][ArrayScheme.isSpaceAfterSeparator] field.
+         * The default value of the [isSpaceAfterSeparator][isSpaceAfterSeparator] field.
          */
         const val DEFAULT_SPACE_AFTER_SEPARATOR = true
     }

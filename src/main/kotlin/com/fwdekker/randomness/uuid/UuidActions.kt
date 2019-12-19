@@ -43,25 +43,27 @@ class UuidInsertAction(private val settings: UuidSettings = UuidSettings.default
      * @return random type 4 UUIDs
      */
     override fun generateStrings(count: Int): List<String> {
+        val scheme = settings.currentScheme
+
         @Suppress("MagicNumber") // UUID version is not magic
-        val generator = when (settings.version) {
+        val generator = when (scheme.version) {
             1 ->
                 Generators.timeBasedGenerator(
                     EthernetAddress(random.nextLong()),
                     UUIDTimer(random.asJavaRandom(), null)
                 )
             4 -> Generators.randomBasedGenerator(random.asJavaRandom())
-            else -> throw DataGenerationException("Unknown UUID version `${settings.version}`.")
+            else -> throw DataGenerationException("Unknown UUID version `${scheme.version}`.")
         }
 
         return (0 until count)
             .map { generator.generate().toString() }
-            .map { settings.capitalization.transform(it) }
+            .map { scheme.capitalization.transform(it) }
             .map {
-                if (settings.addDashes) it
+                if (scheme.addDashes) it
                 else it.replace("-", "")
             }
-            .map { settings.enclosure + it + settings.enclosure }
+            .map { scheme.enclosure + it + scheme.enclosure }
     }
 }
 
@@ -88,7 +90,7 @@ class UuidInsertArrayAction(
  * @see UuidSettings
  * @see UuidSettingsComponent
  */
-class UuidSettingsAction : DataSettingsAction<UuidSettings>(RandomnessIcons.Uuid.Settings) {
+class UuidSettingsAction : DataSettingsAction<UuidSettings, UuidScheme>(RandomnessIcons.Uuid.Settings) {
     override val title = "UUID Settings"
 
     override val configurableClass = UuidSettingsConfigurable::class.java

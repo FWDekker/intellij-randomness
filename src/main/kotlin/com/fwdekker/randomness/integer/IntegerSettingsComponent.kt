@@ -1,5 +1,7 @@
 package com.fwdekker.randomness.integer
 
+import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.integer.IntegerSettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -17,12 +19,18 @@ import javax.swing.event.ChangeEvent
 /**
  * Component for settings of random integer generation.
  *
- * @see IntegerSettings
  * @see IntegerSettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class IntegerSettingsComponent(settings: IntegerSettings = default) : SettingsComponent<IntegerSettings>(settings) {
+class IntegerSettingsComponent(settings: IntegerSettings = default) :
+    SettingsComponent<IntegerSettings, IntegerScheme>(settings) {
+    @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
+    override val schemesPanel: SchemesPanel<IntegerSettings, IntegerScheme>
+        get() = schemesPanelImpl as SchemesPanel<IntegerSettings, IntegerScheme>
+    override lateinit var unsavedSettings: IntegerSettings
+
     private lateinit var contentPane: JPanel
+    private lateinit var schemesPanelImpl: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<IntegerInsertAction>
     private lateinit var previewPanel: JPanel
     private lateinit var valueRange: JSpinnerRange
@@ -38,7 +46,7 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) : SettingsCo
         loadSettings()
 
         base.addChangeListener {
-            groupingSeparatorGroup.forEach { it.isEnabled = base.value == IntegerSettings.DECIMAL_BASE }
+            groupingSeparatorGroup.forEach { it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE }
         }
         base.changeListeners.forEach { it.stateChanged(ChangeEvent(base)) }
 
@@ -54,35 +62,53 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) : SettingsCo
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        unsavedSettings = IntegerSettings()
+        schemesPanelImpl = IntegerSchemesPanel(unsavedSettings)
+            .also { panel ->
+                panel.addListener(object : SchemesPanel.Listener<IntegerScheme> {
+                    override fun onCurrentSchemeWillChange(scheme: IntegerScheme) = saveScheme(scheme)
+
+                    override fun onCurrentSchemeHasChanged(scheme: IntegerScheme) = loadScheme(scheme)
+                })
+            }
+
         previewPanelHolder = PreviewPanel { IntegerInsertAction(IntegerSettings().also { saveSettings(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
         minValue = JLongSpinner(description = "minimum value")
         maxValue = JLongSpinner(description = "maximum value")
         base = JIntSpinner(
-            IntegerSettings.DECIMAL_BASE,
-            IntegerSettings.MIN_BASE, IntegerSettings.MAX_BASE,
+            IntegerScheme.DECIMAL_BASE,
+            IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE,
             description = "base"
         )
         valueRange = JSpinnerRange(minValue, maxValue, Long.MAX_VALUE.toDouble(), "value")
     }
 
-    override fun loadSettings(settings: IntegerSettings) {
-        minValue.value = settings.minValue
-        maxValue.value = settings.maxValue
-        base.value = settings.base
-        groupingSeparatorGroup.setValue(settings.groupingSeparator)
+    override fun loadScheme(scheme: IntegerScheme) {
+        minValue.value = scheme.minValue
+        maxValue.value = scheme.maxValue
+        base.value = scheme.base
+        groupingSeparatorGroup.setValue(scheme.groupingSeparator)
     }
 
-    override fun saveSettings(settings: IntegerSettings) {
-        settings.minValue = minValue.value
-        settings.maxValue = maxValue.value
-        settings.base = base.value
-        settings.safeSetGroupingSeparator(groupingSeparatorGroup.getValue())
+    override fun saveScheme(scheme: IntegerScheme) {
+        scheme.minValue = minValue.value
+        scheme.maxValue = maxValue.value
+        scheme.base = base.value
+        scheme.safeSetGroupingSeparator(groupingSeparatorGroup.getValue())
     }
 
     override fun doValidate() = minValue.validateValue()
         ?: maxValue.validateValue()
         ?: base.validateValue()
         ?: valueRange.validateValue()
+
+
+    private class IntegerSchemesPanel(settings: IntegerSettings) :
+        SchemesPanel<IntegerSettings, IntegerScheme>(settings, Scheme.DEFAULT_NAME) {
+        override val type: Class<IntegerScheme> = IntegerScheme::class.java
+
+        override fun createDefaultInstance() = IntegerScheme()
+    }
 }

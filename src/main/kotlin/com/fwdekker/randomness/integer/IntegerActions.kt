@@ -6,6 +6,7 @@ import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.integer.IntegerScheme.Companion.DECIMAL_BASE
 import icons.RandomnessIcons
 import java.text.DecimalFormat
 
@@ -41,10 +42,11 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
      */
     override fun generateStrings(count: Int) =
         List(count) {
-            if (settings.minValue > settings.maxValue)
+            val scheme = settings.currentScheme
+            if (scheme.minValue > scheme.maxValue)
                 throw DataGenerationException("Minimum value is larger than maximum value.")
 
-            convertToString(random.nextLong(settings.minValue, settings.maxValue + 1))
+            convertToString(random.nextLong(scheme.minValue, scheme.maxValue + 1))
         }
 
 
@@ -55,15 +57,17 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
      * @return a nicely formatted representation of an integer
      */
     private fun convertToString(value: Long): String {
-        if (settings.base != IntegerSettings.DECIMAL_BASE)
-            return value.toString(settings.base)
+        val scheme = settings.currentScheme
+
+        if (scheme.base != DECIMAL_BASE)
+            return value.toString(scheme.base)
 
         val format = DecimalFormat()
-        format.isGroupingUsed = settings.groupingSeparator.isNotEmpty()
+        format.isGroupingUsed = scheme.groupingSeparator.isNotEmpty()
         format.minimumFractionDigits = 0
         format.maximumFractionDigits = 0
         format.decimalFormatSymbols = format.decimalFormatSymbols
-            .also { it.groupingSeparator = settings.groupingSeparator.getOrElse(0) { Char.MIN_VALUE } }
+            .also { it.groupingSeparator = scheme.groupingSeparator.getOrElse(0) { Char.MIN_VALUE } }
 
         return format.format(value)
     }
@@ -92,7 +96,7 @@ class IntegerInsertArrayAction(
  * @see IntegerSettings
  * @see IntegerSettingsComponent
  */
-class IntegerSettingsAction : DataSettingsAction<IntegerSettings>(RandomnessIcons.Integer.Settings) {
+class IntegerSettingsAction : DataSettingsAction<IntegerSettings, IntegerScheme>(RandomnessIcons.Integer.Settings) {
     override val title = "Integer Settings"
 
     override val configurableClass = IntegerSettingsConfigurable::class.java

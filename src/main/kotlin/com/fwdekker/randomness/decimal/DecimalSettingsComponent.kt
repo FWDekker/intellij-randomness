@@ -1,5 +1,7 @@
 package com.fwdekker.randomness.decimal
 
+import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.decimal.DecimalSettings.Companion.default
 import com.fwdekker.randomness.ui.JDoubleSpinner
@@ -17,12 +19,18 @@ import javax.swing.event.ChangeEvent
 /**
  * Component for settings of random decimal generation.
  *
- * @see DecimalSettings
  * @see DecimalSettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class DecimalSettingsComponent(settings: DecimalSettings = default) : SettingsComponent<DecimalSettings>(settings) {
+class DecimalSettingsComponent(settings: DecimalSettings = default) :
+    SettingsComponent<DecimalSettings, DecimalScheme>(settings) {
+    @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
+    override val schemesPanel: SchemesPanel<DecimalSettings, DecimalScheme>
+        get() = schemesPanelImpl as SchemesPanel<DecimalSettings, DecimalScheme>
+    override lateinit var unsavedSettings: DecimalSettings
+
     private lateinit var contentPane: JPanel
+    private lateinit var schemesPanelImpl: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<DecimalInsertAction>
     private lateinit var previewPanel: JPanel
     private lateinit var valueRange: JSpinnerRange
@@ -55,6 +63,16 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) : SettingsCo
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        unsavedSettings = DecimalSettings()
+        schemesPanelImpl = DecimalSchemesPanel(unsavedSettings)
+            .also { panel ->
+                panel.addListener(object : SchemesPanel.Listener<DecimalScheme> {
+                    override fun onCurrentSchemeWillChange(scheme: DecimalScheme) = saveScheme(scheme)
+
+                    override fun onCurrentSchemeHasChanged(scheme: DecimalScheme) = loadScheme(scheme)
+                })
+            }
+
         previewPanelHolder = PreviewPanel { DecimalInsertAction(DecimalSettings().also { saveSettings(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
@@ -65,22 +83,22 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) : SettingsCo
         decimalCount = JIntSpinner(0, 0, description = "decimal count")
     }
 
-    override fun loadSettings(settings: DecimalSettings) {
-        minValue.value = settings.minValue
-        maxValue.value = settings.maxValue
-        decimalCount.value = settings.decimalCount
-        showTrailingZeroesCheckBox.isSelected = settings.showTrailingZeroes
-        groupingSeparatorGroup.setValue(settings.groupingSeparator)
-        decimalSeparatorGroup.setValue(settings.decimalSeparator)
+    override fun loadScheme(scheme: DecimalScheme) {
+        minValue.value = scheme.minValue
+        maxValue.value = scheme.maxValue
+        decimalCount.value = scheme.decimalCount
+        showTrailingZeroesCheckBox.isSelected = scheme.showTrailingZeroes
+        groupingSeparatorGroup.setValue(scheme.groupingSeparator)
+        decimalSeparatorGroup.setValue(scheme.decimalSeparator)
     }
 
-    override fun saveSettings(settings: DecimalSettings) {
-        settings.minValue = minValue.value
-        settings.maxValue = maxValue.value
-        settings.decimalCount = decimalCount.value
-        settings.showTrailingZeroes = showTrailingZeroesCheckBox.isSelected
-        settings.safeSetGroupingSeparator(groupingSeparatorGroup.getValue())
-        settings.safeSetDecimalSeparator(decimalSeparatorGroup.getValue())
+    override fun saveScheme(scheme: DecimalScheme) {
+        scheme.minValue = minValue.value
+        scheme.maxValue = maxValue.value
+        scheme.decimalCount = decimalCount.value
+        scheme.showTrailingZeroes = showTrailingZeroesCheckBox.isSelected
+        scheme.safeSetGroupingSeparator(groupingSeparatorGroup.getValue())
+        scheme.safeSetDecimalSeparator(decimalSeparatorGroup.getValue())
     }
 
     override fun doValidate() =
@@ -88,4 +106,12 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) : SettingsCo
             ?: maxValue.validateValue()
             ?: valueRange.validateValue()
             ?: decimalCount.validateValue()
+
+
+    private class DecimalSchemesPanel(settings: DecimalSettings) :
+        SchemesPanel<DecimalSettings, DecimalScheme>(settings, Scheme.DEFAULT_NAME) {
+        override val type: Class<DecimalScheme> = DecimalScheme::class.java
+
+        override fun createDefaultInstance() = DecimalScheme()
+    }
 }

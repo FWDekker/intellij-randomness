@@ -1,13 +1,16 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
+import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
 import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
-import com.fwdekker.randomness.word.WordSettings.Companion.DEFAULT_CAPITALIZATION
+import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
+import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.word.WordSettings.Companion.default
 import com.intellij.openapi.ui.ValidationInfo
 import javax.swing.ButtonGroup
@@ -17,13 +20,18 @@ import javax.swing.JPanel
 /**
  * Component for settings of random word generation.
  *
- * @see WordSettings
  * @see WordSettingsAction
  * @see DictionaryTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class WordSettingsComponent(settings: WordSettings = default) : SettingsComponent<WordSettings>(settings) {
+class WordSettingsComponent(settings: WordSettings = default) : SettingsComponent<WordSettings, WordScheme>(settings) {
+    @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
+    override val schemesPanel: SchemesPanel<WordSettings, WordScheme>
+        get() = schemesPanelImpl as SchemesPanel<WordSettings, WordScheme>
+    override lateinit var unsavedSettings: WordSettings
+
     private lateinit var contentPane: JPanel
+    private lateinit var schemesPanelImpl: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<WordInsertAction>
     private lateinit var previewPanel: JPanel
     private lateinit var lengthRange: JSpinnerRange
@@ -53,6 +61,16 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        unsavedSettings = WordSettings()
+        schemesPanelImpl = WordSchemesPanel(unsavedSettings)
+            .also { panel ->
+                panel.addListener(object : SchemesPanel.Listener<WordScheme> {
+                    override fun onCurrentSchemeWillChange(scheme: WordScheme) = saveScheme(scheme)
+
+                    override fun onCurrentSchemeHasChanged(scheme: WordScheme) = loadScheme(scheme)
+                })
+            }
+
         previewPanelHolder = PreviewPanel { WordInsertAction(WordSettings().also { saveSettings(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
@@ -63,24 +81,24 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         dictionaryPanel = dictionaryTable.createComponent()
     }
 
-    override fun loadSettings(settings: WordSettings) {
-        minLength.value = settings.minLength
-        maxLength.value = settings.maxLength
-        enclosureGroup.setValue(settings.enclosure)
-        capitalizationGroup.setValue(settings.capitalization)
-        dictionaryTable.data = settings.bundledDictionaries + settings.userDictionaries
-        dictionaryTable.activeData = settings.activeBundledDictionaries + settings.activeUserDictionaries
+    override fun loadScheme(scheme: WordScheme) {
+        minLength.value = scheme.minLength
+        maxLength.value = scheme.maxLength
+        enclosureGroup.setValue(scheme.enclosure)
+        capitalizationGroup.setValue(scheme.capitalization)
+        dictionaryTable.data = scheme.bundledDictionaries + scheme.userDictionaries
+        dictionaryTable.activeData = scheme.activeBundledDictionaries + scheme.activeUserDictionaries
     }
 
-    override fun saveSettings(settings: WordSettings) {
-        settings.minLength = minLength.value
-        settings.maxLength = maxLength.value
-        settings.enclosure = enclosureGroup.getValue() ?: WordSettings.DEFAULT_ENCLOSURE
-        settings.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
-        settings.bundledDictionaries = dictionaryTable.data.filterIsInstance<BundledDictionary>().toSet()
-        settings.activeBundledDictionaries = dictionaryTable.activeData.filterIsInstance<BundledDictionary>().toSet()
-        settings.userDictionaries = dictionaryTable.data.filterIsInstance<UserDictionary>().toSet()
-        settings.activeUserDictionaries = dictionaryTable.activeData.filterIsInstance<UserDictionary>().toSet()
+    override fun saveScheme(scheme: WordScheme) {
+        scheme.minLength = minLength.value
+        scheme.maxLength = maxLength.value
+        scheme.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
+        scheme.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
+        scheme.bundledDictionaries = dictionaryTable.data.filterIsInstance<BundledDictionary>().toSet()
+        scheme.activeBundledDictionaries = dictionaryTable.activeData.filterIsInstance<BundledDictionary>().toSet()
+        scheme.userDictionaries = dictionaryTable.data.filterIsInstance<UserDictionary>().toSet()
+        scheme.activeUserDictionaries = dictionaryTable.activeData.filterIsInstance<UserDictionary>().toSet()
 
         BundledDictionary.cache.clear()
         UserDictionary.cache.clear()
@@ -88,7 +106,7 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
 
     override fun isModified(settings: WordSettings): Boolean {
         val tableDictionaries = dictionaryTable.data
-        val settingsDictionaries = settings.bundledDictionaries + settings.userDictionaries
+        val settingsDictionaries = settings.currentScheme.bundledDictionaries + settings.currentScheme.userDictionaries
 
         return tableDictionaries.size != settingsDictionaries.size ||
             tableDictionaries.zip(settingsDictionaries).any { it.first != it.second }
@@ -160,5 +178,13 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
                 )
             else -> null
         }
+    }
+
+
+    private class WordSchemesPanel(settings: WordSettings) :
+        SchemesPanel<WordSettings, WordScheme>(settings, Scheme.DEFAULT_NAME) {
+        override val type: Class<WordScheme> = WordScheme::class.java
+
+        override fun createDefaultInstance() = WordScheme()
     }
 }

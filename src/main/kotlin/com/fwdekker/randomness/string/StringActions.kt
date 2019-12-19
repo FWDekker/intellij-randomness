@@ -40,15 +40,16 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
      */
     override fun generateStrings(count: Int) =
         List(count) {
-            if (settings.minLength > settings.maxLength)
+            val scheme = settings.currentScheme
+            if (scheme.minLength > scheme.maxLength)
                 throw DataGenerationException("Minimum length is larger than maximum length.")
 
-            val length = random.nextInt(settings.minLength, settings.maxLength + 1)
+            val length = random.nextInt(scheme.minLength, scheme.maxLength + 1)
 
             val text = List(length) { generateCharacter() }.joinToString("")
-            val capitalizedText = settings.capitalization.transform(text)
+            val capitalizedText = scheme.capitalization.transform(text)
 
-            settings.enclosure + capitalizedText + settings.enclosure
+            scheme.enclosure + capitalizedText + scheme.enclosure
         }
 
 
@@ -60,7 +61,7 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
      */
     @Throws(DataGenerationException::class)
     private fun generateCharacter(): Char {
-        val symbolSet = settings.activeSymbolSetList.sum()
+        val symbolSet = settings.currentScheme.activeSymbolSetList.sum()
         if (symbolSet.isEmpty())
             throw DataGenerationException("No active symbol sets.")
 
@@ -93,7 +94,7 @@ class StringInsertArrayAction(
  * @see StringSettings
  * @see StringSettingsComponent
  */
-class StringSettingsAction : DataSettingsAction<StringSettings>(RandomnessIcons.String.Settings) {
+class StringSettingsAction : DataSettingsAction<StringSettings, StringScheme>(RandomnessIcons.String.Settings) {
     override val title = "String Settings"
 
     override val configurableClass = StringSettingsConfigurable::class.java

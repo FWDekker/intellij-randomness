@@ -1,9 +1,11 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
+import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
-import com.fwdekker.randomness.string.StringSettings.Companion.DEFAULT_CAPITALIZATION
-import com.fwdekker.randomness.string.StringSettings.Companion.DEFAULT_ENCLOSURE
+import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
+import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.string.StringSettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
@@ -19,13 +21,18 @@ import javax.swing.JPanel
 /**
  * Component for settings of random string generation.
  *
- * @see StringSettings
  * @see StringSettingsAction
  * @see SymbolSetTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class StringSettingsComponent(settings: StringSettings = default) : SettingsComponent<StringSettings>(settings) {
+class StringSettingsComponent(settings: StringSettings = default) : SettingsComponent<StringSettings, StringScheme>(settings) {
+    @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
+    override val schemesPanel: SchemesPanel<StringSettings, StringScheme>
+        get() = schemesPanelImpl as SchemesPanel<StringSettings, StringScheme>
+    override lateinit var unsavedSettings: StringSettings
+
     private lateinit var contentPane: JPanel
+    private lateinit var schemesPanelImpl: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<StringInsertAction>
     private lateinit var previewPanel: JPanel
     private lateinit var lengthRange: JSpinnerRange
@@ -55,6 +62,16 @@ class StringSettingsComponent(settings: StringSettings = default) : SettingsComp
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        unsavedSettings = StringSettings()
+        schemesPanelImpl = StringSchemesPanel(unsavedSettings)
+            .also { panel ->
+                panel.addListener(object : SchemesPanel.Listener<StringScheme> {
+                    override fun onCurrentSchemeWillChange(scheme: StringScheme) = saveScheme(scheme)
+
+                    override fun onCurrentSchemeHasChanged(scheme: StringScheme) = loadScheme(scheme)
+                })
+            }
+
         previewPanelHolder = PreviewPanel { StringInsertAction(StringSettings().also { saveSettings(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
@@ -65,27 +82,27 @@ class StringSettingsComponent(settings: StringSettings = default) : SettingsComp
         symbolSetPanel = symbolSetTable.createComponent()
     }
 
-    override fun loadSettings(settings: StringSettings) {
-        minLength.value = settings.minLength
-        maxLength.value = settings.maxLength
-        enclosureGroup.setValue(settings.enclosure)
-        capitalizationGroup.setValue(settings.capitalization)
-        symbolSetTable.data = settings.symbolSetList
-        symbolSetTable.activeData = settings.activeSymbolSetList
+    override fun loadScheme(scheme: StringScheme) {
+        minLength.value = scheme.minLength
+        maxLength.value = scheme.maxLength
+        enclosureGroup.setValue(scheme.enclosure)
+        capitalizationGroup.setValue(scheme.capitalization)
+        symbolSetTable.data = scheme.symbolSetList
+        symbolSetTable.activeData = scheme.activeSymbolSetList
     }
 
-    override fun saveSettings(settings: StringSettings) {
-        settings.minLength = minLength.value
-        settings.maxLength = maxLength.value
-        settings.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
-        settings.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
-        settings.symbolSetList = symbolSetTable.data
-        settings.activeSymbolSetList = symbolSetTable.activeData
+    override fun saveScheme(scheme: StringScheme) {
+        scheme.minLength = minLength.value
+        scheme.maxLength = maxLength.value
+        scheme.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
+        scheme.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
+        scheme.symbolSetList = symbolSetTable.data
+        scheme.activeSymbolSetList = symbolSetTable.activeData
     }
 
     override fun isModified(settings: StringSettings): Boolean {
         val tableSymbolSets: List<SymbolSet> = ArrayList(symbolSetTable.data)
-        val settingsSymbolSets: List<SymbolSet> = ArrayList(settings.symbolSetList)
+        val settingsSymbolSets: List<SymbolSet> = ArrayList(settings.currentScheme.symbolSetList)
 
         return tableSymbolSets.size != settingsSymbolSets.size ||
             tableSymbolSets.zip(settingsSymbolSets).any { it.first != it.second }
@@ -106,4 +123,12 @@ class StringSettingsComponent(settings: StringSettings = default) : SettingsComp
                     ?: maxLength.validateValue()
                     ?: lengthRange.validateValue()
         }
+
+
+    private class StringSchemesPanel(settings: StringSettings) :
+        SchemesPanel<StringSettings, StringScheme>(settings, Scheme.DEFAULT_NAME) {
+        override val type: Class<StringScheme> = StringScheme::class.java
+
+        override fun createDefaultInstance() = StringScheme()
+    }
 }

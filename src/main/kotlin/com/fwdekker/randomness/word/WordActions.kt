@@ -40,7 +40,8 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
      * @throws InvalidDictionaryException if no words could be found using the settings in `settings`
      */
     override fun generateStrings(count: Int): List<String> {
-        val dictionaries = (settings.activeBundledDictionaries + settings.activeUserDictionaries)
+        val scheme = settings.currentScheme
+        val dictionaries = (scheme.activeBundledDictionaries + scheme.activeUserDictionaries)
             .ifEmpty { throw DataGenerationException("There are no active dictionaries.") }
 
         val words =
@@ -50,14 +51,14 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
                 throw DataGenerationException(e.message, e)
             }
                 .ifEmpty { throw DataGenerationException("All active dictionaries are empty.") }
-                .filter { it.length in settings.minLength..settings.maxLength }
+                .filter { it.length in scheme.minLength..scheme.maxLength }
                 .toSet()
                 .ifEmpty { throw DataGenerationException("There are no words within the configured length range.") }
 
         return (0 until count)
             .map { words.random(random) }
-            .map { settings.capitalization.transform(it) }
-            .map { settings.enclosure + it + settings.enclosure }
+            .map { scheme.capitalization.transform(it) }
+            .map { scheme.enclosure + it + scheme.enclosure }
     }
 }
 
@@ -84,7 +85,7 @@ class WordInsertArrayAction(
  * @see WordSettings
  * @see WordSettingsComponent
  */
-class WordSettingsAction : DataSettingsAction<WordSettings>(RandomnessIcons.Word.Settings) {
+class WordSettingsAction : DataSettingsAction<WordSettings, WordScheme>(RandomnessIcons.Word.Settings) {
     override val title = "Word Settings"
 
     override val configurableClass = WordSettingsConfigurable::class.java
