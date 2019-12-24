@@ -16,7 +16,7 @@ import javax.swing.JPanel
  * @param T the type of scheme to manage
  * @property settings the settings to manage
  */
-abstract class SettingsComponent<S : Settings<S, T>, T : Scheme<T>>(private val settings: S) : SettingsManager<S, T> {
+abstract class SettingsComponent<S : Settings<S, T>, T : Scheme<T>>(private val settings: S) : SettingsManager<S> {
     /**
      * The panel containing the settings.
      */
@@ -28,7 +28,7 @@ abstract class SettingsComponent<S : Settings<S, T>, T : Scheme<T>>(private val 
     /**
      * The panel containing the dropdown box of schemes and action buttons to rename, delete, etc. schemes.
      */
-    abstract val schemesPanel: SchemesPanel<S, T>
+    abstract val schemesPanel: SchemesPanel<T>
 
 
     final override fun loadSettings() = loadSettings(settings)
@@ -98,14 +98,13 @@ abstract class SettingsComponent<S : Settings<S, T>, T : Scheme<T>>(private val 
  * A panel to manage schemes with, providing a dropdown box to select schemes from and buttons to remove, rename, etc.
  * schemes.
  *
- * @param S the type of settings to manage
  * @param T the type of scheme to manage
  * @property settings the settings model that backs this panel; changed made through this panel are reflected in the
  * given settings instance
  * @property defaultName the name of the default scheme instance
  */
-abstract class SchemesPanel<S : Settings<S, T>, T : Scheme<T>>(
-    private val settings: S,
+abstract class SchemesPanel<T : Scheme<T>>(
+    private val settings: Settings<*, T>,
     private val defaultName: String
 ) : SimpleSchemesPanel<T>(), SchemesModel<T> {
     private val listeners = mutableListOf<Listener<T>>()
@@ -133,9 +132,9 @@ abstract class SchemesPanel<S : Settings<S, T>, T : Scheme<T>>(
     fun addListener(listener: Listener<T>) = listeners.add(listener)
 
     /**
-     * Forcefully updates the combo box so that its entries and the current selection reflect the [settings] instance.
+     * Forcefully updates the combo box so that its entries and the current selection reflect the `settings` instance.
      *
-     * This panel instance will update the combo box by itself. Call this method if the [settings] instance has been
+     * This panel instance will update the combo box by itself. Call this method if the `settings` instance has been
      * changed externally and these changes need to be reflected.
      */
     fun updateComboBoxList() =
@@ -183,6 +182,11 @@ abstract class SchemesPanel<S : Settings<S, T>, T : Scheme<T>>(
      */
     override fun containsScheme(name: String, projectScheme: Boolean) = settings.schemes.any { it.name == name }
 
+    /**
+     * Returns an object with a number of actions that can be performed on this panel.
+     *
+     * @return an object with a number of actions that can be performed on this panel
+     */
     override fun createSchemeActions() = object : AbstractSchemeActions<T>(this) {
         override fun onSchemeChanged(scheme: T?) {
             if (scheme == null)

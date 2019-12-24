@@ -13,7 +13,7 @@ import com.intellij.util.xmlb.annotations.Transient
 
 
 /**
- * The user-configurable collection of schemes applicable to generating arrays.
+ * The user-configurable collection of schemes applicable to generating words.
  *
  * @property schemes the schemes that the user can choose from
  * @property currentSchemeName the scheme that is currently active

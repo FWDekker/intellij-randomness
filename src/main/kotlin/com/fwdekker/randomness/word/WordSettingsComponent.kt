@@ -26,8 +26,8 @@ import javax.swing.JPanel
 @Suppress("LateinitUsage") // Initialized by scene builder
 class WordSettingsComponent(settings: WordSettings = default) : SettingsComponent<WordSettings, WordScheme>(settings) {
     @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
-    override val schemesPanel: SchemesPanel<WordSettings, WordScheme>
-        get() = schemesPanelImpl as SchemesPanel<WordSettings, WordScheme>
+    override val schemesPanel: SchemesPanel<WordScheme>
+        get() = schemesPanelImpl as SchemesPanel<WordScheme>
     override lateinit var unsavedSettings: WordSettings
 
     private lateinit var contentPane: JPanel
@@ -181,8 +181,7 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
     }
 
 
-    private class WordSchemesPanel(settings: WordSettings) :
-        SchemesPanel<WordSettings, WordScheme>(settings, Scheme.DEFAULT_NAME) {
+    private class WordSchemesPanel(settings: WordSettings) : SchemesPanel<WordScheme>(settings, Scheme.DEFAULT_NAME) {
         override val type: Class<WordScheme>
             get() = WordScheme::class.java
 

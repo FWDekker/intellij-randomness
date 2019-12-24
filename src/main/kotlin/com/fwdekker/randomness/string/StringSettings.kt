@@ -13,7 +13,7 @@ import com.intellij.util.xmlb.annotations.Transient
 
 
 /**
- * The user-configurable collection of schemes applicable to generating arrays.
+ * The user-configurable collection of schemes applicable to generating strings.
  *
  * @property schemes the schemes that the user can choose from
  * @property currentSchemeName the scheme that is currently active
@@ -98,13 +98,6 @@ data class StringScheme(
          * The default value of the [activeSymbolSets][activeSymbolSets] field.
          */
         val DEFAULT_ACTIVE_SYMBOL_SETS = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
-
-
-        /**
-         * The persistent `StringSettings` instance.
-         */
-        val default: StringSettings
-            get() = ServiceManager.getService(StringSettings::class.java)
     }
 
 

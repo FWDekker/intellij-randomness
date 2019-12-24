@@ -11,7 +11,7 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
 
 
 /**
- * The user-configurable collection of schemes applicable to generating arrays.
+ * The user-configurable collection of schemes applicable to generating integers.
  *
  * @property schemes the schemes that the user can choose from
  * @property currentSchemeName the scheme that is currently active

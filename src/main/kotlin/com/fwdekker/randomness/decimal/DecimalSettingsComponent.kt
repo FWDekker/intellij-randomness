@@ -25,8 +25,8 @@ import javax.swing.event.ChangeEvent
 class DecimalSettingsComponent(settings: DecimalSettings = default) :
     SettingsComponent<DecimalSettings, DecimalScheme>(settings) {
     @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
-    override val schemesPanel: SchemesPanel<DecimalSettings, DecimalScheme>
-        get() = schemesPanelImpl as SchemesPanel<DecimalSettings, DecimalScheme>
+    override val schemesPanel: SchemesPanel<DecimalScheme>
+        get() = schemesPanelImpl as SchemesPanel<DecimalScheme>
     override lateinit var unsavedSettings: DecimalSettings
 
     private lateinit var contentPane: JPanel
@@ -109,7 +109,7 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
 
 
     private class DecimalSchemesPanel(settings: DecimalSettings) :
-        SchemesPanel<DecimalSettings, DecimalScheme>(settings, Scheme.DEFAULT_NAME) {
+        SchemesPanel<DecimalScheme>(settings, Scheme.DEFAULT_NAME) {
         override val type: Class<DecimalScheme>
             get() = DecimalScheme::class.java
 

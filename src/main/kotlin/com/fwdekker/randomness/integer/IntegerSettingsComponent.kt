@@ -25,8 +25,8 @@ import javax.swing.event.ChangeEvent
 class IntegerSettingsComponent(settings: IntegerSettings = default) :
     SettingsComponent<IntegerSettings, IntegerScheme>(settings) {
     @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
-    override val schemesPanel: SchemesPanel<IntegerSettings, IntegerScheme>
-        get() = schemesPanelImpl as SchemesPanel<IntegerSettings, IntegerScheme>
+    override val schemesPanel: SchemesPanel<IntegerScheme>
+        get() = schemesPanelImpl as SchemesPanel<IntegerScheme>
     override lateinit var unsavedSettings: IntegerSettings
 
     private lateinit var contentPane: JPanel
@@ -106,7 +106,7 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
 
 
     private class IntegerSchemesPanel(settings: IntegerSettings) :
-        SchemesPanel<IntegerSettings, IntegerScheme>(settings, Scheme.DEFAULT_NAME) {
+        SchemesPanel<IntegerScheme>(settings, Scheme.DEFAULT_NAME) {
         override val type: Class<IntegerScheme>
             get() = IntegerScheme::class.java
 

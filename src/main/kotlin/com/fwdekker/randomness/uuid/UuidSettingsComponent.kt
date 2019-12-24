@@ -25,8 +25,8 @@ import javax.swing.JPanel
 @Suppress("LateinitUsage") // Initialized by scene builder
 class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponent<UuidSettings, UuidScheme>(settings) {
     @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
-    override val schemesPanel: SchemesPanel<UuidSettings, UuidScheme>
-        get() = schemesPanelImpl as SchemesPanel<UuidSettings, UuidScheme>
+    override val schemesPanel: SchemesPanel<UuidScheme>
+        get() = schemesPanelImpl as SchemesPanel<UuidScheme>
     override lateinit var unsavedSettings: UuidSettings
 
     private lateinit var contentPane: JPanel
@@ -88,8 +88,7 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
     override fun doValidate(): ValidationInfo? = null
 
 
-    private class UuidSchemesPanel(settings: UuidSettings) :
-        SchemesPanel<UuidSettings, UuidScheme>(settings, Scheme.DEFAULT_NAME) {
+    private class UuidSchemesPanel(settings: UuidSettings) : SchemesPanel<UuidScheme>(settings, Scheme.DEFAULT_NAME) {
         override val type: Class<UuidScheme>
             get() = UuidScheme::class.java
 

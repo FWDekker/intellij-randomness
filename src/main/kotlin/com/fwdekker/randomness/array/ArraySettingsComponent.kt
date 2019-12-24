@@ -32,8 +32,8 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
 
 
     @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
-    override val schemesPanel: SchemesPanel<ArraySettings, ArrayScheme>
-        get() = schemesPanelImpl as SchemesPanel<ArraySettings, ArrayScheme>
+    override val schemesPanel: SchemesPanel<ArrayScheme>
+        get() = schemesPanelImpl as SchemesPanel<ArrayScheme>
     override lateinit var unsavedSettings: ArraySettings
 
     private lateinit var contentPane: JPanel
@@ -105,8 +105,7 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
     override fun doValidate() = countSpinner.validateValue()
 
 
-    private class ArraySchemesPanel(settings: ArraySettings) :
-        SchemesPanel<ArraySettings, ArrayScheme>(settings, DEFAULT_NAME) {
+    private class ArraySchemesPanel(settings: ArraySettings) : SchemesPanel<ArrayScheme>(settings, DEFAULT_NAME) {
         override val type: Class<ArrayScheme>
             get() = ArrayScheme::class.java
 

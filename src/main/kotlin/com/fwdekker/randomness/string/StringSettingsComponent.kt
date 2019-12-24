@@ -28,8 +28,8 @@ import javax.swing.JPanel
 class StringSettingsComponent(settings: StringSettings = default) :
     SettingsComponent<StringSettings, StringScheme>(settings) {
     @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
-    override val schemesPanel: SchemesPanel<StringSettings, StringScheme>
-        get() = schemesPanelImpl as SchemesPanel<StringSettings, StringScheme>
+    override val schemesPanel: SchemesPanel<StringScheme>
+        get() = schemesPanelImpl as SchemesPanel<StringScheme>
     override lateinit var unsavedSettings: StringSettings
 
     private lateinit var contentPane: JPanel
@@ -127,7 +127,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
 
 
     private class StringSchemesPanel(settings: StringSettings) :
-        SchemesPanel<StringSettings, StringScheme>(settings, Scheme.DEFAULT_NAME) {
+        SchemesPanel<StringScheme>(settings, Scheme.DEFAULT_NAME) {
         override val type: Class<StringScheme>
             get() = StringScheme::class.java
 
