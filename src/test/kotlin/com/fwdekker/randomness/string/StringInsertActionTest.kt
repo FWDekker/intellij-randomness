@@ -34,14 +34,15 @@ class StringInsertActionTest {
         minLength: Int, maxLength: Int, enclosure: String,
         capitalization: CapitalizationMode, symbolSets: Set<SymbolSet>
     ) {
-        val stringSettings = StringSettings()
-        stringSettings.minLength = minLength
-        stringSettings.maxLength = maxLength
-        stringSettings.enclosure = enclosure
-        stringSettings.capitalization = capitalization
-        stringSettings.activeSymbolSetList = symbolSets
+        val stringScheme = StringScheme(
+            minLength = minLength,
+            maxLength = maxLength,
+            enclosure = enclosure,
+            capitalization = capitalization,
+            activeSymbolSets = symbolSets.toMap()
+        )
 
-        val insertRandomString = StringInsertAction(stringSettings)
+        val insertRandomString = StringInsertAction(stringScheme)
         val expectedPattern = buildExpectedPattern(minLength, maxLength, enclosure, capitalization, symbolSets)
 
         assertThat(insertRandomString.generateString()).containsPattern(expectedPattern)
@@ -49,7 +50,7 @@ class StringInsertActionTest {
 
     @Test
     fun testInvalidRange() {
-        val action = StringInsertAction(StringSettings(99, 21))
+        val action = StringInsertAction(StringScheme(minLength = 99, maxLength = 21))
         Assertions.assertThatThrownBy { action.generateString() }
             .isInstanceOf(DataGenerationException::class.java)
             .hasMessage("Minimum length is larger than maximum length.")
@@ -57,7 +58,7 @@ class StringInsertActionTest {
 
     @Test
     fun testNoSymbols() {
-        val action = StringInsertAction(StringSettings(activeSymbolSets = emptyMap()))
+        val action = StringInsertAction(StringScheme(activeSymbolSets = emptyMap()))
         Assertions.assertThatThrownBy { action.generateString() }
             .isInstanceOf(DataGenerationException::class.java)
             .hasMessage("No active symbol sets.")

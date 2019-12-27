@@ -5,6 +5,7 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.DataSettingsAction
+import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
 import icons.RandomnessIcons
 
@@ -22,12 +23,12 @@ class WordGroupAction : DataGroupAction(RandomnessIcons.Word.Base) {
 /**
  * Inserts random words.
  *
- * @param settings the settings to use for generating words
+ * @param scheme the scheme to use for generating words
  *
  * @see WordInsertArrayAction
  * @see WordSettings
  */
-class WordInsertAction(private val settings: WordSettings = WordSettings.default) :
+class WordInsertAction(private val scheme: WordScheme = WordSettings.default.currentScheme) :
     DataInsertAction(RandomnessIcons.Word.Base) {
     override val name = "Random Word"
 
@@ -40,7 +41,6 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
      * @throws InvalidDictionaryException if no words could be found using the settings in `settings`
      */
     override fun generateStrings(count: Int): List<String> {
-        val scheme = settings.currentScheme
         val dictionaries = (scheme.activeBundledDictionaries + scheme.activeUserDictionaries)
             .ifEmpty { throw DataGenerationException("There are no active dictionaries.") }
 
@@ -66,15 +66,15 @@ class WordInsertAction(private val settings: WordSettings = WordSettings.default
 /**
  * Inserts an array-like string of words.
  *
- * @param arraySettings the settings to use for generating arrays
- * @param settings the settings to use for generating words
+ * @param arrayScheme the scheme to use for generating arrays
+ * @param scheme the scheme to use for generating words
  *
  * @see WordInsertAction
  */
 class WordInsertArrayAction(
-    arraySettings: ArraySettings = ArraySettings.default,
-    settings: WordSettings = WordSettings.default
-) : DataInsertArrayAction(arraySettings, WordInsertAction(settings), RandomnessIcons.Word.Array) {
+    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+    scheme: WordScheme = WordSettings.default.currentScheme
+) : DataInsertArrayAction(arrayScheme, WordInsertAction(scheme), RandomnessIcons.Word.Array) {
     override val name = "Random Word Array"
 }
 

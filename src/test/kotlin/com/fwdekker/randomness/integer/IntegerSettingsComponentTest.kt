@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.integer
 
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -16,6 +18,7 @@ import org.jetbrains.spek.api.dsl.it
  * GUI tests for [IntegerSettingsComponent].
  */
 object IntegerSettingsComponentTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
     lateinit var integerSettings: IntegerSettings
     lateinit var integerSettingsComponent: IntegerSettingsComponent
     lateinit var integerSettingsComponentConfigurable: IntegerSettingsConfigurable
@@ -27,11 +30,16 @@ object IntegerSettingsComponentTest : Spek({
     }
 
     beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         integerSettings = IntegerSettings()
-        integerSettings.minValue = 2_147_483_883L
-        integerSettings.maxValue = 6_442_451_778L
-        integerSettings.base = 10
-        integerSettings.groupingSeparator = "_"
+            .apply {
+                currentScheme.minValue = 2_147_483_883L
+                currentScheme.maxValue = 6_442_451_778L
+                currentScheme.base = 10
+                currentScheme.groupingSeparator = "_"
+            }
 
         integerSettingsComponent =
             GuiActionRunner.execute<IntegerSettingsComponent> { IntegerSettingsComponent(integerSettings) }
@@ -40,6 +48,7 @@ object IntegerSettingsComponentTest : Spek({
     }
 
     afterEachTest {
+        ideaFixture.tearDown()
         frame.cleanUp()
     }
 
@@ -92,21 +101,21 @@ object IntegerSettingsComponentTest : Spek({
 
         describe("grouping separator") {
             it("uses the default separator if null is set") {
-                integerSettings.safeSetGroupingSeparator(null)
+                integerSettings.currentScheme.safeSetGroupingSeparator(null)
 
-                assertThat(integerSettings.groupingSeparator).isEqualTo(IntegerSettings.DEFAULT_GROUPING_SEPARATOR)
+                assertThat(integerSettings.currentScheme.groupingSeparator).isEqualTo(IntegerScheme.DEFAULT_GROUPING_SEPARATOR)
             }
 
             it("uses the default separator if an empty string is set") {
-                integerSettings.safeSetGroupingSeparator("")
+                integerSettings.currentScheme.safeSetGroupingSeparator("")
 
-                assertThat(integerSettings.groupingSeparator).isEqualTo(IntegerSettings.DEFAULT_GROUPING_SEPARATOR)
+                assertThat(integerSettings.currentScheme.groupingSeparator).isEqualTo(IntegerScheme.DEFAULT_GROUPING_SEPARATOR)
             }
 
             it("uses only the first character if a multi-character string is given") {
-                integerSettings.safeSetGroupingSeparator("mention")
+                integerSettings.currentScheme.safeSetGroupingSeparator("mention")
 
-                assertThat(integerSettings.groupingSeparator).isEqualTo("m")
+                assertThat(integerSettings.currentScheme.groupingSeparator).isEqualTo("m")
             }
         }
     }
@@ -187,10 +196,10 @@ object IntegerSettingsComponentTest : Spek({
 
             integerSettingsComponent.saveSettings()
 
-            assertThat(integerSettings.minValue).isEqualTo(2_147_483_648L)
-            assertThat(integerSettings.maxValue).isEqualTo(2_147_483_649L)
-            assertThat(integerSettings.base).isEqualTo(14)
-            assertThat(integerSettings.groupingSeparator).isEqualTo(".")
+            assertThat(integerSettings.currentScheme.minValue).isEqualTo(2_147_483_648L)
+            assertThat(integerSettings.currentScheme.maxValue).isEqualTo(2_147_483_649L)
+            assertThat(integerSettings.currentScheme.base).isEqualTo(14)
+            assertThat(integerSettings.currentScheme.groupingSeparator).isEqualTo(".")
         }
     }
 
@@ -205,7 +214,7 @@ object IntegerSettingsComponentTest : Spek({
 
                 integerSettingsComponentConfigurable.apply()
 
-                assertThat(integerSettings.minValue).isEqualTo(92)
+                assertThat(integerSettings.currentScheme.minValue).isEqualTo(92)
             }
 
             it("rejects incorrect settings") {
@@ -228,8 +237,12 @@ object IntegerSettingsComponentTest : Spek({
             }
 
             it("ignores an undone modification") {
-                GuiActionRunner.execute { frame.spinner("maxValue").target().value = integerSettings.minValue }
-                GuiActionRunner.execute { frame.spinner("maxValue").target().value = integerSettings.maxValue }
+                GuiActionRunner.execute {
+                    frame.spinner("maxValue").target().value = integerSettings.currentScheme.minValue
+                }
+                GuiActionRunner.execute {
+                    frame.spinner("maxValue").target().value = integerSettings.currentScheme.maxValue
+                }
 
                 assertThat(integerSettingsComponentConfigurable.isModified).isFalse()
             }

@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.array
 
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -16,6 +18,7 @@ import org.jetbrains.spek.api.dsl.it
  * GUI tests for [ArraySettingsComponent].
  */
 object ArraySettingsComponentTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
     lateinit var arraySettings: ArraySettings
     lateinit var arraySettingsComponent: ArraySettingsComponent
     lateinit var arraySettingsComponentConfigurable: ArraySettingsConfigurable
@@ -27,11 +30,16 @@ object ArraySettingsComponentTest : Spek({
     }
 
     beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         arraySettings = ArraySettings()
-        arraySettings.count = 6
-        arraySettings.brackets = "[]"
-        arraySettings.separator = ","
-        arraySettings.isSpaceAfterSeparator = false
+            .apply {
+                currentScheme.count = 6
+                currentScheme.brackets = "[]"
+                currentScheme.separator = ","
+                currentScheme.isSpaceAfterSeparator = false
+            }
 
         arraySettingsComponent =
             GuiActionRunner.execute<ArraySettingsComponent> { ArraySettingsComponent(arraySettings) }
@@ -40,6 +48,7 @@ object ArraySettingsComponentTest : Spek({
     }
 
     afterEachTest {
+        ideaFixture.tearDown()
         frame.cleanUp()
     }
 
@@ -122,10 +131,10 @@ object ArraySettingsComponentTest : Spek({
 
             arraySettingsComponent.saveSettings()
 
-            assertThat(arraySettings.count).isEqualTo(642)
-            assertThat(arraySettings.brackets).isEqualTo("{}")
-            assertThat(arraySettings.separator).isEqualTo(";")
-            assertThat(arraySettings.isSpaceAfterSeparator).isEqualTo(false)
+            assertThat(arraySettings.currentScheme.count).isEqualTo(642)
+            assertThat(arraySettings.currentScheme.brackets).isEqualTo("{}")
+            assertThat(arraySettings.currentScheme.separator).isEqualTo(";")
+            assertThat(arraySettings.currentScheme.isSpaceAfterSeparator).isEqualTo(false)
         }
     }
 
@@ -140,7 +149,7 @@ object ArraySettingsComponentTest : Spek({
 
                 arraySettingsComponentConfigurable.apply()
 
-                assertThat(arraySettings.count).isEqualTo(39)
+                assertThat(arraySettings.currentScheme.count).isEqualTo(39)
             }
 
             it("rejects incorrect settings") {
@@ -164,7 +173,7 @@ object ArraySettingsComponentTest : Spek({
 
             it("ignores an undone modification") {
                 GuiActionRunner.execute { frame.spinner("count").target().value = 17 }
-                GuiActionRunner.execute { frame.spinner("count").target().value = arraySettings.count }
+                GuiActionRunner.execute { frame.spinner("count").target().value = arraySettings.currentScheme.count }
 
                 assertThat(arraySettingsComponentConfigurable.isModified).isFalse()
             }

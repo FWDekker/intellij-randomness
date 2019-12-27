@@ -20,28 +20,28 @@ object StringSettingsTest : Spek({
 
     describe("state management") {
         it("creates an independent copy") {
-            val copy = stringSettings.copyState()
-            stringSettings.minLength = 49
-            copy.minLength = 244
+            val copy = stringSettings.deepCopy()
+            stringSettings.currentScheme.minLength = 49
+            copy.currentScheme.minLength = 244
 
-            assertThat(stringSettings.minLength).isEqualTo(49)
+            assertThat(stringSettings.currentScheme.minLength).isEqualTo(49)
         }
 
         it("copies state from another instance") {
             val symbolSets = listOf(SymbolSet.BRACKETS)
 
-            stringSettings.minLength = 730
-            stringSettings.maxLength = 891
-            stringSettings.enclosure = "Qh7"
-            stringSettings.symbolSetList = symbolSets
+            stringSettings.currentScheme.minLength = 730
+            stringSettings.currentScheme.maxLength = 891
+            stringSettings.currentScheme.enclosure = "Qh7"
+            stringSettings.currentScheme.symbolSetList = symbolSets
 
             val newStringSettings = StringSettings()
             newStringSettings.loadState(stringSettings.state)
 
-            assertThat(newStringSettings.minLength).isEqualTo(730)
-            assertThat(newStringSettings.maxLength).isEqualTo(891)
-            assertThat(newStringSettings.enclosure).isEqualTo("Qh7")
-            assertThat(newStringSettings.symbolSetList).isEqualTo(symbolSets)
+            assertThat(newStringSettings.currentScheme.minLength).isEqualTo(730)
+            assertThat(newStringSettings.currentScheme.maxLength).isEqualTo(891)
+            assertThat(newStringSettings.currentScheme.enclosure).isEqualTo("Qh7")
+            assertThat(newStringSettings.currentScheme.symbolSetList).isEqualTo(symbolSets)
         }
     }
 })

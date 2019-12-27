@@ -42,11 +42,13 @@ object WordSettingsComponentTest : Spek({
         ideaFixture.setUp()
 
         wordSettings = WordSettings()
-        wordSettings.minLength = 4
-        wordSettings.maxLength = 6
-        wordSettings.enclosure = ""
-        wordSettings.capitalization = CapitalizationMode.LOWER
-        wordSettings.activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.EXTENDED_DICTIONARY)
+            .apply {
+                currentScheme.minLength = 4
+                currentScheme.maxLength = 6
+                currentScheme.enclosure = ""
+                currentScheme.capitalization = CapitalizationMode.LOWER
+                currentScheme.activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.EXTENDED_DICTIONARY)
+            }
 
         wordSettingsComponent = GuiActionRunner.execute<WordSettingsComponent> { WordSettingsComponent(wordSettings) }
         wordSettingsComponentConfigurable = WordSettingsConfigurable(wordSettingsComponent)
@@ -193,8 +195,8 @@ object WordSettingsComponentTest : Spek({
             }
 
             it("fails if one of the dictionaries is invalid") {
-                wordSettings.userDictionaryFiles = mutableSetOf("does_not_exist.dic")
-                wordSettings.activeUserDictionaryFiles = wordSettings.userDictionaryFiles
+                wordSettings.currentScheme.userDictionaryFiles = mutableSetOf("does_not_exist.dic")
+                wordSettings.currentScheme.activeUserDictionaryFiles = wordSettings.currentScheme.userDictionaryFiles
                 GuiActionRunner.execute { wordSettingsComponent.loadSettings(wordSettings) }
 
                 val validationInfo = wordSettingsComponent.doValidate()
@@ -211,8 +213,8 @@ object WordSettingsComponentTest : Spek({
                 val dictionaryFile = tempFileHelper.createFile("", ".dic")
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
 
-                wordSettings.userDictionaries = setOf(dictionary)
-                wordSettings.activeUserDictionaries = wordSettings.userDictionaries
+                wordSettings.currentScheme.userDictionaries = setOf(dictionary)
+                wordSettings.currentScheme.activeUserDictionaries = wordSettings.currentScheme.userDictionaries
                 GuiActionRunner.execute { wordSettingsComponent.loadSettings(wordSettings) }
 
                 val validationInfo = wordSettingsComponent.doValidate()
@@ -226,8 +228,8 @@ object WordSettingsComponentTest : Spek({
                 val dictionaryFile = tempFileHelper.createFile("whistle", ".dic")
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
 
-                wordSettings.userDictionaries = setOf(dictionary)
-                wordSettings.activeUserDictionaries = wordSettings.userDictionaries
+                wordSettings.currentScheme.userDictionaries = setOf(dictionary)
+                wordSettings.currentScheme.activeUserDictionaries = wordSettings.currentScheme.userDictionaries
                 GuiActionRunner.execute {
                     wordSettingsComponent.loadSettings(wordSettings)
                     dictionaryTable.listTableModel.addRow(EditableDatum(true, dictionary))
@@ -254,10 +256,10 @@ object WordSettingsComponentTest : Spek({
 
             wordSettingsComponent.saveSettings()
 
-            assertThat(wordSettings.minLength).isEqualTo(840)
-            assertThat(wordSettings.maxLength).isEqualTo(861)
-            assertThat(wordSettings.enclosure).isEqualTo("'")
-            assertThat(wordSettings.capitalization).isEqualTo(CapitalizationMode.LOWER)
+            assertThat(wordSettings.currentScheme.minLength).isEqualTo(840)
+            assertThat(wordSettings.currentScheme.maxLength).isEqualTo(861)
+            assertThat(wordSettings.currentScheme.enclosure).isEqualTo("'")
+            assertThat(wordSettings.currentScheme.capitalization).isEqualTo(CapitalizationMode.LOWER)
         }
     }
 
@@ -272,7 +274,7 @@ object WordSettingsComponentTest : Spek({
 
                 wordSettingsComponentConfigurable.apply()
 
-                assertThat(wordSettings.maxLength).isEqualTo(253)
+                assertThat(wordSettings.currentScheme.maxLength).isEqualTo(253)
             }
 
             it("rejects incorrect settings") {
@@ -296,7 +298,9 @@ object WordSettingsComponentTest : Spek({
 
             it("ignores an undone modification") {
                 GuiActionRunner.execute { frame.spinner("maxLength").target().value = 51 }
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = wordSettings.maxLength }
+                GuiActionRunner.execute {
+                    frame.spinner("maxLength").target().value = wordSettings.currentScheme.maxLength
+                }
 
                 assertThat(wordSettingsComponentConfigurable.isModified).isFalse()
             }

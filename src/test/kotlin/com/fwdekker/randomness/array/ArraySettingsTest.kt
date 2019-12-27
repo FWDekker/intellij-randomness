@@ -18,71 +18,83 @@ object ArraySettingsTest : Spek({
     }
 
 
-    describe("state management") {
-        it("creates an independent copy") {
-            val copy = arraySettings.deepCopy()
-            arraySettings.count = 44
-            copy.count = 15
+    it("creates an independent copy") {
+        val copy = arraySettings.deepCopy()
+        arraySettings.currentScheme.count = 44
+        copy.currentScheme.count = 15
 
-            assertThat(arraySettings.count).isEqualTo(44)
-        }
-
-        it("copies state from another instance") {
-            arraySettings.count = 997
-            arraySettings.brackets = "0fWx<i6jTJ"
-            arraySettings.separator = "f3hu)Rxiz1"
-            arraySettings.isSpaceAfterSeparator = false
-
-            val newArraySettings = ArraySettings()
-            newArraySettings.loadState(arraySettings.state)
-
-            assertThat(newArraySettings.count).isEqualTo(997)
-            assertThat(newArraySettings.brackets).isEqualTo("0fWx<i6jTJ")
-            assertThat(newArraySettings.separator).isEqualTo("f3hu)Rxiz1")
-            assertThat(newArraySettings.isSpaceAfterSeparator).isEqualTo(false)
-        }
+        assertThat(arraySettings.currentScheme.count).isEqualTo(44)
     }
+
+    it("copies state from another instance") {
+        arraySettings.currentScheme.count = 997
+        arraySettings.currentScheme.brackets = "0fWx<i6jTJ"
+        arraySettings.currentScheme.separator = "f3hu)Rxiz1"
+        arraySettings.currentScheme.isSpaceAfterSeparator = false
+
+        val newArraySettings = ArraySettings()
+        newArraySettings.loadState(arraySettings.state)
+
+        assertThat(newArraySettings.currentScheme.count).isEqualTo(997)
+        assertThat(newArraySettings.currentScheme.brackets).isEqualTo("0fWx<i6jTJ")
+        assertThat(newArraySettings.currentScheme.separator).isEqualTo("f3hu)Rxiz1")
+        assertThat(newArraySettings.currentScheme.isSpaceAfterSeparator).isEqualTo(false)
+    }
+})
+
+
+/**
+ * Unit tests for [ArrayScheme].
+ */
+object ArraySchemeTest : Spek({
+    lateinit var arrayScheme: ArrayScheme
+
+
+    beforeEachTest {
+        arrayScheme = ArrayScheme()
+    }
+
 
     describe("arrayify") {
         it("returns only the brackets if the array is empty") {
-            assertThat(arraySettings.arrayify(emptyList())).isEqualTo("[]")
+            assertThat(arrayScheme.arrayify(emptyList())).isEqualTo("[]")
         }
 
         it("arrayifies an array") {
-            arraySettings.count = 4
-            arraySettings.brackets = "@#"
-            arraySettings.separator = ";;"
-            arraySettings.isSpaceAfterSeparator = true
+            arrayScheme.count = 4
+            arrayScheme.brackets = "@#"
+            arrayScheme.separator = ";;"
+            arrayScheme.isSpaceAfterSeparator = true
 
-            assertThat(arraySettings.arrayify(listOf("Garhwali", "Pattypan", "Troll")))
+            assertThat(arrayScheme.arrayify(listOf("Garhwali", "Pattypan", "Troll")))
                 .isEqualTo("@Garhwali;; Pattypan;; Troll#")
         }
 
         it("arrayifies an array without brackets") {
-            arraySettings.count = 8
-            arraySettings.brackets = ""
-            arraySettings.separator = "h"
-            arraySettings.isSpaceAfterSeparator = false
+            arrayScheme.count = 8
+            arrayScheme.brackets = ""
+            arrayScheme.separator = "h"
+            arrayScheme.isSpaceAfterSeparator = false
 
-            assertThat(arraySettings.arrayify(listOf("Elvish", "Stride", "Bills"))).isEqualTo("ElvishhStridehBills")
+            assertThat(arrayScheme.arrayify(listOf("Elvish", "Stride", "Bills"))).isEqualTo("ElvishhStridehBills")
         }
 
         it("does not place a space after separator if that option is false") {
-            arraySettings.count = 3
-            arraySettings.brackets = "<>"
-            arraySettings.separator = "-"
-            arraySettings.isSpaceAfterSeparator = false
+            arrayScheme.count = 3
+            arrayScheme.brackets = "<>"
+            arrayScheme.separator = "-"
+            arrayScheme.isSpaceAfterSeparator = false
 
-            assertThat(arraySettings.arrayify(listOf("Remain", "Pound"))).isEqualTo("<Remain-Pound>")
+            assertThat(arrayScheme.arrayify(listOf("Remain", "Pound"))).isEqualTo("<Remain-Pound>")
         }
 
         it("ignores space after separator if newline separator is used") {
-            arraySettings.count = 2
-            arraySettings.brackets = "[]"
-            arraySettings.separator = "\n"
-            arraySettings.isSpaceAfterSeparator = true
+            arrayScheme.count = 2
+            arrayScheme.brackets = "[]"
+            arrayScheme.separator = "\n"
+            arrayScheme.isSpaceAfterSeparator = true
 
-            assertThat(arraySettings.arrayify(listOf("Union", "Bell"))).isEqualTo("[Union\nBell]")
+            assertThat(arrayScheme.arrayify(listOf("Union", "Bell"))).isEqualTo("[Union\nBell]")
         }
     }
 })

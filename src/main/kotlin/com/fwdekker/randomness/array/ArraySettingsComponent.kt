@@ -81,7 +81,7 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
             }
 
         previewPanelHolder = PreviewPanel {
-            DummyInsertArrayAction(ArraySettings().also { saveSettings(it) }, previewPlaceholder)
+            DummyInsertArrayAction(ArrayScheme().also { saveScheme(it) }, previewPlaceholder)
         }
         previewPanel = previewPanelHolder.rootPane
 

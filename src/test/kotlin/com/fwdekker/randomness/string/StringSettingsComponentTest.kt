@@ -39,12 +39,14 @@ object StringSettingsComponentTest : Spek({
         ideaFixture.setUp()
 
         stringSettings = StringSettings()
-        stringSettings.minLength = 144
-        stringSettings.maxLength = 719
-        stringSettings.enclosure = "\""
-        stringSettings.capitalization = CapitalizationMode.RANDOM
-        stringSettings.symbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS, SymbolSet.HEXADECIMAL)
-        stringSettings.activeSymbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
+            .apply {
+                currentScheme.minLength = 144
+                currentScheme.maxLength = 719
+                currentScheme.enclosure = "\""
+                currentScheme.capitalization = CapitalizationMode.RANDOM
+                currentScheme.symbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS, SymbolSet.HEXADECIMAL)
+                currentScheme.activeSymbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
+            }
 
         stringSettingsComponent =
             GuiActionRunner.execute<StringSettingsComponent> { StringSettingsComponent(stringSettings) }
@@ -193,12 +195,13 @@ object StringSettingsComponentTest : Spek({
 
             stringSettingsComponent.saveSettings()
 
-            assertThat(stringSettings.minLength).isEqualTo(445)
-            assertThat(stringSettings.maxLength).isEqualTo(803)
-            assertThat(stringSettings.enclosure).isEqualTo("`")
-            assertThat(stringSettings.capitalization).isEqualTo(CapitalizationMode.UPPER)
-            assertThat(stringSettings.symbolSetList).isEqualTo(listOf(SymbolSet.BRACKETS, SymbolSet.MINUS))
-            assertThat(stringSettings.activeSymbolSetList).isEqualTo(listOf(SymbolSet.MINUS))
+            assertThat(stringSettings.currentScheme.minLength).isEqualTo(445)
+            assertThat(stringSettings.currentScheme.maxLength).isEqualTo(803)
+            assertThat(stringSettings.currentScheme.enclosure).isEqualTo("`")
+            assertThat(stringSettings.currentScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
+            assertThat(stringSettings.currentScheme.symbolSetList).isEqualTo(listOf(SymbolSet.BRACKETS,
+                SymbolSet.MINUS))
+            assertThat(stringSettings.currentScheme.activeSymbolSetList).isEqualTo(listOf(SymbolSet.MINUS))
         }
     }
 
@@ -214,7 +217,7 @@ object StringSettingsComponentTest : Spek({
 
                 stringSettingsComponentConfigurable.apply()
 
-                assertThat(stringSettings.maxLength).isEqualTo(55)
+                assertThat(stringSettings.currentScheme.maxLength).isEqualTo(55)
             }
 
             it("rejects incorrect settings") {
@@ -237,8 +240,12 @@ object StringSettingsComponentTest : Spek({
             }
 
             it("ignores an undone modification") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = stringSettings.minLength }
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = stringSettings.maxLength }
+                GuiActionRunner.execute {
+                    frame.spinner("maxLength").target().value = stringSettings.currentScheme.minLength
+                }
+                GuiActionRunner.execute {
+                    frame.spinner("maxLength").target().value = stringSettings.currentScheme.maxLength
+                }
 
                 assertThat(stringSettingsComponentConfigurable.isModified).isFalse()
             }

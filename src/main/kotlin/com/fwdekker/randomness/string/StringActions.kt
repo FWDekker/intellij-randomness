@@ -5,6 +5,7 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.DataSettingsAction
+import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
 import icons.RandomnessIcons
 
@@ -22,12 +23,12 @@ class StringGroupAction : DataGroupAction(RandomnessIcons.String.Base) {
 /**
  * Inserts random alphanumerical strings.
  *
- * @param settings the settings to use for generating strings
+ * @param scheme the scheme to use for generating strings
  *
  * @see StringInsertArrayAction
  * @see StringSettings
  */
-class StringInsertAction(private val settings: StringSettings = StringSettings.default) :
+class StringInsertAction(private val scheme: StringScheme = StringSettings.default.currentScheme) :
     DataInsertAction(RandomnessIcons.String.Base) {
     override val name = "Random String"
 
@@ -40,7 +41,6 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
      */
     override fun generateStrings(count: Int) =
         List(count) {
-            val scheme = settings.currentScheme
             if (scheme.minLength > scheme.maxLength)
                 throw DataGenerationException("Minimum length is larger than maximum length.")
 
@@ -61,7 +61,7 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
      */
     @Throws(DataGenerationException::class)
     private fun generateCharacter(): Char {
-        val symbolSet = settings.currentScheme.activeSymbolSetList.sum()
+        val symbolSet = scheme.activeSymbolSetList.sum()
         if (symbolSet.isEmpty())
             throw DataGenerationException("No active symbol sets.")
 
@@ -75,15 +75,15 @@ class StringInsertAction(private val settings: StringSettings = StringSettings.d
 /**
  * Inserts an array-like string of strings.
  *
- * @param arraySettings the settings to use for generating arrays
- * @param settings the settings to use for generating strings
+ * @param arrayScheme the scheme to use for generating arrays
+ * @param scheme the scheme to use for generating strings
  *
  * @see StringInsertAction
  */
 class StringInsertArrayAction(
-    arraySettings: ArraySettings = ArraySettings.default,
-    settings: StringSettings = StringSettings.default
-) : DataInsertArrayAction(arraySettings, StringInsertAction(settings), RandomnessIcons.String.Array) {
+    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+    scheme: StringScheme = StringSettings.default.currentScheme
+) : DataInsertArrayAction(arrayScheme, StringInsertAction(scheme), RandomnessIcons.String.Array) {
     override val name = "Random String Array"
 }
 

@@ -18,47 +18,59 @@ object IntegerSettingsTest : Spek({
     }
 
 
-    describe("state management") {
-        it("creates an independent copy") {
-            val copy = integerSettings.copyState()
-            integerSettings.minValue = 159
-            copy.minValue = 48
+    it("creates an independent copy") {
+        val copy = integerSettings.deepCopy()
+        integerSettings.currentScheme.minValue = 159
+        copy.currentScheme.minValue = 48
 
-            assertThat(integerSettings.minValue).isEqualTo(159)
-        }
-
-        it("copies state from another instance") {
-            integerSettings.minValue = 742
-            integerSettings.maxValue = 908
-            integerSettings.base = 12
-
-            val newIntegerSettings = IntegerSettings()
-            newIntegerSettings.loadState(integerSettings.state)
-
-            assertThat(newIntegerSettings.minValue).isEqualTo(742)
-            assertThat(newIntegerSettings.maxValue).isEqualTo(908)
-            assertThat(newIntegerSettings.base).isEqualTo(12)
-        }
+        assertThat(integerSettings.currentScheme.minValue).isEqualTo(159)
     }
+
+    it("copies state from another instance") {
+        integerSettings.currentScheme.minValue = 742
+        integerSettings.currentScheme.maxValue = 908
+        integerSettings.currentScheme.base = 12
+
+        val newIntegerSettings = IntegerSettings()
+        newIntegerSettings.loadState(integerSettings.state)
+
+        assertThat(newIntegerSettings.currentScheme.minValue).isEqualTo(742)
+        assertThat(newIntegerSettings.currentScheme.maxValue).isEqualTo(908)
+        assertThat(newIntegerSettings.currentScheme.base).isEqualTo(12)
+    }
+})
+
+
+/**
+ * Unit tests for [IntegerScheme].
+ */
+object IntegerSchemeTest : Spek({
+    lateinit var integerScheme: IntegerScheme
+
+
+    beforeEachTest {
+        integerScheme = IntegerScheme()
+    }
+
 
     describe("input handling") {
         describe("grouping separator") {
             it("uses the default separator if null is set") {
-                integerSettings.safeSetGroupingSeparator(null)
+                integerScheme.safeSetGroupingSeparator(null)
 
-                assertThat(integerSettings.groupingSeparator).isEqualTo(IntegerSettings.DEFAULT_GROUPING_SEPARATOR)
+                assertThat(integerScheme.groupingSeparator).isEqualTo(IntegerScheme.DEFAULT_GROUPING_SEPARATOR)
             }
 
             it("uses the default separator if an empty string is set") {
-                integerSettings.safeSetGroupingSeparator("")
+                integerScheme.safeSetGroupingSeparator("")
 
-                assertThat(integerSettings.groupingSeparator).isEqualTo(IntegerSettings.DEFAULT_GROUPING_SEPARATOR)
+                assertThat(integerScheme.groupingSeparator).isEqualTo(IntegerScheme.DEFAULT_GROUPING_SEPARATOR)
             }
 
             it("uses only the first character if a multi-character string is given") {
-                integerSettings.safeSetGroupingSeparator("recited")
+                integerScheme.safeSetGroupingSeparator("recited")
 
-                assertThat(integerSettings.groupingSeparator).isEqualTo("r")
+                assertThat(integerScheme.groupingSeparator).isEqualTo("r")
             }
         }
     }

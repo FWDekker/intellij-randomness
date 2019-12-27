@@ -5,6 +5,7 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.DataSettingsAction
+import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DECIMAL_BASE
 import icons.RandomnessIcons
@@ -24,12 +25,12 @@ class IntegerGroupAction : DataGroupAction(RandomnessIcons.Integer.Base) {
 /**
  * Inserts random integers.
  *
- * @param settings the settings to use for generating integers
+ * @param scheme the scheme to use for generating integers
  *
  * @see IntegerInsertArrayAction
  * @see IntegerSettings
  */
-class IntegerInsertAction(private val settings: IntegerSettings = IntegerSettings.default) :
+class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.default.currentScheme) :
     DataInsertAction(RandomnessIcons.Integer.Base) {
     override val name = "Random Integer"
 
@@ -42,7 +43,6 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
      */
     override fun generateStrings(count: Int) =
         List(count) {
-            val scheme = settings.currentScheme
             if (scheme.minValue > scheme.maxValue)
                 throw DataGenerationException("Minimum value is larger than maximum value.")
 
@@ -57,8 +57,6 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
      * @return a nicely formatted representation of an integer
      */
     private fun convertToString(value: Long): String {
-        val scheme = settings.currentScheme
-
         if (scheme.base != DECIMAL_BASE)
             return value.toString(scheme.base)
 
@@ -77,15 +75,15 @@ class IntegerInsertAction(private val settings: IntegerSettings = IntegerSetting
 /**
  * Inserts an array-like string of integers.
  *
- * @param arraySettings the settings to use for generating arrays
- * @param settings the settings to use for generating integers
+ * @param arrayScheme the scheme to use for generating arrays
+ * @param scheme the settings to use for generating integers
  *
  * @see IntegerInsertAction
  */
 class IntegerInsertArrayAction(
-    arraySettings: ArraySettings = ArraySettings.default,
-    settings: IntegerSettings = IntegerSettings.default
-) : DataInsertArrayAction(arraySettings, IntegerInsertAction(settings), RandomnessIcons.Integer.Array) {
+    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+    scheme: IntegerScheme = IntegerSettings.default.currentScheme
+) : DataInsertArrayAction(arrayScheme, IntegerInsertAction(scheme), RandomnessIcons.Integer.Array) {
     override val name = "Random Integer Array"
 }
 

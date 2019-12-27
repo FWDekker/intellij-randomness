@@ -28,11 +28,9 @@ class IntegerInsertActionTest {
     @ParameterizedTest
     @MethodSource("provider")
     fun testValue(minValue: Long, maxValue: Long, expectedString: String) {
-        val integerSettings = IntegerSettings()
-        integerSettings.minValue = minValue
-        integerSettings.maxValue = maxValue
+        val integerScheme = IntegerScheme(minValue = minValue, maxValue = maxValue)
 
-        val insertRandomInteger = IntegerInsertAction(integerSettings)
+        val insertRandomInteger = IntegerInsertAction(integerScheme)
         val randomString = insertRandomInteger.generateString()
 
         assertThat(randomString).isEqualTo(expectedString)
@@ -40,7 +38,7 @@ class IntegerInsertActionTest {
 
     @Test
     fun testInvalidRange() {
-        val action = IntegerInsertAction(IntegerSettings(65, 24))
+        val action = IntegerInsertAction(IntegerScheme(minValue = 65, maxValue = 24))
         Assertions.assertThatThrownBy { action.generateString() }
             .isInstanceOf(DataGenerationException::class.java)
             .hasMessage("Minimum value is larger than maximum value.")

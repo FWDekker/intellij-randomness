@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.decimal
 
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -16,6 +18,7 @@ import org.jetbrains.spek.api.dsl.it
  * GUI tests for [DecimalSettingsComponent].
  */
 object DecimalSettingsComponentTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
     lateinit var decimalSettings: DecimalSettings
     lateinit var decimalSettingsComponent: DecimalSettingsComponent
     lateinit var decimalSettingsComponentConfigurable: DecimalSettingsConfigurable
@@ -27,13 +30,18 @@ object DecimalSettingsComponentTest : Spek({
     }
 
     beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         decimalSettings = DecimalSettings()
-        decimalSettings.minValue = 157.61
-        decimalSettings.maxValue = 408.68
-        decimalSettings.decimalCount = 5
-        decimalSettings.showTrailingZeroes = false
-        decimalSettings.groupingSeparator = "_"
-        decimalSettings.decimalSeparator = "."
+            .apply {
+                currentScheme.minValue = 157.61
+                currentScheme.maxValue = 408.68
+                currentScheme.decimalCount = 5
+                currentScheme.showTrailingZeroes = false
+                currentScheme.groupingSeparator = "_"
+                currentScheme.decimalSeparator = "."
+            }
 
         decimalSettingsComponent =
             GuiActionRunner.execute<DecimalSettingsComponent> { DecimalSettingsComponent(decimalSettings) }
@@ -42,6 +50,7 @@ object DecimalSettingsComponentTest : Spek({
     }
 
     afterEachTest {
+        ideaFixture.tearDown()
         frame.cleanUp()
     }
 
@@ -138,12 +147,12 @@ object DecimalSettingsComponentTest : Spek({
 
             decimalSettingsComponent.saveSettings()
 
-            assertThat(decimalSettings.minValue).isEqualTo(112.54)
-            assertThat(decimalSettings.maxValue).isEqualTo(644.74)
-            assertThat(decimalSettings.decimalCount).isEqualTo(485)
-            assertThat(decimalSettings.showTrailingZeroes).isEqualTo(false)
-            assertThat(decimalSettings.groupingSeparator).isEqualTo("_")
-            assertThat(decimalSettings.decimalSeparator).isEqualTo(",")
+            assertThat(decimalSettings.currentScheme.minValue).isEqualTo(112.54)
+            assertThat(decimalSettings.currentScheme.maxValue).isEqualTo(644.74)
+            assertThat(decimalSettings.currentScheme.decimalCount).isEqualTo(485)
+            assertThat(decimalSettings.currentScheme.showTrailingZeroes).isEqualTo(false)
+            assertThat(decimalSettings.currentScheme.groupingSeparator).isEqualTo("_")
+            assertThat(decimalSettings.currentScheme.decimalSeparator).isEqualTo(",")
         }
     }
 
@@ -158,7 +167,7 @@ object DecimalSettingsComponentTest : Spek({
 
                 decimalSettingsComponentConfigurable.apply()
 
-                assertThat(decimalSettings.decimalCount).isEqualTo(89)
+                assertThat(decimalSettings.currentScheme.decimalCount).isEqualTo(89)
             }
 
             it("rejects incorrect settings") {
@@ -182,7 +191,9 @@ object DecimalSettingsComponentTest : Spek({
 
             it("ignores an undone modification") {
                 GuiActionRunner.execute { frame.spinner("decimalCount").target().value = 62 }
-                GuiActionRunner.execute { frame.spinner("decimalCount").target().value = decimalSettings.decimalCount }
+                GuiActionRunner.execute {
+                    frame.spinner("decimalCount").target().value = decimalSettings.currentScheme.decimalCount
+                }
 
                 assertThat(decimalSettingsComponentConfigurable.isModified).isFalse()
             }

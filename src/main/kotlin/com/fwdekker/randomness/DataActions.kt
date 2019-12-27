@@ -1,6 +1,6 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettingsAction
 import com.intellij.codeInsight.hint.HintManager
 import com.intellij.openapi.actionSystem.ActionGroup
@@ -198,12 +198,12 @@ abstract class DataInsertAction(private val icon: Icon) : AnAction() {
 /**
  * Inserts a randomly generated array of strings at the positions of the event's editor's carets.
  *
- * @param arraySettings the settings to use for generating arrays
+ * @param arrayScheme the settings to use for generating arrays
  * @param dataInsertAction the action to generate data with
  * @param icon the icon to display with the action
  */
 abstract class DataInsertArrayAction(
-    private val arraySettings: ArraySettings,
+    private val arrayScheme: ArrayScheme,
     private val dataInsertAction: DataInsertAction,
     icon: Icon = RandomnessIcons.Data.Array
 ) : DataInsertAction(icon) {
@@ -216,7 +216,6 @@ abstract class DataInsertArrayAction(
      */
     @Throws(DataGenerationException::class)
     override fun generateStrings(count: Int): List<String> {
-        val arrayScheme = arraySettings.currentScheme
         if (arrayScheme.count <= 0)
             throw DataGenerationException("Array cannot have fewer than 1 element.")
 

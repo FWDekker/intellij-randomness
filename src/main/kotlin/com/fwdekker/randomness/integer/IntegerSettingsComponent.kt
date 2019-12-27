@@ -72,7 +72,7 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
                 })
             }
 
-        previewPanelHolder = PreviewPanel { IntegerInsertAction(IntegerSettings().also { saveSettings(it) }) }
+        previewPanelHolder = PreviewPanel { IntegerInsertAction(IntegerScheme().also { saveScheme(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
         minValue = JLongSpinner(description = "minimum value")

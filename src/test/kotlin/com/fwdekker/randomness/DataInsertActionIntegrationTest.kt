@@ -1,6 +1,6 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.array.ArrayScheme
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Document
@@ -136,11 +136,8 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
     fun testInsertArray() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("wizard\nsirens\nvanity") }
 
-        val arraySettings = ArraySettings()
-        arraySettings.count = 2
-
         setSelection(5, 9)
-        myFixture.testAction(DummyInsertArrayAction(arraySettings, RANDOM_STRING))
+        myFixture.testAction(DummyInsertArrayAction(ArrayScheme(count = 2), RANDOM_STRING))
 
         assertThat(document.text).isEqualTo("wizar[$RANDOM_STRING, $RANDOM_STRING]rens\nvanity")
     }

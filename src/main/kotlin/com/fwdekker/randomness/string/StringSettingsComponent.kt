@@ -73,7 +73,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
                 })
             }
 
-        previewPanelHolder = PreviewPanel { StringInsertAction(StringSettings().also { saveSettings(it) }) }
+        previewPanelHolder = PreviewPanel { StringInsertAction(StringScheme().also { saveScheme(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
         minLength = JIntSpinner(1, 1, description = "minimum length")

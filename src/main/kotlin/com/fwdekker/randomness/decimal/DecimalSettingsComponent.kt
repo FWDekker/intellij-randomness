@@ -73,7 +73,7 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
                 })
             }
 
-        previewPanelHolder = PreviewPanel { DecimalInsertAction(DecimalSettings().also { saveSettings(it) }) }
+        previewPanelHolder = PreviewPanel { DecimalInsertAction(DecimalScheme().also { saveScheme(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
         minValue = JDoubleSpinner(description = "minimum value")

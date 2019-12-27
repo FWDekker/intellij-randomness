@@ -23,12 +23,13 @@ class IntegerInsertActionSymbolTest {
     @ParameterizedTest
     @MethodSource("provider")
     fun testValue(value: Long, groupingSeparator: String, expectedString: String) {
-        val integerSettings = IntegerSettings()
-        integerSettings.minValue = value
-        integerSettings.maxValue = value
-        integerSettings.groupingSeparator = groupingSeparator
+        val integerScheme = IntegerScheme(
+            minValue = value,
+            maxValue = value,
+            groupingSeparator = groupingSeparator
+        )
 
-        val insertRandomInteger = IntegerInsertAction(integerSettings)
+        val insertRandomInteger = IntegerInsertAction(integerScheme)
         val randomString = insertRandomInteger.generateString()
 
         assertThat(randomString).isEqualTo(expectedString)

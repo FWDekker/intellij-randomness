@@ -5,6 +5,7 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.DataSettingsAction
+import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
 import icons.RandomnessIcons
 import java.text.DecimalFormat
@@ -29,7 +30,7 @@ class DecimalGroupAction : DataGroupAction(RandomnessIcons.Decimal.Base) {
  * @see DecimalInsertArrayAction
  * @see DecimalSettings
  */
-class DecimalInsertAction(private val settings: DecimalSettings = DecimalSettings.default) :
+class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.default.currentScheme) :
     DataInsertAction(RandomnessIcons.Decimal.Base) {
     override val name = "Random Decimal"
 
@@ -42,7 +43,6 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
      */
     override fun generateStrings(count: Int) =
         List(count) {
-            val scheme = settings.currentScheme
             if (scheme.minValue > scheme.maxValue)
                 throw DataGenerationException("Minimum value is larger than maximum value.")
 
@@ -57,8 +57,6 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
      * @return a nicely formatted representation of a decimal
      */
     private fun convertToString(decimal: Double): String {
-        val scheme = settings.currentScheme
-
         val format = DecimalFormat()
         format.isGroupingUsed = scheme.groupingSeparator.isNotEmpty()
 
@@ -77,15 +75,15 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
 /**
  * Inserts an array-like string of decimals.
  *
- * @param arraySettings the settings to use for generating arrays
- * @param settings the settings to use for generating decimals
+ * @param arrayScheme the settings to use for generating arrays
+ * @param scheme the settings to use for generating decimals
  *
  * @see DecimalInsertAction
  */
 class DecimalInsertArrayAction(
-    arraySettings: ArraySettings = ArraySettings.default,
-    settings: DecimalSettings = DecimalSettings.default
-) : DataInsertArrayAction(arraySettings, DecimalInsertAction(settings), RandomnessIcons.Decimal.Array) {
+    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+    scheme: DecimalScheme = DecimalSettings.default.currentScheme
+) : DataInsertArrayAction(arrayScheme, DecimalInsertAction(scheme), RandomnessIcons.Decimal.Array) {
     override val name = "Random Decimal Array"
 }
 

@@ -71,7 +71,7 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
                 })
             }
 
-        previewPanelHolder = PreviewPanel { WordInsertAction(WordSettings().also { saveSettings(it) }) }
+        previewPanelHolder = PreviewPanel { WordInsertAction(WordScheme().also { saveScheme(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
         minLength = JIntSpinner(1, 1, description = "minimum length")

@@ -55,13 +55,13 @@ class DecimalInsertActionTest {
     @ParameterizedTest
     @MethodSource("provider")
     fun testValue(value: Double, decimalCount: Int, showTrailingZeroes: Boolean, expectedString: String) {
-        val decimalSettings = DecimalSettings()
-        decimalSettings.minValue = value
-        decimalSettings.maxValue = value
-        decimalSettings.decimalCount = decimalCount
-        decimalSettings.showTrailingZeroes = showTrailingZeroes
+        val decimalScheme = DecimalScheme()
+        decimalScheme.minValue = value
+        decimalScheme.maxValue = value
+        decimalScheme.decimalCount = decimalCount
+        decimalScheme.showTrailingZeroes = showTrailingZeroes
 
-        val insertRandomDecimal = DecimalInsertAction(decimalSettings)
+        val insertRandomDecimal = DecimalInsertAction(decimalScheme)
         val randomString = insertRandomDecimal.generateString()
 
         assertThat(randomString).isEqualTo(expectedString)
@@ -69,7 +69,7 @@ class DecimalInsertActionTest {
 
     @Test
     fun testInvalidRange() {
-        val action = DecimalInsertAction(DecimalSettings(365.85, 241.54))
+        val action = DecimalInsertAction(DecimalScheme("Default", 365.85, 241.54))
         assertThatThrownBy { action.generateString() }
             .isInstanceOf(DataGenerationException::class.java)
             .hasMessage("Minimum value is larger than maximum value.")

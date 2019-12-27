@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -15,6 +17,7 @@ import org.jetbrains.spek.api.dsl.it
  * GUI tests for [UuidSettingsComponent].
  */
 object UuidSettingsComponentTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
     lateinit var uuidSettings: UuidSettings
     lateinit var uuidSettingsComponent: UuidSettingsComponent
     lateinit var uuidSettingsComponentConfigurable: UuidSettingsConfigurable
@@ -26,11 +29,16 @@ object UuidSettingsComponentTest : Spek({
     }
 
     beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         uuidSettings = UuidSettings()
-        uuidSettings.version = 4
-        uuidSettings.enclosure = "'"
-        uuidSettings.capitalization = CapitalizationMode.UPPER
-        uuidSettings.addDashes = false
+            .apply {
+                currentScheme.version = 4
+                currentScheme.enclosure = "'"
+                currentScheme.capitalization = CapitalizationMode.UPPER
+                currentScheme.addDashes = false
+            }
 
         uuidSettingsComponent = GuiActionRunner.execute<UuidSettingsComponent> { UuidSettingsComponent(uuidSettings) }
         uuidSettingsComponentConfigurable = UuidSettingsConfigurable(uuidSettingsComponent)
@@ -38,6 +46,7 @@ object UuidSettingsComponentTest : Spek({
     }
 
     afterEachTest {
+        ideaFixture.tearDown()
         frame.cleanUp()
     }
 
@@ -82,10 +91,10 @@ object UuidSettingsComponentTest : Spek({
 
             uuidSettingsComponent.saveSettings()
 
-            assertThat(uuidSettings.version).isEqualTo(1)
-            assertThat(uuidSettings.enclosure).isEqualTo("`")
-            assertThat(uuidSettings.capitalization).isEqualTo(CapitalizationMode.UPPER)
-            assertThat(uuidSettings.addDashes).isEqualTo(true)
+            assertThat(uuidSettings.currentScheme.version).isEqualTo(1)
+            assertThat(uuidSettings.currentScheme.enclosure).isEqualTo("`")
+            assertThat(uuidSettings.currentScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
+            assertThat(uuidSettings.currentScheme.addDashes).isEqualTo(true)
         }
     }
 
@@ -103,10 +112,10 @@ object UuidSettingsComponentTest : Spek({
 
                 uuidSettingsComponentConfigurable.apply()
 
-                assertThat(uuidSettings.version).isEqualTo(1)
-                assertThat(uuidSettings.enclosure).isEqualTo("`")
-                assertThat(uuidSettings.capitalization).isEqualTo(CapitalizationMode.LOWER)
-                assertThat(uuidSettings.addDashes).isEqualTo(false)
+                assertThat(uuidSettings.currentScheme.version).isEqualTo(1)
+                assertThat(uuidSettings.currentScheme.enclosure).isEqualTo("`")
+                assertThat(uuidSettings.currentScheme.capitalization).isEqualTo(CapitalizationMode.LOWER)
+                assertThat(uuidSettings.currentScheme.addDashes).isEqualTo(false)
             }
         }
 
