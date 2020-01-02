@@ -219,6 +219,7 @@ abstract class DataInsertArrayAction(
         if (arrayScheme.count <= 0)
             throw DataGenerationException("Array cannot have fewer than 1 element.")
 
+        dataInsertAction.random = random
         return dataInsertAction.generateStrings(count * arrayScheme.count)
             .chunked(arrayScheme.count)
             .map { arrayScheme.arrayify(it) }

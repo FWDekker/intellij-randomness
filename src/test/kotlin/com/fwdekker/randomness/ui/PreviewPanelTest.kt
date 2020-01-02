@@ -29,7 +29,7 @@ object PreviewPanelTest : Spek({
     val randomText = "random_value"
     val randomTextHtml = "<html>$randomText</html>"
 
-    lateinit var panel: PreviewPanel<DummyInsertAction>
+    lateinit var panel: PreviewPanel
     lateinit var frame: FrameFixture
 
 
@@ -38,8 +38,8 @@ object PreviewPanelTest : Spek({
     }
 
     beforeEachTest {
-        panel = GuiActionRunner.execute<PreviewPanel<DummyInsertAction>> {
-            PreviewPanel { DummyInsertAction(randomText).also { action = it } }
+        panel = GuiActionRunner.execute<PreviewPanel> {
+            PreviewPanel { DummyInsertAction { randomText }.also { action = it } }
         }
         frame = Containers.showInFrame(panel.rootPane)
 
@@ -90,7 +90,7 @@ object PreviewPanelTest : Spek({
                     override fun clone(item: EditableDatum<String>, forInPlaceEditing: Boolean) =
                         EditableDatum(item.active, item.datum)
                 }
-                val table = object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, "" , "") {}
+                val table = object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, "", "") {}
 
                 panel.updatePreviewOnUpdateOf(table)
                 table.data = listOf("a")

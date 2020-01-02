@@ -30,7 +30,7 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
     override lateinit var schemesPanel: SchemesPanel<UuidScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var previewPanelHolder: PreviewPanel<UuidInsertAction>
+    private lateinit var previewPanelHolder: PreviewPanel
     private lateinit var previewPanel: JPanel
     private lateinit var versionGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup

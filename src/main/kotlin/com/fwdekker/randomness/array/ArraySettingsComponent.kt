@@ -29,7 +29,14 @@ import javax.swing.event.ChangeEvent
 class ArraySettingsComponent(settings: ArraySettings = default) :
     SettingsComponent<ArraySettings, ArrayScheme>(settings) {
     companion object {
-        private const val previewPlaceholder = "17"
+        /**
+         * The minimal value in the preview (inclusive).
+         */
+        private const val previewMin = 1
+        /**
+         * The maximal value in the preview (inclusive).
+         */
+        private const val previewMax = 20
     }
 
 
@@ -37,7 +44,7 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
     override lateinit var schemesPanel: SchemesPanel<ArrayScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var previewPanelHolder: PreviewPanel<DummyInsertArrayAction>
+    private lateinit var previewPanelHolder: PreviewPanel
     private lateinit var previewPanel: JPanel
     private lateinit var countSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
@@ -74,7 +81,8 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
             .also { it.addListener(SettingsComponentListener(this)) }
 
         previewPanelHolder = PreviewPanel {
-            DummyInsertArrayAction(ArrayScheme().also { saveScheme(it) }, previewPlaceholder)
+            val scheme = ArrayScheme().also { saveScheme(it) }
+            DummyInsertArrayAction(scheme) { it.nextInt(previewMin, previewMax + 1).toString() }
         }
         previewPanel = previewPanelHolder.rootPane
 

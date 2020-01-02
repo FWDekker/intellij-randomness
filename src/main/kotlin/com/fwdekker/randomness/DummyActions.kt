@@ -3,6 +3,7 @@ package com.fwdekker.randomness
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
 import icons.RandomnessIcons
+import kotlin.random.Random
 
 
 /**
@@ -10,12 +11,12 @@ import icons.RandomnessIcons
  *
  * Mostly for testing and demonstration purposes.
  *
- * @property dummyValue the dummy value that is inserted
+ * @property dummySupplier generates dummy values to insert
  */
-class DummyInsertAction(private val dummyValue: String) : DataInsertAction(RandomnessIcons.Data.Base) {
+class DummyInsertAction(private val dummySupplier: (Random) -> String) : DataInsertAction(RandomnessIcons.Data.Base) {
     override val name = "Random Dummy"
 
-    override fun generateStrings(count: Int) = List(count) { dummyValue }
+    override fun generateStrings(count: Int) = List(count) { dummySupplier(random) }
 }
 
 /**
@@ -24,8 +25,11 @@ class DummyInsertAction(private val dummyValue: String) : DataInsertAction(Rando
  * Mostly for testing and demonstration purposes.
  *
  * @param arrayScheme the scheme to use for generating arrays
+ * @param dummySupplier generates dummy values to insert
  */
-class DummyInsertArrayAction(arrayScheme: ArrayScheme = ArraySettings.default.currentScheme, dummyValue: String) :
-    DataInsertArrayAction(arrayScheme, DummyInsertAction(dummyValue), RandomnessIcons.Data.Array) {
+class DummyInsertArrayAction(
+    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+    dummySupplier: (Random) -> String
+) : DataInsertArrayAction(arrayScheme, DummyInsertAction(dummySupplier), RandomnessIcons.Data.Array) {
     override val name = "Random Dummy Array"
 }

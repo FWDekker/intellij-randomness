@@ -34,7 +34,7 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
 
         document = myFixture.editor.document
         caretModel = myFixture.editor.caretModel
-        insertRandomSimple = DummyInsertAction(RANDOM_STRING)
+        insertRandomSimple = DummyInsertAction { RANDOM_STRING }
     }
 
     override fun getTestDataPath() = javaClass.classLoader.getResource("integration-project/")?.path
@@ -137,7 +137,7 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("wizard\nsirens\nvanity") }
 
         setSelection(5, 9)
-        myFixture.testAction(DummyInsertArrayAction(ArrayScheme(count = 2), RANDOM_STRING))
+        myFixture.testAction(DummyInsertArrayAction(ArrayScheme(count = 2)) { RANDOM_STRING })
 
         assertThat(document.text).isEqualTo("wizar[$RANDOM_STRING, $RANDOM_STRING]rens\nvanity")
     }
