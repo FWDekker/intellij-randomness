@@ -30,7 +30,7 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
     override lateinit var schemesPanel: SchemesPanel<DecimalScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var previewPanelHolder: PreviewPanel<DecimalInsertAction>
+    private lateinit var previewPanelHolder: PreviewPanel
     private lateinit var previewPanel: JPanel
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JDoubleSpinner

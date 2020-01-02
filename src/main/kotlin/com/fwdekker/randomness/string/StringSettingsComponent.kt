@@ -33,7 +33,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
     override lateinit var schemesPanel: SchemesPanel<StringScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var previewPanelHolder: PreviewPanel<StringInsertAction>
+    private lateinit var previewPanelHolder: PreviewPanel
     private lateinit var previewPanel: JPanel
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner

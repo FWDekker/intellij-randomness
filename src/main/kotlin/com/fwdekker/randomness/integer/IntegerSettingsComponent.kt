@@ -30,7 +30,7 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
     override lateinit var schemesPanel: SchemesPanel<IntegerScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var previewPanelHolder: PreviewPanel<IntegerInsertAction>
+    private lateinit var previewPanelHolder: PreviewPanel
     private lateinit var previewPanel: JPanel
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JLongSpinner

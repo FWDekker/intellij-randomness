@@ -24,7 +24,7 @@ object DataInsertActionTest : Spek({
 
 
     beforeEachTest {
-        dataInsertAction = DummyInsertAction("random_value")
+        dataInsertAction = DummyInsertAction { "random_value" }
     }
 
 

@@ -31,7 +31,7 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
     override lateinit var schemesPanel: SchemesPanel<WordScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var previewPanelHolder: PreviewPanel<WordInsertAction>
+    private lateinit var previewPanelHolder: PreviewPanel
     private lateinit var previewPanel: JPanel
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
