@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.integer
 
-import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.integer.IntegerSettings.Companion.default
@@ -18,6 +17,8 @@ import javax.swing.event.ChangeEvent
 
 /**
  * Component for settings of random integer generation.
+ *
+ * @param settings the settings to edit in the component
  *
  * @see IntegerSettingsAction
  */
@@ -105,8 +106,7 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         ?: valueRange.validateValue()
 
 
-    private class IntegerSchemesPanel(settings: IntegerSettings) :
-        SchemesPanel<IntegerScheme>(settings, Scheme.DEFAULT_NAME) {
+    private class IntegerSchemesPanel(settings: IntegerSettings) : SchemesPanel<IntegerScheme>(settings) {
         override val type: Class<IntegerScheme>
             get() = IntegerScheme::class.java
 

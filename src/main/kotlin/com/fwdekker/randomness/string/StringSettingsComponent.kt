@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
@@ -20,6 +19,8 @@ import javax.swing.JPanel
 
 /**
  * Component for settings of random string generation.
+ *
+ * @param settings the settings to edit in the component
  *
  * @see StringSettingsAction
  * @see SymbolSetTable
@@ -126,8 +127,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
         }
 
 
-    private class StringSchemesPanel(settings: StringSettings) :
-        SchemesPanel<StringScheme>(settings, Scheme.DEFAULT_NAME) {
+    private class StringSchemesPanel(settings: StringSettings) : SchemesPanel<StringScheme>(settings) {
         override val type: Class<StringScheme>
             get() = StringScheme::class.java
 

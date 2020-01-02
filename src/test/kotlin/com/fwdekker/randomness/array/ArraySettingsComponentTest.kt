@@ -1,10 +1,8 @@
 package com.fwdekker.randomness.array
 
-import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
@@ -21,7 +19,6 @@ object ArraySettingsComponentTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var arraySettings: ArraySettings
     lateinit var arraySettingsComponent: ArraySettingsComponent
-    lateinit var arraySettingsComponentConfigurable: ArraySettingsConfigurable
     lateinit var frame: FrameFixture
 
 
@@ -43,7 +40,6 @@ object ArraySettingsComponentTest : Spek({
 
         arraySettingsComponent =
             GuiActionRunner.execute<ArraySettingsComponent> { ArraySettingsComponent(arraySettings) }
-        arraySettingsComponentConfigurable = ArraySettingsConfigurable(arraySettingsComponent)
         frame = showInFrame(arraySettingsComponent.rootPane)
     }
 
@@ -73,6 +69,25 @@ object ArraySettingsComponentTest : Spek({
 
         it("loads the settings' settings for using a space after separator") {
             frame.checkBox("spaceAfterSeparator").requireSelected(false)
+        }
+    }
+
+    describe("saving settings") {
+        it("correctly saves settings to a settings object") {
+            GuiActionRunner.execute {
+                frame.spinner("count").target().value = 642
+                frame.radioButton("bracketsCurly").target().isSelected = true
+                frame.radioButton("separatorSemicolon").target().isSelected = true
+                frame.checkBox("spaceAfterSeparator").target().isSelected = false
+            }
+
+            val scheme = ArrayScheme()
+            arraySettingsComponent.saveScheme(scheme)
+
+            assertThat(scheme.count).isEqualTo(642)
+            assertThat(scheme.brackets).isEqualTo("{}")
+            assertThat(scheme.separator).isEqualTo(";")
+            assertThat(scheme.isSpaceAfterSeparator).isEqualTo(false)
         }
     }
 
@@ -116,89 +131,6 @@ object ArraySettingsComponentTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("count").target())
                 assertThat(validationInfo?.message).isEqualTo("The count should be greater than or equal to 1.")
-            }
-        }
-    }
-
-    describe("saving settings") {
-        it("correctly saves settings to a settings object") {
-            GuiActionRunner.execute {
-                frame.spinner("count").target().value = 642
-                frame.radioButton("bracketsCurly").target().isSelected = true
-                frame.radioButton("separatorSemicolon").target().isSelected = true
-                frame.checkBox("spaceAfterSeparator").target().isSelected = false
-            }
-
-            arraySettingsComponent.saveSettings()
-
-            assertThat(arraySettings.currentScheme.count).isEqualTo(642)
-            assertThat(arraySettings.currentScheme.brackets).isEqualTo("{}")
-            assertThat(arraySettings.currentScheme.separator).isEqualTo(";")
-            assertThat(arraySettings.currentScheme.isSpaceAfterSeparator).isEqualTo(false)
-        }
-    }
-
-    describe("configurable") {
-        it("returns the correct display name") {
-            assertThat(arraySettingsComponentConfigurable.displayName).isEqualTo("Arrays")
-        }
-
-        describe("saving modifications") {
-            it("accepts correct settings") {
-                GuiActionRunner.execute { frame.spinner("count").target().value = 39 }
-
-                arraySettingsComponentConfigurable.apply()
-
-                assertThat(arraySettings.currentScheme.count).isEqualTo(39)
-            }
-
-            it("rejects incorrect settings") {
-                GuiActionRunner.execute { frame.spinner("count").target().value = -3 }
-
-                assertThatThrownBy { arraySettingsComponentConfigurable.apply() }
-                    .isInstanceOf(ConfigurationException::class.java)
-            }
-        }
-
-        describe("modification detection") {
-            it("is initially unmodified") {
-                assertThat(arraySettingsComponentConfigurable.isModified).isFalse()
-            }
-
-            it("modifies a single detection") {
-                GuiActionRunner.execute { frame.spinner("count").target().value = 124 }
-
-                assertThat(arraySettingsComponentConfigurable.isModified).isTrue()
-            }
-
-            it("ignores an undone modification") {
-                GuiActionRunner.execute { frame.spinner("count").target().value = 17 }
-                GuiActionRunner.execute { frame.spinner("count").target().value = arraySettings.currentScheme.count }
-
-                assertThat(arraySettingsComponentConfigurable.isModified).isFalse()
-            }
-
-            it("ignores saved modifications") {
-                GuiActionRunner.execute { frame.spinner("count").target().value = 110 }
-
-                arraySettingsComponentConfigurable.apply()
-
-                assertThat(arraySettingsComponentConfigurable.isModified).isFalse()
-            }
-        }
-
-        describe("resets") {
-            it("resets all fields properly") {
-                GuiActionRunner.execute {
-                    frame.spinner("count").target().value = 642
-                    frame.radioButton("bracketsCurly").target().isSelected = true
-                    frame.radioButton("separatorSemicolon").target().isSelected = true
-                    frame.checkBox("spaceAfterSeparator").target().isSelected = false
-
-                    arraySettingsComponentConfigurable.reset()
-                }
-
-                assertThat(arraySettingsComponentConfigurable.isModified).isFalse()
             }
         }
     }

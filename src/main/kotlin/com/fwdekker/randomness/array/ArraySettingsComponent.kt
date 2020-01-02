@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.DummyInsertArrayAction
-import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.array.ArrayScheme.Companion.DEFAULT_BRACKETS
@@ -20,6 +19,8 @@ import javax.swing.event.ChangeEvent
 
 /**
  * Component for settings of random array generation.
+ *
+ * @param settings the settings to edit in the component
  *
  * @see ArraySettingsAction
  */
@@ -105,7 +106,7 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
     override fun doValidate() = countSpinner.validateValue()
 
 
-    private class ArraySchemesPanel(settings: ArraySettings) : SchemesPanel<ArrayScheme>(settings, DEFAULT_NAME) {
+    private class ArraySchemesPanel(settings: ArraySettings) : SchemesPanel<ArrayScheme>(settings) {
         override val type: Class<ArrayScheme>
             get() = ArrayScheme::class.java
 

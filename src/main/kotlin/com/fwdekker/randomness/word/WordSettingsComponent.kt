@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -19,6 +18,8 @@ import javax.swing.JPanel
 
 /**
  * Component for settings of random word generation.
+ *
+ * @param settings the settings to edit in the component
  *
  * @see WordSettingsAction
  * @see DictionaryTable
@@ -181,7 +182,7 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
     }
 
 
-    private class WordSchemesPanel(settings: WordSettings) : SchemesPanel<WordScheme>(settings, Scheme.DEFAULT_NAME) {
+    private class WordSchemesPanel(settings: WordSettings) : SchemesPanel<WordScheme>(settings) {
         override val type: Class<WordScheme>
             get() = WordScheme::class.java
 

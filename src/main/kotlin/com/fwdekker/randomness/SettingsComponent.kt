@@ -1,5 +1,6 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.intellij.application.options.schemes.AbstractSchemeActions
 import com.intellij.application.options.schemes.SchemesModel
 import com.intellij.application.options.schemes.SimpleSchemesPanel
@@ -11,6 +12,12 @@ import javax.swing.JPanel
  * A component that allows the user to edit settings and its corresponding schemes.
  *
  * Subclasses **MUST** call `loadSettings` in their constructor.
+ *
+ * There are multiple settings [S] instances at any time. The `settings` given in the constructor is read when the
+ * component is created and is written to when the user saves its changes. The currently-selected scheme is loaded into
+ * the component's inputs. When the user selects a different scheme of which to change its values, the values in the
+ * input fields are stored in a copy of `settings`. This way, the local changes are not lost when switching between
+ * schemes, and the user can still revert all unsaved changes if desired.
  *
  * @param S the type of settings to manage
  * @param T the type of scheme to manage
@@ -101,13 +108,18 @@ abstract class SettingsComponent<S : Settings<S, T>, T : Scheme<T>>(private val 
  * @param T the type of scheme to manage
  * @property settings the settings model that backs this panel; changed made through this panel are reflected in the
  * given settings instance
- * @property defaultName the name of the default scheme instance
  */
-abstract class SchemesPanel<T : Scheme<T>>(
-    private val settings: Settings<*, T>,
-    private val defaultName: String
-) : SimpleSchemesPanel<T>(), SchemesModel<T> {
+abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : SimpleSchemesPanel<T>(), SchemesModel<T> {
+    /**
+     * Listeners for changes in the scheme selection.
+     */
     private val listeners = mutableListOf<Listener<T>>()
+
+    /**
+     * Actions that can be performed with this panel.
+     */
+    val actions = createSchemeActions()
+
 
     /**
      * The type of scheme being managed.
@@ -137,12 +149,20 @@ abstract class SchemesPanel<T : Scheme<T>>(
      * This panel instance will update the combo box by itself. Call this method if the `settings` instance has been
      * changed externally and these changes need to be reflected.
      */
-    fun updateComboBoxList() =
+    fun updateComboBoxList() {
         settings.currentScheme.also { currentScheme ->
             resetSchemes(settings.schemes)
             selectScheme(currentScheme)
         }
+    }
 
+
+    /**
+     * Returns the scheme with the given name.
+     *
+     * @param name the name of the scheme to return
+     */
+    fun getScheme(name: String) = settings.schemes.single { it.name == name }
 
     /**
      * Removes the given scheme from the settings.
@@ -154,18 +174,18 @@ abstract class SchemesPanel<T : Scheme<T>>(
      * @throws IllegalArgumentException if the default scheme is being removed
      */
     override fun removeScheme(scheme: T) {
-        require(differsFromDefault(scheme)) { "Cannot remove default scheme." }
+        require(scheme.name != DEFAULT_NAME) { "Cannot remove default scheme." }
 
         listeners.forEach { it.onCurrentSchemeWillChange(scheme) }
 
         if (scheme == settings.currentScheme)
-            settings.currentSchemeName = defaultName // TODO Must this be done beforehand?
+            settings.currentSchemeName = DEFAULT_NAME // TODO Must this be done beforehand?
 
         settings.schemes.remove(scheme)
 
         if (settings.schemes.isEmpty()) {
             settings.schemes.add(createDefaultInstance())
-            settings.currentSchemeName = defaultName
+            settings.currentSchemeName = DEFAULT_NAME
         }
 
         updateComboBoxList() // TODO Must this happen before updating listeners?
@@ -187,47 +207,7 @@ abstract class SchemesPanel<T : Scheme<T>>(
      *
      * @return an object with a number of actions that can be performed on this panel
      */
-    override fun createSchemeActions() = object : AbstractSchemeActions<T>(this) {
-        override fun onSchemeChanged(scheme: T?) {
-            if (scheme == null)
-                return
-
-            listeners.forEach { it.onCurrentSchemeWillChange(settings.currentScheme) }
-            settings.currentScheme = scheme
-            listeners.forEach { it.onCurrentSchemeHasChanged(scheme) }
-        }
-
-        override fun renameScheme(scheme: T, newName: String) {
-            require(differsFromDefault(scheme)) { "Cannot rename default scheme." }
-
-            listeners.forEach { it.onCurrentSchemeWillChange(scheme) }
-
-            scheme.myName = newName
-            settings.currentScheme = scheme
-            updateComboBoxList()
-
-            listeners.forEach { it.onCurrentSchemeHasChanged(scheme) }
-        }
-
-        override fun resetScheme(scheme: T) {
-            require(scheme.name == defaultName) { "Cannot reset non-default scheme." }
-            scheme.copyFrom(createDefaultInstance().copyAs(scheme.myName))
-        }
-
-        override fun duplicateScheme(scheme: T, newName: String) {
-            listeners.forEach { it.onCurrentSchemeWillChange(scheme) }
-
-            val copy = scheme.copyAs(newName)
-            settings.schemes.add(copy)
-            settings.currentScheme = copy
-
-            listeners.forEach { it.onCurrentSchemeHasChanged(copy) }
-
-            updateComboBoxList()
-        }
-
-        override fun getSchemeType() = type
-    }
+    final override fun createSchemeActions() = SchemeActions()
 
 
     /**
@@ -244,7 +224,7 @@ abstract class SchemesPanel<T : Scheme<T>>(
      *
      * @param scheme the scheme to compare against the default scheme
      */
-    override fun differsFromDefault(scheme: T) = scheme.name != defaultName
+    override fun differsFromDefault(scheme: T) = scheme != createDefaultInstance()
 
     /**
      * Returns false because project-specific schemes are not supported.
@@ -285,7 +265,7 @@ abstract class SchemesPanel<T : Scheme<T>>(
      * @param scheme the scheme to check for deletability
      * @return true if the given scheme can be deleted
      */
-    override fun canDeleteScheme(scheme: T) = differsFromDefault(scheme)
+    override fun canDeleteScheme(scheme: T) = scheme.name != DEFAULT_NAME
 
     /**
      * Returns true because all schemes can be duplicated.
@@ -303,7 +283,7 @@ abstract class SchemesPanel<T : Scheme<T>>(
      * @param scheme the scheme to check for renamability
      * @return true if the given scheme can be renamed
      */
-    override fun canRenameScheme(scheme: T) = differsFromDefault(scheme)
+    override fun canRenameScheme(scheme: T) = scheme.name != DEFAULT_NAME
 
     /**
      * Returns true if the given scheme can be reset.
@@ -313,8 +293,82 @@ abstract class SchemesPanel<T : Scheme<T>>(
      * @param scheme the scheme to check for resetability
      * @return true if the given scheme can be reset
      */
-    override fun canResetScheme(scheme: T) = !differsFromDefault(scheme)
+    override fun canResetScheme(scheme: T) = scheme.name == DEFAULT_NAME
 
+
+    /**
+     * The actions that can be performed with this panel.
+     */
+    inner class SchemeActions : AbstractSchemeActions<T>(this) {
+        /**
+         * Called when the user changes the scheme using the combo box.
+         *
+         * @param scheme the scheme that has become the selected scheme
+         */
+        public override fun onSchemeChanged(scheme: T?) {
+            if (scheme == null)
+                return
+
+            listeners.forEach { it.onCurrentSchemeWillChange(settings.currentScheme) }
+            settings.currentScheme = scheme
+            listeners.forEach { it.onCurrentSchemeHasChanged(scheme) }
+        }
+
+        /**
+         * Called when the user renames a scheme.
+         *
+         * @param scheme the scheme that is being renamed
+         * @param newName the new name of the scheme
+         */
+        public override fun renameScheme(scheme: T, newName: String) {
+            require(scheme.name != DEFAULT_NAME) { "Cannot rename default scheme." }
+
+            listeners.forEach { it.onCurrentSchemeWillChange(scheme) }
+
+            scheme.myName = newName
+            settings.currentScheme = scheme
+            updateComboBoxList()
+
+            listeners.forEach { it.onCurrentSchemeHasChanged(scheme) }
+        }
+
+        /**
+         * Called when a user opts to reset a scheme to its defaults.
+         *
+         * @param scheme the scheme to reset
+         */
+        public override fun resetScheme(scheme: T) {
+            require(scheme.name == DEFAULT_NAME) { "Cannot reset non-default scheme." }
+
+            scheme.copyFrom(createDefaultInstance().copyAs(scheme.myName))
+            listeners.forEach { it.onCurrentSchemeHasChanged(scheme) }
+        }
+
+        /**
+         * Called when a user wants to duplicate a scheme.
+         *
+         * @param scheme the scheme to duplicate; it is assumed that this is the currently-selected scheme
+         * @param newName the name to be applied to the duplicate
+         */
+        public override fun duplicateScheme(scheme: T, newName: String) {
+            listeners.forEach { it.onCurrentSchemeWillChange(scheme) }
+
+            val copy = scheme.copyAs(newName)
+            settings.schemes.add(copy)
+            settings.currentScheme = copy
+
+            listeners.forEach { it.onCurrentSchemeHasChanged(copy) }
+
+            updateComboBoxList()
+        }
+
+        /**
+         * Returns the type of scheme actions apply to.
+         *
+         * @return the type of scheme actions apply to
+         */
+        override fun getSchemeType() = type
+    }
 
     /**
      * A listener that listens to events that occur to this panel.

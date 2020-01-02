@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.decimal
 
-import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.decimal.DecimalSettings.Companion.default
@@ -18,6 +17,8 @@ import javax.swing.event.ChangeEvent
 
 /**
  * Component for settings of random decimal generation.
+ *
+ * @param settings the settings to edit in the component
  *
  * @see DecimalSettingsAction
  */
@@ -108,8 +109,7 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
             ?: decimalCount.validateValue()
 
 
-    private class DecimalSchemesPanel(settings: DecimalSettings) :
-        SchemesPanel<DecimalScheme>(settings, Scheme.DEFAULT_NAME) {
+    private class DecimalSchemesPanel(settings: DecimalSettings) : SchemesPanel<DecimalScheme>(settings) {
         override val type: Class<DecimalScheme>
             get() = DecimalScheme::class.java
 

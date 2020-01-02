@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.ui.PreviewPanel
@@ -19,6 +18,8 @@ import javax.swing.JPanel
 
 /**
  * Component for settings of random UUID generation.
+ *
+ * @param settings the settings to edit in the component
  *
  * @see UuidSettingsAction
  */
@@ -88,7 +89,7 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
     override fun doValidate(): ValidationInfo? = null
 
 
-    private class UuidSchemesPanel(settings: UuidSettings) : SchemesPanel<UuidScheme>(settings, Scheme.DEFAULT_NAME) {
+    private class UuidSchemesPanel(settings: UuidSettings) : SchemesPanel<UuidScheme>(settings) {
         override val type: Class<UuidScheme>
             get() = UuidScheme::class.java
 
