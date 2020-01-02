@@ -13,8 +13,11 @@ import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.openapi.ui.ValidationInfo
+import com.jgoodies.forms.factories.DefaultComponentFactory
 import java.util.ArrayList
+import java.util.ResourceBundle
 import javax.swing.ButtonGroup
+import javax.swing.JComponent
 import javax.swing.JPanel
 
 
@@ -41,6 +44,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
     private lateinit var enclosureGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var symbolSetPanel: JPanel
+    private lateinit var symbolSetSeparator: JComponent
     private lateinit var symbolSetTable: SymbolSetTable
 
     override val rootPane get() = contentPane
@@ -62,6 +66,9 @@ class StringSettingsComponent(settings: StringSettings = default) :
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        val bundle = ResourceBundle.getBundle("randomness")
+        val factory = DefaultComponentFactory.getInstance()
+
         unsavedSettings = StringSettings()
         schemesPanel = StringSchemesPanel(unsavedSettings)
             .also { it.addListener(SettingsComponentListener(this)) }
@@ -74,6 +81,8 @@ class StringSettingsComponent(settings: StringSettings = default) :
         lengthRange = JSpinnerRange(minLength, maxLength, Int.MAX_VALUE.toDouble(), "length")
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.createComponent()
+
+        symbolSetSeparator = factory.createSeparator(bundle.getString("settings.symbol_sets"))
     }
 
     override fun loadScheme(scheme: StringScheme) {
