@@ -13,7 +13,10 @@ import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.word.WordSettings.Companion.default
 import com.intellij.openapi.ui.ValidationInfo
+import com.jgoodies.forms.factories.DefaultComponentFactory
+import java.util.ResourceBundle
 import javax.swing.ButtonGroup
+import javax.swing.JComponent
 import javax.swing.JPanel
 
 
@@ -39,6 +42,7 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup
     private lateinit var dictionaryPanel: JPanel
+    private lateinit var dictionarySeparator: JComponent
     private lateinit var dictionaryTable: DictionaryTable
 
     override val rootPane get() = contentPane
@@ -60,6 +64,9 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        val bundle = ResourceBundle.getBundle("randomness")
+        val factory = DefaultComponentFactory.getInstance()
+
         unsavedSettings = WordSettings()
         schemesPanel = WordSchemesPanel(unsavedSettings)
             .also { panel -> panel.addListener(SettingsComponentListener(this)) }
@@ -72,6 +79,8 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         lengthRange = JSpinnerRange(minLength, maxLength, Int.MAX_VALUE.toDouble(), "length")
         dictionaryTable = DictionaryTable()
         dictionaryPanel = dictionaryTable.createComponent()
+
+        dictionarySeparator = factory.createSeparator(bundle.getString("settings.dictionaries"))
     }
 
     override fun loadScheme(scheme: WordScheme) {

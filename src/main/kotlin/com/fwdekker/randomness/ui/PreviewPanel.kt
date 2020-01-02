@@ -2,11 +2,14 @@ package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataInsertAction
+import com.jgoodies.forms.factories.DefaultComponentFactory
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
+import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JButton
 import javax.swing.JCheckBox
+import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JRadioButton
@@ -30,6 +33,7 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
      * The root panel containing the preview elements.
      */
     lateinit var rootPane: JPanel
+    private lateinit var separator: JComponent
     private lateinit var refreshButton: JButton
     private lateinit var previewLabel: JLabel
 
@@ -51,6 +55,20 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
 
             override fun mousePressed(e: MouseEvent?) = Unit
         })
+    }
+
+
+    /**
+     * Initialises custom UI components.
+     *
+     * This method is called by the scene builder at the start of the constructor.
+     */
+    @Suppress("UnusedPrivateMember") // Used by scene builder
+    private fun createUIComponents() {
+        val bundle = ResourceBundle.getBundle("randomness")
+        val factory = DefaultComponentFactory.getInstance()
+
+        separator = factory.createSeparator(bundle.getString("settings.preview"))
     }
 
 
