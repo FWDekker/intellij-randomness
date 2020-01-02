@@ -27,11 +27,18 @@ class UuidInsertActionTest {
 
     @ParameterizedTest
     @MethodSource("provider")
-    fun testEnclosure(version: Int, enclosure: String, capitalizationMode: CapitalizationMode, addDashes: Boolean) {
-        val insertRandomUuid = UuidInsertAction(UuidSettings(version, enclosure, capitalizationMode, addDashes))
+    fun testEnclosure(version: Int, enclosure: String, capitalization: CapitalizationMode, addDashes: Boolean) {
+        val uuidScheme = UuidScheme(
+            version = version,
+            enclosure = enclosure,
+            capitalization = capitalization,
+            addDashes = addDashes
+        )
+
+        val insertRandomUuid = UuidInsertAction(uuidScheme)
         val generatedString = insertRandomUuid.generateString()
 
-        val alphabet = capitalizationMode.transform("0-9a-fA-F")
+        val alphabet = capitalization.transform("0-9a-fA-F")
         val dash = if (addDashes) "-" else ""
 
         assertThat(
@@ -45,7 +52,7 @@ class UuidInsertActionTest {
 
     @Test
     fun testInvalidVersion() {
-        assertThatThrownBy { UuidInsertAction(UuidSettings(9)).generateString()}
+        assertThatThrownBy { UuidInsertAction(UuidScheme(version = 9)).generateString() }
             .isInstanceOf(DataGenerationException::class.java)
             .hasMessage("Unknown UUID version `9`.")
     }

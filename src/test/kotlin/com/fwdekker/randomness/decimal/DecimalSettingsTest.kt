@@ -18,73 +18,111 @@ object DecimalSettingsTest : Spek({
     }
 
 
-    describe("state management") {
-        it("creates an independent copy") {
-            val copy = decimalSettings.copyState()
-            decimalSettings.minValue = 613.24
-            copy.minValue = 10.21
+    it("creates an independent copy") {
+        val copy = decimalSettings.deepCopy()
+        decimalSettings.currentScheme.minValue = 613.24
+        copy.currentScheme.minValue = 10.21
 
-            assertThat(decimalSettings.minValue).isEqualTo(613.24)
-        }
-
-        it("copies state from another instance") {
-            decimalSettings.minValue = 399.75
-            decimalSettings.maxValue = 928.22
-            decimalSettings.decimalCount = 205
-            decimalSettings.showTrailingZeroes = false
-            decimalSettings.groupingSeparator = "a"
-            decimalSettings.decimalSeparator = "D"
-
-            val newDecimalSettings = DecimalSettings()
-            newDecimalSettings.loadState(decimalSettings.state)
-
-            assertThat(newDecimalSettings.minValue).isEqualTo(399.75)
-            assertThat(newDecimalSettings.maxValue).isEqualTo(928.22)
-            assertThat(newDecimalSettings.decimalCount).isEqualTo(205)
-            assertThat(newDecimalSettings.showTrailingZeroes).isEqualTo(false)
-            assertThat(newDecimalSettings.groupingSeparator).isEqualTo("a")
-            assertThat(newDecimalSettings.decimalSeparator).isEqualTo("D")
-        }
+        assertThat(decimalSettings.currentScheme.minValue).isEqualTo(613.24)
     }
+
+    it("copies state from another instance") {
+        decimalSettings.currentScheme.minValue = 399.75
+        decimalSettings.currentScheme.maxValue = 928.22
+        decimalSettings.currentScheme.decimalCount = 205
+        decimalSettings.currentScheme.showTrailingZeroes = false
+        decimalSettings.currentScheme.groupingSeparator = "a"
+        decimalSettings.currentScheme.decimalSeparator = "D"
+
+        val newDecimalSettings = DecimalSettings()
+        newDecimalSettings.loadState(decimalSettings.state)
+
+        assertThat(newDecimalSettings.currentScheme.minValue).isEqualTo(399.75)
+        assertThat(newDecimalSettings.currentScheme.maxValue).isEqualTo(928.22)
+        assertThat(newDecimalSettings.currentScheme.decimalCount).isEqualTo(205)
+        assertThat(newDecimalSettings.currentScheme.showTrailingZeroes).isEqualTo(false)
+        assertThat(newDecimalSettings.currentScheme.groupingSeparator).isEqualTo("a")
+        assertThat(newDecimalSettings.currentScheme.decimalSeparator).isEqualTo("D")
+    }
+})
+
+
+/**
+ * Unit tests for [DecimalScheme].
+ */
+object DecimalSchemeTest : Spek({
+    lateinit var decimalScheme: DecimalScheme
+
+
+    beforeEachTest {
+        decimalScheme = DecimalScheme()
+    }
+
 
     describe("input handling") {
         describe("grouping separator") {
             it("uses the default separator if null is set") {
-                decimalSettings.safeSetGroupingSeparator(null)
+                decimalScheme.safeSetGroupingSeparator(null)
 
-                assertThat(decimalSettings.groupingSeparator).isEqualTo(DecimalSettings.DEFAULT_GROUPING_SEPARATOR)
+                assertThat(decimalScheme.groupingSeparator).isEqualTo(DecimalScheme.DEFAULT_GROUPING_SEPARATOR)
             }
 
             it("uses the default separator if an empty string is set") {
-                decimalSettings.safeSetGroupingSeparator("")
+                decimalScheme.safeSetGroupingSeparator("")
 
-                assertThat(decimalSettings.groupingSeparator).isEqualTo(DecimalSettings.DEFAULT_GROUPING_SEPARATOR)
+                assertThat(decimalScheme.groupingSeparator).isEqualTo(DecimalScheme.DEFAULT_GROUPING_SEPARATOR)
             }
 
             it("uses only the first character if a multi-character string is given") {
-                decimalSettings.safeSetGroupingSeparator("drummer")
+                decimalScheme.safeSetGroupingSeparator("drummer")
 
-                assertThat(decimalSettings.groupingSeparator).isEqualTo("d")
+                assertThat(decimalScheme.groupingSeparator).isEqualTo("d")
             }
         }
 
         describe("decimal separator") {
             it("uses the default separator if null is set") {
-                decimalSettings.safeSetDecimalSeparator(null)
+                decimalScheme.safeSetDecimalSeparator(null)
 
-                assertThat(decimalSettings.decimalSeparator).isEqualTo(DecimalSettings.DEFAULT_DECIMAL_SEPARATOR)
+                assertThat(decimalScheme.decimalSeparator).isEqualTo(DecimalScheme.DEFAULT_DECIMAL_SEPARATOR)
             }
 
             it("uses the default separator if an empty string is set") {
-                decimalSettings.safeSetDecimalSeparator("")
+                decimalScheme.safeSetDecimalSeparator("")
 
-                assertThat(decimalSettings.decimalSeparator).isEqualTo(DecimalSettings.DEFAULT_DECIMAL_SEPARATOR)
+                assertThat(decimalScheme.decimalSeparator).isEqualTo(DecimalScheme.DEFAULT_DECIMAL_SEPARATOR)
             }
 
             it("uses only the first character if a multi-character string is given") {
-                decimalSettings.safeSetDecimalSeparator("foolish")
+                decimalScheme.safeSetDecimalSeparator("foolish")
 
-                assertThat(decimalSettings.decimalSeparator).isEqualTo("f")
+                assertThat(decimalScheme.decimalSeparator).isEqualTo("f")
+            }
+        }
+    }
+
+    describe("copying") {
+        describe("copyFrom") {
+            it("makes the two schemes equal") {
+                val schemeA = DecimalScheme()
+                val schemeB = DecimalScheme(myName = "Name")
+                assertThat(schemeA).isNotEqualTo(schemeB)
+
+                schemeA.copyFrom(schemeB)
+
+                assertThat(schemeA).isEqualTo(schemeB)
+            }
+        }
+
+        describe("copyAs") {
+            it("makes two schemes equal except for the name") {
+                val schemeA = DecimalScheme()
+                val schemeB = schemeA.copyAs("NewName")
+                assertThat(schemeA).isNotEqualTo(schemeB)
+
+                schemeB.myName = schemeA.myName
+
+                assertThat(schemeA).isEqualTo(schemeB)
             }
         }
     }

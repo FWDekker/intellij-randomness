@@ -1,6 +1,6 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettingsAction
 import com.intellij.codeInsight.hint.HintManager
 import com.intellij.openapi.actionSystem.ActionGroup
@@ -42,7 +42,7 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
     /**
      * The action used to edit the generator settings for this data type.
      */
-    abstract val settingsAction: DataSettingsAction<*>
+    abstract val settingsAction: DataSettingsAction
 
 
     /**
@@ -198,12 +198,12 @@ abstract class DataInsertAction(private val icon: Icon) : AnAction() {
 /**
  * Inserts a randomly generated array of strings at the positions of the event's editor's carets.
  *
- * @param arraySettings the settings to use for generating arrays
+ * @param arrayScheme the scheme to use for generating arrays
  * @param dataInsertAction the action to generate data with
  * @param icon the icon to display with the action
  */
 abstract class DataInsertArrayAction(
-    private val arraySettings: ArraySettings,
+    private val arrayScheme: ArrayScheme,
     private val dataInsertAction: DataInsertAction,
     icon: Icon = RandomnessIcons.Data.Array
 ) : DataInsertAction(icon) {
@@ -216,12 +216,12 @@ abstract class DataInsertArrayAction(
      */
     @Throws(DataGenerationException::class)
     override fun generateStrings(count: Int): List<String> {
-        if (arraySettings.count <= 0)
+        if (arrayScheme.count <= 0)
             throw DataGenerationException("Array cannot have fewer than 1 element.")
 
-        return dataInsertAction.generateStrings(count * arraySettings.count)
-            .chunked(arraySettings.count)
-            .map { arraySettings.arrayify(it) }
+        return dataInsertAction.generateStrings(count * arrayScheme.count)
+            .chunked(arrayScheme.count)
+            .map { arrayScheme.arrayify(it) }
     }
 }
 
@@ -231,8 +231,7 @@ abstract class DataInsertArrayAction(
  *
  * @param icon the icon to display with the action
  */
-abstract class DataSettingsAction<S : Settings<S>>(private val icon: Icon = RandomnessIcons.Data.Settings) :
-    AnAction() {
+abstract class DataSettingsAction(private val icon: Icon = RandomnessIcons.Data.Settings) : AnAction() {
     /**
      * The name of the action.
      */
@@ -241,7 +240,7 @@ abstract class DataSettingsAction<S : Settings<S>>(private val icon: Icon = Rand
     /**
      * The class of the configurable maintaining the settings.
      */
-    protected abstract val configurableClass: Class<out SettingsConfigurable<S>>
+    protected abstract val configurableClass: Class<out SettingsConfigurable<*, *>>
 
 
     /**

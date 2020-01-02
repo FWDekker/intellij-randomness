@@ -12,11 +12,11 @@ import javax.swing.JComponent
  *
  * @param S the type of settings the configurable changes.
  */
-abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
+abstract class SettingsConfigurable<S : Settings<S, T>, T : Scheme<T>> : Configurable {
     /**
      * The user interface for changing the settings.
      */
-    protected abstract val component: SettingsComponent<S>
+    protected abstract val component: SettingsComponent<S, T>
 
 
     /**
@@ -35,6 +35,8 @@ abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
 
     /**
      * Saves the changes in the settings component to the default settings object.
+     *
+     * @throws ConfigurationException if the changes cannot be saved
      */
     override fun apply() {
         val validationInfo = component.doValidate()

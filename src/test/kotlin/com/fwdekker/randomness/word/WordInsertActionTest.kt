@@ -31,12 +31,9 @@ class WordInsertActionParamTest {
     @ParameterizedTest
     @MethodSource("provider")
     fun testValue(minLength: Int, maxLength: Int, enclosure: String) {
-        val wordSettings = WordSettings()
-        wordSettings.minLength = minLength
-        wordSettings.maxLength = maxLength
-        wordSettings.enclosure = enclosure
+        val wordScheme = WordScheme(minLength = minLength, maxLength = maxLength, enclosure = enclosure)
 
-        val insertRandomWord = WordInsertAction(wordSettings)
+        val insertRandomWord = WordInsertAction(wordScheme)
         val randomString = insertRandomWord.generateString()
 
         assertThat(randomString)
@@ -63,10 +60,10 @@ object WordInsertActionTest : Spek({
 
     describe("error handling") {
         it("throws an exception if there are no active dictionaries") {
-            val wordSettings = WordSettings()
-            wordSettings.activeBundledDictionaries = emptySet()
+            val wordScheme = WordScheme()
+            wordScheme.activeBundledDictionaries = emptySet()
 
-            val insertRandomWord = WordInsertAction(wordSettings)
+            val insertRandomWord = WordInsertAction(wordScheme)
 
             assertThatThrownBy { insertRandomWord.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
@@ -79,11 +76,11 @@ object WordInsertActionTest : Spek({
             val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
             dictionaryFile.delete()
 
-            val wordSettings = WordSettings()
-            wordSettings.activeBundledDictionaries = emptySet()
-            wordSettings.activeUserDictionaries = setOf(dictionary)
+            val wordScheme = WordScheme()
+            wordScheme.activeBundledDictionaries = emptySet()
+            wordScheme.activeUserDictionaries = setOf(dictionary)
 
-            val insertRandomWord = WordInsertAction(wordSettings)
+            val insertRandomWord = WordInsertAction(wordScheme)
 
             assertThatThrownBy { insertRandomWord.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
@@ -95,11 +92,11 @@ object WordInsertActionTest : Spek({
             val dictionaryFile = tempFileHelper.createFile("", ".dic")
             val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
 
-            val wordSettings = WordSettings()
-            wordSettings.activeBundledDictionaries = emptySet()
-            wordSettings.activeUserDictionaries = setOf(dictionary)
+            val wordScheme = WordScheme()
+            wordScheme.activeBundledDictionaries = emptySet()
+            wordScheme.activeUserDictionaries = setOf(dictionary)
 
-            val insertRandomWord = WordInsertAction(wordSettings)
+            val insertRandomWord = WordInsertAction(wordScheme)
 
             assertThatThrownBy { insertRandomWord.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
@@ -111,12 +108,12 @@ object WordInsertActionTest : Spek({
             val dictionaryFile = tempFileHelper.createFile("a", ".dic")
             val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
 
-            val wordSettings = WordSettings()
-            wordSettings.minLength = 2
-            wordSettings.activeBundledDictionaries = emptySet()
-            wordSettings.activeUserDictionaries = setOf(dictionary)
+            val wordScheme = WordScheme()
+            wordScheme.minLength = 2
+            wordScheme.activeBundledDictionaries = emptySet()
+            wordScheme.activeUserDictionaries = setOf(dictionary)
 
-            val insertRandomWord = WordInsertAction(wordSettings)
+            val insertRandomWord = WordInsertAction(wordScheme)
 
             assertThatThrownBy { insertRandomWord.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)

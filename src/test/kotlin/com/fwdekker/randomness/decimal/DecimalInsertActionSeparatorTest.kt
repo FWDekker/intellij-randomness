@@ -39,15 +39,16 @@ class DecimalInsertActionSeparatorTest {
         value: Double, decimalCount: Int, groupingSeparator: String,
         decimalSeparator: String, expectedString: String
     ) {
-        val decimalSettings = DecimalSettings()
-        decimalSettings.minValue = value
-        decimalSettings.maxValue = value
-        decimalSettings.decimalCount = decimalCount
-        decimalSettings.showTrailingZeroes = false
-        decimalSettings.groupingSeparator = groupingSeparator
-        decimalSettings.decimalSeparator = decimalSeparator
+        val decimalScheme = DecimalScheme(
+            minValue = value,
+            maxValue = value,
+            decimalCount = decimalCount,
+            showTrailingZeroes = false,
+            groupingSeparator = groupingSeparator,
+            decimalSeparator = decimalSeparator
+        )
 
-        val insertRandomDecimal = DecimalInsertAction(decimalSettings)
+        val insertRandomDecimal = DecimalInsertAction(decimalScheme)
         val randomString = insertRandomDecimal.generateString()
 
         assertThat(randomString).isEqualTo(expectedString)

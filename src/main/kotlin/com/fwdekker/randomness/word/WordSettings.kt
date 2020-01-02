@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
@@ -12,8 +13,44 @@ import com.intellij.util.xmlb.annotations.Transient
 
 
 /**
+ * The user-configurable collection of schemes applicable to generating words.
+ *
+ * @property schemes the schemes that the user can choose from
+ * @property currentSchemeName the scheme that is currently active
+ */
+@State(name = "WordSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
+data class WordSettings(
+    @MapAnnotation(sortBeforeSave = false)
+    override var schemes: MutableList<WordScheme> = DEFAULT_SCHEMES.toMutableList(),
+    override var currentSchemeName: String = Scheme.DEFAULT_NAME
+) : Settings<WordSettings, WordScheme> {
+    companion object {
+        /**
+         * The default value of the [schemes][schemes] field.
+         */
+        val DEFAULT_SCHEMES
+            get() = listOf(WordScheme())
+
+        /**
+         * The persistent `WordSettings` instance.
+         */
+        val default: WordSettings
+            get() = ServiceManager.getService(WordSettings::class.java)
+    }
+
+
+    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
+
+    override fun getState() = this
+
+    override fun loadState(state: WordSettings) = XmlSerializerUtil.copyBean(state, this)
+}
+
+
+/**
  * Contains settings for generating random words.
  *
+ * @property myName The name of the scheme.
  * @property minLength The minimum length of the generated word, inclusive.
  * @property maxLength The maximum length of the generated word, inclusive.
  * @property enclosure The string that encloses the generated word on both sides.
@@ -29,8 +66,8 @@ import com.intellij.util.xmlb.annotations.Transient
  * @see WordSettingsAction
  * @see WordSettingsComponent
  */
-@State(name = "WordSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-data class WordSettings(
+data class WordScheme(
+    override var myName: String = Scheme.DEFAULT_NAME,
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
@@ -43,48 +80,41 @@ data class WordSettings(
     var userDictionaryFiles: MutableSet<String> = DEFAULT_USER_DICTIONARY_FILES.toMutableSet(),
     @MapAnnotation(sortBeforeSave = false)
     var activeUserDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES.toMutableSet()
-) : Settings<WordSettings> {
+) : Scheme<WordScheme> {
     companion object {
         /**
-         * The default value of the [minLength][WordSettings.minLength] field.
+         * The default value of the [minLength][minLength] field.
          */
         const val DEFAULT_MIN_LENGTH = 3
         /**
-         * The default value of the [maxLength][WordSettings.maxLength] field.
+         * The default value of the [maxLength][maxLength] field.
          */
         const val DEFAULT_MAX_LENGTH = 8
         /**
-         * The default value of the [enclosure][WordSettings.enclosure] field.
+         * The default value of the [enclosure][enclosure] field.
          */
         const val DEFAULT_ENCLOSURE = "\""
         /**
-         * The default value of the [capitalization][WordSettings.capitalization] field.
+         * The default value of the [capitalization][capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
         /**
-         * The default value of the [bundledDictionaryFiles][WordSettings.bundledDictionaryFiles] field.
+         * The default value of the [bundledDictionaryFiles][bundledDictionaryFiles] field.
          */
         val DEFAULT_BUNDLED_DICTIONARY_FILES =
             setOf(BundledDictionary.SIMPLE_DICTIONARY, BundledDictionary.EXTENDED_DICTIONARY)
         /**
-         * The default value of the [activeBundledDictionaryFiles][WordSettings.activeBundledDictionaryFiles] field.
+         * The default value of the [activeBundledDictionaryFiles][activeBundledDictionaryFiles] field.
          */
         val DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES = setOf(BundledDictionary.SIMPLE_DICTIONARY)
         /**
-         * The default value of the [userDictionaryFiles][WordSettings.userDictionaryFiles] field.
+         * The default value of the [userDictionaryFiles][userDictionaryFiles] field.
          */
         val DEFAULT_USER_DICTIONARY_FILES = setOf<String>()
         /**
-         * The default value of the [activeUserDictionaryFiles][WordSettings.activeUserDictionaryFiles] field.
+         * The default value of the [activeUserDictionaryFiles][activeUserDictionaryFiles] field.
          */
         val DEFAULT_ACTIVE_USER_DICTIONARY_FILES = setOf<String>()
-
-
-        /**
-         * The persistent `WordSettings` instance.
-         */
-        val default: WordSettings
-            get() = ServiceManager.getService(WordSettings::class.java)
     }
 
 
@@ -126,11 +156,9 @@ data class WordSettings(
         }
 
 
-    override fun copyState() = WordSettings().also { it.loadState(this) }
+    override fun copyFrom(other: WordScheme) = XmlSerializerUtil.copyBean(other, this)
 
-    override fun getState() = this
-
-    override fun loadState(state: WordSettings) = XmlSerializerUtil.copyBean(state, this)
+    override fun copyAs(name: String) = this.copy(myName = name)
 }
 
 
@@ -141,6 +169,6 @@ data class WordSettings(
  */
 class WordSettingsConfigurable(
     override val component: WordSettingsComponent = WordSettingsComponent()
-) : SettingsConfigurable<WordSettings>() {
+) : SettingsConfigurable<WordSettings, WordScheme>() {
     override fun getDisplayName() = "Words"
 }

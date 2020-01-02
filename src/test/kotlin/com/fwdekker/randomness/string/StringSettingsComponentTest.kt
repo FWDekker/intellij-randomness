@@ -2,11 +2,9 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.ui.EditableDatum
-import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.table.TableView
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -24,7 +22,6 @@ object StringSettingsComponentTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var stringSettings: StringSettings
     lateinit var stringSettingsComponent: StringSettingsComponent
-    lateinit var stringSettingsComponentConfigurable: StringSettingsConfigurable
     lateinit var symbolSetTable: TableView<EditableDatum<SymbolSet>>
     lateinit var frame: FrameFixture
 
@@ -39,16 +36,17 @@ object StringSettingsComponentTest : Spek({
         ideaFixture.setUp()
 
         stringSettings = StringSettings()
-        stringSettings.minLength = 144
-        stringSettings.maxLength = 719
-        stringSettings.enclosure = "\""
-        stringSettings.capitalization = CapitalizationMode.RANDOM
-        stringSettings.symbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS, SymbolSet.HEXADECIMAL)
-        stringSettings.activeSymbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
+            .apply {
+                currentScheme.minLength = 144
+                currentScheme.maxLength = 719
+                currentScheme.enclosure = "\""
+                currentScheme.capitalization = CapitalizationMode.RANDOM
+                currentScheme.symbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS, SymbolSet.HEXADECIMAL)
+                currentScheme.activeSymbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
+            }
 
         stringSettingsComponent =
             GuiActionRunner.execute<StringSettingsComponent> { StringSettingsComponent(stringSettings) }
-        stringSettingsComponentConfigurable = StringSettingsConfigurable(stringSettingsComponent)
         frame = showInFrame(stringSettingsComponent.rootPane)
 
         symbolSetTable = frame.table().target() as TableView<EditableDatum<SymbolSet>>
@@ -87,6 +85,31 @@ object StringSettingsComponentTest : Spek({
                 .containsExactly(SymbolSet.ALPHABET, SymbolSet.DIGITS, SymbolSet.HEXADECIMAL)
             assertThat(symbolSetTable.items.filter { it.active }.map { it.datum })
                 .containsExactly(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
+        }
+    }
+
+    describe("saving settings") {
+        it("correctly saves settings to a settings object") {
+            GuiActionRunner.execute {
+                frame.spinner("minLength").target().value = 445
+                frame.spinner("maxLength").target().value = 803
+                frame.radioButton("enclosureBacktick").target().isSelected = true
+                frame.radioButton("capitalizationUpper").target().isSelected = true
+
+                repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
+                symbolSetTable.listTableModel.addRow(EditableDatum(false, SymbolSet.BRACKETS))
+                symbolSetTable.listTableModel.addRow(EditableDatum(true, SymbolSet.MINUS))
+            }
+
+            stringSettingsComponent.saveSettings()
+
+            assertThat(stringSettings.currentScheme.minLength).isEqualTo(445)
+            assertThat(stringSettings.currentScheme.maxLength).isEqualTo(803)
+            assertThat(stringSettings.currentScheme.enclosure).isEqualTo("`")
+            assertThat(stringSettings.currentScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
+            assertThat(stringSettings.currentScheme.symbolSetList).isEqualTo(listOf(SymbolSet.BRACKETS,
+                SymbolSet.MINUS))
+            assertThat(stringSettings.currentScheme.activeSymbolSetList).isEqualTo(listOf(SymbolSet.MINUS))
         }
     }
 
@@ -174,125 +197,6 @@ object StringSettingsComponentTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
                 assertThat(validationInfo?.message).isEqualTo("Activate at least one symbol set.")
-            }
-        }
-    }
-
-    describe("saving settings") {
-        it("correctly saves settings to a settings object") {
-            GuiActionRunner.execute {
-                frame.spinner("minLength").target().value = 445
-                frame.spinner("maxLength").target().value = 803
-                frame.radioButton("enclosureBacktick").target().isSelected = true
-                frame.radioButton("capitalizationUpper").target().isSelected = true
-
-                repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
-                symbolSetTable.listTableModel.addRow(EditableDatum(false, SymbolSet.BRACKETS))
-                symbolSetTable.listTableModel.addRow(EditableDatum(true, SymbolSet.MINUS))
-            }
-
-            stringSettingsComponent.saveSettings()
-
-            assertThat(stringSettings.minLength).isEqualTo(445)
-            assertThat(stringSettings.maxLength).isEqualTo(803)
-            assertThat(stringSettings.enclosure).isEqualTo("`")
-            assertThat(stringSettings.capitalization).isEqualTo(CapitalizationMode.UPPER)
-            assertThat(stringSettings.symbolSetList).isEqualTo(listOf(SymbolSet.BRACKETS, SymbolSet.MINUS))
-            assertThat(stringSettings.activeSymbolSetList).isEqualTo(listOf(SymbolSet.MINUS))
-        }
-    }
-
-    describe("configurable") {
-        it("returns the correct display name") {
-            assertThat(stringSettingsComponentConfigurable.displayName).isEqualTo("Strings")
-        }
-
-        describe("saving modifications") {
-            it("accepts correct settings") {
-                GuiActionRunner.execute { frame.spinner("minLength").target().value = 19 }
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 55 }
-
-                stringSettingsComponentConfigurable.apply()
-
-                assertThat(stringSettings.maxLength).isEqualTo(55)
-            }
-
-            it("rejects incorrect settings") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = -45 }
-
-                Assertions.assertThatThrownBy { stringSettingsComponentConfigurable.apply() }
-                    .isInstanceOf(ConfigurationException::class.java)
-            }
-        }
-
-        describe("modification detection") {
-            it("is initially unmodified") {
-                assertThat(stringSettingsComponentConfigurable.isModified).isFalse()
-            }
-
-            it("modifies a single detection") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 91 }
-
-                assertThat(stringSettingsComponentConfigurable.isModified).isTrue()
-            }
-
-            it("ignores an undone modification") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = stringSettings.minLength }
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = stringSettings.maxLength }
-
-                assertThat(stringSettingsComponentConfigurable.isModified).isFalse()
-            }
-
-            it("ignores saved modifications") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 204 }
-
-                stringSettingsComponentConfigurable.apply()
-
-                assertThat(stringSettingsComponentConfigurable.isModified).isFalse()
-            }
-
-            it("detects a copy of a symbol set") {
-                val symbolSet1 = EditableDatum(false, SymbolSet("name", "symbols"))
-                val symbolSet2 = EditableDatum(false, SymbolSet("name", "symbols"))
-
-                GuiActionRunner.execute { symbolSetTable.listTableModel.addRow(symbolSet1) }
-                stringSettingsComponentConfigurable.apply()
-                GuiActionRunner.execute { symbolSetTable.listTableModel.addRow(symbolSet2) }
-
-                assertThat(stringSettingsComponentConfigurable.isModified).isTrue()
-            }
-
-            it("detects reordering of the entries") {
-                val dictionary1 = EditableDatum(false, SymbolSet("name1", "symbols"))
-                val dictionary2 = EditableDatum(false, SymbolSet("name2", "symbols"))
-
-                GuiActionRunner.execute {
-                    symbolSetTable.listTableModel.addRow(dictionary1)
-                    symbolSetTable.listTableModel.addRow(dictionary2)
-                }
-                stringSettingsComponentConfigurable.apply()
-                GuiActionRunner.execute {
-                    symbolSetTable.listTableModel.removeRow(0)
-                    symbolSetTable.listTableModel.addRow(dictionary1)
-                }
-
-                assertThat(stringSettingsComponentConfigurable.isModified).isTrue()
-            }
-        }
-
-        describe("resets") {
-            it("resets all fields properly") {
-                GuiActionRunner.execute {
-                    frame.spinner("minLength").target().value = 75
-                    frame.spinner("maxLength").target().value = 102
-                    frame.radioButton("enclosureSingle").target().isSelected = true
-                    frame.radioButton("capitalizationLower").target().isSelected = true
-                    symbolSetTable.listTableModel.addRow(EditableDatum(true, SymbolSet.MINUS))
-
-                    stringSettingsComponentConfigurable.reset()
-                }
-
-                assertThat(stringSettingsComponentConfigurable.isModified).isFalse()
             }
         }
     }

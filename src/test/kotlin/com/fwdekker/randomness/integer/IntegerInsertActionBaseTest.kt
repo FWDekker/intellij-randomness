@@ -23,13 +23,14 @@ class IntegerInsertActionBaseTest {
     @ParameterizedTest
     @MethodSource("provider")
     fun testValue(value: Long, base: Int, groupingSeparator: String, expectedString: String) {
-        val integerSettings = IntegerSettings()
-        integerSettings.minValue = value
-        integerSettings.maxValue = value
-        integerSettings.base = base
-        integerSettings.groupingSeparator = groupingSeparator
+        val integerScheme = IntegerScheme(
+            minValue = value,
+            maxValue = value,
+            base = base,
+            groupingSeparator = groupingSeparator
+        )
 
-        val insertRandomInteger = IntegerInsertAction(integerSettings)
+        val insertRandomInteger = IntegerInsertAction(integerScheme)
         val randomString = insertRandomInteger.generateString()
 
         assertThat(randomString).isEqualTo(expectedString)

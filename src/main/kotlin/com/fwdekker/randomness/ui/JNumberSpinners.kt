@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.ui.JNumberSpinner.Companion.DEFAULT_DESCRIPTION
 import com.intellij.openapi.ui.ValidationInfo
 import java.awt.Dimension
 import java.text.DecimalFormatSymbols

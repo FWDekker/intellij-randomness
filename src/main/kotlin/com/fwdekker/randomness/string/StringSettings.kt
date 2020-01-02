@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
@@ -12,8 +13,44 @@ import com.intellij.util.xmlb.annotations.Transient
 
 
 /**
+ * The user-configurable collection of schemes applicable to generating strings.
+ *
+ * @property schemes the schemes that the user can choose from
+ * @property currentSchemeName the scheme that is currently active
+ */
+@State(name = "StringSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
+data class StringSettings(
+    @MapAnnotation(sortBeforeSave = false)
+    override var schemes: MutableList<StringScheme> = DEFAULT_SCHEMES.toMutableList(),
+    override var currentSchemeName: String = Scheme.DEFAULT_NAME
+) : Settings<StringSettings, StringScheme> {
+    companion object {
+        /**
+         * The default value of the [schemes][schemes] field.
+         */
+        val DEFAULT_SCHEMES
+            get() = listOf(StringScheme())
+
+        /**
+         * The persistent `StringSettings` instance.
+         */
+        val default: StringSettings
+            get() = ServiceManager.getService(StringSettings::class.java)
+    }
+
+
+    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
+
+    override fun getState() = this
+
+    override fun loadState(state: StringSettings) = XmlSerializerUtil.copyBean(state, this)
+}
+
+
+/**
  * Contains settings for generating random strings.
  *
+ * @property myName The name of the scheme.
  * @property minLength The minimum length of the generated string, inclusive.
  * @property maxLength The maximum length of the generated string, inclusive.
  * @property enclosure The string that encloses the generated string on both sides.
@@ -25,8 +62,8 @@ import com.intellij.util.xmlb.annotations.Transient
  * @see StringSettingsAction
  * @see StringSettingsComponent
  */
-@State(name = "StringSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-data class StringSettings(
+data class StringScheme(
+    override var myName: String = Scheme.DEFAULT_NAME,
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
@@ -35,39 +72,32 @@ data class StringSettings(
     var symbolSets: Map<String, String> = DEFAULT_SYMBOL_SETS.toMap(),
     @MapAnnotation(sortBeforeSave = false)
     var activeSymbolSets: Map<String, String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMap()
-) : Settings<StringSettings> {
+) : Scheme<StringScheme> {
     companion object {
         /**
-         * The default value of the [minLength][StringSettings.minLength] field.
+         * The default value of the [minLength][minLength] field.
          */
         const val DEFAULT_MIN_LENGTH = 3
         /**
-         * The default value of the [maxLength][StringSettings.maxLength] field.
+         * The default value of the [maxLength][maxLength] field.
          */
         const val DEFAULT_MAX_LENGTH = 8
         /**
-         * The default value of the [enclosure][StringSettings.enclosure] field.
+         * The default value of the [enclosure][enclosure] field.
          */
         const val DEFAULT_ENCLOSURE = "\""
         /**
-         * The default value of the [capitalization][StringSettings.capitalization] field.
+         * The default value of the [capitalization][capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RANDOM
         /**
-         * The default value of the [symbolSets][StringSettings.symbolSets] field.
+         * The default value of the [symbolSets][symbolSets] field.
          */
         val DEFAULT_SYMBOL_SETS = SymbolSet.defaultSymbolSets.toMap()
         /**
-         * The default value of the [activeSymbolSets][StringSettings.activeSymbolSets] field.
+         * The default value of the [activeSymbolSets][activeSymbolSets] field.
          */
         val DEFAULT_ACTIVE_SYMBOL_SETS = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
-
-
-        /**
-         * The persistent `StringSettings` instance.
-         */
-        val default: StringSettings
-            get() = ServiceManager.getService(StringSettings::class.java)
     }
 
 
@@ -91,11 +121,9 @@ data class StringSettings(
         }
 
 
-    override fun copyState() = StringSettings().also { it.loadState(this) }
+    override fun copyFrom(other: StringScheme) = XmlSerializerUtil.copyBean(other, this)
 
-    override fun getState() = this
-
-    override fun loadState(state: StringSettings) = XmlSerializerUtil.copyBean(state, this)
+    override fun copyAs(name: String) = this.copy(myName = name)
 }
 
 
@@ -106,6 +134,6 @@ data class StringSettings(
  */
 class StringSettingsConfigurable(
     override val component: StringSettingsComponent = StringSettingsComponent()
-) : SettingsConfigurable<StringSettings>() {
+) : SettingsConfigurable<StringSettings, StringScheme>() {
     override fun getDisplayName() = "Strings"
 }

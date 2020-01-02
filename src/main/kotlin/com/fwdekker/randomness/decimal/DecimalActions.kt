@@ -5,6 +5,7 @@ import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.DataSettingsAction
+import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
 import icons.RandomnessIcons
 import java.text.DecimalFormat
@@ -24,12 +25,12 @@ class DecimalGroupAction : DataGroupAction(RandomnessIcons.Decimal.Base) {
 /**
  * Inserts random decimals.
  *
- * @param settings the settings to use for generating decimals
+ * @param scheme the settings to use for generating decimals
  *
  * @see DecimalInsertArrayAction
  * @see DecimalSettings
  */
-class DecimalInsertAction(private val settings: DecimalSettings = DecimalSettings.default) :
+class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.default.currentScheme) :
     DataInsertAction(RandomnessIcons.Decimal.Base) {
     override val name = "Random Decimal"
 
@@ -42,10 +43,10 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
      */
     override fun generateStrings(count: Int) =
         List(count) {
-            if (settings.minValue > settings.maxValue)
+            if (scheme.minValue > scheme.maxValue)
                 throw DataGenerationException("Minimum value is larger than maximum value.")
 
-            convertToString(random.nextDouble(settings.minValue, settings.maxValue.nextUp()))
+            convertToString(random.nextDouble(scheme.minValue, scheme.maxValue.nextUp()))
         }
 
 
@@ -57,13 +58,13 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
      */
     private fun convertToString(decimal: Double): String {
         val format = DecimalFormat()
-        format.isGroupingUsed = settings.groupingSeparator.isNotEmpty()
+        format.isGroupingUsed = scheme.groupingSeparator.isNotEmpty()
 
         val symbols = format.decimalFormatSymbols
-        symbols.groupingSeparator = settings.groupingSeparator.getOrElse(0) { Char.MIN_VALUE }
-        symbols.decimalSeparator = settings.decimalSeparator.getOrElse(0) { Char.MIN_VALUE }
-        if (settings.showTrailingZeroes) format.minimumFractionDigits = settings.decimalCount
-        format.maximumFractionDigits = settings.decimalCount
+        symbols.groupingSeparator = scheme.groupingSeparator.getOrElse(0) { Char.MIN_VALUE }
+        symbols.decimalSeparator = scheme.decimalSeparator.getOrElse(0) { Char.MIN_VALUE }
+        if (scheme.showTrailingZeroes) format.minimumFractionDigits = scheme.decimalCount
+        format.maximumFractionDigits = scheme.decimalCount
         format.decimalFormatSymbols = symbols
 
         return format.format(decimal)
@@ -74,15 +75,15 @@ class DecimalInsertAction(private val settings: DecimalSettings = DecimalSetting
 /**
  * Inserts an array-like string of decimals.
  *
- * @param arraySettings the settings to use for generating arrays
- * @param settings the settings to use for generating decimals
+ * @param arrayScheme the scheme to use for generating arrays
+ * @param scheme the scheme to use for generating decimals
  *
  * @see DecimalInsertAction
  */
 class DecimalInsertArrayAction(
-    arraySettings: ArraySettings = ArraySettings.default,
-    settings: DecimalSettings = DecimalSettings.default
-) : DataInsertArrayAction(arraySettings, DecimalInsertAction(settings), RandomnessIcons.Decimal.Array) {
+    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+    scheme: DecimalScheme = DecimalSettings.default.currentScheme
+) : DataInsertArrayAction(arrayScheme, DecimalInsertAction(scheme), RandomnessIcons.Decimal.Array) {
     override val name = "Random Decimal Array"
 }
 
@@ -93,7 +94,7 @@ class DecimalInsertArrayAction(
  * @see DecimalSettings
  * @see DecimalSettingsComponent
  */
-class DecimalSettingsAction : DataSettingsAction<DecimalSettings>(RandomnessIcons.Decimal.Settings) {
+class DecimalSettingsAction : DataSettingsAction(RandomnessIcons.Decimal.Settings) {
     override val title = "Decimal Settings"
 
     override val configurableClass = DecimalSettingsConfigurable::class.java

@@ -2,12 +2,10 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.ui.EditableDatum
-import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.table.TableView
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
@@ -25,7 +23,6 @@ object WordSettingsComponentTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var wordSettings: WordSettings
     lateinit var wordSettingsComponent: WordSettingsComponent
-    lateinit var wordSettingsComponentConfigurable: WordSettingsConfigurable
     lateinit var dictionaryTable: TableView<EditableDatum<Dictionary>>
     lateinit var frame: FrameFixture
 
@@ -42,14 +39,15 @@ object WordSettingsComponentTest : Spek({
         ideaFixture.setUp()
 
         wordSettings = WordSettings()
-        wordSettings.minLength = 4
-        wordSettings.maxLength = 6
-        wordSettings.enclosure = ""
-        wordSettings.capitalization = CapitalizationMode.LOWER
-        wordSettings.activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.EXTENDED_DICTIONARY)
+            .apply {
+                currentScheme.minLength = 4
+                currentScheme.maxLength = 6
+                currentScheme.enclosure = ""
+                currentScheme.capitalization = CapitalizationMode.LOWER
+                currentScheme.activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.EXTENDED_DICTIONARY)
+            }
 
         wordSettingsComponent = GuiActionRunner.execute<WordSettingsComponent> { WordSettingsComponent(wordSettings) }
-        wordSettingsComponentConfigurable = WordSettingsConfigurable(wordSettingsComponent)
         frame = showInFrame(wordSettingsComponent.rootPane)
 
         dictionaryTable = frame.table().target() as TableView<EditableDatum<Dictionary>>
@@ -94,6 +92,24 @@ object WordSettingsComponentTest : Spek({
             assertThat(dictionaryTable.items.filter { it.active }.map { it.datum }).containsExactly(
                 BundledDictionary.cache.get(BundledDictionary.EXTENDED_DICTIONARY)
             )
+        }
+    }
+
+    describe("saving settings") {
+        it("correctly saves settings to a settings object") {
+            GuiActionRunner.execute {
+                frame.spinner("minLength").target().value = 840
+                frame.spinner("maxLength").target().value = 861
+                frame.radioButton("enclosureSingle").target().isSelected = true
+                frame.radioButton("capitalizationLower").target().isSelected = true
+            }
+
+            wordSettingsComponent.saveSettings()
+
+            assertThat(wordSettings.currentScheme.minLength).isEqualTo(840)
+            assertThat(wordSettings.currentScheme.maxLength).isEqualTo(861)
+            assertThat(wordSettings.currentScheme.enclosure).isEqualTo("'")
+            assertThat(wordSettings.currentScheme.capitalization).isEqualTo(CapitalizationMode.LOWER)
         }
     }
 
@@ -193,8 +209,8 @@ object WordSettingsComponentTest : Spek({
             }
 
             it("fails if one of the dictionaries is invalid") {
-                wordSettings.userDictionaryFiles = mutableSetOf("does_not_exist.dic")
-                wordSettings.activeUserDictionaryFiles = wordSettings.userDictionaryFiles
+                wordSettings.currentScheme.userDictionaryFiles = mutableSetOf("does_not_exist.dic")
+                wordSettings.currentScheme.activeUserDictionaryFiles = wordSettings.currentScheme.userDictionaryFiles
                 GuiActionRunner.execute { wordSettingsComponent.loadSettings(wordSettings) }
 
                 val validationInfo = wordSettingsComponent.doValidate()
@@ -211,8 +227,8 @@ object WordSettingsComponentTest : Spek({
                 val dictionaryFile = tempFileHelper.createFile("", ".dic")
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
 
-                wordSettings.userDictionaries = setOf(dictionary)
-                wordSettings.activeUserDictionaries = wordSettings.userDictionaries
+                wordSettings.currentScheme.userDictionaries = setOf(dictionary)
+                wordSettings.currentScheme.activeUserDictionaries = wordSettings.currentScheme.userDictionaries
                 GuiActionRunner.execute { wordSettingsComponent.loadSettings(wordSettings) }
 
                 val validationInfo = wordSettingsComponent.doValidate()
@@ -226,8 +242,8 @@ object WordSettingsComponentTest : Spek({
                 val dictionaryFile = tempFileHelper.createFile("whistle", ".dic")
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
 
-                wordSettings.userDictionaries = setOf(dictionary)
-                wordSettings.activeUserDictionaries = wordSettings.userDictionaries
+                wordSettings.currentScheme.userDictionaries = setOf(dictionary)
+                wordSettings.currentScheme.activeUserDictionaries = wordSettings.currentScheme.userDictionaries
                 GuiActionRunner.execute {
                     wordSettingsComponent.loadSettings(wordSettings)
                     dictionaryTable.listTableModel.addRow(EditableDatum(true, dictionary))
@@ -239,122 +255,6 @@ object WordSettingsComponentTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
                 assertThat(validationInfo?.message).matches("Dictionaries must be unique.")
-            }
-        }
-    }
-
-    describe("saving settings") {
-        it("correctly saves settings to a settings object") {
-            GuiActionRunner.execute {
-                frame.spinner("minLength").target().value = 840
-                frame.spinner("maxLength").target().value = 861
-                frame.radioButton("enclosureSingle").target().isSelected = true
-                frame.radioButton("capitalizationLower").target().isSelected = true
-            }
-
-            wordSettingsComponent.saveSettings()
-
-            assertThat(wordSettings.minLength).isEqualTo(840)
-            assertThat(wordSettings.maxLength).isEqualTo(861)
-            assertThat(wordSettings.enclosure).isEqualTo("'")
-            assertThat(wordSettings.capitalization).isEqualTo(CapitalizationMode.LOWER)
-        }
-    }
-
-    describe("configurable") {
-        it("returns the correct display name") {
-            assertThat(wordSettingsComponentConfigurable.displayName).isEqualTo("Words")
-        }
-
-        describe("saving modifications") {
-            it("accepts correct settings") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 253 }
-
-                wordSettingsComponentConfigurable.apply()
-
-                assertThat(wordSettings.maxLength).isEqualTo(253)
-            }
-
-            it("rejects incorrect settings") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = -82 }
-
-                assertThatThrownBy { wordSettingsComponentConfigurable.apply() }
-                    .isInstanceOf(ConfigurationException::class.java)
-            }
-        }
-
-        describe("modification detection") {
-            it("is initially unmodified") {
-                assertThat(wordSettingsComponentConfigurable.isModified).isFalse()
-            }
-
-            it("modifies a single detection") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 240 }
-
-                assertThat(wordSettingsComponentConfigurable.isModified).isTrue()
-            }
-
-            it("ignores an undone modification") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 51 }
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = wordSettings.maxLength }
-
-                assertThat(wordSettingsComponentConfigurable.isModified).isFalse()
-            }
-
-            it("ignores saved modifications") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 209 }
-
-                wordSettingsComponentConfigurable.apply()
-
-                assertThat(wordSettingsComponentConfigurable.isModified).isFalse()
-            }
-
-            it("detects a copy of a dictionary") {
-                val dictionaryFile = tempFileHelper.createFile("somehow", ".dic")
-                val dictionary1 = UserDictionary.cache.get(dictionaryFile.absolutePath)
-                val dictionary2 = UserDictionary.cache.get(dictionaryFile.absolutePath)
-
-                GuiActionRunner.execute { dictionaryTable.listTableModel.addRow(EditableDatum(false, dictionary1)) }
-                wordSettingsComponentConfigurable.apply()
-                GuiActionRunner.execute { dictionaryTable.listTableModel.addRow(EditableDatum(false, dictionary2)) }
-
-                assertThat(wordSettingsComponentConfigurable.isModified).isTrue()
-            }
-
-            it("detects reordering of the entries") {
-                val dictionaryFile1 = tempFileHelper.createFile("harvest", ".dic")
-                val dictionary1 =
-                    EditableDatum<Dictionary>(false, UserDictionary.cache.get(dictionaryFile1.absolutePath))
-                val dictionaryFile2 = tempFileHelper.createFile("music", ".dic")
-                val dictionary2 =
-                    EditableDatum<Dictionary>(false, UserDictionary.cache.get(dictionaryFile2.absolutePath))
-
-                GuiActionRunner.execute {
-                    dictionaryTable.listTableModel.addRow(dictionary1)
-                    dictionaryTable.listTableModel.addRow(dictionary2)
-                }
-                wordSettingsComponentConfigurable.apply()
-                GuiActionRunner.execute {
-                    dictionaryTable.listTableModel.removeRow(0)
-                    dictionaryTable.listTableModel.addRow(dictionary1)
-                }
-
-                assertThat(wordSettingsComponentConfigurable.isModified).isTrue()
-            }
-        }
-
-        describe("resets") {
-            it("resets all fields properly") {
-                GuiActionRunner.execute {
-                    frame.spinner("minLength").target().value = 108
-                    frame.spinner("maxLength").target().value = 183
-                    frame.radioButton("enclosureBacktick").target().isSelected = true
-                    frame.radioButton("capitalizationLower").target().isSelected = true
-
-                    wordSettingsComponentConfigurable.reset()
-                }
-
-                assertThat(wordSettingsComponentConfigurable.isModified).isFalse()
             }
         }
     }
