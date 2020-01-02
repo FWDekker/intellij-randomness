@@ -3,6 +3,7 @@ package com.fwdekker.randomness.uuid
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
+import com.fwdekker.randomness.SettingsComponentListener
 import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
@@ -25,13 +26,10 @@ import javax.swing.JPanel
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
 class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponent<UuidSettings, UuidScheme>(settings) {
-    @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
-    override val schemesPanel: SchemesPanel<UuidScheme>
-        get() = schemesPanelImpl as SchemesPanel<UuidScheme>
     override lateinit var unsavedSettings: UuidSettings
+    override lateinit var schemesPanel: SchemesPanel<UuidScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var schemesPanelImpl: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<UuidInsertAction>
     private lateinit var previewPanel: JPanel
     private lateinit var versionGroup: ButtonGroup
@@ -58,14 +56,8 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         unsavedSettings = UuidSettings()
-        schemesPanelImpl = UuidSchemesPanel(unsavedSettings)
-            .also { panel ->
-                panel.addListener(object : SchemesPanel.Listener<UuidScheme> {
-                    override fun onCurrentSchemeWillChange(scheme: UuidScheme) = saveScheme(scheme)
-
-                    override fun onCurrentSchemeHasChanged(scheme: UuidScheme) = loadScheme(scheme)
-                })
-            }
+        schemesPanel = UuidSchemesPanel(unsavedSettings)
+            .also { it.addListener(SettingsComponentListener(this)) }
 
         previewPanelHolder = PreviewPanel { UuidInsertAction(UuidScheme().also { saveScheme(it) }) }
         previewPanel = previewPanelHolder.rootPane
@@ -89,6 +81,11 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
     override fun doValidate(): ValidationInfo? = null
 
 
+    /**
+     * A panel to select schemes from.
+     *
+     * @param settings the settings model backing up the panel
+     */
     private class UuidSchemesPanel(settings: UuidSettings) : SchemesPanel<UuidScheme>(settings) {
         override val type: Class<UuidScheme>
             get() = UuidScheme::class.java

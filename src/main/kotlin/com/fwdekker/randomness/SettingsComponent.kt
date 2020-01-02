@@ -1,6 +1,7 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
+import com.fwdekker.randomness.SchemesPanel.Listener
 import com.intellij.application.options.schemes.AbstractSchemeActions
 import com.intellij.application.options.schemes.SchemesModel
 import com.intellij.application.options.schemes.SimpleSchemesPanel
@@ -106,7 +107,7 @@ abstract class SettingsComponent<S : Settings<S, T>, T : Scheme<T>>(private val 
  * schemes.
  *
  * @param T the type of scheme to manage
- * @property settings the settings model that backs this panel; changed made through this panel are reflected in the
+ * @property settings the settings model that backs this panel; changes made through this panel are reflected in the
  * given settings instance
  */
 abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : SimpleSchemesPanel<T>(), SchemesModel<T> {
@@ -178,7 +179,7 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
 
         listeners.forEach { it.onCurrentSchemeWillChange(scheme) }
 
-        settings.currentSchemeName = DEFAULT_NAME // TODO Must this be done beforehand?
+        settings.currentSchemeName = DEFAULT_NAME
         settings.schemes.remove(scheme)
 
         if (settings.schemes.isEmpty()) {
@@ -186,7 +187,7 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
             settings.currentSchemeName = DEFAULT_NAME
         }
 
-        updateComboBoxList() // TODO Must this happen before updating listeners?
+        updateComboBoxList()
 
         listeners.forEach { it.onCurrentSchemeHasChanged(scheme) }
     }
@@ -356,10 +357,9 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
             val copy = scheme.copyAs(newName)
             settings.schemes.add(copy)
             settings.currentScheme = copy
+            updateComboBoxList()
 
             listeners.forEach { it.onCurrentSchemeHasChanged(copy) }
-
-            updateComboBoxList()
         }
 
         /**
@@ -369,6 +369,7 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
          */
         override fun getSchemeType() = type
     }
+
 
     /**
      * A listener that listens to events that occur to this panel.
@@ -390,4 +391,21 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
          */
         fun onCurrentSchemeHasChanged(scheme: T)
     }
+}
+
+
+/**
+ * A [Listener] that takes events occurring in a [SchemesPanel] and handles them in a [SettingsComponent].
+ *
+ * Consider this listener the glue between the schemes panel (the model) and the settings component (the view).
+ *
+ * @param S the type of settings to manage
+ * @param T the type of scheme to manage
+ * @property component the settings component in which the changes should be reflected
+ */
+class SettingsComponentListener<S : Settings<S, T>, T : Scheme<T>>(private val component: SettingsComponent<S, T>) :
+    Listener<T> {
+    override fun onCurrentSchemeWillChange(scheme: T) = component.saveScheme(scheme)
+
+    override fun onCurrentSchemeHasChanged(scheme: T) = component.loadScheme(scheme)
 }

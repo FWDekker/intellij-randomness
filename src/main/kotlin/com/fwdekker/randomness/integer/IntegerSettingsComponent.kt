@@ -2,6 +2,7 @@ package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
+import com.fwdekker.randomness.SettingsComponentListener
 import com.fwdekker.randomness.integer.IntegerSettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JLongSpinner
@@ -25,13 +26,10 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class IntegerSettingsComponent(settings: IntegerSettings = default) :
     SettingsComponent<IntegerSettings, IntegerScheme>(settings) {
-    @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
-    override val schemesPanel: SchemesPanel<IntegerScheme>
-        get() = schemesPanelImpl as SchemesPanel<IntegerScheme>
     override lateinit var unsavedSettings: IntegerSettings
+    override lateinit var schemesPanel: SchemesPanel<IntegerScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var schemesPanelImpl: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<IntegerInsertAction>
     private lateinit var previewPanel: JPanel
     private lateinit var valueRange: JSpinnerRange
@@ -64,14 +62,8 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         unsavedSettings = IntegerSettings()
-        schemesPanelImpl = IntegerSchemesPanel(unsavedSettings)
-            .also { panel ->
-                panel.addListener(object : SchemesPanel.Listener<IntegerScheme> {
-                    override fun onCurrentSchemeWillChange(scheme: IntegerScheme) = saveScheme(scheme)
-
-                    override fun onCurrentSchemeHasChanged(scheme: IntegerScheme) = loadScheme(scheme)
-                })
-            }
+        schemesPanel = IntegerSchemesPanel(unsavedSettings)
+            .also { it.addListener(SettingsComponentListener(this)) }
 
         previewPanelHolder = PreviewPanel { IntegerInsertAction(IntegerScheme().also { saveScheme(it) }) }
         previewPanel = previewPanelHolder.rootPane
@@ -106,6 +98,11 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         ?: valueRange.validateValue()
 
 
+    /**
+     * A panel to select schemes from.
+     *
+     * @param settings the settings model backing up the panel
+     */
     private class IntegerSchemesPanel(settings: IntegerSettings) : SchemesPanel<IntegerScheme>(settings) {
         override val type: Class<IntegerScheme>
             get() = IntegerScheme::class.java

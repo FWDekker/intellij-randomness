@@ -84,13 +84,7 @@ data class ArrayScheme(
     }
 
 
-    override fun copyFrom(other: ArrayScheme) {
-        this.myName = other.myName
-        this.count = other.count
-        this.brackets = other.brackets
-        this.separator = other.separator
-        this.isSpaceAfterSeparator = other.isSpaceAfterSeparator
-    }
+    override fun copyFrom(other: ArrayScheme) = XmlSerializerUtil.copyBean(other, this)
 
     override fun copyAs(name: String) = this.copy(myName = name)
 

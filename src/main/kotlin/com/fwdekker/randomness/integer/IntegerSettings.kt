@@ -99,13 +99,7 @@ data class IntegerScheme(
     }
 
 
-    override fun copyFrom(other: IntegerScheme) {
-        this.myName = other.myName
-        this.minValue = other.minValue
-        this.maxValue = other.maxValue
-        this.base = other.base
-        this.groupingSeparator = other.groupingSeparator
-    }
+    override fun copyFrom(other: IntegerScheme) = XmlSerializerUtil.copyBean(other, this)
 
     override fun copyAs(name: String) = this.copy(myName = name)
 

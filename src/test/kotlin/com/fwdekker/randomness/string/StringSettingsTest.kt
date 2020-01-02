@@ -49,8 +49,8 @@ object StringSettingsTest : Spek({
     describe("copying") {
         describe("copyFrom") {
             it("makes the two schemes equal") {
-                val schemeA = ArrayScheme()
-                val schemeB = ArrayScheme(myName = "Name")
+                val schemeA = StringScheme()
+                val schemeB = StringScheme(myName = "Name")
                 assertThat(schemeA).isNotEqualTo(schemeB)
 
                 schemeA.copyFrom(schemeB)
@@ -61,7 +61,7 @@ object StringSettingsTest : Spek({
 
         describe("copyAs") {
             it("makes two schemes equal except for the name") {
-                val schemeA = ArrayScheme()
+                val schemeA = StringScheme()
                 val schemeB = schemeA.copyAs("NewName")
                 assertThat(schemeA).isNotEqualTo(schemeB)
 

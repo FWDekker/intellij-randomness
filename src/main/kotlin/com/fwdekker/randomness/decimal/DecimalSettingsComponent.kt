@@ -2,6 +2,7 @@ package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
+import com.fwdekker.randomness.SettingsComponentListener
 import com.fwdekker.randomness.decimal.DecimalSettings.Companion.default
 import com.fwdekker.randomness.ui.JDoubleSpinner
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -25,13 +26,10 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class DecimalSettingsComponent(settings: DecimalSettings = default) :
     SettingsComponent<DecimalSettings, DecimalScheme>(settings) {
-    @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
-    override val schemesPanel: SchemesPanel<DecimalScheme>
-        get() = schemesPanelImpl as SchemesPanel<DecimalScheme>
     override lateinit var unsavedSettings: DecimalSettings
+    override lateinit var schemesPanel: SchemesPanel<DecimalScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var schemesPanelImpl: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<DecimalInsertAction>
     private lateinit var previewPanel: JPanel
     private lateinit var valueRange: JSpinnerRange
@@ -65,14 +63,8 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         unsavedSettings = DecimalSettings()
-        schemesPanelImpl = DecimalSchemesPanel(unsavedSettings)
-            .also { panel ->
-                panel.addListener(object : SchemesPanel.Listener<DecimalScheme> {
-                    override fun onCurrentSchemeWillChange(scheme: DecimalScheme) = saveScheme(scheme)
-
-                    override fun onCurrentSchemeHasChanged(scheme: DecimalScheme) = loadScheme(scheme)
-                })
-            }
+        schemesPanel = DecimalSchemesPanel(unsavedSettings)
+            .also { it.addListener(SettingsComponentListener(this)) }
 
         previewPanelHolder = PreviewPanel { DecimalInsertAction(DecimalScheme().also { saveScheme(it) }) }
         previewPanel = previewPanelHolder.rootPane
@@ -109,6 +101,11 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
             ?: decimalCount.validateValue()
 
 
+    /**
+     * A panel to select schemes from.
+     *
+     * @param settings the settings model backing up the panel
+     */
     private class DecimalSchemesPanel(settings: DecimalSettings) : SchemesPanel<DecimalScheme>(settings) {
         override val type: Class<DecimalScheme>
             get() = DecimalScheme::class.java

@@ -99,15 +99,7 @@ data class DecimalScheme(
     }
 
 
-    override fun copyFrom(other: DecimalScheme) {
-        this.myName = other.myName
-        this.minValue = other.minValue
-        this.maxValue = other.maxValue
-        this.decimalCount = other.decimalCount
-        this.showTrailingZeroes = other.showTrailingZeroes
-        this.groupingSeparator = other.groupingSeparator
-        this.decimalSeparator = other.decimalSeparator
-    }
+    override fun copyFrom(other: DecimalScheme) = XmlSerializerUtil.copyBean(other, this)
 
     override fun copyAs(name: String) = this.copy(myName = name)
 

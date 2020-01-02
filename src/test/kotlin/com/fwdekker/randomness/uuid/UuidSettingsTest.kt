@@ -57,8 +57,8 @@ object UuidSettingsTest : Spek({
     describe("copying") {
         describe("copyFrom") {
             it("makes the two schemes equal") {
-                val schemeA = ArrayScheme()
-                val schemeB = ArrayScheme(myName = "Name")
+                val schemeA = UuidScheme()
+                val schemeB = UuidScheme(myName = "Name")
                 assertThat(schemeA).isNotEqualTo(schemeB)
 
                 schemeA.copyFrom(schemeB)
@@ -69,7 +69,7 @@ object UuidSettingsTest : Spek({
 
         describe("copyAs") {
             it("makes two schemes equal except for the name") {
-                val schemeA = ArrayScheme()
+                val schemeA = UuidScheme()
                 val schemeB = schemeA.copyAs("NewName")
                 assertThat(schemeA).isNotEqualTo(schemeB)
 

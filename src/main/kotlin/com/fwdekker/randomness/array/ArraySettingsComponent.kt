@@ -3,6 +3,7 @@ package com.fwdekker.randomness.array
 import com.fwdekker.randomness.DummyInsertArrayAction
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
+import com.fwdekker.randomness.SettingsComponentListener
 import com.fwdekker.randomness.array.ArrayScheme.Companion.DEFAULT_BRACKETS
 import com.fwdekker.randomness.array.ArrayScheme.Companion.DEFAULT_SEPARATOR
 import com.fwdekker.randomness.array.ArraySettings.Companion.default
@@ -32,13 +33,10 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
     }
 
 
-    @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
-    override val schemesPanel: SchemesPanel<ArrayScheme>
-        get() = schemesPanelImpl as SchemesPanel<ArrayScheme>
     override lateinit var unsavedSettings: ArraySettings
+    override lateinit var schemesPanel: SchemesPanel<ArrayScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var schemesPanelImpl: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<DummyInsertArrayAction>
     private lateinit var previewPanel: JPanel
     private lateinit var countSpinner: JIntSpinner
@@ -72,14 +70,8 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         unsavedSettings = ArraySettings()
-        schemesPanelImpl = ArraySchemesPanel(unsavedSettings)
-            .also { panel ->
-                panel.addListener(object : SchemesPanel.Listener<ArrayScheme> {
-                    override fun onCurrentSchemeWillChange(scheme: ArrayScheme) = saveScheme(scheme)
-
-                    override fun onCurrentSchemeHasChanged(scheme: ArrayScheme) = loadScheme(scheme)
-                })
-            }
+        schemesPanel = ArraySchemesPanel(unsavedSettings)
+            .also { it.addListener(SettingsComponentListener(this)) }
 
         previewPanelHolder = PreviewPanel {
             DummyInsertArrayAction(ArrayScheme().also { saveScheme(it) }, previewPlaceholder)
@@ -106,6 +98,11 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
     override fun doValidate() = countSpinner.validateValue()
 
 
+    /**
+     * A panel to select schemes from.
+     *
+     * @param settings the settings model backing up the panel
+     */
     private class ArraySchemesPanel(settings: ArraySettings) : SchemesPanel<ArrayScheme>(settings) {
         override val type: Class<ArrayScheme>
             get() = ArrayScheme::class.java

@@ -86,13 +86,7 @@ data class UuidScheme(
     }
 
 
-    override fun copyFrom(other: UuidScheme) {
-        this.myName = other.myName
-        this.version = other.version
-        this.enclosure = other.enclosure
-        this.capitalization = other.capitalization
-        this.addDashes = other.addDashes
-    }
+    override fun copyFrom(other: UuidScheme) = XmlSerializerUtil.copyBean(other, this)
 
     override fun copyAs(name: String) = this.copy(myName = name)
 }

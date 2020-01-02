@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.decimal
 
-import com.fwdekker.randomness.array.ArrayScheme
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -105,8 +104,8 @@ object DecimalSchemeTest : Spek({
     describe("copying") {
         describe("copyFrom") {
             it("makes the two schemes equal") {
-                val schemeA = ArrayScheme()
-                val schemeB = ArrayScheme(myName = "Name")
+                val schemeA = DecimalScheme()
+                val schemeB = DecimalScheme(myName = "Name")
                 assertThat(schemeA).isNotEqualTo(schemeB)
 
                 schemeA.copyFrom(schemeB)
@@ -117,7 +116,7 @@ object DecimalSchemeTest : Spek({
 
         describe("copyAs") {
             it("makes two schemes equal except for the name") {
-                val schemeA = ArrayScheme()
+                val schemeA = DecimalScheme()
                 val schemeB = schemeA.copyAs("NewName")
                 assertThat(schemeA).isNotEqualTo(schemeB)
 

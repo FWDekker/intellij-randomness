@@ -3,6 +3,7 @@ package com.fwdekker.randomness.string
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
+import com.fwdekker.randomness.SettingsComponentListener
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.string.StringSettings.Companion.default
@@ -28,13 +29,10 @@ import javax.swing.JPanel
 @Suppress("LateinitUsage") // Initialized by scene builder
 class StringSettingsComponent(settings: StringSettings = default) :
     SettingsComponent<StringSettings, StringScheme>(settings) {
-    @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
-    override val schemesPanel: SchemesPanel<StringScheme>
-        get() = schemesPanelImpl as SchemesPanel<StringScheme>
     override lateinit var unsavedSettings: StringSettings
+    override lateinit var schemesPanel: SchemesPanel<StringScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var schemesPanelImpl: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<StringInsertAction>
     private lateinit var previewPanel: JPanel
     private lateinit var lengthRange: JSpinnerRange
@@ -65,14 +63,8 @@ class StringSettingsComponent(settings: StringSettings = default) :
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         unsavedSettings = StringSettings()
-        schemesPanelImpl = StringSchemesPanel(unsavedSettings)
-            .also { panel ->
-                panel.addListener(object : SchemesPanel.Listener<StringScheme> {
-                    override fun onCurrentSchemeWillChange(scheme: StringScheme) = saveScheme(scheme)
-
-                    override fun onCurrentSchemeHasChanged(scheme: StringScheme) = loadScheme(scheme)
-                })
-            }
+        schemesPanel = StringSchemesPanel(unsavedSettings)
+            .also { it.addListener(SettingsComponentListener(this)) }
 
         previewPanelHolder = PreviewPanel { StringInsertAction(StringScheme().also { saveScheme(it) }) }
         previewPanel = previewPanelHolder.rootPane
@@ -133,6 +125,11 @@ class StringSettingsComponent(settings: StringSettings = default) :
         }
 
 
+    /**
+     * A panel to select schemes from.
+     *
+     * @param settings the settings model backing up the panel
+     */
     private class StringSchemesPanel(settings: StringSettings) : SchemesPanel<StringScheme>(settings) {
         override val type: Class<StringScheme>
             get() = StringScheme::class.java

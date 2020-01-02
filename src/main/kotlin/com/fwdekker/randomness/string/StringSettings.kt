@@ -121,15 +121,7 @@ data class StringScheme(
         }
 
 
-    override fun copyFrom(other: StringScheme) {
-        this.myName = other.myName
-        this.minLength = other.minLength
-        this.maxLength = other.maxLength
-        this.enclosure = other.enclosure
-        this.capitalization = other.capitalization
-        this.symbolSets = other.symbolSets
-        this.activeSymbolSets = other.activeSymbolSets
-    }
+    override fun copyFrom(other: StringScheme) = XmlSerializerUtil.copyBean(other, this)
 
     override fun copyAs(name: String) = this.copy(myName = name)
 }

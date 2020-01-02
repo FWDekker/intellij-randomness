@@ -53,10 +53,7 @@ data class DummyScheme(
     }
 
 
-    override fun copyFrom(other: DummyScheme) {
-        this.myName = other.myName
-        this.count = other.count
-    }
+    override fun copyFrom(other: DummyScheme) = XmlSerializerUtil.copyBean(other, this)
 
     override fun copyAs(name: String) = this.copy(myName = name)
 }

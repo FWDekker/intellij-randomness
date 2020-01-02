@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.word
 
-import com.fwdekker.randomness.array.ArrayScheme
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -45,8 +44,8 @@ object WordSettingsTest : Spek({
     describe("copying") {
         describe("copyFrom") {
             it("makes the two schemes equal") {
-                val schemeA = ArrayScheme()
-                val schemeB = ArrayScheme(myName = "Name")
+                val schemeA = WordScheme()
+                val schemeB = WordScheme(myName = "Name")
                 assertThat(schemeA).isNotEqualTo(schemeB)
 
                 schemeA.copyFrom(schemeB)
@@ -57,7 +56,7 @@ object WordSettingsTest : Spek({
 
         describe("copyAs") {
             it("makes two schemes equal except for the name") {
-                val schemeA = ArrayScheme()
+                val schemeA = WordScheme()
                 val schemeB = schemeA.copyAs("NewName")
                 assertThat(schemeA).isNotEqualTo(schemeB)
 

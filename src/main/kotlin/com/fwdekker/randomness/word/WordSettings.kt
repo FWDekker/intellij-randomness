@@ -156,17 +156,7 @@ data class WordScheme(
         }
 
 
-    override fun copyFrom(other: WordScheme) {
-        this.myName = other.myName
-        this.minLength = other.minLength
-        this.maxLength = other.maxLength
-        this.enclosure = other.enclosure
-        this.capitalization = other.capitalization
-        this.bundledDictionaryFiles = other.bundledDictionaryFiles
-        this.activeBundledDictionaryFiles = other.activeBundledDictionaryFiles
-        this.userDictionaryFiles = other.userDictionaryFiles
-        this.activeUserDictionaryFiles = other.activeUserDictionaryFiles
-    }
+    override fun copyFrom(other: WordScheme) = XmlSerializerUtil.copyBean(other, this)
 
     override fun copyAs(name: String) = this.copy(myName = name)
 }

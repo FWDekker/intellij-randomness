@@ -3,6 +3,7 @@ package com.fwdekker.randomness.word
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
+import com.fwdekker.randomness.SettingsComponentListener
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
 import com.fwdekker.randomness.ui.PreviewPanel
@@ -26,13 +27,10 @@ import javax.swing.JPanel
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
 class WordSettingsComponent(settings: WordSettings = default) : SettingsComponent<WordSettings, WordScheme>(settings) {
-    @Suppress("UNCHECKED_CAST") // Guaranteed by implementation
-    override val schemesPanel: SchemesPanel<WordScheme>
-        get() = schemesPanelImpl as SchemesPanel<WordScheme>
     override lateinit var unsavedSettings: WordSettings
+    override lateinit var schemesPanel: SchemesPanel<WordScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var schemesPanelImpl: JPanel
     private lateinit var previewPanelHolder: PreviewPanel<WordInsertAction>
     private lateinit var previewPanel: JPanel
     private lateinit var lengthRange: JSpinnerRange
@@ -63,14 +61,8 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         unsavedSettings = WordSettings()
-        schemesPanelImpl = WordSchemesPanel(unsavedSettings)
-            .also { panel ->
-                panel.addListener(object : SchemesPanel.Listener<WordScheme> {
-                    override fun onCurrentSchemeWillChange(scheme: WordScheme) = saveScheme(scheme)
-
-                    override fun onCurrentSchemeHasChanged(scheme: WordScheme) = loadScheme(scheme)
-                })
-            }
+        schemesPanel = WordSchemesPanel(unsavedSettings)
+            .also { panel -> panel.addListener(SettingsComponentListener(this)) }
 
         previewPanelHolder = PreviewPanel { WordInsertAction(WordScheme().also { saveScheme(it) }) }
         previewPanel = previewPanelHolder.rootPane
@@ -188,6 +180,11 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
     }
 
 
+    /**
+     * A panel to select schemes from.
+     *
+     * @param settings the settings model backing up the panel
+     */
     private class WordSchemesPanel(settings: WordSettings) : SchemesPanel<WordScheme>(settings) {
         override val type: Class<WordScheme>
             get() = WordScheme::class.java

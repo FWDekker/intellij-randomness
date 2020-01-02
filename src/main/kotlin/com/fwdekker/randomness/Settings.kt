@@ -59,8 +59,10 @@ interface Settings<SELF, SCHEME : Scheme<SCHEME>> : PersistentStateComponent<SEL
 
 
 /**
- * A scheme is a collection of configurable values; in a typical use case a user can quickly switch between instances of
- * schemes of the same type to change the "preset" or "configuration" that is currently being used.
+ * A scheme is a collection of configurable values.
+ *
+ * In a typical use case a user can quickly switch between instances of schemes of the same type to change the "preset"
+ * or "configuration" that is currently being used.
  *
  * @param SELF the type of scheme that is stored; should be a self reference
  * @see Settings

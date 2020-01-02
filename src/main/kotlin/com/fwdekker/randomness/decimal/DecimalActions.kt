@@ -25,7 +25,7 @@ class DecimalGroupAction : DataGroupAction(RandomnessIcons.Decimal.Base) {
 /**
  * Inserts random decimals.
  *
- * @param settings the settings to use for generating decimals
+ * @param scheme the settings to use for generating decimals
  *
  * @see DecimalInsertArrayAction
  * @see DecimalSettings
