@@ -89,7 +89,7 @@ class UuidInsertArrayAction(
  * @see UuidSettings
  * @see UuidSettingsComponent
  */
-class UuidSettingsAction : DataSettingsAction<UuidSettings, UuidScheme>(RandomnessIcons.Uuid.Settings) {
+class UuidSettingsAction : DataSettingsAction(RandomnessIcons.Uuid.Settings) {
     override val title = "UUID Settings"
 
     override val configurableClass = UuidSettingsConfigurable::class.java

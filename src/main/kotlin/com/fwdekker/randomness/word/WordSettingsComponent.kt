@@ -105,6 +105,12 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         UserDictionary.cache.clear()
     }
 
+    /**
+     * Returns true if any dictionaries have been reordered.
+     *
+     * @param settings the settings to check for modifications
+     * @return true if any dictionaries have been reordered
+     */
     override fun isModified(settings: WordSettings): Boolean {
         val tableDictionaries = dictionaryTable.data
         val settingsDictionaries = settings.currentScheme.bundledDictionaries + settings.currentScheme.userDictionaries

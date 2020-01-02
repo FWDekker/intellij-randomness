@@ -102,6 +102,12 @@ class StringSettingsComponent(settings: StringSettings = default) :
         scheme.activeSymbolSetList = symbolSetTable.activeData
     }
 
+    /**
+     * Returns true if any symbol sets have been reordered.
+     *
+     * @param settings the settings to check for modifications
+     * @return true if any symbol sets have been reordered
+     */
     override fun isModified(settings: StringSettings): Boolean {
         val tableSymbolSets: List<SymbolSet> = ArrayList(symbolSetTable.data)
         val settingsSymbolSets: List<SymbolSet> = ArrayList(settings.currentScheme.symbolSetList)

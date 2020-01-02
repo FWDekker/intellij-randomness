@@ -178,9 +178,7 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
 
         listeners.forEach { it.onCurrentSchemeWillChange(scheme) }
 
-        if (scheme == settings.currentScheme)
-            settings.currentSchemeName = DEFAULT_NAME // TODO Must this be done beforehand?
-
+        settings.currentSchemeName = DEFAULT_NAME // TODO Must this be done beforehand?
         settings.schemes.remove(scheme)
 
         if (settings.schemes.isEmpty()) {
@@ -321,7 +319,7 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
          * @param newName the new name of the scheme
          */
         public override fun renameScheme(scheme: T, newName: String) {
-            require(scheme.name != DEFAULT_NAME) { "Cannot rename default scheme." }
+            require(canRenameScheme(scheme)) { "Cannot rename given scheme." }
 
             listeners.forEach { it.onCurrentSchemeWillChange(scheme) }
 
@@ -338,7 +336,7 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
          * @param scheme the scheme to reset
          */
         public override fun resetScheme(scheme: T) {
-            require(scheme.name == DEFAULT_NAME) { "Cannot reset non-default scheme." }
+            require(canResetScheme(scheme)) { "Cannot reset given scheme." }
 
             scheme.copyFrom(createDefaultInstance().copyAs(scheme.myName))
             listeners.forEach { it.onCurrentSchemeHasChanged(scheme) }
@@ -351,6 +349,8 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
          * @param newName the name to be applied to the duplicate
          */
         public override fun duplicateScheme(scheme: T, newName: String) {
+            require(canDuplicateScheme(scheme)) { "Cannot duplicate given scheme." }
+
             listeners.forEach { it.onCurrentSchemeWillChange(scheme) }
 
             val copy = scheme.copyAs(newName)

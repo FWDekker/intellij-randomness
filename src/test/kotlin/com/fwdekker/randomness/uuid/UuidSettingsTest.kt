@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.array.ArrayScheme
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -50,6 +51,32 @@ object UuidSettingsTest : Spek({
             assertThat(newUuidSettings.currentScheme.enclosure).isEqualTo("nvpB")
             assertThat(newUuidSettings.currentScheme.capitalization).isEqualTo(CapitalizationMode.FIRST_LETTER)
             assertThat(newUuidSettings.currentScheme.addDashes).isEqualTo(true)
+        }
+    }
+
+    describe("copying") {
+        describe("copyFrom") {
+            it("makes the two schemes equal") {
+                val schemeA = ArrayScheme()
+                val schemeB = ArrayScheme(myName = "Name")
+                assertThat(schemeA).isNotEqualTo(schemeB)
+
+                schemeA.copyFrom(schemeB)
+
+                assertThat(schemeA).isEqualTo(schemeB)
+            }
+        }
+
+        describe("copyAs") {
+            it("makes two schemes equal except for the name") {
+                val schemeA = ArrayScheme()
+                val schemeB = schemeA.copyAs("NewName")
+                assertThat(schemeA).isNotEqualTo(schemeB)
+
+                schemeB.myName = schemeA.myName
+
+                assertThat(schemeA).isEqualTo(schemeB)
+            }
         }
     }
 })

@@ -94,7 +94,7 @@ class StringInsertArrayAction(
  * @see StringSettings
  * @see StringSettingsComponent
  */
-class StringSettingsAction : DataSettingsAction<StringSettings, StringScheme>(RandomnessIcons.String.Settings) {
+class StringSettingsAction : DataSettingsAction(RandomnessIcons.String.Settings) {
     override val title = "String Settings"
 
     override val configurableClass = StringSettingsConfigurable::class.java

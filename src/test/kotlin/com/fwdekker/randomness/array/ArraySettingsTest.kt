@@ -97,4 +97,30 @@ object ArraySchemeTest : Spek({
             assertThat(arrayScheme.arrayify(listOf("Union", "Bell"))).isEqualTo("[Union\nBell]")
         }
     }
+
+    describe("copying") {
+        describe("copyFrom") {
+            it("makes the two schemes equal") {
+                val schemeA = ArrayScheme()
+                val schemeB = ArrayScheme(myName = "Name")
+                assertThat(schemeA).isNotEqualTo(schemeB)
+
+                schemeA.copyFrom(schemeB)
+
+                assertThat(schemeA).isEqualTo(schemeB)
+            }
+        }
+
+        describe("copyAs") {
+            it("makes two schemes equal except for the name") {
+                val schemeA = ArrayScheme()
+                val schemeB = schemeA.copyAs("NewName")
+                assertThat(schemeA).isNotEqualTo(schemeB)
+
+                schemeB.myName = schemeA.myName
+
+                assertThat(schemeA).isEqualTo(schemeB)
+            }
+        }
+    }
 })

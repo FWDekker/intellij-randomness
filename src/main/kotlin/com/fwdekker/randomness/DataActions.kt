@@ -42,7 +42,7 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
     /**
      * The action used to edit the generator settings for this data type.
      */
-    abstract val settingsAction: DataSettingsAction<*, *>
+    abstract val settingsAction: DataSettingsAction
 
 
     /**
@@ -198,7 +198,7 @@ abstract class DataInsertAction(private val icon: Icon) : AnAction() {
 /**
  * Inserts a randomly generated array of strings at the positions of the event's editor's carets.
  *
- * @param arrayScheme the settings to use for generating arrays
+ * @param arrayScheme the scheme to use for generating arrays
  * @param dataInsertAction the action to generate data with
  * @param icon the icon to display with the action
  */
@@ -231,9 +231,7 @@ abstract class DataInsertArrayAction(
  *
  * @param icon the icon to display with the action
  */
-abstract class DataSettingsAction<S : Settings<S, T>, T : Scheme<T>>(
-    private val icon: Icon = RandomnessIcons.Data.Settings
-) : AnAction() {
+abstract class DataSettingsAction(private val icon: Icon = RandomnessIcons.Data.Settings) : AnAction() {
     /**
      * The name of the action.
      */
@@ -242,7 +240,7 @@ abstract class DataSettingsAction<S : Settings<S, T>, T : Scheme<T>>(
     /**
      * The class of the configurable maintaining the settings.
      */
-    protected abstract val configurableClass: Class<out SettingsConfigurable<S, T>>
+    protected abstract val configurableClass: Class<out SettingsConfigurable<*, *>>
 
 
     /**

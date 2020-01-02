@@ -76,7 +76,7 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
  * Inserts an array-like string of integers.
  *
  * @param arrayScheme the scheme to use for generating arrays
- * @param scheme the settings to use for generating integers
+ * @param scheme the scheme to use for generating integers
  *
  * @see IntegerInsertAction
  */
@@ -94,7 +94,7 @@ class IntegerInsertArrayAction(
  * @see IntegerSettings
  * @see IntegerSettingsComponent
  */
-class IntegerSettingsAction : DataSettingsAction<IntegerSettings, IntegerScheme>(RandomnessIcons.Integer.Settings) {
+class IntegerSettingsAction : DataSettingsAction(RandomnessIcons.Integer.Settings) {
     override val title = "Integer Settings"
 
     override val configurableClass = IntegerSettingsConfigurable::class.java

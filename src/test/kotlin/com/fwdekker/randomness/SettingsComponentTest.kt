@@ -70,6 +70,7 @@ object SettingsComponentTest : Spek({
             assertThat(frame.spinner("count").target().value).isEqualTo(5)
 
             assertThat(unsavedSettings.currentSchemeName).isEqualTo("Scheme2")
+            assertThat(schemesPanel.containsScheme("Scheme2", false)).isTrue()
         }
 
         describe("modifying") {
@@ -148,6 +149,19 @@ object SettingsComponentTest : Spek({
                 GuiActionRunner.execute {
                     schemesPanel.actions.onSchemeChanged(schemesPanel.getScheme("Scheme1"))
                     schemesPanel.removeScheme(schemesPanel.getScheme("Scheme1"))
+                }
+
+                assertThat(unsavedSettings.currentSchemeName).isEqualTo("Default")
+            }
+
+            it("adds the default scheme if the last scheme was removed") {
+                val scheme = schemesPanel.selectedScheme
+                GuiActionRunner.execute {
+                    schemesPanel.settings.schemes.clear()
+                    schemesPanel.settings.schemes.add(scheme)
+
+                    schemesPanel.actions.onSchemeChanged(scheme)
+                    schemesPanel.removeScheme(scheme)
                 }
 
                 assertThat(unsavedSettings.currentSchemeName).isEqualTo("Default")

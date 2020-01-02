@@ -85,7 +85,7 @@ class WordInsertArrayAction(
  * @see WordSettings
  * @see WordSettingsComponent
  */
-class WordSettingsAction : DataSettingsAction<WordSettings, WordScheme>(RandomnessIcons.Word.Settings) {
+class WordSettingsAction : DataSettingsAction(RandomnessIcons.Word.Settings) {
     override val title = "Word Settings"
 
     override val configurableClass = WordSettingsConfigurable::class.java

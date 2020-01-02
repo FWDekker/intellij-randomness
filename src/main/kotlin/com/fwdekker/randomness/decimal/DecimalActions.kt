@@ -75,8 +75,8 @@ class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.de
 /**
  * Inserts an array-like string of decimals.
  *
- * @param arrayScheme the settings to use for generating arrays
- * @param scheme the settings to use for generating decimals
+ * @param arrayScheme the scheme to use for generating arrays
+ * @param scheme the scheme to use for generating decimals
  *
  * @see DecimalInsertAction
  */
@@ -94,7 +94,7 @@ class DecimalInsertArrayAction(
  * @see DecimalSettings
  * @see DecimalSettingsComponent
  */
-class DecimalSettingsAction : DataSettingsAction<DecimalSettings, DecimalScheme>(RandomnessIcons.Decimal.Settings) {
+class DecimalSettingsAction : DataSettingsAction(RandomnessIcons.Decimal.Settings) {
     override val title = "Decimal Settings"
 
     override val configurableClass = DecimalSettingsConfigurable::class.java
