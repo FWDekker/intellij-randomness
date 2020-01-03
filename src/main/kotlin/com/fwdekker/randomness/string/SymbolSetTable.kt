@@ -30,7 +30,7 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
         }
 
         /**
-         * The columns showing the symbols of the symbol sets.
+         * The column showing the symbols of the symbol sets.
          */
         private val SYMBOLS_COLUMN = object : EditableColumnInfo<EditableSymbolSet, String>("Symbols") {
             override fun getColumnClass() = String::class.java
