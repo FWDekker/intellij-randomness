@@ -112,9 +112,10 @@ abstract class ActivityTableModelEditor<T>(
             appendSecondaryText(emptySubText, style) {
                 model.addRow(createElement())
 
+                val firstEditableColumn = (1..model.columnCount).first { model.isCellEditable(0, it) }
                 table.setRowSelectionInterval(0, 0)
                 table.setColumnSelectionInterval(0, 0)
-                table.editCellAt(0, 0)
+                table.editCellAt(0, firstEditableColumn)
             }
             appendSecondaryText(
                 " (${KeymapUtil.getFirstKeyboardShortcutText(CommonShortcuts.getNew())})",
@@ -126,9 +127,31 @@ abstract class ActivityTableModelEditor<T>(
         return TableModelEditor::class.java.getDeclaredField("toolbarDecorator")
             .apply { isAccessible = true }
             .let { it.get(this) as ToolbarDecorator }
+            .setAddAction {
+                // Implementation based on `TableToolbarDecorator#createDefaultTableActions`
+                TableUtil.stopEditing(table)
+
+                table.rowCount.let { rowCount ->
+                    if (canCreateElement()) model.addRow(createElement())
+                    else model.addRow()
+
+                    if (rowCount == table.rowCount) return@setAddAction
+                }
+
+                val newRowIndex = model.rowCount - 1
+                val firstEditableColumn = (1..model.columnCount).first { model.isCellEditable(newRowIndex, it) }
+                table.setRowSelectionInterval(newRowIndex, newRowIndex)
+                table.setColumnSelectionInterval(0, 0)
+                table.editCellAt(newRowIndex, firstEditableColumn)
+
+                TableUtil.updateScroller(table)
+                table.editorComponent?.let { table.scrollRectToVisible(it.bounds) }
+                IdeFocusManager.getGlobalInstance()
+                    .doWhenFocusSettlesDown { IdeFocusManager.getGlobalInstance().requestFocus(table, true) }
+            }
             .addExtraAction(object :
                 ToolbarDecorator.ElementActionButton(IdeBundle.message("button.copy"), PlatformIcons.COPY_ICON) {
-                // Implementation copied from superclass' `createComponent` method
+                // Implementation based on `TableModelEditor#createComponent`
                 override fun actionPerformed(e: AnActionEvent) {
                     TableUtil.stopEditing(table)
 
@@ -136,10 +159,10 @@ abstract class ActivityTableModelEditor<T>(
                         .also { if (it.isEmpty()) return }
                         .forEach { model.addRow(itemEditor.clone(it, false)) }
 
+                    TableUtil.updateScroller(table)
                     IdeFocusManager
                         .getGlobalInstance()
                         .doWhenFocusSettlesDown { IdeFocusManager.getGlobalInstance().requestFocus(table, true) }
-                    TableUtil.updateScroller(table)
                 }
 
                 override fun isEnabled() = table.selection.all { isCopyable(it.datum) }
