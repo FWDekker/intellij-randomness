@@ -2,6 +2,7 @@ package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
@@ -20,15 +21,19 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
 @State(name = "UuidSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class UuidSettings(
     @MapAnnotation(sortBeforeSave = false)
-    override var schemes: MutableList<UuidScheme> = DEFAULT_SCHEMES.toMutableList(),
-    override var currentSchemeName: String = Scheme.DEFAULT_NAME
+    override var schemes: MutableList<UuidScheme> = DEFAULT_SCHEMES,
+    override var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
 ) : Settings<UuidSettings, UuidScheme> {
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
          */
-        val DEFAULT_SCHEMES
-            get() = listOf(UuidScheme())
+        val DEFAULT_SCHEMES: MutableList<UuidScheme>
+            get() = mutableListOf(UuidScheme())
+        /**
+         * The default value of the [currentSchemeName][currentSchemeName] field.
+         */
+        const val DEFAULT_CURRENT_SCHEME_NAME = DEFAULT_NAME
 
         /**
          * The persistent `UuidSettings` instance.
@@ -60,7 +65,7 @@ data class UuidSettings(
  * @see UuidSettingsComponent
  */
 data class UuidScheme(
-    override var myName: String = Scheme.DEFAULT_NAME,
+    override var myName: String = DEFAULT_NAME,
     var version: Int = DEFAULT_VERSION,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,

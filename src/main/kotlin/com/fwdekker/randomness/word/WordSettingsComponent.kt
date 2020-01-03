@@ -11,6 +11,7 @@ import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_ENCLOSURE
+import com.fwdekker.randomness.word.WordSettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.word.WordSettings.Companion.default
 import com.intellij.openapi.ui.ValidationInfo
 import com.jgoodies.forms.factories.DefaultComponentFactory
@@ -198,6 +199,6 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         override val type: Class<WordScheme>
             get() = WordScheme::class.java
 
-        override fun createDefaultInstance() = WordScheme()
+        override fun createDefaultInstances() = DEFAULT_SCHEMES
     }
 }

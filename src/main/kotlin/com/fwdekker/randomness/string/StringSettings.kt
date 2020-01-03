@@ -2,6 +2,7 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
@@ -21,15 +22,19 @@ import com.intellij.util.xmlb.annotations.Transient
 @State(name = "StringSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class StringSettings(
     @MapAnnotation(sortBeforeSave = false)
-    override var schemes: MutableList<StringScheme> = DEFAULT_SCHEMES.toMutableList(),
-    override var currentSchemeName: String = Scheme.DEFAULT_NAME
+    override var schemes: MutableList<StringScheme> = DEFAULT_SCHEMES,
+    override var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
 ) : Settings<StringSettings, StringScheme> {
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
          */
-        val DEFAULT_SCHEMES
-            get() = listOf(StringScheme())
+        val DEFAULT_SCHEMES: MutableList<StringScheme>
+            get() = mutableListOf(StringScheme())
+        /**
+         * The default value of the [currentSchemeName][currentSchemeName] field.
+         */
+        const val DEFAULT_CURRENT_SCHEME_NAME = DEFAULT_NAME
 
         /**
          * The persistent `StringSettings` instance.
@@ -63,7 +68,7 @@ data class StringSettings(
  * @see StringSettingsComponent
  */
 data class StringScheme(
-    override var myName: String = Scheme.DEFAULT_NAME,
+    override var myName: String = DEFAULT_NAME,
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,

@@ -20,15 +20,19 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
 @State(name = "ArraySettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class ArraySettings(
     @MapAnnotation(sortBeforeSave = false)
-    override var schemes: MutableList<ArrayScheme> = DEFAULT_SCHEMES.toMutableList(),
-    override var currentSchemeName: String = DEFAULT_NAME
+    override var schemes: MutableList<ArrayScheme> = DEFAULT_SCHEMES,
+    override var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
 ) : Settings<ArraySettings, ArrayScheme> {
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
          */
-        val DEFAULT_SCHEMES
-            get() = listOf(ArrayScheme())
+        val DEFAULT_SCHEMES: MutableList<ArrayScheme>
+            get() = mutableListOf(ArrayScheme())
+        /**
+         * The default value of the [currentSchemeName][currentSchemeName] field.
+         */
+        const val DEFAULT_CURRENT_SCHEME_NAME = DEFAULT_NAME
 
         /**
          * The persistent `ArraySettings` instance.

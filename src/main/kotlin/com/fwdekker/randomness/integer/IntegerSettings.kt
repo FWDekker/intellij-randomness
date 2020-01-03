@@ -8,6 +8,7 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
+import org.ini4j.Registry.Key.DEFAULT_NAME
 
 
 /**
@@ -19,15 +20,19 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
 @State(name = "IntegerSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class IntegerSettings(
     @MapAnnotation(sortBeforeSave = false)
-    override var schemes: MutableList<IntegerScheme> = DEFAULT_SCHEMES.toMutableList(),
-    override var currentSchemeName: String = Scheme.DEFAULT_NAME
+    override var schemes: MutableList<IntegerScheme> = DEFAULT_SCHEMES,
+    override var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
 ) : Settings<IntegerSettings, IntegerScheme> {
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
          */
-        val DEFAULT_SCHEMES
-            get() = listOf(IntegerScheme())
+        val DEFAULT_SCHEMES: MutableList<IntegerScheme>
+            get() = mutableListOf(IntegerScheme())
+        /**
+         * The default value of the [currentSchemeName][currentSchemeName] field.
+         */
+        const val DEFAULT_CURRENT_SCHEME_NAME = DEFAULT_NAME
 
         /**
          * The persistent `IntegerSettings` instance.
@@ -60,7 +65,7 @@ data class IntegerSettings(
  */
 // TODO Turn the separator property into a char property once supported by the settings serializer
 data class IntegerScheme(
-    override var myName: String = Scheme.DEFAULT_NAME,
+    override var myName: String = DEFAULT_NAME,
     var minValue: Long = DEFAULT_MIN_VALUE,
     var maxValue: Long = DEFAULT_MAX_VALUE,
     var base: Int = DEFAULT_BASE,

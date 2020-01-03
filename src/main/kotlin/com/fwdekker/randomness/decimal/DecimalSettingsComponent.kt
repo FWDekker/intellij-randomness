@@ -3,6 +3,7 @@ package com.fwdekker.randomness.decimal
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.SettingsComponentListener
+import com.fwdekker.randomness.decimal.DecimalSettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.decimal.DecimalSettings.Companion.default
 import com.fwdekker.randomness.ui.JDoubleSpinner
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -110,6 +111,6 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
         override val type: Class<DecimalScheme>
             get() = DecimalScheme::class.java
 
-        override fun createDefaultInstance() = DecimalScheme()
+        override fun createDefaultInstances() = DEFAULT_SCHEMES
     }
 }

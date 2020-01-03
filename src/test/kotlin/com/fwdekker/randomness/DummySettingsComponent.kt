@@ -1,5 +1,6 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.DummySettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.intellij.util.xmlb.XmlSerializerUtil
@@ -15,15 +16,19 @@ import javax.swing.JPanel
  */
 data class DummySettings(
     @MapAnnotation(sortBeforeSave = false)
-    override var schemes: MutableList<DummyScheme> = DEFAULT_SCHEMES.toMutableList(),
-    override var currentSchemeName: String = DEFAULT_NAME
+    override var schemes: MutableList<DummyScheme> = DEFAULT_SCHEMES,
+    override var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
 ) : Settings<DummySettings, DummyScheme> {
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
          */
-        val DEFAULT_SCHEMES
-            get() = listOf(DummyScheme())
+        val DEFAULT_SCHEMES: MutableList<DummyScheme>
+            get() = mutableListOf(DummyScheme())
+        /**
+         * The default value of the [currentSchemeName][currentSchemeName] field.
+         */
+        const val DEFAULT_CURRENT_SCHEME_NAME = "Default"
     }
 
 
@@ -72,13 +77,7 @@ class DummySettingsComponent(settings: DummySettings = DummySettings()) :
 
     override val unsavedSettings = DummySettings()
     override val schemesPanel = DummySchemesPanel(unsavedSettings)
-        .also { panel ->
-            panel.addListener(object : SchemesPanel.Listener<DummyScheme> {
-                override fun onCurrentSchemeWillChange(scheme: DummyScheme) = saveScheme(scheme)
-
-                override fun onCurrentSchemeHasChanged(scheme: DummyScheme) = loadScheme(scheme)
-            })
-        }
+        .also { it.addListener(SettingsComponentListener(this)) }
 
 
     init {
@@ -109,7 +108,7 @@ class DummySettingsComponent(settings: DummySettings = DummySettings()) :
         override val type: Class<DummyScheme>
             get() = DummyScheme::class.java
 
-        override fun createDefaultInstance() = DummyScheme()
+        override fun createDefaultInstances() = DEFAULT_SCHEMES
     }
 }
 

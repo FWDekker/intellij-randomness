@@ -6,6 +6,7 @@ import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.SettingsComponentListener
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_ENCLOSURE
+import com.fwdekker.randomness.string.StringSettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.string.StringSettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
@@ -143,6 +144,6 @@ class StringSettingsComponent(settings: StringSettings = default) :
         override val type: Class<StringScheme>
             get() = StringScheme::class.java
 
-        override fun createDefaultInstance() = StringScheme()
+        override fun createDefaultInstances() = DEFAULT_SCHEMES
     }
 }

@@ -6,6 +6,7 @@ import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.SettingsComponentListener
 import com.fwdekker.randomness.array.ArrayScheme.Companion.DEFAULT_BRACKETS
 import com.fwdekker.randomness.array.ArrayScheme.Companion.DEFAULT_SEPARATOR
+import com.fwdekker.randomness.array.ArraySettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.array.ArraySettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.PreviewPanel
@@ -115,6 +116,6 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
         override val type: Class<ArrayScheme>
             get() = ArrayScheme::class.java
 
-        override fun createDefaultInstance() = ArrayScheme()
+        override fun createDefaultInstances() = DEFAULT_SCHEMES
     }
 }
