@@ -10,6 +10,7 @@ import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_VERSION
+import com.fwdekker.randomness.uuid.UuidSettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.uuid.UuidSettings.Companion.default
 import com.intellij.openapi.ui.ValidationInfo
 import javax.swing.ButtonGroup
@@ -90,6 +91,6 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
         override val type: Class<UuidScheme>
             get() = UuidScheme::class.java
 
-        override fun createDefaultInstance() = UuidScheme()
+        override fun createDefaultInstances() = DEFAULT_SCHEMES
     }
 }

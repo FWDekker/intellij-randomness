@@ -3,6 +3,7 @@ package com.fwdekker.randomness.integer
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.SettingsComponentListener
+import com.fwdekker.randomness.integer.IntegerSettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.integer.IntegerSettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JLongSpinner
@@ -107,6 +108,6 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         override val type: Class<IntegerScheme>
             get() = IntegerScheme::class.java
 
-        override fun createDefaultInstance() = IntegerScheme()
+        override fun createDefaultInstances() = DEFAULT_SCHEMES
     }
 }

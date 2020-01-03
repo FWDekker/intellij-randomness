@@ -1,6 +1,5 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.SchemesPanel.Listener
 import com.intellij.application.options.schemes.AbstractSchemeActions
 import com.intellij.application.options.schemes.SchemesModel
@@ -128,13 +127,13 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
     abstract val type: Class<T>
 
     /**
-     * Returns a new scheme instance that is equivalent to the default scheme instance.
+     * Returns a list of the default instances.
      *
-     * This method **must** return a new instance every time it is called.
+     * This method **must** return new instances every time it is called.
      *
-     * @return a new scheme instance that is equivalent to the default scheme instance
+     * @return a list of the default instances
      */
-    abstract fun createDefaultInstance(): T
+    abstract fun createDefaultInstances(): List<T>
 
 
     /**
@@ -175,16 +174,16 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
      * @throws IllegalArgumentException if the default scheme is being removed
      */
     override fun removeScheme(scheme: T) {
-        require(scheme.name != DEFAULT_NAME) { "Cannot remove default scheme." }
+        require(scheme.name !in createDefaultInstances().map { it.name }) { "Cannot remove default scheme." }
 
         listeners.forEach { it.onCurrentSchemeWillChange(scheme) }
 
-        settings.currentSchemeName = DEFAULT_NAME
+        settings.currentSchemeName = createDefaultInstances().map { it.name }[0]
         settings.schemes.remove(scheme)
 
         if (settings.schemes.isEmpty()) {
-            settings.schemes.add(createDefaultInstance())
-            settings.currentSchemeName = DEFAULT_NAME
+            settings.schemes.addAll(createDefaultInstances())
+            settings.currentSchemeName = createDefaultInstances().map { it.name }[0]
         }
 
         updateComboBoxList()
@@ -223,7 +222,7 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
      *
      * @param scheme the scheme to compare against the default scheme
      */
-    override fun differsFromDefault(scheme: T) = scheme != createDefaultInstance()
+    override fun differsFromDefault(scheme: T) = scheme !in createDefaultInstances()
 
     /**
      * Returns false because project-specific schemes are not supported.
@@ -264,7 +263,7 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
      * @param scheme the scheme to check for deletability
      * @return true if the given scheme can be deleted
      */
-    override fun canDeleteScheme(scheme: T) = scheme.name != DEFAULT_NAME
+    override fun canDeleteScheme(scheme: T) = scheme.name !in createDefaultInstances().map { it.name }
 
     /**
      * Returns true because all schemes can be duplicated.
@@ -282,7 +281,7 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
      * @param scheme the scheme to check for renamability
      * @return true if the given scheme can be renamed
      */
-    override fun canRenameScheme(scheme: T) = scheme.name != DEFAULT_NAME
+    override fun canRenameScheme(scheme: T) = scheme.name !in createDefaultInstances().map { it.name }
 
     /**
      * Returns true if the given scheme can be reset.
@@ -292,7 +291,7 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
      * @param scheme the scheme to check for resetability
      * @return true if the given scheme can be reset
      */
-    override fun canResetScheme(scheme: T) = scheme.name == DEFAULT_NAME
+    override fun canResetScheme(scheme: T) = scheme.name in createDefaultInstances().map { it.name }
 
 
     /**
@@ -339,7 +338,7 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
         public override fun resetScheme(scheme: T) {
             require(canResetScheme(scheme)) { "Cannot reset given scheme." }
 
-            scheme.copyFrom(createDefaultInstance().copyAs(scheme.myName))
+            scheme.copyFrom(createDefaultInstances().single { it.myName == scheme.myName })
             listeners.forEach { it.onCurrentSchemeHasChanged(scheme) }
         }
 
