@@ -2,7 +2,10 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.ui.ActivityTableModelEditor
 import com.fwdekker.randomness.ui.EditableDatum
+import com.intellij.ui.components.fields.ExpandableTextField
+import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.util.ui.CollectionItemEditor
+import javax.swing.JTable
 
 
 private typealias EditableSymbolSet = EditableDatum<SymbolSet>
@@ -40,6 +43,26 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
             override fun setValue(item: EditableSymbolSet, value: String) {
                 item.datum.symbols = value
             }
+
+            override fun getEditor(item: EditableSymbolSet?) =
+                object : AbstractTableCellEditor() {
+                    private var component: ExpandableTextField? = null
+
+                    override fun getTableCellEditorComponent(
+                        table: JTable?,
+                        value: Any?,
+                        isSelected: Boolean,
+                        row: Int,
+                        column: Int
+                    ): ExpandableTextField =
+                        ExpandableTextField()
+                            .also {
+                                it.text = value as String
+                                component = it
+                            }
+
+                    override fun getCellEditorValue() = component?.text
+                }
         }
 
         /**
