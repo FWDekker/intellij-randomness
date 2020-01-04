@@ -19,7 +19,7 @@ This plugin is also available on the [plugin repository](https://plugins.jetbrai
 
 
 ## 📖 How to use
-<img align="right" src=".github/img/decimal-settings-cropped.png" alt="String settings" />
+<img align="right" src=".github/img/live-sample.gif" alt="Animated sample usage of Randomness." />
 
 To insert random data, press <kbd>Alt + R</kbd> (<kbd>⌥R</kbd>) and choose the type of data you want to insert.
 A different value will be inserted at each caret.
