@@ -22,7 +22,9 @@
         <properties>
           <editable value="false"/>
           <lineWrap value="true"/>
+          <name value="previewLabel"/>
           <opaque value="false"/>
+          <text resource-bundle="randomness" key="settings.placeholder"/>
           <wrapStyleWord value="true"/>
         </properties>
       </component>
