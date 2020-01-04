@@ -39,31 +39,31 @@ Randomness can also be found in the main menu under <kbd>Tools</kbd> or in the
   1. **Integers**, such as `7,826,922`, in any base from binary to hexatrigesimal.
   2. **Decimals**, such as `8,816,573.10`, using customisable separators.
   3. **Strings**, such as `"PaQDQqSBEH"`, with custom symbol lists.
-  4. **Words**, such as `"Imporous"`, with custom word lists.
+  4. **Words**, such as `"Bridge"`, with custom word lists.
   5. **UUIDs**, such as `0caa7b28-fe58-4ba6-a25a-9e5beaaf8f4b`, with or without dashes.
 
   In addition to these data types, it's also possible to generate entire **arrays** of a data type.
   For example, an array of integers might look like `[978, 881, 118, 286, 288]`.
 * ⚙ **Settings**<br />
-  The way the data is generated can be adjusted to your demands.
+  The way the data is generated can be **adjusted to your demands**.
   You can customise the smallest integer to generate, the quotation marks to surround strings with, the number of
   elements to put in an array, the decimal separator to use, the capitalisation of strings and UUIDs, and much more.
 * 👀 **Previews**<br />
-  To help you decide what settings to choose, a preview of the data that is generated with your current settings is
+  To **help you decide** what settings to choose, a preview of the data that is generated with your current settings is
   shown at the bottom of the settings window.
 * 💨 **Shortcuts**<br />
   Instead of using up all your shortcuts, Randomness only uses the <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) shortcut by
   default.
   However, you have the option to assign a unique shortcut to each individual data type and each settings window to
-  streamline your workflow.
+  **streamline your workflow**.
 * 💤 **Symbol sets**<br />
   While Randomness comes with a varied selection of symbols to use for generating strings, it also gives you the option
-  to add your own symbols, with support for Chinese and mathematical symbols.
+  to **add your own symbols**, with support for Chinese and mathematical symbols.
 * 📚 **Dictionaries**<br />
   Randomness is bundled with a small English dictionary from which it chooses random words.
   However, you may want to add random words from another language or insert random movie quotes.
-  You can create your own dictionaries by creating a text file and putting one option on each line, and saving the file
-  with the `.dic` extension.
+  You can **create your own dictionaries** by creating a text file and putting one option on each line, and saving the
+  file with the `.dic` extension.
   Empty lines and lines that start with a `#` are ignored.
 
   <p align="center"><img src=".github/img/word-settings.png" alt="Dictionary settings" /></p>
@@ -99,5 +99,6 @@ You can open this file with [Sketch](https://www.sketch.com/) (macOS), [Lunacy](
 
 
 ## 🙏 Credits
-Thanks to [Georgios Andreadis](https://github.com/gandreadis) for the logo!<br />
+Thanks to [Georgios Andreadis](https://github.com/gandreadis) for the
+[original logo](https://github.com/FWDekker/intellij-randomness/pull/86)!<br />
 Thanks to [Meilina Reksoprodjo](https://github.com/meilinar) for help with macOS user testing!
