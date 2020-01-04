@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.ServiceManager
@@ -8,7 +9,6 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
-import org.ini4j.Registry.Key.DEFAULT_NAME
 
 
 /**

@@ -27,7 +27,6 @@ object PreviewPanelTest : Spek({
 
     val placeholder = ResourceBundle.getBundle("randomness").getString("settings.placeholder")
     val randomText = "random_value"
-    val randomTextHtml = "<html>$randomText</html>"
 
     lateinit var panel: PreviewPanel
     lateinit var frame: FrameFixture
@@ -43,7 +42,7 @@ object PreviewPanelTest : Spek({
         }
         frame = Containers.showInFrame(panel.rootPane)
 
-        assertThat(frame.label("previewLabel").text()).isEqualTo(placeholder)
+        assertThat(frame.textBox("previewLabel").text()).isEqualTo(placeholder)
     }
 
     afterEachTest {
@@ -55,7 +54,7 @@ object PreviewPanelTest : Spek({
         it("updates the label's contents") {
             GuiActionRunner.execute { panel.updatePreview() }
 
-            assertThat(frame.label("previewLabel").text()).isEqualTo("<html>random_value</html>")
+            assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
         }
     }
 
@@ -67,7 +66,7 @@ object PreviewPanelTest : Spek({
                 spinner.value = 5
             }
 
-            assertThat(frame.label("previewLabel").text()).isEqualTo(randomTextHtml)
+            assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
         }
 
         it("updates when a JCheckBox is updated") {
@@ -77,7 +76,7 @@ object PreviewPanelTest : Spek({
                 spinner.isSelected = true
             }
 
-            assertThat(frame.label("previewLabel").text()).isEqualTo(randomTextHtml)
+            assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
         }
 
         // Requires dependency on IntelliJ classes
@@ -96,7 +95,7 @@ object PreviewPanelTest : Spek({
                 table.data = listOf("a")
             }
 
-            assertThat(frame.label("previewLabel").text()).isEqualTo(randomTextHtml)
+            assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
         }
 
         it("updates when a group of JRadioButtons is updated") {
@@ -132,7 +131,9 @@ object PreviewPanelTest : Spek({
             GuiActionRunner.execute { panel.updatePreview() }
             val oldRandom = action?.random
 
-            frame.button("refreshButton").target().mouseListeners.forEach { it.mouseClicked(null) }
+            GuiActionRunner.execute {
+                frame.button("refreshButton").target().mouseListeners.forEach { it.mouseClicked(null) }
+            }
 
             GuiActionRunner.execute { panel.updatePreview() }
             val newRandom = action?.random
