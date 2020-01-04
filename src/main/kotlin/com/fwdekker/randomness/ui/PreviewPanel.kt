@@ -10,10 +10,10 @@ import javax.swing.ButtonGroup
 import javax.swing.JButton
 import javax.swing.JCheckBox
 import javax.swing.JComponent
-import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JRadioButton
 import javax.swing.JSpinner
+import javax.swing.JTextArea
 import kotlin.random.Random
 
 
@@ -35,7 +35,7 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
     lateinit var rootPane: JPanel
     private lateinit var separator: JComponent
     private lateinit var refreshButton: JButton
-    private lateinit var previewLabel: JLabel
+    private lateinit var previewLabel: JTextArea
 
     private var seed = Random.nextInt()
 
@@ -78,13 +78,7 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
     @Suppress("SwallowedException") // Alternative is to add coupling to SettingsComponent
     fun updatePreview() {
         try {
-            previewLabel.text = "" +
-                "<html>" +
-                getGenerator().also { it.random = Random(seed) }
-                    .generateString()
-                    .replace("<", "&lt;")
-                    .replace("\n", "<br>") +
-                "</html>"
+            previewLabel.text = getGenerator().also { it.random = Random(seed) }.generateString()
         } catch (e: DataGenerationException) {
             // Ignore exception; invalid settings are handled by form validation
         } catch (e: IllegalArgumentException) {
