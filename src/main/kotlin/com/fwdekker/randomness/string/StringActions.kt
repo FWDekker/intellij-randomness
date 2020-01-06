@@ -4,6 +4,8 @@ import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
+import com.fwdekker.randomness.DataInsertRepeatAction
+import com.fwdekker.randomness.DataInsertRepeatArrayAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
@@ -16,6 +18,8 @@ import icons.RandomnessIcons
 class StringGroupAction : DataGroupAction(RandomnessIcons.String.Base) {
     override val insertAction = StringInsertAction()
     override val insertArrayAction = StringInsertArrayAction()
+    override val insertRepeatAction = StringInsertRepeatAction()
+    override val insertRepeatArrayAction = StringInsertRepeatArrayAction()
     override val settingsAction = StringSettingsAction()
 }
 
@@ -85,6 +89,31 @@ class StringInsertArrayAction(
     scheme: StringScheme = StringSettings.default.currentScheme
 ) : DataInsertArrayAction(arrayScheme, StringInsertAction(scheme), RandomnessIcons.String.Array) {
     override val name = "Random String Array"
+}
+
+
+/**
+ * Inserts repeated random strings.
+ *
+ * @param scheme the settings to use for generating strings
+ */
+class StringInsertRepeatAction(scheme: StringScheme = StringSettings.default.currentScheme) :
+    DataInsertRepeatAction(StringInsertAction(scheme), RandomnessIcons.String.Repeat) {
+    override val name = "Random Repeated String"
+}
+
+
+/**
+ * Inserts repeated array-like strings of strings.
+ *
+ * @param arrayScheme the scheme to use for generating arrays
+ * @param scheme the scheme to use for generating strings
+ */
+class StringInsertRepeatArrayAction(
+    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+    scheme: StringScheme = StringSettings.default.currentScheme
+) : DataInsertRepeatArrayAction(StringInsertArrayAction(arrayScheme, scheme), RandomnessIcons.String.RepeatArray) {
+    override val name = "Random Repeated String Array"
 }
 
 

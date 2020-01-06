@@ -4,6 +4,8 @@ import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
+import com.fwdekker.randomness.DataInsertRepeatAction
+import com.fwdekker.randomness.DataInsertRepeatArrayAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
@@ -18,6 +20,8 @@ import kotlin.math.nextUp
 class DecimalGroupAction : DataGroupAction(RandomnessIcons.Decimal.Base) {
     override val insertAction = DecimalInsertAction()
     override val insertArrayAction = DecimalInsertArrayAction()
+    override val insertRepeatAction = DecimalInsertRepeatAction()
+    override val insertRepeatArrayAction = DecimalInsertRepeatArrayAction()
     override val settingsAction = DecimalSettingsAction()
 }
 
@@ -85,6 +89,31 @@ class DecimalInsertArrayAction(
     scheme: DecimalScheme = DecimalSettings.default.currentScheme
 ) : DataInsertArrayAction(arrayScheme, DecimalInsertAction(scheme), RandomnessIcons.Decimal.Array) {
     override val name = "Random Decimal Array"
+}
+
+
+/**
+ * Inserts repeated random decimals.
+ *
+ * @param scheme the settings to use for generating decimals
+ */
+class DecimalInsertRepeatAction(scheme: DecimalScheme = DecimalSettings.default.currentScheme) :
+    DataInsertRepeatAction(DecimalInsertAction(scheme), RandomnessIcons.Decimal.Repeat) {
+    override val name = "Random Repeated Decimal"
+}
+
+
+/**
+ * Inserts repeated array-like strings of decimals.
+ *
+ * @param arrayScheme the scheme to use for generating arrays
+ * @param scheme the scheme to use for generating decimals
+ */
+class DecimalInsertRepeatArrayAction(
+    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+    scheme: DecimalScheme = DecimalSettings.default.currentScheme
+) : DataInsertRepeatArrayAction(DecimalInsertArrayAction(arrayScheme, scheme), RandomnessIcons.Decimal.RepeatArray) {
+    override val name = "Random Repeated Decimal Array"
 }
 
 

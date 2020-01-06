@@ -4,6 +4,8 @@ import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
+import com.fwdekker.randomness.DataInsertRepeatAction
+import com.fwdekker.randomness.DataInsertRepeatArrayAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
@@ -16,6 +18,8 @@ import icons.RandomnessIcons
 class WordGroupAction : DataGroupAction(RandomnessIcons.Word.Base) {
     override val insertAction = WordInsertAction()
     override val insertArrayAction = WordInsertArrayAction()
+    override val insertRepeatAction = WordInsertRepeatAction()
+    override val insertRepeatArrayAction = WordInsertRepeatArrayAction()
     override val settingsAction = WordSettingsAction()
 }
 
@@ -76,6 +80,31 @@ class WordInsertArrayAction(
     scheme: WordScheme = WordSettings.default.currentScheme
 ) : DataInsertArrayAction(arrayScheme, WordInsertAction(scheme), RandomnessIcons.Word.Array) {
     override val name = "Random Word Array"
+}
+
+
+/**
+ * Inserts repeated random words.
+ *
+ * @param scheme the settings to use for generating words
+ */
+class WordInsertRepeatAction(scheme: WordScheme = WordSettings.default.currentScheme) :
+    DataInsertRepeatAction(WordInsertAction(scheme), RandomnessIcons.Word.Repeat) {
+    override val name = "Random Repeated Word"
+}
+
+
+/**
+ * Inserts repeated array-like strings of words.
+ *
+ * @param arrayScheme the scheme to use for generating arrays
+ * @param scheme the scheme to use for generating words
+ */
+class WordInsertRepeatArrayAction(
+    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+    scheme: WordScheme = WordSettings.default.currentScheme
+) : DataInsertRepeatArrayAction(WordInsertArrayAction(arrayScheme, scheme), RandomnessIcons.Word.RepeatArray) {
+    override val name = "Random Repeated Word Array"
 }
 
 

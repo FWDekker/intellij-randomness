@@ -4,6 +4,8 @@ import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
+import com.fwdekker.randomness.DataInsertRepeatAction
+import com.fwdekker.randomness.DataInsertRepeatArrayAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
@@ -18,6 +20,8 @@ import java.text.DecimalFormat
 class IntegerGroupAction : DataGroupAction(RandomnessIcons.Integer.Base) {
     override val insertAction = IntegerInsertAction()
     override val insertArrayAction = IntegerInsertArrayAction()
+    override val insertRepeatAction = IntegerInsertRepeatAction()
+    override val insertRepeatArrayAction = IntegerInsertRepeatArrayAction()
     override val settingsAction = IntegerSettingsAction()
 }
 
@@ -85,6 +89,31 @@ class IntegerInsertArrayAction(
     scheme: IntegerScheme = IntegerSettings.default.currentScheme
 ) : DataInsertArrayAction(arrayScheme, IntegerInsertAction(scheme), RandomnessIcons.Integer.Array) {
     override val name = "Random Integer Array"
+}
+
+
+/**
+ * Inserts repeated random integers.
+ *
+ * @param scheme the settings to use for generating integers
+ */
+class IntegerInsertRepeatAction(scheme: IntegerScheme = IntegerSettings.default.currentScheme) :
+    DataInsertRepeatAction(IntegerInsertAction(scheme), RandomnessIcons.Integer.Repeat) {
+    override val name = "Random Repeated Integer"
+}
+
+
+/**
+ * Inserts repeated array-like strings of integers.
+ *
+ * @param arrayScheme the scheme to use for generating arrays
+ * @param scheme the scheme to use for generating integers
+ */
+class IntegerInsertRepeatArrayAction(
+    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+    scheme: IntegerScheme = IntegerSettings.default.currentScheme
+) : DataInsertRepeatArrayAction(IntegerInsertArrayAction(arrayScheme, scheme), RandomnessIcons.Integer.RepeatArray) {
+    override val name = "Random Repeated Integer Array"
 }
 
 
