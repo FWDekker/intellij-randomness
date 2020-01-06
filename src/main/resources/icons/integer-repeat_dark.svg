@@ -2,17 +2,17 @@
 <svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
   <desc>Created with Lunacy</desc>
   <defs>
-    <path d="M9.5 8.5L17 8.5L17 0L0 0L0 16L9.5 16L9.5 8.5Z" id="path_1" />
+    <path d="M16 10L16 0L6.14673e-08 0L0 16L10 16L9 15L8.5 13.5L8.5 9.5L9 8.5L9.5 8.5L10 9L12.5 8.5L15 9L16 10Z" id="path_1" />
     <clipPath id="mask_1">
       <use xlink:href="#path_1" />
     </clipPath>
   </defs>
-  <g id="integer-array_dark">
-    <g id="ActionArray-instance">
-      <g id="Mask-group" transform="translate(-1 0)">
-        <path d="M9.5 8.5L17 8.5L17 0L0 0L0 16L9.5 16L9.5 8.5Z" id="Action-mask" fill="none" stroke="none" />
+  <g id="integer-repeat_dark">
+    <g id="ActionRepeat-instance">
+      <g id="Mask-group">
+        <path d="M16 10L16 0L6.14673e-08 0L0 16L10 16L9 15L8.5 13.5L8.5 9.5L9 8.5L9.5 8.5L10 9L12.5 8.5L15 9L16 10Z" id="Action-mask" fill="none" stroke="none" />
         <g clip-path="url(#mask_1)">
-          <g id="Action-instance" transform="translate(1 0)">
+          <g id="Action-instance">
             <g id="Action-instance">
               <path d="M0 7C0 3.13401 3.13401 0 7 0C10.866 0 14 3.13401 14 7C14 10.866 10.866 14 7 14C3.13401 14 0 10.866 0 7Z" transform="translate(1 1)" id="Oval" fill="#40B6E0" fill-opacity="0.6" stroke="none" />
               <g id="123" fill="#000000" fill-opacity="0.8980392">
@@ -22,11 +22,10 @@
           </g>
         </g>
       </g>
-      <g id="Array-instance" transform="translate(9.500004 9.499996)">
-        <g id="Array-instance">
-          <g id="Group">
-            <path d="M0 6.5L0 5.525L1.625 5.525L1.625 0.975L0 0.975L0 0L2.6 0L2.6 6.5L0 6.5L0 6.5Z" transform="translate(3.899999 0)" id="Right" fill="#AFB1B3" stroke="none" />
-            <path d="M0 6.5L0 0L2.6 0L2.6 0.975L0.975 0.975L0.975 5.525L2.6 5.525L2.6 6.5L0 6.5L0 6.5Z" id="Left" fill="#AFB1B3" stroke="none" />
+      <g id="Settings-instance" transform="translate(9.000008 9)">
+        <g id="Repeat-instance">
+          <g id="Shape" transform="translate(-0.007536888 0.1610396)">
+            <path d="M3.33628 0C2.36649 0 1.49815 0.454063 0.915213 1.1699L0 0.308531L0.138604 3.07306L2.78338 2.92817L1.62351 1.83653C2.03157 1.32196 2.6477 0.994202 3.33707 0.994202C4.34253 0.994202 5.19219 1.69143 5.46771 2.64859L6.45591 2.68466C6.17152 1.15487 4.88292 0 3.33628 0ZM3.33628 6.64411C4.30762 6.64411 5.17718 6.1886 5.76013 5.47078L6.67653 6.33328L6.53793 3.56875L3.89315 3.71364L5.0505 4.8029C4.64244 5.31738 4.02636 5.64506 3.33707 5.64506C2.31149 5.64506 1.448 4.91964 1.19058 3.9329L0.205622 3.89694C0.466101 5.45767 1.76864 6.64411 3.33628 6.64411Z" transform="matrix(0.9986295 0.05233596 -0.05233596 0.9986295 0.347725 1.825392E-07)" id="Shape" fill="#AFB1B3" fill-rule="evenodd" stroke="none" />
           </g>
         </g>
       </g>

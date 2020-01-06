@@ -19,7 +19,7 @@ This plugin is also available on the [plugin repository](https://plugins.jetbrai
 
 
 ## 📖 How to use
-<img align="right" src=".github/img/live-sample.gif" alt="Animated sample usage of Randomness." />
+<img align="right" width="450px" src=".github/img/live-sample.gif" alt="Animated sample usage of Randomness." />
 
 To insert random data, press <kbd>Alt + R</kbd> (<kbd>⌥R</kbd>) and choose the type of data you want to insert.
 A different value will be inserted at each caret.
@@ -56,7 +56,7 @@ Randomness can also be found in the main menu under <kbd>Tools</kbd> or in the
   default.
   However, you have the option to assign a unique shortcut to each individual data type and each settings window to
   **streamline your workflow**.
-* 💤 **Symbol sets**<br />
+* 💬 **Symbol sets**<br />
   While Randomness comes with a varied selection of symbols to use for generating strings, it also gives you the option
   to **add your own symbols**, with support for Chinese and mathematical symbols.
 * 📚 **Dictionaries**<br />
