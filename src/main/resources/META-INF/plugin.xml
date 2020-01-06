@@ -54,63 +54,145 @@
         </action>
 
         <!-- Integers -->
-        <action id="randomness.InsertInteger" class="com.fwdekker.randomness.integer.IntegerInsertAction"
-                text="Random Integer" description="Inserts a random integer at each caret."
+        <action id="randomness.InsertInteger"
+                class="com.fwdekker.randomness.integer.IntegerInsertAction"
+                text="Random Integer"
+                description="Inserts a random integer at each caret."
                 icon="/icons/integer.svg" />
-        <action id="randomness.InsertIntegerArray" class="com.fwdekker.randomness.integer.IntegerInsertArrayAction"
-                text="Random Integer Array" description="Inserts an array of random integers at each caret."
+        <action id="randomness.InsertIntegerArray"
+                class="com.fwdekker.randomness.integer.IntegerInsertAction$ArrayAction"
+                text="Random Integer Array"
+                description="Inserts an array of random integers at each caret."
                 icon="/icons/integer-array.svg" />
-        <action id="randomness.IntegerSettings" class="com.fwdekker.randomness.integer.IntegerSettingsAction"
-                text="Integer Settings" description="Settings for the Random Integer action."
+        <action id="randomness.InsertIntegerRepeat"
+                class="com.fwdekker.randomness.integer.IntegerInsertAction$RepeatAction"
+                text="Random Repeated Integer"
+                description="Inserts the same random integer at each caret."
+                icon="/icons/integer-repeat.svg" />
+        <action id="randomness.InsertIntegerRepeatArray"
+                class="com.fwdekker.randomness.integer.IntegerInsertAction$RepeatArrayAction"
+                text="Random Repeated Integer Array"
+                description="Inserts the same array of random integers at each caret."
+                icon="/icons/integer-repeat-array.svg" />
+        <action id="randomness.IntegerSettings"
+                class="com.fwdekker.randomness.integer.IntegerSettingsAction"
+                text="Integer Settings"
+                description="Settings for the Random Integer action."
                 icon="/icons/integer-settings.svg" />
 
         <!-- Decimals -->
-        <action id="randomness.InsertDecimal" class="com.fwdekker.randomness.decimal.DecimalInsertAction"
-                text="Random Decimal" description="Inserts a random decimal at each caret."
+        <action id="randomness.InsertDecimal"
+                class="com.fwdekker.randomness.decimal.DecimalInsertAction"
+                text="Random Decimal"
+                description="Inserts a random decimal at each caret."
                 icon="/icons/decimal.svg" />
-        <action id="randomness.InsertDecimalArray" class="com.fwdekker.randomness.decimal.DecimalInsertArrayAction"
-                text="Random Decimal Array" description="Inserts an array of random decimals at each caret."
+        <action id="randomness.InsertDecimalArray"
+                class="com.fwdekker.randomness.decimal.DecimalInsertAction$ArrayAction"
+                text="Random Decimal Array"
+                description="Inserts an array of random decimals at each caret."
                 icon="/icons/decimal-array.svg" />
-        <action id="randomness.DecimalSettings" class="com.fwdekker.randomness.decimal.DecimalSettingsAction"
-                text="Decimal Settings" description="Settings for the Random Decimal action."
+        <action id="randomness.InsertDecimalRepeat"
+                class="com.fwdekker.randomness.decimal.DecimalInsertAction$RepeatAction"
+                text="Random Repeated Decimal"
+                description="Inserts the same random decimal at each caret."
+                icon="/icons/decimal-repeat.svg" />
+        <action id="randomness.InsertDecimalRepeatArray"
+                class="com.fwdekker.randomness.decimal.DecimalInsertAction$RepeatArrayAction"
+                text="Random Repeated Decimal Array"
+                description="Inserts the same array of random decimals at each caret."
+                icon="/icons/decimal-repeat-array.svg" />
+        <action id="randomness.DecimalSettings"
+                class="com.fwdekker.randomness.decimal.DecimalSettingsAction"
+                text="Decimal Settings"
+                description="Settings for the Random Decimal action."
                 icon="/icons/decimal-settings.svg" />
 
         <!-- Strings -->
-        <action id="randomness.InsertString" class="com.fwdekker.randomness.string.StringInsertAction"
-                text="Random String" description="Inserts a random string at each caret."
+        <action id="randomness.InsertString"
+                class="com.fwdekker.randomness.string.StringInsertAction"
+                text="Random String"
+                description="Inserts a random string at each caret."
                 icon="/icons/string.svg" />
-        <action id="randomness.InsertStringArray" class="com.fwdekker.randomness.string.StringInsertArrayAction"
-                text="Random String Array" description="Insert an array of random strings at each caret."
+        <action id="randomness.InsertStringArray"
+                class="com.fwdekker.randomness.string.StringInsertAction$ArrayAction"
+                text="Random String Array"
+                description="Insert an array of random strings at each caret."
                 icon="/icons/string-array.svg" />
-        <action id="randomness.StringSettings" class="com.fwdekker.randomness.string.StringSettingsAction"
-                text="String Settings" description="Settings for the Random String action."
+        <action id="randomness.InsertStringRepeat"
+                class="com.fwdekker.randomness.string.StringInsertAction$RepeatAction"
+                text="Random Repeated String"
+                description="Inserts the same random string at each caret."
+                icon="/icons/string-repeat.svg" />
+        <action id="randomness.InsertStringRepeatArray"
+                class="com.fwdekker.randomness.string.StringInsertAction$RepeatArrayAction"
+                text="Random Repeated String Array"
+                description="Inserts the same array of random strings at each caret."
+                icon="/icons/string-repeat-array.svg" />
+        <action id="randomness.StringSettings"
+                class="com.fwdekker.randomness.string.StringSettingsAction"
+                text="String Settings"
+                description="Settings for the Random String action."
                 icon="/icons/string-settings.svg" />
 
         <!-- Words -->
-        <action id="randomness.InsertWord" class="com.fwdekker.randomness.word.WordInsertAction"
-                text="Random Word" description="Inserts a random word at each caret."
+        <action id="randomness.InsertWord"
+                class="com.fwdekker.randomness.word.WordInsertAction"
+                text="Random Word"
+                description="Inserts a random word at each caret."
                 icon="/icons/word.svg" />
-        <action id="randomness.InsertWordArray" class="com.fwdekker.randomness.word.WordInsertArrayAction"
-                text="Random Word Array" description="Inserts an array of random words at each caret."
+        <action id="randomness.InsertWordArray"
+                class="com.fwdekker.randomness.word.WordInsertAction$ArrayAction"
+                text="Random Word Array"
+                description="Inserts an array of random words at each caret."
                 icon="/icons/word-array.svg" />
-        <action id="randomness.WordSettings" class="com.fwdekker.randomness.word.WordSettingsAction"
-                text="Word Settings" description="Settings for the Random Word action."
+        <action id="randomness.InsertWordRepeat"
+                class="com.fwdekker.randomness.word.WordInsertAction$RepeatAction"
+                text="Random Repeated Word"
+                description="Inserts the same random word at each caret."
+                icon="/icons/word-repeat.svg" />
+        <action id="randomness.InsertWordRepeatArray"
+                class="com.fwdekker.randomness.word.WordInsertAction$RepeatArrayAction"
+                text="Random Repeated Word Array"
+                description="Inserts the same array of random words at each caret."
+                icon="/icons/word-repeat-array.svg" />
+        <action id="randomness.WordSettings"
+                class="com.fwdekker.randomness.word.WordSettingsAction"
+                text="Word Settings"
+                description="Settings for the Random Word action."
                 icon="/icons/word-settings.svg" />
 
         <!-- UUIDs -->
-        <action id="randomness.InsertUuid" class="com.fwdekker.randomness.uuid.UuidInsertAction"
-                text="Random UUID" description="Inserts a random UUID at each caret."
+        <action id="randomness.InsertUuid"
+                class="com.fwdekker.randomness.uuid.UuidInsertAction"
+                text="Random UUID"
+                description="Inserts a random UUID at each caret."
                 icon="/icons/uuid.svg" />
-        <action id="randomness.InsertUuidArray" class="com.fwdekker.randomness.uuid.UuidInsertArrayAction"
-                text="Random UUID Array" description="Inserts an array of random UUIDs at each caret."
+        <action id="randomness.InsertUuidArray"
+                class="com.fwdekker.randomness.uuid.UuidInsertAction$ArrayAction"
+                text="Random UUID Array"
+                description="Inserts an array of random UUIDs at each caret."
                 icon="/icons/uuid-array.svg" />
-        <action id="randomness.UuidSettings" class="com.fwdekker.randomness.uuid.UuidSettingsAction"
-                text="UUID Settings" description="Settings for the Random UUID action."
+        <action id="randomness.InsertUuidRepeat"
+                class="com.fwdekker.randomness.uuid.UuidInsertAction$RepeatAction"
+                text="Random Repeated UUID"
+                description="Inserts the same random UUID at each caret."
+                icon="/icons/uuid-repeat.svg" />
+        <action id="randomness.InsertUuidRepeatArray"
+                class="com.fwdekker.randomness.uuid.UuidInsertAction$RepeatArrayAction"
+                text="Random Repeated UUID Array"
+                description="Inserts the same array of random UUIDs at each caret."
+                icon="/icons/uuid-repeat-array.svg" />
+        <action id="randomness.UuidSettings"
+                class="com.fwdekker.randomness.uuid.UuidSettingsAction"
+                text="UUID Settings"
+                description="Settings for the Random UUID action."
                 icon="/icons/uuid-settings.svg" />
 
         <!-- Arrays -->
-        <action id="randomness.ArraySettings" class="com.fwdekker.randomness.array.ArraySettingsAction"
-                text="Array Settings" description="Settings for inserting arrays of data."
+        <action id="randomness.ArraySettings"
+                class="com.fwdekker.randomness.array.ArraySettingsAction"
+                text="Array Settings"
+                description="Settings for inserting arrays of data."
                 icon="/icons/data-settings.svg" />
     </actions>
 </idea-plugin>

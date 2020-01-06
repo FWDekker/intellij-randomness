@@ -32,13 +32,21 @@ class DataGenerationException(message: String? = null, cause: Throwable? = null)
  */
 abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Base) : ActionGroup() {
     /**
-     * The action used to insert a single datum.
+     * The action used to insert single data.
      */
     abstract val insertAction: DataInsertAction
     /**
-     * The action used to insert an array of data.
+     * The action used to insert arrays of data.
      */
     abstract val insertArrayAction: DataInsertArrayAction
+    /**
+     * The action used to insert repeated single data.
+     */
+    abstract val insertRepeatAction: DataInsertRepeatAction
+    /**
+     * The action used to insert repeated arrays of data.
+     */
+    abstract val insertRepeatArrayAction: DataInsertRepeatArrayAction
     /**
      * The action used to edit the generator settings for this data type.
      */
@@ -51,7 +59,8 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
      * @param event carries information on the invocation place
      * @return the insert action, array insert action, and settings action
      */
-    override fun getChildren(event: AnActionEvent?) = arrayOf(insertArrayAction, settingsAction)
+    override fun getChildren(event: AnActionEvent?) =
+        arrayOf(insertArrayAction, insertRepeatAction, insertRepeatArrayAction, settingsAction)
 
     /**
      * Returns `true`.
@@ -68,12 +77,15 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
      */
     override fun actionPerformed(event: AnActionEvent) {
         // alt behavior is handled by implementation of `actionPerformed`
+        val altPressed = event.modifiers and (InputEvent.ALT_MASK or InputEvent.ALT_DOWN_MASK) != 0
         val ctrlPressed = event.modifiers and (InputEvent.CTRL_MASK or InputEvent.CTRL_DOWN_MASK) != 0
         val shiftPressed = event.modifiers and (InputEvent.SHIFT_MASK or InputEvent.SHIFT_DOWN_MASK) != 0
 
         when {
             ctrlPressed && shiftPressed -> ArraySettingsAction().actionPerformed(event)
             ctrlPressed -> settingsAction.actionPerformed(event)
+            altPressed && shiftPressed -> insertRepeatArrayAction.actionPerformed(event)
+            altPressed -> insertRepeatAction.actionPerformed(event)
             shiftPressed -> insertArrayAction.actionPerformed(event)
             else -> insertAction.actionPerformed(event)
         }
@@ -101,7 +113,7 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
 
 
 /**
- * Inserts a randomly generated string at the positions of the event's editor's carets.
+ * Inserts randomly generated strings at the event's editor's carets.
  *
  * @param icon the icon to display with the action
  */
@@ -145,11 +157,7 @@ abstract class DataInsertAction(private val icon: Icon) : AnAction() {
 
         val data =
             try {
-                val altPressed = event.modifiers and (InputEvent.ALT_MASK or InputEvent.ALT_DOWN_MASK) != 0
-                if (altPressed)
-                    generateString().let { string -> List(editor.caretModel.caretCount) { string } }
-                else
-                    generateStrings(editor.caretModel.caretCount)
+                generateStrings(editor.caretModel.caretCount)
             } catch (e: DataGenerationException) {
                 HintManager.getInstance().showErrorHint(
                     editor,
@@ -196,7 +204,7 @@ abstract class DataInsertAction(private val icon: Icon) : AnAction() {
 
 
 /**
- * Inserts a randomly generated array of strings at the positions of the event's editor's carets.
+ * Inserts randomly generated arrays of strings at the event's editor's carets.
  *
  * @param arrayScheme the scheme to use for generating arrays
  * @param dataInsertAction the action to generate data with
@@ -224,6 +232,54 @@ abstract class DataInsertArrayAction(
             .chunked(arrayScheme.count)
             .map { arrayScheme.arrayify(it) }
     }
+}
+
+
+/**
+ * Inserts the same randomly generated string at the event's editor's carets.
+ *
+ * @param dataInsertAction the action to generate data with
+ * @param icon the icon to display with the action
+ */
+abstract class DataInsertRepeatAction(
+    private val dataInsertAction: DataInsertAction,
+    icon: Icon = RandomnessIcons.Data.Array
+) : DataInsertAction(icon) {
+    /**
+     * Generates a random datum and repeats it [count] times.
+     *
+     * @param count the number of times to repeat the data
+     * @return a random datum, repeated [count] times
+     * @throws DataGenerationException if data could not be generated
+     */
+    @Throws(DataGenerationException::class)
+    override fun generateStrings(count: Int): List<String> {
+        dataInsertAction.random = random
+        return dataInsertAction.generateString().let { string -> List(count) { string } }
+    }
+}
+
+
+/**
+ * Inserts the same randomly generated array of strings at the event's editor's carets.
+ *
+ * @param dataInsertArrayAction the action to generate data with
+ * @param icon the icon to display with the action
+ */
+abstract class DataInsertRepeatArrayAction(
+    private val dataInsertArrayAction: DataInsertArrayAction,
+    icon: Icon = RandomnessIcons.Data.Array
+) : DataInsertAction(icon) {
+    /**
+     * Generates a random array-like string of random data and repeats it [count] times.
+     *
+     * @param count the number of times to repeat the data
+     * @return a random array-like string of random data and repeats it [count] times
+     * @throws DataGenerationException if data could not be generated
+     */
+    @Throws(DataGenerationException::class)
+    override fun generateStrings(count: Int) =
+        dataInsertArrayAction.generateString().let { string -> List(count) { string } }
 }
 
 

@@ -14,14 +14,7 @@ import org.assertj.core.api.Assertions.assertThat
  * @see DataInsertAction
  */
 class DataInsertActionIntegrationTest : BasePlatformTestCase() {
-    companion object {
-        /**
-         * The recognizable string that is inserted by the insertion action.
-         */
-        private const val RANDOM_STRING = "random_value"
-    }
-
-    private lateinit var insertRandomSimple: DummyInsertAction
+    private lateinit var insertAction: DummyInsertAction
     private lateinit var document: Document
     private lateinit var caretModel: CaretModel
 
@@ -34,61 +27,63 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
 
         document = myFixture.editor.document
         caretModel = myFixture.editor.caretModel
-        insertRandomSimple = DummyInsertAction { RANDOM_STRING }
+
+        var insertValue = 0
+        insertAction = DummyInsertAction { insertValue++.toString() }
     }
 
     override fun getTestDataPath() = javaClass.classLoader.getResource("integration-project/")?.path
 
 
     fun testInsertIntoEmpty() {
-        myFixture.testAction(insertRandomSimple)
+        myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo(RANDOM_STRING)
+        assertThat(document.text).isEqualTo("0")
     }
 
     fun testInsertBefore() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("RkpjkS9Itb") }
 
         caretModel.moveToOffset(0)
-        myFixture.testAction(insertRandomSimple)
+        myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("${RANDOM_STRING}RkpjkS9Itb")
+        assertThat(document.text).isEqualTo("${"0"}RkpjkS9Itb")
     }
 
     fun testInsertAfter() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("0aiMbK5hK5") }
 
         caretModel.moveToOffset(10)
-        myFixture.testAction(insertRandomSimple)
+        myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("0aiMbK5hK5$RANDOM_STRING")
+        assertThat(document.text).isEqualTo("0aiMbK5hK5${"0"}")
     }
 
     fun testInsertBetween() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("U6jBDMh8Nq") }
 
         caretModel.moveToOffset(5)
-        myFixture.testAction(insertRandomSimple)
+        myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("U6jBD${RANDOM_STRING}Mh8Nq")
+        assertThat(document.text).isEqualTo("U6jBD${"0"}Mh8Nq")
     }
 
     fun testReplaceAll() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("fMhAajjDw6") }
 
         setSelection(0, 10)
-        myFixture.testAction(insertRandomSimple)
+        myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo(RANDOM_STRING)
+        assertThat(document.text).isEqualTo("0")
     }
 
     fun testReplacePart() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("qZPGZDEcPS") }
 
         setSelection(3, 7)
-        myFixture.testAction(insertRandomSimple)
+        myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("qZP${RANDOM_STRING}cPS")
+        assertThat(document.text).isEqualTo("qZP${"0"}cPS")
     }
 
     fun testInsertMultiple() {
@@ -98,10 +93,9 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
 
         addCaret(11)
         addCaret(22)
-        myFixture.testAction(insertRandomSimple)
+        myFixture.testAction(insertAction)
 
-        assertThat(document.text)
-            .isEqualTo("${RANDOM_STRING}DCtD41lFOk\n${RANDOM_STRING}OCnrdYk9gE\n${RANDOM_STRING}n1HAPKotDq")
+        assertThat(document.text).isEqualTo("${"0"}DCtD41lFOk\n${"1"}OCnrdYk9gE\n${"2"}n1HAPKotDq")
     }
 
     fun testReplaceMultiple() {
@@ -112,10 +106,9 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         setSelection(2, 4)
         addSelection(18, 23)
         addSelection(29, 29)
-        myFixture.testAction(insertRandomSimple)
+        myFixture.testAction(insertAction)
 
-        assertThat(document.text)
-            .isEqualTo("YX${RANDOM_STRING}cq4FC9\nG31Ybbn${RANDOM_STRING}NCqAhq${RANDOM_STRING}Pnh")
+        assertThat(document.text).isEqualTo("YX${"0"}cq4FC9\nG31Ybbn${"1"}NCqAhq${"2"}Pnh")
     }
 
     fun testInsertAndReplace() {
@@ -127,19 +120,46 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         addSelection(6, 9)
         addCaret(15)
         addSelection(24, 28)
-        myFixture.testAction(insertRandomSimple)
+        myFixture.testAction(insertAction)
 
-        assertThat(document.text)
-            .isEqualTo("XOppz${RANDOM_STRING}V${RANDOM_STRING}j\nZhAa${RANDOM_STRING}VfQynW\nk3${RANDOM_STRING}kdAg")
+        assertThat(document.text).isEqualTo("XOppz${"0"}V${"1"}j\nZhAa${"2"}VfQynW\nk3${"3"}kdAg")
     }
 
     fun testInsertArray() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("wizard\nsirens\nvanity") }
 
         setSelection(5, 9)
-        myFixture.testAction(DummyInsertArrayAction(ArrayScheme(count = 2)) { RANDOM_STRING })
 
-        assertThat(document.text).isEqualTo("wizar[$RANDOM_STRING, $RANDOM_STRING]rens\nvanity")
+        var insertValue = 0
+        myFixture.testAction(DummyInsertArrayAction(ArrayScheme(count = 2)) { insertValue++.toString() })
+
+        assertThat(document.text).isEqualTo("wizar[${"0"}, ${"1"}]rens\nvanity")
+    }
+
+    fun testInsertRepeat() {
+        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("evening\nplease\nfew") }
+
+        caretModel.moveToOffset(5)
+        addCaret(10)
+        addCaret(12)
+
+        var insertValue = 0
+        myFixture.testAction(DummyInsertRepeatAction { insertValue++.toString() })
+
+        assertThat(document.text).isEqualTo("eveni${"0"}ng\npl${"0"}ea${"0"}se\nfew")
+    }
+
+    fun testInsertRepeatArray() {
+        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("heavy\nbegin\ncare") }
+
+        caretModel.moveToOffset(2)
+        addCaret(7)
+        addCaret(13)
+
+        var insertValue = 0
+        myFixture.testAction(DummyInsertRepeatArrayAction(ArrayScheme(count = 2)) { insertValue++.toString() })
+
+        assertThat(document.text).isEqualTo("he${"[0, 1]"}avy\nb${"[0, 1]"}egin\nc${"[0, 1]"}are")
     }
 
 

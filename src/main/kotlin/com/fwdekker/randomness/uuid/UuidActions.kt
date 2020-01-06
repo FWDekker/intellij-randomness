@@ -7,9 +7,12 @@ import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
+import com.fwdekker.randomness.DataInsertRepeatAction
+import com.fwdekker.randomness.DataInsertRepeatArrayAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.uuid.UuidInsertAction.ArrayAction
 import icons.RandomnessIcons
 import kotlin.random.asJavaRandom
 
@@ -19,7 +22,9 @@ import kotlin.random.asJavaRandom
  */
 class UuidGroupAction : DataGroupAction(RandomnessIcons.Uuid.Base) {
     override val insertAction = UuidInsertAction()
-    override val insertArrayAction = UuidInsertArrayAction()
+    override val insertArrayAction = UuidInsertAction.ArrayAction()
+    override val insertRepeatAction = UuidInsertAction.RepeatAction()
+    override val insertRepeatArrayAction = UuidInsertAction.RepeatArrayAction()
     override val settingsAction = UuidSettingsAction()
 }
 
@@ -29,7 +34,7 @@ class UuidGroupAction : DataGroupAction(RandomnessIcons.Uuid.Base) {
  *
  * @param scheme the scheme to use for generating UUIDs
  *
- * @see UuidInsertArrayAction
+ * @see ArrayAction
  * @see UuidSettings
  */
 class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.currentScheme) :
@@ -64,22 +69,45 @@ class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.cur
             }
             .map { scheme.enclosure + it + scheme.enclosure }
     }
-}
 
 
-/**
- * Inserts an array-like string of UUIDs.
- *
- * @param arrayScheme the scheme to use for generating arrays
- * @param scheme the scheme to use for generating UUIDs
- *
- * @see UuidInsertAction
- */
-class UuidInsertArrayAction(
-    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-    scheme: UuidScheme = UuidSettings.default.currentScheme
-) : DataInsertArrayAction(arrayScheme, UuidInsertAction(scheme), RandomnessIcons.Uuid.Array) {
-    override val name = "Random UUID Array"
+    /**
+     * Inserts an array-like string of UUIDs.
+     *
+     * @param arrayScheme the scheme to use for generating arrays
+     * @param scheme the scheme to use for generating UUIDs
+     *
+     * @see UuidInsertAction
+     */
+    class ArrayAction(
+        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+        scheme: UuidScheme = UuidSettings.default.currentScheme
+    ) : DataInsertArrayAction(arrayScheme, UuidInsertAction(scheme), RandomnessIcons.Uuid.Array) {
+        override val name = "Random UUID Array"
+    }
+
+    /**
+     * Inserts repeated random UUIDs.
+     *
+     * @param scheme the settings to use for generating UUIDs
+     */
+    class RepeatAction(scheme: UuidScheme = UuidSettings.default.currentScheme) :
+        DataInsertRepeatAction(UuidInsertAction(scheme), RandomnessIcons.Uuid.Repeat) {
+        override val name = "Random Repeated Uuid"
+    }
+
+    /**
+     * Inserts repeated array-like strings of UUIDs.
+     *
+     * @param arrayScheme the scheme to use for generating arrays
+     * @param scheme the scheme to use for generating UUIDs
+     */
+    class RepeatArrayAction(
+        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+        scheme: UuidScheme = UuidSettings.default.currentScheme
+    ) : DataInsertRepeatArrayAction(ArrayAction(arrayScheme, scheme), RandomnessIcons.Uuid.RepeatArray) {
+        override val name = "Random Repeated Uuid Array"
+    }
 }
 
 
