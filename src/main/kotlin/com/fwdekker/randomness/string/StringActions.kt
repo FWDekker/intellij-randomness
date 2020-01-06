@@ -17,9 +17,9 @@ import icons.RandomnessIcons
  */
 class StringGroupAction : DataGroupAction(RandomnessIcons.String.Base) {
     override val insertAction = StringInsertAction()
-    override val insertArrayAction = StringInsertArrayAction()
-    override val insertRepeatAction = StringInsertRepeatAction()
-    override val insertRepeatArrayAction = StringInsertRepeatArrayAction()
+    override val insertArrayAction = StringInsertAction.ArrayAction()
+    override val insertRepeatAction = StringInsertAction.RepeatAction()
+    override val insertRepeatArrayAction = StringInsertAction.RepeatArrayAction()
     override val settingsAction = StringSettingsAction()
 }
 
@@ -29,7 +29,7 @@ class StringGroupAction : DataGroupAction(RandomnessIcons.String.Base) {
  *
  * @param scheme the scheme to use for generating strings
  *
- * @see StringInsertArrayAction
+ * @see ArrayAction
  * @see StringSettings
  */
 class StringInsertAction(private val scheme: StringScheme = StringSettings.default.currentScheme) :
@@ -73,47 +73,45 @@ class StringInsertAction(private val scheme: StringScheme = StringSettings.defau
 
         return symbolSet[charIndex]
     }
-}
 
 
-/**
- * Inserts an array-like string of strings.
- *
- * @param arrayScheme the scheme to use for generating arrays
- * @param scheme the scheme to use for generating strings
- *
- * @see StringInsertAction
- */
-class StringInsertArrayAction(
-    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-    scheme: StringScheme = StringSettings.default.currentScheme
-) : DataInsertArrayAction(arrayScheme, StringInsertAction(scheme), RandomnessIcons.String.Array) {
-    override val name = "Random String Array"
-}
+    /**
+     * Inserts an array-like string of strings.
+     *
+     * @param arrayScheme the scheme to use for generating arrays
+     * @param scheme the scheme to use for generating strings
+     *
+     * @see StringInsertAction
+     */
+    class ArrayAction(
+        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+        scheme: StringScheme = StringSettings.default.currentScheme
+    ) : DataInsertArrayAction(arrayScheme, StringInsertAction(scheme), RandomnessIcons.String.Array) {
+        override val name = "Random String Array"
+    }
 
+    /**
+     * Inserts repeated random strings.
+     *
+     * @param scheme the settings to use for generating strings
+     */
+    class RepeatAction(scheme: StringScheme = StringSettings.default.currentScheme) :
+        DataInsertRepeatAction(StringInsertAction(scheme), RandomnessIcons.String.Repeat) {
+        override val name = "Random Repeated String"
+    }
 
-/**
- * Inserts repeated random strings.
- *
- * @param scheme the settings to use for generating strings
- */
-class StringInsertRepeatAction(scheme: StringScheme = StringSettings.default.currentScheme) :
-    DataInsertRepeatAction(StringInsertAction(scheme), RandomnessIcons.String.Repeat) {
-    override val name = "Random Repeated String"
-}
-
-
-/**
- * Inserts repeated array-like strings of strings.
- *
- * @param arrayScheme the scheme to use for generating arrays
- * @param scheme the scheme to use for generating strings
- */
-class StringInsertRepeatArrayAction(
-    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-    scheme: StringScheme = StringSettings.default.currentScheme
-) : DataInsertRepeatArrayAction(StringInsertArrayAction(arrayScheme, scheme), RandomnessIcons.String.RepeatArray) {
-    override val name = "Random Repeated String Array"
+    /**
+     * Inserts repeated array-like strings of strings.
+     *
+     * @param arrayScheme the scheme to use for generating arrays
+     * @param scheme the scheme to use for generating strings
+     */
+    class RepeatArrayAction(
+        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+        scheme: StringScheme = StringSettings.default.currentScheme
+    ) : DataInsertRepeatArrayAction(ArrayAction(arrayScheme, scheme), RandomnessIcons.String.RepeatArray) {
+        override val name = "Random Repeated String Array"
+    }
 }
 
 

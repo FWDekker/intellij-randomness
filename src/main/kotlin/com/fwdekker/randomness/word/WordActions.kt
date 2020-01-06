@@ -17,9 +17,9 @@ import icons.RandomnessIcons
  */
 class WordGroupAction : DataGroupAction(RandomnessIcons.Word.Base) {
     override val insertAction = WordInsertAction()
-    override val insertArrayAction = WordInsertArrayAction()
-    override val insertRepeatAction = WordInsertRepeatAction()
-    override val insertRepeatArrayAction = WordInsertRepeatArrayAction()
+    override val insertArrayAction = WordInsertAction.ArrayAction()
+    override val insertRepeatAction = WordInsertAction.RepeatAction()
+    override val insertRepeatArrayAction = WordInsertAction.RepeatArrayAction()
     override val settingsAction = WordSettingsAction()
 }
 
@@ -29,7 +29,7 @@ class WordGroupAction : DataGroupAction(RandomnessIcons.Word.Base) {
  *
  * @param scheme the scheme to use for generating words
  *
- * @see WordInsertArrayAction
+ * @see ArrayAction
  * @see WordSettings
  */
 class WordInsertAction(private val scheme: WordScheme = WordSettings.default.currentScheme) :
@@ -64,47 +64,45 @@ class WordInsertAction(private val scheme: WordScheme = WordSettings.default.cur
             .map { scheme.capitalization.transform(it) }
             .map { scheme.enclosure + it + scheme.enclosure }
     }
-}
 
 
-/**
- * Inserts an array-like string of words.
- *
- * @param arrayScheme the scheme to use for generating arrays
- * @param scheme the scheme to use for generating words
- *
- * @see WordInsertAction
- */
-class WordInsertArrayAction(
-    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-    scheme: WordScheme = WordSettings.default.currentScheme
-) : DataInsertArrayAction(arrayScheme, WordInsertAction(scheme), RandomnessIcons.Word.Array) {
-    override val name = "Random Word Array"
-}
+    /**
+     * Inserts an array-like string of words.
+     *
+     * @param arrayScheme the scheme to use for generating arrays
+     * @param scheme the scheme to use for generating words
+     *
+     * @see WordInsertAction
+     */
+    class ArrayAction(
+        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+        scheme: WordScheme = WordSettings.default.currentScheme
+    ) : DataInsertArrayAction(arrayScheme, WordInsertAction(scheme), RandomnessIcons.Word.Array) {
+        override val name = "Random Word Array"
+    }
 
+    /**
+     * Inserts repeated random words.
+     *
+     * @param scheme the settings to use for generating words
+     */
+    class RepeatAction(scheme: WordScheme = WordSettings.default.currentScheme) :
+        DataInsertRepeatAction(WordInsertAction(scheme), RandomnessIcons.Word.Repeat) {
+        override val name = "Random Repeated Word"
+    }
 
-/**
- * Inserts repeated random words.
- *
- * @param scheme the settings to use for generating words
- */
-class WordInsertRepeatAction(scheme: WordScheme = WordSettings.default.currentScheme) :
-    DataInsertRepeatAction(WordInsertAction(scheme), RandomnessIcons.Word.Repeat) {
-    override val name = "Random Repeated Word"
-}
-
-
-/**
- * Inserts repeated array-like strings of words.
- *
- * @param arrayScheme the scheme to use for generating arrays
- * @param scheme the scheme to use for generating words
- */
-class WordInsertRepeatArrayAction(
-    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-    scheme: WordScheme = WordSettings.default.currentScheme
-) : DataInsertRepeatArrayAction(WordInsertArrayAction(arrayScheme, scheme), RandomnessIcons.Word.RepeatArray) {
-    override val name = "Random Repeated Word Array"
+    /**
+     * Inserts repeated array-like strings of words.
+     *
+     * @param arrayScheme the scheme to use for generating arrays
+     * @param scheme the scheme to use for generating words
+     */
+    class RepeatArrayAction(
+        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+        scheme: WordScheme = WordSettings.default.currentScheme
+    ) : DataInsertRepeatArrayAction(ArrayAction(arrayScheme, scheme), RandomnessIcons.Word.RepeatArray) {
+        override val name = "Random Repeated Word Array"
+    }
 }
 
 

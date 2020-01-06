@@ -9,6 +9,7 @@ import com.fwdekker.randomness.DataInsertRepeatArrayAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.integer.IntegerInsertAction.ArrayAction
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DECIMAL_BASE
 import icons.RandomnessIcons
 import java.text.DecimalFormat
@@ -19,9 +20,9 @@ import java.text.DecimalFormat
  */
 class IntegerGroupAction : DataGroupAction(RandomnessIcons.Integer.Base) {
     override val insertAction = IntegerInsertAction()
-    override val insertArrayAction = IntegerInsertArrayAction()
-    override val insertRepeatAction = IntegerInsertRepeatAction()
-    override val insertRepeatArrayAction = IntegerInsertRepeatArrayAction()
+    override val insertArrayAction = IntegerInsertAction.ArrayAction()
+    override val insertRepeatAction = IntegerInsertAction.RepeatAction()
+    override val insertRepeatArrayAction = IntegerInsertAction.RepeatArrayAction()
     override val settingsAction = IntegerSettingsAction()
 }
 
@@ -31,7 +32,7 @@ class IntegerGroupAction : DataGroupAction(RandomnessIcons.Integer.Base) {
  *
  * @param scheme the scheme to use for generating integers
  *
- * @see IntegerInsertArrayAction
+ * @see ArrayAction
  * @see IntegerSettings
  */
 class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.default.currentScheme) :
@@ -73,47 +74,45 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
 
         return format.format(value)
     }
-}
 
 
-/**
- * Inserts an array-like string of integers.
- *
- * @param arrayScheme the scheme to use for generating arrays
- * @param scheme the scheme to use for generating integers
- *
- * @see IntegerInsertAction
- */
-class IntegerInsertArrayAction(
-    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-    scheme: IntegerScheme = IntegerSettings.default.currentScheme
-) : DataInsertArrayAction(arrayScheme, IntegerInsertAction(scheme), RandomnessIcons.Integer.Array) {
-    override val name = "Random Integer Array"
-}
+    /**
+     * Inserts an array-like string of integers.
+     *
+     * @param arrayScheme the scheme to use for generating arrays
+     * @param scheme the scheme to use for generating integers
+     *
+     * @see IntegerInsertAction
+     */
+    class ArrayAction(
+        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+        scheme: IntegerScheme = IntegerSettings.default.currentScheme
+    ) : DataInsertArrayAction(arrayScheme, IntegerInsertAction(scheme), RandomnessIcons.Integer.Array) {
+        override val name = "Random Integer Array"
+    }
 
+    /**
+     * Inserts repeated random integers.
+     *
+     * @param scheme the settings to use for generating integers
+     */
+    class RepeatAction(scheme: IntegerScheme = IntegerSettings.default.currentScheme) :
+        DataInsertRepeatAction(IntegerInsertAction(scheme), RandomnessIcons.Integer.Repeat) {
+        override val name = "Random Repeated Integer"
+    }
 
-/**
- * Inserts repeated random integers.
- *
- * @param scheme the settings to use for generating integers
- */
-class IntegerInsertRepeatAction(scheme: IntegerScheme = IntegerSettings.default.currentScheme) :
-    DataInsertRepeatAction(IntegerInsertAction(scheme), RandomnessIcons.Integer.Repeat) {
-    override val name = "Random Repeated Integer"
-}
-
-
-/**
- * Inserts repeated array-like strings of integers.
- *
- * @param arrayScheme the scheme to use for generating arrays
- * @param scheme the scheme to use for generating integers
- */
-class IntegerInsertRepeatArrayAction(
-    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-    scheme: IntegerScheme = IntegerSettings.default.currentScheme
-) : DataInsertRepeatArrayAction(IntegerInsertArrayAction(arrayScheme, scheme), RandomnessIcons.Integer.RepeatArray) {
-    override val name = "Random Repeated Integer Array"
+    /**
+     * Inserts repeated array-like strings of integers.
+     *
+     * @param arrayScheme the scheme to use for generating arrays
+     * @param scheme the scheme to use for generating integers
+     */
+    class RepeatArrayAction(
+        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+        scheme: IntegerScheme = IntegerSettings.default.currentScheme
+    ) : DataInsertRepeatArrayAction(ArrayAction(arrayScheme, scheme), RandomnessIcons.Integer.RepeatArray) {
+        override val name = "Random Repeated Integer Array"
+    }
 }
 
 
