@@ -26,7 +26,7 @@ Steps to reproduce the behavior:
 **Version information**
  - Operating system [e.g. Windows 10, Ubuntu 18.04, macOS 10.15]:
  - Java version [e.g. 1.8.202, 11.0.4]:
- - Randomness version [e.g. 2.3.0]:
+ - Randomness version [e.g. 2.4.0]:
 
 **Additional context**
 <!-- Add any other context about the problem here. -->
