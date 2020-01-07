@@ -16,6 +16,9 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
  *
  * @property schemes the schemes that the user can choose from
  * @property currentSchemeName the scheme that is currently active
+ *
+ * @see IntegerSettingsAction
+ * @see IntegerSettingsConfigurable
  */
 @State(name = "IntegerSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class IntegerSettings(
@@ -60,8 +63,7 @@ data class IntegerSettings(
  * @property groupingSeparator The character that should separate groups.
  *
  * @see IntegerInsertAction
- * @see IntegerSettingsAction
- * @see IntegerSettingsComponent
+ * @see IntegerSettings
  */
 // TODO Turn the separator property into a char property once supported by the settings serializer
 data class IntegerScheme(

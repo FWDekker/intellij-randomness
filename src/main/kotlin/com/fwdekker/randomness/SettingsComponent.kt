@@ -21,7 +21,7 @@ import javax.swing.JPanel
  *
  * @param S the type of settings to manage
  * @param T the type of scheme to manage
- * @property settings the settings to manage
+ * @param settings the settings to manage
  */
 abstract class SettingsComponent<S : Settings<S, T>, T : Scheme<T>>(private val settings: S) : SettingsManager<S> {
     /**
@@ -400,7 +400,7 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
  *
  * @param S the type of settings to manage
  * @param T the type of scheme to manage
- * @property component the settings component in which the changes should be reflected
+ * @param component the settings component in which the changes should be reflected
  */
 class SettingsComponentListener<S : Settings<S, T>, T : Scheme<T>>(private val component: SettingsComponent<S, T>) :
     Listener<T> {

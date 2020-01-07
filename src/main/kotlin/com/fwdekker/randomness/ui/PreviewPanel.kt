@@ -25,7 +25,7 @@ import kotlin.random.Random
  * changes. After registering some components with this panel, the preview will be updated whenever those components are
  * updated.
  *
- * @property getGenerator returns a [DataInsertAction] that uses the given source of randomness
+ * @param getGenerator returns a [DataInsertAction] that uses the given source of randomness
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
 class PreviewPanel(private val getGenerator: () -> DataInsertAction) {

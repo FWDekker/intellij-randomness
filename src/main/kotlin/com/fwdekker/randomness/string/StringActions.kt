@@ -28,9 +28,6 @@ class StringGroupAction : DataGroupAction(RandomnessIcons.String.Base) {
  * Inserts random alphanumerical strings.
  *
  * @param scheme the scheme to use for generating strings
- *
- * @see ArrayAction
- * @see StringSettings
  */
 class StringInsertAction(private val scheme: StringScheme = StringSettings.default.currentScheme) :
     DataInsertAction(RandomnessIcons.String.Base) {
@@ -80,8 +77,6 @@ class StringInsertAction(private val scheme: StringScheme = StringSettings.defau
      *
      * @param arrayScheme the scheme to use for generating arrays
      * @param scheme the scheme to use for generating strings
-     *
-     * @see StringInsertAction
      */
     class ArrayAction(
         arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,

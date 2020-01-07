@@ -17,6 +17,9 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
  *
  * @property schemes the schemes that the user can choose from
  * @property currentSchemeName the scheme that is currently active
+ *
+ * @see UuidSettingsAction
+ * @see UuidSettingsConfigurable
  */
 @State(name = "UuidSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class UuidSettings(
@@ -61,8 +64,7 @@ data class UuidSettings(
  * @property addDashes True if and only if the UUID should have dashes in it.
  *
  * @see UuidInsertAction
- * @see UuidSettingsAction
- * @see UuidSettingsComponent
+ * @see UuidSettings
  */
 data class UuidScheme(
     override var myName: String = DEFAULT_NAME,

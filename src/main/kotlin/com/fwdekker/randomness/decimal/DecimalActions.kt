@@ -30,9 +30,6 @@ class DecimalGroupAction : DataGroupAction(RandomnessIcons.Decimal.Base) {
  * Inserts random decimals.
  *
  * @param scheme the settings to use for generating decimals
- *
- * @see DecimalInsertArrayAction
- * @see DecimalSettings
  */
 class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.default.currentScheme) :
     DataInsertAction(RandomnessIcons.Decimal.Base) {
@@ -80,8 +77,6 @@ class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.de
      *
      * @param arrayScheme the scheme to use for generating arrays
      * @param scheme the scheme to use for generating decimals
-     *
-     * @see DecimalInsertAction
      */
     class ArrayAction(
         arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,

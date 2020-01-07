@@ -18,6 +18,9 @@ import com.intellij.util.xmlb.annotations.Transient
  *
  * @property schemes the schemes that the user can choose from
  * @property currentSchemeName the scheme that is currently active
+ *
+ * @see WordSettingsAction
+ * @see WordSettingsConfigurable
  */
 @State(name = "WordSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class WordSettings(
@@ -68,8 +71,7 @@ data class WordSettings(
  * [userDictionaryFiles].
  *
  * @see WordInsertAction
- * @see WordSettingsAction
- * @see WordSettingsComponent
+ * @see WordSettings
  */
 data class WordScheme(
     override var myName: String = DEFAULT_NAME,

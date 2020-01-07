@@ -12,7 +12,6 @@ import com.fwdekker.randomness.DataInsertRepeatArrayAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
-import com.fwdekker.randomness.uuid.UuidInsertAction.ArrayAction
 import icons.RandomnessIcons
 import kotlin.random.asJavaRandom
 
@@ -33,9 +32,6 @@ class UuidGroupAction : DataGroupAction(RandomnessIcons.Uuid.Base) {
  * Inserts random type 4 UUID.
  *
  * @param scheme the scheme to use for generating UUIDs
- *
- * @see ArrayAction
- * @see UuidSettings
  */
 class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.currentScheme) :
     DataInsertAction(RandomnessIcons.Uuid.Base) {
@@ -76,8 +72,6 @@ class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.cur
      *
      * @param arrayScheme the scheme to use for generating arrays
      * @param scheme the scheme to use for generating UUIDs
-     *
-     * @see UuidInsertAction
      */
     class ArrayAction(
         arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
