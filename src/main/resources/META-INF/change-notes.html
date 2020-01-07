@@ -1,30 +1,49 @@
-Versions from before 2018 are no longer supported.
-
-All settings are invalidated as of this version. Beware.
-
+<b>All Randomness settings will be reset when updating to v2.4.0 because of changes in how settings are stored.</b>
+You can safely reconfigure Randomness after updating.<br />
+<br />
 <b>New features</b>
 <ul>
-    <li>Holding <kbd>Alt</kbd> (<kbd>⌥</kbd>) while inserting values will insert the same value at all carets.</li>
-    <li>All Randomness actions can now be identified by their icons.</li>
-    <li>The popup now opens next to where you want to insert the data.</li>
-    <li>The popup is now disabled if no editor is selected.</li>
-    <li>Better instructions when tables are empty.</li>
-    <li>Simplifies actions popup sub-menus.</li>
-    <li>Support for combining modifier keys in popup.</li>
-    <li>Improved spinner validation messages.</li>
-    <li>Added schemes.</li>
-    <li>Array previews now feature different, random numbers.</li>
-    <li>No more bordered panels; these occurred on some operating systems.</li>
-    <li>Symbol set editing is now easier with expandable text fields.</li>
-    <li>New logo.</li>
+    <li>
+        <b>🗃️ Schemes</b>.
+        Save your Randomness configurations using schemes.
+        Simply create some new schemes to your liking, and you can change back and forth between your schemes without
+        any typing.
+    </li>
+    <li>
+        <b>🖼️ Icons</b>.
+        In addition to Randomness' new logo, all Randomness actions can now be identified by their unique icons.
+    </li>
+    <li>
+        <b>♻️ Repeat</b>.
+        Hold <kbd>Alt</kbd> (<kbd>⌥</kbd>) while selecting a data type to insert will insert the same value at all
+        <a href="https://www.jetbrains.com/help/idea/working-with-source-code.html#multiple_cursor">carets</a>.
+        Like all other Randomness actions, the repeat action can be assigned a shortcut if you want.
+    </li>
+    <li>
+        <b>⌨️ Modifier keys</b>.
+        Hold multiple modifier keys (<kbd>Alt</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>) to combine their effects.
+        For example, hold <kbd>Ctrl + Shift</kbd> to change the array settings, or hold <kbd>Alt + Shift</kbd> to insert
+        repeated arrays.
+    </li>
+    <li>
+        <b>📏 Expandable fields</b>.
+        View large symbol sets in a single glance using expandable text fields.
+        No more horizontal scrolling back and forth.
+    </li>
+    <li>Empty tables now contain clickable links for adding new values.</li>
+    <li>Array previews now contain multiple random numbers instead of repeating the number 17.</li>
+    <li>Groups of settings are separated by horizontal lines instead of being surrounded by borders.</li>
 </ul>
 
 <b>Fixes</b>
 <ul>
-    <li>Popup is now wide enough to display full header text.</li>
+    <li>The Randomness popup now appears at your caret instead of in the middle of the screen.</li>
+    <li>The Randomness popup no longer appears when the editor isn't selected.</li>
+    <li>The Randomness popup is now wide enough to display the full header text.</li>
+    <li>Invalid number inputs result in preciser error messages.</li>
+    <li>Previews that exceed the dialog width now wrap around.</li>
     <li>
-        The symbol set and dictionary tables now focus on the first editable column when a new item is added instead
-        instead of the activity column.
+        Adding a new symbol set or dictionary will move focus to the first editable column so you can start typing right
+        away.
     </li>
-    <li>Previews no longer exceed the dialog width.</li>
 </ul>
