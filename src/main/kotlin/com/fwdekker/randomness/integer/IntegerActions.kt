@@ -9,7 +9,6 @@ import com.fwdekker.randomness.DataInsertRepeatArrayAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
-import com.fwdekker.randomness.integer.IntegerInsertAction.ArrayAction
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DECIMAL_BASE
 import icons.RandomnessIcons
 import java.text.DecimalFormat
@@ -31,9 +30,6 @@ class IntegerGroupAction : DataGroupAction(RandomnessIcons.Integer.Base) {
  * Inserts random integers.
  *
  * @param scheme the scheme to use for generating integers
- *
- * @see ArrayAction
- * @see IntegerSettings
  */
 class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.default.currentScheme) :
     DataInsertAction(RandomnessIcons.Integer.Base) {
@@ -81,8 +77,6 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
      *
      * @param arrayScheme the scheme to use for generating arrays
      * @param scheme the scheme to use for generating integers
-     *
-     * @see IntegerInsertAction
      */
     class ArrayAction(
         arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,

@@ -16,6 +16,9 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
  *
  * @property schemes the schemes that the user can choose from
  * @property currentSchemeName the scheme that is currently active
+ *
+ * @see ArraySettingsAction
+ * @see ArraySettingsConfigurable
  */
 @State(name = "ArraySettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class ArraySettings(
@@ -59,6 +62,7 @@ data class ArraySettings(
  * @property separator The string to place between generated elements.
  * @property isSpaceAfterSeparator True iff a space should be placed after each separator.
  *
+ * @see ArraySettings
  * @see com.fwdekker.randomness.DataInsertArrayAction
  */
 data class ArrayScheme(

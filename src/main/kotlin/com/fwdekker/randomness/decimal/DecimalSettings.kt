@@ -16,6 +16,9 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
  *
  * @property schemes the schemes that the user can choose from
  * @property currentSchemeName the scheme that is currently active
+ *
+ * @see DecimalSettingsAction
+ * @see DecimalSettingsConfigurable
  */
 @State(name = "DecimalSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class DecimalSettings(
@@ -62,8 +65,7 @@ data class DecimalSettings(
  * @property decimalSeparator The character that should separate decimals.
  *
  * @see DecimalInsertAction
- * @see DecimalSettingsAction
- * @see DecimalSettingsComponent
+ * @see DecimalSettings
  */
 // TODO Turn separator properties into char properties once supported by the settings serializer
 data class DecimalScheme(

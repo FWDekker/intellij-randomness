@@ -18,6 +18,9 @@ import com.intellij.util.xmlb.annotations.Transient
  *
  * @property schemes the schemes that the user can choose from
  * @property currentSchemeName the scheme that is currently active
+ *
+ * @see StringSettingsAction
+ * @see StringSettingsConfigurable
  */
 @State(name = "StringSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
 data class StringSettings(
@@ -64,8 +67,7 @@ data class StringSettings(
  * @property activeSymbolSets The symbol sets that are actually used for generating strings; a subset of [symbolSets].
  *
  * @see StringInsertAction
- * @see StringSettingsAction
- * @see StringSettingsComponent
+ * @see StringSettings
  */
 data class StringScheme(
     override var myName: String = DEFAULT_NAME,

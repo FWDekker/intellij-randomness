@@ -28,9 +28,6 @@ class WordGroupAction : DataGroupAction(RandomnessIcons.Word.Base) {
  * Inserts random words.
  *
  * @param scheme the scheme to use for generating words
- *
- * @see ArrayAction
- * @see WordSettings
  */
 class WordInsertAction(private val scheme: WordScheme = WordSettings.default.currentScheme) :
     DataInsertAction(RandomnessIcons.Word.Base) {
@@ -71,8 +68,6 @@ class WordInsertAction(private val scheme: WordScheme = WordSettings.default.cur
      *
      * @param arrayScheme the scheme to use for generating arrays
      * @param scheme the scheme to use for generating words
-     *
-     * @see WordInsertAction
      */
     class ArrayAction(
         arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
