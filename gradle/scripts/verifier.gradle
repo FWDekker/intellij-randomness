@@ -1,0 +1,176 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "de.undercouch:gradle-download-task:4.0.2"
+    }
+}
+
+
+import de.undercouch.gradle.tasks.download.DownloadAction
+import org.gradle.api.internal.ConventionTask
+
+
+/**
+ * Runs the IntelliJ plugin verifier.
+ */
+class PluginVerifierRunner extends ConventionTask {
+    /**
+     * The file name to store the verifier JAR as.
+     */
+    private static final PLUGIN_VERIFIER_NAME = "verifier-all.jar"
+
+    /**
+     * The name of the plugin's distribution file, excluding the extension.
+     */
+    private String pluginFileName
+    /**
+     * The identifiers of the IDEs to verify against.
+     */
+    private List<String> ides = new ArrayList<String>()
+    /**
+     * The directory to store copies of the IDEs in.
+     */
+    @OutputDirectory
+    private File ideCacheDir = project.file("${project.buildDir}/ides/")
+    /**
+     * Whether to force this task to re-download all IDE distributions.
+     */
+    private boolean forceUpdateIdes = false
+    /**
+     * The version of the plugin verifier to use.
+     */
+    private String verifierVersion = "1.222"
+
+
+    @Input
+    String getPluginFileName() {
+        return pluginFileName
+    }
+
+    void setPluginFileName(String pluginFileName) {
+        this.pluginFileName = pluginFileName
+    }
+
+    @Input
+    List<String> getIdes() {
+        return ides
+    }
+
+    void setIdes(List<String> ides) {
+        this.ides = ides
+    }
+
+    @Input
+    File getIdeCacheDir() {
+        return ideCacheDir
+    }
+
+    void setIdeCacheDir(File target) {
+        this.ideCacheDir = target
+    }
+
+    @Input
+    boolean getForceUpdateIdes() {
+        return forceUpdateIdes
+    }
+
+    void setForceUpdateIdes(boolean forceUpdateIdes) {
+        this.forceUpdateIdes = forceUpdateIdes
+    }
+
+    @Input
+    String getVerifierVersion() {
+        return verifierVersion
+    }
+
+    void setVerifierVersion(String verifierVersion) {
+        this.verifierVersion = verifierVersion
+    }
+
+
+    /**
+     * Runs the plugin verifier.
+     */
+    @TaskAction
+    void runTaskAction() {
+        if (!project.file("${project.buildDir}/distributions/${pluginFileName}.zip").exists())
+            throw new IllegalStateException("Plugin file $pluginFileName does not exist.")
+
+        downloadVerifier()
+        this.ides.each { ide -> downloadIde(ide) }
+        runVerifier()
+    }
+
+
+    /**
+     * Downloads the verifier JAR.
+     */
+    void downloadVerifier() {
+        def url = "" +
+            "https://dl.bintray.com/jetbrains/intellij-plugin-service/org/jetbrains/intellij/" +
+            "plugins/verifier-cli/$verifierVersion/verifier-cli-$verifierVersion-all.jar"
+        new DownloadAction(project)
+            .with {
+                src(url)
+                dest(ideCacheDir.absolutePath + "/$PLUGIN_VERIFIER_NAME")
+                overwrite = false
+                tempAndMove = true
+                execute()
+            }
+    }
+
+    /**
+     * Downloads and extracts the IDE with the given identifier.
+     *
+     * @param identifier the identifier of the IDE to download, consisting of a type, name, and version separated by a
+     * dash
+     */
+    void downloadIde(String identifier) {
+        def (type, name, version) = identifier.split("-")
+        def url = "" +
+            "https://www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/" +
+            "$type/$name/$version/$name-${version}.zip"
+
+        new DownloadAction(project)
+            .with {
+                src(url)
+                dest("${ideCacheDir.getAbsolutePath()}/${identifier}.zip")
+                overwrite = forceUpdateIdes
+                tempAndMove = true
+                execute()
+            }
+
+        System.out.println("Extracting $identifier")
+        if (!project.file("$ideCacheDir/$identifier").exists() || forceUpdateIdes) {
+            project.mkdir("$ideCacheDir/$identifier")
+            project.copy {
+                duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+                from project.zipTree(project.file("$ideCacheDir/${identifier}.zip"))
+                into "$ideCacheDir/$identifier"
+            }
+        }
+    }
+
+    /**
+     * Runs the verifier JAR against the configured IDEs and plugin.
+     */
+    void runVerifier() {
+        project.javaexec {
+            classpath = project.files("$ideCacheDir.absolutePath/$PLUGIN_VERIFIER_NAME")
+            main = "com.jetbrains.pluginverifier.PluginVerifierMain"
+            args = [
+                "-runtime-dir", "/usr/lib/jvm/default-java/",
+                "-verification-reports-dir", "build/pluginVerifier",
+                "check-plugin",
+                "${project.buildDir}/distributions/${pluginFileName}.zip",
+                *ides.collect { "$ideCacheDir/$it" }
+            ]
+        }
+    }
+}
+
+
+project.tasks.create("runPluginVerifier", PluginVerifierRunner)
+    .with { it.dependsOn(project.tasks.findByName("buildPlugin")) }

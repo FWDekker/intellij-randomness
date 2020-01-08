@@ -85,6 +85,7 @@ $ gradlew test                # Run tests
 $ gradlew test --tests X      # Run tests in class X
 $ gradlew check               # Run tests and static analysis
 $ gradlew codeCoverageReport  # Run tests and calculate coverage
+$ gradlew runPluginVerifier   # Check for compatibility issues
 ```
 
 ### 📚 Documentation
