@@ -26,14 +26,14 @@ class PluginVerifierRunner extends ConventionTask {
      */
     private String pluginFileName
     /**
+     * The identifiers of the IDEs to verify against.
+     */
+    private List<String> ides = new ArrayList<String>()
+    /**
      * The directory to store copies of the IDEs in.
      */
     @OutputDirectory
     private File ideCacheDir = project.file("${project.buildDir}/ides/")
-    /**
-     * The identifiers of the IDEs to verify against.
-     */
-    private List<String> ides = new ArrayList<String>()
     /**
      * Whether to force this task to re-download all IDE distributions.
      */
@@ -54,21 +54,21 @@ class PluginVerifierRunner extends ConventionTask {
     }
 
     @Input
-    File getIdeCacheDir() {
-        return ideCacheDir
-    }
-
-    void setIdeCacheDir(File target) {
-        this.ideCacheDir = target
-    }
-
-    @Input
     List<String> getIdes() {
         return ides
     }
 
     void setIdes(List<String> ides) {
         this.ides = ides
+    }
+
+    @Input
+    File getIdeCacheDir() {
+        return ideCacheDir
+    }
+
+    void setIdeCacheDir(File target) {
+        this.ideCacheDir = target
     }
 
     @Input
@@ -124,18 +124,19 @@ class PluginVerifierRunner extends ConventionTask {
     /**
      * Downloads and extracts the IDE with the given identifier.
      *
-     * @param identifier the identifier of the IDE to download
+     * @param identifier the identifier of the IDE to download, consisting of a type, name, and version separated by a
+     * dash
      */
     void downloadIde(String identifier) {
-        def (name, version) = identifier.split("-")
+        def (type, name, version) = identifier.split("-")
         def url = "" +
-            "https://www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/" +
-            "$name/$version/${identifier}.zip"
+            "https://www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/" +
+            "$type/$name/$version/$name-${version}.zip"
 
         new DownloadAction(project)
             .with {
                 src(url)
-                dest(ideCacheDir.getAbsolutePath())
+                dest("${ideCacheDir.getAbsolutePath()}/${identifier}.zip")
                 overwrite = forceUpdateIdes
                 tempAndMove = true
                 execute()

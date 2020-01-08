@@ -106,6 +106,6 @@ dokka {
 
 // Compatibility checks
 runPluginVerifier {
-    ides = new ArrayList<String>(Arrays.asList("ideaIC-2018.1", "ideaIC-2019.1", "ideaIC-2019.3"))
     pluginFileName = "$rootProject.name-$version"
+    ides = ["idea-ideaIC-2018.1", "idea-ideaIC-2019.1", "idea-ideaIC-2019.3", "clion-clion-2019.3"]
 }
