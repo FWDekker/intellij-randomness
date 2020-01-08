@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonShortcuts
 import com.intellij.openapi.keymap.KeymapUtil
 import com.intellij.openapi.wm.IdeFocusManager
+import com.intellij.ui.DarculaColors
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TableUtil
 import com.intellij.ui.ToolbarDecorator
@@ -14,7 +15,6 @@ import com.intellij.util.ui.CollectionItemEditor
 import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.StatusText
 import com.intellij.util.ui.table.TableModelEditor
-import java.awt.Color
 import javax.swing.JPanel
 
 
@@ -106,8 +106,8 @@ abstract class ActivityTableModelEditor<T>(
             .apply { isAccessible = true }
             .get(this) as TableView<EditableDatum<T>>
 
-        // TODO (#209) Use `LINK_PLAIN_ATTRIBUTES` instead of custom `SimpleTextAttributes`
-        val style = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, Color(0x589df6))
+        // TODO (#209) Use `LINK_PLAIN_ATTRIBUTES` instead of custom `SimpleTextAttributes` and hard-coded color
+        val style = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, DarculaColors.BLUE)
         table.emptyText.apply {
             appendSecondaryText(emptySubText, style) {
                 model.addRow(createElement())
