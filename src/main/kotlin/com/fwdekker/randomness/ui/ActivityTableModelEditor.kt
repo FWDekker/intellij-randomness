@@ -12,9 +12,9 @@ import com.intellij.ui.table.TableView
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ui.CollectionItemEditor
 import com.intellij.util.ui.ColumnInfo
-import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.StatusText
 import com.intellij.util.ui.table.TableModelEditor
+import java.awt.Color
 import javax.swing.JPanel
 
 
@@ -107,7 +107,7 @@ abstract class ActivityTableModelEditor<T>(
             .get(this) as TableView<EditableDatum<T>>
 
         // TODO (#209) Use `LINK_PLAIN_ATTRIBUTES` instead of custom `SimpleTextAttributes`
-        val style = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBUI.CurrentTheme.Link.linkColor())
+        val style = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, Color(0x589df6))
         table.emptyText.apply {
             appendSecondaryText(emptySubText, style) {
                 model.addRow(createElement())
