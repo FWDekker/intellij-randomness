@@ -142,12 +142,11 @@ abstract class ActivityTableModelEditor<T>(
                 val firstEditableColumn = (1..model.columnCount).first { model.isCellEditable(newRowIndex, it) }
                 table.setRowSelectionInterval(newRowIndex, newRowIndex)
                 table.setColumnSelectionInterval(0, 0)
-                table.editCellAt(newRowIndex, firstEditableColumn)
 
                 TableUtil.updateScroller(table)
                 table.editorComponent?.let { table.scrollRectToVisible(it.bounds) }
                 IdeFocusManager.getGlobalInstance()
-                    .doWhenFocusSettlesDown { IdeFocusManager.getGlobalInstance().requestFocus(table, true) }
+                    .doWhenFocusSettlesDown { table.editCellAt(newRowIndex, firstEditableColumn) }
             }
             .addExtraAction(object :
                 ToolbarDecorator.ElementActionButton(IdeBundle.message("button.copy"), PlatformIcons.COPY_ICON) {
