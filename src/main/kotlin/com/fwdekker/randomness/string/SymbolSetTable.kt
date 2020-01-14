@@ -55,7 +55,7 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
                         row: Int,
                         column: Int
                     ): ExpandableTextField =
-                        ExpandableTextField()
+                        ExpandableTextField({ it.split("\n") }, { it.joinToString("\n") })
                             .also {
                                 it.text = value as String
                                 component = it
