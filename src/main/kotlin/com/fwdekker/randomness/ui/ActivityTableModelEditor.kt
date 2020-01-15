@@ -120,6 +120,10 @@ abstract class ActivityTableModelEditor<T>(
             .apply { isAccessible = true }
             .let { it.get(this) as ToolbarDecorator }
             .setAddAction { addItem(table) }
+            .setEditAction {
+                if (table.selectedObject != null)
+                    table.editCellAt(table.selectedRow, table.selectedColumn)
+            }
             .addExtraAction(object :
                 ToolbarDecorator.ElementActionButton(IdeBundle.message("button.copy"), PlatformIcons.COPY_ICON) {
                 // Implementation based on `TableModelEditor#createComponent`
