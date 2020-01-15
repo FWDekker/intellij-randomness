@@ -4,7 +4,6 @@ import com.intellij.ide.IdeBundle
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonShortcuts
 import com.intellij.openapi.keymap.KeymapUtil
-import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.DarculaColors
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TableUtil
@@ -45,7 +44,7 @@ abstract class ActivityTableModelEditor<T>(
     columns: Array<ColumnInfo<EditableDatum<T>, *>>,
     itemEditor: CollectionItemEditor<EditableDatum<T>>,
     emptyText: String,
-    val emptySubText: String,
+    private val emptySubText: String,
     private val isCopyable: (T) -> Boolean = { true }
 ) : TableModelEditor<EditableDatum<T>>(
     arrayOf<ColumnInfo<EditableDatum<T>, *>>(createActivityColumn()).plus(columns),
@@ -109,14 +108,7 @@ abstract class ActivityTableModelEditor<T>(
         // TODO (#209) Use `LINK_PLAIN_ATTRIBUTES` instead of custom `SimpleTextAttributes` and hard-coded color
         val style = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, DarculaColors.BLUE)
         table.emptyText.apply {
-            appendSecondaryText(emptySubText, style) {
-                model.addRow(createElement())
-
-                val firstEditableColumn = (1..model.columnCount).first { model.isCellEditable(0, it) }
-                table.setRowSelectionInterval(0, 0)
-                table.setColumnSelectionInterval(0, 0)
-                table.editCellAt(0, firstEditableColumn)
-            }
+            appendSecondaryText(emptySubText, style) { addItem(table) }
             appendSecondaryText(
                 " (${KeymapUtil.getFirstKeyboardShortcutText(CommonShortcuts.getNew())})",
                 StatusText.DEFAULT_ATTRIBUTES,
@@ -127,42 +119,11 @@ abstract class ActivityTableModelEditor<T>(
         return TableModelEditor::class.java.getDeclaredField("toolbarDecorator")
             .apply { isAccessible = true }
             .let { it.get(this) as ToolbarDecorator }
-            .setAddAction {
-                // Implementation based on `TableToolbarDecorator#createDefaultTableActions`
-                TableUtil.stopEditing(table)
-
-                table.rowCount.let { rowCount ->
-                    if (canCreateElement()) model.addRow(createElement())
-                    else model.addRow()
-
-                    if (rowCount == table.rowCount) return@setAddAction
-                }
-
-                val newRowIndex = model.rowCount - 1
-                val firstEditableColumn = (1..model.columnCount).first { model.isCellEditable(newRowIndex, it) }
-                table.setRowSelectionInterval(newRowIndex, newRowIndex)
-                table.setColumnSelectionInterval(0, 0)
-
-                TableUtil.updateScroller(table)
-                table.editorComponent?.let { table.scrollRectToVisible(it.bounds) }
-                IdeFocusManager.getGlobalInstance()
-                    .doWhenFocusSettlesDown { table.editCellAt(newRowIndex, firstEditableColumn) }
-            }
+            .setAddAction { addItem(table) }
             .addExtraAction(object :
                 ToolbarDecorator.ElementActionButton(IdeBundle.message("button.copy"), PlatformIcons.COPY_ICON) {
                 // Implementation based on `TableModelEditor#createComponent`
-                override fun actionPerformed(e: AnActionEvent) {
-                    TableUtil.stopEditing(table)
-
-                    table.selectedObjects
-                        .also { if (it.isEmpty()) return }
-                        .forEach { model.addRow(itemEditor.clone(it, false)) }
-
-                    TableUtil.updateScroller(table)
-                    IdeFocusManager
-                        .getGlobalInstance()
-                        .doWhenFocusSettlesDown { IdeFocusManager.getGlobalInstance().requestFocus(table, true) }
-                }
+                override fun actionPerformed(e: AnActionEvent) = copySelectedItems(table)
 
                 override fun isEnabled() = table.selection.all { isCopyable(it.datum) }
             })
@@ -178,5 +139,48 @@ abstract class ActivityTableModelEditor<T>(
         modelListener(object : DataChangedListener<EditableDatum<T>>() {
             override fun dataChanged(columnInfo: ColumnInfo<EditableDatum<T>, *>, rowIndex: Int) = listener()
         })
+    }
+
+
+    /**
+     * Adds a new item to the table, brings that item into view, and applies focus to that item's first editable column.
+     *
+     * @param table the table to add the item to
+     */
+    private fun addItem(table: TableView<EditableDatum<T>>) {
+        // Implementation based on `TableToolbarDecorator#createDefaultTableActions`
+        TableUtil.stopEditing(table)
+
+        table.rowCount.let { rowCount ->
+            if (canCreateElement()) model.addRow(createElement())
+            else model.addRow()
+
+            if (rowCount == table.rowCount) return
+        }
+
+        val newRowIndex = model.rowCount - 1
+        val firstEditableColumn = (1..model.columnCount).first { model.isCellEditable(newRowIndex, it) }
+        table.setRowSelectionInterval(newRowIndex, newRowIndex)
+        table.setColumnSelectionInterval(0, 0)
+        table.editCellAt(newRowIndex, firstEditableColumn)
+
+        TableUtil.updateScroller(table)
+        table.editorComponent?.let { table.scrollRectToVisible(it.bounds) }
+        table.editCellAt(newRowIndex, firstEditableColumn)
+    }
+
+    /**
+     * Copies all selected items in the given table.
+     *
+     * @param table the table to copy the selected items in
+     */
+    private fun copySelectedItems(table: TableView<EditableDatum<T>>) {
+        TableUtil.stopEditing(table)
+
+        table.selectedObjects
+            .also { if (it.isEmpty()) return }
+            .forEach { model.addRow(itemEditor.clone(it, false)) }
+
+        TableUtil.updateScroller(table)
     }
 }
