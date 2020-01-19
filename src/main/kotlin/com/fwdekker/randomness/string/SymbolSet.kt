@@ -10,6 +10,13 @@ package com.fwdekker.randomness.string
 data class SymbolSet(var name: String, var symbols: String) {
     companion object {
         /**
+         * Symbols that look like other symbols.
+         *
+         * To be precise, this string contains the symbols `0`, `1`, `l`, `I`, `O`, `|`, and `﹒`.
+         */
+        const val lookAlikeCharacters = "01lLiIoO|﹒"
+
+        /**
          * The lowercase English alphabet.
          */
         val ALPHABET = SymbolSet("Alphabet (a, b, c, ...)", "abcdefghijklmnopqrstuvwxyz")
@@ -75,6 +82,12 @@ fun Map<String, String>.toSymbolSets() = this.map { (name, symbols) -> SymbolSet
 /**
  * Concatenates the symbols of all the symbol sets, removing duplicate characters.
  *
+ * @param excludeLookAlikeSymbols whether to remove symbols that occur in [SymbolSet.lookAlikeCharacters]
  * @return the concatenation of all symbols of all the symbol sets, excluding duplicate characters
  */
-fun Iterable<SymbolSet>.sum() = this.fold("") { acc, symbolSet -> acc + symbolSet.symbols }.toSet().joinToString("")
+fun Iterable<SymbolSet>.sum(excludeLookAlikeSymbols: Boolean = false) =
+    this.fold("") { acc, symbolSet -> acc + symbolSet.symbols }.toSet().joinToString("")
+        .let { sum ->
+            if (excludeLookAlikeSymbols) sum.filterNot { it in SymbolSet.lookAlikeCharacters }
+            else sum
+        }

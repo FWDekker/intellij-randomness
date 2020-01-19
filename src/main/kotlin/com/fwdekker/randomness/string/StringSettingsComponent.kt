@@ -18,6 +18,7 @@ import com.jgoodies.forms.factories.DefaultComponentFactory
 import java.util.ArrayList
 import java.util.ResourceBundle
 import javax.swing.ButtonGroup
+import javax.swing.JCheckBox
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -47,6 +48,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
     private lateinit var symbolSetPanel: JPanel
     private lateinit var symbolSetSeparator: JComponent
     private lateinit var symbolSetTable: SymbolSetTable
+    private lateinit var excludeLookAlikeSymbolsCheckBox: JCheckBox
 
     override val rootPane get() = contentPane
 
@@ -93,6 +95,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
         capitalizationGroup.setValue(scheme.capitalization)
         symbolSetTable.data = scheme.symbolSetList
         symbolSetTable.activeData = scheme.activeSymbolSetList
+        excludeLookAlikeSymbolsCheckBox.isSelected = scheme.excludeLookAlikeSymbols
     }
 
     override fun saveScheme(scheme: StringScheme) {
@@ -102,6 +105,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
         scheme.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
         scheme.symbolSetList = symbolSetTable.data
         scheme.activeSymbolSetList = symbolSetTable.activeData
+        scheme.excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected
     }
 
     /**
@@ -128,6 +132,9 @@ class StringSettingsComponent(settings: StringSettings = default) :
                 ValidationInfo("Symbol sets must have at least one symbol each.", symbolSetPanel)
             symbolSetTable.activeData.isEmpty() ->
                 ValidationInfo("Activate at least one symbol set.", symbolSetPanel)
+            symbolSetTable.activeData.sum(excludeLookAlikeSymbolsCheckBox.isSelected).isEmpty() ->
+                ValidationInfo("Active symbol sets must contain at least one non-look-alike character if look-alike " +
+                    "characters are excluded.", symbolSetPanel)
             else ->
                 minLength.validateValue()
                     ?: maxLength.validateValue()

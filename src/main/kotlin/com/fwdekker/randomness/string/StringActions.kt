@@ -62,9 +62,9 @@ class StringInsertAction(private val scheme: StringScheme = StringSettings.defau
      */
     @Throws(DataGenerationException::class)
     private fun generateCharacter(): Char {
-        val symbolSet = scheme.activeSymbolSetList.sum()
+        val symbolSet = scheme.activeSymbolSetList.sum(scheme.excludeLookAlikeSymbols)
         if (symbolSet.isEmpty())
-            throw DataGenerationException("No active symbol sets.")
+            throw DataGenerationException("No valid symbols found in active symbol sets.")
 
         val charIndex = random.nextInt(symbolSet.length)
 

@@ -43,6 +43,7 @@ object StringSettingsComponentTest : Spek({
                 currentScheme.capitalization = CapitalizationMode.RANDOM
                 currentScheme.symbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS, SymbolSet.HEXADECIMAL)
                 currentScheme.activeSymbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
+                currentScheme.excludeLookAlikeSymbols = true
             }
 
         stringSettingsComponent =
@@ -86,6 +87,10 @@ object StringSettingsComponentTest : Spek({
             assertThat(symbolSetTable.items.filter { it.active }.map { it.datum })
                 .containsExactly(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
         }
+
+        it("loads the settings' setting for excluding look-alike symbols") {
+            frame.checkBox("excludeLookAlikeSymbolsCheckBox").requireSelected()
+        }
     }
 
     describe("saving settings") {
@@ -95,6 +100,7 @@ object StringSettingsComponentTest : Spek({
                 frame.spinner("maxLength").target().value = 803
                 frame.radioButton("enclosureBacktick").target().isSelected = true
                 frame.radioButton("capitalizationUpper").target().isSelected = true
+                frame.checkBox("excludeLookAlikeSymbolsCheckBox").target().isSelected = false
 
                 repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
                 symbolSetTable.listTableModel.addRow(EditableDatum(false, SymbolSet.BRACKETS))
@@ -107,9 +113,10 @@ object StringSettingsComponentTest : Spek({
             assertThat(stringSettings.currentScheme.maxLength).isEqualTo(803)
             assertThat(stringSettings.currentScheme.enclosure).isEqualTo("`")
             assertThat(stringSettings.currentScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
-            assertThat(stringSettings.currentScheme.symbolSetList).isEqualTo(listOf(SymbolSet.BRACKETS,
-                SymbolSet.MINUS))
+            assertThat(stringSettings.currentScheme.symbolSetList)
+                .isEqualTo(listOf(SymbolSet.BRACKETS, SymbolSet.MINUS))
             assertThat(stringSettings.currentScheme.activeSymbolSetList).isEqualTo(listOf(SymbolSet.MINUS))
+            assertThat(stringSettings.currentScheme.excludeLookAlikeSymbols).isEqualTo(false)
         }
     }
 
@@ -197,6 +204,23 @@ object StringSettingsComponentTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
                 assertThat(validationInfo?.message).isEqualTo("Activate at least one symbol set.")
+            }
+
+            it("fails if only look-alike symbols are selected and look-alike symbols are excluded") {
+                val lookAlikeSymbolSet = EditableDatum(false, SymbolSet("Look-alike", "l01"))
+                GuiActionRunner.execute {
+                    repeat(symbolSetTable.items.count()) { symbolSetTable.listTableModel.removeRow(0) }
+
+                    symbolSetTable.listTableModel.addRow(lookAlikeSymbolSet)
+                    symbolSetTable.model.setValueAt(true, 0, 0)
+                }
+
+                val validationInfo = stringSettingsComponent.doValidate()
+
+                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
+                assertThat(validationInfo?.message).isEqualTo("Active symbol sets must contain at least one " +
+                    "non-look-alike character if look-alike characters are excluded.")
             }
         }
     }
