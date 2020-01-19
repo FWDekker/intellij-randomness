@@ -9,9 +9,11 @@ import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.DataInsertRepeatAction
 import com.fwdekker.randomness.DataInsertRepeatArrayAction
+import com.fwdekker.randomness.DataQuickSwitchSchemeAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.array.ArraySettingsAction
 import icons.RandomnessIcons
 import kotlin.random.asJavaRandom
 
@@ -25,6 +27,8 @@ class UuidGroupAction : DataGroupAction(RandomnessIcons.Uuid.Base) {
     override val insertRepeatAction = UuidInsertAction.RepeatAction()
     override val insertRepeatArrayAction = UuidInsertAction.RepeatArrayAction()
     override val settingsAction = UuidSettingsAction()
+    override val quickSwitchSchemeAction = UuidSettingsAction.UuidQuickSwitchSchemeAction()
+    override val quickSwitchArraySchemeAction = ArraySettingsAction.ArrayQuickSwitchSchemeAction()
 }
 
 
@@ -115,4 +119,15 @@ class UuidSettingsAction : DataSettingsAction(RandomnessIcons.Uuid.Settings) {
     override val title = "UUID Settings"
 
     override val configurableClass = UuidSettingsConfigurable::class.java
+
+
+    /**
+     * Opens a popup to allow the user to quickly switch to the selected scheme.
+     *
+     * @param settings the settings containing the schemes that can be switched between
+     */
+    class UuidQuickSwitchSchemeAction(settings: UuidSettings = UuidSettings.default) :
+        DataQuickSwitchSchemeAction<UuidScheme>(settings, RandomnessIcons.Uuid.QuickSwitchScheme) {
+        override val title = "Quick Switch UUID Scheme"
+    }
 }

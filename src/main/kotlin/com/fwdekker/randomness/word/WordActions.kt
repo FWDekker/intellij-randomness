@@ -6,9 +6,11 @@ import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.DataInsertRepeatAction
 import com.fwdekker.randomness.DataInsertRepeatArrayAction
+import com.fwdekker.randomness.DataQuickSwitchSchemeAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.array.ArraySettingsAction
 import icons.RandomnessIcons
 
 
@@ -21,6 +23,8 @@ class WordGroupAction : DataGroupAction(RandomnessIcons.Word.Base) {
     override val insertRepeatAction = WordInsertAction.RepeatAction()
     override val insertRepeatArrayAction = WordInsertAction.RepeatArrayAction()
     override val settingsAction = WordSettingsAction()
+    override val quickSwitchSchemeAction = WordSettingsAction.WordQuickSwitchSchemeAction()
+    override val quickSwitchArraySchemeAction = ArraySettingsAction.ArrayQuickSwitchSchemeAction()
 }
 
 
@@ -111,4 +115,15 @@ class WordSettingsAction : DataSettingsAction(RandomnessIcons.Word.Settings) {
     override val title = "Word Settings"
 
     override val configurableClass = WordSettingsConfigurable::class.java
+
+
+    /**
+     * Opens a popup to allow the user to quickly switch to the selected scheme.
+     *
+     * @param settings the settings containing the schemes that can be switched between
+     */
+    class WordQuickSwitchSchemeAction(settings: WordSettings = WordSettings.default) :
+        DataQuickSwitchSchemeAction<WordScheme>(settings, RandomnessIcons.Word.QuickSwitchScheme) {
+        override val title = "Quick Switch Word Scheme"
+    }
 }

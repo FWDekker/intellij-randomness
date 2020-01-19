@@ -6,9 +6,11 @@ import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.DataInsertRepeatAction
 import com.fwdekker.randomness.DataInsertRepeatArrayAction
+import com.fwdekker.randomness.DataQuickSwitchSchemeAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.array.ArraySettingsAction
 import icons.RandomnessIcons
 
 
@@ -21,6 +23,8 @@ class StringGroupAction : DataGroupAction(RandomnessIcons.String.Base) {
     override val insertRepeatAction = StringInsertAction.RepeatAction()
     override val insertRepeatArrayAction = StringInsertAction.RepeatArrayAction()
     override val settingsAction = StringSettingsAction()
+    override val quickSwitchSchemeAction = StringSettingsAction.StringQuickSwitchSchemeAction()
+    override val quickSwitchArraySchemeAction = ArraySettingsAction.ArrayQuickSwitchSchemeAction()
 }
 
 
@@ -120,4 +124,15 @@ class StringSettingsAction : DataSettingsAction(RandomnessIcons.String.Settings)
     override val title = "String Settings"
 
     override val configurableClass = StringSettingsConfigurable::class.java
+
+
+    /**
+     * Opens a popup to allow the user to quickly switch to the selected scheme.
+     *
+     * @param settings the settings containing the schemes that can be switched between
+     */
+    class StringQuickSwitchSchemeAction(settings: StringSettings = StringSettings.default) :
+        DataQuickSwitchSchemeAction<StringScheme>(settings, RandomnessIcons.String.QuickSwitchScheme) {
+        override val title = "Quick Switch String Scheme"
+    }
 }

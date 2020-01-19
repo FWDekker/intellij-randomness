@@ -6,9 +6,11 @@ import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.DataInsertRepeatAction
 import com.fwdekker.randomness.DataInsertRepeatArrayAction
+import com.fwdekker.randomness.DataQuickSwitchSchemeAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.array.ArraySettingsAction
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DECIMAL_BASE
 import icons.RandomnessIcons
 import java.text.DecimalFormat
@@ -23,6 +25,8 @@ class IntegerGroupAction : DataGroupAction(RandomnessIcons.Integer.Base) {
     override val insertRepeatAction = IntegerInsertAction.RepeatAction()
     override val insertRepeatArrayAction = IntegerInsertAction.RepeatArrayAction()
     override val settingsAction = IntegerSettingsAction()
+    override val quickSwitchSchemeAction = IntegerSettingsAction.IntegerQuickSwitchSchemeAction()
+    override val quickSwitchArraySchemeAction = ArraySettingsAction.ArrayQuickSwitchSchemeAction()
 }
 
 
@@ -120,4 +124,15 @@ class IntegerSettingsAction : DataSettingsAction(RandomnessIcons.Integer.Setting
     override val title = "Integer Settings"
 
     override val configurableClass = IntegerSettingsConfigurable::class.java
+
+
+    /**
+     * Opens a popup to allow the user to quickly switch to the selected scheme.
+     *
+     * @param settings the settings containing the schemes that can be switched between
+     */
+    class IntegerQuickSwitchSchemeAction(settings: IntegerSettings = IntegerSettings.default) :
+        DataQuickSwitchSchemeAction<IntegerScheme>(settings, RandomnessIcons.Integer.QuickSwitchScheme) {
+        override val title = "Quick Switch Integer Scheme"
+    }
 }

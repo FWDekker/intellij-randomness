@@ -11,6 +11,7 @@ import com.intellij.openapi.util.IconLoader
  * @param repeat the path to the repeat variant of the basic icon
  * @param repeatArray the path to the repeat array variant of the basic icon
  * @param settings the path to the settings variant of the basic icon
+ * @param quickSwitchScheme the path to the quick switch scheme variant of the basic icon
  */
 @Suppress("PropertyName", "VariableNaming") // Should look like an enum
 enum class RandomnessIcons(
@@ -18,7 +19,8 @@ enum class RandomnessIcons(
     array: kotlin.String,
     repeat: kotlin.String,
     repeatArray: kotlin.String,
-    settings: kotlin.String
+    settings: kotlin.String,
+    quickSwitchScheme: kotlin.String
 ) {
     /**
      * Icons for decimals.
@@ -27,7 +29,8 @@ enum class RandomnessIcons(
         "/icons/decimal-array.svg",
         "/icons/decimal-repeat.svg",
         "/icons/decimal-repeat-array.svg",
-        "/icons/decimal-settings.svg"),
+        "/icons/decimal-settings.svg",
+        "/icons/decimal-quick-switch-scheme.svg"),
 
     /**
      * Icons for integers.
@@ -36,7 +39,8 @@ enum class RandomnessIcons(
         "/icons/integer-array.svg",
         "/icons/integer-repeat.svg",
         "/icons/integer-repeat-array.svg",
-        "/icons/integer-settings.svg"),
+        "/icons/integer-settings.svg",
+        "/icons/integer-quick-switch-scheme.svg"),
 
     /**
      * Icons for strings.
@@ -45,7 +49,8 @@ enum class RandomnessIcons(
         "/icons/string-array.svg",
         "/icons/string-repeat.svg",
         "/icons/string-repeat-array.svg",
-        "/icons/string-settings.svg"),
+        "/icons/string-settings.svg",
+        "/icons/string-quick-switch-scheme.svg"),
 
     /**
      * Icons for words.
@@ -54,7 +59,8 @@ enum class RandomnessIcons(
         "/icons/word-array.svg",
         "/icons/word-repeat.svg",
         "/icons/word-repeat-array.svg",
-        "/icons/word-settings.svg"),
+        "/icons/word-settings.svg",
+        "/icons/word-quick-switch-scheme.svg"),
 
     /**
      * Icons for UUIDs.
@@ -63,7 +69,8 @@ enum class RandomnessIcons(
         "/icons/uuid-array.svg",
         "/icons/uuid-repeat.svg",
         "/icons/uuid-repeat-array.svg",
-        "/icons/uuid-settings.svg"),
+        "/icons/uuid-settings.svg",
+        "/icons/uuid-quick-switch-scheme.svg"),
 
     /**
      * Basic icons.
@@ -72,7 +79,8 @@ enum class RandomnessIcons(
         "/icons/data-array.svg",
         "/icons/data-repeat.svg",
         "/icons/data-repeat-array.svg",
-        "/icons/data-settings.svg");
+        "/icons/data-settings.svg",
+        "/icons/data-quick-switch-scheme.svg");
 
 
     /**
@@ -95,4 +103,8 @@ enum class RandomnessIcons(
      * The settings variant of the basic icon.
      */
     val Settings = IconLoader.getIcon(settings)
+    /**
+     * The quick switch scheme variant of the basic icon.
+     */
+    val QuickSwitchScheme = IconLoader.getIcon(quickSwitchScheme)
 }

@@ -8,7 +8,7 @@ plugins {
     id "jacoco"
 
     // Static analysis
-    id "io.gitlab.arturbosch.detekt" version "1.2.2"
+    id "io.gitlab.arturbosch.detekt" version "1.4.0"
 
     // Documentation
     id "org.jetbrains.dokka" version "0.9.18"
