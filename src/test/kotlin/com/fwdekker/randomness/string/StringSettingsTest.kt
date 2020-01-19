@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.string
 
-import com.fwdekker.randomness.array.ArrayScheme
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -35,6 +34,7 @@ object StringSettingsTest : Spek({
             stringSettings.currentScheme.maxLength = 891
             stringSettings.currentScheme.enclosure = "Qh7"
             stringSettings.currentScheme.symbolSetList = symbolSets
+            stringSettings.currentScheme.excludeLookAlikeSymbols = true
 
             val newStringSettings = StringSettings()
             newStringSettings.loadState(stringSettings.state)
@@ -43,6 +43,7 @@ object StringSettingsTest : Spek({
             assertThat(newStringSettings.currentScheme.maxLength).isEqualTo(891)
             assertThat(newStringSettings.currentScheme.enclosure).isEqualTo("Qh7")
             assertThat(newStringSettings.currentScheme.symbolSetList).isEqualTo(symbolSets)
+            assertThat(newStringSettings.currentScheme.excludeLookAlikeSymbols).isEqualTo(true)
         }
     }
 

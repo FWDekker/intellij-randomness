@@ -61,7 +61,7 @@ class StringInsertActionTest {
         val action = StringInsertAction(StringScheme(activeSymbolSets = emptyMap()))
         Assertions.assertThatThrownBy { action.generateString() }
             .isInstanceOf(DataGenerationException::class.java)
-            .hasMessage("No active symbol sets.")
+            .hasMessage("No valid symbols found in active symbol sets.")
     }
 
 

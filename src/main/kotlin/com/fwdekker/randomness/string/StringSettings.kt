@@ -65,6 +65,7 @@ data class StringSettings(
  * @property capitalization The capitalization mode of the generated string.
  * @property symbolSets The symbol sets that are available for generating strings.
  * @property activeSymbolSets The symbol sets that are actually used for generating strings; a subset of [symbolSets].
+ * @property excludeLookAlikeSymbols Whether the symbols in [SymbolSet.lookAlikeCharacters] should be excluded.
  *
  * @see StringInsertAction
  * @see StringSettings
@@ -78,7 +79,8 @@ data class StringScheme(
     @MapAnnotation(sortBeforeSave = false)
     var symbolSets: Map<String, String> = DEFAULT_SYMBOL_SETS.toMap(),
     @MapAnnotation(sortBeforeSave = false)
-    var activeSymbolSets: Map<String, String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMap()
+    var activeSymbolSets: Map<String, String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMap(),
+    var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS
 ) : Scheme<StringScheme> {
     companion object {
         /**
@@ -105,6 +107,10 @@ data class StringScheme(
          * The default value of the [activeSymbolSets][activeSymbolSets] field.
          */
         val DEFAULT_ACTIVE_SYMBOL_SETS = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
+        /**
+         * The default value of the [excludeLookAlikeSymbols][excludeLookAlikeSymbols] field.
+         */
+        const val DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS = false
     }
 
 

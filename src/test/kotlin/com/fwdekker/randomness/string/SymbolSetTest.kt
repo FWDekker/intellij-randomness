@@ -89,6 +89,10 @@ object SymbolSetTest : Spek({
             it("does not add symbols that are duplicated in a symbol set") {
                 assertThat(listOf(SymbolSet("set1", "abc"), SymbolSet("set2", "ddeef")).sum()).isEqualTo("abcdef")
             }
+
+            it("removes look-alike symbols if the option is given") {
+                assertThat(listOf(SymbolSet("set", "a" + SymbolSet.lookAlikeCharacters)).sum(true)).isEqualTo("a")
+            }
         }
     }
 })
