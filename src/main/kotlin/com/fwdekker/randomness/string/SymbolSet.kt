@@ -77,5 +77,4 @@ fun Map<String, String>.toSymbolSets() = this.map { (name, symbols) -> SymbolSet
  *
  * @return the concatenation of all symbols of all the symbol sets, excluding duplicate characters
  */
-fun Iterable<SymbolSet>.sum() =
-    this.fold("") { acc, symbolSet -> acc + (symbolSet.symbols.takeUnless { it in acc } ?: "") }
+fun Iterable<SymbolSet>.sum() = this.fold("") { acc, symbolSet -> acc + symbolSet.symbols }.toSet().joinToString("")
