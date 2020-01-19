@@ -77,14 +77,17 @@ object SymbolSetTest : Spek({
                 assertThat(listOf(SymbolSet.SPECIAL, SymbolSet.SPECIAL).sum()).isEqualTo(SymbolSet.SPECIAL.symbols)
             }
 
-            it("does nothing when a subset is added to a symbol set") {
-                assertThat(listOf(SymbolSet.HEXADECIMAL,
-                    SymbolSet.DIGITS).sum()).isEqualTo(SymbolSet.HEXADECIMAL.symbols)
-            }
-
             it("adds the symbols of three symbol sets together") {
                 assertThat(listOf(SymbolSet.DIGITS, SymbolSet.MINUS, SymbolSet.SPECIAL).sum())
                     .isEqualTo("0123456789-!@#\$%^&*")
+            }
+
+            it("does not add symbols that are already in the accumulator") {
+                assertThat(listOf(SymbolSet("set1", "abc"), SymbolSet("set2", "cde")).sum()).isEqualTo("abcde")
+            }
+
+            it("does not add symbols that are duplicated in a symbol set") {
+                assertThat(listOf(SymbolSet("set1", "abc"), SymbolSet("set2", "ddeef")).sum()).isEqualTo("abcdef")
             }
         }
     }
