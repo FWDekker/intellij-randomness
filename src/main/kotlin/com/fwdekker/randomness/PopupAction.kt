@@ -21,6 +21,7 @@ import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.popup.list.ListPopupImpl
 import icons.RandomnessIcons
+import java.awt.event.ActionEvent
 import java.awt.event.InputEvent
 
 
@@ -31,6 +32,8 @@ class PopupAction : AnAction() {
     companion object {
         private const val TITLE = "Insert Data"
         private const val ALT_TITLE = "Insert Repeated Data"
+        private const val ALT_CTRL_TITLE = "Quick Switch Scheme"
+        private const val ALT_CTRL_SHIFT_TITLE = "Quick Switch Array Scheme"
         private const val ALT_SHIFT_TITLE = "Insert Repeated Array"
         private const val CTRL_TITLE = "Change Settings"
         private const val CTRL_SHIFT_TITLE = "Change Array Settings"
@@ -74,26 +77,38 @@ class PopupAction : AnAction() {
 
         if (hasEditor) {
             popup.setAdText(AD_TEXT)
-            popup.registerModifierActions { captionEvent ->
-                val modifiers = captionEvent?.modifiers ?: 0
-                val altPressed = modifiers and (InputEvent.ALT_MASK or InputEvent.ALT_DOWN_MASK) != 0
-                val ctrlPressed = modifiers and (InputEvent.CTRL_MASK or InputEvent.CTRL_DOWN_MASK) != 0
-                val shiftPressed = modifiers and (InputEvent.SHIFT_MASK or InputEvent.SHIFT_DOWN_MASK) != 0
-
-                when {
-                    ctrlPressed && shiftPressed -> CTRL_SHIFT_TITLE
-                    ctrlPressed -> CTRL_TITLE
-                    altPressed && shiftPressed -> ALT_SHIFT_TITLE
-                    altPressed -> ALT_TITLE
-                    shiftPressed -> SHIFT_TITLE
-                    else -> TITLE
-                }
-            }
+            popup.registerModifierActions { this.captionModifier(it) }
         } else {
             popup.setAdText("Editor is not selected. Displaying settings only.")
         }
 
         popup.showInBestPositionFor(event.dataContext)
+    }
+
+
+    /**
+     * Returns the desired title for the popup given an event.
+     *
+     * @param event the event on which the title should be based
+     * @return the desired title for the popup given an event
+     */
+    @Suppress("ComplexMethod") // Cannot be simplified
+    private fun captionModifier(event: ActionEvent?): String {
+        val modifiers = event?.modifiers ?: 0
+        val altPressed = modifiers and (InputEvent.ALT_MASK or InputEvent.ALT_DOWN_MASK) != 0
+        val ctrlPressed = modifiers and (InputEvent.CTRL_MASK or InputEvent.CTRL_DOWN_MASK) != 0
+        val shiftPressed = modifiers and (InputEvent.SHIFT_MASK or InputEvent.SHIFT_DOWN_MASK) != 0
+
+        return when {
+            altPressed && ctrlPressed && shiftPressed -> ALT_CTRL_SHIFT_TITLE
+            altPressed && ctrlPressed -> ALT_CTRL_TITLE
+            altPressed && shiftPressed -> ALT_SHIFT_TITLE
+            ctrlPressed && shiftPressed -> CTRL_SHIFT_TITLE
+            altPressed -> ALT_TITLE
+            ctrlPressed -> CTRL_TITLE
+            shiftPressed -> SHIFT_TITLE
+            else -> TITLE
+        }
     }
 
 

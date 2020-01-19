@@ -6,9 +6,11 @@ import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.DataInsertRepeatAction
 import com.fwdekker.randomness.DataInsertRepeatArrayAction
+import com.fwdekker.randomness.DataQuickSwitchSchemeAction
 import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.array.ArraySettingsAction
 import icons.RandomnessIcons
 import java.text.DecimalFormat
 import kotlin.math.nextUp
@@ -23,6 +25,8 @@ class DecimalGroupAction : DataGroupAction(RandomnessIcons.Decimal.Base) {
     override val insertRepeatAction = DecimalInsertAction.RepeatAction()
     override val insertRepeatArrayAction = DecimalInsertAction.RepeatArrayAction()
     override val settingsAction = DecimalSettingsAction()
+    override val quickSwitchSchemeAction = DecimalSettingsAction.DecimalQuickSwitchSchemeAction()
+    override val quickSwitchArraySchemeAction = ArraySettingsAction.ArrayQuickSwitchSchemeAction()
 }
 
 
@@ -120,4 +124,15 @@ class DecimalSettingsAction : DataSettingsAction(RandomnessIcons.Decimal.Setting
     override val title = "Decimal Settings"
 
     override val configurableClass = DecimalSettingsConfigurable::class.java
+
+
+    /**
+     * Opens a popup to allow the user to quickly switch to the selected scheme.
+     *
+     * @param settings the settings containing the schemes that can be switched between
+     */
+    class DecimalQuickSwitchSchemeAction(settings: DecimalSettings = DecimalSettings.default) :
+        DataQuickSwitchSchemeAction<DecimalScheme>(settings, RandomnessIcons.Decimal.Settings) {
+        override val title = "Quick Switch Decimal Scheme"
+    }
 }

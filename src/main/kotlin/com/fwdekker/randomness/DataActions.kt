@@ -3,13 +3,18 @@ package com.fwdekker.randomness
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettingsAction
 import com.intellij.codeInsight.hint.HintManager
+import com.intellij.icons.AllIcons
+import com.intellij.ide.actions.QuickSwitchSchemeAction
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.options.ShowSettingsUtil
+import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.project.Project
 import icons.RandomnessIcons
 import java.awt.event.InputEvent
 import javax.swing.Icon
@@ -51,6 +56,14 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
      * The action used to edit the generator settings for this data type.
      */
     abstract val settingsAction: DataSettingsAction
+    /**
+     * The action used to quickly switch between schemes of this data type.
+     */
+    abstract val quickSwitchSchemeAction: DataQuickSwitchSchemeAction<*>
+    /**
+     * The action used to quickly switch between array schemes.
+     */
+    abstract val quickSwitchArraySchemeAction: DataQuickSwitchSchemeAction<*>
 
 
     /**
@@ -60,7 +73,7 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
      * @return the insert action, array insert action, and settings action
      */
     override fun getChildren(event: AnActionEvent?) =
-        arrayOf(insertArrayAction, insertRepeatAction, insertRepeatArrayAction, settingsAction)
+        arrayOf(insertArrayAction, insertRepeatAction, insertRepeatArrayAction, settingsAction, quickSwitchSchemeAction)
 
     /**
      * Returns `true`.
@@ -82,10 +95,12 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
         val shiftPressed = event.modifiers and (InputEvent.SHIFT_MASK or InputEvent.SHIFT_DOWN_MASK) != 0
 
         when {
-            ctrlPressed && shiftPressed -> ArraySettingsAction().actionPerformed(event)
-            ctrlPressed -> settingsAction.actionPerformed(event)
+            altPressed && ctrlPressed && shiftPressed -> quickSwitchArraySchemeAction.actionPerformed(event)
+            altPressed && ctrlPressed -> quickSwitchSchemeAction.actionPerformed(event)
             altPressed && shiftPressed -> insertRepeatArrayAction.actionPerformed(event)
+            ctrlPressed && shiftPressed -> ArraySettingsAction().actionPerformed(event)
             altPressed -> insertRepeatAction.actionPerformed(event)
+            ctrlPressed -> settingsAction.actionPerformed(event)
             shiftPressed -> insertArrayAction.actionPerformed(event)
             else -> insertAction.actionPerformed(event)
         }
@@ -319,4 +334,56 @@ abstract class DataSettingsAction(private val icon: Icon = RandomnessIcons.Data.
      */
     override fun actionPerformed(event: AnActionEvent) =
         ShowSettingsUtil.getInstance().showSettingsDialog(event.project, configurableClass)
+}
+
+
+/**
+ * Opens a popup to allow the user to quickly switch to the selected scheme.
+ *
+ * @param T the type of scheme that can be switched between
+ * @param settings the settings containing the schemes that can be switched between
+ * @param icon the icon to present with this action
+ */
+abstract class DataQuickSwitchSchemeAction<T : Scheme<T>>(
+    private val settings: Settings<*, T>,
+    private val icon: Icon = RandomnessIcons.Data.Settings
+) : QuickSwitchSchemeAction(true) {
+    /**
+     * The name of the action.
+     */
+    protected abstract val title: String
+
+
+    /**
+     * Sets the title and icon of this action.
+     *
+     * @param event carries information on the invocation place
+     */
+    override fun update(event: AnActionEvent) {
+        super.update(event)
+
+        event.presentation.text = title
+        event.presentation.icon = icon
+    }
+
+    /**
+     * Adds actions for all schemes in `settings` to the given group.
+     *
+     * @param project ignored
+     * @param group the group to add actions to
+     * @param dataContext ignored
+     */
+    override fun fillActions(project: Project?, group: DefaultActionGroup, dataContext: DataContext) {
+        val current = settings.currentScheme
+
+        settings.schemes.forEach { scheme ->
+            val icon = if (scheme === current) AllIcons.Actions.Forward else ourNotCurrentAction
+
+            group.add(object : DumbAwareAction(scheme.myName, "", icon) {
+                override fun actionPerformed(event: AnActionEvent) {
+                    settings.currentSchemeName = scheme.name
+                }
+            })
+        }
+    }
 }
