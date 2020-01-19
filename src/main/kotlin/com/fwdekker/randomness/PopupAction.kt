@@ -2,12 +2,17 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArraySettingsAction
 import com.fwdekker.randomness.decimal.DecimalGroupAction
+import com.fwdekker.randomness.decimal.DecimalSettingsAction
 import com.fwdekker.randomness.integer.IntegerGroupAction
+import com.fwdekker.randomness.integer.IntegerSettingsAction
 import com.fwdekker.randomness.string.StringGroupAction
+import com.fwdekker.randomness.string.StringSettingsAction
 import com.fwdekker.randomness.ui.disableSpeedSearch
 import com.fwdekker.randomness.ui.registerModifierActions
 import com.fwdekker.randomness.uuid.UuidGroupAction
+import com.fwdekker.randomness.uuid.UuidSettingsAction
 import com.fwdekker.randomness.word.WordGroupAction
+import com.fwdekker.randomness.word.WordSettingsAction
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -35,13 +40,19 @@ class PopupAction : AnAction() {
 
 
     /**
+     * Whether the user focused the editor when opening this popup.
+     */
+    private var hasEditor: Boolean = true
+
+
+    /**
      * Sets the icon of this action.
      *
      * @param event carries information on the invocation place
      */
     override fun update(event: AnActionEvent) {
         event.presentation.icon = RandomnessIcons.Data.Base
-        event.presentation.isEnabled = event.getData(CommonDataKeys.EDITOR) != null
+        hasEditor = event.getData(CommonDataKeys.EDITOR) != null
     }
 
     /**
@@ -50,30 +61,36 @@ class PopupAction : AnAction() {
      * @param event carries information on the invocation place
      */
     override fun actionPerformed(event: AnActionEvent) {
+        val popupGroup = if (hasEditor) PopupGroup() else SettingsOnlyPopupGroup()
         val popup = JBPopupFactory.getInstance()
             .createActionGroupPopup(
-                TITLE, PopupGroup(), event.dataContext,
+                TITLE, popupGroup, event.dataContext,
                 JBPopupFactory.ActionSelectionAid.NUMBERING, true
             )
             as ListPopupImpl
 
         popup.disableSpeedSearch()
         popup.setCaption(TITLE)
-        popup.setAdText(AD_TEXT)
-        popup.registerModifierActions { captionEvent ->
-            val modifiers = captionEvent?.modifiers ?: 0
-            val altPressed = modifiers and (InputEvent.ALT_MASK or InputEvent.ALT_DOWN_MASK) != 0
-            val ctrlPressed = modifiers and (InputEvent.CTRL_MASK or InputEvent.CTRL_DOWN_MASK) != 0
-            val shiftPressed = modifiers and (InputEvent.SHIFT_MASK or InputEvent.SHIFT_DOWN_MASK) != 0
 
-            when {
-                ctrlPressed && shiftPressed -> CTRL_SHIFT_TITLE
-                ctrlPressed -> CTRL_TITLE
-                altPressed && shiftPressed -> ALT_SHIFT_TITLE
-                altPressed -> ALT_TITLE
-                shiftPressed -> SHIFT_TITLE
-                else -> TITLE
+        if (hasEditor) {
+            popup.setAdText(AD_TEXT)
+            popup.registerModifierActions { captionEvent ->
+                val modifiers = captionEvent?.modifiers ?: 0
+                val altPressed = modifiers and (InputEvent.ALT_MASK or InputEvent.ALT_DOWN_MASK) != 0
+                val ctrlPressed = modifiers and (InputEvent.CTRL_MASK or InputEvent.CTRL_DOWN_MASK) != 0
+                val shiftPressed = modifiers and (InputEvent.SHIFT_MASK or InputEvent.SHIFT_DOWN_MASK) != 0
+
+                when {
+                    ctrlPressed && shiftPressed -> CTRL_SHIFT_TITLE
+                    ctrlPressed -> CTRL_TITLE
+                    altPressed && shiftPressed -> ALT_SHIFT_TITLE
+                    altPressed -> ALT_TITLE
+                    shiftPressed -> SHIFT_TITLE
+                    else -> TITLE
+                }
             }
+        } else {
+            popup.setAdText("Editor is not selected. Displaying settings only.")
         }
 
         popup.showInBestPositionFor(event.dataContext)
@@ -81,7 +98,7 @@ class PopupAction : AnAction() {
 
 
     /**
-     * The `ActionGroup` containing the popup's actions.
+     * The `ActionGroup` containing all Randomness actions.
      */
     private class PopupGroup : ActionGroup() {
         /**
@@ -96,6 +113,27 @@ class PopupAction : AnAction() {
                 StringGroupAction(),
                 WordGroupAction(),
                 UuidGroupAction(),
+                Separator(),
+                ArraySettingsAction()
+            )
+    }
+
+    /**
+     * The `ActionGroup` containing only settings-related actions.
+     */
+    private class SettingsOnlyPopupGroup : ActionGroup() {
+        /**
+         * Returns all settings actions.
+         *
+         * @param event carries information on the invocation place
+         */
+        override fun getChildren(event: AnActionEvent?) =
+            arrayOf(
+                IntegerSettingsAction(),
+                DecimalSettingsAction(),
+                StringSettingsAction(),
+                WordSettingsAction(),
+                UuidSettingsAction(),
                 Separator(),
                 ArraySettingsAction()
             )
