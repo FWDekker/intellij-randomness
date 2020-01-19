@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <desc>Created with Lunacy</desc>
+  <defs>
+    <path d="M0 0L16 0L16 9.5L15 9.5L15 8L14 8L11 11L10 11L10 12.5L8 12.5L8 15.5L10 15.5L10 16L0 16L0 0Z" id="path_1" />
+    <clipPath id="mask_1">
+      <use xlink:href="#path_1" />
+    </clipPath>
+  </defs>
+  <g id="decimal-quick-switch-scheme_dark">
+    <g id="ActionQuickSwitchScheme-instance">
+      <g id="Mask-group" transform="translate(1.525879E-05 0)">
+        <path d="M0 0L16 0L16 9.5L15 9.5L15 8L14 8L11 11L10 11L10 12.5L8 12.5L8 15.5L10 15.5L10 16L0 16L0 0Z" id="Action-mask" fill="none" stroke="none" />
+        <g clip-path="url(#mask_1)">
+          <g id="Action-instance" transform="translate(-1.525879E-05 0)">
+            <g id="decimal">
+              <path d="M0 7C0 3.13401 3.13401 0 7 0C10.866 0 14 3.13401 14 7C14 10.866 10.866 14 7 14C3.13401 14 0 10.866 0 7Z" transform="translate(1 1)" id="Oval" fill="#62B543" fill-opacity="0.6" stroke="none" />
+              <g id="4.2" fill="#000000" fill-opacity="0.8980392">
+                <path d="M12.455 10.1L12.455 9.308L10.649 9.308L11.615 8.396Q12.029 8.012 12.173 7.712Q12.317 7.412 12.317 7.07Q12.317 6.692 12.122 6.413Q11.927 6.134 11.576 5.981Q11.225 5.828 10.757 5.828Q10.199 5.828 9.767 6.035Q9.335 6.242 9.089 6.608L9.797 7.064Q9.947 6.854 10.169 6.749Q10.391 6.644 10.667 6.644Q10.997 6.644 11.168 6.779Q11.339 6.914 11.339 7.166Q11.339 7.34 11.249 7.517Q11.159 7.694 10.901 7.94L9.281 9.47L9.281 10.1L12.455 10.1ZM7.457 9.218L6.773 9.218L6.773 10.1L5.825 10.1L5.825 9.218L3.563 9.218L3.563 8.564L5.543 5.9L6.563 5.9L4.727 8.426L5.855 8.426L5.855 7.64L6.773 7.64L6.773 8.426L7.457 8.426L7.457 9.218ZM8.297 10.148Q8.051 10.148 7.883 9.98Q7.715 9.812 7.715 9.56Q7.715 9.302 7.883 9.143Q8.051 8.984 8.297 8.984Q8.543 8.984 8.711 9.143Q8.879 9.302 8.879 9.56Q8.879 9.812 8.711 9.98Q8.543 10.148 8.297 10.148Z" />
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+      <g id="QuickSwitchScheme-instance" transform="translate(9 9)">
+        <g id="Group">
+          <path d="M2.1 2.52778L2.1 4.08333L0 2.04167L2.1 0L2.1 1.55556L4.1 1.55556L4.1 2.52778L2.1 2.52778L2.1 2.52778Z" transform="translate(2.9 0)" id="Shape" fill="#AFB1B3" stroke="none" />
+          <path d="M2 2.52778L2 4.08333L4.1 2.04167L2 0L2 1.55556L0 1.55556L0 2.52778L2 2.52778L2 2.52778Z" transform="translate(0 2.916667)" id="Shape" fill="#AFB1B3" stroke="none" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -127,7 +127,7 @@ class UuidSettingsAction : DataSettingsAction(RandomnessIcons.Uuid.Settings) {
      * @param settings the settings containing the schemes that can be switched between
      */
     class UuidQuickSwitchSchemeAction(settings: UuidSettings = UuidSettings.default) :
-        DataQuickSwitchSchemeAction<UuidScheme>(settings, RandomnessIcons.Uuid.Settings) {
+        DataQuickSwitchSchemeAction<UuidScheme>(settings, RandomnessIcons.Uuid.QuickSwitchScheme) {
         override val title = "Quick Switch UUID Scheme"
     }
 }

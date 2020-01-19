@@ -2,6 +2,7 @@ package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.DataQuickSwitchSchemeAction
 import com.fwdekker.randomness.DataSettingsAction
+import icons.RandomnessIcons
 
 
 /**
@@ -22,7 +23,7 @@ class ArraySettingsAction : DataSettingsAction() {
      * @param settings the settings containing the schemes that can be switched between
      */
     class ArrayQuickSwitchSchemeAction(settings: ArraySettings = ArraySettings.default) :
-        DataQuickSwitchSchemeAction<ArrayScheme>(settings) {
+        DataQuickSwitchSchemeAction<ArrayScheme>(settings, RandomnessIcons.Data.QuickSwitchScheme) {
         override val title = "Quick Switch Array Scheme"
     }
 }

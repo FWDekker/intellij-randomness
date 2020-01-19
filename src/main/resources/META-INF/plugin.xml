@@ -83,7 +83,7 @@
                 class="com.fwdekker.randomness.integer.IntegerSettingsAction$IntegerQuickSwitchSchemeAction"
                 text="Integer Quick Switch Scheme"
                 description="Quickly switch scheme for the Random Integer action."
-                icon="/icons/integer-settings.svg" />
+                icon="/icons/integer-quick-switch-scheme.svg" />
 
         <!-- Decimals -->
         <action id="randomness.InsertDecimal"
@@ -115,7 +115,7 @@
                 class="com.fwdekker.randomness.decimal.DecimalSettingsAction$DecimalQuickSwitchSchemeAction"
                 text="Decimal Quick Switch Scheme"
                 description="Quickly switch scheme for the Random Decimal action."
-                icon="/icons/decimal-settings.svg" />
+                icon="/icons/decimal-quick-switch-scheme.svg" />
 
         <!-- Strings -->
         <action id="randomness.InsertString"
@@ -147,7 +147,7 @@
                 class="com.fwdekker.randomness.string.StringSettingsAction$StringQuickSwitchSchemeAction"
                 text="String Quick Switch Scheme"
                 description="Quickly switch scheme for the Random String action."
-                icon="/icons/string-settings.svg" />
+                icon="/icons/string-quick-switch-scheme.svg" />
 
         <!-- Words -->
         <action id="randomness.InsertWord"
@@ -179,7 +179,7 @@
                 class="com.fwdekker.randomness.word.WordSettingsAction$WordQuickSwitchSchemeAction"
                 text="Word Quick Switch Scheme"
                 description="Quickly switch scheme for the Random Word action."
-                icon="/icons/word-settings.svg" />
+                icon="/icons/word-quick-switch-scheme.svg" />
 
         <!-- UUIDs -->
         <action id="randomness.InsertUuid"
@@ -211,7 +211,7 @@
                 class="com.fwdekker.randomness.uuid.UuidSettingsAction$UuidQuickSwitchSchemeAction"
                 text="UUID Quick Switch Scheme"
                 description="Quickly switch scheme for the Random Uuid action."
-                icon="/icons/uuid-settings.svg" />
+                icon="/icons/uuid-quick-switch-scheme.svg" />
 
         <!-- Arrays -->
         <action id="randomness.ArraySettings"
@@ -223,6 +223,6 @@
                 class="com.fwdekker.randomness.array.ArraySettingsAction$ArrayQuickSwitchSchemeAction"
                 text="Array Quick Switch Scheme"
                 description="Quickly switch scheme for the Random Array action."
-                icon="/icons/data-settings.svg" />
+                icon="/icons/data-quick-switch-scheme.svg" />
     </actions>
 </idea-plugin>

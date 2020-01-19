@@ -132,7 +132,7 @@ class DecimalSettingsAction : DataSettingsAction(RandomnessIcons.Decimal.Setting
      * @param settings the settings containing the schemes that can be switched between
      */
     class DecimalQuickSwitchSchemeAction(settings: DecimalSettings = DecimalSettings.default) :
-        DataQuickSwitchSchemeAction<DecimalScheme>(settings, RandomnessIcons.Decimal.Settings) {
+        DataQuickSwitchSchemeAction<DecimalScheme>(settings, RandomnessIcons.Decimal.QuickSwitchScheme) {
         override val title = "Quick Switch Decimal Scheme"
     }
 }

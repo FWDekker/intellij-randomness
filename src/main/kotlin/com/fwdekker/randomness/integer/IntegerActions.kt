@@ -132,7 +132,7 @@ class IntegerSettingsAction : DataSettingsAction(RandomnessIcons.Integer.Setting
      * @param settings the settings containing the schemes that can be switched between
      */
     class IntegerQuickSwitchSchemeAction(settings: IntegerSettings = IntegerSettings.default) :
-        DataQuickSwitchSchemeAction<IntegerScheme>(settings, RandomnessIcons.Integer.Settings) {
+        DataQuickSwitchSchemeAction<IntegerScheme>(settings, RandomnessIcons.Integer.QuickSwitchScheme) {
         override val title = "Quick Switch Integer Scheme"
     }
 }

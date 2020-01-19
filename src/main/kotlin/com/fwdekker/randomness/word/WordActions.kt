@@ -123,7 +123,7 @@ class WordSettingsAction : DataSettingsAction(RandomnessIcons.Word.Settings) {
      * @param settings the settings containing the schemes that can be switched between
      */
     class WordQuickSwitchSchemeAction(settings: WordSettings = WordSettings.default) :
-        DataQuickSwitchSchemeAction<WordScheme>(settings, RandomnessIcons.Word.Settings) {
+        DataQuickSwitchSchemeAction<WordScheme>(settings, RandomnessIcons.Word.QuickSwitchScheme) {
         override val title = "Quick Switch Word Scheme"
     }
 }

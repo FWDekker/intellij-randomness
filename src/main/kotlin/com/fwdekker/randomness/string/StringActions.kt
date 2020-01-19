@@ -132,7 +132,7 @@ class StringSettingsAction : DataSettingsAction(RandomnessIcons.String.Settings)
      * @param settings the settings containing the schemes that can be switched between
      */
     class StringQuickSwitchSchemeAction(settings: StringSettings = StringSettings.default) :
-        DataQuickSwitchSchemeAction<StringScheme>(settings, RandomnessIcons.String.Settings) {
+        DataQuickSwitchSchemeAction<StringScheme>(settings, RandomnessIcons.String.QuickSwitchScheme) {
         override val title = "Quick Switch String Scheme"
     }
 }
