@@ -1,9 +1,8 @@
 package com.fwdekker.randomness.array
 
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.describe
-import org.jetbrains.spek.api.dsl.it
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 
 
 /**
@@ -18,27 +17,29 @@ object ArraySettingsTest : Spek({
     }
 
 
-    it("creates an independent copy") {
-        val copy = arraySettings.deepCopy()
-        arraySettings.currentScheme.count = 44
-        copy.currentScheme.count = 15
+    describe("copying") {
+        it("creates an independent copy") {
+            val copy = arraySettings.deepCopy()
+            arraySettings.currentScheme.count = 44
+            copy.currentScheme.count = 15
 
-        assertThat(arraySettings.currentScheme.count).isEqualTo(44)
-    }
+            assertThat(arraySettings.currentScheme.count).isEqualTo(44)
+        }
 
-    it("copies state from another instance") {
-        arraySettings.currentScheme.count = 997
-        arraySettings.currentScheme.brackets = "0fWx<i6jTJ"
-        arraySettings.currentScheme.separator = "f3hu)Rxiz1"
-        arraySettings.currentScheme.isSpaceAfterSeparator = false
+        it("copies state from another instance") {
+            arraySettings.currentScheme.count = 997
+            arraySettings.currentScheme.brackets = "0fWx<i6jTJ"
+            arraySettings.currentScheme.separator = "f3hu)Rxiz1"
+            arraySettings.currentScheme.isSpaceAfterSeparator = false
 
-        val newArraySettings = ArraySettings()
-        newArraySettings.loadState(arraySettings.state)
+            val newArraySettings = ArraySettings()
+            newArraySettings.loadState(arraySettings.state)
 
-        assertThat(newArraySettings.currentScheme.count).isEqualTo(997)
-        assertThat(newArraySettings.currentScheme.brackets).isEqualTo("0fWx<i6jTJ")
-        assertThat(newArraySettings.currentScheme.separator).isEqualTo("f3hu)Rxiz1")
-        assertThat(newArraySettings.currentScheme.isSpaceAfterSeparator).isEqualTo(false)
+            assertThat(newArraySettings.currentScheme.count).isEqualTo(997)
+            assertThat(newArraySettings.currentScheme.brackets).isEqualTo("0fWx<i6jTJ")
+            assertThat(newArraySettings.currentScheme.separator).isEqualTo("f3hu)Rxiz1")
+            assertThat(newArraySettings.currentScheme.isSpaceAfterSeparator).isEqualTo(false)
+        }
     }
 })
 

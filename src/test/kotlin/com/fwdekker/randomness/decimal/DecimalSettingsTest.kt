@@ -1,9 +1,8 @@
 package com.fwdekker.randomness.decimal
 
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.describe
-import org.jetbrains.spek.api.dsl.it
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 
 
 /**
@@ -18,31 +17,33 @@ object DecimalSettingsTest : Spek({
     }
 
 
-    it("creates an independent copy") {
-        val copy = decimalSettings.deepCopy()
-        decimalSettings.currentScheme.minValue = 613.24
-        copy.currentScheme.minValue = 10.21
+    describe("copying") {
+        it("creates an independent copy") {
+            val copy = decimalSettings.deepCopy()
+            decimalSettings.currentScheme.minValue = 613.24
+            copy.currentScheme.minValue = 10.21
 
-        assertThat(decimalSettings.currentScheme.minValue).isEqualTo(613.24)
-    }
+            assertThat(decimalSettings.currentScheme.minValue).isEqualTo(613.24)
+        }
 
-    it("copies state from another instance") {
-        decimalSettings.currentScheme.minValue = 399.75
-        decimalSettings.currentScheme.maxValue = 928.22
-        decimalSettings.currentScheme.decimalCount = 205
-        decimalSettings.currentScheme.showTrailingZeroes = false
-        decimalSettings.currentScheme.groupingSeparator = "a"
-        decimalSettings.currentScheme.decimalSeparator = "D"
+        it("copies state from another instance") {
+            decimalSettings.currentScheme.minValue = 399.75
+            decimalSettings.currentScheme.maxValue = 928.22
+            decimalSettings.currentScheme.decimalCount = 205
+            decimalSettings.currentScheme.showTrailingZeroes = false
+            decimalSettings.currentScheme.groupingSeparator = "a"
+            decimalSettings.currentScheme.decimalSeparator = "D"
 
-        val newDecimalSettings = DecimalSettings()
-        newDecimalSettings.loadState(decimalSettings.state)
+            val newDecimalSettings = DecimalSettings()
+            newDecimalSettings.loadState(decimalSettings.state)
 
-        assertThat(newDecimalSettings.currentScheme.minValue).isEqualTo(399.75)
-        assertThat(newDecimalSettings.currentScheme.maxValue).isEqualTo(928.22)
-        assertThat(newDecimalSettings.currentScheme.decimalCount).isEqualTo(205)
-        assertThat(newDecimalSettings.currentScheme.showTrailingZeroes).isEqualTo(false)
-        assertThat(newDecimalSettings.currentScheme.groupingSeparator).isEqualTo("a")
-        assertThat(newDecimalSettings.currentScheme.decimalSeparator).isEqualTo("D")
+            assertThat(newDecimalSettings.currentScheme.minValue).isEqualTo(399.75)
+            assertThat(newDecimalSettings.currentScheme.maxValue).isEqualTo(928.22)
+            assertThat(newDecimalSettings.currentScheme.decimalCount).isEqualTo(205)
+            assertThat(newDecimalSettings.currentScheme.showTrailingZeroes).isEqualTo(false)
+            assertThat(newDecimalSettings.currentScheme.groupingSeparator).isEqualTo("a")
+            assertThat(newDecimalSettings.currentScheme.decimalSeparator).isEqualTo("D")
+        }
     }
 })
 
