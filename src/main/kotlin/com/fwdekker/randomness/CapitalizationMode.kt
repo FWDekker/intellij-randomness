@@ -1,7 +1,6 @@
 package com.fwdekker.randomness
 
 import java.util.Locale
-import java.util.NoSuchElementException
 
 
 /**
@@ -54,7 +53,7 @@ enum class CapitalizationMode(val descriptor: String, val transform: (String) ->
          */
         fun getMode(descriptor: String) =
             values().firstOrNull { it.descriptor == descriptor }
-                ?: throw NoSuchElementException("There does not exist a capitalization mode with name `$descriptor`.")
+                ?: throw IllegalArgumentException("There does not exist a capitalization mode with name `$descriptor`.")
 
         /**
          * Randomly converts this character to uppercase or lowercase.

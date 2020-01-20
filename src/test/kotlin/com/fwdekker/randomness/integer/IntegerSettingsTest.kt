@@ -1,9 +1,8 @@
 package com.fwdekker.randomness.integer
 
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.describe
-import org.jetbrains.spek.api.dsl.it
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 
 
 /**
@@ -18,25 +17,27 @@ object IntegerSettingsTest : Spek({
     }
 
 
-    it("creates an independent copy") {
-        val copy = integerSettings.deepCopy()
-        integerSettings.currentScheme.minValue = 159
-        copy.currentScheme.minValue = 48
+    describe("copying") {
+        it("creates an independent copy") {
+            val copy = integerSettings.deepCopy()
+            integerSettings.currentScheme.minValue = 159
+            copy.currentScheme.minValue = 48
 
-        assertThat(integerSettings.currentScheme.minValue).isEqualTo(159)
-    }
+            assertThat(integerSettings.currentScheme.minValue).isEqualTo(159)
+        }
 
-    it("copies state from another instance") {
-        integerSettings.currentScheme.minValue = 742
-        integerSettings.currentScheme.maxValue = 908
-        integerSettings.currentScheme.base = 12
+        it("copies state from another instance") {
+            integerSettings.currentScheme.minValue = 742
+            integerSettings.currentScheme.maxValue = 908
+            integerSettings.currentScheme.base = 12
 
-        val newIntegerSettings = IntegerSettings()
-        newIntegerSettings.loadState(integerSettings.state)
+            val newIntegerSettings = IntegerSettings()
+            newIntegerSettings.loadState(integerSettings.state)
 
-        assertThat(newIntegerSettings.currentScheme.minValue).isEqualTo(742)
-        assertThat(newIntegerSettings.currentScheme.maxValue).isEqualTo(908)
-        assertThat(newIntegerSettings.currentScheme.base).isEqualTo(12)
+            assertThat(newIntegerSettings.currentScheme.minValue).isEqualTo(742)
+            assertThat(newIntegerSettings.currentScheme.maxValue).isEqualTo(908)
+            assertThat(newIntegerSettings.currentScheme.base).isEqualTo(12)
+        }
     }
 })
 

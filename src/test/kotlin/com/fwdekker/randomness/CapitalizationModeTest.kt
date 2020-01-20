@@ -2,10 +2,8 @@ package com.fwdekker.randomness
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.describe
-import org.jetbrains.spek.api.dsl.it
-import java.util.NoSuchElementException
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 
 
 /**
@@ -75,7 +73,7 @@ object CapitalizationModeTest : Spek({
 
         it("throws an exception if the descriptor is not recognized") {
             assertThatThrownBy { CapitalizationMode.getMode("") }
-                .isInstanceOf(NoSuchElementException::class.java)
+                .isInstanceOf(IllegalArgumentException::class.java)
                 .hasMessage("There does not exist a capitalization mode with name ``.")
                 .hasNoCause()
         }
