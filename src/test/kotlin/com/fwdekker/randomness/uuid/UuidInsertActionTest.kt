@@ -2,58 +2,59 @@ package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.MethodSource
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * Parameterized unit tests for [UuidInsertAction].
+ * Unit tests for [UuidInsertAction].
  */
-class UuidInsertActionTest {
-    companion object {
-        @JvmStatic
-        private fun provider() = listOf(
-            arrayOf(1, "", CapitalizationMode.LOWER, true),
-            arrayOf(4, "'", CapitalizationMode.LOWER, true),
-            arrayOf(1, "Eglzfpf5", CapitalizationMode.LOWER, true),
-            arrayOf(4, "", CapitalizationMode.UPPER, true),
-            arrayOf(1, "'", CapitalizationMode.UPPER, false)
-        )
-    }
-
-
-    @ParameterizedTest
-    @MethodSource("provider")
-    fun testEnclosure(version: Int, enclosure: String, capitalization: CapitalizationMode, addDashes: Boolean) {
-        val uuidScheme = UuidScheme(
-            version = version,
-            enclosure = enclosure,
-            capitalization = capitalization,
-            addDashes = addDashes
+class UuidInsertActionTest : Spek({
+    describe("generateString") {
+        data class Param(
+            val version: Int,
+            val enclosure: String,
+            val capitalization: CapitalizationMode,
+            val addDashes: Boolean
         )
 
-        val insertRandomUuid = UuidInsertAction(uuidScheme)
-        val generatedString = insertRandomUuid.generateString()
+        listOf(
+            Param(1, "", CapitalizationMode.LOWER, true),
+            Param(4, "'", CapitalizationMode.LOWER, true),
+            Param(1, "Eglzfpf5", CapitalizationMode.LOWER, true),
+            Param(4, "", CapitalizationMode.UPPER, true),
+            Param(1, "'", CapitalizationMode.UPPER, false)
+        ).forEach { (version, enclosure, capitalization, addDashes) ->
+            it("generates a formatted UUID") {
+                val uuidScheme = UuidScheme(
+                    version = version,
+                    enclosure = enclosure,
+                    capitalization = capitalization,
+                    addDashes = addDashes
+                )
 
-        val alphabet = capitalization.transform("0-9a-fA-F")
-        val dash = if (addDashes) "-" else ""
+                val insertRandomUuid = UuidInsertAction(uuidScheme)
+                val generatedString = insertRandomUuid.generateString()
 
-        assertThat(
-            Regex("" +
-                "^$enclosure" +
-                "[$alphabet]{8}$dash[$alphabet]{4}$dash[$alphabet]{4}$dash[$alphabet]{4}$dash[$alphabet]{12}" +
-                "$enclosure$"
-            ).matches(generatedString)
-        ).isTrue()
+                val alphabet = capitalization.transform("0-9a-fA-F")
+                val dash = if (addDashes) "-" else ""
+
+                assertThat(
+                    Regex("" +
+                        "^$enclosure" +
+                        "[$alphabet]{8}$dash[$alphabet]{4}$dash[$alphabet]{4}$dash[$alphabet]{4}$dash[$alphabet]{12}" +
+                        "$enclosure$"
+                    ).matches(generatedString)
+                ).isTrue()
+            }
+        }
+
+        it("throws an exception if an invalid UUID version is given") {
+            Assertions.assertThatThrownBy { UuidInsertAction(UuidScheme(version = 9)).generateString() }
+                .isInstanceOf(DataGenerationException::class.java)
+                .hasMessage("Unknown UUID version `9`.")
+        }
     }
-
-    @Test
-    fun testInvalidVersion() {
-        assertThatThrownBy { UuidInsertAction(UuidScheme(version = 9)).generateString() }
-            .isInstanceOf(DataGenerationException::class.java)
-            .hasMessage("Unknown UUID version `9`.")
-    }
-}
+})
