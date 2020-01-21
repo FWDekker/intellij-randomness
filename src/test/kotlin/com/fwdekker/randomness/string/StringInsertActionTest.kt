@@ -2,6 +2,7 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.DataGroupActionTest
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek
@@ -75,3 +76,9 @@ class StringInsertActionTest : Spek({
         }
     }
 })
+
+
+/**
+ * Unit tests for [StringGroupAction].
+ */
+class StringGroupActionTest : DataGroupActionTest({ StringGroupAction() })

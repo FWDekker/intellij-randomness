@@ -2,6 +2,7 @@ package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.DataGroupActionTest
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek
@@ -58,3 +59,9 @@ class UuidInsertActionTest : Spek({
         }
     }
 })
+
+
+/**
+ * Unit tests for [UuidGroupAction].
+ */
+class UuidGroupActionTest : DataGroupActionTest({ UuidGroupAction() })

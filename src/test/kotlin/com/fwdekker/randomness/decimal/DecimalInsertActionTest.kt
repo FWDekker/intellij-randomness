@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.DataGroupActionTest
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -112,3 +113,9 @@ class DecimalInsertActionTest : Spek({
         }
     }
 })
+
+
+/**
+ * Unit tests for [DecimalGroupAction].
+ */
+class DecimalGroupActionTest : DataGroupActionTest({ DecimalGroupAction() })

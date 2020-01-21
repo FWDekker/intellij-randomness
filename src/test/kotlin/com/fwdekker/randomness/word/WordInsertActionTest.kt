@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.DataGroupActionTest
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -108,3 +109,9 @@ class WordInsertActionParamTest : Spek({
         }
     }
 })
+
+
+/**
+ * Unit tests for [WordGroupAction].
+ */
+class WordGroupActionTest : DataGroupActionTest({ WordGroupAction() })

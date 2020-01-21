@@ -121,7 +121,7 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
  * @see IntegerSettingsComponent
  */
 class IntegerSettingsAction : DataSettingsAction(RandomnessIcons.Integer.Settings) {
-    override val title = "Integer Settings"
+    override val name = "Integer Settings"
 
     override val configurableClass = IntegerSettingsConfigurable::class.java
 
@@ -133,6 +133,6 @@ class IntegerSettingsAction : DataSettingsAction(RandomnessIcons.Integer.Setting
      */
     class IntegerQuickSwitchSchemeAction(settings: IntegerSettings = IntegerSettings.default) :
         DataQuickSwitchSchemeAction<IntegerScheme>(settings, RandomnessIcons.Integer.QuickSwitchScheme) {
-        override val title = "Quick Switch Integer Scheme"
+        override val name = "Quick Switch Integer Scheme"
     }
 }

@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.DataGroupActionTest
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek
@@ -80,3 +81,9 @@ class IntegerInsertActionTest : Spek({
         }
     }
 })
+
+
+/**
+ * Unit tests for [IntegerGroupAction].
+ */
+class IntegerGroupActionTest : DataGroupActionTest({ IntegerGroupAction() })

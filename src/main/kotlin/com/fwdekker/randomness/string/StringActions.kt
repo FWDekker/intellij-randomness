@@ -121,7 +121,7 @@ class StringInsertAction(private val scheme: StringScheme = StringSettings.defau
  * @see StringSettingsComponent
  */
 class StringSettingsAction : DataSettingsAction(RandomnessIcons.String.Settings) {
-    override val title = "String Settings"
+    override val name = "String Settings"
 
     override val configurableClass = StringSettingsConfigurable::class.java
 
@@ -133,6 +133,6 @@ class StringSettingsAction : DataSettingsAction(RandomnessIcons.String.Settings)
      */
     class StringQuickSwitchSchemeAction(settings: StringSettings = StringSettings.default) :
         DataQuickSwitchSchemeAction<StringScheme>(settings, RandomnessIcons.String.QuickSwitchScheme) {
-        override val title = "Quick Switch String Scheme"
+        override val name = "Quick Switch String Scheme"
     }
 }
