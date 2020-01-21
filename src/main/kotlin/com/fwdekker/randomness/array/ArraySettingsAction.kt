@@ -12,7 +12,7 @@ import icons.RandomnessIcons
  * @see ArraySettingsComponent
  */
 class ArraySettingsAction : DataSettingsAction() {
-    override val title = "Array Settings"
+    override val name = "Array Settings"
 
     override val configurableClass = ArraySettingsConfigurable::class.java
 
@@ -24,6 +24,6 @@ class ArraySettingsAction : DataSettingsAction() {
      */
     class ArrayQuickSwitchSchemeAction(settings: ArraySettings = ArraySettings.default) :
         DataQuickSwitchSchemeAction<ArrayScheme>(settings, RandomnessIcons.Data.QuickSwitchScheme) {
-        override val title = "Quick Switch Array Scheme"
+        override val name = "Quick Switch Array Scheme"
     }
 }

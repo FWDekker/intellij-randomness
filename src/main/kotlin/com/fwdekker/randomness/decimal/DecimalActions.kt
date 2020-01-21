@@ -121,7 +121,7 @@ class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.de
  * @see DecimalSettingsComponent
  */
 class DecimalSettingsAction : DataSettingsAction(RandomnessIcons.Decimal.Settings) {
-    override val title = "Decimal Settings"
+    override val name = "Decimal Settings"
 
     override val configurableClass = DecimalSettingsConfigurable::class.java
 
@@ -133,6 +133,6 @@ class DecimalSettingsAction : DataSettingsAction(RandomnessIcons.Decimal.Setting
      */
     class DecimalQuickSwitchSchemeAction(settings: DecimalSettings = DecimalSettings.default) :
         DataQuickSwitchSchemeAction<DecimalScheme>(settings, RandomnessIcons.Decimal.QuickSwitchScheme) {
-        override val title = "Quick Switch Decimal Scheme"
+        override val name = "Quick Switch Decimal Scheme"
     }
 }

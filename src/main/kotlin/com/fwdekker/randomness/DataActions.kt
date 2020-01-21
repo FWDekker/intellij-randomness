@@ -307,7 +307,7 @@ abstract class DataSettingsAction(private val icon: Icon = RandomnessIcons.Data.
     /**
      * The name of the action.
      */
-    protected abstract val title: String
+    abstract val name: String
 
     /**
      * The class of the configurable maintaining the settings.
@@ -323,7 +323,7 @@ abstract class DataSettingsAction(private val icon: Icon = RandomnessIcons.Data.
     override fun update(event: AnActionEvent) {
         super.update(event)
 
-        event.presentation.text = title
+        event.presentation.text = name
         event.presentation.icon = icon
     }
 
@@ -351,7 +351,7 @@ abstract class DataQuickSwitchSchemeAction<T : Scheme<T>>(
     /**
      * The name of the action.
      */
-    protected abstract val title: String
+    abstract val name: String
 
 
     /**
@@ -362,7 +362,7 @@ abstract class DataQuickSwitchSchemeAction<T : Scheme<T>>(
     override fun update(event: AnActionEvent) {
         super.update(event)
 
-        event.presentation.text = title
+        event.presentation.text = name
         event.presentation.icon = icon
     }
 

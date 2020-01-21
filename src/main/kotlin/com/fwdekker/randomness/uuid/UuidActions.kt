@@ -116,7 +116,7 @@ class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.cur
  * @see UuidSettingsComponent
  */
 class UuidSettingsAction : DataSettingsAction(RandomnessIcons.Uuid.Settings) {
-    override val title = "UUID Settings"
+    override val name = "UUID Settings"
 
     override val configurableClass = UuidSettingsConfigurable::class.java
 
@@ -128,6 +128,6 @@ class UuidSettingsAction : DataSettingsAction(RandomnessIcons.Uuid.Settings) {
      */
     class UuidQuickSwitchSchemeAction(settings: UuidSettings = UuidSettings.default) :
         DataQuickSwitchSchemeAction<UuidScheme>(settings, RandomnessIcons.Uuid.QuickSwitchScheme) {
-        override val title = "Quick Switch UUID Scheme"
+        override val name = "Quick Switch UUID Scheme"
     }
 }

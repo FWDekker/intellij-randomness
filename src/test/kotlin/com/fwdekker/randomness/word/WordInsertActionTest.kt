@@ -1,63 +1,51 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.DataGroupActionTest
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.MethodSource
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * Parameterized unit tests for [WordInsertAction].
- */
-class WordInsertActionParamTest {
-    companion object {
-        @JvmStatic
-        fun provider() =
-            listOf(
-                arrayOf(0, 1, ""),
-                arrayOf(1, 1, ""),
-                arrayOf(12, 12, ""),
-                arrayOf(3, 15, "\""),
-                arrayOf(3, 13, "`"),
-                arrayOf(7, 9, "delim")
-            )
-    }
-
-
-    @ParameterizedTest
-    @MethodSource("provider")
-    fun testValue(minLength: Int, maxLength: Int, enclosure: String) {
-        val wordScheme = WordScheme(minLength = minLength, maxLength = maxLength, enclosure = enclosure)
-
-        val insertRandomWord = WordInsertAction(wordScheme)
-        val randomString = insertRandomWord.generateString()
-
-        assertThat(randomString)
-            .startsWith(enclosure)
-            .endsWith(enclosure)
-        assertThat(randomString.length)
-            .isGreaterThanOrEqualTo(minLength + 2 * enclosure.length)
-            .isLessThanOrEqualTo(maxLength + 2 * enclosure.length)
-    }
-}
-
-
-/**
  * Unit tests for [WordInsertAction].
  */
-object WordInsertActionTest : Spek({
-    val tempFileHelper = TempFileHelper()
+class WordInsertActionParamTest : Spek({
+    describe("pattern") {
+        listOf(
+            Triple(0, 1, ""),
+            Triple(1, 1, ""),
+            Triple(12, 12, ""),
+            Triple(3, 15, "\""),
+            Triple(3, 13, "`"),
+            Triple(7, 9, "delim")
+        ).forEach { (minLength, maxLength, enclosure) ->
+            it("generates a formatted word") {
+                val wordScheme = WordScheme(minLength = minLength, maxLength = maxLength, enclosure = enclosure)
 
+                val insertRandomWord = WordInsertAction(wordScheme)
+                val randomString = insertRandomWord.generateString()
 
-    afterGroup {
-        tempFileHelper.cleanUp()
+                assertThat(randomString)
+                    .startsWith(enclosure)
+                    .endsWith(enclosure)
+                assertThat(randomString.length)
+                    .isGreaterThanOrEqualTo(minLength + 2 * enclosure.length)
+                    .isLessThanOrEqualTo(maxLength + 2 * enclosure.length)
+            }
+        }
     }
 
-
     describe("error handling") {
+        val tempFileHelper = TempFileHelper()
+
+
+        afterGroup {
+            tempFileHelper.cleanUp()
+        }
+
+
         it("throws an exception if there are no active dictionaries") {
             val wordScheme = WordScheme()
             wordScheme.activeBundledDictionaries = emptySet()
@@ -121,3 +109,9 @@ object WordInsertActionTest : Spek({
         }
     }
 })
+
+
+/**
+ * Unit tests for [WordGroupAction].
+ */
+class WordGroupActionTest : DataGroupActionTest({ WordGroupAction() })

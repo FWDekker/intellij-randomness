@@ -1,77 +1,121 @@
 package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.DataGroupActionTest
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.MethodSource
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * Parameterized unit tests for [DecimalInsertAction].
+ * Unit tests for [DecimalInsertAction].
  */
-class DecimalInsertActionTest {
-    companion object {
-        @JvmStatic
-        private fun provider() =
-            listOf(
-                // Zero decimal places
-                arrayOf(5.0, 0, true, "5"),
-                arrayOf(5.0, 1, true, "5.0"),
-                arrayOf(5.0, 2, true, "5.00"),
-                arrayOf(5.0, 0, false, "5"),
-                arrayOf(5.0, 1, false, "5"),
-                arrayOf(5.0, 2, false, "5"),
-                // One decimal place
-                arrayOf(47.6, 0, true, "48"),
-                arrayOf(47.6, 1, true, "47.6"),
-                arrayOf(47.6, 2, true, "47.60"),
-                arrayOf(47.6, 0, false, "48"),
-                arrayOf(47.6, 1, false, "47.6"),
-                arrayOf(47.6, 2, false, "47.6"),
-                // Two decimal places
-                arrayOf(79.59, 0, true, "80"),
-                arrayOf(79.59, 1, true, "79.6"),
-                arrayOf(79.59, 2, true, "79.59"),
-                arrayOf(79.59, 3, true, "79.590"),
-                arrayOf(79.59, 0, false, "80"),
-                arrayOf(79.59, 1, false, "79.6"),
-                arrayOf(79.59, 2, false, "79.59"),
-                arrayOf(79.59, 3, false, "79.59"),
-                // Negative numbers
-                arrayOf(-85.71, 0, true, "-86"),
-                arrayOf(-85.71, 1, true, "-85.7"),
-                arrayOf(-85.71, 2, true, "-85.71"),
-                arrayOf(-85.71, 3, true, "-85.710"),
-                arrayOf(-85.71, 0, false, "-86"),
-                arrayOf(-85.71, 1, false, "-85.7"),
-                arrayOf(-85.71, 2, false, "-85.71"),
-                arrayOf(-85.71, 3, false, "-85.71")
-            )
+class DecimalInsertActionTest : Spek({
+    describe("value range") {
+        mapOf(
+            // Zero decimal places
+            Triple(5.0, 0, true) to "5",
+            Triple(5.0, 1, true) to "5.0",
+            Triple(5.0, 2, true) to "5.00",
+            Triple(5.0, 0, false) to "5",
+            Triple(5.0, 1, false) to "5",
+            Triple(5.0, 2, false) to "5",
+            // One decimal place
+            Triple(47.6, 0, true) to "48",
+            Triple(47.6, 1, true) to "47.6",
+            Triple(47.6, 2, true) to "47.60",
+            Triple(47.6, 0, false) to "48",
+            Triple(47.6, 1, false) to "47.6",
+            Triple(47.6, 2, false) to "47.6",
+            // Two decimal places
+            Triple(79.59, 0, true) to "80",
+            Triple(79.59, 1, true) to "79.6",
+            Triple(79.59, 2, true) to "79.59",
+            Triple(79.59, 3, true) to "79.590",
+            Triple(79.59, 0, false) to "80",
+            Triple(79.59, 1, false) to "79.6",
+            Triple(79.59, 2, false) to "79.59",
+            Triple(79.59, 3, false) to "79.59",
+            // Negative numbers
+            Triple(-85.71, 0, true) to "-86",
+            Triple(-85.71, 1, true) to "-85.7",
+            Triple(-85.71, 2, true) to "-85.71",
+            Triple(-85.71, 3, true) to "-85.710",
+            Triple(-85.71, 0, false) to "-86",
+            Triple(-85.71, 1, false) to "-85.7",
+            Triple(-85.71, 2, false) to "-85.71",
+            Triple(-85.71, 3, false) to "-85.71"
+        ).forEach { (value, decimalCount, showTrailingZeroes), expectedString ->
+            it("generates $expectedString") {
+                val decimalScheme = DecimalScheme()
+                decimalScheme.minValue = value
+                decimalScheme.maxValue = value
+                decimalScheme.decimalCount = decimalCount
+                decimalScheme.showTrailingZeroes = showTrailingZeroes
+
+                val insertRandomDecimal = DecimalInsertAction(decimalScheme)
+                val randomString = insertRandomDecimal.generateString()
+
+                assertThat(randomString).isEqualTo(expectedString)
+            }
+        }
+
+        it("throws an exception of the minimum is larger than the maximum") {
+            val action = DecimalInsertAction(DecimalScheme("Default", 365.85, 241.54))
+            assertThatThrownBy { action.generateString() }
+                .isInstanceOf(DataGenerationException::class.java)
+                .hasMessage("Minimum value is larger than maximum value.")
+        }
     }
 
+    describe("separator") {
+        data class Param(
+            val value: Double,
+            val decimalCount: Int,
+            val groupingSeparator: String,
+            val decimalSeparator: String
+        )
 
-    @ParameterizedTest
-    @MethodSource("provider")
-    fun testValue(value: Double, decimalCount: Int, showTrailingZeroes: Boolean, expectedString: String) {
-        val decimalScheme = DecimalScheme()
-        decimalScheme.minValue = value
-        decimalScheme.maxValue = value
-        decimalScheme.decimalCount = decimalCount
-        decimalScheme.showTrailingZeroes = showTrailingZeroes
+        mapOf(
+            // Decimal separator only
+            Param(4.21, 2, ".", ".") to "4.21",
+            Param(4.21, 2, ".", ",") to "4,21",
+            Param(4.21, 2, ",", ".") to "4.21",
+            Param(4.21, 2, ",", ",") to "4,21",
+            // Grouping separator only
+            Param(15616.0, 0, ".", ".") to "15.616",
+            Param(15616.0, 0, ".", ",") to "15.616",
+            Param(15616.0, 0, ",", ".") to "15,616",
+            Param(15616.0, 0, ",", ",") to "15,616",
+            // Both separators
+            Param(67575.845, 3, "", ".") to "67575.845",
+            Param(67575.845, 3, ".", ".") to "67.575.845",
+            Param(67575.845, 3, ".", ",") to "67.575,845",
+            Param(67575.845, 3, ",", ".") to "67,575.845",
+            Param(67575.845, 3, ",", ",") to "67,575,845"
+        ).forEach { (value, decimalCount, groupingSeparator, decimalSeparator), expectedString ->
+            it("generates $expectedString") {
+                val decimalScheme = DecimalScheme(
+                    minValue = value,
+                    maxValue = value,
+                    decimalCount = decimalCount,
+                    showTrailingZeroes = false,
+                    groupingSeparator = groupingSeparator,
+                    decimalSeparator = decimalSeparator
+                )
 
-        val insertRandomDecimal = DecimalInsertAction(decimalScheme)
-        val randomString = insertRandomDecimal.generateString()
+                val insertRandomDecimal = DecimalInsertAction(decimalScheme)
+                val randomString = insertRandomDecimal.generateString()
 
-        assertThat(randomString).isEqualTo(expectedString)
+                assertThat(randomString).isEqualTo(expectedString)
+            }
+        }
     }
+})
 
-    @Test
-    fun testInvalidRange() {
-        val action = DecimalInsertAction(DecimalScheme("Default", 365.85, 241.54))
-        assertThatThrownBy { action.generateString() }
-            .isInstanceOf(DataGenerationException::class.java)
-            .hasMessage("Minimum value is larger than maximum value.")
-    }
-}
+
+/**
+ * Unit tests for [DecimalGroupAction].
+ */
+class DecimalGroupActionTest : DataGroupActionTest({ DecimalGroupAction() })

@@ -112,7 +112,7 @@ class WordInsertAction(private val scheme: WordScheme = WordSettings.default.cur
  * @see WordSettingsComponent
  */
 class WordSettingsAction : DataSettingsAction(RandomnessIcons.Word.Settings) {
-    override val title = "Word Settings"
+    override val name = "Word Settings"
 
     override val configurableClass = WordSettingsConfigurable::class.java
 
@@ -124,6 +124,6 @@ class WordSettingsAction : DataSettingsAction(RandomnessIcons.Word.Settings) {
      */
     class WordQuickSwitchSchemeAction(settings: WordSettings = WordSettings.default) :
         DataQuickSwitchSchemeAction<WordScheme>(settings, RandomnessIcons.Word.QuickSwitchScheme) {
-        override val title = "Quick Switch Word Scheme"
+        override val name = "Quick Switch Word Scheme"
     }
 }
