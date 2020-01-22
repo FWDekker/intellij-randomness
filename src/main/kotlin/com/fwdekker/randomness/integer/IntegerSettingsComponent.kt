@@ -93,10 +93,11 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         scheme.safeSetGroupingSeparator(groupingSeparatorGroup.getValue())
     }
 
-    override fun doValidate() = minValue.validateValue()
-        ?: maxValue.validateValue()
-        ?: base.validateValue()
-        ?: valueRange.validateValue()
+    override fun doValidate() =
+        minValue.validateValue()
+            ?: maxValue.validateValue()
+            ?: base.validateValue()
+            ?: valueRange.validateValue()
 
 
     /**

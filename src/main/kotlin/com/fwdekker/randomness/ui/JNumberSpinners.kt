@@ -97,12 +97,9 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
      */
     fun validateValue() =
         when {
-            value < minValue ->
-                ValidationInfo("The $description should be greater than or equal to $minValue.", this)
-            value > maxValue ->
-                ValidationInfo("The $description should be less than or equal to $maxValue.", this)
-            else ->
-                null
+            value < minValue -> ValidationInfo("The $description should be greater than or equal to $minValue.", this)
+            value > maxValue -> ValidationInfo("The $description should be less than or equal to $maxValue.", this)
+            else -> null
         }
 }
 

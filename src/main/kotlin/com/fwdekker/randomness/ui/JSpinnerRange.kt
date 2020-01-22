@@ -57,11 +57,8 @@ class JSpinnerRange(
      */
     fun validateValue() =
         when {
-            minValue > maxValue ->
-                ValidationInfo("The maximum$name should not be smaller than the minimum$name.", max)
-            maxValue - minValue > maxRange ->
-                ValidationInfo("The$name range should not exceed $maxRange.", max)
-            else ->
-                null
+            minValue > maxValue -> ValidationInfo("The maximum$name should not be smaller than the minimum$name.", max)
+            maxValue - minValue > maxRange -> ValidationInfo("The$name range should not exceed $maxRange.", max)
+            else -> null
         }
 }

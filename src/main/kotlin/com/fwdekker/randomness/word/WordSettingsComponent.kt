@@ -79,7 +79,7 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         maxLength = JIntSpinner(1, 1, description = "maximum length")
         lengthRange = JSpinnerRange(minLength, maxLength, Int.MAX_VALUE.toDouble(), "length")
         dictionaryTable = DictionaryTable()
-        dictionaryPanel = dictionaryTable.createComponent()
+        dictionaryPanel = dictionaryTable.panel
 
         dictionarySeparator = factory.createSeparator(bundle.getString("settings.dictionaries"))
     }
@@ -125,40 +125,13 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         BundledDictionary.cache.clear()
         UserDictionary.cache.clear()
 
-        return validateDictionarySelection()
+        return dictionaryTable.doValidate()
             ?: validateWordRange()
             ?: minLength.validateValue()
             ?: maxLength.validateValue()
             ?: lengthRange.validateValue()
     }
 
-    /**
-     * Returns `null` if a unique, non-empty selection of valid dictionaries has been made, or a `ValidationInfo` object
-     * explaining which input should be changed.
-     *
-     * @return `null` if a unique, non-empty selection of valid dictionaries has been made, or a `ValidationInfo` object
-     * explaining which input should be changed
-     */
-    @Suppress("ReturnCount") // Acceptable for validation functions
-    private fun validateDictionarySelection(): ValidationInfo? {
-        if (dictionaryTable.data.distinct().size != dictionaryTable.data.size)
-            return ValidationInfo("Dictionaries must be unique.", dictionaryPanel)
-        if (dictionaryTable.activeData.isEmpty())
-            return ValidationInfo("Select at least one dictionary.", dictionaryPanel)
-
-        dictionaryTable.data.forEach { dictionary ->
-            try {
-                dictionary.validate()
-            } catch (e: InvalidDictionaryException) {
-                return ValidationInfo("Dictionary `$dictionary` is invalid: ${e.message}", dictionaryPanel)
-            }
-
-            if (dictionary.words.isEmpty())
-                return ValidationInfo("Dictionary `$dictionary` is empty.", dictionaryPanel)
-        }
-
-        return null
-    }
 
     /**
      * Returns `null` if the selected word range overlaps with words in the chosen dictionaries, or a `ValidationInfo`
