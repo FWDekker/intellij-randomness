@@ -9,7 +9,7 @@
     <a href="https://fwdekker.github.io/intellij-randomness/"><img src="https://img.shields.io/badge/documentation-ready-blue.svg?style=for-the-badge" alt="Documentation" /></a>
     <br />
     <a href="https://travis-ci.com/FWDekker/intellij-randomness"><img src="https://img.shields.io/travis/com/FWDekker/intellij-randomness/master?style=for-the-badge" alt="Travis build status" /></a>
-    <a href="https://codecov.io/gh/FWDekker/intellij-randomness"><img src="https://img.shields.io/codecov/c/github/FWDekker/intellij-randomness.svg?style=for-the-badge" alt="Branch coverage" /></a>
+    <a href="https://codecov.io/gh/FWDekker/intellij-randomness"><img src="https://img.shields.io/codecov/c/github/FWDekker/intellij-randomness.svg?style=for-the-badge" alt="Line coverage" /></a>
 </p>
 
 Rather than going to [random.org](https://www.random.org/) or making up your own random data, you can now insert random
@@ -30,8 +30,7 @@ You can modify this behavior by holding a key while selecting the type of data t
 * Hold <kbd>Alt</kbd> (<kbd>⌥</kbd>) to insert the same value at each caret.
 You can also hold multiple modifier keys to combine their effects.
 
-Randomness can also be found in the main menu under <kbd>Tools</kbd> or in the
-[<kbd>Generate</kbd> menu](https://www.jetbrains.com/help/idea/generating-code.html).
+Randomness can also be found in the main menu under <kbd>Tools</kbd> or in <kbd>Code > Generate</kbd>.
 
 ## ✨ Features
 * 🕸 **Data Types**<br />
