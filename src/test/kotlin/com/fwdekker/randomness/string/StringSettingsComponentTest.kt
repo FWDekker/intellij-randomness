@@ -156,6 +156,18 @@ object StringSettingsComponentTest : Spek({
         }
 
         describe("symbol sets") {
+            it("fails if there are no symbol sets") {
+                GuiActionRunner.execute {
+                    repeat(symbolSetTable.listTableModel.rowCount) { symbolSetTable.listTableModel.removeRow(0) }
+                }
+
+                val validationInfo = stringSettingsComponent.doValidate()
+
+                assertThat(validationInfo).isNotNull()
+                assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
+                assertThat(validationInfo?.message).isEqualTo("Add at least one symbol set.")
+            }
+
             it("fails if a symbol set does not have a name") {
                 val symbolSet = EditableDatum(false, SymbolSet("", "abc"))
                 GuiActionRunner.execute { symbolSetTable.listTableModel.addRow(symbolSet) }
@@ -164,7 +176,7 @@ object StringSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
-                assertThat(validationInfo?.message).isEqualTo("All symbol sets must have a name.")
+                assertThat(validationInfo?.message).isEqualTo("All symbol sets should have a name.")
             }
 
             it("fails if two symbol sets have the same name") {
@@ -179,7 +191,7 @@ object StringSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
-                assertThat(validationInfo?.message).isEqualTo("Symbol sets must have unique names.")
+                assertThat(validationInfo?.message).isEqualTo("There are multiple symbol sets with the name `name1`.")
             }
 
             it("fails if a symbol set does not have symbols") {
@@ -190,7 +202,7 @@ object StringSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
-                assertThat(validationInfo?.message).isEqualTo("Symbol sets must have at least one symbol each.")
+                assertThat(validationInfo?.message).isEqualTo("Symbol set `name` should contain at least one symbol.")
             }
 
             it("fails if no symbol sets are selected") {
@@ -218,7 +230,7 @@ object StringSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
-                assertThat(validationInfo?.message).isEqualTo("Active symbol sets must contain at least one " +
+                assertThat(validationInfo?.message).isEqualTo("Active symbol sets should contain at least one " +
                     "non-look-alike character if look-alike characters are excluded.")
             }
         }

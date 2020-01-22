@@ -13,7 +13,6 @@ import com.fwdekker.randomness.ui.JSpinnerRange
 import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
-import com.intellij.openapi.ui.ValidationInfo
 import com.jgoodies.forms.factories.DefaultComponentFactory
 import java.util.ArrayList
 import java.util.ResourceBundle
@@ -83,7 +82,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
         maxLength = JIntSpinner(1, 1, description = "maximum length")
         lengthRange = JSpinnerRange(minLength, maxLength, Int.MAX_VALUE.toDouble(), "length")
         symbolSetTable = SymbolSetTable()
-        symbolSetPanel = symbolSetTable.createComponent()
+        symbolSetPanel = symbolSetTable.panel
 
         symbolSetSeparator = factory.createSeparator(bundle.getString("settings.symbol_sets"))
     }
@@ -123,23 +122,10 @@ class StringSettingsComponent(settings: StringSettings = default) :
     }
 
     override fun doValidate() =
-        when {
-            symbolSetTable.data.any { it.name.isEmpty() } ->
-                ValidationInfo("All symbol sets must have a name.", symbolSetPanel)
-            symbolSetTable.data.map { it.name }.distinct().size != symbolSetTable.data.size ->
-                ValidationInfo("Symbol sets must have unique names.", symbolSetPanel)
-            symbolSetTable.data.any { it.symbols.isEmpty() } ->
-                ValidationInfo("Symbol sets must have at least one symbol each.", symbolSetPanel)
-            symbolSetTable.activeData.isEmpty() ->
-                ValidationInfo("Activate at least one symbol set.", symbolSetPanel)
-            symbolSetTable.activeData.sum(excludeLookAlikeSymbolsCheckBox.isSelected).isEmpty() ->
-                ValidationInfo("Active symbol sets must contain at least one non-look-alike character if look-alike " +
-                    "characters are excluded.", symbolSetPanel)
-            else ->
-                minLength.validateValue()
-                    ?: maxLength.validateValue()
-                    ?: lengthRange.validateValue()
-        }
+        minLength.validateValue()
+            ?: maxLength.validateValue()
+            ?: lengthRange.validateValue()
+            ?: symbolSetTable.doValidate(excludeLookAlikeSymbolsCheckBox.isSelected)
 
 
     /**

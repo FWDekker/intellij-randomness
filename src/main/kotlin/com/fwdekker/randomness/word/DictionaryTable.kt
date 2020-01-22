@@ -3,6 +3,7 @@ package com.fwdekker.randomness.word
 import com.fwdekker.randomness.ui.ActivityTableModelEditor
 import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.util.ui.CollectionItemEditor
 import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.LocalPathCellEditor
@@ -109,4 +110,32 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
      * @return a new placeholder [Dictionary] instance
      */
     override fun createElement() = Companion.createElement()
+
+    /**
+     * Returns `null` if a unique, non-empty selection of valid dictionaries has been made, or a `ValidationInfo` object
+     * explaining which input should be changed.
+     *
+     * @return `null` if a unique, non-empty selection of valid dictionaries has been made, or a `ValidationInfo` object
+     * explaining which input should be changed
+     */
+    @Suppress("ReturnCount") // Acceptable for validation functions
+    fun doValidate(): ValidationInfo? {
+        if (data.distinct().size != data.size)
+            return ValidationInfo("Dictionaries must be unique.", panel)
+        if (activeData.isEmpty())
+            return ValidationInfo("Select at least one dictionary.", panel)
+
+        data.forEach { dictionary ->
+            try {
+                dictionary.validate()
+            } catch (e: InvalidDictionaryException) {
+                return ValidationInfo("Dictionary `$dictionary` is invalid: ${e.message}", panel)
+            }
+
+            if (dictionary.words.isEmpty())
+                return ValidationInfo("Dictionary `$dictionary` is empty.", panel)
+        }
+
+        return null
+    }
 }

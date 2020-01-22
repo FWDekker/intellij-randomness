@@ -73,12 +73,12 @@ class PopupAction : AnAction() {
             as ListPopupImpl
 
         popup.disableSpeedSearch()
-        popup.setCaption(TITLE)
-
         if (hasEditor) {
+            popup.setCaption(TITLE)
             popup.setAdText(AD_TEXT)
             popup.registerModifierActions { this.captionModifier(it) }
         } else {
+            popup.setCaption(CTRL_TITLE)
             popup.setAdText("Editor is not selected. Displaying settings only.")
         }
 

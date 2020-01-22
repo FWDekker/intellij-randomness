@@ -47,10 +47,7 @@ abstract class ActivityTableModelEditor<T>(
     private val emptySubText: String,
     private val isCopyable: (T) -> Boolean = { true }
 ) : TableModelEditor<EditableDatum<T>>(
-    arrayOf<ColumnInfo<EditableDatum<T>, *>>(createActivityColumn()).plus(columns),
-    itemEditor,
-    emptyText
-) {
+    arrayOf<ColumnInfo<EditableDatum<T>, *>>(createActivityColumn()).plus(columns), itemEditor, emptyText) {
     companion object {
         /**
          * Whether newly added data are active by default.
@@ -76,6 +73,11 @@ abstract class ActivityTableModelEditor<T>(
 
 
     /**
+     * The panel in which the table editor is present.
+     */
+    val panel: JPanel
+
+    /**
      * All data currently in the table.
      */
     var data: Collection<T>
@@ -94,12 +96,19 @@ abstract class ActivityTableModelEditor<T>(
         }
 
 
+    init {
+        panel = createComponent()
+    }
+
+
     /**
      * Creates a new `JPanel` with the table and the corresponding buttons.
      *
+     * Do not use this method; instead, use the `panel` property.
+     *
      * @return a new `JPanel` with the table and the corresponding buttons
      */
-    override fun createComponent(): JPanel {
+    final override fun createComponent(): JPanel {
         @Suppress("UNCHECKED_CAST") // Reflection, see superclass for correctness
         val table = TableModelEditor::class.java.getDeclaredField("table")
             .apply { isAccessible = true }
