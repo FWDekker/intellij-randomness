@@ -241,9 +241,9 @@
       <member id="364e0"/>
     </group>
     <group name="capitalizationGroup" bound="true">
-      <member id="c6fa1"/>
-      <member id="e20f5"/>
       <member id="4426c"/>
+      <member id="e20f5"/>
+      <member id="c6fa1"/>
     </group>
   </buttonGroups>
 </form>

@@ -31,13 +31,12 @@ dependencies {
     testImplementation group: "com.nhaarman.mockitokotlin2", name: "mockito-kotlin", version: mockitoKotlinVersion
     testImplementation group: "org.assertj", name: "assertj-core", version: assertjVersion
     testImplementation group: "org.assertj", name: "assertj-swing-junit", version: assertjSwingVersion
-    testImplementation group: "org.spekframework.spek2", name: "spek-dsl-jvm", version: spekVersion
-    testRuntimeOnly group: "org.spekframework.spek2", name: "spek-runner-junit5", version: spekVersion
     testImplementation group: "org.junit.platform", name: "junit-platform-runner", version: junitRunnerVersion
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-api", version: junitVersion
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
-    testImplementation group: "org.junit.jupiter", name: "junit-jupiter-params", version: junitVersion
     testImplementation group: "org.junit.vintage", name: "junit-vintage-engine", version: junitVersion
+    testImplementation group: "org.spekframework.spek2", name: "spek-dsl-jvm", version: spekVersion
+    testRuntimeOnly group: "org.spekframework.spek2", name: "spek-runner-junit5", version: spekVersion
 
     detektPlugins group: "io.gitlab.arturbosch.detekt", name: "detekt-formatting", version: detektVersion
 }
