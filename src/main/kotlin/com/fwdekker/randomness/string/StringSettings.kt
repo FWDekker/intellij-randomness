@@ -11,6 +11,7 @@ import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.Transient
+import com.vdurmont.emoji.EmojiParser
 
 
 /**
@@ -76,9 +77,9 @@ data class StringScheme(
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    @MapAnnotation(sortBeforeSave = false)
+    @get:Transient
     var symbolSets: Map<String, String> = DEFAULT_SYMBOL_SETS.toMap(),
-    @MapAnnotation(sortBeforeSave = false)
+    @get:Transient
     var activeSymbolSets: Map<String, String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMap(),
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS
 ) : Scheme<StringScheme> {
@@ -113,6 +114,27 @@ data class StringScheme(
         const val DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS = false
     }
 
+
+    /**
+     * Same as [symbolSets], except that all emoji are serialized.
+     */
+    @get:MapAnnotation(sortBeforeSave = false)
+    @Suppress("unused" /* Used by serializer */)
+    var serializedSymbolSets: Map<String, String>
+        get() = symbolSets.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
+        set(value) {
+            symbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
+        }
+    /**
+     * Same as [activeSymbolSets], except that all emoji are serialized.
+     */
+    @get:MapAnnotation(sortBeforeSave = false)
+    @Suppress("unused" /* Used by serializer */)
+    var serializedActiveSymbolSets: Map<String, String>
+        get() = activeSymbolSets.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
+        set(value) {
+            activeSymbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
+        }
 
     /**
      * A list view of the `SymbolSet` objects described by [symbolSets].

@@ -6,7 +6,7 @@ import javax.swing.JComponent
 /**
  * Carries information on why a component has invalid input.
  *
- * Based on [com.intellij.openapi.ui.ValidationInfo] and [com.intellij.openapi.options.ConfigurationException].
+ * Based on `com.intellij.openapi.ui.ValidationInfo` and `com.intellij.openapi.options.ConfigurationException`.
  *
  * @property message the message explaining why the component is not valid
  * @property component the component that is not valid
