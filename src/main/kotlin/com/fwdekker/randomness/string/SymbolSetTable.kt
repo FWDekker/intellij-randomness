@@ -1,8 +1,8 @@
 package com.fwdekker.randomness.string
 
+import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.ActivityTableModelEditor
 import com.fwdekker.randomness.ui.EditableDatum
-import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.util.ui.CollectionItemEditor

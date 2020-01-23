@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.ActivityTableModelEditor
 import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
-import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.util.ui.CollectionItemEditor
 import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.LocalPathCellEditor

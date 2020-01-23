@@ -4,6 +4,7 @@ import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.SettingsComponentListener
+import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
@@ -12,7 +13,6 @@ import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_VERSION
 import com.fwdekker.randomness.uuid.UuidSettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.uuid.UuidSettings.Companion.default
-import com.intellij.openapi.ui.ValidationInfo
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel

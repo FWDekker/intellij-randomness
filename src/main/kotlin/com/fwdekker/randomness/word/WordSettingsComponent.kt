@@ -4,6 +4,7 @@ import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.SettingsComponentListener
+import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
 import com.fwdekker.randomness.ui.PreviewPanel
@@ -13,7 +14,6 @@ import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.word.WordSettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.word.WordSettings.Companion.default
-import com.intellij.openapi.ui.ValidationInfo
 import com.jgoodies.forms.factories.DefaultComponentFactory
 import java.util.ResourceBundle
 import javax.swing.ButtonGroup
@@ -150,13 +150,15 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
                 ValidationInfo(
                     "The longest word in the selected dictionaries is $maxWordLength characters. " +
                         "Set the minimum length to a value less than or equal to $maxWordLength.",
-                    minLength
+                    minLength,
+                    Runnable { minLength.value = maxWordLength }
                 )
             maxLength.value < minWordLength ->
                 ValidationInfo(
                     "The shortest word in the selected dictionaries is $minWordLength characters. " +
                         "Set the maximum length to a value less than or equal to $minWordLength.",
-                    maxLength
+                    maxLength,
+                    Runnable { maxLength.value = minWordLength }
                 )
             else -> null
         }

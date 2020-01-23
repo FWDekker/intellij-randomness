@@ -4,7 +4,6 @@ import com.fwdekker.randomness.SchemesPanel.Listener
 import com.intellij.application.options.schemes.AbstractSchemeActions
 import com.intellij.application.options.schemes.SchemesModel
 import com.intellij.application.options.schemes.SimpleSchemesPanel
-import com.intellij.openapi.ui.ValidationInfo
 import javax.swing.JPanel
 
 
