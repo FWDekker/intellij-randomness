@@ -11,6 +11,7 @@ import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
 import com.fwdekker.randomness.array.ArraySettingsAction
+import com.vdurmont.emoji.EmojiParser
 import icons.RandomnessIcons
 
 
@@ -65,14 +66,14 @@ class StringInsertAction(private val scheme: StringScheme = StringSettings.defau
      * @throws DataGenerationException if a random character could not be generated
      */
     @Throws(DataGenerationException::class)
-    private fun generateCharacter(): Char {
+    private fun generateCharacter(): String {
         val symbolSet = scheme.activeSymbolSetList.sum(scheme.excludeLookAlikeSymbols)
         if (symbolSet.isEmpty())
             throw DataGenerationException("No valid symbols found in active symbol sets.")
 
-        val charIndex = random.nextInt(symbolSet.length)
-
-        return symbolSet[charIndex]
+        val symbolList =
+            EmojiParser.extractEmojis(symbolSet) + EmojiParser.removeAllEmojis(symbolSet).map { it.toString() }
+        return symbolList[random.nextInt(symbolList.size)]
     }
 
 

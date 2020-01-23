@@ -27,6 +27,7 @@ dependencies {
     implementation group: "com.fasterxml.uuid", name: "java-uuid-generator", version: uuidGeneratorVersion
     implementation group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk8"
     implementation group: "org.jetbrains.kotlin", name: "kotlin-reflect"
+    implementation group: "com.vdurmont", name: "emoji-java", version: emojiVersion
 
     testImplementation group: "com.nhaarman.mockitokotlin2", name: "mockito-kotlin", version: mockitoKotlinVersion
     testImplementation group: "org.assertj", name: "assertj-core", version: assertjVersion

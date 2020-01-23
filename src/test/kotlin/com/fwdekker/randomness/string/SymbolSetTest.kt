@@ -92,6 +92,18 @@ object SymbolSetTest : Spek({
             it("removes look-alike symbols if the option is given") {
                 assertThat(listOf(SymbolSet("set", "a" + SymbolSet.lookAlikeCharacters)).sum(true)).isEqualTo("a")
             }
+
+            it("retains emoji with modifiers") {
+                assertThat(listOf(SymbolSet("emoji", "a👨‍💼b")).sum()).isEqualTo("👨‍💼ab")
+            }
+
+            it("retains duplicate characters in emoji") {
+                assertThat(listOf(SymbolSet("emoji", "🇦🇶🇦")).sum()).isEqualTo("🇦🇶🇦")
+            }
+
+            it("removes duplicate emoji") {
+                assertThat(listOf(SymbolSet("emoji", "🇦🇶😀🇦🇶😀")).sum()).isEqualTo("🇦🇶😀")
+            }
         }
     }
 })

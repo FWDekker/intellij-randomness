@@ -58,6 +58,19 @@ class StringInsertActionTest : Spek({
                 assertThat(insertRandomString.generateString()).containsPattern(expectedPattern)
             }
         }
+
+        it("retains emoji modifiers in the right order") {
+            val emoji = "👩‍👩‍👧‍👧"
+            val stringScheme = StringScheme(
+                minLength = 1,
+                maxLength = 1,
+                enclosure = "",
+                capitalization = CapitalizationMode.RETAIN,
+                activeSymbolSets = setOf(SymbolSet("emoji", "👩‍👩‍👧‍👧")).toMap()
+            )
+
+            assertThat(StringInsertAction(stringScheme).generateString()).isEqualTo(emoji)
+        }
     }
 
     describe("error handling") {
