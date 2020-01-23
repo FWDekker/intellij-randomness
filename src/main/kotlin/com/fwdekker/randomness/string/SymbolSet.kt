@@ -1,5 +1,7 @@
 package com.fwdekker.randomness.string
 
+import com.vdurmont.emoji.EmojiParser
+
 
 /**
  * A `SymbolSet` represents a named collection of symbols.
@@ -82,12 +84,17 @@ fun Map<String, String>.toSymbolSets() = this.map { (name, symbols) -> SymbolSet
 /**
  * Concatenates the symbols of all the symbol sets, removing duplicate characters.
  *
+ * This method respects emoji sequences and will not remove duplicate characters if these characters are essential to
+ * displaying the embedded emoji correctly.
+ *
  * @param excludeLookAlikeSymbols whether to remove symbols that occur in [SymbolSet.lookAlikeCharacters]
  * @return the concatenation of all symbols of all the symbol sets, excluding duplicate characters
  */
 fun Iterable<SymbolSet>.sum(excludeLookAlikeSymbols: Boolean = false) =
-    this.fold("") { acc, symbolSet -> acc + symbolSet.symbols }.toSet().joinToString("")
-        .let { sum ->
-            if (excludeLookAlikeSymbols) sum.filterNot { it in SymbolSet.lookAlikeCharacters }
-            else sum
+    this.fold("") { acc, symbolSet -> acc + symbolSet.symbols }
+        .let { Pair(EmojiParser.extractEmojis(it).distinct(), EmojiParser.removeAllEmojis(it).toList().distinct()) }
+        .let { (emoji, noEmoji) ->
+            emoji.joinToString("") +
+                (if (excludeLookAlikeSymbols) noEmoji.filterNot { it in SymbolSet.lookAlikeCharacters }
+                else noEmoji).joinToString("")
         }
