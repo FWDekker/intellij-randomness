@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.ui
 
-import com.intellij.openapi.ui.ValidationInfo
+import com.fwdekker.randomness.ValidationInfo
 import javax.swing.JSpinner
 
 
