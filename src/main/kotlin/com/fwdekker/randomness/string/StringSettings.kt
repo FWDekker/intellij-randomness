@@ -121,7 +121,7 @@ data class StringScheme(
     @get:MapAnnotation(sortBeforeSave = false)
     @Suppress("unused" /* Used by serializer */)
     var serializedSymbolSets: Map<String, String>
-        get() = symbolSets.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value, EmojiParser.FitzpatrickAction.PARSE)) }.toMap()
+        get() = symbolSets.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
         set(value) {
             symbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
         }
@@ -131,7 +131,7 @@ data class StringScheme(
     @get:MapAnnotation(sortBeforeSave = false)
     @Suppress("unused" /* Used by serializer */)
     var serializedActiveSymbolSets: Map<String, String>
-        get() = activeSymbolSets.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value, EmojiParser.FitzpatrickAction.PARSE)) }.toMap()
+        get() = activeSymbolSets.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
         set(value) {
             activeSymbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
         }
