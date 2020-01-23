@@ -57,7 +57,7 @@ Randomness can also be found in the main menu under <kbd>Tools</kbd> or in <kbd>
   **streamline your workflow**.
 * 💬 **Symbol sets**<br />
   While Randomness comes with a varied selection of symbols to use for generating strings, it also gives you the option
-  to **add your own symbols**, with support for Chinese and mathematical symbols.
+  to **add your own symbols**, with support for Chinese symbols and emoji.
 * 📚 **Dictionaries**<br />
   Randomness is bundled with a small English dictionary from which it chooses random words.
   However, you may want to add random words from another language or insert random movie quotes.

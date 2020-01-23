@@ -71,4 +71,25 @@ object StringSettingsTest : Spek({
             }
         }
     }
+
+    describe("emoji serialization") {
+        it("serializes emoji") {
+            val symbolSets = listOf(SymbolSet("emoji", "💆")).toMap()
+            val scheme = StringScheme(symbolSets = symbolSets, activeSymbolSets = symbolSets)
+
+            assertThat(scheme.serializedSymbolSets["emoji"]).isEqualTo(":massage:")
+            assertThat(scheme.serializedActiveSymbolSets["emoji"]).isEqualTo(":massage:")
+        }
+
+        it("deserializes emoji") {
+            val symbolSets = listOf(SymbolSet("emoji", ":couple_with_heart_man_man:")).toMap()
+            val scheme = StringScheme().apply {
+                serializedSymbolSets = symbolSets
+                serializedActiveSymbolSets = symbolSets
+            }
+
+            assertThat(scheme.symbolSets["emoji"]).isEqualTo("👨‍❤️‍👨")
+            assertThat(scheme.activeSymbolSets["emoji"]).isEqualTo("👨‍❤️‍👨")
+        }
+    }
 })
