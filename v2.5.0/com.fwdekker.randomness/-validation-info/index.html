@@ -1,0 +1,61 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>ValidationInfo - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness</a>&nbsp;/&nbsp;<a href="./index.html">ValidationInfo</a><br/>
+<br/>
+<h1>ValidationInfo</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ValidationInfo</span></code>
+<p>Carries information on why a component has invalid input.</p>
+<p>Based on <code>com.intellij.openapi.ui.ValidationInfo</code> and <code>com.intellij.openapi.options.ConfigurationException</code>.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">ValidationInfo</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ValidationInfo$<init>(kotlin.String, javax.swing.JComponent, java.lang.Runnable)/message">message</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.ValidationInfo$<init>(kotlin.String, javax.swing.JComponent, java.lang.Runnable)/component">component</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JComponent.html"><span class="identifier">JComponent</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.ValidationInfo$<init>(kotlin.String, javax.swing.JComponent, java.lang.Runnable)/quickFix">quickFix</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html"><span class="identifier">Runnable</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span></code>
+<p>Carries information on why a component has invalid input.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="component.html">component</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">component</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JComponent.html"><span class="identifier">JComponent</span></a><span class="symbol">?</span></code>
+<p>the component that is not valid</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="message.html">message</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">message</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>the message explaining why the component is not valid</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="quick-fix.html">quickFix</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">quickFix</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html"><span class="identifier">Runnable</span></a><span class="symbol">?</span></code>
+<p>a runnable that can be executed to make the component valid</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

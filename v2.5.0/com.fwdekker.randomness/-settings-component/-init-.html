@@ -1,0 +1,28 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SettingsComponent.<init> - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness</a>&nbsp;/&nbsp;<a href="index.html">SettingsComponent</a>&nbsp;/&nbsp;<a href="./-init-.html">&lt;init&gt;</a><br/>
+<br/>
+<h1>&lt;init&gt;</h1>
+<a name="com.fwdekker.randomness.SettingsComponent$&lt;init&gt;(com.fwdekker.randomness.SettingsComponent.S)"></a>
+<code><span class="identifier">SettingsComponent</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.SettingsComponent$<init>(com.fwdekker.randomness.SettingsComponent.S)/settings">settings</span><span class="symbol">:</span>&nbsp;<a href="index.html#S"><span class="identifier">S</span></a><span class="symbol">)</span></code>
+<p>A component that allows the user to edit settings and its corresponding schemes.</p>
+<p>Subclasses <strong>MUST</strong> call <code>loadSettings</code> in their constructor.</p>
+<p>There are multiple settings <a href="index.html#S">S</a> instances at any time. The <code>settings</code> given in the constructor is read when the
+component is created and is written to when the user saves its changes. The currently-selected scheme is loaded into
+the component's inputs. When the user selects a different scheme of which to change its values, the values in the
+input fields are stored in a copy of <code>settings</code>. This way, the local changes are not lost when switching between
+schemes, and the user can still revert all unsaved changes if desired.</p>
+<h3>Parameters</h3>
+<p><a name="S"></a>
+<code>S</code> - the type of settings to manage</p>
+<p><a name="T"></a>
+<code>T</code> - the type of scheme to manage</p>
+<p><a name="settings"></a>
+<code>settings</code> - the settings to manage</p>
+</BODY>
+</HTML>
