@@ -1,22 +1,35 @@
-Symbol set settings will be reset to support emoji.
+<b>Symbol set settings will be reset when updating to v2.5.0 because of changes in how settings are stored.</b>
+You can re-add your custom symbol sets after updating.
 
 <b>New features</b>
 <ul>
-    <li>Quickly switch between schemes by holding <kbd>Alt + Ctrl</kbd> while selecting a data type.</li>
-    <li>Exclude look-alike characters in string settings if you don't want them.</li>
-    <li>Opening the Randomness popup without an editor will display settings-related actions only.</li>
+    <li>
+        <b>♻️ Scheme switcher</b>.
+        Quickly switch between your schemes by holding <kbd>Alt + Ctrl</kbd> while selecting a data type.
+    </li>
+    <li>
+        <b>😀 Emoji</b>.
+        Generate random strings of emoji by adding them to symbol sets.
+    </li>
+    <li>
+        <b>🕵 Look-alike characters</b>.
+        Exclude characters that look like each other (e.g. `1`, `l`, `I`) in generated strings to prevent confusion.
+    </li>
+    <li>Change your settings using the Randomness popup even when you don't have an editor opened.</li>
     <li>Slightly friendlier and more accurate error messages for tables.</li>
-    <li>Symbol sets now support emoji. Note that IntelliJ doesn't actually display modifiers that well.</li>
 </ul>
 
 <b>Fixes</b>
 <ul>
-    <li>Inputs now correctly resize when shrinking the dialog.</li>
+    <li>Input fields now correctly resize when shrinking the dialog.</li>
     <li>Symbol set table now makes full use of vertical space.</li>
     <li>Dictionary table no longer exceeds dialog width.</li>
     <li>Adding a new entry to a table using the "Add" button will now allow you to immediately edit the new entry.</li>
     <li>Leading and trailing whitespace characters no longer disappear when expanding a symbol set field.</li>
-    <li>Pressing <kbd>Enter</kbd> in a table now opens the editor for the current selection.</li>
-    <li>Duplicate symbols in symbol sets are now ignored.</li>
-    <li>Fix focus order of radio buttons and number inputs in settings.</li>
+    <li>Pressing <kbd>Enter</kbd> in a table now activates the editor for the currently-selected cell.</li>
+    <li>Duplicate symbols in single symbol sets are now ignored.</li>
+    <li>Arrow keys now work correctly for all radio buttons.</li>
 </ul>
+
+Change notes of previous updates can be found on the
+<a href="https://plugins.jetbrains.com/plugin/9836-randomness/versions">plugin repository</a>.
