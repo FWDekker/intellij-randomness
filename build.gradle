@@ -64,6 +64,7 @@ patchPluginXml {
 
 // Tests/coverage
 test {
+    systemProperty("SPEK_TIMEOUT", 0)
     useJUnitPlatform {
         includeEngines "junit-vintage", "junit-jupiter", "spek2"
     }
