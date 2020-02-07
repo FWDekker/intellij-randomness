@@ -2,6 +2,7 @@ package com.fwdekker.randomness.uuid
 
 import com.fasterxml.uuid.EthernetAddress
 import com.fasterxml.uuid.Generators
+import com.fasterxml.uuid.UUIDClock
 import com.fasterxml.uuid.UUIDTimer
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
@@ -54,7 +55,9 @@ class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.cur
             1 ->
                 Generators.timeBasedGenerator(
                     EthernetAddress(random.nextLong()),
-                    UUIDTimer(random.asJavaRandom(), null)
+                    UUIDTimer(random.asJavaRandom(), null, object : UUIDClock() {
+                        override fun currentTimeMillis() = random.nextLong()
+                    })
                 )
             4 -> Generators.randomBasedGenerator(random.asJavaRandom())
             else -> throw DataGenerationException("Unknown UUID version `${scheme.version}`.")
