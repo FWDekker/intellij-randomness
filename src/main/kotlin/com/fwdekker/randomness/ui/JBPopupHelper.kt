@@ -8,14 +8,6 @@ import javax.swing.KeyStroke
 
 
 /**
- * Disables speed search.
- */
-fun ListPopupImpl.disableSpeedSearch() {
-    speedSearch.setEnabled(false)
-    speedSearch.addChangeListener { speedSearch.updatePattern("") }
-}
-
-/**
  * Registers actions such that actions can be selected while holding (combinations of) modifier keys.
  *
  * All combinations of modifier keys are registered for events. Additionally, the [captionModifier] function is invoked

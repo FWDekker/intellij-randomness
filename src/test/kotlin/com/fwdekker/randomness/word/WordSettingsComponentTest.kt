@@ -257,4 +257,18 @@ object WordSettingsComponentTest : Spek({
             }
         }
     }
+
+    describe("change detection") {
+        it("detects if dictionaries have been reordered") {
+            GuiActionRunner.execute {
+                val newSettings = wordSettings.deepCopy()
+                    .apply {
+                        currentScheme.apply { userDictionaryFiles = userDictionaryFiles.shuffled().toMutableSet() }
+                    }
+                wordSettingsComponent.loadSettings(newSettings)
+            }
+
+            assertThat(wordSettingsComponent.isModified()).isTrue()
+        }
+    }
 })

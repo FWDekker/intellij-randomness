@@ -235,4 +235,16 @@ object StringSettingsComponentTest : Spek({
             }
         }
     }
+
+    describe("change detection") {
+        it("detects if symbol sets have been reordered") {
+            GuiActionRunner.execute {
+                val newSettings = stringSettings.deepCopy()
+                    .apply { currentScheme.apply { symbolSetList = symbolSetList.shuffled() } }
+                stringSettingsComponent.loadSettings(newSettings)
+            }
+
+            assertThat(stringSettingsComponent.isModified()).isTrue()
+        }
+    }
 })
