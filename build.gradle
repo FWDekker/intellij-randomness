@@ -25,8 +25,6 @@ repositories {
 
 dependencies {
     implementation group: "com.fasterxml.uuid", name: "java-uuid-generator", version: uuidGeneratorVersion
-    implementation group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk8"
-    implementation group: "org.jetbrains.kotlin", name: "kotlin-reflect"
     implementation group: "com.vdurmont", name: "emoji-java", version: emojiVersion
 
     testImplementation group: "com.nhaarman.mockitokotlin2", name: "mockito-kotlin", version: mockitoKotlinVersion
@@ -44,14 +42,6 @@ dependencies {
 
 
 /// Configuration
-// Compilation
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
 intellij {
     version = intellijVersion
     updateSinceUntilBuild = false
