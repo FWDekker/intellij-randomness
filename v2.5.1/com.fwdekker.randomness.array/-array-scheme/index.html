@@ -1,0 +1,165 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>ArrayScheme - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.array</a>&nbsp;/&nbsp;<a href="./index.html">ArrayScheme</a><br/>
+<br/>
+<h1>ArrayScheme</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ArrayScheme</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-scheme/index.html"><span class="identifier">Scheme</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">ArrayScheme</span></a><span class="symbol">&gt;</span></code>
+<p>Contains settings for generating arrays of other types of random values.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">ArrayScheme</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.array.ArrayScheme$<init>(kotlin.String, kotlin.Int, kotlin.String, kotlin.String, kotlin.Boolean)/myName">myName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_NAME<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.array.ArrayScheme$<init>(kotlin.String, kotlin.Int, kotlin.String, kotlin.String, kotlin.Boolean)/count">count</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_COUNT<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.array.ArrayScheme$<init>(kotlin.String, kotlin.Int, kotlin.String, kotlin.String, kotlin.Boolean)/brackets">brackets</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_BRACKETS<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.array.ArrayScheme$<init>(kotlin.String, kotlin.Int, kotlin.String, kotlin.String, kotlin.Boolean)/separator">separator</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_SEPARATOR<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.array.ArrayScheme$<init>(kotlin.String, kotlin.Int, kotlin.String, kotlin.String, kotlin.Boolean)/isSpaceAfterSeparator">isSpaceAfterSeparator</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_SPACE_AFTER_SEPARATOR<span class="symbol">)</span></code>
+<p>Contains settings for generating arrays of other types of random values.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="brackets.html">brackets</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">brackets</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The brackets to surround arrays with.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="count.html">count</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">count</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The number of elements to generate.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="is-space-after-separator.html">isSpaceAfterSeparator</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">isSpaceAfterSeparator</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>True iff a space should be placed after each separator.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="my-name.html">myName</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">myName</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The name of the scheme.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="separator.html">separator</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">separator</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The string to place between generated elements.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="arrayify.html">arrayify</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">arrayify</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.array.ArrayScheme$arrayify(kotlin.collections.Collection((kotlin.String)))/strings">strings</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html"><span class="identifier">Collection</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Turns a collection of strings into a single string based on the fields of this <code>ArraySettings</code> object.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="copy-as.html">copyAs</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">copyAs</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.array.ArrayScheme$copyAs(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">ArrayScheme</span></a></code>
+<p>Returns a copy of this scheme that has the given name.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="copy-from.html">copyFrom</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">copyFrom</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.array.ArrayScheme$copyFrom(com.fwdekker.randomness.array.ArrayScheme)/other">other</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ArrayScheme</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Shallowly copies the state of <a href="../../com.fwdekker.randomness/-scheme/copy-from.html#com.fwdekker.randomness.Scheme$copyFrom(com.fwdekker.randomness.Scheme.SELF)/other">other</a> into <code>this</code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-scheme/get-name.html">getName</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getName</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Same as <a href="../../com.fwdekker.randomness/-scheme/my-name.html">myName</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-b-r-a-c-k-e-t-s.html">DEFAULT_BRACKETS</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_BRACKETS</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The default value of the <a href="brackets.html">brackets</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-c-o-u-n-t.html">DEFAULT_COUNT</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_COUNT</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The default value of the <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/count.html">count</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-s-e-p-a-r-a-t-o-r.html">DEFAULT_SEPARATOR</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_SEPARATOR</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The default value of the <a href="separator.html">separator</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-s-p-a-c-e_-a-f-t-e-r_-s-e-p-a-r-a-t-o-r.html">DEFAULT_SPACE_AFTER_SEPARATOR</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_SPACE_AFTER_SEPARATOR</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>The default value of the <a href="is-space-after-separator.html">isSpaceAfterSeparator</a> field.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
