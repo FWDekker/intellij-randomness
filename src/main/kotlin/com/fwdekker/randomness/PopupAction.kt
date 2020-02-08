@@ -7,7 +7,6 @@ import com.fwdekker.randomness.integer.IntegerGroupAction
 import com.fwdekker.randomness.integer.IntegerSettingsAction
 import com.fwdekker.randomness.string.StringGroupAction
 import com.fwdekker.randomness.string.StringSettingsAction
-import com.fwdekker.randomness.ui.disableSpeedSearch
 import com.fwdekker.randomness.ui.registerModifierActions
 import com.fwdekker.randomness.uuid.UuidGroupAction
 import com.fwdekker.randomness.uuid.UuidSettingsAction
@@ -72,7 +71,7 @@ class PopupAction : AnAction() {
             )
             as ListPopupImpl
 
-        popup.disableSpeedSearch()
+        popup.speedSearch.setEnabled(false)
         if (hasEditor) {
             popup.setCaption(TITLE)
             popup.setAdText(AD_TEXT)
