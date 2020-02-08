@@ -80,6 +80,7 @@ class PopupAction : AnAction() {
         } else {
             popup.setCaption(CTRL_TITLE)
             popup.setAdText("Editor is not selected. Displaying settings only.")
+            popup.registerModifierActions { CTRL_TITLE }
         }
 
         popup.showInBestPositionFor(event.dataContext)
