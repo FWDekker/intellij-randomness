@@ -25,9 +25,10 @@ To insert random data, press <kbd>Alt + R</kbd> (<kbd>⌥R</kbd>) and choose the
 A different value will be inserted at each caret.
 
 You can modify this behavior by holding a key while selecting the type of data to insert:
-* Hold <kbd>Shift</kbd> to insert a whole array of values.
-* Hold <kbd>Ctrl</kbd> to open the settings of that data type.
-* Hold <kbd>Alt</kbd> (<kbd>⌥</kbd>) to insert the same value at each caret.
+* **Array**: Hold <kbd>Shift</kbd> to insert a whole array of values.
+* **Settings**: Hold <kbd>Ctrl</kbd> to open the settings of that data type.
+* **Repeat**: Hold <kbd>Alt</kbd> (<kbd>⌥</kbd>) to insert the same value at each caret.
+
 You can also hold multiple modifier keys to combine their effects.
 
 Randomness can also be found in the main menu under <kbd>Tools</kbd> or in <kbd>Code > Generate</kbd>.
