@@ -37,8 +37,8 @@ object DecimalSettingsComponentTest : Spek({
                 currentScheme.showTrailingZeroes = false
                 currentScheme.groupingSeparator = "_"
                 currentScheme.decimalSeparator = "."
-                currentScheme.prefix = "."
-                currentScheme.suffix = "."
+                currentScheme.prefix = ""
+                currentScheme.suffix = ""
             }
 
         decimalSettingsComponent =
