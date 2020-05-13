@@ -35,6 +35,8 @@ object IntegerSettingsComponentTest : Spek({
                 currentScheme.maxValue = 6_442_451_778L
                 currentScheme.base = 10
                 currentScheme.groupingSeparator = "_"
+                currentScheme.prefix = ""
+                currentScheme.suffix = ""
             }
 
         integerSettingsComponent =
@@ -61,11 +63,19 @@ object IntegerSettingsComponentTest : Spek({
             frame.spinner("base").requireValue(10)
         }
 
-        it("loads the settings' base value") {
+        it("loads the settings' grouping separator") {
             frame.radioButton("groupingSeparatorNone").requireSelected(false)
             frame.radioButton("groupingSeparatorPeriod").requireSelected(false)
             frame.radioButton("groupingSeparatorComma").requireSelected(false)
             frame.radioButton("groupingSeparatorUnderscore").requireSelected(true)
+        }
+
+        it("loads the settings' prefix") {
+            frame.textBox("prefix").requireText("")
+        }
+
+        it("loads the settings' suffix") {
+            frame.textBox("suffix").requireText("")
         }
     }
 
@@ -76,6 +86,8 @@ object IntegerSettingsComponentTest : Spek({
                 frame.spinner("maxValue").target().value = 2147483649L
                 frame.spinner("base").target().value = 14
                 frame.radioButton("groupingSeparatorPeriod").target().isSelected = true
+                frame.textBox("prefix").target().text = "prefix"
+                frame.textBox("suffix").target().text = "suffix"
             }
 
             integerSettingsComponent.saveSettings()
@@ -84,6 +96,8 @@ object IntegerSettingsComponentTest : Spek({
             assertThat(integerSettings.currentScheme.maxValue).isEqualTo(2_147_483_649L)
             assertThat(integerSettings.currentScheme.base).isEqualTo(14)
             assertThat(integerSettings.currentScheme.groupingSeparator).isEqualTo(".")
+            assertThat(integerSettings.currentScheme.prefix).isEqualTo("prefix")
+            assertThat(integerSettings.currentScheme.suffix).isEqualTo("suffix")
         }
     }
 

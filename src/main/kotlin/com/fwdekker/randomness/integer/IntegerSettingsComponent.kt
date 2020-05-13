@@ -14,6 +14,7 @@ import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
+import javax.swing.JTextField
 import javax.swing.event.ChangeEvent
 
 
@@ -38,6 +39,8 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
     private lateinit var maxValue: JLongSpinner
     private lateinit var base: JIntSpinner
     private lateinit var groupingSeparatorGroup: ButtonGroup
+    private lateinit var prefixInput: JTextField
+    private lateinit var suffixInput: JTextField
 
     override val rootPane get() = contentPane
 
@@ -51,6 +54,7 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         base.changeListeners.forEach { it.stateChanged(ChangeEvent(base)) }
 
         previewPanelHolder.updatePreviewOnUpdateOf(minValue, maxValue, base, groupingSeparatorGroup)
+        previewPanelHolder.updatePreviewOnUpdateOf(prefixInput, suffixInput) // Call method twice because it's shorter
         previewPanelHolder.updatePreview()
     }
 
@@ -84,6 +88,8 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         maxValue.value = scheme.maxValue
         base.value = scheme.base
         groupingSeparatorGroup.setValue(scheme.groupingSeparator)
+        prefixInput.text = scheme.prefix
+        suffixInput.text = scheme.suffix
     }
 
     override fun saveScheme(scheme: IntegerScheme) {
@@ -91,6 +97,8 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         scheme.maxValue = maxValue.value
         scheme.base = base.value
         scheme.safeSetGroupingSeparator(groupingSeparatorGroup.getValue())
+        scheme.prefix = prefixInput.text
+        scheme.suffix = suffixInput.text
     }
 
     override fun doValidate() =

@@ -5,6 +5,7 @@ import com.fwdekker.randomness.DataInsertAction
 import com.jgoodies.forms.factories.DefaultComponentFactory
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
+import java.beans.PropertyChangeEvent
 import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JButton
@@ -14,6 +15,11 @@ import javax.swing.JPanel
 import javax.swing.JRadioButton
 import javax.swing.JSpinner
 import javax.swing.JTextArea
+import javax.swing.JTextField
+import javax.swing.SwingUtilities
+import javax.swing.event.DocumentEvent
+import javax.swing.event.DocumentListener
+import javax.swing.text.Document
 import kotlin.random.Random
 
 
@@ -95,13 +101,50 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
     fun updatePreviewOnUpdateOf(vararg components: Any) {
         components.forEach { component ->
             when (component) {
-                is JSpinner -> component.addChangeListener { updatePreview() }
-                is JRadioButton -> component.addItemListener { updatePreview() }
-                is JCheckBox -> component.addItemListener { updatePreview() }
                 is ActivityTableModelEditor<*> -> component.addChangeListener { updatePreview() }
                 is ButtonGroup -> updatePreviewOnUpdateOf(*component.buttons())
+                is JCheckBox -> component.addItemListener { updatePreview() }
+                is JRadioButton -> component.addItemListener { updatePreview() }
+                is JSpinner -> component.addChangeListener { updatePreview() }
+                is JTextField -> component.addChangeListener { updatePreview() }
                 else -> throw IllegalArgumentException("Unknown component type ${component.javaClass.canonicalName}.")
             }
         }
+    }
+
+    /**
+     * Adds a `ChangeListener` to a text field.
+     *
+     * Code taken from [StackOverflow][https://stackoverflow.com/a/27190162/3307872].
+     *
+     * @param changeListener the change listener that responds to changes in the text field
+     */
+    private fun JTextField.addChangeListener(changeListener: (JTextField) -> Unit) {
+        val dl = object : DocumentListener {
+            private var lastChange = 0
+            private var lastNotifiedChange = 0
+
+
+            override fun changedUpdate(e: DocumentEvent?) {
+                lastChange++
+                SwingUtilities.invokeLater {
+                    if (lastNotifiedChange == lastChange) return@invokeLater
+
+                    lastNotifiedChange = lastChange
+                    changeListener(this@addChangeListener)
+                }
+            }
+
+            override fun insertUpdate(e: DocumentEvent?) = changedUpdate(e)
+
+            override fun removeUpdate(e: DocumentEvent?) = changedUpdate(e)
+        }
+
+        this.addPropertyChangeListener("document") { e: PropertyChangeEvent ->
+            (e.oldValue as? Document)?.removeDocumentListener(dl)
+            (e.newValue as? Document)?.addDocumentListener(dl)
+            dl.changedUpdate(null)
+        }
+        this.document.addDocumentListener(dl)
     }
 }
