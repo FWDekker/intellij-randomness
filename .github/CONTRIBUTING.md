@@ -36,3 +36,8 @@ This project maintains the [Kotlin coding conventions](https://kotlinlang.org/do
 Check the [README](../README.md) for instructions on using tools such as Detekt.
 
 Additionally, please make sure you write [good commit messages](https://chris.beams.io/posts/git-commit/).
+
+
+## 🗞️ Publishing a release
+When it's time for a new release, check the [release checklist](RELEASE_CHECKLIST.md) to make sure everything is in
+order.
