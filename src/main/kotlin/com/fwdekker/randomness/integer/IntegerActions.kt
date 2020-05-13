@@ -72,7 +72,7 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
         format.decimalFormatSymbols = format.decimalFormatSymbols
             .also { it.groupingSeparator = scheme.groupingSeparator.getOrElse(0) { Char.MIN_VALUE } }
 
-        return format.format(value)
+        return scheme.prefix + format.format(value) + scheme.suffix
     }
 
 

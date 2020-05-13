@@ -37,6 +37,8 @@ object DecimalSettingsComponentTest : Spek({
                 currentScheme.showTrailingZeroes = false
                 currentScheme.groupingSeparator = "_"
                 currentScheme.decimalSeparator = "."
+                currentScheme.prefix = ""
+                currentScheme.suffix = ""
             }
 
         decimalSettingsComponent =
@@ -78,6 +80,14 @@ object DecimalSettingsComponentTest : Spek({
             frame.radioButton("decimalSeparatorComma").requireSelected(false)
             frame.radioButton("decimalSeparatorPeriod").requireSelected(true)
         }
+
+        it("loads the settings' prefix") {
+            frame.textBox("prefix").requireText("")
+        }
+
+        it("loads the settings' suffix") {
+            frame.textBox("suffix").requireText("")
+        }
     }
 
     describe("saving settings") {
@@ -89,6 +99,8 @@ object DecimalSettingsComponentTest : Spek({
                 frame.checkBox("showTrailingZeroes").target().isSelected = false
                 frame.radioButton("groupingSeparatorUnderscore").target().isSelected = true
                 frame.radioButton("decimalSeparatorComma").target().isSelected = true
+                frame.textBox("prefix").target().text = "exercise"
+                frame.textBox("suffix").target().text = "court"
             }
 
             decimalSettingsComponent.saveSettings()
@@ -99,6 +111,8 @@ object DecimalSettingsComponentTest : Spek({
             assertThat(decimalSettings.currentScheme.showTrailingZeroes).isEqualTo(false)
             assertThat(decimalSettings.currentScheme.groupingSeparator).isEqualTo("_")
             assertThat(decimalSettings.currentScheme.decimalSeparator).isEqualTo(",")
+            assertThat(decimalSettings.currentScheme.prefix).isEqualTo("exercise")
+            assertThat(decimalSettings.currentScheme.suffix).isEqualTo("court")
         }
     }
 

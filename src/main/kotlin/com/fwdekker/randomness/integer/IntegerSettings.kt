@@ -61,6 +61,8 @@ data class IntegerSettings(
  * @property maxValue The maximum value to be generated, inclusive.
  * @property base The base the generated value should be displayed in.
  * @property groupingSeparator The character that should separate groups.
+ * @property prefix The string to prepend to the generated value.
+ * @property suffix The string to append to the generated value.
  *
  * @see IntegerInsertAction
  * @see IntegerSettings
@@ -71,7 +73,9 @@ data class IntegerScheme(
     var minValue: Long = DEFAULT_MIN_VALUE,
     var maxValue: Long = DEFAULT_MAX_VALUE,
     var base: Int = DEFAULT_BASE,
-    var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR
+    var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
+    var prefix: String = DEFAULT_PREFIX,
+    var suffix: String = DEFAULT_SUFFIX
 ) : Scheme<IntegerScheme> {
     companion object {
         /**
@@ -103,6 +107,14 @@ data class IntegerScheme(
          * The default value of the [groupingSeparator][groupingSeparator] field.
          */
         const val DEFAULT_GROUPING_SEPARATOR = ""
+        /**
+         * The default value of the [prefix][prefix] field.
+         */
+        const val DEFAULT_PREFIX = ""
+        /**
+         * The default value of the [suffix][suffix] field.
+         */
+        const val DEFAULT_SUFFIX = ""
     }
 
 

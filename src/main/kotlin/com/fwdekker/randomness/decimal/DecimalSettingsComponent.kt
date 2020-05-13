@@ -14,6 +14,7 @@ import com.fwdekker.randomness.ui.setValue
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
+import javax.swing.JTextField
 import javax.swing.event.ChangeEvent
 
 
@@ -40,6 +41,8 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
     private lateinit var showTrailingZeroesCheckBox: JCheckBox
     private lateinit var groupingSeparatorGroup: ButtonGroup
     private lateinit var decimalSeparatorGroup: ButtonGroup
+    private lateinit var prefixInput: JTextField
+    private lateinit var suffixInput: JTextField
 
     override val rootPane get() = contentPane
 
@@ -50,8 +53,9 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
         decimalCount.addChangeListener { showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0 }
         decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
 
-        previewPanelHolder.updatePreviewOnUpdateOf(
-            minValue, maxValue, decimalCount, showTrailingZeroesCheckBox, groupingSeparatorGroup, decimalSeparatorGroup)
+        previewPanelHolder.updatePreviewOnUpdateOf(minValue, maxValue, decimalCount, showTrailingZeroesCheckBox)
+        previewPanelHolder.updatePreviewOnUpdateOf(groupingSeparatorGroup, decimalSeparatorGroup, prefixInput)
+        previewPanelHolder.updatePreviewOnUpdateOf(suffixInput)
         previewPanelHolder.updatePreview()
     }
 
@@ -84,6 +88,8 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
         showTrailingZeroesCheckBox.isSelected = scheme.showTrailingZeroes
         groupingSeparatorGroup.setValue(scheme.groupingSeparator)
         decimalSeparatorGroup.setValue(scheme.decimalSeparator)
+        prefixInput.text = scheme.prefix
+        suffixInput.text = scheme.suffix
     }
 
     override fun saveScheme(scheme: DecimalScheme) {
@@ -93,6 +99,8 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
         scheme.showTrailingZeroes = showTrailingZeroesCheckBox.isSelected
         scheme.safeSetGroupingSeparator(groupingSeparatorGroup.getValue())
         scheme.safeSetDecimalSeparator(decimalSeparatorGroup.getValue())
+        scheme.prefix = prefixInput.text
+        scheme.suffix = suffixInput.text
     }
 
     override fun doValidate() =

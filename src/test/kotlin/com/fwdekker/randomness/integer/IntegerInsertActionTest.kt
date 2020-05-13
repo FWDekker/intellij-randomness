@@ -80,6 +80,29 @@ class IntegerInsertActionTest : Spek({
             }
         }
     }
+
+    describe("prefix and suffix") {
+        mapOf(
+            Triple(920L, "", "") to "920",
+            Triple(553L, "before", "after") to "before553after",
+            Triple(948L, "0x", "") to "0x948",
+            Triple(502L, "", "L") to "502L"
+        ).forEach { (value, prefix, suffix), expectedString ->
+            it("generates $expectedString") {
+                val integerScheme = IntegerScheme(
+                    minValue = value,
+                    maxValue = value,
+                    prefix = prefix,
+                    suffix = suffix
+                )
+
+                val insertRandomInteger = IntegerInsertAction(integerScheme)
+                val randomString = insertRandomInteger.generateString()
+
+                assertThat(randomString).isEqualTo(expectedString)
+            }
+        }
+    }
 })
 
 

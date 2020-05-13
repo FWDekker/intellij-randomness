@@ -112,6 +112,29 @@ class DecimalInsertActionTest : Spek({
             }
         }
     }
+
+    describe("prefix and suffix") {
+        mapOf(
+            Triple(922.86, "", "") to "922.86",
+            Triple(136.50, "before", "after") to "before136.50after",
+            Triple(941.07, "\\0", "") to "\\0941.07",
+            Triple(693.27, "", "f") to "693.27f"
+        ).forEach { (value, prefix, suffix), expectedString ->
+            it("generates $expectedString") {
+                val decimalScheme = DecimalScheme(
+                    minValue = value,
+                    maxValue = value,
+                    prefix = prefix,
+                    suffix = suffix
+                )
+
+                val insertRandomDecimal = DecimalInsertAction(decimalScheme)
+                val randomString = insertRandomDecimal.generateString()
+
+                assertThat(randomString).isEqualTo(expectedString)
+            }
+        }
+    }
 })
 
 
