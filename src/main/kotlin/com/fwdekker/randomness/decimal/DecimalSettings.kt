@@ -63,6 +63,8 @@ data class DecimalSettings(
  * @property showTrailingZeroes Whether to include trailing zeroes in the decimals.
  * @property groupingSeparator The character that should separate groups.
  * @property decimalSeparator The character that should separate decimals.
+ * @property prefix The string to prepend to the generated value.
+ * @property suffix The string to append to the generated value.
  *
  * @see DecimalInsertAction
  * @see DecimalSettings
@@ -75,7 +77,9 @@ data class DecimalScheme(
     var decimalCount: Int = DEFAULT_DECIMAL_COUNT,
     var showTrailingZeroes: Boolean = DEFAULT_SHOW_TRAILING_ZEROES,
     var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
-    var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR
+    var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR,
+    var prefix: String = DEFAULT_PREFIX,
+    var suffix: String = DEFAULT_SUFFIX
 ) : Scheme<DecimalScheme> {
     companion object {
         /**
@@ -102,6 +106,14 @@ data class DecimalScheme(
          * The default value of the [decimalSeparator][decimalSeparator] field.
          */
         const val DEFAULT_DECIMAL_SEPARATOR = "."
+        /**
+         * The default value of the [prefix][prefix] field.
+         */
+        const val DEFAULT_PREFIX = ""
+        /**
+         * The default value of the [suffix][suffix] field.
+         */
+        const val DEFAULT_SUFFIX = ""
     }
 
 

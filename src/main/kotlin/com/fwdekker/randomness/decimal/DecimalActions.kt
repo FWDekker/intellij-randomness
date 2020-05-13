@@ -72,7 +72,7 @@ class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.de
         format.maximumFractionDigits = scheme.decimalCount
         format.decimalFormatSymbols = symbols
 
-        return format.format(decimal)
+        return scheme.prefix + format.format(decimal) + scheme.suffix
     }
 
 

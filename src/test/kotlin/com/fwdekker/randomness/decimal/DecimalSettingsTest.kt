@@ -33,6 +33,8 @@ object DecimalSettingsTest : Spek({
             decimalSettings.currentScheme.showTrailingZeroes = false
             decimalSettings.currentScheme.groupingSeparator = "a"
             decimalSettings.currentScheme.decimalSeparator = "D"
+            decimalSettings.currentScheme.prefix = "baby"
+            decimalSettings.currentScheme.suffix = "many"
 
             val newDecimalSettings = DecimalSettings()
             newDecimalSettings.loadState(decimalSettings.state)
@@ -43,6 +45,8 @@ object DecimalSettingsTest : Spek({
             assertThat(newDecimalSettings.currentScheme.showTrailingZeroes).isEqualTo(false)
             assertThat(newDecimalSettings.currentScheme.groupingSeparator).isEqualTo("a")
             assertThat(newDecimalSettings.currentScheme.decimalSeparator).isEqualTo("D")
+            assertThat(newDecimalSettings.currentScheme.prefix).isEqualTo("baby")
+            assertThat(newDecimalSettings.currentScheme.suffix).isEqualTo("many")
         }
     }
 })
