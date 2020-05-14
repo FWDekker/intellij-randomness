@@ -51,7 +51,7 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
             if (scheme.minValue > scheme.maxValue)
                 throw DataGenerationException("Minimum value is larger than maximum value.")
 
-            convertToString(random.nextLong(scheme.minValue, scheme.maxValue + 1))
+            scheme.prefix + convertToString(random.nextLong(scheme.minValue, scheme.maxValue + 1)) + scheme.suffix
         }
 
 
@@ -72,7 +72,7 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
         format.decimalFormatSymbols = format.decimalFormatSymbols
             .also { it.groupingSeparator = scheme.groupingSeparator.getOrElse(0) { Char.MIN_VALUE } }
 
-        return scheme.prefix + format.format(value) + scheme.suffix
+        return format.format(value)
     }
 
 
