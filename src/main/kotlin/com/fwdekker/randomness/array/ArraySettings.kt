@@ -4,9 +4,9 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.service
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
 
@@ -41,7 +41,7 @@ data class ArraySettings(
          * The persistent `ArraySettings` instance.
          */
         val default: ArraySettings
-            get() = ServiceManager.getService(ArraySettings::class.java)
+            get() = service()
     }
 
 

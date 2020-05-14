@@ -27,9 +27,11 @@ interface Settings<SELF, SCHEME : Scheme<SCHEME>> : PersistentStateComponent<SEL
      * This field is backed by [currentSchemeName]. If [currentSchemeName] refers to a scheme that is not contained in
      * [schemes], `get`ting this field will throw an exception.
      */
+    @Suppress("UseCheckOrError") // This is shorter and faster
     var currentScheme: SCHEME
         @Transient
-        get() = schemes.first { it.name == currentSchemeName }
+        get() = schemes.firstOrNull { it.name == currentSchemeName }
+            ?: throw IllegalStateException("Current scheme does not exist.")
         set(value) {
             currentSchemeName = value.name
         }
