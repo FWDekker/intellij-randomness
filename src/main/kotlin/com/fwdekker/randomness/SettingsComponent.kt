@@ -185,9 +185,9 @@ abstract class SchemesPanel<T : Scheme<T>>(val settings: Settings<*, T>) : Simpl
             settings.currentSchemeName = createDefaultInstances().map { it.name }[0]
         }
 
-        updateComboBoxList()
+        listeners.forEach { it.onCurrentSchemeHasChanged(settings.currentScheme) }
 
-        listeners.forEach { it.onCurrentSchemeHasChanged(scheme) }
+        updateComboBoxList()
     }
 
     /**
