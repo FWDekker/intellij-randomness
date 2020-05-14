@@ -96,5 +96,6 @@ private fun actionListener(actionPerformed: (ActionEvent?) -> Unit) =
  * @param other the list to multiply with
  * @return the cartesian product of `this` and [other]
  */
+@Suppress("UnusedPrivateMember") // False positive: Used as operator `*`
 private operator fun <E> List<List<E>>.times(other: List<List<E>>) =
     this.flatMap { t1 -> other.map { t2 -> t1 + t2 } }
