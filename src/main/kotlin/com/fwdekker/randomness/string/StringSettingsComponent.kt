@@ -14,6 +14,7 @@ import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.jgoodies.forms.factories.DefaultComponentFactory
+import java.awt.font.TextAttribute
 import java.util.ArrayList
 import java.util.ResourceBundle
 import javax.swing.ButtonGroup
@@ -55,8 +56,14 @@ class StringSettingsComponent(settings: StringSettings = default) :
     init {
         loadSettings()
 
-        previewPanelHolder.updatePreviewOnUpdateOf(
-            minLength, maxLength, enclosureGroup, capitalizationGroup, symbolSetTable)
+        excludeLookAlikeSymbolsCheckBox.font = excludeLookAlikeSymbolsCheckBox.font.attributes.toMutableMap()
+            .also { it[TextAttribute.UNDERLINE] = TextAttribute.UNDERLINE_LOW_DOTTED }
+            .let { excludeLookAlikeSymbolsCheckBox.font.deriveFont(it) }
+        excludeLookAlikeSymbolsCheckBox.toolTipText =
+            "Excludes the following characters from all generated strings: ${SymbolSet.lookAlikeCharacters}"
+
+        previewPanelHolder.updatePreviewOnUpdateOf(minLength, maxLength, enclosureGroup, capitalizationGroup)
+        previewPanelHolder.updatePreviewOnUpdateOf(symbolSetTable) // Call method twice because it's shorter
         previewPanelHolder.updatePreview()
     }
 
