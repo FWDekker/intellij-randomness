@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SettingsComponentListener - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness</a>&nbsp;/&nbsp;<a href="./index.html">SettingsComponentListener</a><br/>
+<br/>
+<h1>SettingsComponentListener</h1>
+<code><span class="keyword">class </span><span class="identifier">SettingsComponentListener</span><span class="symbol">&lt;</span><span class="identifier">S</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-settings/index.html"><span class="identifier">Settings</span></a><span class="symbol">&lt;</span><a href="index.html#S"><span class="identifier">S</span></a><span class="symbol">,</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-scheme/index.html"><span class="identifier">Scheme</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-schemes-panel/-listener/index.html"><span class="identifier">SchemesPanel.Listener</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>A <a href="../-schemes-panel/-listener/index.html">Listener</a> that takes events occurring in a <a href="../-schemes-panel/index.html">SchemesPanel</a> and handles them in a <a href="../-settings-component/index.html">SettingsComponent</a>.</p>
+<p>Consider this listener the glue between the schemes panel (the model) and the settings component (the view).</p>
+<h3>Parameters</h3>
+<p><a name="S"></a>
+<code>S</code> - the type of settings to manage</p>
+<p><a name="T"></a>
+<code>T</code> - the type of scheme to manage</p>
+<p><a name="component"></a>
+<code>component</code> - the settings component in which the changes should be reflected</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">SettingsComponentListener</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.SettingsComponentListener$<init>(com.fwdekker.randomness.SettingsComponent((com.fwdekker.randomness.SettingsComponentListener.S, com.fwdekker.randomness.SettingsComponentListener.T)))/component">component</span><span class="symbol">:</span>&nbsp;<a href="../-settings-component/index.html"><span class="identifier">SettingsComponent</span></a><span class="symbol">&lt;</span><a href="index.html#S"><span class="identifier">S</span></a><span class="symbol">,</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span></code>
+<p>A <a href="../-schemes-panel/-listener/index.html">Listener</a> that takes events occurring in a <a href="../-schemes-panel/index.html">SchemesPanel</a> and handles them in a <a href="../-settings-component/index.html">SettingsComponent</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="on-current-scheme-has-changed.html">onCurrentSchemeHasChanged</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">onCurrentSchemeHasChanged</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.SettingsComponentListener$onCurrentSchemeHasChanged(com.fwdekker.randomness.SettingsComponentListener.T)/scheme">scheme</span><span class="symbol">:</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Invoked when the currently-selected scheme has just been changed.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="on-current-scheme-will-change.html">onCurrentSchemeWillChange</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">onCurrentSchemeWillChange</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.SettingsComponentListener$onCurrentSchemeWillChange(com.fwdekker.randomness.SettingsComponentListener.T)/scheme">scheme</span><span class="symbol">:</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Invoked when the currently-selected scheme is about to change.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

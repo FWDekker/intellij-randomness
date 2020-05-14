@@ -1,0 +1,246 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>StringScheme - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.string</a>&nbsp;/&nbsp;<a href="./index.html">StringScheme</a><br/>
+<br/>
+<h1>StringScheme</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">StringScheme</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-scheme/index.html"><span class="identifier">Scheme</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">StringScheme</span></a><span class="symbol">&gt;</span></code>
+<p>Contains settings for generating random strings.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">StringScheme</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.string.StringScheme$<init>(kotlin.String, kotlin.Int, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.collections.Map((kotlin.String, )), kotlin.collections.Map((kotlin.String, )), kotlin.Boolean)/myName">myName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_NAME<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.string.StringScheme$<init>(kotlin.String, kotlin.Int, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.collections.Map((kotlin.String, )), kotlin.collections.Map((kotlin.String, )), kotlin.Boolean)/minLength">minLength</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_MIN_LENGTH<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.string.StringScheme$<init>(kotlin.String, kotlin.Int, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.collections.Map((kotlin.String, )), kotlin.collections.Map((kotlin.String, )), kotlin.Boolean)/maxLength">maxLength</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_MAX_LENGTH<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.string.StringScheme$<init>(kotlin.String, kotlin.Int, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.collections.Map((kotlin.String, )), kotlin.collections.Map((kotlin.String, )), kotlin.Boolean)/enclosure">enclosure</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_ENCLOSURE<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.string.StringScheme$<init>(kotlin.String, kotlin.Int, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.collections.Map((kotlin.String, )), kotlin.collections.Map((kotlin.String, )), kotlin.Boolean)/capitalization">capitalization</span><span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-capitalization-mode/index.html"><span class="identifier">CapitalizationMode</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_CAPITALIZATION<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.string.StringScheme$<init>(kotlin.String, kotlin.Int, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.collections.Map((kotlin.String, )), kotlin.collections.Map((kotlin.String, )), kotlin.Boolean)/symbolSets">symbolSets</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_SYMBOL_SETS.toMap()<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.string.StringScheme$<init>(kotlin.String, kotlin.Int, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.collections.Map((kotlin.String, )), kotlin.collections.Map((kotlin.String, )), kotlin.Boolean)/activeSymbolSets">activeSymbolSets</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_ACTIVE_SYMBOL_SETS.toMap()<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.string.StringScheme$<init>(kotlin.String, kotlin.Int, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.collections.Map((kotlin.String, )), kotlin.collections.Map((kotlin.String, )), kotlin.Boolean)/excludeLookAlikeSymbols">excludeLookAlikeSymbols</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS<span class="symbol">)</span></code>
+<p>Contains settings for generating random strings.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="active-symbol-set-list.html">activeSymbolSetList</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">activeSymbolSetList</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html"><span class="identifier">Collection</span></a><span class="symbol">&lt;</span><a href="../-symbol-set/index.html"><span class="identifier">SymbolSet</span></a><span class="symbol">&gt;</span></code>
+<p>A list view of the <code>SymbolSet</code> objects described by <a href="active-symbol-sets.html">activeSymbolSets</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="active-symbol-sets.html">activeSymbolSets</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">activeSymbolSets</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>The symbol sets that are actually used for generating strings; a subset of <a href="symbol-sets.html">symbolSets</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="capitalization.html">capitalization</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">capitalization</span><span class="symbol">: </span><a href="../../com.fwdekker.randomness/-capitalization-mode/index.html"><span class="identifier">CapitalizationMode</span></a></code>
+<p>The capitalization mode of the generated string.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="enclosure.html">enclosure</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">enclosure</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The string that encloses the generated string on both sides.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="exclude-look-alike-symbols.html">excludeLookAlikeSymbols</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">excludeLookAlikeSymbols</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Whether the symbols in <a href="../-symbol-set/look-alike-characters.html">SymbolSet.lookAlikeCharacters</a> should be excluded.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="max-length.html">maxLength</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">maxLength</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The maximum length of the generated string, inclusive.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="min-length.html">minLength</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">minLength</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The minimum length of the generated string, inclusive.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="my-name.html">myName</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">myName</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The name of the scheme.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="serialized-active-symbol-sets.html">serializedActiveSymbolSets</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">serializedActiveSymbolSets</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>Same as <a href="active-symbol-sets.html">activeSymbolSets</a>, except that all emoji are serialized.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="serialized-symbol-sets.html">serializedSymbolSets</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">serializedSymbolSets</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>Same as <a href="symbol-sets.html">symbolSets</a>, except that all emoji are serialized.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="symbol-set-list.html">symbolSetList</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">symbolSetList</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html"><span class="identifier">Collection</span></a><span class="symbol">&lt;</span><a href="../-symbol-set/index.html"><span class="identifier">SymbolSet</span></a><span class="symbol">&gt;</span></code>
+<p>A list view of the <code>SymbolSet</code> objects described by <a href="symbol-sets.html">symbolSets</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="symbol-sets.html">symbolSets</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">symbolSets</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>The symbol sets that are available for generating strings.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="copy-as.html">copyAs</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">copyAs</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.string.StringScheme$copyAs(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">StringScheme</span></a></code>
+<p>Returns a copy of this scheme that has the given name.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="copy-from.html">copyFrom</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">copyFrom</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.string.StringScheme$copyFrom(com.fwdekker.randomness.string.StringScheme)/other">other</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">StringScheme</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Shallowly copies the state of <a href="../../com.fwdekker.randomness/-scheme/copy-from.html#com.fwdekker.randomness.Scheme$copyFrom(com.fwdekker.randomness.Scheme.SELF)/other">other</a> into <code>this</code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-scheme/get-name.html">getName</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getName</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Same as <a href="../../com.fwdekker.randomness/-scheme/my-name.html">myName</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-a-c-t-i-v-e_-s-y-m-b-o-l_-s-e-t-s.html">DEFAULT_ACTIVE_SYMBOL_SETS</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">DEFAULT_ACTIVE_SYMBOL_SETS</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>The default value of the <a href="active-symbol-sets.html">activeSymbolSets</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-c-a-p-i-t-a-l-i-z-a-t-i-o-n.html">DEFAULT_CAPITALIZATION</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">DEFAULT_CAPITALIZATION</span><span class="symbol">: </span><a href="../../com.fwdekker.randomness/-capitalization-mode/index.html"><span class="identifier">CapitalizationMode</span></a></code>
+<p>The default value of the <a href="capitalization.html">capitalization</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-e-n-c-l-o-s-u-r-e.html">DEFAULT_ENCLOSURE</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_ENCLOSURE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The default value of the <a href="enclosure.html">enclosure</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-e-x-c-l-u-d-e_-l-o-o-k_-a-l-i-k-e_-s-y-m-b-o-l-s.html">DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>The default value of the <a href="exclude-look-alike-symbols.html">excludeLookAlikeSymbols</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-m-a-x_-l-e-n-g-t-h.html">DEFAULT_MAX_LENGTH</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_MAX_LENGTH</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The default value of the <a href="max-length.html">maxLength</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-m-i-n_-l-e-n-g-t-h.html">DEFAULT_MIN_LENGTH</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_MIN_LENGTH</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The default value of the <a href="min-length.html">minLength</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-s-y-m-b-o-l_-s-e-t-s.html">DEFAULT_SYMBOL_SETS</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">DEFAULT_SYMBOL_SETS</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>The default value of the <a href="symbol-sets.html">symbolSets</a> field.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

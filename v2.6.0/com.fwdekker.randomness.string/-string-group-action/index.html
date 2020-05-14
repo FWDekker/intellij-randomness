@@ -1,0 +1,146 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>StringGroupAction - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.string</a>&nbsp;/&nbsp;<a href="./index.html">StringGroupAction</a><br/>
+<br/>
+<h1>StringGroupAction</h1>
+<code><span class="keyword">class </span><span class="identifier">StringGroupAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-data-group-action/index.html"><span class="identifier">DataGroupAction</span></a></code>
+<p>All actions related to inserting strings.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">StringGroupAction</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>All actions related to inserting strings.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="insert-action.html">insertAction</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">insertAction</span><span class="symbol">: </span><a href="../-string-insert-action/index.html"><span class="identifier">StringInsertAction</span></a></code>
+<p>The action used to insert single data.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="insert-array-action.html">insertArrayAction</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">insertArrayAction</span><span class="symbol">: </span><a href="../-string-insert-action/-array-action/index.html"><span class="identifier">StringInsertAction.ArrayAction</span></a></code>
+<p>The action used to insert arrays of data.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="insert-repeat-action.html">insertRepeatAction</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">insertRepeatAction</span><span class="symbol">: </span><a href="../-string-insert-action/-repeat-action/index.html"><span class="identifier">StringInsertAction.RepeatAction</span></a></code>
+<p>The action used to insert repeated single data.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="insert-repeat-array-action.html">insertRepeatArrayAction</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">insertRepeatArrayAction</span><span class="symbol">: </span><a href="../-string-insert-action/-repeat-array-action/index.html"><span class="identifier">StringInsertAction.RepeatArrayAction</span></a></code>
+<p>The action used to insert repeated arrays of data.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="quick-switch-array-scheme-action.html">quickSwitchArraySchemeAction</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">quickSwitchArraySchemeAction</span><span class="symbol">: </span><a href="../../com.fwdekker.randomness.array/-array-settings-action/-array-quick-switch-scheme-action/index.html"><span class="identifier">ArraySettingsAction.ArrayQuickSwitchSchemeAction</span></a></code>
+<p>The action used to quickly switch between array schemes.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="quick-switch-scheme-action.html">quickSwitchSchemeAction</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">quickSwitchSchemeAction</span><span class="symbol">: </span><a href="../-string-settings-action/-string-quick-switch-scheme-action/index.html"><span class="identifier">StringSettingsAction.StringQuickSwitchSchemeAction</span></a></code>
+<p>The action used to quickly switch between schemes of this data type.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="settings-action.html">settingsAction</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">settingsAction</span><span class="symbol">: </span><a href="../-string-settings-action/index.html"><span class="identifier">StringSettingsAction</span></a></code>
+<p>The action used to edit the generator settings for this data type.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-data-group-action/action-performed.html">actionPerformed</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">actionPerformed</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.DataGroupAction$actionPerformed(com.intellij.openapi.actionSystem.AnActionEvent)/event">event</span><span class="symbol">:</span>&nbsp;<span class="identifier">AnActionEvent</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Chooses one of the three actions to execute based on the key modifiers in <a href="../../com.fwdekker.randomness/-data-group-action/action-performed.html#com.fwdekker.randomness.DataGroupAction$actionPerformed(com.intellij.openapi.actionSystem.AnActionEvent)/event">event</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-data-group-action/can-be-performed.html">canBePerformed</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">canBePerformed</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.DataGroupAction$canBePerformed(com.intellij.openapi.actionSystem.DataContext)/context">context</span><span class="symbol">:</span>&nbsp;<span class="identifier">DataContext</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns <code>true</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-data-group-action/get-children.html">getChildren</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getChildren</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.DataGroupAction$getChildren(com.intellij.openapi.actionSystem.AnActionEvent)/event">event</span><span class="symbol">:</span>&nbsp;<span class="identifier">AnActionEvent</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><span class="identifier">AnAction</span><span class="symbol">&gt;</span></code>
+<p>Returns the insert action, array insert action, and settings action.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-data-group-action/is-popup.html">isPopup</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isPopup</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns <code>true</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-data-group-action/update.html">update</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">update</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.DataGroupAction$update(com.intellij.openapi.actionSystem.AnActionEvent)/event">event</span><span class="symbol">:</span>&nbsp;<span class="identifier">AnActionEvent</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the title of this action.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

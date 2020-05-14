@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>IntegerSettingsConfigurable - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.integer</a>&nbsp;/&nbsp;<a href="./index.html">IntegerSettingsConfigurable</a><br/>
+<br/>
+<h1>IntegerSettingsConfigurable</h1>
+<code><span class="keyword">class </span><span class="identifier">IntegerSettingsConfigurable</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-settings-configurable/index.html"><span class="identifier">SettingsConfigurable</span></a><span class="symbol">&lt;</span><a href="../-integer-settings/index.html"><span class="identifier">IntegerSettings</span></a><span class="symbol">,</span>&nbsp;<a href="../-integer-scheme/index.html"><span class="identifier">IntegerScheme</span></a><span class="symbol">&gt;</span></code>
+<p>The configurable for integer settings.</p>
+<p><strong>See Also</strong><br/>
+<p><a href="../-integer-settings-action/index.html">IntegerSettingsAction</a></p>
+</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">IntegerSettingsConfigurable</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerSettingsConfigurable$<init>(com.fwdekker.randomness.integer.IntegerSettingsComponent)/component">component</span><span class="symbol">:</span>&nbsp;<a href="../-integer-settings-component/index.html"><span class="identifier">IntegerSettingsComponent</span></a>&nbsp;<span class="symbol">=</span>&nbsp;IntegerSettingsComponent()<span class="symbol">)</span></code>
+<p>The configurable for integer settings.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="component.html">component</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">component</span><span class="symbol">: </span><a href="../-integer-settings-component/index.html"><span class="identifier">IntegerSettingsComponent</span></a></code>
+<p>The user interface for changing the settings.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get-display-name.html">getDisplayName</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getDisplayName</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Returns the name of the configurable as displayed in the settings window.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-settings-configurable/apply.html">apply</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">apply</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Saves the changes in the settings component to the default settings object.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-settings-configurable/create-component.html">createComponent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">createComponent</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JComponent.html"><span class="identifier">JComponent</span></a><span class="symbol">?</span></code>
+<p>Returns the root pane of the settings component.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-settings-configurable/is-modified.html">isModified</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isModified</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns true if the settings were modified since they were loaded.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-settings-configurable/reset.html">reset</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">reset</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Discards unsaved changes in the settings component.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

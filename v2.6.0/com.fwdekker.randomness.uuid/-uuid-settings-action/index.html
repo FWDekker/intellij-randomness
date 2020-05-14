@@ -1,0 +1,92 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>UuidSettingsAction - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.uuid</a>&nbsp;/&nbsp;<a href="./index.html">UuidSettingsAction</a><br/>
+<br/>
+<h1>UuidSettingsAction</h1>
+<code><span class="keyword">class </span><span class="identifier">UuidSettingsAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-data-settings-action/index.html"><span class="identifier">DataSettingsAction</span></a></code>
+<p>Controller for random UUID generation settings.</p>
+<p><strong>See Also</strong><br/>
+<p><a href="../-uuid-settings/index.html">UuidSettings</a></p>
+<p><a href="../-uuid-settings-component/index.html">UuidSettingsComponent</a></p>
+</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-uuid-quick-switch-scheme-action/index.html">UuidQuickSwitchSchemeAction</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">UuidQuickSwitchSchemeAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-data-quick-switch-scheme-action/index.html"><span class="identifier">DataQuickSwitchSchemeAction</span></a><span class="symbol">&lt;</span><a href="../-uuid-scheme/index.html"><span class="identifier">UuidScheme</span></a><span class="symbol">&gt;</span></code>
+<p>Opens a popup to allow the user to quickly switch to the selected scheme.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">UuidSettingsAction</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>Controller for random UUID generation settings.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="configurable-class.html">configurableClass</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">configurableClass</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html"><span class="identifier">Class</span></a><span class="symbol">&lt;</span><a href="../-uuid-settings-configurable/index.html"><span class="identifier">UuidSettingsConfigurable</span></a><span class="symbol">&gt;</span></code>
+<p>The class of the configurable maintaining the settings.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="name.html">name</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">name</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The name of the action.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-data-settings-action/action-performed.html">actionPerformed</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">actionPerformed</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.DataSettingsAction$actionPerformed(com.intellij.openapi.actionSystem.AnActionEvent)/event">event</span><span class="symbol">:</span>&nbsp;<span class="identifier">AnActionEvent</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Opens the IntelliJ settings menu at the right location to adjust the configurable of type <a href="../../com.fwdekker.randomness/-data-settings-action/configurable-class.html">configurableClass</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-data-settings-action/update.html">update</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">update</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.DataSettingsAction$update(com.intellij.openapi.actionSystem.AnActionEvent)/event">event</span><span class="symbol">:</span>&nbsp;<span class="identifier">AnActionEvent</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the title of this action.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
