@@ -108,5 +108,5 @@ dokka {
 // Compatibility checks
 runPluginVerifier {
     pluginFileName = "$rootProject.name-$version"
-    ides = ["IC-2018.1", "IC-2019.1", "IC-2020.1", "CL-2019.3"]
+    ides = ["IC-2018.1", "IC-2019.1", "IC-2020.1", "CL-2020.1"]
 }
