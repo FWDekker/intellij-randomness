@@ -1,4 +1,7 @@
 comments:
+    # License in each file is unnecessary.
+    AbsentOrWrongFileLicense:
+        active: false
     # Nothing wrong with documenting private methods.
     CommentOverPrivateFunction:
         active: false
