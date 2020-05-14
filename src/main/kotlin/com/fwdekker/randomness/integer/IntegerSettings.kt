@@ -31,7 +31,10 @@ data class IntegerSettings(
          * The default value of the [schemes][schemes] field.
          */
         val DEFAULT_SCHEMES: MutableList<IntegerScheme>
-            get() = mutableListOf(IntegerScheme())
+            get() = mutableListOf(
+                IntegerScheme(),
+                IntegerScheme("Hex", minValue = 0, maxValue = 256, base = 16, groupingSeparator = "", prefix = "0x")
+            )
         /**
          * The default value of the [currentSchemeName][currentSchemeName] field.
          */
