@@ -4,6 +4,7 @@
 * Update `README.md`, `change-notes.html`, and `description.html` if necessary.
   * Make sure to preview the change notes in the IDE by loading the plugin.
 * Update screenshots in `.github/img/` and on the plugin repository if necessary.
+* Ensure documentation generates without errors and push documentation to `gh-pages` branch.
 
 ## Verification
 * Run tests and static analysis one more time.
