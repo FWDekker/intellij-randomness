@@ -2,7 +2,7 @@ package com.fwdekker.randomness
 
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.DataManager
-import com.intellij.ide.plugins.IdeaPluginDescriptor
+import com.intellij.ide.plugins.IdeaPluginDescriptorImpl
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
@@ -47,30 +47,46 @@ class ErrorReporter : ErrorReportSubmitter() {
         val project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(parentComponent))
         object : Backgroundable(project, "Opening GitHub in Browser") {
             override fun run(indicator: ProgressIndicator) {
-                BrowserUtil.open("https://github.com/FWDekker/intellij-randomness/issues/new" +
-                    "?labels=bug" +
-                    "&assignee=FWDekker" +
-                    "&title=Bug report" +
-                    "&body=" +
-                    createMarkdownSection(
-                        "Additional info",
-                        if (additionalInfo.isNullOrBlank()) "_No additional information provided._" else additionalInfo
-                    ) +
-                    createMarkdownSection("Stacktraces", formatEvents(events)) +
-                    createMarkdownSection("Version information", getFormattedVersionInformation())
+                BrowserUtil.open(
+                    "https://github.com/FWDekker/intellij-randomness/issues/new" +
+                        "?labels=bug" +
+                        "&assignee=FWDekker" +
+                        "&title=Bug report" +
+                        "&body=" +
+                        createMarkdownSection(
+                            "Additional info",
+                            if (additionalInfo.isNullOrBlank()) "_No additional information provided._"
+                            else additionalInfo
+                        ) +
+                        createMarkdownSection("Stacktraces", formatEvents(events)) +
+                        createMarkdownSection("Version information", getFormattedVersionInformation())
                 )
 
                 ApplicationManager.getApplication().invokeLater {
-                    consumer.consume(SubmittedReportInfo(
-                        "https://github.com/FWDekker/intellij-randomness/issues",
-                        "Issue on GitHub",
-                        SubmittedReportInfo.SubmissionStatus.NEW_ISSUE
-                    ))
+                    consumer.consume(
+                        SubmittedReportInfo(
+                            "https://github.com/FWDekker/intellij-randomness/issues",
+                            "Issue on GitHub",
+                            SubmittedReportInfo.SubmissionStatus.NEW_ISSUE
+                        )
+                    )
                 }
             }
         }.queue()
         return true
     }
+
+    /**
+     * Returns the privacy notice text.
+     *
+     * @return the privacy notice text
+     */
+    override fun getPrivacyNoticeText() =
+        """
+        Pressing the Report button will open a form on a web page with the details of this error filled in.
+        Submitting the form requires a GitHub account and is subject to <a href="https://github.com/site/privacy">
+        GitHub's privacy policy</a>.
+        """.trimIndent()
 
 
     /**
@@ -121,7 +137,7 @@ class ErrorReporter : ErrorReportSubmitter() {
      * @return the version number of Randomness, or `null` if it could not be determined
      */
     private fun getPluginVersion() =
-        if (pluginDescriptor is IdeaPluginDescriptor) (pluginDescriptor as IdeaPluginDescriptor).version
+        if (pluginDescriptor is IdeaPluginDescriptorImpl) (pluginDescriptor as IdeaPluginDescriptorImpl).version
         else null
 
     /**
