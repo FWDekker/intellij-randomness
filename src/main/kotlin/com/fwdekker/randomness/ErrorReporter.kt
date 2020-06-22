@@ -2,7 +2,7 @@ package com.fwdekker.randomness
 
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.DataManager
-import com.intellij.ide.plugins.IdeaPluginDescriptorImpl
+import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
@@ -136,8 +136,9 @@ class ErrorReporter : ErrorReportSubmitter() {
      *
      * @return the version number of Randomness, or `null` if it could not be determined
      */
+    @Suppress("MissingRecentApi") // False positive
     private fun getPluginVersion() =
-        if (pluginDescriptor is IdeaPluginDescriptorImpl) (pluginDescriptor as IdeaPluginDescriptorImpl).version
+        if (pluginDescriptor is IdeaPluginDescriptor) (pluginDescriptor as IdeaPluginDescriptor).version
         else null
 
     /**
