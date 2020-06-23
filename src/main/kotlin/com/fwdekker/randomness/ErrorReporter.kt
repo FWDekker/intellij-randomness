@@ -113,7 +113,7 @@ class ErrorReporter : ErrorReportSubmitter() {
         )
         return baseUrl + candidates.first { encodeUrl(baseUrl + it).length <= MAX_URL_LENGTH }
             .replace(' ', '+')
-            .replace("&", "")
+            .filterNot { it in listOf('#', '&', ';') }
     }
 
     /**
