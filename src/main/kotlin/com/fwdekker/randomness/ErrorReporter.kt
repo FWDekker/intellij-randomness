@@ -95,11 +95,7 @@ class ErrorReporter : ErrorReportSubmitter() {
      */
     // Public for testability
     fun getIssueUrl(events: Array<out IdeaLoggingEvent>, additionalInfo: String?): String {
-        val baseUrl = "https://github.com/FWDekker/intellij-randomness/issues/new" +
-            "?labels=bug" +
-            "&assignee=FWDekker" +
-            "&title=Bug report" +
-            "&body="
+        val baseUrl = "https://github.com/FWDekker/intellij-randomness/issues/new?body="
         val additionalInfoSection = createMarkdownSection(
             "Additional info",
             if (additionalInfo.isNullOrBlank()) "_No additional information provided._"
@@ -115,7 +111,9 @@ class ErrorReporter : ErrorReportSubmitter() {
             versionSection,
             ""
         )
-        return baseUrl + candidates.first { encodeUrl(baseUrl + it).length <= MAX_URL_LENGTH }.replace(' ', '+')
+        return baseUrl + candidates.first { encodeUrl(baseUrl + it).length <= MAX_URL_LENGTH }
+            .replace(' ', '+')
+            .replace("&", "")
     }
 
     /**
