@@ -81,6 +81,8 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
         decimalCount = JIntSpinner(0, 0, description = "decimal count")
     }
 
+    override fun getPreferredFocusComponent() = minValue
+
     override fun loadScheme(scheme: DecimalScheme) {
         minValue.value = scheme.minValue
         maxValue.value = scheme.maxValue

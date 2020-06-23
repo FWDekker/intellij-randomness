@@ -4,6 +4,7 @@ import com.fwdekker.randomness.SchemesPanel.Listener
 import com.intellij.application.options.schemes.AbstractSchemeActions
 import com.intellij.application.options.schemes.SchemesModel
 import com.intellij.application.options.schemes.SimpleSchemesPanel
+import javax.swing.JComponent
 import javax.swing.JPanel
 
 
@@ -66,6 +67,13 @@ abstract class SettingsComponent<S : Settings<S, T>, T : Scheme<T>>(private val 
      */
     abstract fun saveScheme(scheme: T)
 
+
+    /**
+     * Returns the component that should be focused on when the dialog appears.
+     *
+     * @return the component that should be focused on when the dialog appears
+     */
+    abstract fun getPreferredFocusComponent(): JComponent?
 
     /**
      * Returns true if this component contains unsaved changes.

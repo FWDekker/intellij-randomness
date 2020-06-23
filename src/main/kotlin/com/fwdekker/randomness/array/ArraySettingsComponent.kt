@@ -64,8 +64,8 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
         }
         newlineSeparatorButton.changeListeners.forEach { it.stateChanged(ChangeEvent(newlineSeparatorButton)) }
 
-        previewPanelHolder.updatePreviewOnUpdateOf(
-            countSpinner, bracketsGroup, separatorGroup, spaceAfterSeparatorCheckBox)
+        previewPanelHolder.updatePreviewOnUpdateOf(countSpinner, bracketsGroup, separatorGroup)
+        previewPanelHolder.updatePreviewOnUpdateOf(spaceAfterSeparatorCheckBox)
         previewPanelHolder.updatePreview()
     }
 
@@ -89,6 +89,8 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
 
         countSpinner = JIntSpinner(value = 1, minValue = 1, description = "count")
     }
+
+    override fun getPreferredFocusComponent() = countSpinner
 
     override fun loadScheme(scheme: ArrayScheme) {
         countSpinner.value = scheme.count

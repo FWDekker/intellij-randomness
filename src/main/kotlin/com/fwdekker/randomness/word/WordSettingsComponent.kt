@@ -84,6 +84,8 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         dictionarySeparator = factory.createSeparator(bundle.getString("settings.dictionaries"))
     }
 
+    override fun getPreferredFocusComponent() = minLength
+
     override fun loadScheme(scheme: WordScheme) {
         minLength.value = scheme.minLength
         maxLength.value = scheme.maxLength

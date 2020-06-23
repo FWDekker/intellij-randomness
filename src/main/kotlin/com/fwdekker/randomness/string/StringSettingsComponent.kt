@@ -94,6 +94,8 @@ class StringSettingsComponent(settings: StringSettings = default) :
         symbolSetSeparator = factory.createSeparator(bundle.getString("settings.symbol_sets"))
     }
 
+    override fun getPreferredFocusComponent() = minLength
+
     override fun loadScheme(scheme: StringScheme) {
         minLength.value = scheme.minLength
         maxLength.value = scheme.maxLength

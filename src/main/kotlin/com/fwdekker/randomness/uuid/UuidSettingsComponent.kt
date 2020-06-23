@@ -64,6 +64,7 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
         previewPanel = previewPanelHolder.rootPane
     }
 
+    override fun getPreferredFocusComponent() = versionGroup.elements.toList().firstOrNull { it.isSelected }
 
     override fun loadScheme(scheme: UuidScheme) {
         versionGroup.setValue(scheme.version.toString())

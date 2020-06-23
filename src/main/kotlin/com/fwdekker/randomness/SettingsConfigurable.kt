@@ -27,6 +27,13 @@ abstract class SettingsConfigurable<S : Settings<S, T>, T : Scheme<T>> : Configu
     abstract override fun getDisplayName(): String
 
     /**
+     * Returns the component that should be focused on when the dialog appears.
+     *
+     * @return the component that should be focused on when the dialog appears
+     */
+    override fun getPreferredFocusedComponent() = component.getPreferredFocusComponent()
+
+    /**
      * Returns true if the settings were modified since they were loaded.
      *
      * @return true if the settings were modified since they were loaded

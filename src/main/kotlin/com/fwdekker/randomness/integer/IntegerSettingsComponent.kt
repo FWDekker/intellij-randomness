@@ -83,6 +83,8 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         valueRange = JSpinnerRange(minValue, maxValue, Long.MAX_VALUE.toDouble(), "value")
     }
 
+    override fun getPreferredFocusComponent() = minValue
+
     override fun loadScheme(scheme: IntegerScheme) {
         minValue.value = scheme.minValue
         maxValue.value = scheme.maxValue

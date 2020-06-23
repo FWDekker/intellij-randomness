@@ -5,6 +5,7 @@ import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
+import javax.swing.JComponent
 import javax.swing.JPanel
 
 
@@ -87,6 +88,8 @@ class DummySettingsComponent(settings: DummySettings = DummySettings()) :
         rootPane.add(schemesPanel)
     }
 
+
+    override fun getPreferredFocusComponent(): JComponent? = null
 
     override fun loadScheme(scheme: DummyScheme) {
         countSpinner.value = scheme.count
