@@ -1,0 +1,142 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Settings - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness</a>&nbsp;/&nbsp;<a href="./index.html">Settings</a><br/>
+<br/>
+<h1>Settings</h1>
+<code><span class="keyword">interface </span><span class="identifier">Settings</span><span class="symbol">&lt;</span><span class="identifier">SELF</span><span class="symbol">, </span><span class="identifier">SCHEME</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-scheme/index.html"><span class="identifier">Scheme</span></a><span class="symbol">&lt;</span><a href="index.html#SCHEME"><span class="identifier">SCHEME</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">PersistentStateComponent</span><span class="symbol">&lt;</span><a href="index.html#SELF"><span class="identifier">SELF</span></a><span class="symbol">&gt;</span></code>
+<p>Settings are composed of <a href="../-scheme/index.html">Scheme</a>s and persist these over IDE restarts.</p>
+<h3>Parameters</h3>
+<p><a name="SELF"></a>
+<code>SELF</code> - the type of settings that should be persisted; should be a self reference</p>
+<p><a name="SCHEME"></a>
+<code>SCHEME</code> - the type of scheme that the settings consist of</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="current-scheme.html">currentScheme</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">var </span><span class="identifier">currentScheme</span><span class="symbol">: </span><a href="index.html#SCHEME"><span class="identifier">SCHEME</span></a></code>
+<p>The instance of the scheme that is currently active.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="current-scheme-name.html">currentSchemeName</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">var </span><span class="identifier">currentSchemeName</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The name of the scheme that is currently active.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="schemes.html">schemes</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">var </span><span class="identifier">schemes</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="index.html#SCHEME"><span class="identifier">SCHEME</span></a><span class="symbol">&gt;</span></code>
+<p>The various schemes that are contained within the settings.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="deep-copy.html">deepCopy</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">deepCopy</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="index.html#SELF"><span class="identifier">SELF</span></a></code>
+<p>Returns a deep copy of the settings and the contained schemes.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-state.html">getState</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getState</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="index.html#SELF"><span class="identifier">SELF</span></a></code>
+<p>Returns <code>this</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="load-state.html">loadState</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">loadState</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.Settings$loadState(com.fwdekker.randomness.Settings.SELF)/state">state</span><span class="symbol">:</span>&nbsp;<a href="index.html#SELF"><span class="identifier">SELF</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies the fields of <code>state</code> to <code>this</code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.array/-array-settings/index.html">ArraySettings</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ArraySettings</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Settings</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.array/-array-settings/index.html"><span class="identifier">ArraySettings</span></a><span class="symbol">,</span>&nbsp;<a href="../../com.fwdekker.randomness.array/-array-scheme/index.html"><span class="identifier">ArrayScheme</span></a><span class="symbol">&gt;</span></code>
+<p>The user-configurable collection of schemes applicable to generating arrays.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.decimal/-decimal-settings/index.html">DecimalSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DecimalSettings</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Settings</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.decimal/-decimal-settings/index.html"><span class="identifier">DecimalSettings</span></a><span class="symbol">,</span>&nbsp;<a href="../../com.fwdekker.randomness.decimal/-decimal-scheme/index.html"><span class="identifier">DecimalScheme</span></a><span class="symbol">&gt;</span></code>
+<p>The user-configurable collection of schemes applicable to generating decimals.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.integer/-integer-settings/index.html">IntegerSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">IntegerSettings</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Settings</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.integer/-integer-settings/index.html"><span class="identifier">IntegerSettings</span></a><span class="symbol">,</span>&nbsp;<a href="../../com.fwdekker.randomness.integer/-integer-scheme/index.html"><span class="identifier">IntegerScheme</span></a><span class="symbol">&gt;</span></code>
+<p>The user-configurable collection of schemes applicable to generating integers.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.string/-string-settings/index.html">StringSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">StringSettings</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Settings</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.string/-string-settings/index.html"><span class="identifier">StringSettings</span></a><span class="symbol">,</span>&nbsp;<a href="../../com.fwdekker.randomness.string/-string-scheme/index.html"><span class="identifier">StringScheme</span></a><span class="symbol">&gt;</span></code>
+<p>The user-configurable collection of schemes applicable to generating strings.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.uuid/-uuid-settings/index.html">UuidSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">UuidSettings</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Settings</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.uuid/-uuid-settings/index.html"><span class="identifier">UuidSettings</span></a><span class="symbol">,</span>&nbsp;<a href="../../com.fwdekker.randomness.uuid/-uuid-scheme/index.html"><span class="identifier">UuidScheme</span></a><span class="symbol">&gt;</span></code>
+<p>The user-configurable collection of schemes applicable to generating UUIDs.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.word/-word-settings/index.html">WordSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">WordSettings</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Settings</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.word/-word-settings/index.html"><span class="identifier">WordSettings</span></a><span class="symbol">,</span>&nbsp;<a href="../../com.fwdekker.randomness.word/-word-scheme/index.html"><span class="identifier">WordScheme</span></a><span class="symbol">&gt;</span></code>
+<p>The user-configurable collection of schemes applicable to generating words.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
