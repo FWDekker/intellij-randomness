@@ -13,6 +13,9 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.util.Consumer
 import java.awt.Component
+import java.net.IDN
+import java.net.URI
+import java.net.URL
 
 
 /**
@@ -22,6 +25,14 @@ import java.awt.Component
  * as a notification by IntelliJ.
  */
 class ErrorReporter : ErrorReportSubmitter() {
+    companion object {
+        /**
+         * Maximum URL length supported by GitHub, experimentally verified.
+         */
+        const val MAX_URL_LENGTH = 8000
+    }
+
+
     /**
      * Returns the text that is displayed in the button to report the error.
      *
@@ -47,21 +58,7 @@ class ErrorReporter : ErrorReportSubmitter() {
         val project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(parentComponent))
         object : Backgroundable(project, "Opening GitHub in Browser") {
             override fun run(indicator: ProgressIndicator) {
-                BrowserUtil.open(
-                    "https://github.com/FWDekker/intellij-randomness/issues/new" +
-                        "?labels=bug" +
-                        "&assignee=FWDekker" +
-                        "&title=Bug report" +
-                        "&body=" +
-                        createMarkdownSection(
-                            "Additional info",
-                            if (additionalInfo.isNullOrBlank()) "_No additional information provided._"
-                            else additionalInfo
-                        ) +
-                        createMarkdownSection("Stacktraces", formatEvents(events)) +
-                        createMarkdownSection("Version information", getFormattedVersionInformation())
-                )
-
+                BrowserUtil.open(getIssueUrl(events, additionalInfo))
                 ApplicationManager.getApplication().invokeLater {
                     consumer.consume(
                         SubmittedReportInfo(
@@ -88,6 +85,36 @@ class ErrorReporter : ErrorReportSubmitter() {
         GitHub's privacy policy</a>.
         """.trimIndent()
 
+
+    /**
+     * Constructs a URL to create an issue with the given information that is below the maximum URL limit.
+     *
+     * @param events the events that caused the exception
+     * @param additionalInfo additional information provided by the user
+     * @return a URL to create an issue with the given information that is below the maximum URL limit
+     */
+    // Public for testability
+    fun getIssueUrl(events: Array<out IdeaLoggingEvent>, additionalInfo: String?): String {
+        val baseUrl = "https://github.com/FWDekker/intellij-randomness/issues/new?body="
+        val additionalInfoSection = createMarkdownSection(
+            "Additional info",
+            if (additionalInfo.isNullOrBlank()) "_No additional information provided._"
+            else additionalInfo
+        )
+        val stackTracesSection = createMarkdownSection("Stacktraces", formatEvents(events))
+        val versionSection = createMarkdownSection("Version information", getFormattedVersionInformation())
+
+        val candidates = listOf(
+            additionalInfoSection + stackTracesSection + versionSection,
+            additionalInfoSection + versionSection,
+            stackTracesSection + versionSection,
+            versionSection,
+            ""
+        )
+        return baseUrl + candidates.first { encodeUrl(baseUrl + it).length <= MAX_URL_LENGTH }
+            .replace(' ', '+')
+            .filterNot { it in listOf('#', '&', ';') }
+    }
 
     /**
      * Creates a Markdown "section" containing the title in bold followed by the contents on the next line, finalized by
@@ -153,4 +180,17 @@ class ErrorReporter : ErrorReportSubmitter() {
             Pair("Operating system", System.getProperty("os.name")),
             Pair("Java version", System.getProperty("java.version"))
         ).joinToString("\n") { "- ${it.first}: ${it.second}" }
+
+    /**
+     * Correctly encodes a string describing a URL.
+     *
+     * Taken from https://stackoverflow.com/a/25735202.
+     *
+     * @param urlString the string to encode
+     * @return an encoded URL
+     */
+    private fun encodeUrl(urlString: String) =
+        URL(urlString.replace(' ', '+'))
+            .let { URI(it.protocol, it.userInfo, IDN.toASCII(it.host), it.port, it.path, it.query, it.ref) }
+            .toASCIIString()
 }
