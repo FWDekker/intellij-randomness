@@ -93,7 +93,8 @@ class ErrorReporter : ErrorReportSubmitter() {
      * @param additionalInfo additional information provided by the user
      * @return a URL to create an issue with the given information that is below the maximum URL limit
      */
-    private fun getIssueUrl(events: Array<out IdeaLoggingEvent>, additionalInfo: String?): String {
+    // Public for testability
+    fun getIssueUrl(events: Array<out IdeaLoggingEvent>, additionalInfo: String?): String {
         val baseUrl = "https://github.com/FWDekker/intellij-randomness/issues/new" +
             "?labels=bug" +
             "&assignee=FWDekker" +
@@ -114,7 +115,7 @@ class ErrorReporter : ErrorReportSubmitter() {
             versionSection,
             ""
         )
-        return baseUrl + candidates.first { encodeUrl(it).length <= MAX_URL_LENGTH - baseUrl.length }.replace(' ', '+')
+        return baseUrl + candidates.first { encodeUrl(baseUrl + it).length <= MAX_URL_LENGTH }.replace(' ', '+')
     }
 
     /**
