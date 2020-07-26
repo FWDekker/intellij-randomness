@@ -229,4 +229,8 @@ class PluginVerifierRunner extends ConventionTask {
 
 
 project.tasks.create("runPluginVerifier", PluginVerifierRunner)
-    .with { it.dependsOn(project.tasks.findByName("buildPlugin")) }
+    .with {
+        group = "intellij"
+        description = "Test the plugin for binary compatibility against different versions of JetBrains IDEs"
+        dependsOn(project.tasks.findByName("buildPlugin"))
+    }
