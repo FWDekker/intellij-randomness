@@ -41,6 +41,10 @@ class PluginVerifierRunner extends ConventionTask {
      */
     private List<String> ides = new ArrayList<String>()
     /**
+     * The runtime directory to run the verifier with, or an empty string if it should be detected automatically.
+     */
+    private String runtimeDir = ""
+    /**
      * Base URL to resolve IDEs at; "releases/" or "snapshots/" will be appended later.
      */
     private String repoUrl = "https://www.jetbrains.com/intellij-repository/"
@@ -66,6 +70,15 @@ class PluginVerifierRunner extends ConventionTask {
 
     void setIdes(List<String> ides) {
         this.ides = ides
+    }
+
+    @Input
+    String getRuntimeDir() {
+        return runtimeDir
+    }
+
+    void setRuntimeDir(String runtimeDir) {
+        this.runtimeDir = runtimeDir
     }
 
     @Input
@@ -149,15 +162,17 @@ class PluginVerifierRunner extends ConventionTask {
      * @param ides the locations of the IDEs to give to the verifier
      */
     void runVerifier(List<File> ides) {
+        def myArgs = []
+        myArgs += ["-verification-reports-dir", "build/$PLUGIN_VERIFIER_DIR/reports"]
+        myArgs += ["check-plugin"]
+        if (runtimeDir != "") myArgs += ["-runtime-dir", runtimeDir]
+        myArgs += ["${project.buildDir}/distributions/${pluginFileName}.zip"]
+        myArgs += [*(ides*.absolutePath)]
+
         project.javaexec {
             classpath = project.files("$project.buildDir/$PLUGIN_VERIFIER_DIR/$PLUGIN_VERIFIER_NAME")
             main = "com.jetbrains.pluginverifier.PluginVerifierMain"
-            args = [
-                "-verification-reports-dir", "build/$PLUGIN_VERIFIER_DIR/reports",
-                "check-plugin",
-                "${project.buildDir}/distributions/${pluginFileName}.zip",
-                *(ides*.absolutePath)
-            ]
+            args = myArgs
         }
     }
 
