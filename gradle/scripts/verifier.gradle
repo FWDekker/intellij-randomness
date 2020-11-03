@@ -111,7 +111,7 @@ class PluginVerifierRunner extends ConventionTask {
      */
     @TaskAction
     void runTaskAction() {
-        println("WARNING! The plugin verifier script is deprecated. The runPluginVerifier task is built into the " +
+        logger.warn("WARNING! The plugin verifier script is deprecated. The runPluginVerifier task is built into the " +
             "gradle-intellij-plugin as of version 0.6.0. For more information, see " +
             "https://github.com/JetBrains/gradle-intellij-plugin/issues/385#issuecomment-718796665. " +
             "This script will be removed from the intellij-random repository on 2021-10-29.")
@@ -122,7 +122,7 @@ class PluginVerifierRunner extends ConventionTask {
         downloadVerifier()
         runVerifier(ides.collect { ide -> resolveIde(ide) })
 
-        println("WARNING! The plugin verifier script is deprecated. The runPluginVerifier task is built into the " +
+        logger.warn("WARNING! The plugin verifier script is deprecated. The runPluginVerifier task is built into the " +
             "gradle-intellij-plugin as of version 0.6.0. For more information, see " +
             "https://github.com/JetBrains/gradle-intellij-plugin/issues/385#issuecomment-718796665. " +
             "This script will be removed from the intellij-random repository on 2021-10-29.")
