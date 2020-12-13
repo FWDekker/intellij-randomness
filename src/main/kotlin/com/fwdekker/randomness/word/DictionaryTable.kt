@@ -18,7 +18,47 @@ private typealias EditableDictionary = EditableDatum<Dictionary>
  * @see WordSettingsComponent
  */
 class DictionaryTable : ActivityTableModelEditor<Dictionary>(
-    arrayOf(TYPE_COLUMN, LOCATION_COLUMN), ITEM_EDITOR, EMPTY_TEXT, EMPTY_SUB_TEXT, { it is UserDictionary }) {
+    arrayOf(TYPE_COLUMN, LOCATION_COLUMN),
+    ITEM_EDITOR,
+    EMPTY_TEXT, EMPTY_SUB_TEXT,
+    { it is UserDictionary }
+) {
+    /**
+     * Creates a new placeholder [Dictionary] instance.
+     *
+     * @return a new placeholder [Dictionary] instance
+     */
+    override fun createElement() = Companion.createElement()
+
+    /**
+     * Returns `null` if a unique, non-empty selection of valid dictionaries has been made, or a `ValidationInfo` object
+     * explaining which input should be changed.
+     *
+     * @return `null` if a unique, non-empty selection of valid dictionaries has been made, or a `ValidationInfo` object
+     * explaining which input should be changed
+     */
+    @Suppress("ReturnCount") // Acceptable for validation functions
+    fun doValidate(): ValidationInfo? {
+        if (data.distinct().size != data.size)
+            return ValidationInfo("Dictionaries must be unique.", panel)
+        if (activeData.isEmpty())
+            return ValidationInfo("Select at least one dictionary.", panel)
+
+        data.forEach { dictionary ->
+            try {
+                dictionary.validate()
+            } catch (e: InvalidDictionaryException) {
+                return ValidationInfo("Dictionary `$dictionary` is invalid: ${e.message}", panel)
+            }
+
+            if (dictionary.words.isEmpty())
+                return ValidationInfo("Dictionary `$dictionary` is empty.", panel)
+        }
+
+        return null
+    }
+
+
     companion object {
         /**
          * The error message that is displayed if an unknown dictionary implementation is used.
@@ -101,41 +141,5 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
          * @return a new placeholder [Dictionary] instance
          */
         private fun createElement() = EditableDictionary(DEFAULT_STATE, UserDictionary.cache.get("", true))
-    }
-
-
-    /**
-     * Creates a new placeholder [Dictionary] instance.
-     *
-     * @return a new placeholder [Dictionary] instance
-     */
-    override fun createElement() = Companion.createElement()
-
-    /**
-     * Returns `null` if a unique, non-empty selection of valid dictionaries has been made, or a `ValidationInfo` object
-     * explaining which input should be changed.
-     *
-     * @return `null` if a unique, non-empty selection of valid dictionaries has been made, or a `ValidationInfo` object
-     * explaining which input should be changed
-     */
-    @Suppress("ReturnCount") // Acceptable for validation functions
-    fun doValidate(): ValidationInfo? {
-        if (data.distinct().size != data.size)
-            return ValidationInfo("Dictionaries must be unique.", panel)
-        if (activeData.isEmpty())
-            return ValidationInfo("Select at least one dictionary.", panel)
-
-        data.forEach { dictionary ->
-            try {
-                dictionary.validate()
-            } catch (e: InvalidDictionaryException) {
-                return ValidationInfo("Dictionary `$dictionary` is invalid: ${e.message}", panel)
-            }
-
-            if (dictionary.words.isEmpty())
-                return ValidationInfo("Dictionary `$dictionary` is empty.", panel)
-        }
-
-        return null
     }
 }

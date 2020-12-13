@@ -52,8 +52,8 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
     init {
         loadSettings()
 
-        previewPanelHolder.updatePreviewOnUpdateOf(
-            minLength, maxLength, capitalizationGroup, enclosureGroup, dictionaryTable)
+        previewPanelHolder.updatePreviewOnUpdateOf(minLength, maxLength, capitalizationGroup, enclosureGroup)
+        previewPanelHolder.updatePreviewOnUpdateOf(dictionaryTable)
         previewPanelHolder.updatePreview()
     }
 

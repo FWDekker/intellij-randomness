@@ -26,12 +26,20 @@ data class DecimalSettings(
     override var schemes: MutableList<DecimalScheme> = DEFAULT_SCHEMES,
     override var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
 ) : Settings<DecimalSettings, DecimalScheme> {
+    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
+
+    override fun getState() = this
+
+    override fun loadState(state: DecimalSettings) = XmlSerializerUtil.copyBean(state, this)
+
+
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
          */
         val DEFAULT_SCHEMES: MutableList<DecimalScheme>
             get() = mutableListOf(DecimalScheme())
+
         /**
          * The default value of the [currentSchemeName][currentSchemeName] field.
          */
@@ -43,13 +51,6 @@ data class DecimalSettings(
         val default: DecimalSettings
             get() = service()
     }
-
-
-    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
-
-    override fun getState() = this
-
-    override fun loadState(state: DecimalSettings) = XmlSerializerUtil.copyBean(state, this)
 }
 
 
@@ -81,42 +82,6 @@ data class DecimalScheme(
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX
 ) : Scheme<DecimalScheme> {
-    companion object {
-        /**
-         * The default value of the [minValue][minValue] field.
-         */
-        const val DEFAULT_MIN_VALUE = 0.0
-        /**
-         * The default value of the [maxValue][maxValue] field.
-         */
-        const val DEFAULT_MAX_VALUE = 1_000.0
-        /**
-         * The default value of the [decimalCount][decimalCount] field.
-         */
-        const val DEFAULT_DECIMAL_COUNT = 2
-        /**
-         * The default value of the [showTrailingZeroes][showTrailingZeroes] field.
-         */
-        const val DEFAULT_SHOW_TRAILING_ZEROES = true
-        /**
-         * The default value of the [groupingSeparator][groupingSeparator] field.
-         */
-        const val DEFAULT_GROUPING_SEPARATOR = ""
-        /**
-         * The default value of the [decimalSeparator][decimalSeparator] field.
-         */
-        const val DEFAULT_DECIMAL_SEPARATOR = "."
-        /**
-         * The default value of the [prefix][prefix] field.
-         */
-        const val DEFAULT_PREFIX = ""
-        /**
-         * The default value of the [suffix][suffix] field.
-         */
-        const val DEFAULT_SUFFIX = ""
-    }
-
-
     override fun copyFrom(other: DecimalScheme) = XmlSerializerUtil.copyBean(other, this)
 
     override fun copyAs(name: String) = this.copy(myName = name)
@@ -143,6 +108,49 @@ data class DecimalScheme(
             this.decimalSeparator = DEFAULT_DECIMAL_SEPARATOR
         else
             this.decimalSeparator = decimalSeparator.substring(0, 1)
+
+
+    companion object {
+        /**
+         * The default value of the [minValue][minValue] field.
+         */
+        const val DEFAULT_MIN_VALUE = 0.0
+
+        /**
+         * The default value of the [maxValue][maxValue] field.
+         */
+        const val DEFAULT_MAX_VALUE = 1_000.0
+
+        /**
+         * The default value of the [decimalCount][decimalCount] field.
+         */
+        const val DEFAULT_DECIMAL_COUNT = 2
+
+        /**
+         * The default value of the [showTrailingZeroes][showTrailingZeroes] field.
+         */
+        const val DEFAULT_SHOW_TRAILING_ZEROES = true
+
+        /**
+         * The default value of the [groupingSeparator][groupingSeparator] field.
+         */
+        const val DEFAULT_GROUPING_SEPARATOR = ""
+
+        /**
+         * The default value of the [decimalSeparator][decimalSeparator] field.
+         */
+        const val DEFAULT_DECIMAL_SEPARATOR = "."
+
+        /**
+         * The default value of the [prefix][prefix] field.
+         */
+        const val DEFAULT_PREFIX = ""
+
+        /**
+         * The default value of the [suffix][suffix] field.
+         */
+        const val DEFAULT_SUFFIX = ""
+    }
 }
 
 

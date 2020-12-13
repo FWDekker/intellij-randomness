@@ -13,11 +13,14 @@ complexity:
     # Static analysis is not good at estimating this.
     TooManyFunctions:
         thresholdInClasses: 20
-    # Acceptable if used sparingly
+    # Acceptable if used sparingly.
     LabeledExpression:
         active: false
 
 formatting:
+    # Experimental. Too many false positives.
+    ArgumentListWrapping:
+        active: false
     # That's part of my code style.
     NoConsecutiveBlankLines:
         active: false

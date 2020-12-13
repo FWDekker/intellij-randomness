@@ -155,9 +155,9 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
-                assertThat(validationInfo?.message).isEqualTo("" +
-                    "The shortest word in the selected dictionaries is 1 characters. " +
-                    "Set the maximum length to a value less than or equal to 1."
+                assertThat(validationInfo?.message).isEqualTo(
+                    "The shortest word in the selected dictionaries is 1 characters. Set the maximum length to a " +
+                        "value less than or equal to 1."
                 )
             }
 
@@ -169,9 +169,9 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
-                assertThat(validationInfo?.message).isEqualTo("" +
-                    "The longest word in the selected dictionaries is 31 characters. " +
-                    "Set the minimum length to a value less than or equal to 31."
+                assertThat(validationInfo?.message).isEqualTo(
+                    "The longest word in the selected dictionaries is 31 characters. Set the minimum length to a " +
+                        "value less than or equal to 31."
                 )
             }
         }
@@ -216,9 +216,8 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
-                assertThat(validationInfo?.message).isEqualTo("" +
-                    "Dictionary `[user] does_not_exist.dic` is invalid: " +
-                    "Failed to read user dictionary into memory."
+                assertThat(validationInfo?.message).isEqualTo(
+                    "Dictionary `[user] does_not_exist.dic` is invalid: Failed to read user dictionary into memory."
                 )
             }
 

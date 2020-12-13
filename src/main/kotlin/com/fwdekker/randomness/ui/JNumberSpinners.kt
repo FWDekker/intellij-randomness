@@ -21,22 +21,6 @@ import javax.swing.SpinnerNumberModel
  */
 abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T, description: String? = null) :
     JSpinner(SpinnerNumberModel(value, minValue, maxValue, stepSize)) where T : Number, T : Comparable<T> {
-    companion object {
-        /**
-         * The default description to use in error messages.
-         */
-        const val DEFAULT_DESCRIPTION = "value"
-        /**
-         * The default width of a number spinner.
-         */
-        const val DEFAULT_WIDTH = 52
-        /**
-         * The default number format used to display numbers.
-         */
-        val DEFAULT_FORMAT = DecimalFormatSymbols(Locale.US)
-    }
-
-
     /**
      * Transforms a [Number] into a [T].
      */
@@ -101,6 +85,24 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
             value > maxValue -> ValidationInfo("The $description should be less than or equal to $maxValue.", this)
             else -> null
         }
+
+
+    companion object {
+        /**
+         * The default description to use in error messages.
+         */
+        const val DEFAULT_DESCRIPTION = "value"
+
+        /**
+         * The default width of a number spinner.
+         */
+        const val DEFAULT_WIDTH = 52
+
+        /**
+         * The default number format used to display numbers.
+         */
+        val DEFAULT_FORMAT = DecimalFormatSymbols(Locale.US)
+    }
 }
 
 

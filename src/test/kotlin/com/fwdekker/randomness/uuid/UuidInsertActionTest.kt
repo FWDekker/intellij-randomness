@@ -43,10 +43,15 @@ class UuidInsertActionTest : Spek({
                 val dash = if (addDashes) "-" else ""
 
                 assertThat(
-                    Regex("" +
-                        "^$enclosure" +
-                        "[$alphabet]{8}$dash[$alphabet]{4}$dash[$alphabet]{4}$dash[$alphabet]{4}$dash[$alphabet]{12}" +
-                        "$enclosure$"
+                    Regex(
+                        "" +
+                            "^$enclosure" +
+                            "[$alphabet]{8}$dash" +
+                            "[$alphabet]{4}$dash" +
+                            "[$alphabet]{4}$dash" +
+                            "[$alphabet]{4}$dash" +
+                            "[$alphabet]{12}" +
+                            "$enclosure$"
                     ).matches(generatedString)
                 ).isTrue()
             }

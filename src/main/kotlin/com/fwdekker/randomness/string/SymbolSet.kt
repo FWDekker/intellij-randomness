@@ -10,6 +10,14 @@ import com.vdurmont.emoji.EmojiParser
  * @param symbols the symbols in the symbol set
  */
 data class SymbolSet(var name: String, var symbols: String) {
+    /**
+     * Returns the `name` field.
+     *
+     * @return the `name` field
+     */
+    override fun toString() = name
+
+
     companion object {
         /**
          * Symbols that look like other symbols.
@@ -22,30 +30,37 @@ data class SymbolSet(var name: String, var symbols: String) {
          * The lowercase English alphabet.
          */
         val ALPHABET = SymbolSet("Alphabet (a, b, c, ...)", "abcdefghijklmnopqrstuvwxyz")
+
         /**
          * The digits 0 through 9.
          */
         val DIGITS = SymbolSet("Digits (0, 1, 2, ...)", "0123456789")
+
         /**
          * The hexadecimal digits 0 through f.
          */
         val HEXADECIMAL = SymbolSet("Hexadecimal (0, 1, 2, ..., d, e, f)", "0123456789abcdef")
+
         /**
          * A minus (`-`).
          */
         val MINUS = SymbolSet("Minus (-)", "-")
+
         /**
          * An underscore (`_`).
          */
         val UNDERSCORE = SymbolSet("Underscore (_)", "_")
+
         /**
          * A whitespace (` `).
          */
         val SPACE = SymbolSet("Space ( )", " ")
+
         /**
          * A collection of special characters.
          */
         val SPECIAL = SymbolSet("Special (!, @, #, $, %, ^, &, *)", "!@#$%^&*")
+
         /**
          * A collection of brackets and parentheses.
          */
@@ -56,14 +71,6 @@ data class SymbolSet(var name: String, var symbols: String) {
          */
         val defaultSymbolSets = listOf(ALPHABET, DIGITS, HEXADECIMAL, MINUS, UNDERSCORE, SPACE, SPECIAL, BRACKETS)
     }
-
-
-    /**
-     * Returns the `name` field.
-     *
-     * @return the `name` field
-     */
-    override fun toString() = name
 }
 
 
@@ -95,6 +102,8 @@ fun Iterable<SymbolSet>.sum(excludeLookAlikeSymbols: Boolean = false) =
         .let { Pair(EmojiParser.extractEmojis(it).distinct(), EmojiParser.removeAllEmojis(it).toList().distinct()) }
         .let { (emoji, noEmoji) ->
             emoji.joinToString("") +
-                (if (excludeLookAlikeSymbols) noEmoji.filterNot { it in SymbolSet.lookAlikeCharacters }
-                else noEmoji).joinToString("")
+                (
+                    if (excludeLookAlikeSymbols) noEmoji.filterNot { it in SymbolSet.lookAlikeCharacters }
+                    else noEmoji
+                    ).joinToString("") // TODO: Fix this indenting :(
         }

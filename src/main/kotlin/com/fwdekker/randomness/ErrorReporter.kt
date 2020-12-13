@@ -25,14 +25,6 @@ import java.net.URL
  * as a notification by IntelliJ.
  */
 class ErrorReporter : ErrorReportSubmitter() {
-    companion object {
-        /**
-         * Maximum URL length supported by GitHub, experimentally verified.
-         */
-        const val MAX_URL_LENGTH = 8000
-    }
-
-
     /**
      * Returns the text that is displayed in the button to report the error.
      *
@@ -193,4 +185,12 @@ class ErrorReporter : ErrorReportSubmitter() {
         URL(urlString.replace(' ', '+'))
             .let { URI(it.protocol, it.userInfo, IDN.toASCII(it.host), it.port, it.path, it.query, it.ref) }
             .toASCIIString()
+
+
+    companion object {
+        /**
+         * Maximum URL length supported by GitHub, experimentally verified.
+         */
+        const val MAX_URL_LENGTH = 8000
+    }
 }

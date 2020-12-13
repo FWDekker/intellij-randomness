@@ -18,22 +18,17 @@ class JSpinnerRange(
     private val maxRange: Double = DEFAULT_MAX_RANGE,
     name: String? = null
 ) {
-    companion object {
-        /**
-         * The maximum span that can be expressed.
-         */
-        private const val DEFAULT_MAX_RANGE = 1E53
-    }
-
     /**
      * The `name` parameter preceded by a whitespace if it was not null, or an empty string otherwise.
      */
     val name = if (name != null) " $name" else ""
+
     /**
      * The current minimum value of the range.
      */
     val minValue: Double
         get() = (this.min.value as Number).toDouble()
+
     /**
      * The current maximum value of the range.
      */
@@ -61,4 +56,12 @@ class JSpinnerRange(
             maxValue - minValue > maxRange -> ValidationInfo("The$name range should not exceed $maxRange.", max)
             else -> null
         }
+
+
+    companion object {
+        /**
+         * The maximum span that can be expressed.
+         */
+        private const val DEFAULT_MAX_RANGE = 1E53
+    }
 }

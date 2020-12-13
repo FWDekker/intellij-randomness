@@ -25,84 +25,101 @@ enum class RandomnessIcons(
     /**
      * Icons for decimals.
      */
-    Decimal("/icons/decimal.svg",
+    Decimal(
+        "/icons/decimal.svg",
         "/icons/decimal-array.svg",
         "/icons/decimal-repeat.svg",
         "/icons/decimal-repeat-array.svg",
         "/icons/decimal-settings.svg",
-        "/icons/decimal-quick-switch-scheme.svg"),
+        "/icons/decimal-quick-switch-scheme.svg"
+    ),
 
     /**
      * Icons for integers.
      */
-    Integer("/icons/integer.svg",
+    Integer(
+        "/icons/integer.svg",
         "/icons/integer-array.svg",
         "/icons/integer-repeat.svg",
         "/icons/integer-repeat-array.svg",
         "/icons/integer-settings.svg",
-        "/icons/integer-quick-switch-scheme.svg"),
+        "/icons/integer-quick-switch-scheme.svg"
+    ),
 
     /**
      * Icons for strings.
      */
-    String("/icons/string.svg",
+    String(
+        "/icons/string.svg",
         "/icons/string-array.svg",
         "/icons/string-repeat.svg",
         "/icons/string-repeat-array.svg",
         "/icons/string-settings.svg",
-        "/icons/string-quick-switch-scheme.svg"),
+        "/icons/string-quick-switch-scheme.svg"
+    ),
 
     /**
      * Icons for words.
      */
-    Word("/icons/word.svg",
+    Word(
+        "/icons/word.svg",
         "/icons/word-array.svg",
         "/icons/word-repeat.svg",
         "/icons/word-repeat-array.svg",
         "/icons/word-settings.svg",
-        "/icons/word-quick-switch-scheme.svg"),
+        "/icons/word-quick-switch-scheme.svg"
+    ),
 
     /**
      * Icons for UUIDs.
      */
-    Uuid("/icons/uuid.svg",
+    Uuid(
+        "/icons/uuid.svg",
         "/icons/uuid-array.svg",
         "/icons/uuid-repeat.svg",
         "/icons/uuid-repeat-array.svg",
         "/icons/uuid-settings.svg",
-        "/icons/uuid-quick-switch-scheme.svg"),
+        "/icons/uuid-quick-switch-scheme.svg"
+    ),
 
     /**
      * Basic icons.
      */
-    Data("/icons/data.svg",
+    Data(
+        "/icons/data.svg",
         "/icons/data-array.svg",
         "/icons/data-repeat.svg",
         "/icons/data-repeat-array.svg",
         "/icons/data-settings.svg",
-        "/icons/data-quick-switch-scheme.svg");
+        "/icons/data-quick-switch-scheme.svg"
+    );
 
 
     /**
      * The basic icon for the data type.
      */
     val Base = IconLoader.findIcon(base)!!
+
     /**
      * The array variant of the basic icon.
      */
     val Array = IconLoader.findIcon(array)!!
+
     /**
      * The repeat variant of the basic icon.
      */
     val Repeat = IconLoader.findIcon(repeat)!!
+
     /**
      * The repeat array variant of the basic icon.
      */
     val RepeatArray = IconLoader.findIcon(repeatArray)!!
+
     /**
      * The settings variant of the basic icon.
      */
     val Settings = IconLoader.findIcon(settings)!!
+
     /**
      * The quick switch scheme variant of the basic icon.
      */

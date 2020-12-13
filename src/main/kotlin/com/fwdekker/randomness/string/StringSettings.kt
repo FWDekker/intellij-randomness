@@ -29,12 +29,20 @@ data class StringSettings(
     override var schemes: MutableList<StringScheme> = DEFAULT_SCHEMES,
     override var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
 ) : Settings<StringSettings, StringScheme> {
+    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
+
+    override fun getState() = this
+
+    override fun loadState(state: StringSettings) = XmlSerializerUtil.copyBean(state, this)
+
+
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
          */
         val DEFAULT_SCHEMES: MutableList<StringScheme>
             get() = mutableListOf(StringScheme())
+
         /**
          * The default value of the [currentSchemeName][currentSchemeName] field.
          */
@@ -46,13 +54,6 @@ data class StringSettings(
         val default: StringSettings
             get() = service()
     }
-
-
-    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
-
-    override fun getState() = this
-
-    override fun loadState(state: StringSettings) = XmlSerializerUtil.copyBean(state, this)
 }
 
 
@@ -83,38 +84,6 @@ data class StringScheme(
     var activeSymbolSets: Map<String, String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMap(),
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS
 ) : Scheme<StringScheme> {
-    companion object {
-        /**
-         * The default value of the [minLength][minLength] field.
-         */
-        const val DEFAULT_MIN_LENGTH = 3
-        /**
-         * The default value of the [maxLength][maxLength] field.
-         */
-        const val DEFAULT_MAX_LENGTH = 8
-        /**
-         * The default value of the [enclosure][enclosure] field.
-         */
-        const val DEFAULT_ENCLOSURE = "\""
-        /**
-         * The default value of the [capitalization][capitalization] field.
-         */
-        val DEFAULT_CAPITALIZATION = CapitalizationMode.RANDOM
-        /**
-         * The default value of the [symbolSets][symbolSets] field.
-         */
-        val DEFAULT_SYMBOL_SETS = SymbolSet.defaultSymbolSets.toMap()
-        /**
-         * The default value of the [activeSymbolSets][activeSymbolSets] field.
-         */
-        val DEFAULT_ACTIVE_SYMBOL_SETS = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
-        /**
-         * The default value of the [excludeLookAlikeSymbols][excludeLookAlikeSymbols] field.
-         */
-        const val DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS = false
-    }
-
-
     /**
      * Same as [symbolSets], except that all emoji are serialized.
      */
@@ -125,6 +94,7 @@ data class StringScheme(
         set(value) {
             symbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
         }
+
     /**
      * Same as [activeSymbolSets], except that all emoji are serialized.
      */
@@ -145,6 +115,7 @@ data class StringScheme(
         set(value) {
             symbolSets = value.toMap()
         }
+
     /**
      * A list view of the `SymbolSet` objects described by [activeSymbolSets].
      */
@@ -159,6 +130,44 @@ data class StringScheme(
     override fun copyFrom(other: StringScheme) = XmlSerializerUtil.copyBean(other, this)
 
     override fun copyAs(name: String) = this.copy(myName = name)
+
+
+    companion object {
+        /**
+         * The default value of the [minLength][minLength] field.
+         */
+        const val DEFAULT_MIN_LENGTH = 3
+
+        /**
+         * The default value of the [maxLength][maxLength] field.
+         */
+        const val DEFAULT_MAX_LENGTH = 8
+
+        /**
+         * The default value of the [enclosure][enclosure] field.
+         */
+        const val DEFAULT_ENCLOSURE = "\""
+
+        /**
+         * The default value of the [capitalization][capitalization] field.
+         */
+        val DEFAULT_CAPITALIZATION = CapitalizationMode.RANDOM
+
+        /**
+         * The default value of the [symbolSets][symbolSets] field.
+         */
+        val DEFAULT_SYMBOL_SETS = SymbolSet.defaultSymbolSets.toMap()
+
+        /**
+         * The default value of the [activeSymbolSets][activeSymbolSets] field.
+         */
+        val DEFAULT_ACTIVE_SYMBOL_SETS = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
+
+        /**
+         * The default value of the [excludeLookAlikeSymbols][excludeLookAlikeSymbols] field.
+         */
+        const val DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS = false
+    }
 }
 
 

@@ -46,32 +46,10 @@ abstract class ActivityTableModelEditor<T>(
     private val emptySubText: String,
     private val isCopyable: (T) -> Boolean = { true }
 ) : TableModelEditor<EditableDatum<T>>(
-    arrayOf<ColumnInfo<EditableDatum<T>, *>>(createActivityColumn()).plus(columns), itemEditor, emptyText
+    arrayOf<ColumnInfo<EditableDatum<T>, *>>(createActivityColumn()).plus(columns),
+    itemEditor,
+    emptyText
 ) {
-    companion object {
-        /**
-         * Whether newly added data are active by default.
-         */
-        const val DEFAULT_STATE = true
-
-
-        /**
-         * Creates a new column with checkboxes for (de)activating data.
-         *
-         * @return a new column with checkboxes for (de)activating data
-         */
-        private fun <T> createActivityColumn() = object : EditableColumnInfo<EditableDatum<T>, Boolean>() {
-            override fun getColumnClass() = Boolean::class.java
-
-            override fun valueOf(item: EditableDatum<T>) = item.active
-
-            override fun setValue(item: EditableDatum<T>, value: Boolean) {
-                item.active = value
-            }
-        }
-    }
-
-
     /**
      * The panel in which the table editor is present.
      */
@@ -123,6 +101,13 @@ abstract class ActivityTableModelEditor<T>(
             )
         }
 
+        val copyAction =
+            object : ToolbarDecorator.ElementActionButton(IdeBundle.message("button.copy"), PlatformIcons.COPY_ICON) {
+                // Implementation based on `TableModelEditor#createComponent`
+                override fun actionPerformed(e: AnActionEvent) = copySelectedItems(table)
+
+                override fun isEnabled() = table.selection.all { isCopyable(it.datum) }
+            }
         return TableModelEditor::class.java.getDeclaredField("toolbarDecorator")
             .apply { isAccessible = true }
             .let { it.get(this) as ToolbarDecorator }
@@ -131,13 +116,7 @@ abstract class ActivityTableModelEditor<T>(
                 if (table.selectedObject != null)
                     table.editCellAt(table.selectedRow, table.selectedColumn)
             }
-            .addExtraAction(object :
-                ToolbarDecorator.ElementActionButton(IdeBundle.message("button.copy"), PlatformIcons.COPY_ICON) {
-                // Implementation based on `TableModelEditor#createComponent`
-                override fun actionPerformed(e: AnActionEvent) = copySelectedItems(table)
-
-                override fun isEnabled() = table.selection.all { isCopyable(it.datum) }
-            })
+            .addExtraAction(copyAction)
             .createPanel()
     }
 
@@ -193,5 +172,29 @@ abstract class ActivityTableModelEditor<T>(
             .forEach { model.addRow(itemEditor.clone(it, false)) }
 
         TableUtil.updateScroller(table)
+    }
+
+
+    companion object {
+        /**
+         * Whether newly added data are active by default.
+         */
+        const val DEFAULT_STATE = true
+
+
+        /**
+         * Creates a new column with checkboxes for (de)activating data.
+         *
+         * @return a new column with checkboxes for (de)activating data
+         */
+        private fun <T> createActivityColumn() = object : EditableColumnInfo<EditableDatum<T>, Boolean>() {
+            override fun getColumnClass() = Boolean::class.java
+
+            override fun valueOf(item: EditableDatum<T>) = item.active
+
+            override fun setValue(item: EditableDatum<T>, value: Boolean) {
+                item.active = value
+            }
+        }
     }
 }
