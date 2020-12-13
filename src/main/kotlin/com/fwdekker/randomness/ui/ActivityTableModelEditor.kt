@@ -4,7 +4,6 @@ import com.intellij.ide.IdeBundle
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonShortcuts
 import com.intellij.openapi.keymap.KeymapUtil
-import com.intellij.ui.DarculaColors
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.TableUtil
 import com.intellij.ui.ToolbarDecorator
@@ -47,7 +46,8 @@ abstract class ActivityTableModelEditor<T>(
     private val emptySubText: String,
     private val isCopyable: (T) -> Boolean = { true }
 ) : TableModelEditor<EditableDatum<T>>(
-    arrayOf<ColumnInfo<EditableDatum<T>, *>>(createActivityColumn()).plus(columns), itemEditor, emptyText) {
+    arrayOf<ColumnInfo<EditableDatum<T>, *>>(createActivityColumn()).plus(columns), itemEditor, emptyText
+) {
     companion object {
         /**
          * Whether newly added data are active by default.
@@ -114,10 +114,8 @@ abstract class ActivityTableModelEditor<T>(
             .apply { isAccessible = true }
             .get(this) as TableView<EditableDatum<T>>
 
-        // TODO (#209) Use `LINK_PLAIN_ATTRIBUTES` instead of custom `SimpleTextAttributes` and hard-coded color
-        val style = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, DarculaColors.BLUE)
         table.emptyText.apply {
-            appendSecondaryText(emptySubText, style) { addItem(table) }
+            appendSecondaryText(emptySubText, SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) { addItem(table) }
             appendSecondaryText(
                 " (${KeymapUtil.getFirstKeyboardShortcutText(CommonShortcuts.getNew())})",
                 StatusText.DEFAULT_ATTRIBUTES,

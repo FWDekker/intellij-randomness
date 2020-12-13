@@ -50,13 +50,13 @@ class ErrorReporter : ErrorReportSubmitter() {
      * @return `true`
      */
     override fun submit(
-        events: Array<out IdeaLoggingEvent>,
+        events: Array<IdeaLoggingEvent>,
         additionalInfo: String?,
         parentComponent: Component,
-        consumer: Consumer<SubmittedReportInfo>
+        consumer: Consumer<in SubmittedReportInfo>
     ): Boolean {
         val project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(parentComponent))
-        object : Backgroundable(project, "Opening GitHub in Browser") {
+        object : Backgroundable(project, "Opening GitHub in browser") {
             override fun run(indicator: ProgressIndicator) {
                 BrowserUtil.open(getIssueUrl(events, additionalInfo))
                 ApplicationManager.getApplication().invokeLater {

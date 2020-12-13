@@ -1,7 +1,7 @@
 /// Plugins
 plugins {
     // Compilation
-    id "org.jetbrains.kotlin.jvm" version "1.3.72"
+    id "org.jetbrains.kotlin.jvm" version "1.4.21"
     id "org.jetbrains.intellij" version "0.6.5"
 
     // Tests/coverage
@@ -23,8 +23,6 @@ repositories {
 
 dependencies {
     implementation group: "com.fasterxml.uuid", name: "java-uuid-generator", version: uuidGeneratorVersion
-    implementation group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk8"
-    implementation group: "org.jetbrains.kotlin", name: "kotlin-reflect"
     implementation group: "com.vdurmont", name: "emoji-java", version: emojiVersion
 
     testImplementation group: "com.nhaarman.mockitokotlin2", name: "mockito-kotlin", version: mockitoKotlinVersion
@@ -62,7 +60,8 @@ patchPluginXml {
 
 // Tests/coverage
 test {
-    systemProperty("SPEK_TIMEOUT", 0)
+    systemProperty("java.awt.headless", "false")
+    systemProperty("spek2.execution.test.timeout", 0)
     useJUnitPlatform {
         includeEngines "junit-vintage", "junit-jupiter", "spek2"
     }

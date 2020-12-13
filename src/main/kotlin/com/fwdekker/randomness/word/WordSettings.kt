@@ -5,9 +5,9 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.service
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.Transient
@@ -43,7 +43,7 @@ data class WordSettings(
          * The persistent `WordSettings` instance.
          */
         val default: WordSettings
-            get() = ServiceManager.getService(WordSettings::class.java)
+            get() = service()
     }
 
 
