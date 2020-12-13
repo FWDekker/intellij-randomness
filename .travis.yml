@@ -1,13 +1,7 @@
 language: java
-sudo: false
+os: ["linux"]
 dist: trusty
-jdk: oraclejdk8
-
-# Use newest JDK
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
+jdk: oraclejdk11
 
 # Display Gradle version instead of letting Travis execute './gradlew assemble' by default
 install:

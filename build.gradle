@@ -62,8 +62,14 @@ patchPluginXml {
 test {
     systemProperty("java.awt.headless", "false")
     systemProperty("spek2.execution.test.timeout", 0)
+
     useJUnitPlatform {
         includeEngines "junit-vintage", "junit-jupiter", "spek2"
+    }
+
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
     }
 }
 
