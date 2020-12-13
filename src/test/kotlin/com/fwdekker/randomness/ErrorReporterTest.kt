@@ -82,7 +82,7 @@ object ErrorReporterTest : Spek({
                 it("includes all parts that are not expanded due to encoding") {
                     val url = reporter.getIssueUrl(
                         arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION"))),
-                        "ADDITIONAL_INFO_${List(2000) { "A" }}"
+                        "ADDITIONAL_INFO_${List(1000) { "A" }}"
                     )
 
                     assertThat(url)
@@ -94,7 +94,7 @@ object ErrorReporterTest : Spek({
                 it("does not expand whitespace") {
                     val url = reporter.getIssueUrl(
                         arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION"))),
-                        "ADDITIONAL_INFO_${List(2000) { " " }}_" // Trailing ` ` to prevent trimming
+                        "ADDITIONAL_INFO_${List(1000) { " " }}_" // Trailing `_` to prevent trimming
                     )
 
                     assertThat(url)

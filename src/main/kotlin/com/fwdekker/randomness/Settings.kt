@@ -15,6 +15,7 @@ interface Settings<SELF, SCHEME : Scheme<SCHEME>> : PersistentStateComponent<SEL
      * The various schemes that are contained within the settings.
      */
     var schemes: MutableList<SCHEME>
+
     /**
      * The name of the scheme that is currently active.
      */
@@ -70,14 +71,6 @@ interface Settings<SELF, SCHEME : Scheme<SCHEME>> : PersistentStateComponent<SEL
  * @see Settings
  */
 interface Scheme<SELF> : com.intellij.openapi.options.Scheme {
-    companion object {
-        /**
-         * The name of the default scheme.
-         */
-        const val DEFAULT_NAME = "Default"
-    }
-
-
     /**
      * The name of the scheme, used to identify it.
      */
@@ -104,4 +97,12 @@ interface Scheme<SELF> : com.intellij.openapi.options.Scheme {
      * @return a copy of this scheme that has the given name
      */
     fun copyAs(name: String): SELF
+
+
+    companion object {
+        /**
+         * The name of the default scheme.
+         */
+        const val DEFAULT_NAME = "Default"
+    }
 }

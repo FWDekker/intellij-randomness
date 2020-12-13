@@ -230,8 +230,10 @@ object StringSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
-                assertThat(validationInfo?.message).isEqualTo("Active symbol sets should contain at least one " +
-                    "non-look-alike character if look-alike characters are excluded.")
+                assertThat(validationInfo?.message).isEqualTo(
+                    "Active symbol sets should contain at least one non-look-alike character if look-alike " +
+                        "characters are excluded."
+                )
             }
         }
     }

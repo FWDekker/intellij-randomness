@@ -28,19 +28,6 @@ import java.awt.event.InputEvent
  * Shows a popup for all available Randomness actions.
  */
 class PopupAction : AnAction() {
-    companion object {
-        private const val TITLE = "Insert Data"
-        private const val ALT_TITLE = "Insert Repeated Data"
-        private const val ALT_CTRL_TITLE = "Quick Switch Scheme"
-        private const val ALT_CTRL_SHIFT_TITLE = "Quick Switch Array Scheme"
-        private const val ALT_SHIFT_TITLE = "Insert Repeated Array"
-        private const val CTRL_TITLE = "Change Settings"
-        private const val CTRL_SHIFT_TITLE = "Change Array Settings"
-        private const val SHIFT_TITLE = "Insert Array"
-        private const val AD_TEXT = "Shift = Array. Ctrl = Settings. Alt = Repeat."
-    }
-
-
     /**
      * Whether the user focused the editor when opening this popup.
      */
@@ -67,7 +54,8 @@ class PopupAction : AnAction() {
         val popup = JBPopupFactory.getInstance()
             .createActionGroupPopup(
                 TITLE, popupGroup, event.dataContext,
-                JBPopupFactory.ActionSelectionAid.NUMBERING, true
+                JBPopupFactory.ActionSelectionAid.NUMBERING,
+                true
             )
             as ListPopupImpl
 
@@ -152,5 +140,18 @@ class PopupAction : AnAction() {
                 Separator(),
                 ArraySettingsAction()
             )
+    }
+
+
+    companion object {
+        private const val TITLE = "Insert Data"
+        private const val ALT_TITLE = "Insert Repeated Data"
+        private const val ALT_CTRL_TITLE = "Quick Switch Scheme"
+        private const val ALT_CTRL_SHIFT_TITLE = "Quick Switch Array Scheme"
+        private const val ALT_SHIFT_TITLE = "Insert Repeated Array"
+        private const val CTRL_TITLE = "Change Settings"
+        private const val CTRL_SHIFT_TITLE = "Change Array Settings"
+        private const val SHIFT_TITLE = "Insert Array"
+        private const val AD_TEXT = "Shift = Array. Ctrl = Settings. Alt = Repeat."
     }
 }

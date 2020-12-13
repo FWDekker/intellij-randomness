@@ -5,9 +5,9 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.service
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
 
@@ -27,12 +27,20 @@ data class UuidSettings(
     override var schemes: MutableList<UuidScheme> = DEFAULT_SCHEMES,
     override var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
 ) : Settings<UuidSettings, UuidScheme> {
+    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
+
+    override fun getState() = this
+
+    override fun loadState(state: UuidSettings) = XmlSerializerUtil.copyBean(state, this)
+
+
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
          */
         val DEFAULT_SCHEMES: MutableList<UuidScheme>
             get() = mutableListOf(UuidScheme())
+
         /**
          * The default value of the [currentSchemeName][currentSchemeName] field.
          */
@@ -42,15 +50,8 @@ data class UuidSettings(
          * The persistent `UuidSettings` instance.
          */
         val default: UuidSettings
-            get() = ServiceManager.getService(UuidSettings::class.java)
+            get() = service()
     }
-
-
-    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
-
-    override fun getState() = this
-
-    override fun loadState(state: UuidSettings) = XmlSerializerUtil.copyBean(state, this)
 }
 
 
@@ -73,29 +74,32 @@ data class UuidScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var addDashes: Boolean = DEFAULT_ADD_DASHES
 ) : Scheme<UuidScheme> {
+    override fun copyFrom(other: UuidScheme) = XmlSerializerUtil.copyBean(other, this)
+
+    override fun copyAs(name: String) = this.copy(myName = name)
+
+
     companion object {
         /**
          * The default value of the [version][version] field.
          */
         const val DEFAULT_VERSION = 4
+
         /**
          * The default value of the [enclosure][enclosure] field.
          */
         const val DEFAULT_ENCLOSURE = "\""
+
         /**
          * The default value of the [capitalization][capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.LOWER
+
         /**
          * The default value of the [addDashes][addDashes] field.
          */
         const val DEFAULT_ADD_DASHES = true
     }
-
-
-    override fun copyFrom(other: UuidScheme) = XmlSerializerUtil.copyBean(other, this)
-
-    override fun copyAs(name: String) = this.copy(myName = name)
 }
 
 

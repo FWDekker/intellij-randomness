@@ -40,11 +40,14 @@ fun ListPopupImpl.registerModifierActions(captionModifier: (ActionEvent?) -> Str
             actionListener { event ->
                 event ?: return@actionListener
 
-                handleSelect(true, KeyEvent(
-                    component, event.id, event.getWhen(),
-                    event.modifiers, KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
-                    KeyEvent.KEY_LOCATION_UNKNOWN
-                ))
+                handleSelect(
+                    true,
+                    KeyEvent(
+                        component,
+                        event.id, event.getWhen(), event.modifiers,
+                        KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED, KeyEvent.KEY_LOCATION_UNKNOWN
+                    )
+                )
             }
         )
 
@@ -57,11 +60,14 @@ fun ListPopupImpl.registerModifierActions(captionModifier: (ActionEvent?) -> Str
                     event ?: return@actionListener
 
                     list.addSelectionInterval(key - 1, key - 1)
-                    handleSelect(true, KeyEvent(
-                        component, event.id, event.getWhen(),
-                        event.modifiers, KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED,
-                        KeyEvent.KEY_LOCATION_UNKNOWN
-                    ))
+                    handleSelect(
+                        true,
+                        KeyEvent(
+                            component,
+                            event.id, event.getWhen(), event.modifiers,
+                            KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED, KeyEvent.KEY_LOCATION_UNKNOWN
+                        )
+                    )
                 }
             )
         }

@@ -29,18 +29,6 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class ArraySettingsComponent(settings: ArraySettings = default) :
     SettingsComponent<ArraySettings, ArrayScheme>(settings) {
-    companion object {
-        /**
-         * The minimal value in the preview (inclusive).
-         */
-        private const val previewMin = 1
-        /**
-         * The maximal value in the preview (inclusive).
-         */
-        private const val previewMax = 20
-    }
-
-
     override lateinit var unsavedSettings: ArraySettings
     override lateinit var schemesPanel: SchemesPanel<ArrayScheme>
 
@@ -64,8 +52,8 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
         }
         newlineSeparatorButton.changeListeners.forEach { it.stateChanged(ChangeEvent(newlineSeparatorButton)) }
 
-        previewPanelHolder.updatePreviewOnUpdateOf(
-            countSpinner, bracketsGroup, separatorGroup, spaceAfterSeparatorCheckBox)
+        previewPanelHolder.updatePreviewOnUpdateOf(countSpinner, bracketsGroup, separatorGroup)
+        previewPanelHolder.updatePreviewOnUpdateOf(spaceAfterSeparatorCheckBox)
         previewPanelHolder.updatePreview()
     }
 
@@ -117,5 +105,18 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
             get() = ArrayScheme::class.java
 
         override fun createDefaultInstances() = DEFAULT_SCHEMES
+    }
+
+
+    companion object {
+        /**
+         * The minimal value in the preview (inclusive).
+         */
+        private const val previewMin = 1
+
+        /**
+         * The maximal value in the preview (inclusive).
+         */
+        private const val previewMax = 20
     }
 }

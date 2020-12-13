@@ -4,9 +4,9 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.service
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
 
@@ -26,12 +26,20 @@ data class ArraySettings(
     override var schemes: MutableList<ArrayScheme> = DEFAULT_SCHEMES,
     override var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
 ) : Settings<ArraySettings, ArrayScheme> {
+    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
+
+    override fun getState() = this
+
+    override fun loadState(state: ArraySettings) = XmlSerializerUtil.copyBean(state, this)
+
+
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
          */
         val DEFAULT_SCHEMES: MutableList<ArrayScheme>
             get() = mutableListOf(ArrayScheme())
+
         /**
          * The default value of the [currentSchemeName][currentSchemeName] field.
          */
@@ -41,15 +49,8 @@ data class ArraySettings(
          * The persistent `ArraySettings` instance.
          */
         val default: ArraySettings
-            get() = ServiceManager.getService(ArraySettings::class.java)
+            get() = service()
     }
-
-
-    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
-
-    override fun getState() = this
-
-    override fun loadState(state: ArraySettings) = XmlSerializerUtil.copyBean(state, this)
 }
 
 
@@ -72,26 +73,6 @@ data class ArrayScheme(
     var separator: String = DEFAULT_SEPARATOR,
     var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR
 ) : Scheme<ArrayScheme> {
-    companion object {
-        /**
-         * The default value of the [count][count] field.
-         */
-        const val DEFAULT_COUNT = 5
-        /**
-         * The default value of the [brackets][brackets] field.
-         */
-        const val DEFAULT_BRACKETS = "[]"
-        /**
-         * The default value of the [separator][separator] field.
-         */
-        const val DEFAULT_SEPARATOR = ","
-        /**
-         * The default value of the [isSpaceAfterSeparator][isSpaceAfterSeparator] field.
-         */
-        const val DEFAULT_SPACE_AFTER_SEPARATOR = true
-    }
-
-
     override fun copyFrom(other: ArrayScheme) = XmlSerializerUtil.copyBean(other, this)
 
     override fun copyAs(name: String) = this.copy(myName = name)
@@ -109,6 +90,29 @@ data class ArrayScheme(
             prefix = brackets.getOrNull(0)?.toString() ?: "",
             postfix = brackets.getOrNull(1)?.toString() ?: ""
         )
+
+
+    companion object {
+        /**
+         * The default value of the [count][count] field.
+         */
+        const val DEFAULT_COUNT = 5
+
+        /**
+         * The default value of the [brackets][brackets] field.
+         */
+        const val DEFAULT_BRACKETS = "[]"
+
+        /**
+         * The default value of the [separator][separator] field.
+         */
+        const val DEFAULT_SEPARATOR = ","
+
+        /**
+         * The default value of the [isSpaceAfterSeparator][isSpaceAfterSeparator] field.
+         */
+        const val DEFAULT_SPACE_AFTER_SEPARATOR = true
+    }
 }
 
 

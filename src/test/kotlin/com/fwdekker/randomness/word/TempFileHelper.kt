@@ -24,9 +24,9 @@ internal class TempFileHelper {
      * @param contents the contents to write to the dictionary file
      * @param extension the extension of the file, including a dot
      */
-    fun createFile(contents: String = "", extension: String? = null) =
+    fun createFile(contents: String = "", extension: String? = null): File =
         try {
-            val dictionaryFile = createTempFile("intellij-randomness", extension)
+            val dictionaryFile = File.createTempFile("intellij-randomness", extension)
             files.add(dictionaryFile)
             dictionaryFile.writeText(contents)
 

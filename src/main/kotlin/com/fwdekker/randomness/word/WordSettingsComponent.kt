@@ -52,8 +52,8 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
     init {
         loadSettings()
 
-        previewPanelHolder.updatePreviewOnUpdateOf(
-            minLength, maxLength, capitalizationGroup, enclosureGroup, dictionaryTable)
+        previewPanelHolder.updatePreviewOnUpdateOf(minLength, maxLength, capitalizationGroup, enclosureGroup)
+        previewPanelHolder.updatePreviewOnUpdateOf(dictionaryTable)
         previewPanelHolder.updatePreview()
     }
 
@@ -142,8 +142,8 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
      */
     private fun validateWordRange(): ValidationInfo? {
         val words = dictionaryTable.activeData.filter { it.isValid() }.flatMap { it.words }
-        val minWordLength = words.map { it.length }.min() ?: 1
-        val maxWordLength = words.map { it.length }.max() ?: Integer.MAX_VALUE
+        val minWordLength = words.map { it.length }.minOrNull() ?: 1
+        val maxWordLength = words.map { it.length }.maxOrNull() ?: Integer.MAX_VALUE
 
         return when {
             minLength.value > maxWordLength ->

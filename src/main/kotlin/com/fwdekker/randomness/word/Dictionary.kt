@@ -55,23 +55,6 @@ interface Dictionary {
  * @property filename the path to the resource file
  */
 class BundledDictionary private constructor(val filename: String) : Dictionary {
-    companion object {
-        /**
-         * The location of a simple English dictionary.
-         */
-        const val SIMPLE_DICTIONARY = "english_simple.dic"
-        /**
-         * The location of an extended English dictionary.
-         */
-        const val EXTENDED_DICTIONARY = "english_extended.dic"
-
-        /**
-         * The cache of bundled dictionaries, used to improve word generation times.
-         */
-        val cache = Cache<String, BundledDictionary> { BundledDictionary(it) }
-    }
-
-
     @get:Throws(InvalidDictionaryException::class)
     override val words: Set<String> by lazy {
         validate()
@@ -120,6 +103,24 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
      * Returns a stream to the resource file.
      */
     private fun getStream() = BundledDictionary::class.java.classLoader.getResourceAsStream(filename)
+
+
+    companion object {
+        /**
+         * The location of a simple English dictionary.
+         */
+        const val SIMPLE_DICTIONARY = "english_simple.dic"
+
+        /**
+         * The location of an extended English dictionary.
+         */
+        const val EXTENDED_DICTIONARY = "english_extended.dic"
+
+        /**
+         * The cache of bundled dictionaries, used to improve word generation times.
+         */
+        val cache = Cache<String, BundledDictionary> { BundledDictionary(it) }
+    }
 }
 
 
@@ -129,14 +130,6 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
  * @property filename the path to the file
  */
 class UserDictionary private constructor(val filename: String) : Dictionary {
-    companion object {
-        /**
-         * The cache of bundled dictionaries, used to improve word generation times.
-         */
-        val cache = Cache<String, UserDictionary> { UserDictionary(it) }
-    }
-
-
     @get:Throws(InvalidDictionaryException::class)
     override val words: Set<String> by lazy {
         validate()
@@ -177,4 +170,12 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
      * @return the hash code of the filename
      */
     override fun hashCode() = filename.hashCode()
+
+
+    companion object {
+        /**
+         * The cache of bundled dictionaries, used to improve word generation times.
+         */
+        val cache = Cache<String, UserDictionary> { UserDictionary(it) }
+    }
 }

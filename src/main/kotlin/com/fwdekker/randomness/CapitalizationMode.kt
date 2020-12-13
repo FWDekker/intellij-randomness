@@ -14,22 +14,27 @@ enum class CapitalizationMode(val descriptor: String, val transform: (String) ->
      * Does not change the string.
      */
     RETAIN("retain", { string -> string }),
+
     /**
      * Makes the first character uppercase and all characters after that lowercase.
      */
     SENTENCE("sentence", { string -> string.toSentenceCase() }),
+
     /**
      * Makes all characters uppercase.
      */
     UPPER("upper", { string -> string.toUpperCase(Locale.getDefault()) }),
+
     /**
      * Makes all characters lowercase.
      */
     LOWER("lower", { string -> string.toLowerCase(Locale.getDefault()) }),
+
     /**
      * Makes the first letter of each word uppercase.
      */
     FIRST_LETTER("first letter", { string -> string.split(' ').joinToString(" ") { it.toSentenceCase() } }),
+
     /**
      * Makes each letter randomly uppercase or lowercase.
      */

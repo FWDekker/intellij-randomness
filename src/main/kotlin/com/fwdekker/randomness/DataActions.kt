@@ -40,26 +40,32 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
      * The action used to insert single data.
      */
     abstract val insertAction: DataInsertAction
+
     /**
      * The action used to insert arrays of data.
      */
     abstract val insertArrayAction: DataInsertArrayAction
+
     /**
      * The action used to insert repeated single data.
      */
     abstract val insertRepeatAction: DataInsertRepeatAction
+
     /**
      * The action used to insert repeated arrays of data.
      */
     abstract val insertRepeatArrayAction: DataInsertRepeatArrayAction
+
     /**
      * The action used to edit the generator settings for this data type.
      */
     abstract val settingsAction: DataSettingsAction
+
     /**
      * The action used to quickly switch between schemes of this data type.
      */
     abstract val quickSwitchSchemeAction: DataQuickSwitchSchemeAction<*>
+
     /**
      * The action used to quickly switch between array schemes.
      */

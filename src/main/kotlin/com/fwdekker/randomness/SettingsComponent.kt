@@ -27,10 +27,12 @@ abstract class SettingsComponent<S : Settings<S, T>, T : Scheme<T>>(private val 
      * The panel containing the settings.
      */
     abstract val rootPane: JPanel?
+
     /**
      * The local copy that represents the currently-unsaved settings that are being edited by the user.
      */
     abstract val unsavedSettings: S
+
     /**
      * The panel containing the dropdown box of schemes and action buttons to rename, delete, etc. schemes.
      */

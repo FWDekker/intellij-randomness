@@ -18,7 +18,49 @@ private typealias EditableSymbolSet = EditableDatum<SymbolSet>
  * @see StringSettingsComponent
  */
 class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
-    arrayOf(NAME_COLUMN, SYMBOLS_COLUMN), ITEM_EDITOR, EMPTY_TEXT, EMPTY_SUB_TEXT) {
+    arrayOf(NAME_COLUMN, SYMBOLS_COLUMN),
+    ITEM_EDITOR,
+    EMPTY_TEXT, EMPTY_SUB_TEXT
+) {
+    /**
+     * Creates a new placeholder [SymbolSet] instance.
+     *
+     * @return a new placeholder [SymbolSet] instance
+     */
+    override fun createElement() = Companion.createElement()
+
+    /**
+     * Validates the symbol sets entered into this table.
+     *
+     * @param excludeLookAlikeSymbols `true` if and only if look-alike symbols are excluded
+     * @return `null` if the input is valid, or a `ValidationInfo` object explaining why the input is invalid
+     */
+    fun doValidate(excludeLookAlikeSymbols: Boolean): ValidationInfo? {
+        val duplicateName = data.map { it.name }.firstNonDistinctOrNull()
+        val emptySymbolSet = data.firstOrNull { it.symbols.isEmpty() }
+
+        return when {
+            data.isEmpty() ->
+                ValidationInfo("Add at least one symbol set.", panel)
+            data.any { it.name.isEmpty() } ->
+                ValidationInfo("All symbol sets should have a name.", panel)
+            duplicateName != null ->
+                ValidationInfo("There are multiple symbol sets with the name `$duplicateName`.", panel)
+            emptySymbolSet != null ->
+                ValidationInfo("Symbol set `$emptySymbolSet` should contain at least one symbol.", panel)
+            activeData.isEmpty() ->
+                ValidationInfo("Activate at least one symbol set.", panel)
+            activeData.sum(excludeLookAlikeSymbols).isEmpty() ->
+                ValidationInfo(
+                    "Active symbol sets should contain at least one non-look-alike character if look-alike " +
+                        "characters are excluded.",
+                    panel
+                )
+            else -> null
+        }
+    }
+
+
     companion object {
         /**
          * The column showing the names of the symbol sets.
@@ -93,42 +135,6 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
          * @return a new placeholder [SymbolSet] instance
          */
         private fun createElement() = EditableSymbolSet(DEFAULT_STATE, SymbolSet("", ""))
-    }
-
-
-    /**
-     * Creates a new placeholder [SymbolSet] instance.
-     *
-     * @return a new placeholder [SymbolSet] instance
-     */
-    override fun createElement() = Companion.createElement()
-
-    /**
-     * Validates the symbol sets entered into this table.
-     *
-     * @param excludeLookAlikeSymbols `true` if and only if look-alike symbols are excluded
-     * @return `null` if the input is valid, or a `ValidationInfo` object explaining why the input is invalid
-     */
-    fun doValidate(excludeLookAlikeSymbols: Boolean): ValidationInfo? {
-        val duplicateName = data.map { it.name }.firstNonDistinctOrNull()
-        val emptySymbolSet = data.firstOrNull { it.symbols.isEmpty() }
-
-        return when {
-            data.isEmpty() ->
-                ValidationInfo("Add at least one symbol set.", panel)
-            data.any { it.name.isEmpty() } ->
-                ValidationInfo("All symbol sets should have a name.", panel)
-            duplicateName != null ->
-                ValidationInfo("There are multiple symbol sets with the name `$duplicateName`.", panel)
-            emptySymbolSet != null ->
-                ValidationInfo("Symbol set `$emptySymbolSet` should contain at least one symbol.", panel)
-            activeData.isEmpty() ->
-                ValidationInfo("Activate at least one symbol set.", panel)
-            activeData.sum(excludeLookAlikeSymbols).isEmpty() ->
-                ValidationInfo("Active symbol sets should contain at least one non-look-alike character if " +
-                    "look-alike characters are excluded.", panel)
-            else -> null
-        }
     }
 }
 

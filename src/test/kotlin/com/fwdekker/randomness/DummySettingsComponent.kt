@@ -19,24 +19,25 @@ data class DummySettings(
     override var schemes: MutableList<DummyScheme> = DEFAULT_SCHEMES,
     override var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
 ) : Settings<DummySettings, DummyScheme> {
+    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
+
+    override fun getState() = this
+
+    override fun loadState(state: DummySettings) = XmlSerializerUtil.copyBean(state, this)
+
+
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
          */
         val DEFAULT_SCHEMES: MutableList<DummyScheme>
             get() = mutableListOf(DummyScheme())
+
         /**
          * The default value of the [currentSchemeName][currentSchemeName] field.
          */
         const val DEFAULT_CURRENT_SCHEME_NAME = "Default"
     }
-
-
-    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
-
-    override fun getState() = this
-
-    override fun loadState(state: DummySettings) = XmlSerializerUtil.copyBean(state, this)
 }
 
 
@@ -50,17 +51,17 @@ data class DummyScheme(
     override var myName: String = DEFAULT_NAME,
     var count: Int = DEFAULT_COUNT
 ) : Scheme<DummyScheme> {
+    override fun copyFrom(other: DummyScheme) = XmlSerializerUtil.copyBean(other, this)
+
+    override fun copyAs(name: String) = this.copy(myName = name)
+
+
     companion object {
         /**
          * The default value of the [count][count] field.
          */
         const val DEFAULT_COUNT = 3
     }
-
-
-    override fun copyFrom(other: DummyScheme) = XmlSerializerUtil.copyBean(other, this)
-
-    override fun copyAs(name: String) = this.copy(myName = name)
 }
 
 

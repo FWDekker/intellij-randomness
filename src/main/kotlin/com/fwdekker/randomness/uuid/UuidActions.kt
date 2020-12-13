@@ -55,9 +55,13 @@ class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.cur
             1 ->
                 Generators.timeBasedGenerator(
                     EthernetAddress(random.nextLong()),
-                    UUIDTimer(random.asJavaRandom(), null, object : UUIDClock() {
-                        override fun currentTimeMillis() = random.nextLong()
-                    })
+                    UUIDTimer(
+                        random.asJavaRandom(),
+                        null,
+                        object : UUIDClock() {
+                            override fun currentTimeMillis() = random.nextLong()
+                        }
+                    )
                 )
             4 -> Generators.randomBasedGenerator(random.asJavaRandom())
             else -> throw DataGenerationException("Unknown UUID version `${scheme.version}`.")
