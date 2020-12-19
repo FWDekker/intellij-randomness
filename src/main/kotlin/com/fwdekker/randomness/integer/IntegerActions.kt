@@ -63,7 +63,7 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
      */
     private fun convertToString(value: Long): String {
         if (scheme.base != DECIMAL_BASE)
-            return value.toString(scheme.base)
+            return scheme.capitalization.transform(value.toString(scheme.base))
 
         val format = DecimalFormat()
         format.isGroupingUsed = scheme.groupingSeparator.isNotEmpty()

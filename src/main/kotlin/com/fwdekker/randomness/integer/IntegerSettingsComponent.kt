@@ -1,8 +1,10 @@
 package com.fwdekker.randomness.integer
 
+import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.SettingsComponentListener
+import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.integer.IntegerSettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.integer.IntegerSettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -39,6 +41,7 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
     private lateinit var maxValue: JLongSpinner
     private lateinit var base: JIntSpinner
     private lateinit var groupingSeparatorGroup: ButtonGroup
+    private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var prefixInput: JTextField
     private lateinit var suffixInput: JTextField
 
@@ -50,11 +53,12 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
 
         base.addChangeListener {
             groupingSeparatorGroup.forEach { it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE }
+            capitalizationGroup.forEach { it.isEnabled = base.value > IntegerScheme.DECIMAL_BASE }
         }
         base.changeListeners.forEach { it.stateChanged(ChangeEvent(base)) }
 
         previewPanelHolder.updatePreviewOnUpdateOf(minValue, maxValue, base, groupingSeparatorGroup)
-        previewPanelHolder.updatePreviewOnUpdateOf(prefixInput, suffixInput) // Call method twice because it's shorter
+        previewPanelHolder.updatePreviewOnUpdateOf(capitalizationGroup, prefixInput, suffixInput)
         previewPanelHolder.updatePreview()
     }
 
@@ -88,6 +92,7 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         maxValue.value = scheme.maxValue
         base.value = scheme.base
         groupingSeparatorGroup.setValue(scheme.groupingSeparator)
+        capitalizationGroup.setValue(scheme.capitalization)
         prefixInput.text = scheme.prefix
         suffixInput.text = scheme.suffix
     }
@@ -97,6 +102,7 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         scheme.maxValue = maxValue.value
         scheme.base = base.value
         scheme.safeSetGroupingSeparator(groupingSeparatorGroup.getValue())
+        scheme.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
         scheme.prefix = prefixInput.text
         scheme.suffix = suffixInput.text
     }

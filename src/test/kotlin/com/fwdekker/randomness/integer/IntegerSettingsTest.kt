@@ -20,6 +20,7 @@ object IntegerSettingsTest : Spek({
     describe("copying") {
         it("creates an independent copy") {
             val copy = integerSettings.deepCopy()
+
             integerSettings.currentScheme.minValue = 159
             copy.currentScheme.minValue = 48
 

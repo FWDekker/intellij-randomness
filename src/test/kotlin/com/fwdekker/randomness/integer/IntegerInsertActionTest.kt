@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.integer
 
+import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupActionTest
 import org.assertj.core.api.Assertions
@@ -71,6 +72,31 @@ class IntegerInsertActionTest : Spek({
                     minValue = value,
                     maxValue = value,
                     groupingSeparator = groupingSeparator
+                )
+
+                val insertRandomInteger = IntegerInsertAction(integerScheme)
+                val randomString = insertRandomInteger.generateString()
+
+                assertThat(randomString).isEqualTo(expectedString)
+            }
+        }
+    }
+
+    describe("capitalization") {
+        data class Param(val value: Long, val base: Int, val prefix: String, val capitalization: CapitalizationMode)
+
+        mapOf(
+            Param(624L, 10, "", CapitalizationMode.UPPER) to "624",
+            Param(254L, 16, "", CapitalizationMode.UPPER) to "FE",
+            Param(254L, 16, "0x", CapitalizationMode.FIRST_LETTER) to "0xFe",
+        ).forEach { (value, base, prefix, capitalization), expectedString ->
+            it("generates $expectedString") {
+                val integerScheme = IntegerScheme(
+                    minValue = value,
+                    maxValue = value,
+                    base = base,
+                    prefix = prefix,
+                    capitalization = capitalization
                 )
 
                 val insertRandomInteger = IntegerInsertAction(integerScheme)
