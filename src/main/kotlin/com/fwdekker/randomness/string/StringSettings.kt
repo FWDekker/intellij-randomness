@@ -88,7 +88,7 @@ data class StringScheme(
      * Same as [symbolSets], except that all emoji are serialized.
      */
     @get:MapAnnotation(sortBeforeSave = false)
-    @Suppress("unused" /* Used by serializer */)
+    @Suppress("unused") // Used by serializer
     var serializedSymbolSets: Map<String, String>
         get() = symbolSets.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
         set(value) {
@@ -99,7 +99,7 @@ data class StringScheme(
      * Same as [activeSymbolSets], except that all emoji are serialized.
      */
     @get:MapAnnotation(sortBeforeSave = false)
-    @Suppress("unused" /* Used by serializer */)
+    @Suppress("unused") // Used by serializer
     var serializedActiveSymbolSets: Map<String, String>
         get() = activeSymbolSets.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
         set(value) {

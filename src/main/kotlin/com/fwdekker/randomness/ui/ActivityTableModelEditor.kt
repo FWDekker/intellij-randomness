@@ -103,11 +103,11 @@ abstract class ActivityTableModelEditor<T>(
 
         val copyAction =
             object : ToolbarDecorator.ElementActionButton(IdeBundle.message("button.copy"), PlatformIcons.COPY_ICON) {
-                // Implementation based on `TableModelEditor#createComponent`
                 override fun actionPerformed(e: AnActionEvent) = copySelectedItems(table)
 
                 override fun isEnabled() = table.selection.all { isCopyable(it.datum) }
             }
+        // Implementation based on `TableModelEditor#createComponent`
         return TableModelEditor::class.java.getDeclaredField("toolbarDecorator")
             .apply { isAccessible = true }
             .let { it.get(this) as ToolbarDecorator }

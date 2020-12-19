@@ -47,6 +47,9 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
 
 
     init {
+        previewLabel.border = null
+        previewLabel.isFocusable = false
+
         refreshButton.addMouseListener(object : MouseListener {
             override fun mouseReleased(e: MouseEvent?) = Unit
 
