@@ -1,5 +1,7 @@
 package com.fwdekker.randomness.integer
 
+import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.CapitalizationModeTest
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
@@ -35,6 +37,7 @@ object IntegerSettingsComponentTest : Spek({
                 currentScheme.maxValue = 6_442_451_778L
                 currentScheme.base = 10
                 currentScheme.groupingSeparator = "_"
+                currentScheme.capitalization = CapitalizationMode.LOWER
                 currentScheme.prefix = ""
                 currentScheme.suffix = ""
             }
@@ -70,6 +73,11 @@ object IntegerSettingsComponentTest : Spek({
             frame.radioButton("groupingSeparatorUnderscore").requireSelected(true)
         }
 
+        it("loads the settings' capitalization mode") {
+            frame.radioButton("capitalizationLower").requireSelected(true)
+            frame.radioButton("capitalizationUpper").requireSelected(false)
+        }
+
         it("loads the settings' prefix") {
             frame.textBox("prefix").requireText("")
         }
@@ -86,6 +94,7 @@ object IntegerSettingsComponentTest : Spek({
                 frame.spinner("maxValue").target().value = 2147483649L
                 frame.spinner("base").target().value = 14
                 frame.radioButton("groupingSeparatorPeriod").target().isSelected = true
+                frame.radioButton("capitalizationUpper").target().isSelected = true
                 frame.textBox("prefix").target().text = "prefix"
                 frame.textBox("suffix").target().text = "suffix"
             }
@@ -96,6 +105,7 @@ object IntegerSettingsComponentTest : Spek({
             assertThat(integerSettings.currentScheme.maxValue).isEqualTo(2_147_483_649L)
             assertThat(integerSettings.currentScheme.base).isEqualTo(14)
             assertThat(integerSettings.currentScheme.groupingSeparator).isEqualTo(".")
+            assertThat(integerSettings.currentScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
             assertThat(integerSettings.currentScheme.prefix).isEqualTo("prefix")
             assertThat(integerSettings.currentScheme.suffix).isEqualTo("suffix")
         }

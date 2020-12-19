@@ -63,7 +63,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
             "Excludes the following characters from all generated strings: ${SymbolSet.lookAlikeCharacters}"
 
         previewPanelHolder.updatePreviewOnUpdateOf(minLength, maxLength, enclosureGroup, capitalizationGroup)
-        previewPanelHolder.updatePreviewOnUpdateOf(symbolSetTable) // Call method twice because it's shorter
+        previewPanelHolder.updatePreviewOnUpdateOf(symbolSetTable)
         previewPanelHolder.updatePreview()
     }
 
