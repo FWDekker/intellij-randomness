@@ -106,12 +106,12 @@ data class IntegerScheme(
         /**
          * The minimum value of the [base][base] field.
          */
-        const val MIN_BASE = 2
+        const val MIN_BASE = Character.MIN_RADIX
 
         /**
          * The maximum value of the [base][base] field.
          */
-        const val MAX_BASE = 36
+        const val MAX_BASE = Character.MAX_RADIX
 
         /**
          * The definition of decimal base.

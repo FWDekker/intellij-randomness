@@ -14,11 +14,14 @@ import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.word.WordSettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.word.WordSettings.Companion.default
+import com.intellij.ui.components.JBLabel
+import com.intellij.util.ui.UIUtil
 import com.jgoodies.forms.factories.DefaultComponentFactory
 import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.JTextArea
 
 
 /**
@@ -45,12 +48,17 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
     private lateinit var dictionaryPanel: JPanel
     private lateinit var dictionarySeparator: JComponent
     private lateinit var dictionaryTable: DictionaryTable
+    private lateinit var dictionaryHelp: JTextArea
 
     override val rootPane get() = contentPane
 
 
     init {
         loadSettings()
+
+        dictionaryHelp.border = null
+        dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
+        dictionaryHelp.isFocusable = false
 
         previewPanelHolder.updatePreviewOnUpdateOf(minLength, maxLength, capitalizationGroup, enclosureGroup)
         previewPanelHolder.updatePreviewOnUpdateOf(dictionaryTable)
