@@ -78,13 +78,13 @@ object DictionaryTest : Spek({
             it("returns a human-readable string of the dictionary's filename") {
                 val dictionary = BundledDictionary.cache.get("dictionaries/simple.dic", false)
 
-                assertThat(dictionary.toString()).isEqualTo("[bundled] dictionaries/simple.dic")
+                assertThat(dictionary.toString()).isEqualTo("dictionaries/simple.dic")
             }
 
             it("works even if the file does not exist") {
                 val dictionary = BundledDictionary.cache.get("does_not_exist.dic", false)
 
-                assertThat(dictionary.toString()).isEqualTo("[bundled] does_not_exist.dic")
+                assertThat(dictionary.toString()).isEqualTo("does_not_exist.dic")
             }
         }
 
@@ -214,15 +214,13 @@ object DictionaryTest : Spek({
                 val dictionaryFile = tempFileHelper.createFile("mode\ndepeche", ".dic")
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
 
-                assertThat(dictionary.toString())
-                    .startsWith("[user] ")
-                    .endsWith(".dic")
+                assertThat(dictionary.toString()).endsWith(".dic")
             }
 
             it("works even if the file does not exist") {
                 val dictionary = UserDictionary.cache.get("does_not_exist.dic", false)
 
-                assertThat(dictionary.toString()).isEqualTo("[user] does_not_exist.dic")
+                assertThat(dictionary.toString()).isEqualTo("does_not_exist.dic")
             }
         }
 

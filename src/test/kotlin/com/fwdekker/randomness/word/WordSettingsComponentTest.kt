@@ -190,7 +190,7 @@ object WordSettingsComponentTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
                 assertThat(validationInfo?.message)
-                    .matches("Dictionary `.*\\.dic` is invalid: Failed to read user dictionary into memory\\.")
+                    .matches("Dictionary .*\\.dic is invalid: Failed to read user dictionary into memory\\.")
             }
 
             it("fails if no dictionaries are selected") {
@@ -216,7 +216,7 @@ object WordSettingsComponentTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
                 assertThat(validationInfo?.message).isEqualTo(
-                    "Dictionary `[user] does_not_exist.dic` is invalid: Failed to read user dictionary into memory."
+                    "Dictionary does_not_exist.dic is invalid: Failed to read user dictionary into memory."
                 )
             }
 
@@ -232,7 +232,7 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
-                assertThat(validationInfo?.message).matches("Dictionary `.*\\.dic` is empty\\.")
+                assertThat(validationInfo?.message).matches("Dictionary .*\\.dic is empty\\.")
             }
 
             it("fails if a dictionary is added twice") {

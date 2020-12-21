@@ -49,11 +49,11 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
             try {
                 dictionary.validate()
             } catch (e: InvalidDictionaryException) {
-                return ValidationInfo("Dictionary `$dictionary` is invalid: ${e.message}", panel)
+                return ValidationInfo("Dictionary $dictionary is invalid: ${e.message}", panel)
             }
 
             if (dictionary.words.isEmpty())
-                return ValidationInfo("Dictionary `$dictionary` is empty.", panel)
+                return ValidationInfo("Dictionary $dictionary is empty.", panel)
         }
 
         return null

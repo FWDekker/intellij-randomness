@@ -96,7 +96,7 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
      *
      * @return a human-readable string of the dictionary's filename
      */
-    override fun toString() = "[bundled] $filename"
+    override fun toString() = filename
 
 
     /**
@@ -149,7 +149,7 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
      *
      * @return a human-readable string of the dictionary's filename
      */
-    override fun toString() = "[user] $filename"
+    override fun toString() = filename
 
     /**
      * Returns `true` iff this dictionary's filename equals [other]'s filename.
