@@ -21,7 +21,8 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
     arrayOf(TYPE_COLUMN, LOCATION_COLUMN),
     ITEM_EDITOR,
     EMPTY_TEXT, EMPTY_SUB_TEXT,
-    { it is UserDictionary }
+    { it is UserDictionary },
+    columnAdjuster = { it[1].maxWidth = it[1].preferredWidth }
 ) {
     /**
      * Creates a new placeholder [Dictionary] instance.

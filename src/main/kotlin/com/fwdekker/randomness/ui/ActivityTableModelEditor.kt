@@ -14,6 +14,7 @@ import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.StatusText
 import com.intellij.util.ui.table.TableModelEditor
 import javax.swing.JPanel
+import javax.swing.table.TableColumn
 
 
 /**
@@ -38,13 +39,16 @@ data class EditableDatum<T>(var active: Boolean, var datum: T)
  * @param emptyText the text to display when the table is empty
  * @param emptySubText the instruction to display when the table is empty
  * @param isCopyable returns `true` if and only if the given datum can be copied
+ * @param columnAdjuster invoked on the list of columns (including the activity column) to allow adjusting their
+ * properties
  */
 abstract class ActivityTableModelEditor<T>(
     columns: Array<ColumnInfo<EditableDatum<T>, *>>,
     itemEditor: CollectionItemEditor<EditableDatum<T>>,
     emptyText: String,
     private val emptySubText: String,
-    private val isCopyable: (T) -> Boolean = { true }
+    private val isCopyable: (T) -> Boolean = { true },
+    private val columnAdjuster: (List<TableColumn>) -> Unit = {}
 ) : TableModelEditor<EditableDatum<T>>(
     arrayOf<ColumnInfo<EditableDatum<T>, *>>(createActivityColumn()).plus(columns),
     itemEditor,
@@ -91,6 +95,8 @@ abstract class ActivityTableModelEditor<T>(
         val table = TableModelEditor::class.java.getDeclaredField("table")
             .apply { isAccessible = true }
             .get(this) as TableView<EditableDatum<T>>
+
+        columnAdjuster(table.columnModel.columns.toList())
 
         table.emptyText.apply {
             appendSecondaryText(emptySubText, SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES) { addItem(table) }
