@@ -159,8 +159,7 @@ data class WordScheme(
         /**
          * The default value of the [bundledDictionaryFiles][bundledDictionaryFiles] field.
          */
-        val DEFAULT_BUNDLED_DICTIONARY_FILES =
-            setOf(BundledDictionary.SIMPLE_DICTIONARY, BundledDictionary.EXTENDED_DICTIONARY)
+        val DEFAULT_BUNDLED_DICTIONARY_FILES = setOf(BundledDictionary.SIMPLE_DICTIONARY)
 
         /**
          * The default value of the [activeBundledDictionaryFiles][activeBundledDictionaryFiles] field.
