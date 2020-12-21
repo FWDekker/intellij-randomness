@@ -109,7 +109,7 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
         /**
          * The location of a simple English dictionary.
          */
-        const val SIMPLE_DICTIONARY = "english_simple.dic"
+        const val SIMPLE_DICTIONARY = "english.dic"
 
         /**
          * The cache of bundled dictionaries, used to improve word generation times.
