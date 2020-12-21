@@ -43,7 +43,7 @@ object WordSettingsComponentTest : Spek({
                 currentScheme.maxLength = 6
                 currentScheme.enclosure = ""
                 currentScheme.capitalization = CapitalizationMode.LOWER
-                currentScheme.activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.EXTENDED_DICTIONARY)
+                currentScheme.activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.SIMPLE_DICTIONARY)
             }
 
         wordSettingsComponent = GuiActionRunner.execute<WordSettingsComponent> { WordSettingsComponent(wordSettings) }
@@ -85,11 +85,10 @@ object WordSettingsComponentTest : Spek({
 
         it("loads the settings' bundled dictionaries") {
             assertThat(dictionaryTable.items.map { it.datum }).containsExactly(
-                BundledDictionary.cache.get(BundledDictionary.SIMPLE_DICTIONARY),
-                BundledDictionary.cache.get(BundledDictionary.EXTENDED_DICTIONARY)
+                BundledDictionary.cache.get(BundledDictionary.SIMPLE_DICTIONARY)
             )
             assertThat(dictionaryTable.items.filter { it.active }.map { it.datum }).containsExactly(
-                BundledDictionary.cache.get(BundledDictionary.EXTENDED_DICTIONARY)
+                BundledDictionary.cache.get(BundledDictionary.SIMPLE_DICTIONARY)
             )
         }
     }
@@ -170,8 +169,8 @@ object WordSettingsComponentTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
                 assertThat(validationInfo?.message).isEqualTo(
-                    "The longest word in the selected dictionaries is 31 characters. Set the minimum length to a " +
-                        "value less than or equal to 31."
+                    "The longest word in the selected dictionaries is 15 characters. Set the minimum length to a " +
+                        "value less than or equal to 15."
                 )
             }
         }
