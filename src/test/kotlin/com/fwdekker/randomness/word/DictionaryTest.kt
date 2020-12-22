@@ -7,6 +7,7 @@ import org.junit.jupiter.api.fail
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.io.IOException
+import java.lang.IllegalArgumentException
 
 
 /**
@@ -253,6 +254,82 @@ object DictionaryTest : Spek({
 
                 assertThat(dictionary).isNotEqualTo(other)
             }
+        }
+    }
+})
+
+/**
+ * Unit tests for [DictionaryReference]s.
+ */
+object DictionaryReferenceTest : Spek({
+    val tempFileHelper = TempFileHelper()
+
+
+    beforeEachTest {
+        BundledDictionary.cache.clear()
+        UserDictionary.cache.clear()
+    }
+
+    afterGroup {
+        tempFileHelper.cleanUp()
+    }
+
+
+    describe("instantiation") {
+        it("creates a bundled dictionary reference") {
+            val dictionary = BundledDictionary.cache.get("bundled.dic")
+
+            val reference = DictionaryReference.to(dictionary)
+
+            assertThat(reference.isBundled).isTrue()
+            assertThat(reference.filename).isEqualTo("bundled.dic")
+            assertThat(reference.referent).isEqualTo(dictionary)
+        }
+
+        it("creates a user dictionary reference") {
+            val dictionary = UserDictionary.cache.get("user.dic")
+
+            val reference = DictionaryReference.to(dictionary)
+
+            assertThat(reference.isBundled).isFalse()
+            assertThat(reference.filename).isEqualTo("user.dic")
+            assertThat(reference.referent).isEqualTo(dictionary)
+        }
+
+        it("fails for other dictionary types") {
+            val dictionary = object : Dictionary {
+                override val words = setOf("word")
+
+                override fun validate() = Unit
+            }
+
+            assertThatThrownBy { DictionaryReference.to(dictionary) }
+                .isInstanceOf(IllegalStateException::class.java)
+                .hasMessage(DictionaryReference.DICTIONARY_CAST_EXCEPTION)
+        }
+    }
+
+    describe("validation") {
+        it("fails for an invalid dictionary") {
+            val dictionaryFile = tempFileHelper.createFile("contents\n", ".dic")
+                .also { it.setReadable(false) }
+            val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
+            val reference = DictionaryReference.to(dictionary)
+
+            assertThat(reference.isValid()).isFalse()
+        }
+
+        it("no longer fails for a now-valid dictionary") {
+            val dictionaryFile = tempFileHelper.createFile("contents\n", ".dic")
+                .also { it.setReadable(false) }
+            val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
+            val reference = DictionaryReference.to(dictionary)
+
+            assertThat(reference.isValid()).isFalse()
+
+            dictionaryFile.setReadable(true)
+
+            assertThat(reference.isValid()).isTrue()
         }
     }
 })

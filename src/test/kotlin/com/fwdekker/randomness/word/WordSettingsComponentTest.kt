@@ -84,12 +84,10 @@ object WordSettingsComponentTest : Spek({
         }
 
         it("loads the settings' bundled dictionaries") {
-            assertThat(dictionaryTable.items.map { it.datum }).containsExactly(
-                BundledDictionary.cache.get(BundledDictionary.SIMPLE_DICTIONARY)
-            )
-            assertThat(dictionaryTable.items.filter { it.active }.map { it.datum }).containsExactly(
-                BundledDictionary.cache.get(BundledDictionary.SIMPLE_DICTIONARY)
-            )
+            assertThat(dictionaryTable.items.map { it.datum })
+                .containsExactly(DictionaryReference(true, BundledDictionary.SIMPLE_DICTIONARY))
+            assertThat(dictionaryTable.items.filter { it.active }.map { it.datum })
+                .containsExactly(DictionaryReference(true, BundledDictionary.SIMPLE_DICTIONARY))
         }
     }
 
@@ -179,7 +177,7 @@ object WordSettingsComponentTest : Spek({
             it("fails if a dictionary of a now-deleted file is given") {
                 val dictionaryFile = tempFileHelper.createFile("explore\nworm\ndamp", ".dic")
                     .also { it.delete() }
-                val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
+                val dictionary = DictionaryReference(false, dictionaryFile.absolutePath)
 
                 GuiActionRunner.execute {
                     dictionaryTable.listTableModel.addRow(EditableDatum(true, dictionary))

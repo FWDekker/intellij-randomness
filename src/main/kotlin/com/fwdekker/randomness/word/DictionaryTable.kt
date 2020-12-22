@@ -9,7 +9,7 @@ import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.LocalPathCellEditor
 
 
-private typealias EditableDictionary = EditableDatum<Dictionary>
+private typealias EditableDictionary = EditableDatum<DictionaryReference>
 
 
 /**
@@ -17,11 +17,11 @@ private typealias EditableDictionary = EditableDatum<Dictionary>
  *
  * @see WordSettingsComponent
  */
-class DictionaryTable : ActivityTableModelEditor<Dictionary>(
+class DictionaryTable : ActivityTableModelEditor<DictionaryReference>(
     arrayOf(TYPE_COLUMN, LOCATION_COLUMN),
     ITEM_EDITOR,
     EMPTY_TEXT, EMPTY_SUB_TEXT,
-    { it is UserDictionary },
+    { !it.isBundled },
     columnAdjuster = { it[1].maxWidth = it[1].preferredWidth }
 ) {
     /**
@@ -62,24 +62,14 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
 
     companion object {
         /**
-         * The error message that is displayed if an unknown dictionary implementation is used.
-         */
-        const val DICTIONARY_CAST_EXCEPTION = "Unexpected dictionary implementation."
-
-        /**
          * The column showing the type of the dictionary.
          */
         private val TYPE_COLUMN = object : ColumnInfo<EditableDictionary, String>("Type") {
             override fun getColumnClass() = String::class.java
 
             override fun valueOf(item: EditableDictionary) =
-                item.datum.let { dictionary ->
-                    when (dictionary) {
-                        is BundledDictionary -> "bundled"
-                        is UserDictionary -> "user"
-                        else -> error(DICTIONARY_CAST_EXCEPTION)
-                    }
-                }
+                if (item.datum.isBundled) "bundled"
+                else "user"
         }
 
         /**
@@ -88,20 +78,13 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
         private val LOCATION_COLUMN = object : EditableColumnInfo<EditableDictionary, String>("Location") {
             override fun getColumnClass() = String::class.java
 
-            override fun valueOf(item: EditableDictionary) =
-                item.datum.let { dictionary ->
-                    when (dictionary) {
-                        is BundledDictionary -> dictionary.filename
-                        is UserDictionary -> dictionary.filename
-                        else -> error(DICTIONARY_CAST_EXCEPTION)
-                    }
-                }
+            override fun valueOf(item: EditableDictionary) = item.datum.filename
 
             override fun setValue(item: EditableDictionary, value: String) {
-                item.datum = UserDictionary.cache.get(value, true)
+                item.datum.filename = value
             }
 
-            override fun isCellEditable(item: EditableDictionary) = item.datum is UserDictionary
+            override fun isCellEditable(item: EditableDictionary) = !item.datum.isBundled
 
             override fun getEditor(item: EditableDictionary?) =
                 LocalPathCellEditor()
@@ -115,14 +98,10 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
         private val ITEM_EDITOR = object : CollectionItemEditor<EditableDictionary> {
             override fun getItemClass() = createElement()::class.java
 
-            override fun isRemovable(item: EditableDictionary) = item.datum is UserDictionary
+            override fun isRemovable(item: EditableDictionary) = !item.datum.isBundled
 
-            override fun clone(item: EditableDictionary, forInPlaceEditing: Boolean): EditableDatum<Dictionary> {
-                val dictionary = item.datum
-                require(dictionary is UserDictionary) { "Cannot copy non-user dictionary." }
-
-                return EditableDatum(item.active, UserDictionary.cache.get(dictionary.filename))
-            }
+            override fun clone(item: EditableDictionary, forInPlaceEditing: Boolean) =
+                EditableDatum(item.active, item.datum.copy())
         }
 
         /**
@@ -141,6 +120,6 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
          *
          * @return a new placeholder [Dictionary] instance
          */
-        private fun createElement() = EditableDictionary(DEFAULT_STATE, UserDictionary.cache.get("", true))
+        private fun createElement() = EditableDictionary(DEFAULT_STATE, DictionaryReference(false, ""))
     }
 }

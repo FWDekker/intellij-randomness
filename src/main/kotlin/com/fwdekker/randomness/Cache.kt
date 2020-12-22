@@ -20,7 +20,7 @@ class Cache<K, V>(private val creator: (K) -> V) {
      * instantiated, even if there already is a value for `key`.
      *
      * @param key the key to look up the value with
-     * @param useCache whether to return the existing value if it exists
+     * @param useCache whether to return the existing value if it exists. Either way, the result is stored in the cache
      * @return the value that corresponds to `key`
      */
     @Synchronized

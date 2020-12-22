@@ -174,3 +174,57 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
         val cache = Cache<String, UserDictionary> { UserDictionary(it) }
     }
 }
+
+
+/**
+ * References a dictionary by its properties.
+ *
+ * Using a reference, each access goes through the cache first, so that outdated instances of a dictionary (i.e. those
+ * flushed when clearing the cache) are not used anymore. This ensures that only the latest instance of that dictionary
+ * is used, which is important when a dictionary has to be used both before and after clearing a cache.
+ *
+ * @property isBundled True if this dictionary refers to a [BundledDictionary].
+ * @property filename The filename of the referred-to dictionary.
+ */
+data class DictionaryReference(val isBundled: Boolean, var filename: String) : Dictionary {
+    /**
+     * The dictionary that is referred to by this reference, as fetched from the cache.
+     */
+    val referent: Dictionary
+        get() =
+            if (isBundled) BundledDictionary.cache.get(filename)
+            else UserDictionary.cache.get(filename)
+
+
+    @get:Throws(InvalidDictionaryException::class)
+    override val words: Set<String>
+        get() = referent.words
+
+    @Throws(InvalidDictionaryException::class)
+    override fun validate() = referent.validate()
+
+
+    override fun toString() = filename
+
+
+    companion object {
+        /**
+         * The error message that is displayed if an unknown dictionary implementation is used.
+         */
+        const val DICTIONARY_CAST_EXCEPTION = "Unexpected dictionary implementation."
+
+
+        /**
+         * Returns a reference to the given dictionary.
+         *
+         * @param dictionary the dictionary to return a reference to
+         */
+        @Suppress("FunctionMinLength") // Function name is clear enough because of class name
+        fun to(dictionary: Dictionary) =
+            when (dictionary) {
+                is BundledDictionary -> DictionaryReference(true, dictionary.filename)
+                is UserDictionary -> DictionaryReference(false, dictionary.filename)
+                else -> error(DICTIONARY_CAST_EXCEPTION)
+            }
+    }
+}

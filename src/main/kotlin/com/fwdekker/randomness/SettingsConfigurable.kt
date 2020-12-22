@@ -48,7 +48,7 @@ abstract class SettingsConfigurable<S : Settings<S, T>, T : Scheme<T>> : Configu
     override fun apply() {
         val validationInfo = component.doValidate()
         if (validationInfo != null)
-            throw ConfigurationException(validationInfo.message, "Failed to Save Settings")
+            throw ConfigurationException(validationInfo.message, "Failed to save settings")
                 .also { it.quickFix = validationInfo.quickFix }
 
         component.saveSettings()
