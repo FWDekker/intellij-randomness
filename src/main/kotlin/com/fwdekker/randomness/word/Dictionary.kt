@@ -2,7 +2,9 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.Cache
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.IOException
+import java.io.InputStream
 
 
 /**
@@ -66,14 +68,18 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
                 .filterNot { it.startsWith('#') }
                 .toSet()
         } catch (e: IOException) {
-            throw InvalidDictionaryException("Failed to read bundled dictionary into memory.", e)
+            throw InvalidDictionaryException(e.message, e)
         }
     }
 
 
     @Throws(InvalidDictionaryException::class)
     override fun validate() {
-        getStream() ?: throw InvalidDictionaryException("Failed to read bundled dictionary into memory.")
+        try {
+            getStream()
+        } catch (e: IOException) {
+            throw InvalidDictionaryException(e.message, e)
+        }
     }
 
     /**
@@ -101,8 +107,14 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
 
     /**
      * Returns a stream to the resource file.
+     *
+     * @return a stream to the resource file
+     * @throws IOException if the resource file could not be opened
      */
-    private fun getStream() = BundledDictionary::class.java.classLoader.getResourceAsStream(filename)
+    @Throws(IOException::class)
+    private fun getStream() =
+        BundledDictionary::class.java.classLoader.getResource(filename)?.openStream()
+            ?: throw FileNotFoundException("File not found.")
 
 
     companion object {
@@ -137,10 +149,14 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
 
     @Throws(InvalidDictionaryException::class)
     override fun validate() {
+        val file = File(filename)
+        if (!file.exists()) throw InvalidDictionaryException("File not found.")
+        if (!file.canRead()) throw InvalidDictionaryException("File unreadable.")
+
         try {
-            File(filename).inputStream()
+            file.inputStream()
         } catch (e: IOException) {
-            throw InvalidDictionaryException("Failed to read user dictionary into memory.", e)
+            throw InvalidDictionaryException(e.message, e)
         }
     }
 

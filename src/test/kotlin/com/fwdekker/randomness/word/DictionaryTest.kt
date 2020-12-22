@@ -29,8 +29,7 @@ object DictionaryTest : Spek({
                 assertThat(dictionary.isValid()).isFalse()
                 assertThatThrownBy { dictionary.validate() }
                     .isInstanceOf(InvalidDictionaryException::class.java)
-                    .hasMessage("Failed to read bundled dictionary into memory.")
-                    .hasNoCause()
+                    .hasMessage("File not found.")
             }
         }
 
@@ -40,8 +39,7 @@ object DictionaryTest : Spek({
 
                 assertThatThrownBy { dictionary.words }
                     .isInstanceOf(InvalidDictionaryException::class.java)
-                    .hasMessage("Failed to read bundled dictionary into memory.")
-                    .hasNoCause()
+                    .hasMessage("File not found.")
             }
 
             it("is an empty list if the dictionary is empty") {
@@ -145,8 +143,7 @@ object DictionaryTest : Spek({
                 assertThat(dictionary.isValid()).isFalse()
                 assertThatThrownBy { dictionary.validate() }
                     .isInstanceOf(InvalidDictionaryException::class.java)
-                    .hasMessage("Failed to read user dictionary into memory.")
-                    .hasCauseInstanceOf(IOException::class.java)
+                    .hasMessage("File not found.")
             }
 
             it("fails if the file is deleted after construction of the dictionary") {
@@ -159,8 +156,18 @@ object DictionaryTest : Spek({
                 assertThat(dictionary.isValid()).isFalse()
                 assertThatThrownBy { dictionary.validate() }
                     .isInstanceOf(InvalidDictionaryException::class.java)
-                    .hasMessage("Failed to read user dictionary into memory.")
-                    .hasCauseInstanceOf(IOException::class.java)
+                    .hasMessage("File not found.")
+            }
+
+            it("fails if the file exists but cannot be accessed") {
+                val dictionaryFile = tempFileHelper.createFile("ladder\nkempt\npork", ".dic")
+                    .also { it.setReadable(false) }
+                val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
+
+                assertThat(dictionary.isValid()).isFalse()
+                assertThatThrownBy { dictionary.validate() }
+                    .isInstanceOf(InvalidDictionaryException::class.java)
+                    .hasMessage("File unreadable.")
             }
         }
 
@@ -170,8 +177,7 @@ object DictionaryTest : Spek({
 
                 assertThatThrownBy { dictionary.words }
                     .isInstanceOf(InvalidDictionaryException::class.java)
-                    .hasMessage("Failed to read user dictionary into memory.")
-                    .hasCauseInstanceOf(IOException::class.java)
+                    .hasMessage("File not found.")
             }
 
             it("is an empty list if the dictionary is empty") {

@@ -188,7 +188,7 @@ object WordSettingsComponentTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
                 assertThat(validationInfo?.message)
-                    .matches("Dictionary .*\\.dic is invalid: Failed to read user dictionary into memory\\.")
+                    .matches("Dictionary .*\\.dic is invalid: File not found\\.")
             }
 
             it("fails if no dictionaries are selected") {
@@ -213,9 +213,8 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
-                assertThat(validationInfo?.message).isEqualTo(
-                    "Dictionary does_not_exist.dic is invalid: Failed to read user dictionary into memory."
-                )
+                assertThat(validationInfo?.message)
+                    .isEqualTo("Dictionary does_not_exist.dic is invalid: File not found.")
             }
 
             it("fails if one the dictionaries is empty") {

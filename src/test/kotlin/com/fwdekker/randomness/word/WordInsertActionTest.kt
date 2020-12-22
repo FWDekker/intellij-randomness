@@ -71,7 +71,7 @@ class WordInsertActionParamTest : Spek({
 
             assertThatThrownBy { insertRandomWord.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
-                .hasMessage("Failed to read user dictionary into memory.")
+                .hasMessage("File not found.")
                 .hasCauseInstanceOf(InvalidDictionaryException::class.java)
         }
 
