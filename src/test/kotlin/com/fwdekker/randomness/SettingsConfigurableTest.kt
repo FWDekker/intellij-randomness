@@ -74,9 +74,27 @@ object SettingsConfigurableTest : Spek({
             assertThat(settingsComponentConfigurable.isModified).isFalse()
         }
 
-        it("modifies a single detection") {
+        it("detects a single modification") {
             GuiActionRunner.execute { frame.spinner("count").target().value = 124 }
 
+            assertThat(settingsComponentConfigurable.isModified).isTrue()
+        }
+
+        it("declares itself modified if settings are invalid, even though no modifications have been made") {
+            // Ground truth: `isModified` is false after reloading valid settings
+            val validSettings = DummySettings(mutableListOf(DummyScheme(count = 584)))
+            GuiActionRunner.execute {
+                settings.loadState(validSettings)
+                settingsComponent.loadSettings()
+            }
+            assertThat(settingsComponentConfigurable.isModified).isFalse()
+
+            // Actual test: `isModified` is true after reloading invalid settings
+            val invalidSettings = DummySettings(mutableListOf(DummyScheme(count = -3)))
+            GuiActionRunner.execute {
+                settings.loadState(invalidSettings)
+                settingsComponent.loadSettings()
+            }
             assertThat(settingsComponentConfigurable.isModified).isTrue()
         }
 

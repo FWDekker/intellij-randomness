@@ -34,17 +34,18 @@ abstract class SettingsConfigurable<S : Settings<S, T>, T : Scheme<T>> : Configu
     abstract override fun getDisplayName(): String
 
     /**
-     * Returns true if the settings were modified since they were loaded.
+     * Returns true if the settings were modified since they were loaded or they are invalid.
      *
-     * @return true if the settings were modified since they were loaded
+     * @return true if the settings were modified since they were loaded or they are invalid
      */
-    override fun isModified() = component.isModified()
+    override fun isModified() = component.isModified() || component.doValidate() != null
 
     /**
      * Saves the changes in the settings component to the default settings object.
      *
      * @throws ConfigurationException if the changes cannot be saved
      */
+    @Throws(ConfigurationException::class)
     override fun apply() {
         val validationInfo = component.doValidate()
         if (validationInfo != null)
