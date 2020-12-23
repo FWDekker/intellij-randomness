@@ -97,10 +97,8 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         maxLength.value = scheme.maxLength
         enclosureGroup.setValue(scheme.enclosure)
         capitalizationGroup.setValue(scheme.capitalization)
-        dictionaryTable.data =
-            (scheme.bundledDictionaries + scheme.userDictionaries).map { DictionaryReference.to(it) }
-        dictionaryTable.activeData =
-            (scheme.activeBundledDictionaries + scheme.activeUserDictionaries).map { DictionaryReference.to(it) }
+        dictionaryTable.data = scheme.bundledDictionaries + scheme.userDictionaries
+        dictionaryTable.activeData = scheme.activeBundledDictionaries + scheme.activeUserDictionaries
     }
 
     override fun saveScheme(scheme: WordScheme) {
@@ -108,14 +106,10 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         scheme.maxLength = maxLength.value
         scheme.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
         scheme.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
-        scheme.bundledDictionaries =
-            dictionaryTable.data.map { it.referent }.filterIsInstance<BundledDictionary>().toSet()
-        scheme.activeBundledDictionaries =
-            dictionaryTable.activeData.map { it.referent }.filterIsInstance<BundledDictionary>().toSet()
-        scheme.userDictionaries =
-            dictionaryTable.data.map { it.referent }.filterIsInstance<UserDictionary>().toSet()
-        scheme.activeUserDictionaries =
-            dictionaryTable.activeData.map { it.referent }.filterIsInstance<UserDictionary>().toSet()
+        scheme.bundledDictionaries = dictionaryTable.data.filter { it.isBundled }.toSet()
+        scheme.activeBundledDictionaries = dictionaryTable.activeData.filter { it.isBundled }.toSet()
+        scheme.userDictionaries = dictionaryTable.data.filter { !it.isBundled }.toSet()
+        scheme.activeUserDictionaries = dictionaryTable.activeData.filter { !it.isBundled }.toSet()
 
         BundledDictionary.cache.clear()
         UserDictionary.cache.clear()
@@ -132,7 +126,7 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         val settingsDictionaries = settings.currentScheme.bundledDictionaries + settings.currentScheme.userDictionaries
 
         return tableDictionaries.size != settingsDictionaries.size ||
-            tableDictionaries.zip(settingsDictionaries).any { it.first.referent != it.second }
+            tableDictionaries.zip(settingsDictionaries).any { it.first != it.second }
     }
 
     override fun doValidate(): ValidationInfo? {

@@ -219,7 +219,7 @@ object WordSettingsComponentTest : Spek({
 
             it("fails if one the dictionaries is empty") {
                 val dictionaryFile = tempFileHelper.createFile("", ".dic")
-                val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
+                val dictionary = DictionaryReference(false, dictionaryFile.absolutePath)
 
                 wordSettings.currentScheme.userDictionaries = setOf(dictionary)
                 wordSettings.currentScheme.activeUserDictionaries = wordSettings.currentScheme.userDictionaries
@@ -234,7 +234,7 @@ object WordSettingsComponentTest : Spek({
 
             it("fails if a dictionary is added twice") {
                 val dictionaryFile = tempFileHelper.createFile("whistle", ".dic")
-                val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
+                val dictionary = DictionaryReference(false, dictionaryFile.absolutePath)
 
                 wordSettings.currentScheme.userDictionaries = setOf(dictionary)
                 wordSettings.currentScheme.activeUserDictionaries = wordSettings.currentScheme.userDictionaries

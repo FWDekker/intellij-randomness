@@ -92,9 +92,9 @@ data class WordScheme(
     /**
      * A mutable view of the filenames of the files in [bundledDictionaryFiles].
      */
-    var bundledDictionaries: Set<BundledDictionary>
+    var bundledDictionaries: Set<DictionaryReference>
         @Transient
-        get() = bundledDictionaryFiles.map { BundledDictionary.cache.get(it) }.toSet()
+        get() = bundledDictionaryFiles.map { DictionaryReference(true, it) }.toSet()
         set(value) {
             bundledDictionaryFiles = value.map { it.filename }.toMutableSet()
         }
@@ -102,9 +102,9 @@ data class WordScheme(
     /**
      * A mutable view of the filenames of the files in [userDictionaryFiles].
      */
-    var userDictionaries: Set<UserDictionary>
+    var userDictionaries: Set<DictionaryReference>
         @Transient
-        get() = userDictionaryFiles.map { UserDictionary.cache.get(it) }.toSet()
+        get() = userDictionaryFiles.map { DictionaryReference(false, it) }.toSet()
         set(value) {
             userDictionaryFiles = value.map { it.filename }.toMutableSet()
         }
@@ -112,9 +112,9 @@ data class WordScheme(
     /**
      * A mutable view of the filenames of the files in [activeBundledDictionaryFiles].
      */
-    var activeBundledDictionaries: Set<BundledDictionary>
+    var activeBundledDictionaries: Set<DictionaryReference>
         @Transient
-        get() = activeBundledDictionaryFiles.map { BundledDictionary.cache.get(it) }.toSet()
+        get() = activeBundledDictionaryFiles.map { DictionaryReference(true, it) }.toSet()
         set(value) {
             activeBundledDictionaryFiles = value.map { it.filename }.toMutableSet()
         }
@@ -122,9 +122,9 @@ data class WordScheme(
     /**
      * A mutable view of the filenames of the files in [activeUserDictionaryFiles].
      */
-    var activeUserDictionaries: Set<UserDictionary>
+    var activeUserDictionaries: Set<DictionaryReference>
         @Transient
-        get() = activeUserDictionaryFiles.map { UserDictionary.cache.get(it) }.toSet()
+        get() = activeUserDictionaryFiles.map { DictionaryReference(false, it) }.toSet()
         set(value) {
             activeUserDictionaryFiles = value.map { it.filename }.toMutableSet()
         }

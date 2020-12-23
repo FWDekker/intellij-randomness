@@ -60,7 +60,7 @@ class WordInsertActionParamTest : Spek({
 
         it("throws an exception if an active dictionary no longer exists") {
             val dictionaryFile = tempFileHelper.createFile("", ".dic")
-            val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
+            val dictionary = DictionaryReference(false, dictionaryFile.absolutePath)
             dictionaryFile.delete()
 
             val wordScheme = WordScheme()
@@ -77,7 +77,7 @@ class WordInsertActionParamTest : Spek({
 
         it("throws an exception if all active dictionaries are empty") {
             val dictionaryFile = tempFileHelper.createFile("", ".dic")
-            val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
+            val dictionary = DictionaryReference(false, dictionaryFile.absolutePath)
 
             val wordScheme = WordScheme()
             wordScheme.activeBundledDictionaries = emptySet()
@@ -93,7 +93,7 @@ class WordInsertActionParamTest : Spek({
 
         it("throws an exception if there are no words in the configured range") {
             val dictionaryFile = tempFileHelper.createFile("a", ".dic")
-            val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
+            val dictionary = DictionaryReference(false, dictionaryFile.absolutePath)
 
             val wordScheme = WordScheme()
             wordScheme.minLength = 2
