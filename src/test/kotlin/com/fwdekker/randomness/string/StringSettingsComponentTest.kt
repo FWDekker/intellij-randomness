@@ -135,6 +135,34 @@ object StringSettingsComponentTest : Spek({
         }
     }
 
+    describe("modification detection") {
+        it("is not modified by default") {
+            assertThat(stringSettingsComponent.isModified()).isFalse()
+        }
+
+        it("is modified if a different number of symbol sets is present") {
+            stringSettings.currentScheme.symbolSetList = listOf(SymbolSet.ALPHABET)
+            GuiActionRunner.execute { stringSettingsComponent.loadSettings() }
+
+            val resizedSettings = stringSettings.deepCopy()
+            resizedSettings.currentScheme.symbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.BRACKETS)
+            GuiActionRunner.execute { stringSettingsComponent.loadSettings(resizedSettings) }
+
+            assertThat(stringSettingsComponent.isModified()).isTrue()
+        }
+
+        it("is modified if the user reorders dictionaries") {
+            stringSettings.currentScheme.symbolSetList = listOf(SymbolSet.DIGITS, SymbolSet.UNDERSCORE)
+            GuiActionRunner.execute { stringSettingsComponent.loadSettings() }
+
+            val reorderedSettings = stringSettings.deepCopy()
+            reorderedSettings.currentScheme.symbolSetList = listOf(SymbolSet.UNDERSCORE, SymbolSet.DIGITS)
+            GuiActionRunner.execute { stringSettingsComponent.loadSettings(reorderedSettings) }
+
+            assertThat(stringSettingsComponent.isModified()).isTrue()
+        }
+    }
+
     describe("validation") {
         it("passes for the default settings") {
             GuiActionRunner.execute { stringSettingsComponent.loadSettings(StringSettings()) }

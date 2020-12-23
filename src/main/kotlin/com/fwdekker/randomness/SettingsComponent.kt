@@ -79,8 +79,8 @@ abstract class SettingsComponent<S : Settings<S, T>, T : Scheme<T>>(private val 
     /**
      * Returns true if this component contains unsaved changes.
      *
-     * Implement this method if the user should be able to reset their changes even if saving would not actually change
-     * the settings object.
+     * Implement this method only if meaningful changes can be made to the settings object that are not detected using
+     * the settings' equals method.
      *
      * @param settings the settings as they were loaded into the component
      * @return true if this component contains unsaved changes

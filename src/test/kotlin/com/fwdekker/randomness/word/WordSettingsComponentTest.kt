@@ -125,6 +125,34 @@ object WordSettingsComponentTest : Spek({
         }
     }
 
+    describe("modification detection") {
+        it("is not modified by default") {
+            assertThat(wordSettingsComponent.isModified()).isFalse()
+        }
+
+        it("is modified if a different number of dictionaries is present") {
+            wordSettings.currentScheme.userDictionaryFiles = mutableSetOf("user1.dic")
+            GuiActionRunner.execute { wordSettingsComponent.loadSettings() }
+
+            val resizedSettings = wordSettings.deepCopy()
+            resizedSettings.currentScheme.userDictionaryFiles = mutableSetOf("user1.dic", "user2.dic")
+            GuiActionRunner.execute { wordSettingsComponent.loadSettings(resizedSettings) }
+
+            assertThat(wordSettingsComponent.isModified()).isTrue()
+        }
+
+        it("is modified if the user reorders dictionaries") {
+            wordSettings.currentScheme.userDictionaryFiles = mutableSetOf("user1.dic", "user2.dic")
+            GuiActionRunner.execute { wordSettingsComponent.loadSettings() }
+
+            val reorderedSettings = wordSettings.deepCopy()
+            reorderedSettings.currentScheme.userDictionaryFiles = mutableSetOf("user2.dic", "user1.dic")
+            GuiActionRunner.execute { wordSettingsComponent.loadSettings(reorderedSettings) }
+
+            assertThat(wordSettingsComponent.isModified()).isTrue()
+        }
+    }
+
     describe("validation") {
         it("passes for the default settings") {
             GuiActionRunner.execute { wordSettingsComponent.loadSettings(WordSettings()) }
