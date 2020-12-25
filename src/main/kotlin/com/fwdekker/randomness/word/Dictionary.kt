@@ -219,7 +219,7 @@ data class DictionaryReference(val isBundled: Boolean, var filename: String) : D
     override fun validate() = referent.validate()
 
 
-    override fun toString() = filename
+    override fun toString() = referent.toString()
 
 
     companion object {
