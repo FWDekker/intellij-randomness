@@ -2,6 +2,7 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.Cache
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.IOException
 
 
@@ -66,14 +67,18 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
                 .filterNot { it.startsWith('#') }
                 .toSet()
         } catch (e: IOException) {
-            throw InvalidDictionaryException("Failed to read bundled dictionary into memory.", e)
+            throw InvalidDictionaryException(e.message, e)
         }
     }
 
 
     @Throws(InvalidDictionaryException::class)
     override fun validate() {
-        getStream() ?: throw InvalidDictionaryException("Failed to read bundled dictionary into memory.")
+        try {
+            getStream()
+        } catch (e: IOException) {
+            throw InvalidDictionaryException(e.message, e)
+        }
     }
 
     /**
@@ -96,13 +101,19 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
      *
      * @return a human-readable string of the dictionary's filename
      */
-    override fun toString() = "[bundled] $filename"
+    override fun toString() = filename
 
 
     /**
      * Returns a stream to the resource file.
+     *
+     * @return a stream to the resource file
+     * @throws IOException if the resource file could not be opened
      */
-    private fun getStream() = BundledDictionary::class.java.classLoader.getResourceAsStream(filename)
+    @Throws(IOException::class)
+    private fun getStream() =
+        BundledDictionary::class.java.classLoader.getResource(filename)?.openStream()
+            ?: throw FileNotFoundException("File not found.")
 
 
     companion object {
@@ -137,10 +148,14 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
 
     @Throws(InvalidDictionaryException::class)
     override fun validate() {
+        val file = File(filename)
+        if (!file.exists()) throw InvalidDictionaryException("File not found.")
+        if (!file.canRead()) throw InvalidDictionaryException("File unreadable.")
+
         try {
-            File(filename).inputStream()
+            file.inputStream()
         } catch (e: IOException) {
-            throw InvalidDictionaryException("Failed to read user dictionary into memory.", e)
+            throw InvalidDictionaryException(e.message, e)
         }
     }
 
@@ -149,7 +164,7 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
      *
      * @return a human-readable string of the dictionary's filename
      */
-    override fun toString() = "[user] $filename"
+    override fun toString() = filename
 
     /**
      * Returns `true` iff this dictionary's filename equals [other]'s filename.
@@ -172,5 +187,59 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
          * The cache of bundled dictionaries, used to improve word generation times.
          */
         val cache = Cache<String, UserDictionary> { UserDictionary(it) }
+    }
+}
+
+
+/**
+ * References a dictionary by its properties.
+ *
+ * Using a reference, each access goes through the cache first, so that outdated instances of a dictionary (i.e. those
+ * flushed when clearing the cache) are not used anymore. This ensures that only the latest instance of that dictionary
+ * is used, which is important when a dictionary has to be used both before and after clearing a cache.
+ *
+ * @property isBundled True if this dictionary refers to a [BundledDictionary].
+ * @property filename The filename of the referred-to dictionary.
+ */
+data class DictionaryReference(val isBundled: Boolean, var filename: String) : Dictionary {
+    /**
+     * The dictionary that is referred to by this reference, as fetched from the cache.
+     */
+    val referent: Dictionary
+        get() =
+            if (isBundled) BundledDictionary.cache.get(filename)
+            else UserDictionary.cache.get(filename)
+
+
+    @get:Throws(InvalidDictionaryException::class)
+    override val words: Set<String>
+        get() = referent.words
+
+    @Throws(InvalidDictionaryException::class)
+    override fun validate() = referent.validate()
+
+
+    override fun toString() = referent.toString()
+
+
+    companion object {
+        /**
+         * The error message that is displayed if an unknown dictionary implementation is used.
+         */
+        const val DICTIONARY_CAST_EXCEPTION = "Unexpected dictionary implementation."
+
+
+        /**
+         * Returns a reference to the given dictionary.
+         *
+         * @param dictionary the dictionary to return a reference to
+         */
+        @Suppress("FunctionMinLength") // Function name is clear enough because of class name
+        fun to(dictionary: Dictionary) =
+            when (dictionary) {
+                is BundledDictionary -> DictionaryReference(true, dictionary.filename)
+                is UserDictionary -> DictionaryReference(false, dictionary.filename)
+                else -> error(DICTIONARY_CAST_EXCEPTION)
+            }
     }
 }

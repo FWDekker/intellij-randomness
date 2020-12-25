@@ -84,12 +84,10 @@ object WordSettingsComponentTest : Spek({
         }
 
         it("loads the settings' bundled dictionaries") {
-            assertThat(dictionaryTable.items.map { it.datum }).containsExactly(
-                BundledDictionary.cache.get(BundledDictionary.SIMPLE_DICTIONARY)
-            )
-            assertThat(dictionaryTable.items.filter { it.active }.map { it.datum }).containsExactly(
-                BundledDictionary.cache.get(BundledDictionary.SIMPLE_DICTIONARY)
-            )
+            assertThat(dictionaryTable.items.map { it.datum })
+                .containsExactly(DictionaryReference(true, BundledDictionary.SIMPLE_DICTIONARY))
+            assertThat(dictionaryTable.items.filter { it.active }.map { it.datum })
+                .containsExactly(DictionaryReference(true, BundledDictionary.SIMPLE_DICTIONARY))
         }
     }
 
@@ -124,6 +122,34 @@ object WordSettingsComponentTest : Spek({
 
                 frame.spinner("maxLength").requireValue(796)
             }
+        }
+    }
+
+    describe("modification detection") {
+        it("is not modified by default") {
+            assertThat(wordSettingsComponent.isModified()).isFalse()
+        }
+
+        it("is modified if a different number of dictionaries is present") {
+            wordSettings.currentScheme.userDictionaryFiles = mutableSetOf("user1.dic")
+            GuiActionRunner.execute { wordSettingsComponent.loadSettings() }
+
+            val resizedSettings = wordSettings.deepCopy()
+            resizedSettings.currentScheme.userDictionaryFiles = mutableSetOf("user1.dic", "user2.dic")
+            GuiActionRunner.execute { wordSettingsComponent.loadSettings(resizedSettings) }
+
+            assertThat(wordSettingsComponent.isModified()).isTrue()
+        }
+
+        it("is modified if the user reorders dictionaries") {
+            wordSettings.currentScheme.userDictionaryFiles = mutableSetOf("user1.dic", "user2.dic")
+            GuiActionRunner.execute { wordSettingsComponent.loadSettings() }
+
+            val reorderedSettings = wordSettings.deepCopy()
+            reorderedSettings.currentScheme.userDictionaryFiles = mutableSetOf("user2.dic", "user1.dic")
+            GuiActionRunner.execute { wordSettingsComponent.loadSettings(reorderedSettings) }
+
+            assertThat(wordSettingsComponent.isModified()).isTrue()
         }
     }
 
@@ -179,7 +205,7 @@ object WordSettingsComponentTest : Spek({
             it("fails if a dictionary of a now-deleted file is given") {
                 val dictionaryFile = tempFileHelper.createFile("explore\nworm\ndamp", ".dic")
                     .also { it.delete() }
-                val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
+                val dictionary = DictionaryReference(false, dictionaryFile.absolutePath)
 
                 GuiActionRunner.execute {
                     dictionaryTable.listTableModel.addRow(EditableDatum(true, dictionary))
@@ -190,7 +216,7 @@ object WordSettingsComponentTest : Spek({
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
                 assertThat(validationInfo?.message)
-                    .matches("Dictionary `.*\\.dic` is invalid: Failed to read user dictionary into memory\\.")
+                    .matches("Dictionary .*\\.dic is invalid: File not found\\.")
             }
 
             it("fails if no dictionaries are selected") {
@@ -215,14 +241,13 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
-                assertThat(validationInfo?.message).isEqualTo(
-                    "Dictionary `[user] does_not_exist.dic` is invalid: Failed to read user dictionary into memory."
-                )
+                assertThat(validationInfo?.message)
+                    .isEqualTo("Dictionary does_not_exist.dic is invalid: File not found.")
             }
 
             it("fails if one the dictionaries is empty") {
                 val dictionaryFile = tempFileHelper.createFile("", ".dic")
-                val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
+                val dictionary = DictionaryReference(false, dictionaryFile.absolutePath)
 
                 wordSettings.currentScheme.userDictionaries = setOf(dictionary)
                 wordSettings.currentScheme.activeUserDictionaries = wordSettings.currentScheme.userDictionaries
@@ -232,12 +257,12 @@ object WordSettingsComponentTest : Spek({
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
-                assertThat(validationInfo?.message).matches("Dictionary `.*\\.dic` is empty\\.")
+                assertThat(validationInfo?.message).matches("Dictionary .*\\.dic is empty\\.")
             }
 
             it("fails if a dictionary is added twice") {
                 val dictionaryFile = tempFileHelper.createFile("whistle", ".dic")
-                val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, true)
+                val dictionary = DictionaryReference(false, dictionaryFile.absolutePath)
 
                 wordSettings.currentScheme.userDictionaries = setOf(dictionary)
                 wordSettings.currentScheme.activeUserDictionaries = wordSettings.currentScheme.userDictionaries

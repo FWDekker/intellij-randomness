@@ -106,10 +106,10 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         scheme.maxLength = maxLength.value
         scheme.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
         scheme.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
-        scheme.bundledDictionaries = dictionaryTable.data.filterIsInstance<BundledDictionary>().toSet()
-        scheme.activeBundledDictionaries = dictionaryTable.activeData.filterIsInstance<BundledDictionary>().toSet()
-        scheme.userDictionaries = dictionaryTable.data.filterIsInstance<UserDictionary>().toSet()
-        scheme.activeUserDictionaries = dictionaryTable.activeData.filterIsInstance<UserDictionary>().toSet()
+        scheme.bundledDictionaries = dictionaryTable.data.filter { it.isBundled }.toSet()
+        scheme.activeBundledDictionaries = dictionaryTable.activeData.filter { it.isBundled }.toSet()
+        scheme.userDictionaries = dictionaryTable.data.filter { !it.isBundled }.toSet()
+        scheme.activeUserDictionaries = dictionaryTable.activeData.filter { !it.isBundled }.toSet()
 
         BundledDictionary.cache.clear()
         UserDictionary.cache.clear()
@@ -158,16 +158,14 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
                 ValidationInfo(
                     "The longest word in the selected dictionaries is $maxWordLength characters. " +
                         "Set the minimum length to a value less than or equal to $maxWordLength.",
-                    minLength,
-                    Runnable { minLength.value = maxWordLength }
-                )
+                    minLength
+                ) { minLength.value = maxWordLength }
             maxLength.value < minWordLength ->
                 ValidationInfo(
                     "The shortest word in the selected dictionaries is $minWordLength characters. " +
                         "Set the maximum length to a value less than or equal to $minWordLength.",
-                    maxLength,
-                    Runnable { maxLength.value = minWordLength }
-                )
+                    maxLength
+                ) { maxLength.value = minWordLength }
             else -> null
         }
     }

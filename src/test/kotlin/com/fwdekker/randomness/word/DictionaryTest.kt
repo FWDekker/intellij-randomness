@@ -7,6 +7,7 @@ import org.junit.jupiter.api.fail
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.io.IOException
+import java.lang.IllegalArgumentException
 
 
 /**
@@ -28,8 +29,7 @@ object DictionaryTest : Spek({
                 assertThat(dictionary.isValid()).isFalse()
                 assertThatThrownBy { dictionary.validate() }
                     .isInstanceOf(InvalidDictionaryException::class.java)
-                    .hasMessage("Failed to read bundled dictionary into memory.")
-                    .hasNoCause()
+                    .hasMessage("File not found.")
             }
         }
 
@@ -39,8 +39,7 @@ object DictionaryTest : Spek({
 
                 assertThatThrownBy { dictionary.words }
                     .isInstanceOf(InvalidDictionaryException::class.java)
-                    .hasMessage("Failed to read bundled dictionary into memory.")
-                    .hasNoCause()
+                    .hasMessage("File not found.")
             }
 
             it("is an empty list if the dictionary is empty") {
@@ -78,13 +77,13 @@ object DictionaryTest : Spek({
             it("returns a human-readable string of the dictionary's filename") {
                 val dictionary = BundledDictionary.cache.get("dictionaries/simple.dic", false)
 
-                assertThat(dictionary.toString()).isEqualTo("[bundled] dictionaries/simple.dic")
+                assertThat(dictionary.toString()).isEqualTo("dictionaries/simple.dic")
             }
 
             it("works even if the file does not exist") {
                 val dictionary = BundledDictionary.cache.get("does_not_exist.dic", false)
 
-                assertThat(dictionary.toString()).isEqualTo("[bundled] does_not_exist.dic")
+                assertThat(dictionary.toString()).isEqualTo("does_not_exist.dic")
             }
         }
 
@@ -144,8 +143,7 @@ object DictionaryTest : Spek({
                 assertThat(dictionary.isValid()).isFalse()
                 assertThatThrownBy { dictionary.validate() }
                     .isInstanceOf(InvalidDictionaryException::class.java)
-                    .hasMessage("Failed to read user dictionary into memory.")
-                    .hasCauseInstanceOf(IOException::class.java)
+                    .hasMessage("File not found.")
             }
 
             it("fails if the file is deleted after construction of the dictionary") {
@@ -158,8 +156,18 @@ object DictionaryTest : Spek({
                 assertThat(dictionary.isValid()).isFalse()
                 assertThatThrownBy { dictionary.validate() }
                     .isInstanceOf(InvalidDictionaryException::class.java)
-                    .hasMessage("Failed to read user dictionary into memory.")
-                    .hasCauseInstanceOf(IOException::class.java)
+                    .hasMessage("File not found.")
+            }
+
+            it("fails if the file exists but cannot be accessed") {
+                val dictionaryFile = tempFileHelper.createFile("ladder\nkempt\npork", ".dic")
+                    .also { it.setReadable(false) }
+                val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
+
+                assertThat(dictionary.isValid()).isFalse()
+                assertThatThrownBy { dictionary.validate() }
+                    .isInstanceOf(InvalidDictionaryException::class.java)
+                    .hasMessage("File unreadable.")
             }
         }
 
@@ -169,8 +177,7 @@ object DictionaryTest : Spek({
 
                 assertThatThrownBy { dictionary.words }
                     .isInstanceOf(InvalidDictionaryException::class.java)
-                    .hasMessage("Failed to read user dictionary into memory.")
-                    .hasCauseInstanceOf(IOException::class.java)
+                    .hasMessage("File not found.")
             }
 
             it("is an empty list if the dictionary is empty") {
@@ -214,15 +221,13 @@ object DictionaryTest : Spek({
                 val dictionaryFile = tempFileHelper.createFile("mode\ndepeche", ".dic")
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
 
-                assertThat(dictionary.toString())
-                    .startsWith("[user] ")
-                    .endsWith(".dic")
+                assertThat(dictionary.toString()).endsWith(".dic")
             }
 
             it("works even if the file does not exist") {
                 val dictionary = UserDictionary.cache.get("does_not_exist.dic", false)
 
-                assertThat(dictionary.toString()).isEqualTo("[user] does_not_exist.dic")
+                assertThat(dictionary.toString()).isEqualTo("does_not_exist.dic")
             }
         }
 
@@ -255,6 +260,82 @@ object DictionaryTest : Spek({
 
                 assertThat(dictionary).isNotEqualTo(other)
             }
+        }
+    }
+})
+
+/**
+ * Unit tests for [DictionaryReference]s.
+ */
+object DictionaryReferenceTest : Spek({
+    val tempFileHelper = TempFileHelper()
+
+
+    beforeEachTest {
+        BundledDictionary.cache.clear()
+        UserDictionary.cache.clear()
+    }
+
+    afterGroup {
+        tempFileHelper.cleanUp()
+    }
+
+
+    describe("instantiation") {
+        it("creates a bundled dictionary reference") {
+            val dictionary = BundledDictionary.cache.get("bundled.dic")
+
+            val reference = DictionaryReference.to(dictionary)
+
+            assertThat(reference.isBundled).isTrue()
+            assertThat(reference.filename).isEqualTo("bundled.dic")
+            assertThat(reference.referent).isEqualTo(dictionary)
+        }
+
+        it("creates a user dictionary reference") {
+            val dictionary = UserDictionary.cache.get("user.dic")
+
+            val reference = DictionaryReference.to(dictionary)
+
+            assertThat(reference.isBundled).isFalse()
+            assertThat(reference.filename).isEqualTo("user.dic")
+            assertThat(reference.referent).isEqualTo(dictionary)
+        }
+
+        it("fails for other dictionary types") {
+            val dictionary = object : Dictionary {
+                override val words = setOf("word")
+
+                override fun validate() = Unit
+            }
+
+            assertThatThrownBy { DictionaryReference.to(dictionary) }
+                .isInstanceOf(IllegalStateException::class.java)
+                .hasMessage(DictionaryReference.DICTIONARY_CAST_EXCEPTION)
+        }
+    }
+
+    describe("validation") {
+        it("fails for an invalid dictionary") {
+            val dictionaryFile = tempFileHelper.createFile("contents\n", ".dic")
+                .also { it.setReadable(false) }
+            val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
+            val reference = DictionaryReference.to(dictionary)
+
+            assertThat(reference.isValid()).isFalse()
+        }
+
+        it("no longer fails for a now-valid dictionary") {
+            val dictionaryFile = tempFileHelper.createFile("contents\n", ".dic")
+                .also { it.setReadable(false) }
+            val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
+            val reference = DictionaryReference.to(dictionary)
+
+            assertThat(reference.isValid()).isFalse()
+
+            dictionaryFile.setReadable(true)
+
+            assertThat(reference.isValid()).isTrue()
         }
     }
 })
