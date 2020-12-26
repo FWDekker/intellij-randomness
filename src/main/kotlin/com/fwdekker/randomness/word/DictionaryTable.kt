@@ -81,7 +81,7 @@ class DictionaryTable : ActivityTableModelEditor<DictionaryReference>(
             override fun valueOf(item: EditableDictionary) = item.datum.filename
 
             override fun setValue(item: EditableDictionary, value: String) {
-                item.datum.filename = value
+                item.datum.filename = value.removePrefix("file://")
             }
 
             override fun isCellEditable(item: EditableDictionary) = !item.datum.isBundled
