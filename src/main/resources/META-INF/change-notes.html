@@ -1,23 +1,58 @@
 <b>Breaking changes</b>
 <ul>
-    <li>Minimum IDE version now 2019.3. (#209)</li>
-    <li>Removed extended English dictionary to improve performance and plugin size.</li>
+    <li>
+        Minimum IDE version has been increased to 2020.1.
+        (<a href="https://github.com/FWDekker/intellij-randomness/issues/209">#209</a>,
+         <a href="https://github.com/FWDekker/intellij-randomness/pull/345">#345</a>,
+         <a href="https://github.com/FWDekker/intellij-randomness/pull/361">#361</a>)
+    </li>
+    <li>
+        Extended English dictionary (<tt>english_extended.dic</tt>) has been removed to improve performance and reduce
+        plugin size.
+        (<a href="https://github.com/FWDekker/intellij-randomness/pull/352">#352</a>)
+    </li>
 </ul>
 <br />
 <b>New features</b>
 <ul>
-    <li>Change capitalization of integers base greater than 10. (#346)</li>
-    <li>Added in-app help info about dictionaries. (#347)</li>
-    <li>Improved error messages for IO failures with dictionaries. (#354)</li>
-    <li>Altered dictionary table column widths. (#354)</li>
-    <li>Improve detection of updated dictionaries in settings screen. (#354)</li>
-    <li>Detect invalid settings even when settings have not been changed. (#354)</li>
-    <li>Add improved support for drag-and-drop of dictionaries. (#350)</li>
+    <li>
+        <b>🔠 Integer capitalization</b>.<br />
+        Option to change capitalization of Integers with base greater than 10.
+        For example, generate <tt>0xFF</tt> instead of <tt>0xff</tt>.
+        (<a href="https://github.com/FWDekker/intellij-randomness/issues/346">#346</a>)
+    </li>
+    <li>
+        Short inline explanation of how dictionaries work in the Words settings dialog.
+        (<a href="https://github.com/FWDekker/intellij-randomness/issues/347">#347</a>)
+    </li>
+    <li>
+        Improved support for drag-and-drop of dictionary files into dictionary table.
+        (<a href="https://github.com/FWDekker/intellij-randomness/issues/350">#350</a>)
+    </li>
+    <li>
+        Improved error messages for IO failures with dictionaries.
+        (<a href="https://github.com/FWDekker/intellij-randomness/issues/354">#354</a>)
+    </li>
+    <li>
+        Natural column widths in dictionary table.
+        (<a href="https://github.com/FWDekker/intellij-randomness/issues/354">#354</a>)
+    </li>
+    <li>
+        Changes to dictionary contents are detected directly while in the Words settings dialog.
+        (<a href="https://github.com/FWDekker/intellij-randomness/issues/354">#354</a>)
+    </li>
+    <li>
+        Invalid settings are marked as modified even if settings have not been changed.
+        (<a href="https://github.com/FWDekker/intellij-randomness/issues/354">#354</a>)
+    </li>
 </ul>
 <br />
 <b>Fixes</b>
 <ul>
-    <li>Fixed sub-type listing using custom implementation. (#341)</li>
+    <li>
+        Listing of data types in Randomness settings dialog has been fixed.
+        (<a href="https://github.com/FWDekker/intellij-randomness/issues/341">#341</a>)
+    </li>
 </ul>
 <br />
 Change notes of previous updates can be found on the
