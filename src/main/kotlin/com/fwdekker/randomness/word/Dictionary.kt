@@ -219,6 +219,11 @@ data class DictionaryReference(val isBundled: Boolean, var filename: String) : D
     override fun validate() = referent.validate()
 
 
+    /**
+     * Returns the string representation of the [referent].
+     *
+     * @return the string representation of the [referent]
+     */
     override fun toString() = referent.toString()
 
 
