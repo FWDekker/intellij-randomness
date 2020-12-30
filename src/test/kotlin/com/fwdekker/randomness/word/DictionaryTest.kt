@@ -6,8 +6,14 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.fail
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import java.io.IOException
-import java.lang.IllegalArgumentException
+
+
+/**
+ * Returns `true` if the current operating system is Windows.
+ *
+ * @return `true` if the current operating system is Windows
+ */
+fun isWindows() = System.getProperty("os.name").toLowerCase().contains("win")
 
 
 /**
@@ -160,6 +166,8 @@ object DictionaryTest : Spek({
             }
 
             it("fails if the file exists but cannot be accessed") {
+                if (isWindows()) return@it // setReadable does not work in Windows
+
                 val dictionaryFile = tempFileHelper.createFile("ladder\nkempt\npork", ".dic")
                     .also { it.setReadable(false) }
                 val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
@@ -317,6 +325,8 @@ object DictionaryReferenceTest : Spek({
 
     describe("validation") {
         it("fails for an invalid dictionary") {
+            if (isWindows()) return@it // setReadable does not work in Windows
+
             val dictionaryFile = tempFileHelper.createFile("contents\n", ".dic")
                 .also { it.setReadable(false) }
             val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
@@ -326,6 +336,8 @@ object DictionaryReferenceTest : Spek({
         }
 
         it("no longer fails for a now-valid dictionary") {
+            if (isWindows()) return@it // setReadable does not work in Windows
+
             val dictionaryFile = tempFileHelper.createFile("contents\n", ".dic")
                 .also { it.setReadable(false) }
             val dictionary = UserDictionary.cache.get(dictionaryFile.absolutePath, false)
