@@ -1,14 +1,14 @@
 /// Plugins
 plugins {
     // Compilation
-    id "org.jetbrains.kotlin.jvm" version "1.4.21"
-    id "org.jetbrains.intellij" version "0.6.5"
+    id "org.jetbrains.kotlin.jvm" version "1.4.31"
+    id "org.jetbrains.intellij" version "0.7.2"
 
     // Tests/coverage
     id "jacoco"
 
     // Static analysis
-    id "io.gitlab.arturbosch.detekt" version "1.14.2"
+    id "io.gitlab.arturbosch.detekt" version "1.16.0"
 
     // Documentation
     id "org.jetbrains.dokka" version "0.9.18"
@@ -91,8 +91,8 @@ task codeCoverageReport(type: JacocoReport) {
 // Static analysis
 detekt {
     toolVersion = detektVersion
+    allRules = true
     config = files(".config/detekt/.detekt.yml")
-    failFast = true
 }
 
 // Documentation
