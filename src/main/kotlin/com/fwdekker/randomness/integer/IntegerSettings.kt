@@ -41,7 +41,8 @@ data class IntegerSettings(
         val DEFAULT_SCHEMES: MutableList<IntegerScheme>
             get() = mutableListOf(
                 IntegerScheme(),
-                IntegerScheme("Hex", minValue = 0, maxValue = 256, base = 16, groupingSeparator = "", prefix = "0x")
+                IntegerScheme("Byte", minValue = -128, maxValue = 127),
+                IntegerScheme("Hex", minValue = 0, maxValue = 256, base = 16, groupingSeparator = "", prefix = "0x"),
             )
 
         /**
