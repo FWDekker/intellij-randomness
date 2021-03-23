@@ -51,9 +51,21 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
             if (scheme.minValue > scheme.maxValue)
                 throw DataGenerationException("Minimum value is larger than maximum value.")
 
-            scheme.prefix + convertToString(random.nextLong(scheme.minValue, scheme.maxValue + 1)) + scheme.suffix
+            scheme.prefix + convertToString(randomLong(scheme.minValue, scheme.maxValue)) + scheme.suffix
         }
 
+
+    /**
+     * Returns a random long in the given inclusive range without causing overflow.
+     *
+     * @param from inclusive lower bound
+     * @param until inclusive upper bound
+     * @return a random long in the given inclusive
+     */
+    private fun randomLong(from: Long, until: Long) =
+        if (from == Long.MIN_VALUE && until == Long.MAX_VALUE) random.nextLong()
+        else if (until == Long.MAX_VALUE) random.nextLong(from - 1, until) + 1
+        else random.nextLong(from, until + 1)
 
     /**
      * Returns a nicely formatted representation of an integer.

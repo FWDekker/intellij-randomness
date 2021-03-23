@@ -43,11 +43,11 @@ object JSpinnerRangeTest : Spek({
         }
 
         it("returns validation information if the default range is exceeded") {
-            val range = JSpinnerRange(createJSpinner(-1E53), createJSpinner(1E53))
+            val range = JSpinnerRange(createJSpinner(-546.51), createJSpinner(454.86), 786.15)
 
             val info = range.validateValue()
             assertThat(info).isNotNull()
-            assertThat(info?.message).isEqualTo("The range should not exceed 1.0E53.")
+            assertThat(info?.message).isEqualTo("The range should not exceed 786.15.")
         }
 
         it("returns validation information if a custom range is exceeded") {
