@@ -76,7 +76,7 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
 
         minValue = JDoubleSpinner(description = "minimum value")
         maxValue = JDoubleSpinner(description = "maximum value")
-        valueRange = JSpinnerRange(minValue, maxValue, name = "value")
+        valueRange = JSpinnerRange(minValue, maxValue, MAX_VALUE_RANGE, name = "value")
 
         decimalCount = JIntSpinner(0, 0, description = "decimal count")
     }
@@ -120,5 +120,13 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
             get() = DecimalScheme::class.java
 
         override fun createDefaultInstances() = DEFAULT_SCHEMES
+    }
+
+
+    companion object {
+        /**
+         * The maximum difference between the minimum and maximum values that can be generated.
+         */
+        private const val MAX_VALUE_RANGE = 1E53
     }
 }

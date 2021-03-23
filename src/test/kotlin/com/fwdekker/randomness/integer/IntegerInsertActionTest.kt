@@ -19,7 +19,9 @@ class IntegerInsertActionTest : Spek({
             Pair(1L, 1L) to "1",
             Pair(-5L, -5L) to "-5",
             Pair(488L, 488L) to "488",
-            Pair(-876L, -876L) to "-876"
+            Pair(-876L, -876L) to "-876",
+            Pair(Long.MIN_VALUE, Long.MIN_VALUE) to Long.MIN_VALUE.toString(),
+            Pair(Long.MAX_VALUE, Long.MAX_VALUE) to Long.MAX_VALUE.toString(),
         ).forEach { (minValue, maxValue), expectedString ->
             it("generates $expectedString") {
                 val integerScheme = IntegerScheme(minValue = minValue, maxValue = maxValue)
@@ -31,11 +33,23 @@ class IntegerInsertActionTest : Spek({
             }
         }
 
-        it("throws an exception of the minimum is larger than the maximum") {
+        it("throws an exception if the minimum is larger than the maximum") {
             val action = IntegerInsertAction(IntegerScheme(minValue = 65, maxValue = 24))
             Assertions.assertThatThrownBy { action.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
                 .hasMessage("Minimum value is larger than maximum value.")
+        }
+
+        it("generates a random value at maximum range size") {
+            val integerScheme = IntegerScheme(minValue = Long.MIN_VALUE, maxValue = Long.MAX_VALUE)
+
+            val insertRandomInteger = IntegerInsertAction(integerScheme)
+            val randomString = insertRandomInteger.generateString()
+
+            // Passes with extremely high probability (p = 1 - (2/(2^64))
+            assertThat(randomString)
+                .isNotEqualTo(Long.MIN_VALUE.toString())
+                .isNotEqualTo(Long.MAX_VALUE.toString())
         }
     }
 

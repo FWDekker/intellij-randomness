@@ -15,7 +15,7 @@ import javax.swing.JSpinner
 class JSpinnerRange(
     private val min: JSpinner,
     private val max: JSpinner,
-    private val maxRange: Double = DEFAULT_MAX_RANGE,
+    private val maxRange: Double? = null,
     name: String? = null
 ) {
     /**
@@ -37,7 +37,8 @@ class JSpinnerRange(
 
 
     init {
-        require(maxRange >= 0) { "maxRange must be a positive number." }
+        if (maxRange != null)
+            require(maxRange >= 0) { "maxRange must be a positive number." }
 
         min.addChangeListener { if (minValue > maxValue) max.value = minValue }
         max.addChangeListener { if (maxValue < minValue) min.value = maxValue }
@@ -52,16 +53,11 @@ class JSpinnerRange(
      */
     fun validateValue() =
         when {
-            minValue > maxValue -> ValidationInfo("The maximum$name should not be smaller than the minimum$name.", max)
-            maxValue - minValue > maxRange -> ValidationInfo("The$name range should not exceed $maxRange.", max)
-            else -> null
+            minValue > maxValue ->
+                ValidationInfo("The maximum$name should not be smaller than the minimum$name.", max)
+            maxRange != null && maxValue - minValue > maxRange ->
+                ValidationInfo("The$name range should not exceed $maxRange.", max)
+            else ->
+                null
         }
-
-
-    companion object {
-        /**
-         * The maximum span that can be expressed.
-         */
-        private const val DEFAULT_MAX_RANGE = 1E53
-    }
 }
