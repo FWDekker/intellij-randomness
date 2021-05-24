@@ -84,7 +84,7 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
             IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE,
             description = "base"
         )
-        valueRange = JSpinnerRange(minValue, maxValue, Long.MAX_VALUE.toDouble(), "value")
+        valueRange = JSpinnerRange(minValue, maxValue, maxRange = null, "value")
     }
 
     override fun loadScheme(scheme: IntegerScheme) {
