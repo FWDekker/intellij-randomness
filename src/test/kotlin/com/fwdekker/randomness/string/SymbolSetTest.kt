@@ -73,36 +73,43 @@ object SymbolSetTest : Spek({
 
         describe("sum") {
             it("does nothing when a symbol set is added to itself") {
-                assertThat(listOf(SymbolSet.SPECIAL, SymbolSet.SPECIAL).sum()).isEqualTo(SymbolSet.SPECIAL.symbols)
+                assertThat(listOf(SymbolSet.SPECIAL, SymbolSet.SPECIAL).sum())
+                    .isEqualTo(SymbolSet.SPECIAL.symbols.toList().map { it.toString() })
             }
 
             it("adds the symbols of three symbol sets together") {
                 assertThat(listOf(SymbolSet.DIGITS, SymbolSet.MINUS, SymbolSet.SPECIAL).sum())
-                    .isEqualTo("0123456789-!@#\$%^&*")
+                    .isEqualTo("0123456789-!@#\$%^&*".toList().map { it.toString() })
             }
 
             it("does not add symbols that are already in the accumulator") {
-                assertThat(listOf(SymbolSet("set1", "abc"), SymbolSet("set2", "cde")).sum()).isEqualTo("abcde")
+                assertThat(listOf(SymbolSet("set1", "abc"), SymbolSet("set2", "cde")).sum())
+                    .isEqualTo("abcde".toList().map { it.toString() })
             }
 
             it("does not add symbols that are duplicated in a symbol set") {
-                assertThat(listOf(SymbolSet("set1", "abc"), SymbolSet("set2", "ddeef")).sum()).isEqualTo("abcdef")
+                assertThat(listOf(SymbolSet("set1", "abc"), SymbolSet("set2", "ddeef")).sum())
+                    .isEqualTo("abcdef".toList().map { it.toString() })
             }
 
             it("removes look-alike symbols if the option is given") {
-                assertThat(listOf(SymbolSet("set", "a" + SymbolSet.lookAlikeCharacters)).sum(true)).isEqualTo("a")
+                assertThat(listOf(SymbolSet("set", "a" + SymbolSet.lookAlikeCharacters)).sum(true))
+                    .isEqualTo("a".toList().map { it.toString() })
             }
 
             it("retains emoji with modifiers") {
-                assertThat(listOf(SymbolSet("emoji", "a👨‍💼b")).sum()).isEqualTo("👨‍💼ab")
+                assertThat(listOf(SymbolSet("emoji", "a👨‍💼b")).sum())
+                    .isEqualTo(listOf("👨‍💼", "a", "b"))
             }
 
             it("retains duplicate characters in emoji") {
-                assertThat(listOf(SymbolSet("emoji", "🇦🇶🇦")).sum()).isEqualTo("🇦🇶🇦")
+                assertThat(listOf(SymbolSet("emoji", "🇦🇶🇦")).sum())
+                    .isEqualTo(listOf("🇦🇶", "🇦"))
             }
 
             it("removes duplicate emoji") {
-                assertThat(listOf(SymbolSet("emoji", "🇦🇶😀🇦🇶😀")).sum()).isEqualTo("🇦🇶😀")
+                assertThat(listOf(SymbolSet("emoji", "🇦🇶😀🇦🇶😀")).sum())
+                    .isEqualTo(listOf("🇦🇶", "😀"))
             }
         }
     }

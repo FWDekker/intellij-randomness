@@ -23,7 +23,6 @@ import javax.swing.event.ChangeEvent
  * Component for settings of random array generation.
  *
  * @param settings the settings to edit in the component
- *
  * @see ArraySettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder

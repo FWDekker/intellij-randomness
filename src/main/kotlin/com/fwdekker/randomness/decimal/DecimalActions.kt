@@ -46,13 +46,12 @@ class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.de
      * @param count the number of decimals to generate
      * @return random decimals between the minimum and maximum value, inclusive
      */
-    override fun generateStrings(count: Int) =
-        List(count) {
-            if (scheme.minValue > scheme.maxValue)
-                throw DataGenerationException("Minimum value is larger than maximum value.")
+    override fun generateStrings(count: Int): List<String> {
+        if (scheme.minValue > scheme.maxValue)
+            throw DataGenerationException("Minimum value is larger than maximum value.")
 
-            convertToString(random.nextDouble(scheme.minValue, scheme.maxValue.nextUp()))
-        }
+        return List(count) { convertToString(random.nextDouble(scheme.minValue, scheme.maxValue.nextUp())) }
+    }
 
 
     /**

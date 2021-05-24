@@ -46,13 +46,14 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
      * @param count the number of integers to generate
      * @return random integers between the minimum and maximum value, inclusive
      */
-    override fun generateStrings(count: Int) =
-        List(count) {
-            if (scheme.minValue > scheme.maxValue)
-                throw DataGenerationException("Minimum value is larger than maximum value.")
+    override fun generateStrings(count: Int): List<String> {
+        if (scheme.minValue > scheme.maxValue)
+            throw DataGenerationException("Minimum value is larger than maximum value.")
 
+        return List(count) {
             scheme.prefix + convertToString(randomLong(scheme.minValue, scheme.maxValue)) + scheme.suffix
         }
+    }
 
 
     /**

@@ -87,9 +87,9 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
     @Suppress("SwallowedException") // Alternative is to add coupling to SettingsComponent
     fun updatePreview() {
         try {
-            previewLabel.text = getGenerator().also { it.random = Random(seed) }.generateString()
+            previewLabel.text = getGenerator().also { it.random = Random(seed) }.generateStringTimely()
         } catch (e: DataGenerationException) {
-            // Ignore exception; invalid settings are handled by form validation
+            previewLabel.text = "Settings are invalid: ${e.message}"
         } catch (e: IllegalArgumentException) {
             // Ignore exception; invalid settings are handled by form validation
         }

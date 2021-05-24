@@ -56,7 +56,7 @@ tasks {
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
             jvmTarget = properties("jvmVersion")
-            apiVersion = properties("kotlinVersion")
+            apiVersion = properties("kotlinApiVersion")
             languageVersion = properties("kotlinVersion")
         }
     }

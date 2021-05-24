@@ -60,8 +60,7 @@ class WordInsertAction(private val scheme: WordScheme = WordSettings.default.cur
                 .toSet()
                 .ifEmpty { throw DataGenerationException("There are no words within the configured length range.") }
 
-        return (0 until count)
-            .map { words.random(random) }
+        return List(count) { words.random(random) }
             .map { scheme.capitalization.transform(it) }
             .map { scheme.enclosure + it + scheme.enclosure }
     }

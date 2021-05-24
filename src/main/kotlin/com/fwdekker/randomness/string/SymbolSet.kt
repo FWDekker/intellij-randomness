@@ -92,21 +92,20 @@ fun Collection<SymbolSet>.toMap() = this.map { (name, symbols) -> name to symbol
 fun Map<String, String>.toSymbolSets() = this.map { (name, symbols) -> SymbolSet(name, symbols) }.toList()
 
 /**
- * Concatenates the symbols of all the symbol sets, removing duplicate characters.
+ * Combines the symbols of all the symbol sets, optionally removing duplicate characters.
  *
  * This method respects emoji sequences and will not remove duplicate characters if these characters are essential to
  * displaying the embedded emoji correctly.
  *
  * @param excludeLookAlikeSymbols whether to remove symbols that occur in [SymbolSet.lookAlikeCharacters]
- * @return the concatenation of all symbols of all the symbol sets, excluding duplicate characters
+ * @return a list of all symbols in all active symbol sets, optionally excluding duplicate characters
  */
-fun Iterable<SymbolSet>.sum(excludeLookAlikeSymbols: Boolean = false) =
+fun Iterable<SymbolSet>.sum(excludeLookAlikeSymbols: Boolean = false): List<String> =
     this.fold("") { acc, symbolSet -> acc + symbolSet.symbols }
         .let { Pair(EmojiParser.extractEmojis(it).distinct(), EmojiParser.removeAllEmojis(it).toList().distinct()) }
+        .let { (emoji, noEmoji) -> Pair(emoji, noEmoji.map { it.toString() }) }
         .let { (emoji, noEmoji) ->
-            emoji.joinToString("") +
-                (
-                    if (excludeLookAlikeSymbols) noEmoji.filterNot { it in SymbolSet.lookAlikeCharacters }
-                    else noEmoji
-                    ).joinToString("") // TODO: Fix this indenting :(
+            emoji +
+                if (excludeLookAlikeSymbols) noEmoji.filterNot { it in SymbolSet.lookAlikeCharacters }
+                else noEmoji
         }
