@@ -72,6 +72,10 @@ test {
     }
 }
 
+jacoco {
+    toolVersion = "0.8.7"
+}
+
 task codeCoverageReport(type: JacocoReport) {
     executionData file("$buildDir/jacoco/test.exec")
 
