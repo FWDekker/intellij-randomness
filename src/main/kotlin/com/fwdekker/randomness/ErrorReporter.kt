@@ -155,7 +155,6 @@ class ErrorReporter : ErrorReportSubmitter() {
      *
      * @return the version number of Randomness, or `null` if it could not be determined
      */
-    @Suppress("MissingRecentApi") // False positive
     private fun getPluginVersion() =
         if (pluginDescriptor is IdeaPluginDescriptor) (pluginDescriptor as IdeaPluginDescriptor).version
         else null
