@@ -84,16 +84,16 @@ class DecimalInsertActionTest : Spek({
             Param(4.21, 2, ",", ".") to "4.21",
             Param(4.21, 2, ",", ",") to "4,21",
             // Grouping separator only
-            Param(15616.0, 0, ".", ".") to "15.616",
-            Param(15616.0, 0, ".", ",") to "15.616",
-            Param(15616.0, 0, ",", ".") to "15,616",
-            Param(15616.0, 0, ",", ",") to "15,616",
+            Param(15_616.0, 0, ".", ".") to "15.616",
+            Param(15_616.0, 0, ".", ",") to "15.616",
+            Param(15_616.0, 0, ",", ".") to "15,616",
+            Param(15_616.0, 0, ",", ",") to "15,616",
             // Both separators
-            Param(67575.845, 3, "", ".") to "67575.845",
-            Param(67575.845, 3, ".", ".") to "67.575.845",
-            Param(67575.845, 3, ".", ",") to "67.575,845",
-            Param(67575.845, 3, ",", ".") to "67,575.845",
-            Param(67575.845, 3, ",", ",") to "67,575,845"
+            Param(67_575.845, 3, "", ".") to "67575.845",
+            Param(67_575.845, 3, ".", ".") to "67.575.845",
+            Param(67_575.845, 3, ".", ",") to "67.575,845",
+            Param(67_575.845, 3, ",", ".") to "67,575.845",
+            Param(67_575.845, 3, ",", ",") to "67,575,845"
         ).forEach { (value, decimalCount, groupingSeparator, decimalSeparator), expectedString ->
             it("generates $expectedString") {
                 val decimalScheme = DecimalScheme(

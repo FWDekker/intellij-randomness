@@ -55,9 +55,9 @@ class IntegerInsertActionTest : Spek({
 
     describe("base") {
         mapOf(
-            Triple(33360L, 10, ".") to "33.360",
-            Triple(48345L, 10, ".") to "48.345",
-            Triple(48345L, 11, ".") to "33360"
+            Triple(33_360L, 10, ".") to "33.360",
+            Triple(48_345L, 10, ".") to "48.345",
+            Triple(48_345L, 11, ".") to "33360"
         ).forEach { (value, base, groupingSeparator), expectedString ->
             it("generates $expectedString") {
                 val integerScheme = IntegerScheme(
@@ -77,9 +77,9 @@ class IntegerInsertActionTest : Spek({
 
     describe("separator") {
         mapOf(
-            Pair(95713L, "") to "95713",
-            Pair(163583L, ".") to "163.583",
-            Pair(351426L, ",") to "351,426"
+            Pair(95_713L, "") to "95713",
+            Pair(163_583L, ".") to "163.583",
+            Pair(351_426L, ",") to "351,426"
         ).forEach { (value, groupingSeparator), expectedString ->
             it("generates $expectedString") {
                 val integerScheme = IntegerScheme(

@@ -44,7 +44,7 @@ object ErrorReporterTest : Spek({
 
             it("excludes the stacktraces if they are too long") {
                 val url = reporter.getIssueUrl(
-                    arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION_${List(10000) { "A" }}"))),
+                    arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION_${List(10_000) { "A" }}"))),
                     "ADDITIONAL_INFO"
                 )
 
@@ -57,7 +57,7 @@ object ErrorReporterTest : Spek({
             it("excludes the additional info if they are too long") {
                 val url = reporter.getIssueUrl(
                     arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION"))),
-                    "ADDITIONAL_INFO_${List(10000) { "A" }}"
+                    "ADDITIONAL_INFO_${List(10_000) { "A" }}"
                 )
 
                 assertThat(url)
@@ -68,8 +68,8 @@ object ErrorReporterTest : Spek({
 
             it("excludes both additional info and stacktraces if either is too long") {
                 val url = reporter.getIssueUrl(
-                    arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION_${List(10000) { "A" }}"))),
-                    "ADDITIONAL_INFO_${List(10000) { "A" }}"
+                    arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION_${List(10_000) { "A" }}"))),
+                    "ADDITIONAL_INFO_${List(10_000) { "A" }}"
                 )
 
                 assertThat(url)
