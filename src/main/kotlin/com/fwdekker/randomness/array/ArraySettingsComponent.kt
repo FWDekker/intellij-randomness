@@ -108,15 +108,18 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
     }
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The minimal value in the preview (inclusive).
          */
-        private const val previewMin = 1
+        const val previewMin = 1
 
         /**
          * The maximal value in the preview (inclusive).
          */
-        private const val previewMax = 20
+        const val previewMax = 20
     }
 }

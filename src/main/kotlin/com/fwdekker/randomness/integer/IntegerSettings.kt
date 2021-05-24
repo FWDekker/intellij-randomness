@@ -34,6 +34,9 @@ data class IntegerSettings(
     override fun loadState(state: IntegerSettings) = XmlSerializerUtil.copyBean(state, this)
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
@@ -103,6 +106,9 @@ data class IntegerScheme(
     }
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The minimum value of the [base][base] field.

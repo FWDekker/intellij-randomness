@@ -1,4 +1,5 @@
 import java.net.URL
+import java.time.Year
 
 fun properties(key: String) = project.findProperty(key).toString()
 
@@ -41,7 +42,7 @@ dependencies {
     testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:${properties("spekVersion")}")
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${properties("detektVersion")}")
-    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.4.32")
+    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:${properties("dokkaVersion")}")
 }
 
 
@@ -124,6 +125,9 @@ tasks {
 
     // Documentation
     dokkaHtml.configure {
+        pluginsMapConfiguration.set(mapOf(
+            "org.jetbrains.dokka.base.DokkaBase" to """{ "footerMessage": "© ${Year.now().value} F.W.&nbsp;Dekker" }"""
+        ))
         moduleName.set("IntelliJ Randomness")
         offlineMode.set(true)
 
@@ -131,7 +135,7 @@ tasks {
             named("main") {
                 includes.from(files("packages.md"))
 
-                jdkVersion.set(8)
+                jdkVersion.set(properties("javaVersion").toInt())
 
                 includeNonPublic.set(false)
                 skipDeprecated.set(false)

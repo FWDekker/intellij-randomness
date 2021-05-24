@@ -33,6 +33,9 @@ data class ArraySettings(
     override fun loadState(state: ArraySettings) = XmlSerializerUtil.copyBean(state, this)
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
@@ -92,6 +95,9 @@ data class ArrayScheme(
         )
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The default value of the [count][count] field.

@@ -123,6 +123,9 @@ class RandomnessConfigurable : Configurable {
         }
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * Maximum number of milliseconds to try to find current data manager instance.

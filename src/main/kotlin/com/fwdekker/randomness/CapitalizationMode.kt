@@ -49,6 +49,9 @@ enum class CapitalizationMode(val descriptor: String, val transform: (String) ->
     override fun toString() = descriptor
 
 
+    /**
+     * Holds static elements.
+     */
     companion object {
         /**
          * Returns the capitalization mode with the given name.

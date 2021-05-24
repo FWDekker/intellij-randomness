@@ -34,6 +34,9 @@ data class UuidSettings(
     override fun loadState(state: UuidSettings) = XmlSerializerUtil.copyBean(state, this)
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
@@ -79,6 +82,9 @@ data class UuidScheme(
     override fun copyAs(name: String) = this.copy(myName = name)
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The default value of the [version][version] field.

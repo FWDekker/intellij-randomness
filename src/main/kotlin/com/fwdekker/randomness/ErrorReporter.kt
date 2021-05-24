@@ -186,6 +186,9 @@ class ErrorReporter : ErrorReportSubmitter() {
             .toASCIIString()
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * Maximum URL length supported by GitHub, experimentally verified.

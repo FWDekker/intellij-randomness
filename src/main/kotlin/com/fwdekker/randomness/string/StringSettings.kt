@@ -36,6 +36,9 @@ data class StringSettings(
     override fun loadState(state: StringSettings) = XmlSerializerUtil.copyBean(state, this)
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
@@ -132,6 +135,9 @@ data class StringScheme(
     override fun copyAs(name: String) = this.copy(myName = name)
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The default value of the [minLength][minLength] field.

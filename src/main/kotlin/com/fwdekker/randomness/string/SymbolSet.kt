@@ -18,6 +18,9 @@ data class SymbolSet(var name: String, var symbols: String) {
     override fun toString() = name
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * Symbols that look like other symbols.

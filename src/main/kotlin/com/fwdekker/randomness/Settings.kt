@@ -99,6 +99,9 @@ interface Scheme<SELF> : com.intellij.openapi.options.Scheme {
     fun copyAs(name: String): SELF
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The name of the default scheme.

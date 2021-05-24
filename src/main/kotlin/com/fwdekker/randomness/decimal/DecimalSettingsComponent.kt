@@ -123,10 +123,13 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
     }
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The maximum difference between the minimum and maximum values that can be generated.
          */
-        private const val MAX_VALUE_RANGE = 1E53
+        const val MAX_VALUE_RANGE = 1E53
     }
 }

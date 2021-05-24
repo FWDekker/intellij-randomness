@@ -143,15 +143,53 @@ class PopupAction : AnAction() {
     }
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
-        private const val TITLE = "Insert Data"
-        private const val ALT_TITLE = "Insert Repeated Data"
-        private const val ALT_CTRL_TITLE = "Quick Switch Scheme"
-        private const val ALT_CTRL_SHIFT_TITLE = "Quick Switch Array Scheme"
-        private const val ALT_SHIFT_TITLE = "Insert Repeated Array"
-        private const val CTRL_TITLE = "Change Settings"
-        private const val CTRL_SHIFT_TITLE = "Change Array Settings"
-        private const val SHIFT_TITLE = "Insert Array"
-        private const val AD_TEXT = "Shift = Array. Ctrl = Settings. Alt = Repeat."
+        /**
+         * The default popup title.
+         */
+        const val TITLE = "Insert Data"
+
+        /**
+         * The popup title while the alt key is held down.
+         */
+        const val ALT_TITLE = "Insert Repeated Data"
+
+        /**
+         * The popup title when the alt and control keys are held down.
+         */
+        const val ALT_CTRL_TITLE = "Quick Switch Scheme"
+
+        /**
+         * The popup title when the alt, control, and shift keys are held down.
+         */
+        const val ALT_CTRL_SHIFT_TITLE = "Quick Switch Array Scheme"
+
+        /**
+         * The popup title when the alt and shift keys are held down.
+         */
+        const val ALT_SHIFT_TITLE = "Insert Repeated Array"
+
+        /**
+         * The popup title when the control key is held down.
+         */
+        const val CTRL_TITLE = "Change Settings"
+
+        /**
+         * The popup title when the control and shift keys are held down.
+         */
+        const val CTRL_SHIFT_TITLE = "Change Array Settings"
+
+        /**
+         * The popup title when the shift key is held down.
+         */
+        const val SHIFT_TITLE = "Insert Array"
+
+        /**
+         * The text shown at the bottom of the popup.
+         */
+        const val AD_TEXT = "Shift = Array. Ctrl = Settings. Alt = Repeat."
     }
 }
