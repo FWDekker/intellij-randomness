@@ -17,6 +17,10 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import icons.RandomnessIcons
 import java.awt.event.InputEvent
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import javax.swing.Icon
 import kotlin.random.Random
 
@@ -178,7 +182,7 @@ abstract class DataInsertAction(private val icon: Icon) : AnAction() {
 
         val data =
             try {
-                generateStrings(editor.caretModel.caretCount)
+                generateStringsTimely(editor.caretModel.caretCount)
             } catch (e: DataGenerationException) {
                 HintManager.getInstance().showErrorHint(
                     editor,
@@ -213,6 +217,15 @@ abstract class DataInsertAction(private val icon: Icon) : AnAction() {
     fun generateString() = generateStrings(1).first()
 
     /**
+     * Generates a random datum, or throws an exception if it takes longer than [GENERATOR_TIMEOUT] milliseconds.
+     *
+     * @return a random datum
+     * @throws DataGenerationException if data could not be generated in time
+     */
+    @Throws(DataGenerationException::class)
+    fun generateStringTimely() = generateTimely { generateString() }
+
+    /**
      * Generates random data.
      *
      * @param count the number of data to generate
@@ -221,6 +234,50 @@ abstract class DataInsertAction(private val icon: Icon) : AnAction() {
      */
     @Throws(DataGenerationException::class)
     abstract fun generateStrings(count: Int = 1): List<String>
+
+    /**
+     * Generates random data, or throws an exception if it takes longer than [GENERATOR_TIMEOUT] milliseconds.
+     *
+     * @param count the number of data to generate
+     * @return random data
+     * @throws DataGenerationException if data could not be generated in time
+     */
+    @Throws(DataGenerationException::class)
+    fun generateStringsTimely(count: Int = 1) = generateTimely { generateStrings(count) }
+
+    /**
+     * Runs the given function and returns its return value, or throws an exception if it takes longer than
+     * [GENERATOR_TIMEOUT] milliseconds.
+     *
+     * @param T the return type of [generator]
+     * @param generator the function to call
+     * @return the return value of [generator]
+     * @throws DataGenerationException if data could not be generated in time
+     */
+    @Throws(DataGenerationException::class)
+    private fun <T> generateTimely(generator: () -> T): T {
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            return executor.submit<T> { generator() }.get(GENERATOR_TIMEOUT, TimeUnit.MILLISECONDS)
+        } catch (e: TimeoutException) {
+            throw DataGenerationException("Timed out while generating data.", e)
+        } catch (e: ExecutionException) {
+            throw DataGenerationException(e.message, e)
+        } finally {
+            executor.shutdown()
+        }
+    }
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The timeout in milliseconds before the generator should be interrupted when generating a value.
+         */
+        const val GENERATOR_TIMEOUT = 5000L
+    }
 }
 
 

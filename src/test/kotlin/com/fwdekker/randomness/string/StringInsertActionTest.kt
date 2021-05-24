@@ -7,7 +7,6 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import java.util.regex.Pattern
 
 
 /**
@@ -23,30 +22,14 @@ class StringInsertActionTest : Spek({
             val symbolSets: Set<SymbolSet>
         )
 
-        listOf(
-            Param(0, 0, "", CapitalizationMode.RETAIN, setOf()),
-            Param(0, 0, "'", CapitalizationMode.UPPER, setOf()),
-            Param(0, 0, "a", CapitalizationMode.LOWER, setOf()),
-            Param(0, 0, "2Rv", CapitalizationMode.FIRST_LETTER, setOf()),
-            Param(723, 723, "", CapitalizationMode.UPPER, setOf(SymbolSet.ALPHABET)),
-            Param(466, 466, "z", CapitalizationMode.LOWER, setOf(SymbolSet.ALPHABET, SymbolSet.UNDERSCORE))
-        ).forEach { (minLength, maxLength, enclosure, capitalization, symbolSets) ->
-            fun buildExpectedPattern(
-                minLength: Int,
-                maxLength: Int,
-                enclosure: String,
-                capitalization: CapitalizationMode,
-                symbolSets: Set<SymbolSet>
-            ): Pattern? {
-                val base =
-                    if (symbolSets.isEmpty()) ""
-                    else "[${capitalization.transform.invoke(symbolSets.sum())}]{$minLength,$maxLength}"
-
-                return base
-                    .let { "$enclosure$it$enclosure" }
-                    .let { Pattern.compile(it) }
-            }
-
+        mapOf(
+            Param(0, 0, "", CapitalizationMode.RETAIN, setOf(SymbolSet("x", "x"))) to "",
+            Param(0, 0, "'", CapitalizationMode.UPPER, setOf(SymbolSet("x", "x"))) to "''",
+            Param(0, 0, "a", CapitalizationMode.LOWER, setOf(SymbolSet("x", "x"))) to "aa",
+            Param(0, 0, "2Rv", CapitalizationMode.FIRST_LETTER, setOf(SymbolSet("x", "x"))) to "2Rv2Rv",
+            Param(723, 723, "", CapitalizationMode.UPPER, setOf(SymbolSet("x", "x"))) to "X".repeat(723),
+            Param(466, 466, "z", CapitalizationMode.LOWER, setOf(SymbolSet("x", "x"))) to "z${"x".repeat(466)}z"
+        ).forEach { (minLength, maxLength, enclosure, capitalization, symbolSets), expected ->
             it("generates a formatted string") {
                 val stringScheme = StringScheme(
                     minLength = minLength,
@@ -57,9 +40,7 @@ class StringInsertActionTest : Spek({
                 )
 
                 val insertRandomString = StringInsertAction(stringScheme)
-                val expectedPattern = buildExpectedPattern(minLength, maxLength, enclosure, capitalization, symbolSets)
-
-                assertThat(insertRandomString.generateString()).containsPattern(expectedPattern)
+                assertThat(insertRandomString.generateString()).isEqualTo(expected)
             }
         }
 

@@ -67,8 +67,7 @@ class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.cur
             else -> throw DataGenerationException("Unknown UUID version `${scheme.version}`.")
         }
 
-        return (0 until count)
-            .map { generator.generate().toString() }
+        return List(count) { generator.generate().toString() }
             .map { scheme.capitalization.transform(it) }
             .map {
                 if (scheme.addDashes) it

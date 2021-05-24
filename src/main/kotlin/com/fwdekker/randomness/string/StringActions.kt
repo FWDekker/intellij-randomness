@@ -11,7 +11,6 @@ import com.fwdekker.randomness.DataSettingsAction
 import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
 import com.fwdekker.randomness.array.ArraySettingsAction
-import com.vdurmont.emoji.EmojiParser
 import icons.RandomnessIcons
 
 
@@ -45,35 +44,21 @@ class StringInsertAction(private val scheme: StringScheme = StringSettings.defau
      * @param count the number of strings to generate
      * @return strings of random alphanumerical characters
      */
-    override fun generateStrings(count: Int) =
-        List(count) {
-            if (scheme.minLength > scheme.maxLength)
-                throw DataGenerationException("Minimum length is larger than maximum length.")
+    override fun generateStrings(count: Int): List<String> {
+        if (scheme.minLength > scheme.maxLength)
+            throw DataGenerationException("Minimum length is larger than maximum length.")
 
+        val symbols = scheme.activeSymbolSetList.sum(scheme.excludeLookAlikeSymbols)
+        if (symbols.isEmpty())
+            throw DataGenerationException("No valid symbols found in active symbol sets.")
+
+        return List(count) {
             val length = random.nextInt(scheme.minLength, scheme.maxLength + 1)
-
-            val text = List(length) { generateCharacter() }.joinToString("")
+            val text = List(length) { symbols.random(random) }.joinToString("")
             val capitalizedText = scheme.capitalization.transform(text)
 
             scheme.enclosure + capitalizedText + scheme.enclosure
         }
-
-
-    /**
-     * Returns a random character from the symbol sets in `settings`.
-     *
-     * @return a random character from the symbol sets in `settings`
-     * @throws DataGenerationException if a random character could not be generated
-     */
-    @Throws(DataGenerationException::class)
-    private fun generateCharacter(): String {
-        val symbolSet = scheme.activeSymbolSetList.sum(excludeLookAlikeSymbols = scheme.excludeLookAlikeSymbols)
-        if (symbolSet.isEmpty())
-            throw DataGenerationException("No valid symbols found in active symbol sets.")
-
-        val symbolList =
-            EmojiParser.extractEmojis(symbolSet) + EmojiParser.removeAllEmojis(symbolSet).map { it.toString() }
-        return symbolList[random.nextInt(symbolList.size)]
     }
 
 
