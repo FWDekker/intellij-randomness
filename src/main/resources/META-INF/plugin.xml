@@ -6,7 +6,7 @@
 
     <depends>com.intellij.modules.platform</depends>
 
-    <idea-version since-build="201.0" />
+    <idea-version since-build="202.0" />
 
     <extensions defaultExtensionNs="com.intellij">
         <errorHandler implementation="com.fwdekker.randomness.ErrorReporter"/>
