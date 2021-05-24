@@ -165,21 +165,6 @@ object IntegerSettingsComponentTest : Spek({
             assertThat(integerSettingsComponent.doValidate()).isNull()
         }
 
-        describe("value range") {
-            it("fails if the range size overflows") {
-                GuiActionRunner.execute {
-                    frame.spinner("minValue").target().value = Long.MIN_VALUE
-                    frame.spinner("maxValue").target().value = Long.MAX_VALUE
-                }
-
-                val validationInfo = integerSettingsComponent.doValidate()
-
-                assertThat(validationInfo).isNotNull()
-                assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
-                assertThat(validationInfo?.message).isEqualTo("The value range should not exceed 9.223372036854776E18.")
-            }
-        }
-
         describe("base") {
             it("fails if the base is negative") {
                 GuiActionRunner.execute { frame.spinner("base").target().value = -189 }
