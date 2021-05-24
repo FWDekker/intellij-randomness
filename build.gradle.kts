@@ -128,7 +128,7 @@ tasks {
         pluginsMapConfiguration.set(mapOf(
             "org.jetbrains.dokka.base.DokkaBase" to """{ "footerMessage": "© ${Year.now().value} F.W.&nbsp;Dekker" }"""
         ))
-        moduleName.set("IntelliJ Randomness")
+        moduleName.set("IntelliJ Randomness v${properties("version")}")
         offlineMode.set(true)
 
         dokkaSourceSets {
