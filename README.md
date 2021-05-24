@@ -84,13 +84,13 @@ $ gradlew buildPlugin  # Build an installable zip of the plugin
 $ gradlew test                # Run tests
 $ gradlew test --tests X      # Run tests in class X
 $ gradlew check               # Run tests and static analysis
-$ gradlew codeCoverageReport  # Run tests and calculate coverage
+$ gradlew jacocoTestReport    # Run tests and calculate coverage
 $ gradlew runPluginVerifier   # Check for compatibility issues
 ```
 
 ### 📚 Documentation
 ```bash
-$ gradlew dokka  # Generate documentation
+$ gradlew dokkaHtml  # Generate documentation
 ```
 
 ### 🖼 Icons
