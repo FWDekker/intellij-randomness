@@ -181,6 +181,9 @@ abstract class ActivityTableModelEditor<T>(
     }
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * Whether newly added data are active by default.

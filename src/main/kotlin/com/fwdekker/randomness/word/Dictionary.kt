@@ -116,6 +116,9 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
             ?: throw FileNotFoundException("File not found.")
 
 
+    /**
+     * Holds static elements.
+     */
     companion object {
         /**
          * The location of a simple English dictionary.
@@ -182,6 +185,9 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
     override fun hashCode() = filename.hashCode()
 
 
+    /**
+     * Holds static elements.
+     */
     companion object {
         /**
          * The cache of bundled dictionaries, used to improve word generation times.
@@ -227,6 +233,9 @@ data class DictionaryReference(val isBundled: Boolean, var filename: String) : D
     override fun toString() = referent.toString()
 
 
+    /**
+     * Holds static elements.
+     */
     companion object {
         /**
          * The error message that is displayed if an unknown dictionary implementation is used.

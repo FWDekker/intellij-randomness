@@ -37,11 +37,15 @@ class StringInsertActionTest : Spek({
                 enclosure: String,
                 capitalization: CapitalizationMode,
                 symbolSets: Set<SymbolSet>
-            ) =
-                (if (symbolSets.isEmpty()) ""
-                else "[${capitalization.transform.invoke(symbolSets.sum())}]{$minLength,$maxLength}")
+            ): Pattern? {
+                val base =
+                    if (symbolSets.isEmpty()) ""
+                    else "[${capitalization.transform.invoke(symbolSets.sum())}]{$minLength,$maxLength}"
+
+                return base
                     .let { "$enclosure$it$enclosure" }
                     .let { Pattern.compile(it) }
+            }
 
             it("generates a formatted string") {
                 val stringScheme = StringScheme(

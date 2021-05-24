@@ -60,6 +60,9 @@ class DictionaryTable : ActivityTableModelEditor<DictionaryReference>(
     }
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The column showing the type of the dictionary.
@@ -107,12 +110,12 @@ class DictionaryTable : ActivityTableModelEditor<DictionaryReference>(
         /**
          * The text that is displayed when the table is empty.
          */
-        private const val EMPTY_TEXT = "No dictionaries configured."
+        const val EMPTY_TEXT = "No dictionaries configured."
 
         /**
          * The instruction that is displayed when the table is empty.
          */
-        private const val EMPTY_SUB_TEXT = "Add dictionary"
+        const val EMPTY_SUB_TEXT = "Add dictionary"
 
 
         /**

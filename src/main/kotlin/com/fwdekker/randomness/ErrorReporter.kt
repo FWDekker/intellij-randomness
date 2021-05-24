@@ -155,7 +155,6 @@ class ErrorReporter : ErrorReportSubmitter() {
      *
      * @return the version number of Randomness, or `null` if it could not be determined
      */
-    @Suppress("MissingRecentApi") // False positive
     private fun getPluginVersion() =
         if (pluginDescriptor is IdeaPluginDescriptor) (pluginDescriptor as IdeaPluginDescriptor).version
         else null
@@ -187,6 +186,9 @@ class ErrorReporter : ErrorReportSubmitter() {
             .toASCIIString()
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * Maximum URL length supported by GitHub, experimentally verified.

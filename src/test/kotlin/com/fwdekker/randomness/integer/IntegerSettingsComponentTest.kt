@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.CapitalizationModeTest
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
@@ -90,8 +89,8 @@ object IntegerSettingsComponentTest : Spek({
     describe("saving settings") {
         it("correctly saves settings to a settings object") {
             GuiActionRunner.execute {
-                frame.spinner("minValue").target().value = 2147483648L
-                frame.spinner("maxValue").target().value = 2147483649L
+                frame.spinner("minValue").target().value = 2_147_483_648L
+                frame.spinner("maxValue").target().value = 2_147_483_649L
                 frame.spinner("base").target().value = 14
                 frame.radioButton("groupingSeparatorPeriod").target().isSelected = true
                 frame.radioButton("capitalizationUpper").target().isSelected = true
@@ -140,13 +139,15 @@ object IntegerSettingsComponentTest : Spek({
             it("uses the default separator if null is set") {
                 integerSettings.currentScheme.safeSetGroupingSeparator(null)
 
-                assertThat(integerSettings.currentScheme.groupingSeparator).isEqualTo(IntegerScheme.DEFAULT_GROUPING_SEPARATOR)
+                assertThat(integerSettings.currentScheme.groupingSeparator)
+                    .isEqualTo(IntegerScheme.DEFAULT_GROUPING_SEPARATOR)
             }
 
             it("uses the default separator if an empty string is set") {
                 integerSettings.currentScheme.safeSetGroupingSeparator("")
 
-                assertThat(integerSettings.currentScheme.groupingSeparator).isEqualTo(IntegerScheme.DEFAULT_GROUPING_SEPARATOR)
+                assertThat(integerSettings.currentScheme.groupingSeparator)
+                    .isEqualTo(IntegerScheme.DEFAULT_GROUPING_SEPARATOR)
             }
 
             it("uses only the first character if a multi-character string is given") {

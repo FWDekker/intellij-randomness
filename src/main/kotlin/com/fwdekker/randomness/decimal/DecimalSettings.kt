@@ -33,6 +33,9 @@ data class DecimalSettings(
     override fun loadState(state: DecimalSettings) = XmlSerializerUtil.copyBean(state, this)
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The default value of the [schemes][schemes] field.
@@ -110,6 +113,9 @@ data class DecimalScheme(
             this.decimalSeparator = decimalSeparator.substring(0, 1)
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The default value of the [minValue][minValue] field.

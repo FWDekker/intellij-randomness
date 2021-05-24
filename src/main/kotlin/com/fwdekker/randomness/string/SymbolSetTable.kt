@@ -61,6 +61,9 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
     }
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The column showing the names of the symbol sets.
@@ -121,12 +124,12 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
         /**
          * The text that is displayed when the table is empty.
          */
-        private const val EMPTY_TEXT = "No symbol sets configured."
+        const val EMPTY_TEXT = "No symbol sets configured."
 
         /**
          * The instruction that is displayed when the table is empty.
          */
-        private const val EMPTY_SUB_TEXT = "Add symbol set"
+        const val EMPTY_SUB_TEXT = "Add symbol set"
 
 
         /**

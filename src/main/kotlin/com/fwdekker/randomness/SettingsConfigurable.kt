@@ -4,7 +4,7 @@ import com.intellij.ide.DataManager
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.options.ex.Settings.KEY
-import com.intellij.ui.components.labels.LinkLabel
+import com.intellij.ui.components.ActionLink
 import com.intellij.ui.layout.panel
 import com.intellij.util.ui.JBEmptyBorder
 import java.util.ResourceBundle
@@ -114,7 +114,7 @@ class RandomnessConfigurable : Configurable {
                     children
                         .mapNotNull { child -> settings.find(child.id)?.let { Pair(child.id, it) } }
                         .map { (id, child) ->
-                            LinkLabel.create(child.displayName ?: id) { settings.select(child) }
+                            ActionLink(child.displayName ?: id) { settings.select(child) }
                                 .apply { border = JBEmptyBorder(LINK_MARGIN_TOP, 0, LINK_MARGIN_BOTTOM, 0) }
                         }
                         .forEach { box.add(it) }
@@ -123,6 +123,9 @@ class RandomnessConfigurable : Configurable {
         }
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * Maximum number of milliseconds to try to find current data manager instance.

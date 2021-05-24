@@ -32,7 +32,7 @@ internal class TempFileHelper {
 
             dictionaryFile
         } catch (e: IOException) {
-            fail("Could not set up dictionary file.")
+            fail("Could not set up dictionary file.", e)
         }
 
     /**

@@ -87,6 +87,9 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
         }
 
 
+    /**
+     * Holds constants.
+     */
     companion object {
         /**
          * The default description to use in error messages.

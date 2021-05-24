@@ -29,3 +29,7 @@ Insertion of random UUIDs.
 # Package com.fwdekker.randomness.word
 
 Insertion of random words.
+
+# Package icons
+
+Collection of available icons.
