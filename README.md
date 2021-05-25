@@ -99,7 +99,38 @@ You can open this file with [Sketch](https://www.sketch.com/) (macOS), [Lunacy](
 [Figma](https://github.com/Figma-Linux/figma-linux) (Linux).
 
 
-## 🙏 Credits
-Thanks to [Georgios Andreadis](https://github.com/gandreadis) for the
-[original logo](https://github.com/FWDekker/intellij-randomness/pull/86)!<br />
-Thanks to [Meilina Reksoprodjo](https://github.com/meilinar) for help with macOS user testing!
+## 🙏 Acknowledgements
+In chronological order of contribution:
+* Thanks to [Casper Boone](https://github.com/casperboone) for
+  [reporting a bug](https://github.com/FWDekker/intellij-randomness/issues/25) and for
+  [suggesting emoji support](https://github.com/FWDekker/intellij-randomness/issues/192)!
+* Thanks to [Victor Tyazhelnikov](https://github.com/zenwarr) for
+  [suggesting the array data type](https://github.com/FWDekker/intellij-randomness/issues/54)!
+* Thanks to [Georgios Andreadis](https://github.com/gandreadis) for the
+  [original logo](https://github.com/FWDekker/intellij-randomness/pull/86)!
+* Thanks to [Oleksii K.](https://github.com/ok3141) for
+  [suggesting the UUID data type](https://github.com/FWDekker/intellij-randomness/issues/88) and for
+  [suggesting the hex symbol set](https://github.com/FWDekker/intellij-randomness/issues/89)!
+* Thanks to [Meilina Reksoprodjo](https://github.com/meilinar) for help with macOS user testing!
+* Thanks to [Wouter van Vliet](https://github.com/woutervanvliet) for
+  [helping me clarify the "repeat" action](https://github.com/FWDekker/intellij-randomness/issues/307)!
+* Thanks to [Paweł Lipski](https://github.com/PawelLipski) for
+  [reporting two](https://github.com/FWDekker/intellij-randomness/issues/328)
+  [bugs in the verification script](https://github.com/FWDekker/intellij-randomness/issues/332)!
+* Thanks to [opticyclic](https://github.com/opticyclic) for
+  [suggesting two](https://github.com/FWDekker/intellij-randomness/issues/338)
+  [improvements to the verification script](https://github.com/FWDekker/intellij-randomness/issues/339)!
+* Thanks to [Niraj Jadhav](https://github.com/niraj-toad) for
+  [reporting a bug and demonstrating that the error reporter works](https://github.com/FWDekker/intellij-randomness/issues/343)!
+* Thanks to [jrborases](https://github.com/jrborases) for
+  [suggesting a configurable popup](https://github.com/FWDekker/intellij-randomness/issues/305#issuecomment-661530711)!
+* Thanks to [Alex Pernot](https://github.com/AlexPernot) for
+  [participating in the data type discussion](https://github.com/FWDekker/intellij-randomness/issues/305#issuecomment-662499058)!
+* Thanks to [solo](https://github.com/solonovamax) for
+  [his contributions](https://github.com/FWDekker/intellij-randomness/issues/305#issuecomment-804415489)
+  [to the data type discussion](https://github.com/FWDekker/intellij-randomness/issues/363#issuecomment-804976008)
+  [in several places](https://github.com/FWDekker/intellij-randomness/issues/365#issuecomment-805052007),
+  [suggesting the removal of the integer range limit](https://github.com/FWDekker/intellij-randomness/issues/367), and
+  [suggesting the byte preset](https://github.com/FWDekker/intellij-randomness/issues/368)!
+
+If I should add, remove, or change anything here, just open an issue or email me!
