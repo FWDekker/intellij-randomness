@@ -4,101 +4,327 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>intellij-randomness API</title>
+    <title>Randomness API</title>
 
+    <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic"
-          crossorigin="anonymous">
+          crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
-          integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css"
-          integrity="sha256-Ro/wP8uUi8LR71kwIdilf78atpu8bTEwrK5ZotZo+Zc=" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://static.fwdekker.com/css/milligram-common.css" crossorigin="anonymous">
+          integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.min.css"
+          integrity="sha512-xiunq9hpKsIcz42zt0o2vCo34xV0j6Ny8hgEylN3XBglZDtTZ2nwnqF/Z/TTCc18sGdvCjbFInNd++6q3J0N6g=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            margin: 3em 0;
+            color: black;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <h1><a href="https://plugins.jetbrains.com/plugin/9836-randomness">Randomness</a> documentation</h1>
+    <header>
+        <div class="row">
+            <div class="column">
+                <h1><a href="https://plugins.jetbrains.com/plugin/9836-randomness">Randomness</a> documentation</h1>
+            </div>
+        </div>
+    </header>
 
-    <blockquote>
-        <p>
-            This page links to the API documentation for each version of the <b>Randomness</b> plugin for JetBrains IDEs.
-        </p>
+    <nav>
+        <div class="row">
+            <div class="column">
+                <p>
+                    This page links to the <b>API documentation</b> for each version of the Randomness plugin for
+                    JetBrains IDEs.
+                </p>
 
-        You may also want to
-        <ul>
-            <li><a href="https://plugins.jetbrains.com/plugin/9836-randomness"><b>download</b> the plugin</a></li>
-            <li><a href="https://github.com/FWDekker/intellij-randomness">browse the <b>source code</b></a></li>
-            <li><a href="https://github.com/FWDekker/intellij-randomness/issues/new/choose">report a <b>bug</b></a></li>
-        </ul>
-    </blockquote>
+                You may also want to
+                <ul>
+                    <li>
+                        <a href="https://plugins.jetbrains.com/plugin/9836-randomness">
+                            <b>download</b> the plugin
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/FWDekker/intellij-randomness">
+                            browse the <b>source code</b>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/FWDekker/intellij-randomness/issues/new/choose">
+                            report a <b>bug</b>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <b>v2.x.x</b>
-    <ul>
-        <li><a href="./v2.7.0">v2.7.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.7.0">release notes</a>)</li>
-        <li><a href="./v2.6.1">v2.6.x</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.6.1">release notes</a>)
-            <ul>
-                <li><a href="./v2.6.1">v2.6.1</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.6.1">release notes</a>)</li>
-                <li><a href="./v2.6.0">v2.6.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.6.0">release notes</a>)</li>
-            </ul>
-        </li>
-        <li><a href="./v2.5.1">v2.5.x</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.5.1">release notes</a>)
-            <ul>
-                <li><a href="./v2.5.1">v2.5.1</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.5.1">release notes</a>)</li>
-                <li><a href="./v2.5.0">v2.5.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.5.0">release notes</a>)</li>
-            </ul>
-        </li>
-        <li><a href="./v2.4.1">v2.4.x</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.4.1">release notes</a>)
-            <ul>
-                <li><a href="./v2.4.1">v2.4.1</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.4.1">release notes</a>)</li>
-                <li><a href="./v2.4.0">v2.4.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.4.0">release notes</a>)</li>
-            </ul>
-        </li>
-        <li><a href="./v2.3.0">v2.3.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.3.0">release notes</a>)</li>
-        <li><a href="./v2.2.0">v2.2.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.2.0">release notes</a>)</li>
-        <li><a href="./v2.1.0">v2.1.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.1.0">release notes</a>)</li>
-        <li><a href="./v2.0.0">v2.0.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.0.0">release notes</a>)</li>
-    </ul>
+    <main>
+        <div class="row">
+            <div class="column">
+                <h2>Releases</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="column">
+                <b>v2.x.x</b>
+                <ul>
+                    <li>
+                        <a href="./v2.7.0">v2.7.0</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.7.0"
+                        >release notes</a>)</small>
+                        <small>(2020-12-30)</small>
+                    </li>
+                    <li>
+                        <a href="./v2.6.1">v2.6.x</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.6.1"
+                        >release notes</a>)</small>
+                        <small>(2020-06-24)</small>
 
-    <b>v1.x.x</b>
-    <ul>
-        <li><a href="./v1.6.1">v1.6.x</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.6.1">release notes</a>)
-            <ul>
-                <li><a href="./v1.6.1">v1.6.1</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.6.1">release notes</a>)</li>
-                <li><a href="./v1.6.0">v1.6.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.6.0">release notes</a>)</li>
-            </ul>
-        </li>
-        <li><a href="./v1.5.2">v1.5.x</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.5.2">release notes</a>)
-            <ul>
-                <li><a href="./v1.5.2">v1.5.2</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.5.2">release notes</a>)</li>
-                <li><a href="./v1.5.1">v1.5.1</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.5.1">release notes</a>)</li>
-                <li><a href="./v1.5.0">v1.5.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.5.0">release notes</a>)</li>
-            </ul>
-        </li>
-        <li><a href="./v1.4.0">v1.4.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.4.0">release notes</a>)</li>
-        <li><a href="./v1.3.2">v1.3.x</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.3.2">release notes</a>)
-            <ul>
-                <li><a href="./v1.3.2">v1.3.2</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.3.2">release notes</a>)</li>
-                <li><a href="./v1.3.1">v1.3.1</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.3.1">release notes</a>)</li>
-                <li><a href="./v1.3.0">v1.3.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.3.0">release notes</a>)</li>
-            </ul>
-        </li>
-        <li><a href="./v1.2.0">v1.2.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.2.0">release notes</a>)</li>
-        <li><a href="./v1.1.0">v1.1.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.1.0">release notes</a>)</li>
-        <li><a href="./v1.0.1">v1.0.x</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.0.1">release notes</a>)
-            <ul>
-                <li><a href="./v1.0.1">v1.0.1</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.0.1">release notes</a>)</li>
-                <li><a href="./v1.0.0">v1.0.0</a> (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.0.0">release notes</a>)</li>
-            </ul>
-        </li>
-    </ul>
+                        <ul>
+                            <li>
+                                <a href="./v2.6.1">v2.6.1</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.6.1"
+                                >release notes</a>)</small>
+                                <small>(2020-06-24)</small>
+                            </li>
+                            <li>
+                                <a href="./v2.6.0">v2.6.0</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.6.0"
+                                >release notes</a>)</small>
+                                <small>(2020-05-14)</small>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="./v2.5.1">v2.5.x</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.5.1"
+                        >release notes</a>)</small>
+                        <small>(2020-02-08)</small>
 
-    <b>v0.x.x</b>
-    <ul>
-        <li>v0.5.0 (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v0.5.0">release notes</a>)</li>
-        <li>v0.4.0 (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v0.4.0">release notes</a>)</li>
-        <li>v0.3.0 (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v0.3.0">release notes</a>)</li>
-        <li>v0.2.0 (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v0.2.0">release notes</a>)</li>
-        <li>v0.1.0 (<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v0.1.0">release notes</a>)</li>
-    </ul>
+                        <ul>
+                            <li>
+                                <a href="./v2.5.1">v2.5.1</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.5.1"
+                                >release notes</a>)</small>
+                                <small>(2020-02-08)</small>
+                            </li>
+                            <li>
+                                <a href="./v2.5.0">v2.5.0</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.5.0"
+                                >release notes</a>)</small>
+                                <small>(2020-01-24)</small>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="./v2.4.1">v2.4.x</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.4.1"
+                        >release notes</a>)</small>
+                        <small>(2020-01-14)</small>
+
+                        <ul>
+                            <li>
+                                <a href="./v2.4.1">v2.4.1</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.4.1"
+                                >release notes</a>)</small>
+                                <small>(2020-01-14)</small>
+                            </li>
+                            <li>
+                                <a href="./v2.4.0">v2.4.0</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.4.0"
+                                >release notes</a>)</small>
+                                <small>(2020-01-07)</small>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="./v2.3.0">v2.3.0</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.3.0"
+                        >release notes</a>)</small>
+                        <small>(2019-12-09)</small>
+                    </li>
+                    <li>
+                        <a href="./v2.2.0">v2.2.0</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.2.0"
+                        >release notes</a>)</small>
+                        <small>(2019-08-06)</small>
+                    </li>
+                    <li>
+                        <a href="./v2.1.0">v2.1.0</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.1.0"
+                        >release notes</a>)</small>
+                        <small>(2019-07-10)</small>
+                    </li>
+                    <li>
+                        <a href="./v2.0.0">v2.0.0</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v2.0.0"
+                        >release notes</a>)</small>
+                        <small>(2019-05-16)</small>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="column">
+                <b>v1.x.x</b>
+                <ul>
+                    <li>
+                        <a href="./v1.6.1">v1.6.x</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.6.1"
+                        >release notes</a>)</small>
+                        <small>(2018-09-12)</small>
+
+                        <ul>
+                            <li>
+                                <a href="./v1.6.1">v1.6.1</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.6.1"
+                                >release notes</a>)</small>
+                                <small>(2018-09-12)</small>
+                            </li>
+                            <li>
+                                <a href="./v1.6.0">v1.6.0</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.6.0"
+                                >release notes</a>)</small>
+                                <small>(2018-09-11)</small>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="./v1.5.2">v1.5.x</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.5.2"
+                        >release notes</a>)</small>
+                        <small>(2018-05-27)</small>
+
+                        <ul>
+                            <li>
+                                <a href="./v1.5.2">v1.5.2</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.5.2"
+                                >release notes</a>)</small>
+                                <small>(2018-05-27)</small>
+                            </li>
+                            <li>
+                                <a href="./v1.5.1">v1.5.1</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.5.1"
+                                >release notes</a>)</small>
+                                <small>(2018-05-15)</small>
+                            </li>
+                            <li>
+                                <a href="./v1.5.0">v1.5.0</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.5.0"
+                                >release notes</a>)</small>
+                                <small>(2018-05-13)</small>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="./v1.4.0">v1.4.0</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.4.0"
+                        >release notes</a>)</small>
+                        <small>(2018-04-30)</small>
+                    </li>
+                    <li>
+                        <a href="./v1.3.2">v1.3.x</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.3.2"
+                        >release notes</a>)</small>
+                        <small>(2018-01-21)</small>
+
+                        <ul>
+                            <li>
+                                <a href="./v1.3.2">v1.3.2</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.3.2"
+                                >release notes</a>)</small>
+                                <small>(2018-01-21)</small>
+                            </li>
+                            <li>
+                                <a href="./v1.3.1">v1.3.1</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.3.1"
+                                >release notes</a>)</small>
+                                <small>(2018-01-15)</small>
+                            </li>
+                            <li>
+                                <a href="./v1.3.0">v1.3.0</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.3.0"
+                                >release notes</a>)</small>
+                                <small>(2018-01-09)</small>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="./v1.2.0">v1.2.0</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.2.0"
+                        >release notes</a>)</small>
+                        <small>(2018-01-05)</small>
+                    </li>
+                    <li>
+                        <a href="./v1.1.0">v1.1.0</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.1.0"
+                        >release notes</a>)</small>
+                        <small>(2017-07-30)</small>
+                    </li>
+                    <li>
+                        <a href="./v1.0.1">v1.0.x</a>
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.0.1"
+                        >release notes</a>)</small>
+                        <small>(2017-07-20)</small>
+
+                        <ul>
+                            <li>
+                                <a href="./v1.0.1">v1.0.1</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.0.1"
+                                >release notes</a>)</small>
+                                <small>(2017-07-20)</small>
+                            </li>
+                            <li>
+                                <a href="./v1.0.0">v1.0.0</a>
+                                <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v1.0.0"
+                                >release notes</a>)</small>
+                                <small>(2017-07-16)</small>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="column">
+                <b>v0.x.x</b>
+                <ul>
+                    <li>
+                        v0.5.0
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v0.5.0"
+                        >release notes</a>)</small>
+                        <small>(2017-07-13)</small>
+                    </li>
+                    <li>
+                        v0.4.0
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v0.4.0"
+                        >release notes</a>)</small>
+                        <small>(2017-07-12)</small>
+                    </li>
+                    <li>
+                        v0.3.0
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v0.3.0"
+                        >release notes</a>)</small>
+                        <small>(2017-07-11)</small>
+                    </li>
+                    <li>
+                        v0.2.0
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v0.2.0"
+                        >release notes</a>)</small>
+                        <small>(2017-07-10)</small>
+                    </li>
+                    <li>
+                        v0.1.0
+                        <small>(<a href="https://github.com/FWDekker/intellij-randomness/releases/tag/v0.1.0"
+                        >release notes</a>)</small>
+                        <small>(2017-07-10)</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
 </div>
 </body>
 </html>
