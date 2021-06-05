@@ -3,6 +3,7 @@ package com.fwdekker.randomness.ui
 import com.intellij.ui.popup.list.ListPopupImpl
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
+import java.util.Locale
 import javax.swing.AbstractAction
 import javax.swing.KeyStroke
 
@@ -26,12 +27,12 @@ fun ListPopupImpl.registerModifierActions(captionModifier: (ActionEvent?) -> Str
     (modifiers * optionalModifiers * optionalModifiers).forEach { (a, b, c) ->
         registerAction(
             "${a}${b}${c}Released",
-            KeyStroke.getKeyStroke("$b $c released ${a.toUpperCase()}"),
+            KeyStroke.getKeyStroke("$b $c released ${a.uppercase(Locale.getDefault())}"),
             actionListener { setCaption(captionModifier(it)) }
         )
         registerAction(
             "${a}${b}${c}Pressed",
-            KeyStroke.getKeyStroke("$a $b $c pressed ${a.toUpperCase()}"),
+            KeyStroke.getKeyStroke("$a $b $c pressed ${a.uppercase(Locale.getDefault())}"),
             actionListener { setCaption(captionModifier(it)) }
         )
         registerAction(

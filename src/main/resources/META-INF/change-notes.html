@@ -1,40 +1,38 @@
 <b>Breaking changes</b>
-<ul>
-    <li>
-        Minimum IDE version has been increased to 2020.2.
-        (<a href="https://github.com/FWDekker/intellij-randomness/pull/375">#375</a>)
-    </li>
-</ul>
+<p>
+    Minimum IDE version has been increased to 2020.2.
+    (<a href="https://github.com/FWDekker/intellij-randomness/pull/375">#375</a>)
+</p>
 <br />
 <b>New features</b>
 <ul>
     <li>
-        Remove integer range limit.
+        Remove limit on difference between minimum and maximum integer.
         (<a href="https://github.com/FWDekker/intellij-randomness/issues/367">#367</a>)
     </li>
     <li>
-        Add byte-type integer.
+        Add "byte" integer type to generate integers from -127 to 128.
         (<a href="https://github.com/FWDekker/intellij-randomness/issues/368">#368</a>)
     </li>
     <li>
-        Timeout:
-        Stops if generating takes too long.
-        Also, significantly improved performance for generating long strings.
+        Input field widths now reflect the expected input sizes.
+        (<a href="https://github.com/FWDekker/intellij-randomness/issues/374">#374</a>)
+    </li>
+    <li>
+        Significantly improved performance when generating long strings.
+        (<a href="https://github.com/FWDekker/intellij-randomness/issues/373">#373</a>)
+    </li>
+    <li>
+        Generator timeout prevents IntelliJ from freezing when using excessively complex inputs.
         (<a href="https://github.com/FWDekker/intellij-randomness/issues/373">#373</a>)
     </li>
 </ul>
 <br />
 <b>Fixes</b>
-<ul>
-    <li>
-        Fix error with overflows in integer types.
-        (<a href="https://github.com/FWDekker/intellij-randomness/issues/370">#370</a>)
-    </li>
-    <li>
-        Downscaled input fields to reflect expected input length.
-        (<a href="https://github.com/FWDekker/intellij-randomness/issues/374">#374</a>)
-    </li>
-</ul>
+<p>
+    Prevent overflows when using a large range with integers.
+    (<a href="https://github.com/FWDekker/intellij-randomness/issues/370">#370</a>)
+</p>
 <br />
 Change notes of previous updates can be found on the
 <a href="https://plugins.jetbrains.com/plugin/9836-randomness/versions">plugin repository</a>.

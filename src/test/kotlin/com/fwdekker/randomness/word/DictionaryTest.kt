@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.fail
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
+import java.util.Locale
 
 
 /**
@@ -13,7 +14,7 @@ import org.spekframework.spek2.style.specification.describe
  *
  * @return `true` if the current operating system is Windows
  */
-fun isWindows() = System.getProperty("os.name").toLowerCase().contains("win")
+fun isWindows() = System.getProperty("os.name").lowercase(Locale.getDefault()).contains("win")
 
 
 /**

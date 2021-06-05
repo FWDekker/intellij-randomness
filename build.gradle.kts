@@ -8,14 +8,14 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
     // Compilation
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.5.10"
+    id("org.jetbrains.kotlin.jvm") version "1.5.10"  // See also `gradle.properties`
     id("org.jetbrains.intellij") version "0.7.3"
 
     // Tests/coverage
     id("jacoco")
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.17.1"
+    id("io.gitlab.arturbosch.detekt") version "1.17.1"  // See also `gradle.properties`
 
     // Documentation
     id("org.jetbrains.dokka") version "1.4.32"
@@ -30,6 +30,9 @@ repositories {
 dependencies {
     implementation("com.fasterxml.uuid:java-uuid-generator:${properties("uuidGeneratorVersion")}")
     implementation("com.vdurmont:emoji-java:${properties("emojiVersion")}")
+    // Use bundled Kotlin (ca. 4MB) to ensure forwards compatibility with IDE versions
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    api("org.jetbrains.kotlin:kotlin-reflect")
 
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:${properties("mockitoKotlinVersion")}")
     testImplementation("org.assertj:assertj-core:${properties("assertjVersion")}")
@@ -42,7 +45,6 @@ dependencies {
     testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:${properties("spekVersion")}")
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${properties("detektVersion")}")
-    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:${properties("dokkaVersion")}")
 }
 
 
@@ -128,7 +130,7 @@ tasks {
         pluginsMapConfiguration.set(mapOf(
             "org.jetbrains.dokka.base.DokkaBase" to """{ "footerMessage": "© ${Year.now().value} F.W.&nbsp;Dekker" }"""
         ))
-        moduleName.set("IntelliJ Randomness v${properties("version")}")
+        moduleName.set("Randomness v${properties("version")}")
         offlineMode.set(true)
 
         dokkaSourceSets {

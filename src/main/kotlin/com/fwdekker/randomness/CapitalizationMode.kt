@@ -23,12 +23,12 @@ enum class CapitalizationMode(val descriptor: String, val transform: (String) ->
     /**
      * Makes all characters uppercase.
      */
-    UPPER("upper", { string -> string.toUpperCase(Locale.getDefault()) }),
+    UPPER("upper", { string -> string.uppercase(Locale.getDefault()) }),
 
     /**
      * Makes all characters lowercase.
      */
-    LOWER("lower", { string -> string.toLowerCase(Locale.getDefault()) }),
+    LOWER("lower", { string -> string.lowercase(Locale.getDefault()) }),
 
     /**
      * Makes the first letter of each word uppercase.
@@ -69,8 +69,8 @@ enum class CapitalizationMode(val descriptor: String, val transform: (String) ->
          * @return the uppercase or lowercase version of this character
          */
         private fun Char.toRandomCase() =
-            if (kotlin.random.Random.nextBoolean()) this.toLowerCase()
-            else this.toUpperCase()
+            if (kotlin.random.Random.nextBoolean()) this.lowercaseChar()
+            else this.uppercaseChar()
 
         /**
          * Turns the first character uppercase while all other characters become lowercase.
@@ -78,6 +78,6 @@ enum class CapitalizationMode(val descriptor: String, val transform: (String) ->
          * @return the sentence-case form of this string
          */
         private fun String.toSentenceCase() =
-            this.toLowerCase(Locale.getDefault()).capitalize()
+            this.lowercase(Locale.getDefault()).replaceFirstChar { it.uppercaseChar() }
     }
 }

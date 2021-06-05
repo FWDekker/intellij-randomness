@@ -58,7 +58,6 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
 
         dictionaryHelp.border = null
         dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
-        dictionaryHelp.isFocusable = false
 
         previewPanelHolder.updatePreviewOnUpdateOf(minLength, maxLength, capitalizationGroup, enclosureGroup)
         previewPanelHolder.updatePreviewOnUpdateOf(dictionaryTable)
