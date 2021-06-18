@@ -7,6 +7,8 @@ import com.fwdekker.randomness.integer.IntegerGroupAction
 import com.fwdekker.randomness.integer.IntegerSettingsAction
 import com.fwdekker.randomness.string.StringGroupAction
 import com.fwdekker.randomness.string.StringSettingsAction
+import com.fwdekker.randomness.uds.UDSGroupAction
+import com.fwdekker.randomness.uds.UDSSettingsAction
 import com.fwdekker.randomness.ui.registerModifierActions
 import com.fwdekker.randomness.uuid.UuidGroupAction
 import com.fwdekker.randomness.uuid.UuidSettingsAction
@@ -116,6 +118,7 @@ class PopupAction : AnAction() {
                 StringGroupAction(),
                 WordGroupAction(),
                 UuidGroupAction(),
+                UDSGroupAction(),
                 Separator(),
                 ArraySettingsAction()
             )
@@ -137,6 +140,7 @@ class PopupAction : AnAction() {
                 StringSettingsAction(),
                 WordSettingsAction(),
                 UuidSettingsAction(),
+                UDSSettingsAction(),
                 Separator(),
                 ArraySettingsAction()
             )
