@@ -21,13 +21,10 @@ import com.fwdekker.randomness.uuid.UuidInsertAction
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordInsertAction
 import com.fwdekker.randomness.word.WordScheme
-import com.intellij.util.castSafelyTo
 import icons.RandomnessIcons
-import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.typeOf
 
 
 /**
@@ -60,6 +57,7 @@ class UDSInsertAction(private val scheme: UDSScheme = UDSSettings.default.curren
      * @param count the number of strings to generate
      * @return random UDS-based strings based on the descriptor
      */
+    @Suppress("LongMethod", "ComplexMethod", "LoopWithTooManyJumpStatements")
     override fun generateStrings(count: Int) = List(count) {
         var out = ""
 
@@ -67,7 +65,7 @@ class UDSInsertAction(private val scheme: UDSScheme = UDSSettings.default.curren
         while (iterator.isNotEmpty()) {
             val prefix = iterator.takeWhile { it != '%' }
             out += prefix
-            iterator = iterator.drop(prefix.length + 1)  // Also drop '%'
+            iterator = iterator.drop(prefix.length + 1) // Also drop '%'
             if (iterator.isEmpty()) break
 
             if (iterator.first() == '%') {
@@ -78,8 +76,8 @@ class UDSInsertAction(private val scheme: UDSScheme = UDSSettings.default.curren
             }
 
             val type = iterator.takeWhile { it != '[' }
-            iterator = iterator.drop(type.length + 1)  // Also drop '['
-            if (iterator.isEmpty()) throw DataGenerationException("UDS type '${type}' cannot end with '['.")
+            iterator = iterator.drop(type.length + 1) // Also drop '['
+            if (iterator.isEmpty()) throw DataGenerationException("UDS type '$type' cannot end with '['.")
 
             val typeArgs = mutableMapOf<String, String>()
             while (iterator.first() != ']') {
@@ -87,16 +85,16 @@ class UDSInsertAction(private val scheme: UDSScheme = UDSSettings.default.curren
                     iterator = iterator.drop(1)
 
                 val argKey = iterator.takeWhile { it != '=' }
-                iterator = iterator.drop(argKey.length + 1)  // Also drop '='
+                iterator = iterator.drop(argKey.length + 1) // Also drop '='
                 if (iterator.isEmpty())
-                    throw DataGenerationException("UDS type argument '${argKey}' must also have a value.")
+                    throw DataGenerationException("UDS type argument '$argKey' must also have a value.")
 
                 val argVal = iterator.takeWhile { it != ',' && it != ']' }
                 iterator = iterator.drop(argVal.length)
 
                 typeArgs[argKey.trim()] = argVal.trim()
             }
-            iterator = iterator.drop(1)  // Drop ']'
+            iterator = iterator.drop(1) // Drop ']'
 
             val (typeConstructor, schemeConstructor) = when (type) {
                 "Int" -> Pair(IntegerInsertAction::class, IntegerScheme::class.primaryConstructor!!)
@@ -104,7 +102,7 @@ class UDSInsertAction(private val scheme: UDSScheme = UDSSettings.default.curren
                 "Str" -> Pair(StringInsertAction::class, StringScheme::class.primaryConstructor!!)
                 "Word" -> Pair(WordInsertAction::class, WordScheme::class.primaryConstructor!!)
                 "UUID" -> Pair(UuidInsertAction::class, UuidScheme::class.primaryConstructor!!)
-                else -> throw DataGenerationException("Unknown UDS type '${type}'.")
+                else -> throw DataGenerationException("Unknown UDS type '$type'.")
             }
 
             val typeScheme = schemeConstructor.callBy(

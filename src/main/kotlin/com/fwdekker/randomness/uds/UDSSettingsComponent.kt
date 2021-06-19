@@ -17,6 +17,7 @@ import javax.swing.JTextField
  *
  * @see UDSSettingsAction
  */
+@Suppress("LateinitUsage") // Initialized by scene builder
 class UDSSettingsComponent(settings: UDSSettings = default) : SettingsComponent<UDSSettings, UDSScheme>(settings) {
     override lateinit var unsavedSettings: UDSSettings
     override lateinit var schemesPanel: SchemesPanel<UDSScheme>
