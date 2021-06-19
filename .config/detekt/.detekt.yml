@@ -57,6 +57,9 @@ style:
     # Such comments are OK.
     ForbiddenComment:
         active: false
+    # One more is fine in my opinion.
+    LoopWithTooManyJumpStatements:
+        maxJumpCount: 2
     # No braces are easier to read.
     MandatoryBracesIfStatements:
         active: false
