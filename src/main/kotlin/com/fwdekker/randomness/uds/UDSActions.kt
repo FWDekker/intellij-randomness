@@ -43,7 +43,8 @@ class UDSInsertAction(private val scheme: UDSScheme = UDSSettings.default.curren
      * @param count the number of strings to generate
      * @return random UDS-based strings based on the descriptor
      */
-    override fun generateStrings(count: Int) = UDSParser.parse(scheme.descriptor).generateStrings(count)
+    override fun generateStrings(count: Int) =
+        UDSParser.parse(scheme.descriptor).also { it.random = this.random }.generateStrings(count)
 
     /**
      * Inserts an array-like string of UDS-based strings.

@@ -11,7 +11,7 @@ import com.fwdekker.randomness.uuid.UuidInsertAction
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordInsertAction
 import com.fwdekker.randomness.word.WordScheme
-import java.util.function.Function
+import kotlin.random.Random
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.createType
@@ -30,11 +30,11 @@ object UDSParser {
      * @return a UDS generator
      */
     fun parse(descriptor: String): UDSGenerator {
-        val generators = mutableListOf<Function<Int, List<String>>>()
+        val generators = mutableListOf<(Int, Random) -> List<String>>()
 
         val iterator = StringPointer(descriptor)
         while ((+iterator).isNotEmpty()) {
-            iterator.advanceWhile { it != '%' }.also { prefix -> generators.add { count -> List(count) { prefix } } }
+            iterator.advanceWhile { it != '%' }.also { prefix -> generators.add { count, _ -> List(count) { prefix } } }
             if ((+iterator).isEmpty())
                 continue
 
@@ -43,7 +43,7 @@ object UDSParser {
                 throw UDSParseException("Descriptor must not end in '%'.")
 
             if ((+iterator).first() == '%') {
-                generators.add { count -> List(count) { "%" } }
+                generators.add { count, _ -> List(count) { "%" } }
                 iterator += 1 // Drop the second '%'
                 continue
             }
@@ -112,7 +112,7 @@ object UDSParser {
         val argVal = (+iterator).takeWhile { it != ',' && it != ']' }
         iterator += argVal.length
 
-        return argKey.trim() to argVal.trim()
+        return argKey.trim() to argVal.trim().removeSurrounding("\"")
     }
 
     /**
@@ -125,7 +125,7 @@ object UDSParser {
     private fun createTypeGenerator(
         type: String,
         args: Map<String, String>
-    ): Function<Int, List<String>> {
+    ): (Int, Random) -> List<String> {
         val (typeConstructor, schemeConstructor) = when (type) {
             "Int" -> Pair(IntegerInsertAction::class, IntegerScheme::class.primaryConstructor!!)
             "Dec" -> Pair(DecimalInsertAction::class, DecimalScheme::class.primaryConstructor!!)
@@ -137,7 +137,9 @@ object UDSParser {
 
         val typeScheme = schemeConstructor.callBy(convertSchemeArgs(args, schemeConstructor))
 
-        return Function { typeConstructor.primaryConstructor!!.call(typeScheme).generateStrings(it) }
+        return { count, random ->
+            typeConstructor.primaryConstructor!!.call(typeScheme).also { it.random = random }.generateStrings(count)
+        }
     }
 
     /**
@@ -173,7 +175,13 @@ object UDSParser {
  *
  * @property generators the generators that generate parts of the string
  */
-class UDSGenerator(private val generators: List<Function<Int, List<String>>>) {
+class UDSGenerator(private val generators: List<(Int, Random) -> List<String>>) {
+    /**
+     * The random number generator used for all the generators.
+     */
+    var random: Random = Random.Default
+
+
     /**
      * Generates the given number of strings.
      *
@@ -181,7 +189,7 @@ class UDSGenerator(private val generators: List<Function<Int, List<String>>>) {
      * @return a list of strings
      */
     fun generateStrings(count: Int): List<String> {
-        val generated = generators.map { it.apply(count) }
+        val generated = generators.map { it(count, random) }
 
         return List(count) { i -> generated.joinToString(separator = "") { it[i] } }
     }
