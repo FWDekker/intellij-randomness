@@ -2,7 +2,7 @@
     <id>com.fwdekker.randomness</id>
     <name>Randomness</name>
     <version>0.0.0</version>  <!-- Patched in from `gradle.properties` -->
-    <vendor email="felix@fwdekker.com" url="https://fwdekker.com/">FWDekker</vendor>
+    <vendor email="f@fwdekker.com" url="https://fwdekker.com/">FWDekker</vendor>
 
     <depends>com.intellij.modules.platform</depends>
 

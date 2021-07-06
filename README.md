@@ -132,5 +132,7 @@ In chronological order of contribution:
   [in several places](https://github.com/FWDekker/intellij-randomness/issues/365#issuecomment-805052007),
   [suggesting the removal of the integer range limit](https://github.com/FWDekker/intellij-randomness/issues/367), and
   [suggesting the byte preset](https://github.com/FWDekker/intellij-randomness/issues/368)!
+* Thanks to [Martin Kaspar van Laak](https://github.com/MartinKvL) for
+  [reporting that symbol sets didn't get saved](https://github.com/FWDekker/intellij-randomness/issues/382)!
 
 If I should add, remove, or change anything here, just open an issue or email me!
