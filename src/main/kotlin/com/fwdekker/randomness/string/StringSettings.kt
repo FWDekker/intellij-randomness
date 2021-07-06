@@ -68,10 +68,10 @@ data class StringSettings(
  * @property maxLength The maximum length of the generated string, inclusive.
  * @property enclosure The string that encloses the generated string on both sides.
  * @property capitalization The capitalization mode of the generated string.
- * @property symbolSets The symbol sets that are available for generating strings. Emoji have been serialized for
- * compatibility with JetBrains' serializer.
- * @property activeSymbolSets The symbol sets that are actually used for generating strings; a subset of [symbolSets].
- * Emoji have been serialized for compatibility with JetBrains' serializer.
+ * @property serializedSymbolSets The symbol sets that are available for generating strings. Emoji have been serialized
+ * for compatibility with JetBrains' serializer.
+ * @property serializedActiveSymbolSets The symbol sets that are actually used for generating strings; a subset of
+ * [symbolSets]. Emoji have been serialized for compatibility with JetBrains' serializer.
  * @property excludeLookAlikeSymbols Whether the symbols in [SymbolSet.lookAlikeCharacters] should be excluded.
  *
  * @see StringInsertAction

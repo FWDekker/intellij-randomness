@@ -79,7 +79,7 @@ object DictionaryTableTest : Spek({
         }
     }
 
-    // TODO: Remove and copy buttons not accessible from tests
+    // TODO: Remove and copy buttons are not accessible from tests
     xdescribe("itemEditor") {
         describe("remove") {
             it("does not remove a bundled dictionary") {}
