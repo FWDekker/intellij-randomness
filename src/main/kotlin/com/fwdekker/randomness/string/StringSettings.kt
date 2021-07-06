@@ -68,8 +68,10 @@ data class StringSettings(
  * @property maxLength The maximum length of the generated string, inclusive.
  * @property enclosure The string that encloses the generated string on both sides.
  * @property capitalization The capitalization mode of the generated string.
- * @property symbolSets The symbol sets that are available for generating strings.
- * @property activeSymbolSets The symbol sets that are actually used for generating strings; a subset of [symbolSets].
+ * @property serializedSymbolSets The symbol sets that are available for generating strings. Emoji have been serialized
+ * for compatibility with JetBrains' serializer.
+ * @property serializedActiveSymbolSets The symbol sets that are actually used for generating strings; a subset of
+ * [symbolSets]. Emoji have been serialized for compatibility with JetBrains' serializer.
  * @property excludeLookAlikeSymbols Whether the symbols in [SymbolSet.lookAlikeCharacters] should be excluded.
  *
  * @see StringInsertAction
@@ -81,32 +83,30 @@ data class StringScheme(
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    @get:Transient
-    var symbolSets: Map<String, String> = DEFAULT_SYMBOL_SETS.toMap(),
-    @get:Transient
-    var activeSymbolSets: Map<String, String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMap(),
+    @MapAnnotation(sortBeforeSave = false)
+    var serializedSymbolSets: Map<String, String> = DEFAULT_SYMBOL_SETS.toMap(),
+    @MapAnnotation(sortBeforeSave = false)
+    var serializedActiveSymbolSets: Map<String, String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMap(),
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS
 ) : Scheme<StringScheme> {
     /**
-     * Same as [symbolSets], except that all emoji are serialized.
+     * Same as [symbolSets], except that serialized emoji have been deserialized.
      */
-    @get:MapAnnotation(sortBeforeSave = false)
-    @Suppress("unused") // Used by serializer
-    var serializedSymbolSets: Map<String, String>
-        get() = symbolSets.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
+    var symbolSets: Map<String, String>
+        @Transient
+        get() = serializedSymbolSets.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
         set(value) {
-            symbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
+            serializedSymbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
         }
 
     /**
-     * Same as [activeSymbolSets], except that all emoji are serialized.
+     * Same as [activeSymbolSets], except that serialized emoji have been deserialized.
      */
-    @get:MapAnnotation(sortBeforeSave = false)
-    @Suppress("unused") // Used by serializer
-    var serializedActiveSymbolSets: Map<String, String>
-        get() = activeSymbolSets.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
+    var activeSymbolSets: Map<String, String>
+        @Transient
+        get() = serializedActiveSymbolSets.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
         set(value) {
-            activeSymbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
+            serializedActiveSymbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
         }
 
     /**

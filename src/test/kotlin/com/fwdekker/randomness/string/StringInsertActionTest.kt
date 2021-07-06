@@ -36,7 +36,7 @@ class StringInsertActionTest : Spek({
                     maxLength = maxLength,
                     enclosure = enclosure,
                     capitalization = capitalization,
-                    activeSymbolSets = symbolSets.toMap()
+                    serializedActiveSymbolSets = symbolSets.toMap()
                 )
 
                 val insertRandomString = StringInsertAction(stringScheme)
@@ -51,7 +51,7 @@ class StringInsertActionTest : Spek({
                 maxLength = 1,
                 enclosure = "",
                 capitalization = CapitalizationMode.RETAIN,
-                activeSymbolSets = setOf(SymbolSet("emoji", "👩‍👩‍👧‍👧")).toMap()
+                serializedActiveSymbolSets = setOf(SymbolSet("emoji", "👩‍👩‍👧‍👧")).toMap()
             )
 
             assertThat(StringInsertAction(stringScheme).generateString()).isEqualTo(emoji)
@@ -67,7 +67,7 @@ class StringInsertActionTest : Spek({
         }
 
         it("throws an exception if no valid symbols are found") {
-            val action = StringInsertAction(StringScheme(activeSymbolSets = emptyMap()))
+            val action = StringInsertAction(StringScheme(serializedActiveSymbolSets = emptyMap()))
             Assertions.assertThatThrownBy { action.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
                 .hasMessage("No valid symbols found in active symbol sets.")

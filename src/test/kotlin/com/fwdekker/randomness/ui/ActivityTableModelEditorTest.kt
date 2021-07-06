@@ -23,7 +23,6 @@ object ActivityTableModelEditorTest : Spek({
         ideaFixture.setUp()
 
         val itemEditor = object : CollectionItemEditor<EditableDatum<String>> {
-            // TODO Do not instantiate instance of `EditableSymbolSet`
             override fun getItemClass() = EditableDatum(false, "")::class.java
 
             override fun clone(item: EditableDatum<String>, forInPlaceEditing: Boolean) =
@@ -120,7 +119,7 @@ object ActivityTableModelEditorTest : Spek({
         }
     }
 
-    // TODO: Copy functionality not accessible from tests
+    // TODO: Copy functionality is not accessible from tests
     xdescribe("copying") {
         it("copies a copyable element") {}
 

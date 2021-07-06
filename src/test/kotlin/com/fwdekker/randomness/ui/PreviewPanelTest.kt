@@ -81,7 +81,6 @@ object PreviewPanelTest : Spek({
         xit("updates when an activity table is updated") {
             GuiActionRunner.execute {
                 val itemEditor = object : CollectionItemEditor<EditableDatum<String>> {
-                    // TODO Do not instantiate instance of `EditableSymbolSet`
                     override fun getItemClass() = EditableDatum(false, "")::class.java
 
                     override fun clone(item: EditableDatum<String>, forInPlaceEditing: Boolean) =
