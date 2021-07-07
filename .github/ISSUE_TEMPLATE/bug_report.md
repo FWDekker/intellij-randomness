@@ -24,7 +24,7 @@ assignees: FWDekker
 <!-- If applicable, add screenshots to help explain your problem. -->
 
 **Version information**
- - Randomness version [e.g. 2.7.1]: <!-- Check `Settings -> Plugins` in your IDE and search for `Randomness` -->
+ - Randomness version [e.g. 2.7.2]: <!-- Check `Settings -> Plugins` in your IDE and search for `Randomness` -->
  - IDE version [e.g. IntelliJ Community 2021.1.2]: <!-- Check `Help -> About` in your IDE -->
  - Operating system [e.g. Windows 10, Ubuntu 20.04, macOS 11.4]: <!-- Use a search engine for help if you don't know -->
  - Java version [e.g. 1.8.291, 11.0.11]: <!-- Run `java -version` in a terminal or check https://www.java.com/en/download/help/version_manual.xml -->
