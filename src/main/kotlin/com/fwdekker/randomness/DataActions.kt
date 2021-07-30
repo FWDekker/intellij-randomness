@@ -16,7 +16,7 @@ import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import icons.RandomnessIcons
-import java.awt.event.InputEvent
+import java.awt.event.ActionEvent
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -99,11 +99,11 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
      * @param event carries information on the invocation place
      */
     override fun actionPerformed(event: AnActionEvent) {
-        // alt behavior is handled by implementation of `actionPerformed`
-        val altPressed = event.modifiers and (InputEvent.ALT_MASK or InputEvent.ALT_DOWN_MASK) != 0
-        val ctrlPressed = event.modifiers and (InputEvent.CTRL_MASK or InputEvent.CTRL_DOWN_MASK) != 0
-        val shiftPressed = event.modifiers and (InputEvent.SHIFT_MASK or InputEvent.SHIFT_DOWN_MASK) != 0
+        val altPressed = event.modifiers and ActionEvent.ALT_MASK != 0
+        val ctrlPressed = event.modifiers and ActionEvent.CTRL_MASK != 0
+        val shiftPressed = event.modifiers and ActionEvent.SHIFT_MASK != 0
 
+        // alt behavior is handled by implementation of `actionPerformed`
         when {
             altPressed && ctrlPressed && shiftPressed -> quickSwitchArraySchemeAction.actionPerformed(event)
             altPressed && ctrlPressed -> quickSwitchSchemeAction.actionPerformed(event)

@@ -21,7 +21,6 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.popup.list.ListPopupImpl
 import icons.RandomnessIcons
 import java.awt.event.ActionEvent
-import java.awt.event.InputEvent
 
 
 /**
@@ -83,9 +82,9 @@ class PopupAction : AnAction() {
     @Suppress("ComplexMethod") // Cannot be simplified
     private fun captionModifier(event: ActionEvent?): String {
         val modifiers = event?.modifiers ?: 0
-        val altPressed = modifiers and (InputEvent.ALT_MASK or InputEvent.ALT_DOWN_MASK) != 0
-        val ctrlPressed = modifiers and (InputEvent.CTRL_MASK or InputEvent.CTRL_DOWN_MASK) != 0
-        val shiftPressed = modifiers and (InputEvent.SHIFT_MASK or InputEvent.SHIFT_DOWN_MASK) != 0
+        val altPressed = modifiers and ActionEvent.ALT_MASK != 0
+        val ctrlPressed = modifiers and ActionEvent.CTRL_MASK != 0
+        val shiftPressed = modifiers and ActionEvent.SHIFT_MASK != 0
 
         return when {
             altPressed && ctrlPressed && shiftPressed -> ALT_CTRL_SHIFT_TITLE
