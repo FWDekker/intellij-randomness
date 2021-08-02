@@ -60,7 +60,7 @@ object SymbolSetTableTest : Spek({
         }
     }
 
-    // TODO: Remove button not accessible from tests
+    // TODO: Remove button is not accessible from tests
     xdescribe("itemEditor") {
         it("removes a symbol set") {
         }
