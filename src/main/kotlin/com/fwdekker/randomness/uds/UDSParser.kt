@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.uds
 
+import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.decimal.DecimalInsertAction
 import com.fwdekker.randomness.decimal.DecimalScheme
@@ -14,6 +15,8 @@ import com.fwdekker.randomness.word.WordScheme
 import kotlin.random.Random
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.KTypeProjection
+import kotlin.reflect.KVariance
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
@@ -28,7 +31,9 @@ object UDSParser {
      *
      * @param descriptor a UDS descriptor
      * @return a UDS generator
+     * @throws UDSParseException if the given string is not a valid UDS descriptor
      */
+    @Throws(UDSParseException::class)
     fun parse(descriptor: String): UDSGenerator {
         val generators = mutableListOf<(Int, Random) -> List<String>>()
 
@@ -65,6 +70,7 @@ object UDSParser {
      * @return the list of key-value pairs, converted to a map
      * @throws UDSParseException if the string could not be parsed into a list of key-value pairs
      */
+    @Throws(UDSParseException::class)
     private fun parseArgs(iterator: StringPointer): Map<String, String> {
         val typeArgs = mutableMapOf<String, String>()
 
@@ -99,6 +105,7 @@ object UDSParser {
      * @return the key-value pair, with both the key and value trimmed for whitespace
      * @throws UDSParseException if the string could not be parsed into a key-value pair
      */
+    @Throws(UDSParseException::class)
     private fun parseKeyValue(iterator: StringPointer): Pair<String, String>? {
         iterator.advanceWhile { it == ',' || it == ' ' }
         if ((+iterator).firstOrNull() == ']')
@@ -121,7 +128,9 @@ object UDSParser {
      * @param type the data type to generate values with
      * @param args the arguments to give to the type's scheme
      * @return a function that returns a given amount of string as specified by the type and arguments
+     * @throws UDSParseException if an unknown type is given
      */
+    @Throws(UDSParseException::class)
     private fun createTypeGenerator(
         type: String,
         args: Map<String, String>
@@ -150,22 +159,233 @@ object UDSParser {
      * @param args the named arguments to convert into the proper type
      * @param function the function to read the types from
      * @return the type-converted arguments
+     * @throws UDSParseException if an unknown type is given
      */
+    @Throws(UDSParseException::class)
+    @Suppress("ComplexMethod") // Method cannot be separated or simplified
     private fun convertSchemeArgs(args: Map<String, String>, function: KFunction<Scheme<*>>): Map<KParameter, *> {
         return args
             .mapNotNull { (k, v) ->
                 function.findParameterByName(k)?.let {
-                    it to when (it.type) {
-                        Boolean::class.createType() -> v.toBoolean()
-                        Double::class.createType() -> v.toDouble()
-                        Int::class.createType() -> v.toInt()
-                        Long::class.createType() -> v.toLong()
-                        String::class.createType() -> v
+                    val stringProjection = KTypeProjection(KVariance.INVARIANT, String::class.createType())
+
+                    it to when {
+                        it.type.classifier == Boolean::class -> v.toBoolean()
+                        it.type.classifier == Double::class -> v.toDoubleOrNull() ?: 0.0
+                        it.type.classifier == Int::class -> v.toIntOrNull() ?: 0
+                        it.type.classifier == Long::class -> v.toLongOrNull() ?: 0L
+                        it.type.classifier == String::class -> v
+                        it.type.classifier == CapitalizationMode::class -> CapitalizationMode.getMode(v)
+                        it.type.classifier == List::class
+                            && it.type.arguments == listOf(stringProjection) -> parseListDescriptor(v)
+                        it.type.classifier == Set::class
+                            && it.type.arguments == listOf(stringProjection) -> parseSetDescriptor(v)
+                        it.type.classifier == Map::class
+                            && it.type.arguments == listOf(stringProjection, stringProjection) -> parseMapDescriptor(v)
                         else -> throw UDSParseException("Unknown type '${it.type}'.")
+                    }
+                } ?: throw UDSParseException("Unknown parameter '$k'.")
+            }
+            .toMap()
+    }
+
+    /**
+     * Parses a list of strings from the given descriptor.
+     *
+     * List descriptors should adhere to the following rules:
+     * * A list consists of entries.
+     * * Entries are separated by at least one whitespace.
+     * * A whitespace can be added to an entry by escaping it with a backslash.
+     * * A backslash can be added to an entry by escaping it with a backslash.
+     * * No other characters may be escaped by a backspace.
+     * * The descriptor may not end with an escaping backslash.
+     * * Empty entries are ignored.
+     * * Lists may have zero entries.
+     *
+     * @param listDescriptor a string describing a list of strings
+     * @param evaluateEscapeCharacters true if escape characters should be validated and evaluated. For example, if set
+     * to true, the string `\\\\` will be replaced with `\\`. Set this to false if the returned list will be used by
+     * another parser which may allow for more escape characters.
+     * @return a list of strings parsed from the given descriptor
+     * @throws UDSParseException if the given string is not a valid string list descriptor
+     */
+    @Throws(UDSParseException::class)
+    @Suppress(
+        "NestedBlockDepth",
+        "StringLiteralDuplication"
+    ) // TODO: Create a generic parser that works with escape symbols
+    private fun parseListDescriptor(listDescriptor: String, evaluateEscapeCharacters: Boolean = true): List<String> {
+        val elements = mutableListOf<String>()
+
+        val iterator = StringPointer(listDescriptor)
+        while ((+iterator).isNotEmpty()) {
+            var element = ""
+
+            while (true) {
+                element += iterator.advanceWhile { it !in " \\" }
+
+                when ((+iterator).firstOrNull()) {
+                    null -> break
+                    ' ' -> {
+                        iterator += 1
+                        break
+                    }
+                    '\\' -> {
+                        iterator += 1
+                        if ((+iterator).isEmpty())
+                            throw UDSParseException("Trailing backslash does not escape anything.")
+
+                        if (!evaluateEscapeCharacters) {
+                            element += "\\" + (+iterator).first()
+                        } else {
+                            if ((+iterator).first() in "\\ ")
+                                element += (+iterator).first()
+                            else
+                                throw UDSParseException("Backslash must escape either whitespace or another backslash.")
+                        }
+
+                        iterator += 1
                     }
                 }
             }
-            .toMap()
+
+            if (element.isNotEmpty())
+                elements += element
+        }
+
+        return elements
+    }
+
+    /**
+     * Parses a set of strings from the given descriptor.
+     *
+     * Uses the same format as [parseListDescriptor], but duplicate entries are removed.
+     *
+     * @param setDescriptor a string describing a set of strings
+     * @return a set of strings parsed from the given descriptor
+     * @throws UDSParseException if the given string is not a valid string set descriptor
+     */
+    @Throws(UDSParseException::class)
+    private fun parseSetDescriptor(setDescriptor: String) =
+        parseListDescriptor(setDescriptor).toSet()
+
+    /**
+     * Parses a string-to-string map from the given descriptor.
+     *
+     * Map descriptors should adhere to the following rules:
+     * * A map consists of key-value pairs.
+     * * Key-value pairs are separated by at least one whitespace.
+     * * A key-value pair consists of a key and a value, separated by a colon.
+     * * A whitespace can be added to a key or a value by escaping it with a backslash.
+     * * A colon can be added to a key or a value by escaping it with a backslash.
+     * * A backslash can be added to a key or a value by escaping it with a backslash.
+     * * No other characters may be escaped by a backslash.
+     * * The descriptor may not end with an escaping backslash.
+     * * A key-value pair descriptor must contain exactly one unescaped colon.
+     * * Keys may not be empty.
+     * * Values may be empty.
+     * * If multiple key-value pairs have the same key, only the last key-value pair is returned.
+     * * Maps may have zero key-value pairs.
+     *
+     * @param mapDescriptor a string describing a string-to-string map
+     * @return a string-to-string map parsed from the given descriptor
+     * @throws UDSParseException if the given string is not a valid string-to-string map descriptor
+     */
+    @Throws(UDSParseException::class)
+    private fun parseMapDescriptor(mapDescriptor: String) =
+        parseListDescriptor(mapDescriptor, evaluateEscapeCharacters = false)
+            .associate { pairDescriptor ->
+                StringPointer(pairDescriptor).let { parseMapKey(it) to parseMapValue(it) }
+            }
+
+    /**
+     * Parses a key for a string-to-string map at the start of the string.
+     *
+     * @param iterator the string that starts with the map's key; after this method, the string points to the first
+     * character after the `:`
+     * @return a key for a string-to-string map
+     * @throws UDSParseException if the iterator does not point to a key for a string-to-string map
+     * @see UDSParser.parseMapDescriptor
+     * @see UDSParser.parseMapValue
+     */
+    @Throws(UDSParseException::class)
+    @Suppress("ThrowsCount") // TODO: Create a generic parser that works with escape symbols
+    private fun parseMapKey(iterator: StringPointer): String {
+        var key = ""
+
+        while ((+iterator).isNotEmpty()) {
+            key += iterator.advanceWhile { it !in ":\\" }
+
+            when ((+iterator).firstOrNull()) {
+                null -> throw UDSParseException("Key '$key' does not have a value.")
+                ':' -> {
+                    if (key.isEmpty())
+                        throw UDSParseException("Key must not be empty.")
+
+                    iterator += 1
+                    break
+                }
+                '\\' -> {
+                    iterator += 1
+                    when ((+iterator).firstOrNull()) {
+                        '\\', ' ', ':' ->
+                            key += (+iterator).first()
+                        null ->
+                            throw UDSParseException("Trailing backslash does not escape anything.")
+                        else ->
+                            throw UDSParseException(
+                                "Backslash must escape either whitespace, colon, or another backslash."
+                            )
+                    }
+
+                    iterator += 1
+                }
+            }
+        }
+
+        return key
+    }
+
+    /**
+     * Parses a value for a string-to-string map at the start of the string.
+     *
+     * @param iterator the string that starts with the map's value; after this method, the string points to the first
+     * character after the `:`
+     * @return a key for a string-to-string map
+     * @throws UDSParseException if the iterator does not point to a value for a string-to-string map
+     * @see UDSParser.parseMapDescriptor
+     * @see UDSParser.parseMapKey
+     */
+    @Throws(UDSParseException::class)
+    @Suppress("ThrowsCount") // TODO: Create a generic parser that works with escape symbols
+    private fun parseMapValue(iterator: StringPointer): String {
+        var value = ""
+
+        while ((+iterator).isNotEmpty()) {
+            value += iterator.advanceWhile { it !in ":\\" }
+
+            when ((+iterator).firstOrNull()) {
+                null -> break
+                ':' -> throw UDSParseException("Value must not contain ':'.")
+                '\\' -> {
+                    iterator += 1
+                    when ((+iterator).firstOrNull()) {
+                        '\\', ' ', ':' ->
+                            value += (+iterator).first()
+                        null ->
+                            throw UDSParseException("Trailing backslash does not escape anything.")
+                        else ->
+                            throw UDSParseException(
+                                "Backslash must escape either whitespace, colon, or another backslash."
+                            )
+                    }
+
+                    iterator += 1
+                }
+            }
+        }
+
+        return value
     }
 }
 

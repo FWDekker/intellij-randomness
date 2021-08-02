@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.uds
 
+import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
@@ -44,7 +45,11 @@ class UDSInsertAction(private val scheme: UDSScheme = UDSSettings.default.curren
      * @return random UDS-based strings based on the descriptor
      */
     override fun generateStrings(count: Int) =
-        UDSParser.parse(scheme.descriptor).also { it.random = this.random }.generateStrings(count)
+        try {
+            UDSParser.parse(scheme.descriptor).also { it.random = this.random }.generateStrings(count)
+        } catch (e: UDSParseException) {
+            throw DataGenerationException(e.message, e)
+        }
 
     /**
      * Inserts an array-like string of UDS-based strings.
