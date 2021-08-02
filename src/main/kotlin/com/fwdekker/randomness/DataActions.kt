@@ -262,7 +262,7 @@ abstract class DataInsertAction(private val icon: Icon) : AnAction() {
         } catch (e: TimeoutException) {
             throw DataGenerationException("Timed out while generating data.", e)
         } catch (e: ExecutionException) {
-            throw DataGenerationException(e.message, e)
+            throw DataGenerationException(e.cause?.message ?: e.message, e)
         } finally {
             executor.shutdown()
         }
