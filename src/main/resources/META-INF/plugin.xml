@@ -17,6 +17,7 @@
         <applicationService serviceImplementation="com.fwdekker.randomness.string.StringSettings" />
         <applicationService serviceImplementation="com.fwdekker.randomness.word.WordSettings" />
         <applicationService serviceImplementation="com.fwdekker.randomness.uuid.UuidSettings" />
+        <applicationService serviceImplementation="com.fwdekker.randomness.uds.UDSSettings" />
         <applicationService serviceImplementation="com.fwdekker.randomness.array.ArraySettings" />
 
         <!-- Settings window -->
@@ -38,6 +39,9 @@
                           parentId="randomness.MainConfigurable" />
             <configurable instance="com.fwdekker.randomness.uuid.UuidSettingsConfigurable"
                           id="randomness.UuidSettingsConfigurable"
+                          parentId="randomness.MainConfigurable" />
+            <configurable instance="com.fwdekker.randomness.uds.UDSSettingsConfigurable"
+                          id="randomness.UDSSettingsConfigurable"
                           parentId="randomness.MainConfigurable" />
             <configurable instance="com.fwdekker.randomness.array.ArraySettingsConfigurable"
                           id="randomness.ArraySettingsConfigurable"
@@ -214,6 +218,38 @@
                 text="UUID Quick Switch Scheme"
                 description="Quickly switch scheme for the Random Uuid action."
                 icon="/icons/uuid-quick-switch-scheme.svg" />
+
+        <!-- UDS -->
+        <action id="randomness.InsertUDS"
+                class="com.fwdekker.randomness.uds.UDSInsertAction"
+                text="Random UDS"
+                description="Inserts a random UDS at each caret."
+                icon="/icons/data.svg" />
+        <action id="randomness.InsertUDSArray"
+                class="com.fwdekker.randomness.uds.UDSInsertAction$ArrayAction"
+                text="Random UDS Array"
+                description="Inserts an array of random UDSs at each caret."
+                icon="/icons/data-array.svg" />
+        <action id="randomness.InsertUDSRepeat"
+                class="com.fwdekker.randomness.uds.UDSInsertAction$RepeatAction"
+                text="Random Repeated UDS"
+                description="Inserts the same random UDS at each caret."
+                icon="/icons/data-repeat.svg" />
+        <action id="randomness.InsertUDSRepeatArray"
+                class="com.fwdekker.randomness.uds.UDSInsertAction$RepeatArrayAction"
+                text="Random Repeated UDS Array"
+                description="Inserts the same array of random UDSs at each caret."
+                icon="/icons/data-repeat-array.svg" />
+        <action id="randomness.UDSSettings"
+                class="com.fwdekker.randomness.uds.UDSSettingsAction"
+                text="UDS Settings"
+                description="Settings for the Random UDS action."
+                icon="/icons/data-settings.svg" />
+        <action id="randomness.UDSQuickSwitchScheme"
+                class="com.fwdekker.randomness.uds.UDSSettingsAction$UDSQuickSwitchSchemeAction"
+                text="UDS Quick Switch Scheme"
+                description="Quickly switch scheme for the Random Uuid action."
+                icon="/icons/data-quick-switch-scheme.svg" />
 
         <!-- Arrays -->
         <action id="randomness.ArraySettings"
