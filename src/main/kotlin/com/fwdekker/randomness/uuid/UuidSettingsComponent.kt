@@ -5,7 +5,7 @@ import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.SettingsComponentListener
 import com.fwdekker.randomness.ValidationInfo
-import com.fwdekker.randomness.ui.PreviewPanel
+import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_CAPITALIZATION
@@ -31,8 +31,6 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
     override lateinit var schemesPanel: SchemesPanel<UuidScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var previewPanelHolder: PreviewPanel
-    private lateinit var previewPanel: JPanel
     private lateinit var versionGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
@@ -42,26 +40,11 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
 
 
     init {
-        loadSettings()
-
-        previewPanelHolder.updatePreviewOnUpdateOf(versionGroup, enclosureGroup, capitalizationGroup, addDashesCheckBox)
-        previewPanelHolder.updatePreview()
-    }
-
-
-    /**
-     * Initialises custom UI components.
-     *
-     * This method is called by the scene builder at the start of the constructor.
-     */
-    @Suppress("UnusedPrivateMember") // Used by scene builder
-    private fun createUIComponents() {
         unsavedSettings = UuidSettings()
         schemesPanel = UuidSchemesPanel(unsavedSettings)
             .also { it.addListener(SettingsComponentListener(this)) }
 
-        previewPanelHolder = PreviewPanel { UuidInsertAction(UuidScheme().also { saveScheme(it) }) }
-        previewPanel = previewPanelHolder.rootPane
+        loadSettings()
     }
 
 
@@ -80,6 +63,14 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
     }
 
     override fun doValidate(): ValidationInfo? = null
+
+    override fun addChangeListener(listener: () -> Unit) =
+        addChangeListenerTo(
+            versionGroup, enclosureGroup, capitalizationGroup, addDashesCheckBox,
+            listener = listener
+        )
+
+    override fun toUDSDescriptor() = "%UUID[]"
 
 
     /**

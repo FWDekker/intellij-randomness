@@ -4,8 +4,15 @@ import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.SettingsComponentListener
 import com.fwdekker.randomness.ValidationInfo
+import com.fwdekker.randomness.decimal.DecimalSettingsComponent
+import com.fwdekker.randomness.integer.IntegerSettingsComponent
+import com.fwdekker.randomness.string.StringSettingsComponent
 import com.fwdekker.randomness.uds.UDSSettings.Companion.default
 import com.fwdekker.randomness.ui.PreviewPanel
+import com.fwdekker.randomness.ui.addChangeListener
+import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.fwdekker.randomness.uuid.UuidSettingsComponent
+import com.fwdekker.randomness.word.WordSettingsComponent
 import javax.swing.JPanel
 import javax.swing.JTextField
 
@@ -26,6 +33,9 @@ class UDSSettingsComponent(settings: UDSSettings = default) : SettingsComponent<
     private lateinit var previewPanelHolder: PreviewPanel
     private lateinit var previewPanel: JPanel
     private lateinit var descriptor: JTextField
+    private lateinit var descriptorEditorPanel: JPanel
+    private var isEditingDescriptor = false
+    private var isEditingComponent = false
 
     override val rootPane get() = contentPane
 
@@ -33,7 +43,9 @@ class UDSSettingsComponent(settings: UDSSettings = default) : SettingsComponent<
     init {
         loadSettings()
 
-        previewPanelHolder.updatePreviewOnUpdateOf(descriptor)
+        descriptor.addChangeListener { onDescriptorChanged(it.text) }
+
+        addChangeListener { previewPanelHolder.updatePreview() }
         previewPanelHolder.updatePreview()
     }
 
@@ -51,6 +63,8 @@ class UDSSettingsComponent(settings: UDSSettings = default) : SettingsComponent<
 
         previewPanelHolder = PreviewPanel { UDSInsertAction(UDSScheme().also { saveScheme(it) }) }
         previewPanel = previewPanelHolder.rootPane
+
+        descriptorEditorPanel = JPanel()
     }
 
     override fun loadScheme(scheme: UDSScheme) {
@@ -62,6 +76,43 @@ class UDSSettingsComponent(settings: UDSSettings = default) : SettingsComponent<
     }
 
     override fun doValidate(): ValidationInfo? = null
+
+    override fun addChangeListener(listener: () -> Unit) = addChangeListenerTo(descriptor, listener = listener)
+
+
+    // TODO: Docs
+    private fun onDescriptorChanged(newDescriptor: String) {
+        // TODO: Extract the descriptor's scheme and load it into the component
+        // TODO: Do not reload entire panel every time, just load it into the component if it's already there
+
+        if (isEditingComponent) return
+
+        isEditingDescriptor = true
+        descriptorEditorPanel.removeAll()
+        when {
+            newDescriptor.startsWith("%Int") -> IntegerSettingsComponent()
+            newDescriptor.startsWith("%Dec") -> DecimalSettingsComponent()
+            newDescriptor.startsWith("%Str") -> StringSettingsComponent()
+            newDescriptor.startsWith("%Word") -> WordSettingsComponent()
+            newDescriptor.startsWith("%UUID") -> UuidSettingsComponent()
+            else -> null
+        }?.also { component ->
+            component.addChangeListener { onComponentChanged(component.toUDSDescriptor()) }
+            descriptorEditorPanel.add(component.rootPane)
+        }
+        isEditingDescriptor = false
+    }
+
+    // TODO: Docs
+    private fun onComponentChanged(newDescriptor: String) {
+        if (isEditingDescriptor) return
+
+        isEditingComponent = true
+        descriptor.text = newDescriptor
+        isEditingComponent = false
+    }
+
+    override fun toUDSDescriptor(): String = descriptor.text
 
 
     /**

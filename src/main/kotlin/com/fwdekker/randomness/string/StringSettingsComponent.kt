@@ -10,12 +10,11 @@ import com.fwdekker.randomness.string.StringSettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.string.StringSettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
-import com.fwdekker.randomness.ui.PreviewPanel
+import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.jgoodies.forms.factories.DefaultComponentFactory
 import java.awt.font.TextAttribute
-import java.util.ArrayList
 import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
@@ -38,8 +37,6 @@ class StringSettingsComponent(settings: StringSettings = default) :
     override lateinit var schemesPanel: SchemesPanel<StringScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var previewPanelHolder: PreviewPanel
-    private lateinit var previewPanel: JPanel
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -61,10 +58,6 @@ class StringSettingsComponent(settings: StringSettings = default) :
             .let { excludeLookAlikeSymbolsCheckBox.font.deriveFont(it) }
         excludeLookAlikeSymbolsCheckBox.toolTipText =
             "Excludes the following characters from all generated strings: ${SymbolSet.lookAlikeCharacters}"
-
-        previewPanelHolder.updatePreviewOnUpdateOf(minLength, maxLength, enclosureGroup, capitalizationGroup)
-        previewPanelHolder.updatePreviewOnUpdateOf(symbolSetTable)
-        previewPanelHolder.updatePreview()
     }
 
 
@@ -81,9 +74,6 @@ class StringSettingsComponent(settings: StringSettings = default) :
         unsavedSettings = StringSettings()
         schemesPanel = StringSchemesPanel(unsavedSettings)
             .also { it.addListener(SettingsComponentListener(this)) }
-
-        previewPanelHolder = PreviewPanel { StringInsertAction(StringScheme().also { saveScheme(it) }) }
-        previewPanel = previewPanelHolder.rootPane
 
         minLength = JIntSpinner(1, 1, description = "minimum length")
         maxLength = JIntSpinner(1, 1, description = "maximum length")
@@ -133,6 +123,20 @@ class StringSettingsComponent(settings: StringSettings = default) :
             ?: maxLength.validateValue()
             ?: lengthRange.validateValue()
             ?: symbolSetTable.doValidate(excludeLookAlikeSymbolsCheckBox.isSelected)
+
+    override fun addChangeListener(listener: () -> Unit) =
+        addChangeListenerTo(
+            minLength, maxLength, enclosureGroup, capitalizationGroup, symbolSetTable,
+            listener = listener
+        )
+
+    override fun toUDSDescriptor() =
+        "%Str[" +
+            "minLength=${minLength.value}, " +
+            "maxLength=${maxLength.value}, " +
+            "enclosure=${enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE}, " +
+            "capitalization=${capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION}, " +
+            "]"
 
 
     /**

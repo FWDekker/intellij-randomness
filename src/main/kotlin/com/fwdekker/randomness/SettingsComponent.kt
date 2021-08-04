@@ -22,6 +22,9 @@ import javax.swing.JPanel
  * @param T the type of scheme to manage
  * @param settings the settings to manage
  */
+// TODO: Remove the inherent use of schemes from settings components
+// TODO: Remove the ability to "save" and "load" from settings, or alternatively create a new super class, like maybe
+// "UDS Primitive" or something.
 abstract class SettingsComponent<S : Settings<S, T>, T : Scheme<T>>(private val settings: S) : SettingsManager<S> {
     /**
      * The panel containing the settings.
@@ -91,6 +94,23 @@ abstract class SettingsComponent<S : Settings<S, T>, T : Scheme<T>>(private val 
      * Discards unsaved changes.
      */
     fun reset() = loadSettings()
+
+
+    // TODO: Move these functions to better places
+    /**
+     * Adds a listener to these settings that is triggered when any of the settings' fields is changed.
+     *
+     * @param listener the function to invoke when any of the settings' fields is changed
+     */
+    abstract fun addChangeListener(listener: () -> Unit)
+
+    // TODO: Consider moving this to the scheme instead of the component
+    /**
+     * Returns the UDS descriptor corresponding to the current scheme.
+     *
+     * @return the UDS descriptor corresponding to the current scheme
+     */
+    abstract fun toUDSDescriptor(): String
 
 
     /**

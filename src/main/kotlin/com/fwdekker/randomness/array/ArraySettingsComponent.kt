@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.DummyInsertArrayAction
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.SettingsComponentListener
@@ -9,7 +8,7 @@ import com.fwdekker.randomness.array.ArrayScheme.Companion.DEFAULT_SEPARATOR
 import com.fwdekker.randomness.array.ArraySettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.array.ArraySettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
-import com.fwdekker.randomness.ui.PreviewPanel
+import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import javax.swing.ButtonGroup
@@ -32,8 +31,6 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
     override lateinit var schemesPanel: SchemesPanel<ArrayScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var previewPanelHolder: PreviewPanel
-    private lateinit var previewPanel: JPanel
     private lateinit var countSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
     private lateinit var separatorGroup: ButtonGroup
@@ -50,10 +47,6 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
             spaceAfterSeparatorCheckBox.isEnabled = !newlineSeparatorButton.isSelected
         }
         newlineSeparatorButton.changeListeners.forEach { it.stateChanged(ChangeEvent(newlineSeparatorButton)) }
-
-        previewPanelHolder.updatePreviewOnUpdateOf(countSpinner, bracketsGroup, separatorGroup)
-        previewPanelHolder.updatePreviewOnUpdateOf(spaceAfterSeparatorCheckBox)
-        previewPanelHolder.updatePreview()
     }
 
 
@@ -67,12 +60,6 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
         unsavedSettings = ArraySettings()
         schemesPanel = ArraySchemesPanel(unsavedSettings)
             .also { it.addListener(SettingsComponentListener(this)) }
-
-        previewPanelHolder = PreviewPanel {
-            val scheme = ArrayScheme().also { saveScheme(it) }
-            DummyInsertArrayAction(scheme) { it.nextInt(previewMin, previewMax + 1).toString() }
-        }
-        previewPanel = previewPanelHolder.rootPane
 
         countSpinner = JIntSpinner(value = 1, minValue = 1, description = "count")
     }
@@ -93,6 +80,20 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
 
     override fun doValidate() = countSpinner.validateValue()
 
+    override fun addChangeListener(listener: () -> Unit) =
+        addChangeListenerTo(
+            countSpinner, bracketsGroup, separatorGroup, spaceAfterSeparatorCheckBox,
+            listener = listener
+        )
+
+    override fun toUDSDescriptor() =
+        "%Array[" +
+            "count=${countSpinner.value}, " +
+            "brackets=${bracketsGroup.getValue() ?: DEFAULT_BRACKETS}], " +
+            "separator=${separatorGroup.getValue() ?: DEFAULT_SEPARATOR}, " +
+            "isSpaceAfterSeparator=${spaceAfterSeparatorCheckBox.isSelected}" +
+            "]"
+
 
     /**
      * A panel to select schemes from.
@@ -104,21 +105,5 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
             get() = ArrayScheme::class.java
 
         override fun createDefaultInstances() = DEFAULT_SCHEMES
-    }
-
-
-    /**
-     * Holds constants.
-     */
-    companion object {
-        /**
-         * The minimal value in the preview (inclusive).
-         */
-        const val previewMin = 1
-
-        /**
-         * The maximal value in the preview (inclusive).
-         */
-        const val previewMax = 20
     }
 }

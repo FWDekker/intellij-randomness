@@ -8,6 +8,7 @@ import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
 import com.fwdekker.randomness.ui.PreviewPanel
+import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
@@ -38,8 +39,6 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
     override lateinit var schemesPanel: SchemesPanel<WordScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var previewPanelHolder: PreviewPanel
-    private lateinit var previewPanel: JPanel
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -58,10 +57,6 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
 
         dictionaryHelp.border = null
         dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
-
-        previewPanelHolder.updatePreviewOnUpdateOf(minLength, maxLength, capitalizationGroup, enclosureGroup)
-        previewPanelHolder.updatePreviewOnUpdateOf(dictionaryTable)
-        previewPanelHolder.updatePreview()
     }
 
 
@@ -78,9 +73,6 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         unsavedSettings = WordSettings()
         schemesPanel = WordSchemesPanel(unsavedSettings)
             .also { panel -> panel.addListener(SettingsComponentListener(this)) }
-
-        previewPanelHolder = PreviewPanel { WordInsertAction(WordScheme().also { saveScheme(it) }) }
-        previewPanel = previewPanelHolder.rootPane
 
         minLength = JIntSpinner(1, 1, description = "minimum length")
         maxLength = JIntSpinner(1, 1, description = "maximum length")
@@ -138,6 +130,14 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
             ?: maxLength.validateValue()
             ?: lengthRange.validateValue()
     }
+
+    override fun addChangeListener(listener: () -> Unit) =
+        addChangeListenerTo(
+            minLength, maxLength, capitalizationGroup, enclosureGroup, dictionaryTable,
+            listener = listener
+        )
+
+    override fun toUDSDescriptor() = "%Word[]"
 
 
     /**

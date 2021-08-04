@@ -10,7 +10,7 @@ import com.fwdekker.randomness.integer.IntegerSettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JLongSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
-import com.fwdekker.randomness.ui.PreviewPanel
+import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.forEach
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
@@ -34,8 +34,6 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
     override lateinit var schemesPanel: SchemesPanel<IntegerScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var previewPanelHolder: PreviewPanel
-    private lateinit var previewPanel: JPanel
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JLongSpinner
     private lateinit var maxValue: JLongSpinner
@@ -56,10 +54,6 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
             capitalizationGroup.forEach { it.isEnabled = base.value > IntegerScheme.DECIMAL_BASE }
         }
         base.changeListeners.forEach { it.stateChanged(ChangeEvent(base)) }
-
-        previewPanelHolder.updatePreviewOnUpdateOf(minValue, maxValue, base, groupingSeparatorGroup)
-        previewPanelHolder.updatePreviewOnUpdateOf(capitalizationGroup, prefixInput, suffixInput)
-        previewPanelHolder.updatePreview()
     }
 
 
@@ -73,9 +67,6 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         unsavedSettings = IntegerSettings()
         schemesPanel = IntegerSchemesPanel(unsavedSettings)
             .also { it.addListener(SettingsComponentListener(this)) }
-
-        previewPanelHolder = PreviewPanel { IntegerInsertAction(IntegerScheme().also { saveScheme(it) }) }
-        previewPanel = previewPanelHolder.rootPane
 
         minValue = JLongSpinner(description = "minimum value")
         maxValue = JLongSpinner(description = "maximum value")
@@ -112,6 +103,14 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
             ?: maxValue.validateValue()
             ?: base.validateValue()
             ?: valueRange.validateValue()
+
+    override fun addChangeListener(listener: () -> Unit) =
+        addChangeListenerTo(
+            minValue, maxValue, base, groupingSeparatorGroup, capitalizationGroup, prefixInput, suffixInput,
+            listener = listener
+        )
+
+    override fun toUDSDescriptor() = "%Int[]"
 
 
     /**

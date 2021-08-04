@@ -3,12 +3,13 @@ package com.fwdekker.randomness.decimal
 import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
 import com.fwdekker.randomness.SettingsComponentListener
+import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.decimal.DecimalSettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.decimal.DecimalSettings.Companion.default
 import com.fwdekker.randomness.ui.JDoubleSpinner
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
-import com.fwdekker.randomness.ui.PreviewPanel
+import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import javax.swing.ButtonGroup
@@ -32,8 +33,6 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
     override lateinit var schemesPanel: SchemesPanel<DecimalScheme>
 
     private lateinit var contentPane: JPanel
-    private lateinit var previewPanelHolder: PreviewPanel
-    private lateinit var previewPanel: JPanel
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JDoubleSpinner
     private lateinit var maxValue: JDoubleSpinner
@@ -52,11 +51,6 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
 
         decimalCount.addChangeListener { showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0 }
         decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
-
-        previewPanelHolder.updatePreviewOnUpdateOf(minValue, maxValue, decimalCount, showTrailingZeroesCheckBox)
-        previewPanelHolder.updatePreviewOnUpdateOf(groupingSeparatorGroup, decimalSeparatorGroup, prefixInput)
-        previewPanelHolder.updatePreviewOnUpdateOf(suffixInput)
-        previewPanelHolder.updatePreview()
     }
 
 
@@ -70,9 +64,6 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
         unsavedSettings = DecimalSettings()
         schemesPanel = DecimalSchemesPanel(unsavedSettings)
             .also { it.addListener(SettingsComponentListener(this)) }
-
-        previewPanelHolder = PreviewPanel { DecimalInsertAction(DecimalScheme().also { saveScheme(it) }) }
-        previewPanel = previewPanelHolder.rootPane
 
         minValue = JDoubleSpinner(description = "minimum value")
         maxValue = JDoubleSpinner(description = "maximum value")
@@ -108,6 +99,15 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
             ?: maxValue.validateValue()
             ?: valueRange.validateValue()
             ?: decimalCount.validateValue()
+
+    override fun addChangeListener(listener: () -> Unit) =
+        addChangeListenerTo(
+            minValue, maxValue, decimalCount, showTrailingZeroesCheckBox, groupingSeparatorGroup, decimalSeparatorGroup,
+            prefixInput, suffixInput,
+            listener = listener
+        )
+
+    override fun toUDSDescriptor() = "%Dec[]"
 
 
     /**
