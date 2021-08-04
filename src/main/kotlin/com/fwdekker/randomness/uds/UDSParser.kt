@@ -2,15 +2,10 @@ package com.fwdekker.randomness.uds
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.decimal.DecimalInsertAction
 import com.fwdekker.randomness.decimal.DecimalScheme
-import com.fwdekker.randomness.integer.IntegerInsertAction
 import com.fwdekker.randomness.integer.IntegerScheme
-import com.fwdekker.randomness.string.StringInsertAction
 import com.fwdekker.randomness.string.StringScheme
-import com.fwdekker.randomness.uuid.UuidInsertAction
 import com.fwdekker.randomness.uuid.UuidScheme
-import com.fwdekker.randomness.word.WordInsertAction
 import com.fwdekker.randomness.word.WordScheme
 import kotlin.random.Random
 import kotlin.reflect.KFunction
@@ -135,20 +130,17 @@ object UDSParser {
         type: String,
         args: Map<String, String>
     ): (Int, Random) -> List<String> {
-        val (typeConstructor, schemeConstructor) = when (type) {
-            "Int" -> Pair(IntegerInsertAction::class, IntegerScheme::class.primaryConstructor!!)
-            "Dec" -> Pair(DecimalInsertAction::class, DecimalScheme::class.primaryConstructor!!)
-            "Str" -> Pair(StringInsertAction::class, StringScheme::class.primaryConstructor!!)
-            "Word" -> Pair(WordInsertAction::class, WordScheme::class.primaryConstructor!!)
-            "UUID" -> Pair(UuidInsertAction::class, UuidScheme::class.primaryConstructor!!)
+        val schemeConstructor = when (type) {
+            "Int" -> IntegerScheme::class.primaryConstructor!!
+            "Dec" -> DecimalScheme::class.primaryConstructor!!
+            "Str" -> StringScheme::class.primaryConstructor!!
+            "Word" -> WordScheme::class.primaryConstructor!!
+            "UUID" -> UuidScheme::class.primaryConstructor!!
             else -> throw UDSParseException("Unknown type '$type'.")
         }
 
         val typeScheme = schemeConstructor.callBy(convertSchemeArgs(args, schemeConstructor))
-
-        return { count, random ->
-            typeConstructor.primaryConstructor!!.call(typeScheme).also { it.random = random }.generateStrings(count)
-        }
+        return { count, _ -> typeScheme.generateStrings(count) }
     }
 
     /**

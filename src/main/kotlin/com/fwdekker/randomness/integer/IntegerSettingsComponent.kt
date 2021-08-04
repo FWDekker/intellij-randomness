@@ -1,12 +1,9 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemesPanel
-import com.fwdekker.randomness.SettingsComponent
-import com.fwdekker.randomness.SettingsComponentListener
+import com.fwdekker.randomness.SchemeComponent
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_CAPITALIZATION
-import com.fwdekker.randomness.integer.IntegerSettings.Companion.DEFAULT_SCHEMES
-import com.fwdekker.randomness.integer.IntegerSettings.Companion.default
+import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JLongSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
@@ -24,15 +21,10 @@ import javax.swing.event.ChangeEvent
  * Component for settings of random integer generation.
  *
  * @param settings the settings to edit in the component
- *
- * @see IntegerSettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class IntegerSettingsComponent(settings: IntegerSettings = default) :
-    SettingsComponent<IntegerSettings, IntegerScheme>(settings) {
-    override lateinit var unsavedSettings: IntegerSettings
-    override lateinit var schemesPanel: SchemesPanel<IntegerScheme>
-
+class IntegerSettingsComponent(settings: IntegerScheme) :
+    SchemeComponent<IntegerScheme>(settings) {
     private lateinit var contentPane: JPanel
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JLongSpinner
@@ -47,7 +39,7 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
 
 
     init {
-        loadSettings()
+        loadScheme()
 
         base.addChangeListener {
             groupingSeparatorGroup.forEach { it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE }
@@ -64,10 +56,6 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        unsavedSettings = IntegerSettings()
-        schemesPanel = IntegerSchemesPanel(unsavedSettings)
-            .also { it.addListener(SettingsComponentListener(this)) }
-
         minValue = JLongSpinner(description = "minimum value")
         maxValue = JLongSpinner(description = "maximum value")
         base = JIntSpinner(
@@ -92,7 +80,7 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         scheme.minValue = minValue.value
         scheme.maxValue = maxValue.value
         scheme.base = base.value
-        scheme.safeSetGroupingSeparator(groupingSeparatorGroup.getValue())
+        scheme.groupingSeparator = groupingSeparatorGroup.getValue() ?: DEFAULT_GROUPING_SEPARATOR
         scheme.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
         scheme.prefix = prefixInput.text
         scheme.suffix = suffixInput.text
@@ -111,17 +99,4 @@ class IntegerSettingsComponent(settings: IntegerSettings = default) :
         )
 
     override fun toUDSDescriptor() = "%Int[]"
-
-
-    /**
-     * A panel to select schemes from.
-     *
-     * @param settings the settings model backing up the panel
-     */
-    private class IntegerSchemesPanel(settings: IntegerSettings) : SchemesPanel<IntegerScheme>(settings) {
-        override val type: Class<IntegerScheme>
-            get() = IntegerScheme::class.java
-
-        override fun createDefaultInstances() = DEFAULT_SCHEMES
-    }
 }

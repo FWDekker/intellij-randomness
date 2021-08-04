@@ -1,13 +1,9 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemesPanel
-import com.fwdekker.randomness.SettingsComponent
-import com.fwdekker.randomness.SettingsComponentListener
+import com.fwdekker.randomness.SchemeComponent
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_ENCLOSURE
-import com.fwdekker.randomness.string.StringSettings.Companion.DEFAULT_SCHEMES
-import com.fwdekker.randomness.string.StringSettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
 import com.fwdekker.randomness.ui.addChangeListenerTo
@@ -27,15 +23,11 @@ import javax.swing.JPanel
  *
  * @param settings the settings to edit in the component
  *
- * @see StringSettingsAction
  * @see SymbolSetTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class StringSettingsComponent(settings: StringSettings = default) :
-    SettingsComponent<StringSettings, StringScheme>(settings) {
-    override lateinit var unsavedSettings: StringSettings
-    override lateinit var schemesPanel: SchemesPanel<StringScheme>
-
+class StringSettingsComponent(settings: StringScheme) :
+    SchemeComponent<StringScheme>(settings) {
     private lateinit var contentPane: JPanel
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
@@ -51,7 +43,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
 
 
     init {
-        loadSettings()
+        loadScheme()
 
         excludeLookAlikeSymbolsCheckBox.font = excludeLookAlikeSymbolsCheckBox.font.attributes.toMutableMap()
             .also { it[TextAttribute.UNDERLINE] = TextAttribute.UNDERLINE_LOW_DOTTED }
@@ -70,10 +62,6 @@ class StringSettingsComponent(settings: StringSettings = default) :
     private fun createUIComponents() {
         val bundle = ResourceBundle.getBundle("randomness")
         val factory = DefaultComponentFactory.getInstance()
-
-        unsavedSettings = StringSettings()
-        schemesPanel = StringSchemesPanel(unsavedSettings)
-            .also { it.addListener(SettingsComponentListener(this)) }
 
         minLength = JIntSpinner(1, 1, description = "minimum length")
         maxLength = JIntSpinner(1, 1, description = "maximum length")
@@ -104,20 +92,6 @@ class StringSettingsComponent(settings: StringSettings = default) :
         scheme.excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected
     }
 
-    /**
-     * Returns true if any symbol sets have been reordered.
-     *
-     * @param settings the settings to check for modifications
-     * @return true if any symbol sets have been reordered
-     */
-    override fun isModified(settings: StringSettings): Boolean {
-        val tableSymbolSets: List<SymbolSet> = ArrayList(symbolSetTable.data)
-        val settingsSymbolSets: List<SymbolSet> = ArrayList(settings.currentScheme.symbolSetList)
-
-        return tableSymbolSets.size != settingsSymbolSets.size ||
-            tableSymbolSets.zip(settingsSymbolSets).any { it.first != it.second }
-    }
-
     override fun doValidate() =
         minLength.validateValue()
             ?: maxLength.validateValue()
@@ -137,17 +111,4 @@ class StringSettingsComponent(settings: StringSettings = default) :
             "enclosure=${enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE}, " +
             "capitalization=${capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION}, " +
             "]"
-
-
-    /**
-     * A panel to select schemes from.
-     *
-     * @param settings the settings model backing up the panel
-     */
-    private class StringSchemesPanel(settings: StringSettings) : SchemesPanel<StringScheme>(settings) {
-        override val type: Class<StringScheme>
-            get() = StringScheme::class.java
-
-        override fun createDefaultInstances() = DEFAULT_SCHEMES
-    }
 }

@@ -1,9 +1,7 @@
 package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemesPanel
-import com.fwdekker.randomness.SettingsComponent
-import com.fwdekker.randomness.SettingsComponentListener
+import com.fwdekker.randomness.SchemeComponent
 import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
@@ -11,8 +9,6 @@ import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_VERSION
-import com.fwdekker.randomness.uuid.UuidSettings.Companion.DEFAULT_SCHEMES
-import com.fwdekker.randomness.uuid.UuidSettings.Companion.default
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
@@ -22,14 +18,9 @@ import javax.swing.JPanel
  * Component for settings of random UUID generation.
  *
  * @param settings the settings to edit in the component
- *
- * @see UuidSettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponent<UuidSettings, UuidScheme>(settings) {
-    override lateinit var unsavedSettings: UuidSettings
-    override lateinit var schemesPanel: SchemesPanel<UuidScheme>
-
+class UuidSettingsComponent(settings: UuidScheme) : SchemeComponent<UuidScheme>(settings) {
     private lateinit var contentPane: JPanel
     private lateinit var versionGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup
@@ -40,11 +31,7 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
 
 
     init {
-        unsavedSettings = UuidSettings()
-        schemesPanel = UuidSchemesPanel(unsavedSettings)
-            .also { it.addListener(SettingsComponentListener(this)) }
-
-        loadSettings()
+        loadScheme()
     }
 
 
@@ -71,17 +58,4 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
         )
 
     override fun toUDSDescriptor() = "%UUID[]"
-
-
-    /**
-     * A panel to select schemes from.
-     *
-     * @param settings the settings model backing up the panel
-     */
-    private class UuidSchemesPanel(settings: UuidSettings) : SchemesPanel<UuidScheme>(settings) {
-        override val type: Class<UuidScheme>
-            get() = UuidScheme::class.java
-
-        override fun createDefaultInstances() = DEFAULT_SCHEMES
-    }
 }

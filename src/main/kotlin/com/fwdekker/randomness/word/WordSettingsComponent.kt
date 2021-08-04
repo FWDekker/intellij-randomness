@@ -1,20 +1,15 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemesPanel
-import com.fwdekker.randomness.SettingsComponent
-import com.fwdekker.randomness.SettingsComponentListener
+import com.fwdekker.randomness.SchemeComponent
 import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
-import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_ENCLOSURE
-import com.fwdekker.randomness.word.WordSettings.Companion.DEFAULT_SCHEMES
-import com.fwdekker.randomness.word.WordSettings.Companion.default
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.UIUtil
 import com.jgoodies.forms.factories.DefaultComponentFactory
@@ -30,14 +25,10 @@ import javax.swing.JTextArea
  *
  * @param settings the settings to edit in the component
  *
- * @see WordSettingsAction
  * @see DictionaryTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class WordSettingsComponent(settings: WordSettings = default) : SettingsComponent<WordSettings, WordScheme>(settings) {
-    override lateinit var unsavedSettings: WordSettings
-    override lateinit var schemesPanel: SchemesPanel<WordScheme>
-
+class WordSettingsComponent(settings: WordScheme) : SchemeComponent<WordScheme>(settings) {
     private lateinit var contentPane: JPanel
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
@@ -53,7 +44,7 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
 
 
     init {
-        loadSettings()
+        loadScheme()
 
         dictionaryHelp.border = null
         dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
@@ -69,10 +60,6 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
     private fun createUIComponents() {
         val bundle = ResourceBundle.getBundle("randomness")
         val factory = DefaultComponentFactory.getInstance()
-
-        unsavedSettings = WordSettings()
-        schemesPanel = WordSchemesPanel(unsavedSettings)
-            .also { panel -> panel.addListener(SettingsComponentListener(this)) }
 
         minLength = JIntSpinner(1, 1, description = "minimum length")
         maxLength = JIntSpinner(1, 1, description = "maximum length")
@@ -104,20 +91,6 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
 
         BundledDictionary.cache.clear()
         UserDictionary.cache.clear()
-    }
-
-    /**
-     * Returns true if any dictionaries have been reordered.
-     *
-     * @param settings the settings to check for modifications
-     * @return true if any dictionaries have been reordered
-     */
-    override fun isModified(settings: WordSettings): Boolean {
-        val tableDictionaries = dictionaryTable.data
-        val settingsDictionaries = settings.currentScheme.bundledDictionaries + settings.currentScheme.userDictionaries
-
-        return tableDictionaries.size != settingsDictionaries.size ||
-            tableDictionaries.zip(settingsDictionaries).any { it.first != it.second }
     }
 
     override fun doValidate(): ValidationInfo? {
@@ -167,18 +140,5 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
                 ) { maxLength.value = minWordLength }
             else -> null
         }
-    }
-
-
-    /**
-     * A panel to select schemes from.
-     *
-     * @param settings the settings model backing up the panel
-     */
-    private class WordSchemesPanel(settings: WordSettings) : SchemesPanel<WordScheme>(settings) {
-        override val type: Class<WordScheme>
-            get() = WordScheme::class.java
-
-        override fun createDefaultInstances() = DEFAULT_SCHEMES
     }
 }

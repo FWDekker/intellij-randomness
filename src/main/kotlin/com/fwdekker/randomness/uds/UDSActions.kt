@@ -1,16 +1,12 @@
 package com.fwdekker.randomness.uds
 
-import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataGroupAction
 import com.fwdekker.randomness.DataInsertAction
 import com.fwdekker.randomness.DataInsertArrayAction
 import com.fwdekker.randomness.DataInsertRepeatAction
 import com.fwdekker.randomness.DataInsertRepeatArrayAction
-import com.fwdekker.randomness.DataQuickSwitchSchemeAction
 import com.fwdekker.randomness.DataSettingsAction
-import com.fwdekker.randomness.array.ArrayScheme
 import com.fwdekker.randomness.array.ArraySettings
-import com.fwdekker.randomness.array.ArraySettingsAction
 import icons.RandomnessIcons
 
 
@@ -23,8 +19,6 @@ class UDSGroupAction : DataGroupAction(RandomnessIcons.Data.Base) {
     override val insertRepeatAction = UDSInsertAction.RepeatAction()
     override val insertRepeatArrayAction = UDSInsertAction.RepeatArrayAction()
     override val settingsAction = UDSSettingsAction()
-    override val quickSwitchSchemeAction = UDSSettingsAction.UDSQuickSwitchSchemeAction()
-    override val quickSwitchArraySchemeAction = ArraySettingsAction.ArrayQuickSwitchSchemeAction()
 }
 
 
@@ -33,7 +27,7 @@ class UDSGroupAction : DataGroupAction(RandomnessIcons.Data.Base) {
  *
  * @param scheme the scheme to use for generating UDS-based strings
  */
-class UDSInsertAction(private val scheme: UDSScheme = UDSSettings.default.currentScheme) :
+class UDSInsertAction(private val scheme: UDSSettings = UDSSettings.default) :
     DataInsertAction(RandomnessIcons.Data.Base) {
     override val name = "Random Decimal"
 
@@ -44,12 +38,7 @@ class UDSInsertAction(private val scheme: UDSScheme = UDSSettings.default.curren
      * @param count the number of strings to generate
      * @return random UDS-based strings based on the descriptor
      */
-    override fun generateStrings(count: Int) =
-        try {
-            UDSParser.parse(scheme.descriptor).also { it.random = this.random }.generateStrings(count)
-        } catch (e: UDSParseException) {
-            throw DataGenerationException(e.message, e)
-        }
+    override fun generateStrings(count: Int) = scheme.generateStrings(count)
 
     /**
      * Inserts an array-like string of UDS-based strings.
@@ -58,8 +47,8 @@ class UDSInsertAction(private val scheme: UDSScheme = UDSSettings.default.curren
      * @param scheme the scheme to use for generating strings
      */
     class ArrayAction(
-        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-        scheme: UDSScheme = UDSSettings.default.currentScheme
+        arrayScheme: ArraySettings = ArraySettings.default,
+        scheme: UDSSettings = UDSSettings.default
     ) : DataInsertArrayAction(arrayScheme, UDSInsertAction(scheme), RandomnessIcons.Data.Array) {
         override val name = "Random UDS Array"
     }
@@ -69,7 +58,7 @@ class UDSInsertAction(private val scheme: UDSScheme = UDSSettings.default.curren
      *
      * @param scheme the settings to use for generating strings
      */
-    class RepeatAction(scheme: UDSScheme = UDSSettings.default.currentScheme) :
+    class RepeatAction(scheme: UDSSettings = UDSSettings.default) :
         DataInsertRepeatAction(UDSInsertAction(scheme), RandomnessIcons.Data.Repeat) {
         override val name = "Random Repeated UDS"
     }
@@ -81,8 +70,8 @@ class UDSInsertAction(private val scheme: UDSScheme = UDSSettings.default.curren
      * @param scheme the scheme to use for generating strings
      */
     class RepeatArrayAction(
-        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-        scheme: UDSScheme = UDSSettings.default.currentScheme
+        arrayScheme: ArraySettings = ArraySettings.default,
+        scheme: UDSSettings = UDSSettings.default
     ) : DataInsertRepeatArrayAction(ArrayAction(arrayScheme, scheme), RandomnessIcons.Data.RepeatArray) {
         override val name = "Random Repeated UDS Array"
     }
@@ -99,15 +88,4 @@ class UDSSettingsAction : DataSettingsAction(RandomnessIcons.Data.Settings) {
     override val name = "UDS Settings"
 
     override val configurableClass = UDSSettingsConfigurable::class.java
-
-
-    /**
-     * Opens a popup to allow the user to quickly switch to the selected scheme.
-     *
-     * @param settings the settings containing the schemes that can be switched between
-     */
-    class UDSQuickSwitchSchemeAction(settings: UDSSettings = UDSSettings.default) :
-        DataQuickSwitchSchemeAction<UDSScheme>(settings, RandomnessIcons.Data.QuickSwitchScheme) {
-        override val name = "Quick Switch UDS Scheme"
-    }
 }

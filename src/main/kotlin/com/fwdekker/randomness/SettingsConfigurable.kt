@@ -19,11 +19,11 @@ import javax.swing.JComponent
  *
  * @param S the type of settings the configurable changes.
  */
-abstract class SettingsConfigurable<S : Settings<S, T>, T : Scheme<T>> : Configurable {
+abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
     /**
      * The user interface for changing the settings.
      */
-    protected abstract val component: SettingsComponent<S, T>
+    protected abstract val component: SettingsComponent<S>
 
 
     /**

@@ -1,68 +1,17 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
-import com.fwdekker.randomness.Settings
-import com.fwdekker.randomness.SettingsConfigurable
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
-import com.intellij.openapi.components.service
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.Transient
-
-
-/**
- * The user-configurable collection of schemes applicable to generating words.
- *
- * @property schemes the schemes that the user can choose from
- * @property currentSchemeName the scheme that is currently active
- *
- * @see WordSettingsAction
- * @see WordSettingsConfigurable
- */
-@State(name = "WordSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-data class WordSettings(
-    @MapAnnotation(sortBeforeSave = false)
-    override var schemes: MutableList<WordScheme> = DEFAULT_SCHEMES,
-    override var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
-) : Settings<WordSettings, WordScheme> {
-    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
-
-    override fun getState() = this
-
-    override fun loadState(state: WordSettings) = XmlSerializerUtil.copyBean(state, this)
-
-
-    /**
-     * Holds constants.
-     */
-    companion object {
-        /**
-         * The default value of the [schemes][schemes] field.
-         */
-        val DEFAULT_SCHEMES: MutableList<WordScheme>
-            get() = mutableListOf(WordScheme())
-
-        /**
-         * The default value of the [currentSchemeName][currentSchemeName] field.
-         */
-        const val DEFAULT_CURRENT_SCHEME_NAME = DEFAULT_NAME
-
-        /**
-         * The persistent `WordSettings` instance.
-         */
-        val default: WordSettings
-            get() = service()
-    }
-}
+import kotlin.random.Random
 
 
 /**
  * Contains settings for generating random words.
  *
- * @property myName The name of the scheme.
  * @property minLength The minimum length of the generated word, inclusive.
  * @property maxLength The maximum length of the generated word, inclusive.
  * @property enclosure The string that encloses the generated word on both sides.
@@ -73,12 +22,8 @@ data class WordSettings(
  * [bundledDictionaryFiles].
  * @property activeUserDictionaryFiles The list of user dictionary files that are currently active; a subset of
  * [userDictionaryFiles].
- *
- * @see WordInsertAction
- * @see WordSettings
  */
 data class WordScheme(
-    override var myName: String = DEFAULT_NAME,
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
@@ -92,6 +37,9 @@ data class WordScheme(
     @MapAnnotation(sortBeforeSave = false)
     var activeUserDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES.toMutableSet()
 ) : Scheme<WordScheme> {
+    private val random: Random = Random.Default
+
+
     /**
      * A mutable view of the filenames of the files in [bundledDictionaryFiles].
      */
@@ -133,9 +81,35 @@ data class WordScheme(
         }
 
 
-    override fun copyFrom(other: WordScheme) = XmlSerializerUtil.copyBean(other, this)
+    /**
+     * Returns random words from the dictionaries in `settings`.
+     *
+     * @param count the number of words to generate
+     * @return random words from the dictionaries in `settings`
+     * @throws InvalidDictionaryException if no words could be found using the settings in `settings`
+     */
+    override fun generateStrings(count: Int): List<String> {
+        val dictionaries = (activeBundledDictionaries + activeUserDictionaries)
+            .ifEmpty { throw DataGenerationException("There are no active dictionaries.") }
 
-    override fun copyAs(name: String) = this.copy(myName = name)
+        val words =
+            try {
+                dictionaries.flatMap { it.words }
+            } catch (e: InvalidDictionaryException) {
+                throw DataGenerationException(e.message, e)
+            }
+                .ifEmpty { throw DataGenerationException("All active dictionaries are empty.") }
+                .filter { it.length in minLength..maxLength }
+                .toSet()
+                .ifEmpty { throw DataGenerationException("There are no words within the configured length range.") }
+
+        return List(count) { words.random(random) }
+            .map { capitalization.transform(it) }
+            .map { enclosure + it + enclosure }
+    }
+
+
+    override fun copyFrom(other: WordScheme) = XmlSerializerUtil.copyBean(other, this)
 
 
     /**
@@ -182,16 +156,4 @@ data class WordScheme(
          */
         val DEFAULT_ACTIVE_USER_DICTIONARY_FILES = setOf<String>()
     }
-}
-
-
-/**
- * The configurable for word settings.
- *
- * @see WordSettingsAction
- */
-class WordSettingsConfigurable(
-    override val component: WordSettingsComponent = WordSettingsComponent()
-) : SettingsConfigurable<WordSettings, WordScheme>() {
-    override fun getDisplayName() = "Words"
 }

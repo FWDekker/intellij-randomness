@@ -1,11 +1,8 @@
 package com.fwdekker.randomness.decimal
 
-import com.fwdekker.randomness.SchemesPanel
-import com.fwdekker.randomness.SettingsComponent
-import com.fwdekker.randomness.SettingsComponentListener
-import com.fwdekker.randomness.array.ArrayScheme
-import com.fwdekker.randomness.decimal.DecimalSettings.Companion.DEFAULT_SCHEMES
-import com.fwdekker.randomness.decimal.DecimalSettings.Companion.default
+import com.fwdekker.randomness.SchemeComponent
+import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_DECIMAL_SEPARATOR
+import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.ui.JDoubleSpinner
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
@@ -23,15 +20,10 @@ import javax.swing.event.ChangeEvent
  * Component for settings of random decimal generation.
  *
  * @param settings the settings to edit in the component
- *
- * @see DecimalSettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class DecimalSettingsComponent(settings: DecimalSettings = default) :
-    SettingsComponent<DecimalSettings, DecimalScheme>(settings) {
-    override lateinit var unsavedSettings: DecimalSettings
-    override lateinit var schemesPanel: SchemesPanel<DecimalScheme>
-
+class DecimalSettingsComponent(settings: DecimalScheme) :
+    SchemeComponent<DecimalScheme>(settings) {
     private lateinit var contentPane: JPanel
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JDoubleSpinner
@@ -47,7 +39,7 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
 
 
     init {
-        loadSettings()
+        loadScheme()
 
         decimalCount.addChangeListener { showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0 }
         decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
@@ -61,10 +53,6 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        unsavedSettings = DecimalSettings()
-        schemesPanel = DecimalSchemesPanel(unsavedSettings)
-            .also { it.addListener(SettingsComponentListener(this)) }
-
         minValue = JDoubleSpinner(description = "minimum value")
         maxValue = JDoubleSpinner(description = "maximum value")
         valueRange = JSpinnerRange(minValue, maxValue, MAX_VALUE_RANGE, name = "value")
@@ -88,8 +76,8 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
         scheme.maxValue = maxValue.value
         scheme.decimalCount = decimalCount.value
         scheme.showTrailingZeroes = showTrailingZeroesCheckBox.isSelected
-        scheme.safeSetGroupingSeparator(groupingSeparatorGroup.getValue())
-        scheme.safeSetDecimalSeparator(decimalSeparatorGroup.getValue())
+        scheme.groupingSeparator = groupingSeparatorGroup.getValue() ?: DEFAULT_GROUPING_SEPARATOR
+        scheme.decimalSeparator = decimalSeparatorGroup.getValue() ?: DEFAULT_DECIMAL_SEPARATOR
         scheme.prefix = prefixInput.text
         scheme.suffix = suffixInput.text
     }
@@ -108,19 +96,6 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
         )
 
     override fun toUDSDescriptor() = "%Dec[]"
-
-
-    /**
-     * A panel to select schemes from.
-     *
-     * @param settings the settings model backing up the panel
-     */
-    private class DecimalSchemesPanel(settings: DecimalSettings) : SchemesPanel<DecimalScheme>(settings) {
-        override val type: Class<DecimalScheme>
-            get() = DecimalScheme::class.java
-
-        override fun createDefaultInstances() = DEFAULT_SCHEMES
-    }
 
 
     /**

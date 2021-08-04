@@ -6,7 +6,7 @@ package com.fwdekker.randomness
  *
  * @param S the type of settings that is saved and loaded
  */
-interface SettingsManager<S : Settings<*, *>> {
+interface SettingsManager<S : Settings<*>> {
     /**
      * Loads the default settings object.
      */

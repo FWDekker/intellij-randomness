@@ -1,69 +1,18 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.Scheme.Companion.DEFAULT_NAME
-import com.fwdekker.randomness.Settings
-import com.fwdekker.randomness.SettingsConfigurable
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
-import com.intellij.openapi.components.service
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.Transient
 import com.vdurmont.emoji.EmojiParser
-
-
-/**
- * The user-configurable collection of schemes applicable to generating strings.
- *
- * @property schemes the schemes that the user can choose from
- * @property currentSchemeName the scheme that is currently active
- *
- * @see StringSettingsAction
- * @see StringSettingsConfigurable
- */
-@State(name = "StringSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-data class StringSettings(
-    @MapAnnotation(sortBeforeSave = false)
-    override var schemes: MutableList<StringScheme> = DEFAULT_SCHEMES,
-    override var currentSchemeName: String = DEFAULT_CURRENT_SCHEME_NAME
-) : Settings<StringSettings, StringScheme> {
-    override fun deepCopy() = copy(schemes = schemes.map { it.copy() }.toMutableList())
-
-    override fun getState() = this
-
-    override fun loadState(state: StringSettings) = XmlSerializerUtil.copyBean(state, this)
-
-
-    /**
-     * Holds constants.
-     */
-    companion object {
-        /**
-         * The default value of the [schemes][schemes] field.
-         */
-        val DEFAULT_SCHEMES: MutableList<StringScheme>
-            get() = mutableListOf(StringScheme())
-
-        /**
-         * The default value of the [currentSchemeName][currentSchemeName] field.
-         */
-        const val DEFAULT_CURRENT_SCHEME_NAME = DEFAULT_NAME
-
-        /**
-         * The persistent `StringSettings` instance.
-         */
-        val default: StringSettings
-            get() = service()
-    }
-}
+import kotlin.random.Random
 
 
 /**
  * Contains settings for generating random strings.
  *
- * @property myName The name of the scheme.
  * @property minLength The minimum length of the generated string, inclusive.
  * @property maxLength The maximum length of the generated string, inclusive.
  * @property enclosure The string that encloses the generated string on both sides.
@@ -73,12 +22,8 @@ data class StringSettings(
  * @property serializedActiveSymbolSets The symbol sets that are actually used for generating strings; a subset of
  * [symbolSets]. Emoji have been serialized for compatibility with JetBrains' serializer.
  * @property excludeLookAlikeSymbols Whether the symbols in [SymbolSet.lookAlikeCharacters] should be excluded.
- *
- * @see StringInsertAction
- * @see StringSettings
  */
 data class StringScheme(
-    override var myName: String = DEFAULT_NAME,
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
@@ -89,6 +34,9 @@ data class StringScheme(
     var serializedActiveSymbolSets: Map<String, String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMap(),
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS
 ) : Scheme<StringScheme> {
+    private val random: Random = Random.Default
+
+
     /**
      * Same as [symbolSets], except that serialized emoji have been deserialized.
      */
@@ -130,9 +78,31 @@ data class StringScheme(
         }
 
 
-    override fun copyFrom(other: StringScheme) = XmlSerializerUtil.copyBean(other, this)
+    /**
+     * Returns strings of random alphanumerical characters.
+     *
+     * @param count the number of strings to generate
+     * @return strings of random alphanumerical characters
+     */
+    override fun generateStrings(count: Int): List<String> {
+        if (minLength > maxLength)
+            throw DataGenerationException("Minimum length is larger than maximum length.")
 
-    override fun copyAs(name: String) = this.copy(myName = name)
+        val symbols = activeSymbolSetList.sum(excludeLookAlikeSymbols)
+        if (symbols.isEmpty())
+            throw DataGenerationException("No valid symbols found in active symbol sets.")
+
+        return List(count) {
+            val length = random.nextInt(minLength, maxLength + 1)
+            val text = List(length) { symbols.random(random) }.joinToString("")
+            val capitalizedText = capitalization.transform(text)
+
+            enclosure + capitalizedText + enclosure
+        }
+    }
+
+
+    override fun copyFrom(other: StringScheme) = XmlSerializerUtil.copyBean(other, this)
 
 
     /**
@@ -174,16 +144,4 @@ data class StringScheme(
          */
         const val DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS = false
     }
-}
-
-
-/**
- * The configurable for string settings.
- *
- * @see StringSettingsAction
- */
-class StringSettingsConfigurable(
-    override val component: StringSettingsComponent = StringSettingsComponent()
-) : SettingsConfigurable<StringSettings, StringScheme>() {
-    override fun getDisplayName() = "Strings"
 }

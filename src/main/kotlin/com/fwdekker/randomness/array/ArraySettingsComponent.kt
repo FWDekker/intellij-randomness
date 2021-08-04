@@ -1,11 +1,8 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.SchemesPanel
 import com.fwdekker.randomness.SettingsComponent
-import com.fwdekker.randomness.SettingsComponentListener
-import com.fwdekker.randomness.array.ArrayScheme.Companion.DEFAULT_BRACKETS
-import com.fwdekker.randomness.array.ArrayScheme.Companion.DEFAULT_SEPARATOR
-import com.fwdekker.randomness.array.ArraySettings.Companion.DEFAULT_SCHEMES
+import com.fwdekker.randomness.array.ArraySettings.Companion.DEFAULT_BRACKETS
+import com.fwdekker.randomness.array.ArraySettings.Companion.DEFAULT_SEPARATOR
 import com.fwdekker.randomness.array.ArraySettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.addChangeListenerTo
@@ -25,11 +22,7 @@ import javax.swing.event.ChangeEvent
  * @see ArraySettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class ArraySettingsComponent(settings: ArraySettings = default) :
-    SettingsComponent<ArraySettings, ArrayScheme>(settings) {
-    override lateinit var unsavedSettings: ArraySettings
-    override lateinit var schemesPanel: SchemesPanel<ArrayScheme>
-
+class ArraySettingsComponent(settings: ArraySettings = default) : SettingsComponent<ArraySettings>(settings) {
     private lateinit var contentPane: JPanel
     private lateinit var countSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
@@ -57,25 +50,21 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        unsavedSettings = ArraySettings()
-        schemesPanel = ArraySchemesPanel(unsavedSettings)
-            .also { it.addListener(SettingsComponentListener(this)) }
-
         countSpinner = JIntSpinner(value = 1, minValue = 1, description = "count")
     }
 
-    override fun loadScheme(scheme: ArrayScheme) {
-        countSpinner.value = scheme.count
-        bracketsGroup.setValue(scheme.brackets)
-        separatorGroup.setValue(scheme.separator)
-        spaceAfterSeparatorCheckBox.isSelected = scheme.isSpaceAfterSeparator
+    override fun loadSettings(settings: ArraySettings) {
+        countSpinner.value = settings.count
+        bracketsGroup.setValue(settings.brackets)
+        separatorGroup.setValue(settings.separator)
+        spaceAfterSeparatorCheckBox.isSelected = settings.isSpaceAfterSeparator
     }
 
-    override fun saveScheme(scheme: ArrayScheme) {
-        scheme.count = countSpinner.value
-        scheme.brackets = bracketsGroup.getValue() ?: DEFAULT_BRACKETS
-        scheme.separator = separatorGroup.getValue() ?: DEFAULT_SEPARATOR
-        scheme.isSpaceAfterSeparator = spaceAfterSeparatorCheckBox.isSelected
+    override fun saveSettings(settings: ArraySettings) {
+        settings.count = countSpinner.value
+        settings.brackets = bracketsGroup.getValue() ?: DEFAULT_BRACKETS
+        settings.separator = separatorGroup.getValue() ?: DEFAULT_SEPARATOR
+        settings.isSpaceAfterSeparator = spaceAfterSeparatorCheckBox.isSelected
     }
 
     override fun doValidate() = countSpinner.validateValue()
@@ -93,17 +82,4 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
             "separator=${separatorGroup.getValue() ?: DEFAULT_SEPARATOR}, " +
             "isSpaceAfterSeparator=${spaceAfterSeparatorCheckBox.isSelected}" +
             "]"
-
-
-    /**
-     * A panel to select schemes from.
-     *
-     * @param settings the settings model backing up the panel
-     */
-    private class ArraySchemesPanel(settings: ArraySettings) : SchemesPanel<ArrayScheme>(settings) {
-        override val type: Class<ArrayScheme>
-            get() = ArrayScheme::class.java
-
-        override fun createDefaultInstances() = DEFAULT_SCHEMES
-    }
 }
