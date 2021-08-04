@@ -3,12 +3,17 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
+import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.literal.LiteralScheme
+import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.uuid.UuidScheme
+import com.fwdekker.randomness.word.WordScheme
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.util.xmlb.annotations.XCollection
 
 
 /**
@@ -17,22 +22,23 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  * @see TemplateSettingsAction
  * @see TemplateSettingsConfigurable
  */
-@State(name = "TemplateSettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
-data class TemplateSettings(var templates: Template = DEFAULT_TEMPLATES) : Settings<TemplateSettings> {
-    override fun deepCopy() = TemplateSettings(templates.deepCopy())
+@State(
+    name = "com.fwdekker.randomness.template.TemplateSettings",
+    storages = [Storage("\$APP_CONFIG\$/randomness.xml")]
+)
+class TemplateSettings(
+    var templates: List<Template> = DEFAULT_TEMPLATES.map { it.deepCopy() },
+    @Suppress("unused") // At least two fields are required for serialization to work
+    val placeholder: String = ""
+) : Settings<TemplateSettings> {
+    override fun deepCopy() = TemplateSettings(templates.map { it.deepCopy() })
 
     override fun getState() = this
 
     override fun loadState(state: TemplateSettings) = XmlSerializerUtil.copyBean(state, this)
 
 
-    /**
-     * Returns random template-based strings based on the descriptor.
-     *
-     * @param count the number of strings to generate
-     * @return random template-based strings based on the descriptor
-     */
-    fun generateStrings(count: Int) = templates.generateStrings(count)
+    fun generateStrings(count: Int) = templates.first().generateStrings(count)
 
 
     /**
@@ -42,14 +48,8 @@ data class TemplateSettings(var templates: Template = DEFAULT_TEMPLATES) : Setti
         /**
          * The default value of the [templates][templates] field.
          */
-        val DEFAULT_TEMPLATES: Template
-            get() = Template(
-                listOf(
-                    LiteralScheme("start"),
-                    IntegerScheme(),
-                    LiteralScheme("end")
-                )
-            )
+        val DEFAULT_TEMPLATES: List<Template>
+            get() = listOf(Template(listOf(LiteralScheme("start"), IntegerScheme(), LiteralScheme("end"))))
 
         /**
          * The persistent `TemplateSettings` instance.
@@ -60,7 +60,19 @@ data class TemplateSettings(var templates: Template = DEFAULT_TEMPLATES) : Setti
 }
 
 
-data class Template(var schemes: List<Scheme<*>>) : Scheme<Template>() {
+data class Template(
+    @get:XCollection(
+        elementTypes = [
+            IntegerScheme::class,
+            DecimalScheme::class,
+            StringScheme::class,
+            WordScheme::class,
+            UuidScheme::class,
+            LiteralScheme::class
+        ]
+    )
+    var schemes: List<Scheme<*>> = listOf()
+) : Scheme<Template>() {
     override fun generateStrings(count: Int) =
         schemes.map { it.generateStrings(count) }
             .let { data -> (0 until count).map { string -> data.joinToString(separator = "") { it[string] } } }

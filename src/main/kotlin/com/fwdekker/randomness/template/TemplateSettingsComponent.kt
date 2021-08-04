@@ -70,11 +70,11 @@ class TemplateSettingsComponent(settings: TemplateSettings = default) : Settings
 
     override fun loadSettings(settings: TemplateSettings) {
         schemeListModel.removeAllElements()
-        schemeListModel.addAll(settings.templates.schemes)
+        schemeListModel.addAll(settings.templates.first().schemes)
     }
 
     override fun saveSettings(settings: TemplateSettings) {
-        settings.templates.schemes = schemeListModel.elements().toList()
+        settings.templates.first().schemes = schemeListModel.elements().toList()
     }
 
     override fun doValidate(): ValidationInfo? = null
@@ -82,7 +82,6 @@ class TemplateSettingsComponent(settings: TemplateSettings = default) : Settings
 
     private fun displaySchemeEditor(listIndex: Int) {
         val scheme = schemeListModel.get(listIndex)
-        println("Displaying scheme $listIndex which is $scheme out of ${schemeListModel.size()}")
         val editor = when (scheme) {
             is IntegerScheme -> IntegerSchemeEditor(scheme)
             is DecimalScheme -> DecimalSchemeEditor(scheme)

@@ -14,7 +14,10 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  * @see ArraySettingsAction
  * @see ArraySettingsConfigurable
  */
-@State(name = "ArraySettings", storages = [Storage("\$APP_CONFIG\$/randomness.xml")])
+@State(
+    name = "com.fwdekker.randomness.array.ArraySettings",
+    storages = [Storage("\$APP_CONFIG\$/randomness.xml")]
+)
 data class ArraySettings(
     var count: Int = DEFAULT_COUNT,
     var brackets: String = DEFAULT_BRACKETS,

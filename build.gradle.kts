@@ -8,7 +8,6 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
     // Compilation
     id("org.jetbrains.kotlin.jvm") version "1.5.10"  // See also `gradle.properties`
-    kotlin("plugin.serialization") version "1.5.10"  // See also `gradle.properties`.
     id("org.jetbrains.intellij") version "0.7.3"
 
     // Tests/coverage
@@ -32,7 +31,6 @@ dependencies {
     implementation("com.vdurmont:emoji-java:${properties("emojiVersion")}")
     // Use bundled Kotlin (ca. 4MB) to ensure forwards compatibility with IDE versions
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${properties("kotlinSerialization")}")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:${properties("mockitoKotlinVersion")}")

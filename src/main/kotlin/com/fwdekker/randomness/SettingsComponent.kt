@@ -3,31 +3,36 @@ package com.fwdekker.randomness
 import javax.swing.JPanel
 
 
-/**
- * A component that allows the user to edit settings and its corresponding schemes.
- *
- * Subclasses **MUST** call `loadSettings` in their constructor.
- *
- * There are multiple settings [S] instances at any time. The `settings` given in the constructor is read when the
- * component is created and is written to when the user saves its changes. The currently-selected scheme is loaded into
- * the component's inputs. When the user selects a different scheme of which to change its values, the values in the
- * input fields are stored in a copy of `settings`. This way, the local changes are not lost when switching between
- * schemes, and the user can still revert all unsaved changes if desired.
- *
- * @param S the type of settings to manage
- * @param T the type of scheme to manage
- * @param settings the settings to manage
- */
-abstract class SettingsComponent<S : Settings<S>>(private val settings: S) : SettingsManager<S> {
+abstract class SettingsComponent<S : Settings<S>>(private val settings: S) {
     /**
      * The panel containing the settings.
      */
     abstract val rootPane: JPanel?
 
 
-    final override fun loadSettings() = loadSettings(settings)
+    /**
+     * Loads the default settings object.
+     */
+    fun loadSettings() = loadSettings(settings)
 
-    final override fun saveSettings() = saveSettings(settings)
+    /**
+     * Loads `settings`.
+     *
+     * @param settings the settings to load
+     */
+    abstract fun loadSettings(settings: S)
+
+    /**
+     * Saves settings to the default settings object.
+     */
+    fun saveSettings() = saveSettings(settings)
+
+    /**
+     * Saves settings to `settings`.
+     *
+     * @param settings the settings to save to
+     */
+    abstract fun saveSettings(settings: S)
 
 
     /**
