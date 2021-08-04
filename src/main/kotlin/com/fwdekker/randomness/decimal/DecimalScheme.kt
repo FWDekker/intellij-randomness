@@ -28,19 +28,6 @@ data class DecimalScheme(
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX
 ) : Scheme<DecimalScheme>() {
-    override val descriptor
-        get() = "%Dec[" +
-            "minValue=$minValue, " +
-            "maxValue=$maxValue, " +
-            "decimalCount=$decimalCount, " +
-            "showTrailingZeroes=$showTrailingZeroes, " +
-            "groupingSeparator=$groupingSeparator, " +
-            "decimalSeparator=$decimalSeparator, " +
-            "prefix=$prefix, " +
-            "suffix=$suffix" +
-            "]"
-
-
     /**
      * Returns random decimals between the minimum and maximum value, inclusive.
      *
@@ -73,6 +60,12 @@ data class DecimalScheme(
 
         return prefix + format.format(decimal) + suffix
     }
+
+
+    override fun deepCopy() =
+        DecimalScheme(
+            minValue, maxValue, decimalCount, showTrailingZeroes, groupingSeparator, decimalSeparator, prefix, suffix
+        )
 
 
     /**

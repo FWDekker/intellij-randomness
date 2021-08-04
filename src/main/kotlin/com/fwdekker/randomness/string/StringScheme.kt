@@ -3,7 +3,6 @@ package com.fwdekker.randomness.string
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.uds.mapToString
 
 
 /**
@@ -28,18 +27,6 @@ data class StringScheme(
     var activeSymbolSets: Set<SymbolSet> = DEFAULT_ACTIVE_SYMBOL_SETS,
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS
 ) : Scheme<StringScheme>() {
-    override val descriptor
-        get() = "%Str[" +
-            "minLength=$minLength, " +
-            "maxLength=$maxLength, " +
-            "enclosure=$enclosure, " +
-            "capitalization=$capitalization, " +
-            "symbolSets=${mapToString(symbolSets.associate { it.name to it.symbols })}, " +
-            "activeSymbolSets=${mapToString(activeSymbolSets.associate { it.name to it.symbols })}, " +
-            "excludeLookAlikeSymbols=$excludeLookAlikeSymbols" +
-            "]"
-
-
     /**
      * Returns strings of random alphanumerical characters.
      *
@@ -62,6 +49,14 @@ data class StringScheme(
             enclosure + capitalizedText + enclosure
         }
     }
+
+
+    override fun deepCopy() =
+        StringScheme(
+            minLength, maxLength, enclosure, capitalization,
+            symbolSets.map { SymbolSet(it.name, it.symbols) }.toSet(),
+            activeSymbolSets.map { SymbolSet(it.name, it.symbols) }.toSet()
+        )
 
 
     /**

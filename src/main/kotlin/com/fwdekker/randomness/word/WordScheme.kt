@@ -3,7 +3,6 @@ package com.fwdekker.randomness.word
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.uds.collectionToString
 
 
 /**
@@ -30,19 +29,6 @@ data class WordScheme(
     var userDictionaries: Set<DictionaryReference> = DEFAULT_USER_DICTIONARIES.toMutableSet(),
     var activeUserDictionaries: Set<DictionaryReference> = DEFAULT_ACTIVE_USER_DICTIONARIES.toMutableSet()
 ) : Scheme<WordScheme>() {
-    override val descriptor =
-        "%Word[" +
-            "minLength=$minLength, " +
-            "maxLength=$maxLength, " +
-            "enclosure=$enclosure, " +
-            "capitalization=$capitalization, " +
-            "bundledDictionaries=${collectionToString(bundledDictionaries)}, " +
-            "activeBundledDictionaries=${collectionToString(activeBundledDictionaries)}, " +
-            "userDictionaries=${collectionToString(userDictionaries)}, " +
-            "activeUserDictionaries=${collectionToString(activeUserDictionaries)}" +
-            "]"
-
-
     /**
      * Returns random words from the dictionaries in `settings`.
      *
@@ -69,6 +55,15 @@ data class WordScheme(
             .map { capitalization.transform(it) }
             .map { enclosure + it + enclosure }
     }
+
+
+    override fun deepCopy() = WordScheme(
+        minLength, maxLength, enclosure, capitalization,
+        bundledDictionaries.map { DictionaryReference(isBundled = true, it.filename) }.toSet(),
+        activeBundledDictionaries.map { DictionaryReference(isBundled = true, it.filename) }.toSet(),
+        userDictionaries.map { DictionaryReference(isBundled = false, it.filename) }.toSet(),
+        activeUserDictionaries.map { DictionaryReference(isBundled = false, it.filename) }.toSet()
+    )
 
 
     /**

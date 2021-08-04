@@ -1,8 +1,8 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArraySettingsAction
-import com.fwdekker.randomness.uds.UDSGroupAction
-import com.fwdekker.randomness.uds.UDSSettingsAction
+import com.fwdekker.randomness.template.TemplateGroupAction
+import com.fwdekker.randomness.template.TemplateSettingsAction
 import com.fwdekker.randomness.ui.registerModifierActions
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
@@ -102,7 +102,7 @@ class PopupAction : AnAction() {
          */
         override fun getChildren(event: AnActionEvent?) =
             arrayOf(
-                UDSGroupAction(),
+                TemplateGroupAction(),
                 Separator(),
                 ArraySettingsAction()
             )
@@ -119,7 +119,7 @@ class PopupAction : AnAction() {
          */
         override fun getChildren(event: AnActionEvent?) =
             arrayOf(
-                UDSSettingsAction(),
+                TemplateSettingsAction(),
                 Separator(),
                 ArraySettingsAction()
             )

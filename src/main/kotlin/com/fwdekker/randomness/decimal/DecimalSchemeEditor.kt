@@ -22,7 +22,7 @@ import javax.swing.event.ChangeEvent
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class DecimalSettingsComponent(scheme: DecimalScheme) : SchemeComponent<DecimalScheme>() {
+class DecimalSchemeEditor(scheme: DecimalScheme) : SchemeComponent<DecimalScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JDoubleSpinner

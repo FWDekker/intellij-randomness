@@ -23,14 +23,12 @@ import javax.swing.event.ChangeEvent
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
 class ArraySettingsComponent(settings: ArraySettings = default) : SettingsComponent<ArraySettings>(settings) {
-    private lateinit var contentPane: JPanel
+    override lateinit var rootPane: JPanel private set
     private lateinit var countSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
     private lateinit var separatorGroup: ButtonGroup
     private lateinit var newlineSeparatorButton: JRadioButton
     private lateinit var spaceAfterSeparatorCheckBox: JCheckBox
-
-    override val rootPane get() = contentPane
 
 
     init {
@@ -69,17 +67,10 @@ class ArraySettingsComponent(settings: ArraySettings = default) : SettingsCompon
 
     override fun doValidate() = countSpinner.validateValue()
 
+
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
             countSpinner, bracketsGroup, separatorGroup, spaceAfterSeparatorCheckBox,
             listener = listener
         )
-
-    override fun toUDSDescriptor() =
-        "%Array[" +
-            "count=${countSpinner.value}, " +
-            "brackets=${bracketsGroup.getValue() ?: DEFAULT_BRACKETS}], " +
-            "separator=${separatorGroup.getValue() ?: DEFAULT_SEPARATOR}, " +
-            "isSpaceAfterSeparator=${spaceAfterSeparatorCheckBox.isSelected}" +
-            "]"
 }

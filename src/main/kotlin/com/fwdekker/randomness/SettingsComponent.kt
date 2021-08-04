@@ -53,30 +53,20 @@ abstract class SettingsComponent<S : Settings<S>>(private val settings: S) : Set
      */
     fun reset() = loadSettings()
 
-
-    // TODO: Move these functions to better places
-    /**
-     * Adds a listener to these settings that is triggered when any of the settings' fields is changed.
-     *
-     * @param listener the function to invoke when any of the settings' fields is changed
-     */
-    abstract fun addChangeListener(listener: () -> Unit)
-
-    // TODO: Consider moving this to the scheme instead of the component
-    /**
-     * Returns the UDS descriptor corresponding to the current scheme.
-     *
-     * @return the UDS descriptor corresponding to the current scheme
-     */
-    abstract fun toUDSDescriptor(): String
-
-
     /**
      * Validates all input fields.
      *
      * @return `null` if the input is valid, or a `ValidationInfo` object explaining why the input is invalid
      */
     abstract fun doValidate(): ValidationInfo?
+
+
+    /**
+     * Adds a listener to these settings that is triggered when any of the settings' fields is changed.
+     *
+     * @param listener the function to invoke when any of the settings' fields is changed
+     */
+    abstract fun addChangeListener(listener: () -> Unit)
 }
 
 /**

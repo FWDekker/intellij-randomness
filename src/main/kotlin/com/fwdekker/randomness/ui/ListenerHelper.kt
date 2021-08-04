@@ -3,10 +3,10 @@ package com.fwdekker.randomness.ui
 import java.beans.PropertyChangeEvent
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
+import javax.swing.JList
 import javax.swing.JRadioButton
 import javax.swing.JSpinner
 import javax.swing.JTextField
-import javax.swing.SwingUtilities
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.text.Document
@@ -19,10 +19,11 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
             is ActivityTableModelEditor<*> -> component.addChangeListener(listener)
             is ButtonGroup -> addChangeListenerTo(*component.buttons(), listener = listener)
             is JCheckBox -> component.addItemListener { listener() }
+            is JList<*> -> component.addPropertyChangeListener { listener() }
             is JRadioButton -> component.addItemListener { listener() }
             is JSpinner -> component.addChangeListener { listener() }
             is JTextField -> component.addChangeListener { listener() }
-            else -> throw IllegalArgumentException("Unknown component type ${component.javaClass.canonicalName}.")
+            else -> throw IllegalArgumentException("Unknown component type '${component.javaClass.canonicalName}'.")
         }
     }
 }

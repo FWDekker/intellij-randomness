@@ -12,7 +12,7 @@
         <errorHandler implementation="com.fwdekker.randomness.ErrorReporter"/>
 
         <!-- Persistence -->
-        <applicationService serviceImplementation="com.fwdekker.randomness.uds.UDSSettings" />
+        <applicationService serviceImplementation="com.fwdekker.randomness.template.TemplateSettings" />
         <applicationService serviceImplementation="com.fwdekker.randomness.array.ArraySettings" />
 
         <!-- Settings window -->
@@ -20,7 +20,7 @@
                                  id="randomness.MainConfigurable"
                                  groupId="tools"
                                  bundle="randomness">
-            <configurable instance="com.fwdekker.randomness.uds.UDSSettingsConfigurable"
+            <configurable instance="com.fwdekker.randomness.template.TemplateSettingsConfigurable"
                           id="randomness.UDSSettingsConfigurable"
                           parentId="randomness.MainConfigurable" />
             <configurable instance="com.fwdekker.randomness.array.ArraySettingsConfigurable"
@@ -39,29 +39,29 @@
             <add-to-group group-id="ToolsMenu" anchor="last" />
         </action>
 
-        <!-- UDS -->
+        <!-- Template -->
         <action id="randomness.InsertUDS"
-                class="com.fwdekker.randomness.uds.UDSInsertAction"
+                class="com.fwdekker.randomness.template.TemplateInsertAction"
                 text="Random UDS"
                 description="Inserts a random UDS at each caret."
                 icon="/icons/data.svg" />
         <action id="randomness.InsertUDSArray"
-                class="com.fwdekker.randomness.uds.UDSInsertAction$ArrayAction"
+                class="com.fwdekker.randomness.template.TemplateInsertAction$ArrayAction"
                 text="Random UDS Array"
                 description="Inserts an array of random UDSs at each caret."
                 icon="/icons/data-array.svg" />
         <action id="randomness.InsertUDSRepeat"
-                class="com.fwdekker.randomness.uds.UDSInsertAction$RepeatAction"
+                class="com.fwdekker.randomness.template.TemplateInsertAction$RepeatAction"
                 text="Random Repeated UDS"
                 description="Inserts the same random UDS at each caret."
                 icon="/icons/data-repeat.svg" />
         <action id="randomness.InsertUDSRepeatArray"
-                class="com.fwdekker.randomness.uds.UDSInsertAction$RepeatArrayAction"
+                class="com.fwdekker.randomness.template.TemplateInsertAction$RepeatArrayAction"
                 text="Random Repeated UDS Array"
                 description="Inserts the same array of random UDSs at each caret."
                 icon="/icons/data-repeat-array.svg" />
         <action id="randomness.UDSSettings"
-                class="com.fwdekker.randomness.uds.UDSSettingsAction"
+                class="com.fwdekker.randomness.template.TemplateSettingsAction"
                 text="UDS Settings"
                 description="Settings for the Random UDS action."
                 icon="/icons/data-settings.svg" />

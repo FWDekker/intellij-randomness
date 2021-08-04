@@ -24,15 +24,6 @@ data class UuidScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var addDashes: Boolean = DEFAULT_ADD_DASHES
 ) : Scheme<UuidScheme>() {
-    override val descriptor =
-        "%UUID[" +
-            "version=$version, " +
-            "enclosure=$enclosure, " +
-            "capitalization=$capitalization, " +
-            "addDashes=$addDashes" +
-            "]"
-
-
     /**
      * Returns random type 4 UUIDs.
      *
@@ -65,6 +56,9 @@ data class UuidScheme(
             }
             .map { enclosure + it + enclosure }
     }
+
+
+    override fun deepCopy() = UuidScheme(version, enclosure, capitalization, addDashes)
 
 
     /**

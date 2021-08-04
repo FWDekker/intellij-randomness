@@ -26,7 +26,7 @@ import javax.swing.JPanel
  * @see SymbolSetTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class StringSettingsComponent(scheme: StringScheme) : SchemeComponent<StringScheme>() {
+class StringSchemeEditor(scheme: StringScheme) : SchemeComponent<StringScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner

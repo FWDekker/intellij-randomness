@@ -26,18 +26,6 @@ data class IntegerScheme(
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX
 ) : Scheme<IntegerScheme>() {
-    override val descriptor
-        get() = "%Int[" +
-            "minValue=$minValue, " +
-            "maxValue=$maxValue, " +
-            "base=$base, " +
-            "groupingSeparator=$groupingSeparator, " +
-            "capitalization=$capitalization, " +
-            "prefix=$prefix, " +
-            "suffix=$suffix" +
-            "]"
-
-
     /**
      * Returns random integers between the minimum and maximum value, inclusive.
      *
@@ -82,6 +70,9 @@ data class IntegerScheme(
 
         return format.format(value)
     }
+
+
+    override fun deepCopy() = IntegerScheme(minValue, maxValue, base, groupingSeparator, capitalization, prefix, suffix)
 
 
     /**

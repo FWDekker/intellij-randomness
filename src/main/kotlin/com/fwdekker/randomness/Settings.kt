@@ -47,11 +47,6 @@ abstract class Scheme<SELF> {
      */
     val random: Random = Random.Default
 
-    /**
-     * The UDS descriptor describing this scheme.
-     */
-    abstract val descriptor: String
-
 
     /**
      * Generates random data according to the settings in this scheme.
@@ -62,4 +57,11 @@ abstract class Scheme<SELF> {
      */
     @Throws(DataGenerationException::class)
     abstract fun generateStrings(count: Int = 1): List<String>
+
+    /**
+     * Returns a deep copy of itself.
+     *
+     * @return a deep copy of itself
+     */
+    abstract fun deepCopy(): SELF
 }

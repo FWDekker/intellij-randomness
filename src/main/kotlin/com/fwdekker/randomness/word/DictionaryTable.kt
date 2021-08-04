@@ -15,7 +15,7 @@ private typealias EditableDictionary = EditableDatum<DictionaryReference>
 /**
  * An editable table for selecting and editing [Dictionaries][Dictionary].
  *
- * @see WordSettingsComponent
+ * @see WordSchemeEditor
  */
 class DictionaryTable : ActivityTableModelEditor<DictionaryReference>(
     arrayOf(TYPE_COLUMN, LOCATION_COLUMN),

@@ -28,7 +28,7 @@ import javax.swing.JTextArea
  * @see DictionaryTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class WordSettingsComponent(scheme: WordScheme) : SchemeComponent<WordScheme>() {
+class WordSchemeEditor(scheme: WordScheme) : SchemeComponent<WordScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner

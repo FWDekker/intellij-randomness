@@ -20,7 +20,7 @@ import javax.swing.JPanel
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class UuidSettingsComponent(scheme: UuidScheme) : SchemeComponent<UuidScheme>() {
+class UuidSchemeEditor(scheme: UuidScheme) : SchemeComponent<UuidScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var versionGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup

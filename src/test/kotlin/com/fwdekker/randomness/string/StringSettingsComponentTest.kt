@@ -15,12 +15,12 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * GUI tests for [StringSettingsComponent].
+ * GUI tests for [StringSchemeEditor].
  */
 object StringSettingsComponentTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var stringSettings: StringSettings
-    lateinit var stringSettingsComponent: StringSettingsComponent
+    lateinit var stringSchemeEditor: StringSchemeEditor
     lateinit var symbolSetTable: TableView<EditableDatum<SymbolSet>>
     lateinit var frame: FrameFixture
 
@@ -45,9 +45,9 @@ object StringSettingsComponentTest : Spek({
                 currentScheme.excludeLookAlikeSymbols = true
             }
 
-        stringSettingsComponent =
-            GuiActionRunner.execute<StringSettingsComponent> { StringSettingsComponent(stringSettings) }
-        frame = showInFrame(stringSettingsComponent.rootPane)
+        stringSchemeEditor =
+            GuiActionRunner.execute<StringSchemeEditor> { StringSchemeEditor(stringSettings) }
+        frame = showInFrame(stringSchemeEditor.rootPane)
 
         symbolSetTable = frame.table().target() as TableView<EditableDatum<SymbolSet>>
     }
@@ -106,7 +106,7 @@ object StringSettingsComponentTest : Spek({
                 symbolSetTable.listTableModel.addRow(EditableDatum(true, SymbolSet.MINUS))
             }
 
-            stringSettingsComponent.saveSettings()
+            stringSchemeEditor.saveSettings()
 
             assertThat(stringSettings.currentScheme.minLength).isEqualTo(445)
             assertThat(stringSettings.currentScheme.maxLength).isEqualTo(803)
@@ -137,44 +137,44 @@ object StringSettingsComponentTest : Spek({
 
     describe("modification detection") {
         it("is not modified by default") {
-            assertThat(stringSettingsComponent.isModified()).isFalse()
+            assertThat(stringSchemeEditor.isModified()).isFalse()
         }
 
         it("is modified if a different number of symbol sets is present") {
             stringSettings.currentScheme.symbolSetList = listOf(SymbolSet.ALPHABET)
-            GuiActionRunner.execute { stringSettingsComponent.loadSettings() }
+            GuiActionRunner.execute { stringSchemeEditor.loadSettings() }
 
             val resizedSettings = stringSettings.deepCopy()
             resizedSettings.currentScheme.symbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.BRACKETS)
-            GuiActionRunner.execute { stringSettingsComponent.loadSettings(resizedSettings) }
+            GuiActionRunner.execute { stringSchemeEditor.loadSettings(resizedSettings) }
 
-            assertThat(stringSettingsComponent.isModified()).isTrue()
+            assertThat(stringSchemeEditor.isModified()).isTrue()
         }
 
         it("is modified if the user reorders dictionaries") {
             stringSettings.currentScheme.symbolSetList = listOf(SymbolSet.DIGITS, SymbolSet.UNDERSCORE)
-            GuiActionRunner.execute { stringSettingsComponent.loadSettings() }
+            GuiActionRunner.execute { stringSchemeEditor.loadSettings() }
 
             val reorderedSettings = stringSettings.deepCopy()
             reorderedSettings.currentScheme.symbolSetList = listOf(SymbolSet.UNDERSCORE, SymbolSet.DIGITS)
-            GuiActionRunner.execute { stringSettingsComponent.loadSettings(reorderedSettings) }
+            GuiActionRunner.execute { stringSchemeEditor.loadSettings(reorderedSettings) }
 
-            assertThat(stringSettingsComponent.isModified()).isTrue()
+            assertThat(stringSchemeEditor.isModified()).isTrue()
         }
     }
 
     describe("validation") {
         it("passes for the default settings") {
-            GuiActionRunner.execute { stringSettingsComponent.loadSettings(StringSettings()) }
+            GuiActionRunner.execute { stringSchemeEditor.loadSettings(StringSettings()) }
 
-            assertThat(stringSettingsComponent.doValidate()).isNull()
+            assertThat(stringSchemeEditor.doValidate()).isNull()
         }
 
         describe("length range") {
             it("fails if the minimum length is negative") {
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = -161 }
 
-                val validationInfo = stringSettingsComponent.doValidate()
+                val validationInfo = stringSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
@@ -189,7 +189,7 @@ object StringSettingsComponentTest : Spek({
                     repeat(symbolSetTable.listTableModel.rowCount) { symbolSetTable.listTableModel.removeRow(0) }
                 }
 
-                val validationInfo = stringSettingsComponent.doValidate()
+                val validationInfo = stringSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
@@ -200,7 +200,7 @@ object StringSettingsComponentTest : Spek({
                 val symbolSet = EditableDatum(false, SymbolSet("", "abc"))
                 GuiActionRunner.execute { symbolSetTable.listTableModel.addRow(symbolSet) }
 
-                val validationInfo = stringSettingsComponent.doValidate()
+                val validationInfo = stringSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
@@ -215,7 +215,7 @@ object StringSettingsComponentTest : Spek({
                     symbolSetTable.listTableModel.addRow(symbolSet2)
                 }
 
-                val validationInfo = stringSettingsComponent.doValidate()
+                val validationInfo = stringSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
@@ -226,7 +226,7 @@ object StringSettingsComponentTest : Spek({
                 val symbolSet = EditableDatum(false, SymbolSet("name", ""))
                 GuiActionRunner.execute { symbolSetTable.listTableModel.addRow(symbolSet) }
 
-                val validationInfo = stringSettingsComponent.doValidate()
+                val validationInfo = stringSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
@@ -238,7 +238,7 @@ object StringSettingsComponentTest : Spek({
                     symbolSetTable.items.forEachIndexed { i, _ -> symbolSetTable.model.setValueAt(false, i, 0) }
                 }
 
-                val validationInfo = stringSettingsComponent.doValidate()
+                val validationInfo = stringSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())
@@ -254,7 +254,7 @@ object StringSettingsComponentTest : Spek({
                     symbolSetTable.model.setValueAt(true, 0, 0)
                 }
 
-                val validationInfo = stringSettingsComponent.doValidate()
+                val validationInfo = stringSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("symbolSetPanel").target())

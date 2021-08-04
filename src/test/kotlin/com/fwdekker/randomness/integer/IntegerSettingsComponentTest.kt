@@ -13,12 +13,12 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * GUI tests for [IntegerSettingsComponent].
+ * GUI tests for [IntegerSchemeEditor].
  */
 object IntegerSettingsComponentTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var integerSettings: IntegerSettings
-    lateinit var integerSettingsComponent: IntegerSettingsComponent
+    lateinit var integerSchemeEditor: IntegerSchemeEditor
     lateinit var frame: FrameFixture
 
 
@@ -41,9 +41,9 @@ object IntegerSettingsComponentTest : Spek({
                 currentScheme.suffix = ""
             }
 
-        integerSettingsComponent =
-            GuiActionRunner.execute<IntegerSettingsComponent> { IntegerSettingsComponent(integerSettings) }
-        frame = showInFrame(integerSettingsComponent.rootPane)
+        integerSchemeEditor =
+            GuiActionRunner.execute<IntegerSchemeEditor> { IntegerSchemeEditor(integerSettings) }
+        frame = showInFrame(integerSchemeEditor.rootPane)
     }
 
     afterEachTest {
@@ -98,7 +98,7 @@ object IntegerSettingsComponentTest : Spek({
                 frame.textBox("suffix").target().text = "suffix"
             }
 
-            integerSettingsComponent.saveSettings()
+            integerSchemeEditor.saveSettings()
 
             assertThat(integerSettings.currentScheme.minValue).isEqualTo(2_147_483_648L)
             assertThat(integerSettings.currentScheme.maxValue).isEqualTo(2_147_483_649L)
@@ -160,16 +160,16 @@ object IntegerSettingsComponentTest : Spek({
 
     describe("validation") {
         it("passes for the default settings") {
-            GuiActionRunner.execute { integerSettingsComponent.loadSettings(IntegerSettings()) }
+            GuiActionRunner.execute { integerSchemeEditor.loadSettings(IntegerSettings()) }
 
-            assertThat(integerSettingsComponent.doValidate()).isNull()
+            assertThat(integerSchemeEditor.doValidate()).isNull()
         }
 
         describe("base") {
             it("fails if the base is negative") {
                 GuiActionRunner.execute { frame.spinner("base").target().value = -189 }
 
-                val validationInfo = integerSettingsComponent.doValidate()
+                val validationInfo = integerSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
@@ -179,7 +179,7 @@ object IntegerSettingsComponentTest : Spek({
             it("fails if the base is 0") {
                 GuiActionRunner.execute { frame.spinner("base").target().value = 0 }
 
-                val validationInfo = integerSettingsComponent.doValidate()
+                val validationInfo = integerSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
@@ -189,7 +189,7 @@ object IntegerSettingsComponentTest : Spek({
             it("fails if the base is 1") {
                 GuiActionRunner.execute { frame.spinner("base").target().value = 1 }
 
-                val validationInfo = integerSettingsComponent.doValidate()
+                val validationInfo = integerSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())
@@ -199,7 +199,7 @@ object IntegerSettingsComponentTest : Spek({
             it("fails if the base is greater than 36") {
                 GuiActionRunner.execute { frame.spinner("base").target().value = 68 }
 
-                val validationInfo = integerSettingsComponent.doValidate()
+                val validationInfo = integerSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("base").target())

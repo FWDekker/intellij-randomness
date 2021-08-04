@@ -23,7 +23,7 @@ import javax.swing.event.ChangeEvent
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class IntegerSettingsComponent(scheme: IntegerScheme) : SchemeComponent<IntegerScheme>() {
+class IntegerSchemeEditor(scheme: IntegerScheme) : SchemeComponent<IntegerScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JLongSpinner

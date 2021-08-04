@@ -15,7 +15,7 @@ private typealias EditableSymbolSet = EditableDatum<SymbolSet>
 /**
  * An editable table for selecting and editing [SymbolSet]s.
  *
- * @see StringSettingsComponent
+ * @see StringSchemeEditor
  */
 class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
     arrayOf(NAME_COLUMN, SYMBOLS_COLUMN),

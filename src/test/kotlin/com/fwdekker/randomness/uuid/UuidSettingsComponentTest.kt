@@ -13,12 +13,12 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * GUI tests for [UuidSettingsComponent].
+ * GUI tests for [UuidSchemeEditor].
  */
 object UuidSettingsComponentTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var uuidSettings: UuidSettings
-    lateinit var uuidSettingsComponent: UuidSettingsComponent
+    lateinit var uuidSchemeEditor: UuidSchemeEditor
     lateinit var frame: FrameFixture
 
 
@@ -38,8 +38,8 @@ object UuidSettingsComponentTest : Spek({
                 currentScheme.addDashes = false
             }
 
-        uuidSettingsComponent = GuiActionRunner.execute<UuidSettingsComponent> { UuidSettingsComponent(uuidSettings) }
-        frame = showInFrame(uuidSettingsComponent.rootPane)
+        uuidSchemeEditor = GuiActionRunner.execute<UuidSchemeEditor> { UuidSchemeEditor(uuidSettings) }
+        frame = showInFrame(uuidSchemeEditor.rootPane)
     }
 
     afterEachTest {
@@ -78,7 +78,7 @@ object UuidSettingsComponentTest : Spek({
             GuiActionRunner.execute { frame.radioButton("capitalizationUpper").target().isSelected = true }
             GuiActionRunner.execute { frame.checkBox("addDashesCheckBox").target().isSelected = true }
 
-            uuidSettingsComponent.saveSettings()
+            uuidSchemeEditor.saveSettings()
 
             assertThat(uuidSettings.currentScheme.version).isEqualTo(1)
             assertThat(uuidSettings.currentScheme.enclosure).isEqualTo("`")
@@ -89,9 +89,9 @@ object UuidSettingsComponentTest : Spek({
 
     describe("validation") {
         it("passes for the default settings") {
-            GuiActionRunner.execute { uuidSettingsComponent.loadSettings(UuidSettings()) }
+            GuiActionRunner.execute { uuidSchemeEditor.loadSettings(UuidSettings()) }
 
-            assertThat(uuidSettingsComponent.doValidate()).isNull()
+            assertThat(uuidSchemeEditor.doValidate()).isNull()
         }
     }
 })
