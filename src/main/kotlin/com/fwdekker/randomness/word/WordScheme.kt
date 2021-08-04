@@ -3,10 +3,7 @@ package com.fwdekker.randomness.word
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
-import com.intellij.util.xmlb.XmlSerializerUtil
-import com.intellij.util.xmlb.annotations.MapAnnotation
-import com.intellij.util.xmlb.annotations.Transient
-import kotlin.random.Random
+import com.fwdekker.randomness.uds.collectionToString
 
 
 /**
@@ -16,69 +13,34 @@ import kotlin.random.Random
  * @property maxLength The maximum length of the generated word, inclusive.
  * @property enclosure The string that encloses the generated word on both sides.
  * @property capitalization The way in which the generated word should be capitalized.
- * @property bundledDictionaryFiles The list of all dictionary files provided by the plugin.
- * @property userDictionaryFiles The list of all dictionary files registered by the user.
- * @property activeBundledDictionaryFiles The list of bundled dictionary files that are currently active; a subset of
- * [bundledDictionaryFiles].
- * @property activeUserDictionaryFiles The list of user dictionary files that are currently active; a subset of
- * [userDictionaryFiles].
+ * @property bundledDictionaries The list of all dictionary files provided by the plugin.
+ * @property userDictionaries The list of all dictionary files registered by the user.
+ * @property activeBundledDictionaries The list of bundled dictionary files that are currently active; a subset of
+ * [bundledDictionaries].
+ * @property activeUserDictionaries The list of user dictionary files that are currently active; a subset of
+ * [userDictionaries].
  */
 data class WordScheme(
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    @MapAnnotation(sortBeforeSave = false)
-    var bundledDictionaryFiles: MutableSet<String> = DEFAULT_BUNDLED_DICTIONARY_FILES.toMutableSet(),
-    @MapAnnotation(sortBeforeSave = false)
-    var activeBundledDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES.toMutableSet(),
-    @MapAnnotation(sortBeforeSave = false)
-    var userDictionaryFiles: MutableSet<String> = DEFAULT_USER_DICTIONARY_FILES.toMutableSet(),
-    @MapAnnotation(sortBeforeSave = false)
-    var activeUserDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES.toMutableSet()
-) : Scheme<WordScheme> {
-    private val random: Random = Random.Default
-
-
-    /**
-     * A mutable view of the filenames of the files in [bundledDictionaryFiles].
-     */
-    var bundledDictionaries: Set<DictionaryReference>
-        @Transient
-        get() = bundledDictionaryFiles.map { DictionaryReference(true, it) }.toSet()
-        set(value) {
-            bundledDictionaryFiles = value.map { it.filename }.toMutableSet()
-        }
-
-    /**
-     * A mutable view of the filenames of the files in [userDictionaryFiles].
-     */
-    var userDictionaries: Set<DictionaryReference>
-        @Transient
-        get() = userDictionaryFiles.map { DictionaryReference(false, it) }.toSet()
-        set(value) {
-            userDictionaryFiles = value.map { it.filename }.toMutableSet()
-        }
-
-    /**
-     * A mutable view of the filenames of the files in [activeBundledDictionaryFiles].
-     */
-    var activeBundledDictionaries: Set<DictionaryReference>
-        @Transient
-        get() = activeBundledDictionaryFiles.map { DictionaryReference(true, it) }.toSet()
-        set(value) {
-            activeBundledDictionaryFiles = value.map { it.filename }.toMutableSet()
-        }
-
-    /**
-     * A mutable view of the filenames of the files in [activeUserDictionaryFiles].
-     */
-    var activeUserDictionaries: Set<DictionaryReference>
-        @Transient
-        get() = activeUserDictionaryFiles.map { DictionaryReference(false, it) }.toSet()
-        set(value) {
-            activeUserDictionaryFiles = value.map { it.filename }.toMutableSet()
-        }
+    var bundledDictionaries: Set<DictionaryReference> = DEFAULT_BUNDLED_DICTIONARIES.toMutableSet(),
+    var activeBundledDictionaries: Set<DictionaryReference> = DEFAULT_ACTIVE_BUNDLED_DICTIONARIES.toMutableSet(),
+    var userDictionaries: Set<DictionaryReference> = DEFAULT_USER_DICTIONARIES.toMutableSet(),
+    var activeUserDictionaries: Set<DictionaryReference> = DEFAULT_ACTIVE_USER_DICTIONARIES.toMutableSet()
+) : Scheme<WordScheme>() {
+    override val descriptor =
+        "%Word[" +
+            "minLength=$minLength, " +
+            "maxLength=$maxLength, " +
+            "enclosure=$enclosure, " +
+            "capitalization=$capitalization, " +
+            "bundledDictionaries=${collectionToString(bundledDictionaries)}, " +
+            "activeBundledDictionaries=${collectionToString(activeBundledDictionaries)}, " +
+            "userDictionaries=${collectionToString(userDictionaries)}, " +
+            "activeUserDictionaries=${collectionToString(activeUserDictionaries)}" +
+            "]"
 
 
     /**
@@ -109,9 +71,6 @@ data class WordScheme(
     }
 
 
-    override fun copyFrom(other: WordScheme) = XmlSerializerUtil.copyBean(other, this)
-
-
     /**
      * Holds constants.
      */
@@ -137,23 +96,23 @@ data class WordScheme(
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
 
         /**
-         * The default value of the [bundledDictionaryFiles][bundledDictionaryFiles] field.
+         * The default value of the [bundledDictionaries][bundledDictionaries] field.
          */
-        val DEFAULT_BUNDLED_DICTIONARY_FILES = setOf(BundledDictionary.SIMPLE_DICTIONARY)
+        val DEFAULT_BUNDLED_DICTIONARIES = setOf(BundledDictionary.SIMPLE_DICTIONARY)
 
         /**
-         * The default value of the [activeBundledDictionaryFiles][activeBundledDictionaryFiles] field.
+         * The default value of the [activeBundledDictionaries][activeBundledDictionaries] field.
          */
-        val DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES = setOf(BundledDictionary.SIMPLE_DICTIONARY)
+        val DEFAULT_ACTIVE_BUNDLED_DICTIONARIES = setOf(BundledDictionary.SIMPLE_DICTIONARY)
 
         /**
-         * The default value of the [userDictionaryFiles][userDictionaryFiles] field.
+         * The default value of the [userDictionaries][userDictionaries] field.
          */
-        val DEFAULT_USER_DICTIONARY_FILES = setOf<String>()
+        val DEFAULT_USER_DICTIONARIES = setOf<DictionaryReference>()
 
         /**
-         * The default value of the [activeUserDictionaryFiles][activeUserDictionaryFiles] field.
+         * The default value of the [activeUserDictionaries][activeUserDictionaries] field.
          */
-        val DEFAULT_ACTIVE_USER_DICTIONARY_FILES = setOf<String>()
+        val DEFAULT_ACTIVE_USER_DICTIONARIES = setOf<DictionaryReference>()
     }
 }

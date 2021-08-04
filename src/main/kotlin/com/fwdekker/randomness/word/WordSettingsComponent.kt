@@ -21,15 +21,15 @@ import javax.swing.JTextArea
 
 
 /**
- * Component for settings of random word generation.
+ * Component for editing random word settings.
  *
- * @param settings the settings to edit in the component
+ * @param scheme the scheme to edit in the component
  *
  * @see DictionaryTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class WordSettingsComponent(settings: WordScheme) : SchemeComponent<WordScheme>(settings) {
-    private lateinit var contentPane: JPanel
+class WordSettingsComponent(scheme: WordScheme) : SchemeComponent<WordScheme>() {
+    override lateinit var rootPane: JPanel private set
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -40,11 +40,9 @@ class WordSettingsComponent(settings: WordScheme) : SchemeComponent<WordScheme>(
     private lateinit var dictionaryTable: DictionaryTable
     private lateinit var dictionaryHelp: JTextArea
 
-    override val rootPane get() = contentPane
-
 
     init {
-        loadScheme()
+        loadScheme(scheme)
 
         dictionaryHelp.border = null
         dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
@@ -66,32 +64,34 @@ class WordSettingsComponent(settings: WordScheme) : SchemeComponent<WordScheme>(
         lengthRange = JSpinnerRange(minLength, maxLength, Int.MAX_VALUE.toDouble(), "length")
         dictionaryTable = DictionaryTable()
         dictionaryPanel = dictionaryTable.panel
-
         dictionarySeparator = factory.createSeparator(bundle.getString("settings.dictionaries"))
     }
 
-    override fun loadScheme(scheme: WordScheme) {
-        minLength.value = scheme.minLength
-        maxLength.value = scheme.maxLength
-        enclosureGroup.setValue(scheme.enclosure)
-        capitalizationGroup.setValue(scheme.capitalization)
-        dictionaryTable.data = scheme.bundledDictionaries + scheme.userDictionaries
-        dictionaryTable.activeData = scheme.activeBundledDictionaries + scheme.activeUserDictionaries
-    }
+    override fun loadScheme(scheme: WordScheme) =
+        scheme.also {
+            minLength.value = it.minLength
+            maxLength.value = it.maxLength
+            enclosureGroup.setValue(it.enclosure)
+            capitalizationGroup.setValue(it.capitalization)
+            dictionaryTable.data = it.bundledDictionaries + it.userDictionaries
+            dictionaryTable.activeData = it.activeBundledDictionaries + it.activeUserDictionaries
+        }.let {}
 
-    override fun saveScheme(scheme: WordScheme) {
-        scheme.minLength = minLength.value
-        scheme.maxLength = maxLength.value
-        scheme.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
-        scheme.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
-        scheme.bundledDictionaries = dictionaryTable.data.filter { it.isBundled }.toSet()
-        scheme.activeBundledDictionaries = dictionaryTable.activeData.filter { it.isBundled }.toSet()
-        scheme.userDictionaries = dictionaryTable.data.filter { !it.isBundled }.toSet()
-        scheme.activeUserDictionaries = dictionaryTable.activeData.filter { !it.isBundled }.toSet()
+    override fun saveScheme(): WordScheme =
+        WordScheme(
+            minLength = minLength.value,
+            maxLength = maxLength.value,
+            enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
+            capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
+            bundledDictionaries = dictionaryTable.data.filter { it.isBundled }.toSet(),
+            activeBundledDictionaries = dictionaryTable.activeData.filter { it.isBundled }.toSet(),
+            userDictionaries = dictionaryTable.data.filter { !it.isBundled }.toSet(),
+            activeUserDictionaries = dictionaryTable.activeData.filter { !it.isBundled }.toSet()
+        ).also {
+            BundledDictionary.cache.clear()
+            UserDictionary.cache.clear()
+        }
 
-        BundledDictionary.cache.clear()
-        UserDictionary.cache.clear()
-    }
 
     override fun doValidate(): ValidationInfo? {
         BundledDictionary.cache.clear()
@@ -109,8 +109,6 @@ class WordSettingsComponent(settings: WordScheme) : SchemeComponent<WordScheme>(
             minLength, maxLength, capitalizationGroup, enclosureGroup, dictionaryTable,
             listener = listener
         )
-
-    override fun toUDSDescriptor() = "%Word[]"
 
 
     /**

@@ -7,8 +7,6 @@ import com.fasterxml.uuid.UUIDTimer
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
-import com.intellij.util.xmlb.XmlSerializerUtil
-import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
 
@@ -25,8 +23,14 @@ data class UuidScheme(
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var addDashes: Boolean = DEFAULT_ADD_DASHES
-) : Scheme<UuidScheme> {
-    private val random: Random = Random.Default
+) : Scheme<UuidScheme>() {
+    override val descriptor =
+        "%UUID[" +
+            "version=$version, " +
+            "enclosure=$enclosure, " +
+            "capitalization=$capitalization, " +
+            "addDashes=$addDashes" +
+            "]"
 
 
     /**
@@ -61,9 +65,6 @@ data class UuidScheme(
             }
             .map { enclosure + it + enclosure }
     }
-
-
-    override fun copyFrom(other: UuidScheme) = XmlSerializerUtil.copyBean(other, this)
 
 
     /**

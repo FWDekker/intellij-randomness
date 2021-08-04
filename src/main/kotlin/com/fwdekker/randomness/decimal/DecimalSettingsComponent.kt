@@ -17,14 +17,13 @@ import javax.swing.event.ChangeEvent
 
 
 /**
- * Component for settings of random decimal generation.
+ * Component for editing random decimal settings.
  *
- * @param settings the settings to edit in the component
+ * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class DecimalSettingsComponent(settings: DecimalScheme) :
-    SchemeComponent<DecimalScheme>(settings) {
-    private lateinit var contentPane: JPanel
+class DecimalSettingsComponent(scheme: DecimalScheme) : SchemeComponent<DecimalScheme>() {
+    override lateinit var rootPane: JPanel private set
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JDoubleSpinner
     private lateinit var maxValue: JDoubleSpinner
@@ -35,11 +34,9 @@ class DecimalSettingsComponent(settings: DecimalScheme) :
     private lateinit var prefixInput: JTextField
     private lateinit var suffixInput: JTextField
 
-    override val rootPane get() = contentPane
-
 
     init {
-        loadScheme()
+        loadScheme(scheme)
 
         decimalCount.addChangeListener { showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0 }
         decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
@@ -56,31 +53,32 @@ class DecimalSettingsComponent(settings: DecimalScheme) :
         minValue = JDoubleSpinner(description = "minimum value")
         maxValue = JDoubleSpinner(description = "maximum value")
         valueRange = JSpinnerRange(minValue, maxValue, MAX_VALUE_RANGE, name = "value")
-
         decimalCount = JIntSpinner(0, 0, description = "decimal count")
     }
 
-    override fun loadScheme(scheme: DecimalScheme) {
-        minValue.value = scheme.minValue
-        maxValue.value = scheme.maxValue
-        decimalCount.value = scheme.decimalCount
-        showTrailingZeroesCheckBox.isSelected = scheme.showTrailingZeroes
-        groupingSeparatorGroup.setValue(scheme.groupingSeparator)
-        decimalSeparatorGroup.setValue(scheme.decimalSeparator)
-        prefixInput.text = scheme.prefix
-        suffixInput.text = scheme.suffix
-    }
+    override fun loadScheme(scheme: DecimalScheme) =
+        scheme.also {
+            minValue.value = it.minValue
+            maxValue.value = it.maxValue
+            decimalCount.value = it.decimalCount
+            showTrailingZeroesCheckBox.isSelected = it.showTrailingZeroes
+            groupingSeparatorGroup.setValue(it.groupingSeparator)
+            decimalSeparatorGroup.setValue(it.decimalSeparator)
+            prefixInput.text = it.prefix
+            suffixInput.text = it.suffix
+        }.let {}
 
-    override fun saveScheme(scheme: DecimalScheme) {
-        scheme.minValue = minValue.value
-        scheme.maxValue = maxValue.value
-        scheme.decimalCount = decimalCount.value
-        scheme.showTrailingZeroes = showTrailingZeroesCheckBox.isSelected
-        scheme.groupingSeparator = groupingSeparatorGroup.getValue() ?: DEFAULT_GROUPING_SEPARATOR
-        scheme.decimalSeparator = decimalSeparatorGroup.getValue() ?: DEFAULT_DECIMAL_SEPARATOR
-        scheme.prefix = prefixInput.text
-        scheme.suffix = suffixInput.text
-    }
+    override fun saveScheme() =
+        DecimalScheme(
+            minValue = minValue.value,
+            maxValue = maxValue.value,
+            decimalCount = decimalCount.value,
+            showTrailingZeroes = showTrailingZeroesCheckBox.isSelected,
+            groupingSeparator = groupingSeparatorGroup.getValue() ?: DEFAULT_GROUPING_SEPARATOR,
+            decimalSeparator = decimalSeparatorGroup.getValue() ?: DEFAULT_DECIMAL_SEPARATOR,
+            prefix = prefixInput.text,
+            suffix = suffixInput.text
+        )
 
     override fun doValidate() =
         minValue.validateValue()
@@ -88,14 +86,13 @@ class DecimalSettingsComponent(settings: DecimalScheme) :
             ?: valueRange.validateValue()
             ?: decimalCount.validateValue()
 
+
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
             minValue, maxValue, decimalCount, showTrailingZeroesCheckBox, groupingSeparatorGroup, decimalSeparatorGroup,
             prefixInput, suffixInput,
             listener = listener
         )
-
-    override fun toUDSDescriptor() = "%Dec[]"
 
 
     /**

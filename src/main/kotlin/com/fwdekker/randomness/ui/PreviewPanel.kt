@@ -79,6 +79,7 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
         try {
             previewLabel.text = getGenerator().also { it.random = Random(seed) }.generateStringTimely()
         } catch (e: DataGenerationException) {
+            e.printStackTrace()
             previewLabel.text = "Settings are invalid: ${e.message}"
         } catch (e: IllegalArgumentException) {
             // Ignore exception; invalid settings are handled by form validation

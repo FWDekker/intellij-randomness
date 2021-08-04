@@ -18,14 +18,13 @@ import javax.swing.event.ChangeEvent
 
 
 /**
- * Component for settings of random integer generation.
+ * Component for editing random integer settings.
  *
- * @param settings the settings to edit in the component
+ * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class IntegerSettingsComponent(settings: IntegerScheme) :
-    SchemeComponent<IntegerScheme>(settings) {
-    private lateinit var contentPane: JPanel
+class IntegerSettingsComponent(scheme: IntegerScheme) : SchemeComponent<IntegerScheme>() {
+    override lateinit var rootPane: JPanel private set
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JLongSpinner
     private lateinit var maxValue: JLongSpinner
@@ -35,11 +34,9 @@ class IntegerSettingsComponent(settings: IntegerScheme) :
     private lateinit var prefixInput: JTextField
     private lateinit var suffixInput: JTextField
 
-    override val rootPane get() = contentPane
-
 
     init {
-        loadScheme()
+        loadScheme(scheme)
 
         base.addChangeListener {
             groupingSeparatorGroup.forEach { it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE }
@@ -66,25 +63,27 @@ class IntegerSettingsComponent(settings: IntegerScheme) :
         valueRange = JSpinnerRange(minValue, maxValue, maxRange = null, "value")
     }
 
-    override fun loadScheme(scheme: IntegerScheme) {
-        minValue.value = scheme.minValue
-        maxValue.value = scheme.maxValue
-        base.value = scheme.base
-        groupingSeparatorGroup.setValue(scheme.groupingSeparator)
-        capitalizationGroup.setValue(scheme.capitalization)
-        prefixInput.text = scheme.prefix
-        suffixInput.text = scheme.suffix
-    }
+    override fun loadScheme(scheme: IntegerScheme) =
+        scheme.also {
+            minValue.value = it.minValue
+            maxValue.value = it.maxValue
+            base.value = it.base
+            groupingSeparatorGroup.setValue(it.groupingSeparator)
+            capitalizationGroup.setValue(it.capitalization)
+            prefixInput.text = it.prefix
+            suffixInput.text = it.suffix
+        }.let { }
 
-    override fun saveScheme(scheme: IntegerScheme) {
-        scheme.minValue = minValue.value
-        scheme.maxValue = maxValue.value
-        scheme.base = base.value
-        scheme.groupingSeparator = groupingSeparatorGroup.getValue() ?: DEFAULT_GROUPING_SEPARATOR
-        scheme.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
-        scheme.prefix = prefixInput.text
-        scheme.suffix = suffixInput.text
-    }
+    override fun saveScheme() =
+        IntegerScheme(
+            minValue = minValue.value,
+            maxValue = maxValue.value,
+            base = base.value,
+            groupingSeparator = groupingSeparatorGroup.getValue() ?: DEFAULT_GROUPING_SEPARATOR,
+            capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
+            prefix = prefixInput.text,
+            suffix = suffixInput.text
+        )
 
     override fun doValidate() =
         minValue.validateValue()
@@ -97,6 +96,4 @@ class IntegerSettingsComponent(settings: IntegerScheme) :
             minValue, maxValue, base, groupingSeparatorGroup, capitalizationGroup, prefixInput, suffixInput,
             listener = listener
         )
-
-    override fun toUDSDescriptor() = "%Int[]"
 }

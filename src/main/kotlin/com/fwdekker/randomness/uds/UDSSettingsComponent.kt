@@ -95,7 +95,7 @@ class UDSSettingsComponent(settings: UDSSettings = default) : SettingsComponent<
             newDescriptor.startsWith("%UUID") -> UuidSettingsComponent(UuidScheme())
             else -> null
         }?.also { component ->
-            component.addChangeListener { onComponentChanged(component.toUDSDescriptor()) }
+            component.addChangeListener { onComponentChanged(component.saveScheme().descriptor) }
             descriptorEditorPanel.add(component.rootPane)
         }
         isEditingDescriptor = false

@@ -18,9 +18,6 @@ import javax.swing.JPanel
  * @param T the type of scheme to manage
  * @param settings the settings to manage
  */
-// TODO: Remove the inherent use of schemes from settings components
-// TODO: Remove the ability to "save" and "load" from settings, or alternatively create a new super class, like maybe
-// "UDS Primitive" or something.
 abstract class SettingsComponent<S : Settings<S>>(private val settings: S) : SettingsManager<S> {
     /**
      * The panel containing the settings.
@@ -82,38 +79,31 @@ abstract class SettingsComponent<S : Settings<S>>(private val settings: S) : Set
     abstract fun doValidate(): ValidationInfo?
 }
 
-abstract class SchemeComponent<S : Scheme<S>>(private val scheme: S) {
+/**
+ * A component to edit a [Scheme] with.
+ *
+ * @param S the type of scheme that can be edited
+ */
+abstract class SchemeComponent<S : Scheme<S>> {
     /**
-     * The panel containing the settings.
+     * The panel containing the settings components.
      */
     abstract val rootPane: JPanel?
 
 
-    fun loadScheme() = loadScheme(scheme)
-
+    /**
+     * Loads the settings from the given scheme into this component.
+     *
+     * @param scheme the scheme to load settings from
+     */
     abstract fun loadScheme(scheme: S)
 
-    fun saveScheme() = saveScheme(scheme)
-
-    abstract fun saveScheme(scheme: S)
-
-
-    // TODO: Move these functions to better places
     /**
-     * Adds a listener to these settings that is triggered when any of the settings' fields is changed.
+     * Returns the settings in this scheme as a scheme.
      *
-     * @param listener the function to invoke when any of the settings' fields is changed
+     * @return the settings in this scheme as a scheme
      */
-    abstract fun addChangeListener(listener: () -> Unit)
-
-    // TODO: Consider moving this to the scheme instead of the component
-    /**
-     * Returns the UDS descriptor corresponding to the current scheme.
-     *
-     * @return the UDS descriptor corresponding to the current scheme
-     */
-    abstract fun toUDSDescriptor(): String
-
+    abstract fun saveScheme(): S
 
     /**
      * Validates all input fields.
@@ -121,4 +111,12 @@ abstract class SchemeComponent<S : Scheme<S>>(private val scheme: S) {
      * @return `null` if the input is valid, or a `ValidationInfo` object explaining why the input is invalid
      */
     abstract fun doValidate(): ValidationInfo?
+
+
+    /**
+     * Adds a listener to these settings that is triggered when any of the settings' fields is changed.
+     *
+     * @param listener the function to invoke when any of the settings' fields is changed
+     */
+    abstract fun addChangeListener(listener: () -> Unit)
 }

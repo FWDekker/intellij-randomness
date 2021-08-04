@@ -1,6 +1,7 @@
 package com.fwdekker.randomness
 
 import com.intellij.openapi.components.PersistentStateComponent
+import kotlin.random.Random
 
 
 // TODO: Overhaul settings to be specific to UDS? But also leave space for symbol sets!
@@ -40,7 +41,18 @@ interface Settings<SELF> : PersistentStateComponent<SELF> {
  * @param SELF the type of scheme that is stored; should be a self-reference
  * @see Settings
  */
-interface Scheme<SELF> {
+abstract class Scheme<SELF> {
+    /**
+     * The random generator used to generate random values.
+     */
+    val random: Random = Random.Default
+
+    /**
+     * The UDS descriptor describing this scheme.
+     */
+    abstract val descriptor: String
+
+
     /**
      * Generates random data according to the settings in this scheme.
      *
@@ -49,12 +61,5 @@ interface Scheme<SELF> {
      * @throws DataGenerationException if data could not be generated
      */
     @Throws(DataGenerationException::class)
-    fun generateStrings(count: Int = 1): List<String>
-
-    /**
-     * Shallowly copies the state of [other] into `this`.
-     *
-     * @param other the state to copy into `this`
-     */
-    fun copyFrom(other: SELF)
+    abstract fun generateStrings(count: Int = 1): List<String>
 }

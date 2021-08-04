@@ -15,39 +15,39 @@ import javax.swing.JPanel
 
 
 /**
- * Component for settings of random UUID generation.
+ * Component for editing random UUID settings.
  *
- * @param settings the settings to edit in the component
+ * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class UuidSettingsComponent(settings: UuidScheme) : SchemeComponent<UuidScheme>(settings) {
-    private lateinit var contentPane: JPanel
+class UuidSettingsComponent(scheme: UuidScheme) : SchemeComponent<UuidScheme>() {
+    override lateinit var rootPane: JPanel private set
     private lateinit var versionGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var addDashesCheckBox: JCheckBox
 
-    override val rootPane get() = contentPane
-
 
     init {
-        loadScheme()
+        loadScheme(scheme)
     }
 
 
-    override fun loadScheme(scheme: UuidScheme) {
-        versionGroup.setValue(scheme.version.toString())
-        enclosureGroup.setValue(scheme.enclosure)
-        capitalizationGroup.setValue(scheme.capitalization)
-        addDashesCheckBox.isSelected = scheme.addDashes
-    }
+    override fun loadScheme(scheme: UuidScheme) =
+        scheme.also {
+            versionGroup.setValue(it.version.toString())
+            enclosureGroup.setValue(it.enclosure)
+            capitalizationGroup.setValue(it.capitalization)
+            addDashesCheckBox.isSelected = it.addDashes
+        }.let {}
 
-    override fun saveScheme(scheme: UuidScheme) {
-        scheme.version = versionGroup.getValue()?.toInt() ?: DEFAULT_VERSION
-        scheme.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
-        scheme.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
-        scheme.addDashes = addDashesCheckBox.isSelected
-    }
+    override fun saveScheme(): UuidScheme =
+        UuidScheme(
+            version = versionGroup.getValue()?.toInt() ?: DEFAULT_VERSION,
+            enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
+            capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
+            addDashes = addDashesCheckBox.isSelected
+        )
 
     override fun doValidate(): ValidationInfo? = null
 
@@ -56,6 +56,4 @@ class UuidSettingsComponent(settings: UuidScheme) : SchemeComponent<UuidScheme>(
             versionGroup, enclosureGroup, capitalizationGroup, addDashesCheckBox,
             listener = listener
         )
-
-    override fun toUDSDescriptor() = "%UUID[]"
 }

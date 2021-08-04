@@ -5,6 +5,7 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.string.SymbolSet
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import kotlin.random.Random
@@ -160,6 +161,7 @@ object UDSParser {
             .mapNotNull { (k, v) ->
                 function.findParameterByName(k)?.let {
                     val stringProjection = KTypeProjection(KVariance.INVARIANT, String::class.createType())
+                    val symbolSetProjection = KTypeProjection(KVariance.INVARIANT, SymbolSet::class.createType())
 
                     it to when {
                         it.type.classifier == Boolean::class -> v.toBoolean()
@@ -172,9 +174,14 @@ object UDSParser {
                             && it.type.arguments == listOf(stringProjection) -> parseListDescriptor(v)
                         it.type.classifier == Set::class
                             && it.type.arguments == listOf(stringProjection) -> parseSetDescriptor(v)
+                        it.type.classifier == Set::class
+                            && it.type.arguments == listOf(symbolSetProjection) ->
+                            parseMapDescriptor(v).map { (k, v) -> SymbolSet(k, v) }.toSet()
                         it.type.classifier == Map::class
                             && it.type.arguments == listOf(stringProjection, stringProjection) -> parseMapDescriptor(v)
-                        else -> throw UDSParseException("Unknown type '${it.type}'.")
+                        else -> throw UDSParseException(
+                            "Unknown type '${it.type}' / '${it.type.classifier}'. This is a bug."
+                        )
                     }
                 } ?: throw UDSParseException("Unknown parameter '$k'.")
             }
@@ -225,7 +232,7 @@ object UDSParser {
                     '\\' -> {
                         iterator += 1
                         if ((+iterator).isEmpty())
-                            throw UDSParseException("Trailing backslash does not escape anything.")
+                            throw UDSParseException("Trailing backslash does not escape anything in '$element'.")
 
                         if (!evaluateEscapeCharacters) {
                             element += "\\" + (+iterator).first()
@@ -323,7 +330,7 @@ object UDSParser {
                         '\\', ' ', ':' ->
                             key += (+iterator).first()
                         null ->
-                            throw UDSParseException("Trailing backslash does not escape anything.")
+                            throw UDSParseException("Trailing backslash does not escape anything in key '$key'.")
                         else ->
                             throw UDSParseException(
                                 "Backslash must escape either whitespace, colon, or another backslash."
@@ -365,7 +372,7 @@ object UDSParser {
                         '\\', ' ', ':' ->
                             value += (+iterator).first()
                         null ->
-                            throw UDSParseException("Trailing backslash does not escape anything.")
+                            throw UDSParseException("Trailing backslash does not escape anything in value '$value'.")
                         else ->
                             throw UDSParseException(
                                 "Backslash must escape either whitespace, colon, or another backslash."
@@ -448,3 +455,18 @@ class StringPointer(private var pointee: String) {
  * @param cause the cause
  */
 class UDSParseException(message: String? = null, cause: Throwable? = null) : Exception(message, cause)
+
+
+fun <T> collectionToString(collection: Collection<T>) =
+    collection.joinToString(separator = " ") {
+        it.toString().replace("\\", "\\\\").replace(" ", "\\ ").replace(",", "\\,")
+    }
+
+fun <K, V> mapToString(map: Map<K, V>): String {
+    return map.toList().joinToString(separator = " ") { (k, v) ->
+        "${escapeMapEntry(k)}:${escapeMapEntry(v)}"
+    }
+}
+
+private fun <T> escapeMapEntry(entry: T) =
+    entry.toString().replace("\\", "\\\\").replace(" ", "\\ ").replace(":", "\\").replace(",", "\\,")

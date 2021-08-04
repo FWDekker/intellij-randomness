@@ -3,9 +3,7 @@ package com.fwdekker.randomness.integer
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
-import com.intellij.util.xmlb.XmlSerializerUtil
 import java.text.DecimalFormat
-import kotlin.random.Random
 
 
 /**
@@ -27,8 +25,17 @@ data class IntegerScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX
-) : Scheme<IntegerScheme> {
-    private val random: Random = Random.Default
+) : Scheme<IntegerScheme>() {
+    override val descriptor
+        get() = "%Int[" +
+            "minValue=$minValue, " +
+            "maxValue=$maxValue, " +
+            "base=$base, " +
+            "groupingSeparator=$groupingSeparator, " +
+            "capitalization=$capitalization, " +
+            "prefix=$prefix, " +
+            "suffix=$suffix" +
+            "]"
 
 
     /**
@@ -41,9 +48,8 @@ data class IntegerScheme(
         if (minValue > maxValue)
             throw DataGenerationException("Minimum value is larger than maximum value.")
 
-        return List(count) { prefix + convertToString(randomLong(minValue, maxValue)) + suffix }
+        return List(count) { prefix + longToString(randomLong(minValue, maxValue)) + suffix }
     }
-
 
     /**
      * Returns a random long in the given inclusive range without causing overflow.
@@ -63,7 +69,7 @@ data class IntegerScheme(
      * @param value the value to format
      * @return a nicely formatted representation of an integer
      */
-    private fun convertToString(value: Long): String {
+    private fun longToString(value: Long): String {
         if (base != DECIMAL_BASE)
             return capitalization.transform(value.toString(base))
 
@@ -76,9 +82,6 @@ data class IntegerScheme(
 
         return format.format(value)
     }
-
-
-    override fun copyFrom(other: IntegerScheme) = XmlSerializerUtil.copyBean(other, this)
 
 
     /**

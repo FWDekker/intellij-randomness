@@ -2,10 +2,8 @@ package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
-import com.intellij.util.xmlb.XmlSerializerUtil
 import java.text.DecimalFormat
 import kotlin.math.nextUp
-import kotlin.random.Random
 
 
 /**
@@ -29,8 +27,18 @@ data class DecimalScheme(
     var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR,
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX
-) : Scheme<DecimalScheme> {
-    private val random: Random = Random.Default
+) : Scheme<DecimalScheme>() {
+    override val descriptor
+        get() = "%Dec[" +
+            "minValue=$minValue, " +
+            "maxValue=$maxValue, " +
+            "decimalCount=$decimalCount, " +
+            "showTrailingZeroes=$showTrailingZeroes, " +
+            "groupingSeparator=$groupingSeparator, " +
+            "decimalSeparator=$decimalSeparator, " +
+            "prefix=$prefix, " +
+            "suffix=$suffix" +
+            "]"
 
 
     /**
@@ -43,7 +51,7 @@ data class DecimalScheme(
         if (minValue > maxValue)
             throw DataGenerationException("Minimum value is larger than maximum value.")
 
-        return List(count) { convertToString(random.nextDouble(minValue, maxValue.nextUp())) }
+        return List(count) { doubleToString(random.nextDouble(minValue, maxValue.nextUp())) }
     }
 
     /**
@@ -52,7 +60,7 @@ data class DecimalScheme(
      * @param decimal the decimal to format
      * @return a nicely formatted representation of a decimal
      */
-    private fun convertToString(decimal: Double): String {
+    private fun doubleToString(decimal: Double): String {
         val format = DecimalFormat()
         format.isGroupingUsed = groupingSeparator.isNotEmpty()
 
@@ -65,9 +73,6 @@ data class DecimalScheme(
 
         return prefix + format.format(decimal) + suffix
     }
-
-
-    override fun copyFrom(other: DecimalScheme) = XmlSerializerUtil.copyBean(other, this)
 
 
     /**

@@ -19,16 +19,15 @@ import javax.swing.JPanel
 
 
 /**
- * Component for settings of random string generation.
+ * Component for editing random string settings.
  *
- * @param settings the settings to edit in the component
+ * @param scheme the scheme to edit in the component
  *
  * @see SymbolSetTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class StringSettingsComponent(settings: StringScheme) :
-    SchemeComponent<StringScheme>(settings) {
-    private lateinit var contentPane: JPanel
+class StringSettingsComponent(scheme: StringScheme) : SchemeComponent<StringScheme>() {
+    override lateinit var rootPane: JPanel private set
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -39,11 +38,9 @@ class StringSettingsComponent(settings: StringScheme) :
     private lateinit var symbolSetTable: SymbolSetTable
     private lateinit var excludeLookAlikeSymbolsCheckBox: JCheckBox
 
-    override val rootPane get() = contentPane
-
 
     init {
-        loadScheme()
+        loadScheme(scheme)
 
         excludeLookAlikeSymbolsCheckBox.font = excludeLookAlikeSymbolsCheckBox.font.attributes.toMutableMap()
             .also { it[TextAttribute.UNDERLINE] = TextAttribute.UNDERLINE_LOW_DOTTED }
@@ -68,29 +65,30 @@ class StringSettingsComponent(settings: StringScheme) :
         lengthRange = JSpinnerRange(minLength, maxLength, Int.MAX_VALUE.toDouble(), "length")
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.panel
-
         symbolSetSeparator = factory.createSeparator(bundle.getString("settings.symbol_sets"))
     }
 
-    override fun loadScheme(scheme: StringScheme) {
-        minLength.value = scheme.minLength
-        maxLength.value = scheme.maxLength
-        enclosureGroup.setValue(scheme.enclosure)
-        capitalizationGroup.setValue(scheme.capitalization)
-        symbolSetTable.data = scheme.symbolSetList
-        symbolSetTable.activeData = scheme.activeSymbolSetList
-        excludeLookAlikeSymbolsCheckBox.isSelected = scheme.excludeLookAlikeSymbols
-    }
+    override fun loadScheme(scheme: StringScheme) =
+        scheme.also {
+            minLength.value = it.minLength
+            maxLength.value = it.maxLength
+            enclosureGroup.setValue(it.enclosure)
+            capitalizationGroup.setValue(it.capitalization)
+            symbolSetTable.data = it.symbolSets
+            symbolSetTable.activeData = it.activeSymbolSets
+            excludeLookAlikeSymbolsCheckBox.isSelected = it.excludeLookAlikeSymbols
+        }.let {}
 
-    override fun saveScheme(scheme: StringScheme) {
-        scheme.minLength = minLength.value
-        scheme.maxLength = maxLength.value
-        scheme.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
-        scheme.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
-        scheme.symbolSetList = symbolSetTable.data
-        scheme.activeSymbolSetList = symbolSetTable.activeData
-        scheme.excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected
-    }
+    override fun saveScheme(): StringScheme =
+        StringScheme(
+            minLength = minLength.value,
+            maxLength = maxLength.value,
+            enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
+            capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
+            symbolSets = symbolSetTable.data.toSet(),
+            activeSymbolSets = symbolSetTable.activeData.toSet(),
+            excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected
+        )
 
     override fun doValidate() =
         minLength.validateValue()
@@ -103,12 +101,4 @@ class StringSettingsComponent(settings: StringScheme) :
             minLength, maxLength, enclosureGroup, capitalizationGroup, symbolSetTable,
             listener = listener
         )
-
-    override fun toUDSDescriptor() =
-        "%Str[" +
-            "minLength=${minLength.value}, " +
-            "maxLength=${maxLength.value}, " +
-            "enclosure=${enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE}, " +
-            "capitalization=${capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION}, " +
-            "]"
 }
