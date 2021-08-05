@@ -49,7 +49,14 @@ class TemplateSettings(
          * The default value of the [templates][templates] field.
          */
         val DEFAULT_TEMPLATES: List<Template>
-            get() = listOf(Template(listOf(LiteralScheme("start"), IntegerScheme(), LiteralScheme("end"))))
+            get() = listOf(Template(listOf(
+                LiteralScheme("start"),
+                IntegerScheme(),
+                LiteralScheme("end"),
+                WordScheme(),
+                StringScheme(),
+                DecimalScheme()
+            )))
 
         /**
          * The persistent `TemplateSettings` instance.

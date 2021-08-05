@@ -74,21 +74,21 @@ class StringSchemeEditor(scheme: StringScheme) : SchemeComponent<StringScheme>()
             maxLength.value = it.maxLength
             enclosureGroup.setValue(it.enclosure)
             capitalizationGroup.setValue(it.capitalization)
-            symbolSetTable.data = it.symbolSets
-            symbolSetTable.activeData = it.activeSymbolSets
+            symbolSetTable.data = it.symbolSetList
+            symbolSetTable.activeData = it.activeSymbolSetList
             excludeLookAlikeSymbolsCheckBox.isSelected = it.excludeLookAlikeSymbols
         }.let {}
 
-    override fun saveScheme(): StringScheme =
-        StringScheme(
-            minLength = minLength.value,
-            maxLength = maxLength.value,
-            enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
-            capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
-            symbolSets = symbolSetTable.data.toSet(),
-            activeSymbolSets = symbolSetTable.activeData.toSet(),
-            excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected
-        )
+    override fun saveScheme() =
+        StringScheme().also {
+            it.minLength = minLength.value
+            it.maxLength = maxLength.value
+            it.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
+            it.capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION
+            it.symbolSetList = symbolSetTable.data.toSet()
+            it.activeSymbolSetList = symbolSetTable.activeData.toSet()
+            it.excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected
+        }
 
     override fun doValidate() =
         minLength.validateValue()
