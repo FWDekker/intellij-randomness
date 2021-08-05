@@ -26,7 +26,10 @@ import javax.swing.JPanel
  * @see SymbolSetTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class StringSchemeEditor(scheme: StringScheme) : SchemeComponent<StringScheme>() {
+class StringSchemeEditor(
+    scheme: StringScheme,
+    private val symbolSetSettings: SymbolSetSettings = SymbolSetSettings.default
+) : SchemeComponent<StringScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
@@ -74,9 +77,11 @@ class StringSchemeEditor(scheme: StringScheme) : SchemeComponent<StringScheme>()
             maxLength.value = it.maxLength
             enclosureGroup.setValue(it.enclosure)
             capitalizationGroup.setValue(it.capitalization)
-            symbolSetTable.data = it.symbolSetList
-            symbolSetTable.activeData = it.activeSymbolSetList
             excludeLookAlikeSymbolsCheckBox.isSelected = it.excludeLookAlikeSymbols
+
+            symbolSetTable.data = symbolSetSettings.symbolSetList
+            symbolSetTable.activeData =
+                symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in it.activeSymbolSets }
         }.let {}
 
     override fun saveScheme() =
@@ -85,9 +90,10 @@ class StringSchemeEditor(scheme: StringScheme) : SchemeComponent<StringScheme>()
             it.maxLength = maxLength.value
             it.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
             it.capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION
-            it.symbolSetList = symbolSetTable.data.toSet()
-            it.activeSymbolSetList = symbolSetTable.activeData.toSet()
             it.excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected
+
+            symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
+            it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet()
         }
 
     override fun doValidate() =

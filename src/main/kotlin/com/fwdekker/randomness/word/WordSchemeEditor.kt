@@ -28,7 +28,10 @@ import javax.swing.JTextArea
  * @see DictionaryTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class WordSchemeEditor(scheme: WordScheme) : SchemeComponent<WordScheme>() {
+class WordSchemeEditor(
+    scheme: WordScheme,
+    private val dictionarySettings: DictionarySettings = DictionarySettings.default
+) : SchemeComponent<WordScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
@@ -73,7 +76,7 @@ class WordSchemeEditor(scheme: WordScheme) : SchemeComponent<WordScheme>() {
             maxLength.value = it.maxLength
             enclosureGroup.setValue(it.enclosure)
             capitalizationGroup.setValue(it.capitalization)
-            dictionaryTable.data = it.bundledDictionaries + it.userDictionaries
+            dictionaryTable.data = dictionarySettings.bundledDictionaries + dictionarySettings.userDictionaries
             dictionaryTable.activeData = it.activeBundledDictionaries + it.activeUserDictionaries
         }.let {}
 
@@ -83,9 +86,9 @@ class WordSchemeEditor(scheme: WordScheme) : SchemeComponent<WordScheme>() {
             it.maxLength = maxLength.value
             it.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
             it.capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION
-            it.bundledDictionaries = dictionaryTable.data.filter { file -> file.isBundled }.toSet()
+            dictionarySettings.bundledDictionaries = dictionaryTable.data.filter { file -> file.isBundled }.toSet()
             it.activeBundledDictionaries = dictionaryTable.activeData.filter { file -> file.isBundled }.toSet()
-            it.userDictionaries = dictionaryTable.data.filter { file -> !file.isBundled }.toSet()
+            dictionarySettings.userDictionaries = dictionaryTable.data.filter { file -> !file.isBundled }.toSet()
             it.activeUserDictionaries = dictionaryTable.activeData.filter { file -> !file.isBundled }.toSet()
 
             BundledDictionary.cache.clear()

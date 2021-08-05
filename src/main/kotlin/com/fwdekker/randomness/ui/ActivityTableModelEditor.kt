@@ -14,6 +14,7 @@ import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.StatusText
 import com.intellij.util.ui.table.TableModelEditor
 import javax.swing.JPanel
+import javax.swing.event.TableModelEvent
 import javax.swing.table.TableColumn
 
 
@@ -133,6 +134,8 @@ abstract class ActivityTableModelEditor<T>(
      */
     fun addChangeListener(listener: () -> Unit) {
         modelListener(object : DataChangedListener<EditableDatum<T>>() {
+            override fun tableChanged(e: TableModelEvent) = listener()
+
             override fun dataChanged(columnInfo: ColumnInfo<EditableDatum<T>, *>, rowIndex: Int) = listener()
         })
     }

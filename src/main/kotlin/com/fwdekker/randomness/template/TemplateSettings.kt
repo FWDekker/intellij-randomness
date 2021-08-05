@@ -49,14 +49,16 @@ class TemplateSettings(
          * The default value of the [templates][templates] field.
          */
         val DEFAULT_TEMPLATES: List<Template>
-            get() = listOf(Template(listOf(
-                LiteralScheme("start"),
-                IntegerScheme(),
-                LiteralScheme("end"),
-                WordScheme(),
-                StringScheme(),
-                DecimalScheme()
-            )))
+            get() = listOf(
+                Template(
+                    listOf(
+                        StringScheme(),
+                        StringScheme(),
+                        WordScheme(),
+                        WordScheme()
+                    )
+                )
+            )
 
         /**
          * The persistent `TemplateSettings` instance.
@@ -78,13 +80,25 @@ data class Template(
             LiteralScheme::class
         ]
     )
-    var schemes: List<Scheme<*>> = listOf()
+    var schemes: List<Scheme<*>> = DEFAULT_SCHEMES
 ) : Scheme<Template>() {
     override fun generateStrings(count: Int) =
         schemes.map { it.generateStrings(count) }
             .let { data -> (0 until count).map { string -> data.joinToString(separator = "") { it[string] } } }
 
     override fun deepCopy() = Template(schemes.map { it.deepCopy() as Scheme<*> })
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The default value of the [templates][templates] field.
+         */
+        val DEFAULT_SCHEMES: List<Scheme<*>>
+            get() = listOf(IntegerScheme())
+    }
 }
 
 

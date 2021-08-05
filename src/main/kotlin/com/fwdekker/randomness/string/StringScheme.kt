@@ -3,9 +3,7 @@ package com.fwdekker.randomness.string
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
-import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.Transient
-import com.vdurmont.emoji.EmojiParser
 
 
 /**
@@ -22,57 +20,15 @@ import com.vdurmont.emoji.EmojiParser
  * @property excludeLookAlikeSymbols Whether the symbols in [SymbolSet.lookAlikeCharacters] should be excluded.
  */
 data class StringScheme(
+    @Transient
+    var symbolSetSettings: SymbolSetSettings = SymbolSetSettings.default,
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    @MapAnnotation(sortBeforeSave = false)
-    var serializedSymbolSets: Map<String, String> = DEFAULT_SYMBOL_SETS.toMap(),
-    @MapAnnotation(sortBeforeSave = false)
-    var serializedActiveSymbolSets: Map<String, String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMap(),
+    var activeSymbolSets: Set<String> = DEFAULT_ACTIVE_SYMBOL_SETS,
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS
 ) : Scheme<StringScheme>() {
-    /**
-     * Same as [symbolSets], except that serialized emoji have been deserialized.
-     */
-    var symbolSets: Map<String, String>
-        @Transient
-        get() = serializedSymbolSets.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
-        set(value) {
-            serializedSymbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
-        }
-
-    /**
-     * Same as [activeSymbolSets], except that serialized emoji have been deserialized.
-     */
-    var activeSymbolSets: Map<String, String>
-        @Transient
-        get() = serializedActiveSymbolSets.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
-        set(value) {
-            serializedActiveSymbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
-        }
-
-    /**
-     * A list view of the `SymbolSet` objects described by [symbolSets].
-     */
-    var symbolSetList: Collection<SymbolSet>
-        @Transient
-        get() = symbolSets.toSymbolSets()
-        set(value) {
-            symbolSets = value.toMap()
-        }
-
-    /**
-     * A list view of the `SymbolSet` objects described by [activeSymbolSets].
-     */
-    var activeSymbolSetList: Collection<SymbolSet>
-        @Transient
-        get() = activeSymbolSets.toSymbolSets()
-        set(value) {
-            activeSymbolSets = value.toMap()
-        }
-
-
     /**
      * Returns strings of random alphanumerical characters.
      *
@@ -83,7 +39,10 @@ data class StringScheme(
         if (minLength > maxLength)
             throw DataGenerationException("Minimum length is larger than maximum length.")
 
-        val symbols = activeSymbolSetList.sum(excludeLookAlikeSymbols)
+        val symbols =
+            symbolSetSettings.symbolSetList
+                .filter { it.name in activeSymbolSets }
+                .sum(excludeLookAlikeSymbols)
         if (symbols.isEmpty())
             throw DataGenerationException("No valid symbols found in active symbol sets.")
 
@@ -103,8 +62,7 @@ data class StringScheme(
             it.maxLength = maxLength
             it.enclosure = enclosure
             it.capitalization = capitalization
-            it.symbolSetList = symbolSetList.map(SymbolSet::copy)
-            it.activeSymbolSetList = activeSymbolSetList.map(SymbolSet::copy)
+            it.activeSymbolSets = activeSymbolSets.map { name -> name }.toSet()
         }
 
 
@@ -133,14 +91,10 @@ data class StringScheme(
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RANDOM
 
         /**
-         * The default value of the [symbolSets][symbolSets] field.
-         */
-        val DEFAULT_SYMBOL_SETS = SymbolSet.defaultSymbolSets.toMap()
-
-        /**
          * The default value of the [activeSymbolSets][activeSymbolSets] field.
          */
-        val DEFAULT_ACTIVE_SYMBOL_SETS = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).toMap()
+        val DEFAULT_ACTIVE_SYMBOL_SETS: Set<String>
+            get() = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).map { it.name }.toSet()
 
         /**
          * The default value of the [excludeLookAlikeSymbols][excludeLookAlikeSymbols] field.

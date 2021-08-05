@@ -18,6 +18,7 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBList
 import javax.swing.DefaultListModel
 import javax.swing.JList
@@ -32,7 +33,8 @@ import javax.swing.JPanel
  * @see TemplateSettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class TemplateSettingsComponent(settings: TemplateSettings = default) : SettingsComponent<TemplateSettings>(settings) {
+class TemplateSettingsComponent(val settings: TemplateSettings = default) :
+    SettingsComponent<TemplateSettings>(settings) {
     override lateinit var rootPane: JPanel private set
     private lateinit var previewPanelHolder: PreviewPanel
     private lateinit var previewPanel: JPanel
@@ -45,7 +47,8 @@ class TemplateSettingsComponent(settings: TemplateSettings = default) : Settings
         loadSettings()
 
         schemeList.addListSelectionListener { event ->
-            if (!event.valueIsAdjusting) displaySchemeEditor(schemeList.selectedIndex)
+            if (!event.valueIsAdjusting && schemeList.selectedIndex >= 0)
+                displaySchemeEditor(schemeList.selectedIndex)
         }
 
         addChangeListener { previewPanelHolder.updatePreview() }
@@ -65,12 +68,14 @@ class TemplateSettingsComponent(settings: TemplateSettings = default) : Settings
 
         schemeListModel = DefaultListModel()
         schemeList = JBList(schemeListModel)
+            .apply { setCellRenderer { _, value, _, _, _ -> JBLabel(value::class.simpleName ?: "Scheme") } }
         schemeEditor = JPanel()
     }
 
     override fun loadSettings(settings: TemplateSettings) {
         schemeListModel.removeAllElements()
         schemeListModel.addAll(settings.templates.first().schemes)
+        schemeList.setSelectionInterval(0, 0)
     }
 
     override fun saveSettings(settings: TemplateSettings) {
@@ -91,7 +96,10 @@ class TemplateSettingsComponent(settings: TemplateSettings = default) : Settings
             is LiteralScheme -> LiteralSchemeEditor(scheme)
             else -> error("Unknown scheme type '${scheme.javaClass.canonicalName}'.")
         }
-        editor.addChangeListener { schemeListModel.set(listIndex, editor.saveScheme()) }
+        editor.addChangeListener {
+            schemeListModel.set(listIndex, editor.saveScheme())
+            previewPanelHolder.updatePreview()
+        }
 
         schemeEditor.removeAll()
         schemeEditor.add(editor.rootPane)
