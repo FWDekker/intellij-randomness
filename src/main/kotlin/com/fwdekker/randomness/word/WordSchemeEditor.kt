@@ -78,6 +78,8 @@ class WordSchemeEditor(
             capitalizationGroup.setValue(it.capitalization)
             dictionaryTable.data = dictionarySettings.bundledDictionaries + dictionarySettings.userDictionaries
             dictionaryTable.activeData = it.activeBundledDictionaries + it.activeUserDictionaries
+                .filter { dictionary -> dictionary in dictionaryTable.data }
+
         }.let {}
 
     override fun saveScheme() =
@@ -86,10 +88,14 @@ class WordSchemeEditor(
             it.maxLength = maxLength.value
             it.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
             it.capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION
-            dictionarySettings.bundledDictionaries = dictionaryTable.data.filter { file -> file.isBundled }.toSet()
-            it.activeBundledDictionaries = dictionaryTable.activeData.filter { file -> file.isBundled }.toSet()
-            dictionarySettings.userDictionaries = dictionaryTable.data.filter { file -> !file.isBundled }.toSet()
-            it.activeUserDictionaries = dictionaryTable.activeData.filter { file -> !file.isBundled }.toSet()
+            dictionarySettings.bundledDictionaries = dictionaryTable.data
+                .filter { file -> file.isBundled }.toSet()
+            it.activeBundledDictionaries = dictionaryTable.activeData
+                .filter { file -> file.isBundled && file in dictionarySettings.bundledDictionaries }.toSet()
+            dictionarySettings.userDictionaries = dictionaryTable.data
+                .filter { file -> !file.isBundled }.toSet()
+            it.activeUserDictionaries = dictionaryTable.activeData
+                .filter { file -> !file.isBundled && file in dictionarySettings.userDictionaries }.toSet()
 
             BundledDictionary.cache.clear()
             UserDictionary.cache.clear()

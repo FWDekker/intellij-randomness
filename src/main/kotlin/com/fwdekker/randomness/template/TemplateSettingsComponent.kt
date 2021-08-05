@@ -18,11 +18,25 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
+import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.ActionToolbarPosition
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonShortcuts
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.ui.AnActionButton
+import com.intellij.ui.JBSplitter
+import com.intellij.ui.LayeredIcon
+import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBList
+import com.intellij.ui.components.JBScrollPane
+import com.intellij.util.ui.JBUI
+import java.awt.BorderLayout
 import javax.swing.DefaultListModel
 import javax.swing.JList
 import javax.swing.JPanel
+import javax.swing.ListSelectionModel
 
 
 /**
@@ -38,8 +52,9 @@ class TemplateSettingsComponent(val settings: TemplateSettings = default) :
     override lateinit var rootPane: JPanel private set
     private lateinit var previewPanelHolder: PreviewPanel
     private lateinit var previewPanel: JPanel
-    private lateinit var schemeListModel: DefaultListModel<Scheme<*>>
+    private lateinit var templatePanel: JBSplitter
     private lateinit var schemeList: JList<Scheme<*>>
+    private lateinit var schemeListModel: DefaultListModel<Scheme<*>>
     private lateinit var schemeEditor: JPanel
 
 
@@ -47,7 +62,7 @@ class TemplateSettingsComponent(val settings: TemplateSettings = default) :
         loadSettings()
 
         schemeList.addListSelectionListener { event ->
-            if (!event.valueIsAdjusting && schemeList.selectedIndex >= 0)
+            if (!event.valueIsAdjusting && schemeList.selectedIndex in 0 until schemeListModel.size)
                 displaySchemeEditor(schemeList.selectedIndex)
         }
 
@@ -66,10 +81,80 @@ class TemplateSettingsComponent(val settings: TemplateSettings = default) :
         previewPanelHolder = PreviewPanel { TemplateInsertAction(TemplateSettings().also { saveSettings(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
+        templatePanel = JBSplitter(false, .2f)
+
         schemeListModel = DefaultListModel()
         schemeList = JBList(schemeListModel)
-            .apply { setCellRenderer { _, value, _, _, _ -> JBLabel(value::class.simpleName ?: "Scheme") } }
-        schemeEditor = JPanel()
+        schemeList.selectionMode = ListSelectionModel.SINGLE_SELECTION
+        schemeList.setCellRenderer { _, value, _, _, _ -> JBLabel(value::class.simpleName ?: "Scheme") }
+        val scrollPane = JBScrollPane()
+        scrollPane.border = JBUI.Borders.empty()
+        scrollPane.setViewportView(schemeList)
+        val toolbar = ToolbarDecorator.createDecorator(schemeList)
+            .setToolbarPosition(ActionToolbarPosition.TOP)
+            .setPanelBorder(JBUI.Borders.empty())
+            .setScrollPaneBorder(JBUI.Borders.empty())
+            .disableAddAction()
+            .addExtraAction(AnActionButton.GroupPopupWrapper(
+                DefaultActionGroup(
+                    object : DumbAwareAction("Literal") {
+                        override fun actionPerformed(e: AnActionEvent) {
+                            schemeListModel.addElement(LiteralScheme())
+                            schemeList.selectedIndex = schemeListModel.size - 1
+                        }
+                    },
+                    object : DumbAwareAction("Integer") {
+                        override fun actionPerformed(e: AnActionEvent) {
+                            schemeListModel.addElement(IntegerScheme())
+                            schemeList.selectedIndex = schemeListModel.size - 1
+                        }
+                    },
+                    object : DumbAwareAction("Decimal") {
+                        override fun actionPerformed(e: AnActionEvent) {
+                            schemeListModel.addElement(DecimalScheme())
+                            schemeList.selectedIndex = schemeListModel.size - 1
+                        }
+                    },
+                    object : DumbAwareAction("String") {
+                        override fun actionPerformed(e: AnActionEvent) {
+                            schemeListModel.addElement(StringScheme())
+                            schemeList.selectedIndex = schemeListModel.size - 1
+                        }
+                    },
+                    object : DumbAwareAction("Word") {
+                        override fun actionPerformed(e: AnActionEvent) {
+                            schemeListModel.addElement(WordScheme())
+                            schemeList.selectedIndex = schemeListModel.size - 1
+                        }
+                    },
+                    object : DumbAwareAction("UUID") {
+                        override fun actionPerformed(e: AnActionEvent) {
+                            schemeListModel.addElement(UuidScheme())
+                            schemeList.selectedIndex = schemeListModel.size - 1
+                        }
+                    }
+                )
+                    .apply {
+                        templatePresentation.icon = LayeredIcon.ADD_WITH_DROPDOWN
+                        templatePresentation.text = "Add"
+                        registerCustomShortcutSet(CommonShortcuts.getNewForDialogs(), null)
+                    }
+            ))
+            .addExtraAction(object : AnActionButton("Copy", AllIcons.General.InlineCopy) {
+                override fun actionPerformed(e: AnActionEvent) {
+                    schemeList.selectedValue?.let { scheme ->
+                        schemeListModel.addElement(scheme.deepCopy() as Scheme<*>)
+                        schemeList.selectedIndex = schemeListModel.size - 1
+                    }
+                }
+
+                override fun isEnabled() = schemeList.selectedValue != null
+            })
+            .setButtonComparator("Add", "Remove", "Copy", "Up", "Down")
+        templatePanel.firstComponent = JBScrollPane(toolbar.createPanel())
+
+        schemeEditor = JPanel(BorderLayout())
+        templatePanel.secondComponent = schemeEditor
     }
 
     override fun loadSettings(settings: TemplateSettings) {
