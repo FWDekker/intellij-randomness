@@ -38,9 +38,6 @@ class TemplateSettings(
     override fun loadState(state: TemplateSettings) = XmlSerializerUtil.copyBean(state, this)
 
 
-    fun generateStrings(count: Int) = templates.first().generateStrings(count)
-
-
     /**
      * Holds constants.
      */
@@ -62,7 +59,11 @@ class TemplateSettings(
     }
 }
 
-
+/**
+ * Generates random data by concatenating the random outputs of a list of [Scheme]s.
+ *
+ * @property schemes the ordered list of underlying schemes
+ */
 data class Template(
     @get:XCollection(
         elementTypes = [
@@ -77,8 +78,8 @@ data class Template(
     var schemes: List<Scheme<*>> = DEFAULT_SCHEMES
 ) : Scheme<Template>() {
     override fun generateStrings(count: Int) =
-        schemes.map { it.generateStrings(count) }
-            .let { data -> (0 until count).map { string -> data.joinToString(separator = "") { it[string] } } }
+        schemes.onEach { it.random = random }.map { it.generateStrings(count) }
+            .let { data -> (0 until count).map { i -> data.joinToString(separator = "") { it[i] } } }
 
     override fun deepCopy() = Template(schemes.map { it.deepCopy() as Scheme<*> })
 
@@ -94,7 +95,6 @@ data class Template(
             get() = listOf(IntegerScheme())
     }
 }
-
 
 /**
  * The configurable for template settings.

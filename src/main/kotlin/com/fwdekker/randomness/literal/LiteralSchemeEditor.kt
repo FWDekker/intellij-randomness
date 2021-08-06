@@ -1,13 +1,13 @@
 package com.fwdekker.randomness.literal
 
-import com.fwdekker.randomness.SchemeComponent
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import javax.swing.JPanel
 import javax.swing.JTextField
 
 
-class LiteralSchemeEditor(scheme: LiteralScheme) : SchemeComponent<LiteralScheme>() {
+class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : SchemeEditor<LiteralScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var literalInput: JTextField
 

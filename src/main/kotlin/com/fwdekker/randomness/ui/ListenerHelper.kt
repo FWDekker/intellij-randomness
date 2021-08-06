@@ -1,5 +1,7 @@
 package com.fwdekker.randomness.ui
 
+import java.awt.event.MouseEvent
+import java.awt.event.MouseListener
 import java.beans.PropertyChangeEvent
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
@@ -12,7 +14,12 @@ import javax.swing.event.DocumentListener
 import javax.swing.text.Document
 
 
-// TODO: Docs
+/**
+ * Adds a `ChangeListener` to each of the given components.
+ *
+ * @param components the components to add the listener to
+ * @param listener the listener to invoke whenever any of the given components changes state
+ */
 fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
     components.forEach { component ->
         when (component) {
@@ -28,11 +35,10 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
     }
 }
 
-
 /**
  * Adds a `ChangeListener` to a text field.
  *
- * Code taken from [StackOverflow](https://stackoverflow.com/a/27190162/3307872), with without the `invokeLater`.
+ * Code taken from [StackOverflow](https://stackoverflow.com/a/27190162/3307872), but without the `invokeLater`.
  *
  * @param changeListener the change listener that responds to changes in the text field
  */
@@ -61,4 +67,47 @@ fun JTextField.addChangeListener(changeListener: (JTextField) -> Unit) {
         dl.changedUpdate(null)
     }
     this.document.addDocumentListener(dl)
+}
+
+/**
+ * A [MouseListener] that listens only to mouse clicks.
+ *
+ * @property listener The listener to invoke whenever the mouse is clicked on the element that this listener is attached
+ * to.
+ */
+class MouseClickListener(private val listener: (MouseEvent?) -> Unit) : MouseListener {
+    /**
+     * Invokes the [listener].
+     *
+     * @param event the event that triggered the listener
+     */
+    override fun mouseClicked(event: MouseEvent?) = listener(event)
+
+    /**
+     * Does nothing.
+     *
+     * @param event ignored
+     */
+    override fun mousePressed(event: MouseEvent?) = Unit
+
+    /**
+     * Does nothing.
+     *
+     * @param event ignored
+     */
+    override fun mouseReleased(event: MouseEvent?) = Unit
+
+    /**
+     * Does nothing.
+     *
+     * @param event ignored
+     */
+    override fun mouseEntered(event: MouseEvent?) = Unit
+
+    /**
+     * Does nothing.
+     *
+     * @param event ignored
+     */
+    override fun mouseExited(event: MouseEvent?) = Unit
 }

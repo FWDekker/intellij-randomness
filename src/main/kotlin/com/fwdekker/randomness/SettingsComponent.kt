@@ -79,7 +79,7 @@ abstract class SettingsComponent<S : Settings<S>>(private val settings: S) {
  *
  * @param S the type of scheme that can be edited
  */
-abstract class SchemeComponent<S : Scheme<S>> {
+abstract class SchemeEditor<S : Scheme<S>> {
     /**
      * The panel containing the settings components.
      */

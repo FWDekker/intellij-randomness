@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemeComponent
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
@@ -20,7 +20,7 @@ import javax.swing.JPanel
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class UuidSchemeEditor(scheme: UuidScheme) : SchemeComponent<UuidScheme>() {
+class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var versionGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup

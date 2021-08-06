@@ -3,8 +3,6 @@ package com.fwdekker.randomness.ui
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataInsertAction
 import com.jgoodies.forms.factories.DefaultComponentFactory
-import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
 import java.util.ResourceBundle
 import javax.swing.JButton
 import javax.swing.JComponent
@@ -28,7 +26,7 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
     /**
      * The root panel containing the preview elements.
      */
-    lateinit var rootPane: JPanel
+    lateinit var rootPane: JPanel private set
     private lateinit var separator: JComponent
     private lateinit var refreshButton: JButton
     private lateinit var previewLabel: JTextArea
@@ -40,19 +38,9 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
         previewLabel.border = null
         previewLabel.isFocusable = false
 
-        refreshButton.addMouseListener(object : MouseListener {
-            override fun mouseReleased(e: MouseEvent?) = Unit
-
-            override fun mouseEntered(e: MouseEvent?) = Unit
-
-            override fun mouseClicked(e: MouseEvent?) {
-                seed = Random.nextInt()
-                updatePreview()
-            }
-
-            override fun mouseExited(e: MouseEvent?) = Unit
-
-            override fun mousePressed(e: MouseEvent?) = Unit
+        refreshButton.addMouseListener(MouseClickListener {
+            seed = Random.nextInt()
+            updatePreview()
         })
     }
 

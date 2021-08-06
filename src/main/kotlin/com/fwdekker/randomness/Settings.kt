@@ -45,7 +45,8 @@ abstract class Scheme<SELF> {
     /**
      * The random generator used to generate random values.
      */
-    val random: Random = Random.Default
+    @Transient
+    var random: Random = Random.Default
 
 
     /**

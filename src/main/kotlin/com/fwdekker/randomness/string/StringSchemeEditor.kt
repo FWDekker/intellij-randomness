@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemeComponent
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -27,9 +27,9 @@ import javax.swing.JPanel
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
 class StringSchemeEditor(
-    scheme: StringScheme,
+    scheme: StringScheme = StringScheme(),
     private val symbolSetSettings: SymbolSetSettings = SymbolSetSettings.default
-) : SchemeComponent<StringScheme>() {
+) : SchemeEditor<StringScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner

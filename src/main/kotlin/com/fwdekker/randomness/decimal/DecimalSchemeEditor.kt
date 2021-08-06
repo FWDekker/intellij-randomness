@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.decimal
 
-import com.fwdekker.randomness.SchemeComponent
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_DECIMAL_SEPARATOR
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.ui.JDoubleSpinner
@@ -22,7 +22,7 @@ import javax.swing.event.ChangeEvent
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class DecimalSchemeEditor(scheme: DecimalScheme) : SchemeComponent<DecimalScheme>() {
+class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : SchemeEditor<DecimalScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JDoubleSpinner

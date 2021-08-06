@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemeComponent
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -23,7 +23,7 @@ import javax.swing.event.ChangeEvent
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class IntegerSchemeEditor(scheme: IntegerScheme) : SchemeComponent<IntegerScheme>() {
+class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEditor<IntegerScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JLongSpinner

@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemeComponent
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
@@ -29,9 +29,9 @@ import javax.swing.JTextArea
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
 class WordSchemeEditor(
-    scheme: WordScheme,
+    scheme: WordScheme = WordScheme(),
     private val dictionarySettings: DictionarySettings = DictionarySettings.default
-) : SchemeComponent<WordScheme>() {
+) : SchemeEditor<WordScheme>() {
     override lateinit var rootPane: JPanel private set
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
