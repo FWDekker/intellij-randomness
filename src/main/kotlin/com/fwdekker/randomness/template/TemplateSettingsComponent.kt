@@ -53,20 +53,14 @@ class TemplateSettingsComponent(val settings: TemplateSettings = default) :
     private lateinit var previewPanelHolder: PreviewPanel
     private lateinit var previewPanel: JPanel
     private lateinit var templatePanel: JBSplitter
-    private lateinit var schemeList: JList<Scheme<*>>
-    private lateinit var schemeListModel: DefaultListModel<Scheme<*>>
-    private lateinit var schemeEditor: JPanel
+    private lateinit var templateListModel: DefaultListModel<Template>
+    private lateinit var templateList: JList<Template>
+    private var templateEditor: TemplateEditor? = null
 
 
     init {
         loadSettings()
 
-        schemeList.addListSelectionListener { event ->
-            if (!event.valueIsAdjusting && schemeList.selectedIndex in 0 until schemeListModel.size)
-                displaySchemeEditor(schemeList.selectedIndex)
-        }
-
-        addChangeListener { previewPanelHolder.updatePreview() }
         previewPanelHolder.updatePreview()
     }
 
@@ -81,15 +75,67 @@ class TemplateSettingsComponent(val settings: TemplateSettings = default) :
         previewPanelHolder = PreviewPanel { TemplateInsertAction(TemplateSettings().also { saveSettings(it) }) }
         previewPanel = previewPanelHolder.rootPane
 
-        templatePanel = JBSplitter(false, .2f)
+        templatePanel = JBSplitter(false, 0.2f)
+        templateListModel = DefaultListModel<Template>()
+        templateList = JBList(templateListModel)
+        templateList.selectionMode = ListSelectionModel.SINGLE_SELECTION
+        templateList.setCellRenderer { _, value, _, _, _ -> JBLabel("Template (${value.schemes.size})") }
+        val toolbar = ToolbarDecorator.createDecorator(templateList)
+            .setToolbarPosition(ActionToolbarPosition.TOP)
+            .setPanelBorder(JBUI.Borders.empty())
+            .setScrollPaneBorder(JBUI.Borders.empty())
+        templatePanel.firstComponent = JBScrollPane(toolbar.createPanel())
 
-        schemeListModel = DefaultListModel()
+        templateList.addListSelectionListener { event ->
+            if (!event.valueIsAdjusting && templateList.selectedIndex in 0 until templateListModel.size)
+                displayTemplateEditor(templateList.selectedIndex)
+        }
+    }
+
+    override fun loadSettings(settings: TemplateSettings) {
+        templateListModel.removeAllElements()
+        templateListModel.addAll(settings.templates)
+        if (!templateListModel.isEmpty)
+            templateList.selectedIndex = 0
+    }
+
+    override fun saveSettings(settings: TemplateSettings) {
+        if (templateList.selectedIndex in 0 until templateListModel.size)
+            settings.templates = settings.templates.toMutableList()
+                .apply { set(templateList.selectedIndex, templateEditor?.saveTemplate()!!) }
+    }
+
+    override fun doValidate(): ValidationInfo? = null
+
+
+    private fun displayTemplateEditor(listIndex: Int) {
+        val template = templateListModel.get(listIndex)
+        templateEditor = TemplateEditor(template)
+        templateEditor?.addChangeListener {
+            saveSettings()
+            previewPanelHolder.updatePreview()
+        }
+        templatePanel.secondComponent = templateEditor?.rootPane
+    }
+
+
+    override fun addChangeListener(listener: () -> Unit) = templateEditor?.addChangeListener(listener) ?: Unit
+}
+
+private class TemplateEditor(private val template: Template) : JPanel() {
+    private val changeListeners = mutableListOf<() -> Unit>()
+
+    val rootPane = JBSplitter(false, .2f)
+    private val schemeList: JList<Scheme<*>>
+    private val schemeListModel = DefaultListModel<Scheme<*>>().apply { addAll(template.schemes) }
+    private val schemeEditor: JPanel
+
+
+    init {
         schemeList = JBList(schemeListModel)
         schemeList.selectionMode = ListSelectionModel.SINGLE_SELECTION
         schemeList.setCellRenderer { _, value, _, _, _ -> JBLabel(value::class.simpleName ?: "Scheme") }
-        val scrollPane = JBScrollPane()
-        scrollPane.border = JBUI.Borders.empty()
-        scrollPane.setViewportView(schemeList)
+
         val toolbar = ToolbarDecorator.createDecorator(schemeList)
             .setToolbarPosition(ActionToolbarPosition.TOP)
             .setPanelBorder(JBUI.Borders.empty())
@@ -151,23 +197,20 @@ class TemplateSettingsComponent(val settings: TemplateSettings = default) :
                 override fun isEnabled() = schemeList.selectedValue != null
             })
             .setButtonComparator("Add", "Remove", "Copy", "Up", "Down")
-        templatePanel.firstComponent = JBScrollPane(toolbar.createPanel())
+        rootPane.firstComponent = JBScrollPane(toolbar.createPanel())
 
         schemeEditor = JPanel(BorderLayout())
-        templatePanel.secondComponent = schemeEditor
+        rootPane.secondComponent = schemeEditor
+
+        schemeList.addListSelectionListener { event ->
+            if (!event.valueIsAdjusting && schemeList.selectedIndex in 0 until schemeListModel.size)
+                displaySchemeEditor(schemeList.selectedIndex)
+        }
+        if (!schemeListModel.isEmpty)
+            schemeList.selectedIndex = 0
     }
 
-    override fun loadSettings(settings: TemplateSettings) {
-        schemeListModel.removeAllElements()
-        schemeListModel.addAll(settings.templates.first().schemes)
-        schemeList.setSelectionInterval(0, 0)
-    }
-
-    override fun saveSettings(settings: TemplateSettings) {
-        settings.templates.first().schemes = schemeListModel.elements().toList()
-    }
-
-    override fun doValidate(): ValidationInfo? = null
+    fun saveTemplate() = Template(schemeListModel.elements().toList())
 
 
     private fun displaySchemeEditor(listIndex: Int) {
@@ -183,7 +226,7 @@ class TemplateSettingsComponent(val settings: TemplateSettings = default) :
         }
         editor.addChangeListener {
             schemeListModel.set(listIndex, editor.saveScheme())
-            previewPanelHolder.updatePreview()
+            changeListeners.forEach { it() }
         }
 
         schemeEditor.removeAll()
@@ -191,5 +234,8 @@ class TemplateSettingsComponent(val settings: TemplateSettings = default) :
     }
 
 
-    override fun addChangeListener(listener: () -> Unit) = addChangeListenerTo(schemeList, listener = listener)
+    fun addChangeListener(listener: () -> Unit) {
+        addChangeListenerTo(schemeList, listener = listener)
+        changeListeners.add(listener)
+    }
 }

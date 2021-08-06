@@ -50,14 +50,8 @@ class TemplateSettings(
          */
         val DEFAULT_TEMPLATES: List<Template>
             get() = listOf(
-                Template(
-                    listOf(
-                        StringScheme(),
-                        StringScheme(),
-                        WordScheme(),
-                        WordScheme()
-                    )
-                )
+                Template(listOf(IntegerScheme())),
+                Template(listOf(LiteralScheme("start"), StringScheme(), LiteralScheme("end")))
             )
 
         /**
