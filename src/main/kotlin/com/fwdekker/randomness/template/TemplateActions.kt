@@ -39,7 +39,7 @@ class TemplateInsertAction(private val scheme: TemplateSettings = TemplateSettin
      * @return random template-based strings based on the descriptor
      */
     override fun generateStrings(count: Int) =
-        scheme.templates.entries.first().value.also { it.random = random }.generateStrings(count)
+        scheme.templates.first().also { it.random = random }.generateStrings(count)
 
     /**
      * Inserts an array-like string of template-based strings.

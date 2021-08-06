@@ -13,9 +13,11 @@ import com.intellij.util.xmlb.annotations.XCollection
 /**
  * Generates random data by concatenating the random outputs of a list of [Scheme]s.
  *
+ * @property name The unique name of the template.
  * @property schemes The ordered list of underlying schemes.
  */
 data class Template(
+    var name: String = DEFAULT_NAME,
     @get:XCollection(
         elementTypes = [
             IntegerScheme::class,
@@ -42,7 +44,12 @@ data class Template(
      */
     companion object {
         /**
-         * The default value of the [templates][templates] field.
+         * The default value of the [name] field.
+         */
+        const val DEFAULT_NAME = "Unnamed template"
+
+        /**
+         * The default value of the [schemes] field.
          */
         val DEFAULT_SCHEMES: List<Scheme<*>>
             get() = listOf(IntegerScheme())

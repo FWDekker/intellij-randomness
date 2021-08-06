@@ -26,7 +26,7 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
 )
 data class TemplateSettings(
     @MapAnnotation(sortBeforeSave = false)
-    var templates: Map<String, Template> = DEFAULT_TEMPLATES,
+    var templates: List<Template> = DEFAULT_TEMPLATES,
     @Suppress("unused") // At least two fields are required for serialization to work
     private val placeholder: String = ""
 ) : Settings<TemplateSettings>() {
@@ -34,7 +34,7 @@ data class TemplateSettings(
 
     override fun deepCopy() =
         copy().also { copy ->
-            copy.templates = templates.map { it.key to it.value.deepCopy() }.toMap()
+            copy.templates = templates.map { it.deepCopy() }
         }
 
 
@@ -45,10 +45,10 @@ data class TemplateSettings(
         /**
          * The default value of the [templates][templates] field.
          */
-        val DEFAULT_TEMPLATES: Map<String, Template>
-            get() = mapOf(
-                "The Integer" to Template(listOf(IntegerScheme())),
-                "My String" to Template(listOf(LiteralScheme("start"), StringScheme(), LiteralScheme("end")))
+        val DEFAULT_TEMPLATES: List<Template>
+            get() = listOf(
+                Template("The Integer", listOf(IntegerScheme())),
+                Template("My String", listOf(LiteralScheme("start"), StringScheme(), LiteralScheme("end")))
             )
 
         /**

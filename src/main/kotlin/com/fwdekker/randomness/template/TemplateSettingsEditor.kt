@@ -12,6 +12,7 @@ import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.StringSchemeEditor
 import com.fwdekker.randomness.template.TemplateSettings.Companion.default
 import com.fwdekker.randomness.ui.PreviewPanel
+import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
@@ -29,12 +30,15 @@ import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.components.JBTextField
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ui.JBUI
 import java.awt.BorderLayout
 import javax.swing.DefaultListModel
+import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.JPanel
+import javax.swing.JTextField
 import javax.swing.ListSelectionModel
 
 
@@ -45,10 +49,10 @@ import javax.swing.ListSelectionModel
  */
 class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEditor<TemplateSettings>(templates) {
     override val rootComponent = JPanel(BorderLayout())
-    private val templateList: JBList<Pair<String, Template>>
-    private val templateListModel = DefaultListModel<Pair<String, Template>>()
+    private val templateList: JBList<Template>
+    private val templateListModel = DefaultListModel<Template>()
 
-    private val unsavedState = TemplateSettings(emptyMap())
+    private val unsavedState = TemplateSettings(listOf())
     private val changeListeners = mutableListOf<() -> Unit>()
 
 
@@ -59,21 +63,22 @@ class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEdito
         templateList = JBList(templateListModel)
         templateList.selectionMode = ListSelectionModel.SINGLE_SELECTION
         templateList.setCellRenderer { _, entry, _, _, _ ->
-            JBLabel(entry.first)
-                .also {
-                    if (originalState.templates[entry.first] != entry.second)
-                        it.foreground = MODIFIED_COLOR
+            JBLabel(entry.name)
+                .also { label ->
+                    if (originalState.templates.firstOrNull { it.name == entry.name } != entry)
+                        label.foreground = MODIFIED_COLOR
                 }
         }
         splitter.firstComponent = JBScrollPane(decorateTemplateList(templateList))
 
         templateList.addListSelectionListener { event ->
-            val index = templateList.selectedIndex
-            if (!event.valueIsAdjusting && index in 0 until templateListModel.size) {
-                val editor = TemplateEditor(templateListModel.get(index).second)
+            val selection = templateList.selectedValue
+            if (!event.valueIsAdjusting && selection != null) {
+                val editor = TemplateEditor(selection)
                 editor.addChangeListener {
                     editor.applyState()
                     changeListeners.forEach { it() }
+                    templateList.repaint() // Force template names to update
                 }
                 splitter.secondComponent = editor.rootComponent
             }
@@ -88,7 +93,7 @@ class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEdito
      * @param templateList the list to decorate
      * @return a panel containing both the decorator and the given list
      */
-    private fun decorateTemplateList(templateList: JBList<Pair<String, Template>>) =
+    private fun decorateTemplateList(templateList: JBList<Template>) =
         ToolbarDecorator.createDecorator(templateList)
             .setToolbarPosition(ActionToolbarPosition.TOP)
             .setPanelBorder(JBUI.Borders.empty())
@@ -97,18 +102,18 @@ class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEdito
             .addExtraAction(
                 AnActionButton.GroupPopupWrapper(
                     DefaultActionGroupBuilder(templateList, templateListModel)
-                        .addAction("Integer") { "Integer" to Template(listOf(IntegerScheme())) }
-                        .addAction("Decimal") { "Decimal" to Template(listOf(DecimalScheme())) }
-                        .addAction("String") { "String" to Template(listOf(StringScheme())) }
-                        .addAction("Word") { "Word" to Template(listOf(WordScheme())) }
-                        .addAction("UUID") { "UUID" to Template(listOf(UuidScheme())) }
+                        .addAction("Integer") { Template("Integer", listOf(IntegerScheme())) }
+                        .addAction("Decimal") { Template("Decimal", listOf(DecimalScheme())) }
+                        .addAction("String") { Template("String", listOf(StringScheme())) }
+                        .addAction("Word") { Template("Word", listOf(WordScheme())) }
+                        .addAction("UUID") { Template("UUID", listOf(UuidScheme())) }
                         .buildActionGroup()
                 )
             )
             .addExtraAction(object : AnActionButton("Copy", PlatformIcons.COPY_ICON) {
                 override fun actionPerformed(e: AnActionEvent) {
                     templateList.selectedValue?.let { template ->
-                        templateListModel.addElement(template.first to template.second.deepCopy())
+                        templateListModel.addElement(template.deepCopy())
                         templateList.selectedIndex = templateListModel.size - 1
                     }
                 }
@@ -141,7 +146,7 @@ class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEdito
 
         return super.isModified() ||
             loadedTemplates.size != unsavedTemplates.size ||
-            loadedTemplates.entries.zip(unsavedTemplates.toMap().entries).any { it.first != it.second }
+            loadedTemplates.zip(unsavedTemplates).any { it.first != it.second }
     }
 
     override fun addChangeListener(listener: () -> Unit) {
@@ -168,6 +173,7 @@ class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEdito
  */
 private class TemplateEditor(template: Template) : StateEditor<Template>(template) {
     override val rootComponent = JPanel(BorderLayout())
+    private val nameInput: JTextField
     private val schemeList: JList<Scheme<*>>
     private val schemeListModel = DefaultListModel<Scheme<*>>()
     private val schemeEditorPanel: JPanel
@@ -176,6 +182,12 @@ private class TemplateEditor(template: Template) : StateEditor<Template>(templat
 
 
     init {
+        val namePanel = JPanel(BorderLayout())
+        namePanel.add(JLabel("Name:"), BorderLayout.WEST)
+        nameInput = JBTextField()
+        namePanel.add(nameInput)
+        rootComponent.add(namePanel, BorderLayout.NORTH)
+
         val splitter = JBSplitter(false, DEFAULT_SPLITTER_PROPORTION)
         rootComponent.add(splitter, BorderLayout.CENTER)
 
@@ -201,7 +213,7 @@ private class TemplateEditor(template: Template) : StateEditor<Template>(templat
         }
         splitter.secondComponent = schemeEditorPanel
 
-        val previewPanel = PreviewPanel { TemplateInsertAction(TemplateSettings(mapOf("" to readState()))) }
+        val previewPanel = PreviewPanel { TemplateInsertAction(TemplateSettings(listOf(readState()))) }
         addChangeListener { previewPanel.updatePreview() }
         rootComponent.add(previewPanel.rootPane, BorderLayout.SOUTH)
 
@@ -267,6 +279,8 @@ private class TemplateEditor(template: Template) : StateEditor<Template>(templat
     override fun loadState(state: Template) {
         super.loadState(state)
 
+        nameInput.text = state.name
+
         schemeListModel.removeAllElements()
         schemeListModel.addAll(state.schemes)
         schemeList.selectedIndex = -1
@@ -276,10 +290,11 @@ private class TemplateEditor(template: Template) : StateEditor<Template>(templat
         changeListeners.forEach { it() }
     }
 
-    override fun readState() = Template(schemeListModel.elements().toList())
+    override fun readState() = Template(nameInput.text, schemeListModel.elements().toList())
 
 
     override fun addChangeListener(listener: () -> Unit) {
+        addChangeListenerTo(nameInput, listener = listener)
         changeListeners += listener
     }
 
