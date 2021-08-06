@@ -58,12 +58,11 @@ abstract class StateEditor<S : State<S>>(val originalState: S) {
     fun reset() = loadState(originalState)
 
     /**
-     * Validates the state of the editor, i.e. of [readState], and indicates which input, if any, caused the invalid
-     * state.
+     * Validates the state of the editor, i.e. of [readState], and indicates whether and why it is invalid.
      *
-     * @return `null` if the state is valid, or a [ValidationInfo] object explaining why the state is invalid
+     * @return `null` if the state is valid, or a string explaining why the state is invalid
      */
-    open fun doValidate(): ValidationInfo? = null
+    open fun doValidate(): String? = readState().doValidate()
 
 
     /**

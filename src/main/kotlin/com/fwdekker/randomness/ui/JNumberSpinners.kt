@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.JNumberSpinner.Companion.DEFAULT_DESCRIPTION
 import java.awt.Dimension
 import java.text.DecimalFormatSymbols
@@ -81,8 +80,8 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
      */
     fun validateValue() =
         when {
-            value < minValue -> ValidationInfo("The $description should be greater than or equal to $minValue.", this)
-            value > maxValue -> ValidationInfo("The $description should be less than or equal to $maxValue.", this)
+            value < minValue -> "The $description should be greater than or equal to $minValue."
+            value > maxValue -> "The $description should be less than or equal to $maxValue."
             else -> null
         }
 

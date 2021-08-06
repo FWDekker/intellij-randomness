@@ -3,10 +3,11 @@ package com.fwdekker.randomness.decimal
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_DECIMAL_SEPARATOR
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_GROUPING_SEPARATOR
+import com.fwdekker.randomness.decimal.DecimalScheme.Companion.MAX_VALUE_DIFFERENCE
 import com.fwdekker.randomness.ui.JDoubleSpinner
 import com.fwdekker.randomness.ui.JIntSpinner
-import com.fwdekker.randomness.ui.JSpinnerRange
 import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import javax.swing.ButtonGroup
@@ -24,7 +25,6 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor<DecimalScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
-    private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JDoubleSpinner
     private lateinit var maxValue: JDoubleSpinner
     private lateinit var decimalCount: JIntSpinner
@@ -52,7 +52,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
     private fun createUIComponents() {
         minValue = JDoubleSpinner(description = "minimum value")
         maxValue = JDoubleSpinner(description = "maximum value")
-        valueRange = JSpinnerRange(minValue, maxValue, MAX_VALUE_RANGE, name = "value")
+        bindSpinners(minValue, maxValue, MAX_VALUE_DIFFERENCE)
         decimalCount = JIntSpinner(0, 0, description = "decimal count")
     }
 
@@ -81,12 +81,6 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
             suffix = suffixInput.text
         )
 
-    override fun doValidate() =
-        minValue.validateValue()
-            ?: maxValue.validateValue()
-            ?: valueRange.validateValue()
-            ?: decimalCount.validateValue()
-
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
@@ -94,15 +88,4 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
             prefixInput, suffixInput,
             listener = listener
         )
-
-
-    /**
-     * Holds constants.
-     */
-    companion object {
-        /**
-         * The maximum difference between the minimum and maximum values that can be generated.
-         */
-        const val MAX_VALUE_RANGE = 1E53
-    }
 }

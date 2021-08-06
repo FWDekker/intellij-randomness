@@ -38,6 +38,17 @@ data class TemplateSettings(
         }
 
 
+    override fun doValidate(): String? {
+        val duplicate = templates.firstOrNull { templates.indexOf(it) != templates.lastIndexOf(it) }?.name
+
+        return when {
+            templates.isEmpty() -> "Configure at least one template."
+            duplicate != null -> "There are multiple templates with the name '$duplicate'."
+            else -> null
+        }
+    }
+
+
     /**
      * Holds constants.
      */

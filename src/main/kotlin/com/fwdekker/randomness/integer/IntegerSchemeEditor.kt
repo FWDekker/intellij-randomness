@@ -6,8 +6,8 @@ import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_CAPITALIZ
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JLongSpinner
-import com.fwdekker.randomness.ui.JSpinnerRange
 import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.forEach
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
@@ -25,7 +25,6 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor<IntegerScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
-    private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JLongSpinner
     private lateinit var maxValue: JLongSpinner
     private lateinit var base: JIntSpinner
@@ -55,12 +54,12 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
     private fun createUIComponents() {
         minValue = JLongSpinner(description = "minimum value")
         maxValue = JLongSpinner(description = "maximum value")
+        bindSpinners(minValue, maxValue, maxRange = null)
         base = JIntSpinner(
             IntegerScheme.DECIMAL_BASE,
             IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE,
             description = "base"
         )
-        valueRange = JSpinnerRange(minValue, maxValue, maxRange = null, "value")
     }
 
     override fun loadState(state: IntegerScheme) {
@@ -85,12 +84,6 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
             prefix = prefixInput.text,
             suffix = suffixInput.text
         )
-
-    override fun doValidate() =
-        minValue.validateValue()
-            ?: maxValue.validateValue()
-            ?: base.validateValue()
-            ?: valueRange.validateValue()
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(

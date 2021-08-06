@@ -51,6 +51,7 @@ class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEdito
     override val rootComponent = JPanel(BorderLayout())
     private val templateList: JBList<Template>
     private val templateListModel = DefaultListModel<Template>()
+    private var templateEditor: TemplateEditor? = null
 
     private val unsavedState = TemplateSettings(listOf())
     private val changeListeners = mutableListOf<() -> Unit>()
@@ -63,7 +64,7 @@ class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEdito
         templateList = JBList(templateListModel)
         templateList.selectionMode = ListSelectionModel.SINGLE_SELECTION
         templateList.setCellRenderer { _, entry, _, _, _ ->
-            JBLabel(entry.name)
+            JBLabel(entry.name.ifBlank { "<empty>" })
                 .also { label ->
                     if (originalState.templates.firstOrNull { it.name == entry.name } != entry)
                         label.foreground = MODIFIED_COLOR
@@ -73,15 +74,18 @@ class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEdito
 
         templateList.addListSelectionListener { event ->
             val selection = templateList.selectedValue
-            if (!event.valueIsAdjusting && selection != null) {
-                val editor = TemplateEditor(selection)
-                editor.addChangeListener {
-                    editor.applyState()
-                    changeListeners.forEach { it() }
-                    templateList.repaint() // Force template names to update
+            if (event.valueIsAdjusting || selection == null)
+                return@addListSelectionListener
+
+            templateEditor = TemplateEditor(selection)
+                .also { editor ->
+                    editor.addChangeListener {
+                        editor.applyState()
+                        changeListeners.forEach { it() }
+                        templateList.repaint() // Force template names to update
+                    }
+                    splitter.secondComponent = editor.rootComponent
                 }
-                splitter.secondComponent = editor.rootComponent
-            }
         }
 
         loadState()
@@ -149,6 +153,9 @@ class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEdito
             loadedTemplates.zip(unsavedTemplates).any { it.first != it.second }
     }
 
+    override fun doValidate() = templateEditor?.doValidate() ?: unsavedState.doValidate()
+
+
     override fun addChangeListener(listener: () -> Unit) {
         changeListeners += listener
     }
@@ -177,6 +184,7 @@ private class TemplateEditor(template: Template) : StateEditor<Template>(templat
     private val schemeList: JList<Scheme<*>>
     private val schemeListModel = DefaultListModel<Scheme<*>>()
     private val schemeEditorPanel: JPanel
+    private var schemeEditor: StateEditor<*>? = null
 
     private val changeListeners = mutableListOf<() -> Unit>()
 
@@ -199,17 +207,20 @@ private class TemplateEditor(template: Template) : StateEditor<Template>(templat
         schemeEditorPanel = JPanel(BorderLayout())
         schemeList.addListSelectionListener { event ->
             val selection = schemeList.selectedValue
-            if (!event.valueIsAdjusting && selection != null) {
-                val editor = getSchemeEditor(selection)
-                editor.addChangeListener {
-                    editor.applyState()
+            if (event.valueIsAdjusting || selection == null)
+                return@addListSelectionListener
+
+            schemeEditor = getSchemeEditor(selection)
+                .also { editor ->
+                    editor.addChangeListener {
+                        editor.applyState()
+                        changeListeners.forEach { it() }
+                    }
+
+                    schemeEditorPanel.removeAll()
+                    schemeEditorPanel.add(editor.rootComponent)
                     changeListeners.forEach { it() }
                 }
-
-                schemeEditorPanel.removeAll()
-                schemeEditorPanel.add(editor.rootComponent)
-                changeListeners.forEach { it() }
-            }
         }
         splitter.secondComponent = schemeEditorPanel
 
@@ -291,6 +302,11 @@ private class TemplateEditor(template: Template) : StateEditor<Template>(templat
     }
 
     override fun readState() = Template(nameInput.text, schemeListModel.elements().toList())
+
+
+    override fun doValidate(): String? =
+        if (nameInput.text.isBlank()) "Template name should not be empty."
+        else schemeEditor?.doValidate()
 
 
     override fun addChangeListener(listener: () -> Unit) {

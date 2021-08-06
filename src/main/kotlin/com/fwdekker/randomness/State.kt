@@ -24,6 +24,13 @@ interface State<SELF : State<SELF>> {
      * @return a deep copy of itself
      */
     fun deepCopy(): State<SELF>
+
+    /**
+     * Validates the state, and indicates whether and why it is invalid.
+     *
+     * @return `null` if the state is valid, or a string explaining why the state is invalid
+     */
+    fun doValidate(): String? = null
 }
 
 /**

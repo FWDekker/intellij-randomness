@@ -53,23 +53,54 @@ data class WordScheme(
      * @throws InvalidDictionaryException if no words could be found using the settings in `settings`
      */
     override fun generateStrings(count: Int): List<String> {
-        val dictionaries = (activeBundledDictionaries + activeUserDictionaries)
-            .ifEmpty { throw DataGenerationException("There are no active dictionaries.") }
+        doValidate()?.also { throw DataGenerationException(it) }
 
+        val dictionaries = (activeBundledDictionaries + activeUserDictionaries)
         val words =
-            try {
-                dictionaries.flatMap { it.words }
-            } catch (e: InvalidDictionaryException) {
-                throw DataGenerationException(e.message, e)
-            }
-                .ifEmpty { throw DataGenerationException("All active dictionaries are empty.") }
+            dictionaries
+                .flatMap { it.words }
                 .filter { it.length in minLength..maxLength }
                 .toSet()
-                .ifEmpty { throw DataGenerationException("There are no words within the configured length range.") }
 
         return List(count) { words.random(random) }
             .map { capitalization.transform(it) }
             .map { enclosure + it + enclosure }
+    }
+
+    override fun doValidate(): String? {
+        BundledDictionary.cache.clear()
+        UserDictionary.cache.clear()
+
+        val words = activeBundledDictionaries.flatMap { dictionary ->
+            try {
+                dictionary.words.also {
+                    if (it.isEmpty())
+                        return "Dictionary '$dictionary' is empty."
+                }
+            } catch (e: InvalidDictionaryException) {
+                return "Dictionary '$dictionary' is invalid: ${e.message}"
+            }
+        }
+        val minWordLength = words.map { it.length }.minOrNull() ?: 1
+        val maxWordLength = words.map { it.length }.maxOrNull() ?: Integer.MAX_VALUE
+
+        return when {
+            minLength < MIN_LENGTH ->
+                "Minimum length should not be smaller than ${MIN_LENGTH}."
+            minLength > maxLength ->
+                "Minimum length should not be larger than maximum length."
+            maxLength - minLength > MAX_LENGTH_DIFFERENCE ->
+                "Value range should not exceed ${MAX_LENGTH_DIFFERENCE}."
+            (activeBundledDictionaryFiles + activeUserDictionaryFiles).isEmpty() ->
+                "Activate at least one dictionary."
+            minLength > maxWordLength ->
+                "The longest word in the selected dictionaries is $maxWordLength characters. " +
+                    "Set the minimum length to a value less than or equal to $maxWordLength."
+            maxLength < minWordLength ->
+                "The shortest word in the selected dictionaries is $minWordLength characters. " +
+                    "Set the maximum length to a value less than or equal to $minWordLength."
+            else -> null
+        }
     }
 
 
@@ -84,6 +115,16 @@ data class WordScheme(
      * Holds constants.
      */
     companion object {
+        /**
+         * The smallest valid value of the [minLength] field.
+         */
+        const val MIN_LENGTH = 1
+
+        /**
+         * The largest valid difference between the [minLength] and [maxLength] fields.
+         */
+        const val MAX_LENGTH_DIFFERENCE = Int.MAX_VALUE.toDouble()
+
         /**
          * The default value of the [minLength][minLength] field.
          */

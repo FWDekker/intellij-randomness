@@ -34,6 +34,8 @@ data class Template(
         schemes.onEach { it.random = random }.map { it.generateStrings(count) }
             .let { data -> (0 until count).map { i -> data.joinToString(separator = "") { it[i] } } }
 
+    override fun doValidate() = schemes.map { it.doValidate() }.firstOrNull()
+
 
     override fun deepCopy() =
         copy().also { copy -> copy.schemes = this.schemes.map { it.deepCopy() } }

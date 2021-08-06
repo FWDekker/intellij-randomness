@@ -3,6 +3,7 @@ package com.fwdekker.randomness.array
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArraySettings.Companion.DEFAULT_BRACKETS
 import com.fwdekker.randomness.array.ArraySettings.Companion.DEFAULT_SEPARATOR
+import com.fwdekker.randomness.array.ArraySettings.Companion.MIN_COUNT
 import com.fwdekker.randomness.array.ArraySettings.Companion.default
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.addChangeListenerTo
@@ -48,7 +49,7 @@ class ArraySettingsEditor(settings: ArraySettings = default) : StateEditor<Array
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        countSpinner = JIntSpinner(value = 1, minValue = 1, description = "count")
+        countSpinner = JIntSpinner(value = 1, minValue = MIN_COUNT, description = "count")
     }
 
     override fun loadState(state: ArraySettings) {
@@ -67,8 +68,6 @@ class ArraySettingsEditor(settings: ArraySettings = default) : StateEditor<Array
             separator = separatorGroup.getValue() ?: DEFAULT_SEPARATOR,
             isSpaceAfterSeparator = spaceAfterSeparatorCheckBox.isSelected
         )
-
-    override fun doValidate() = countSpinner.validateValue()
 
 
     override fun addChangeListener(listener: () -> Unit) =

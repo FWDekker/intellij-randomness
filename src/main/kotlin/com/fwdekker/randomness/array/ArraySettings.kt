@@ -45,11 +45,22 @@ data class ArraySettings(
             postfix = brackets.getOrNull(1)?.toString() ?: ""
         )
 
+    override fun doValidate() =
+        when {
+            count < MIN_COUNT -> "Minimum count should be at least $MIN_COUNT, but is $count."
+            else -> null
+        }
+
 
     /**
      * Holds constants.
      */
     companion object {
+        /**
+         * The minimum valid value of the [count] field.
+         */
+        const val MIN_COUNT = 1
+
         /**
          * The default value of the [count][count] field.
          */

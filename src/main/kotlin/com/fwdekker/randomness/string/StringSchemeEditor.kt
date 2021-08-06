@@ -4,9 +4,11 @@ import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_ENCLOSURE
+import com.fwdekker.randomness.string.StringScheme.Companion.MAX_LENGTH_DIFFERENCE
+import com.fwdekker.randomness.string.StringScheme.Companion.MIN_LENGTH
 import com.fwdekker.randomness.ui.JIntSpinner
-import com.fwdekker.randomness.ui.JSpinnerRange
 import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.jgoodies.forms.factories.DefaultComponentFactory
@@ -31,7 +33,6 @@ class StringSchemeEditor(
     private val symbolSetSettings: SymbolSetSettings = SymbolSetSettings.default
 ) : StateEditor<StringScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
-    private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
     private lateinit var enclosureGroup: ButtonGroup
@@ -63,9 +64,9 @@ class StringSchemeEditor(
         val bundle = ResourceBundle.getBundle("randomness")
         val factory = DefaultComponentFactory.getInstance()
 
-        minLength = JIntSpinner(1, 1, description = "minimum length")
-        maxLength = JIntSpinner(1, 1, description = "maximum length")
-        lengthRange = JSpinnerRange(minLength, maxLength, Int.MAX_VALUE.toDouble(), "length")
+        minLength = JIntSpinner(1, MIN_LENGTH, description = "minimum length")
+        maxLength = JIntSpinner(1, MIN_LENGTH, description = "maximum length")
+        bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE)
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.panel
         symbolSetSeparator = factory.createSeparator(bundle.getString("settings.symbol_sets"))
@@ -96,12 +97,6 @@ class StringSchemeEditor(
             symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
             it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet()
         }
-
-    override fun doValidate() =
-        minLength.validateValue()
-            ?: maxLength.validateValue()
-            ?: lengthRange.validateValue()
-            ?: symbolSetTable.doValidate(excludeLookAlikeSymbolsCheckBox.isSelected)
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(

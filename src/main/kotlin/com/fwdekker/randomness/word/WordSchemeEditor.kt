@@ -2,14 +2,14 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.JIntSpinner
-import com.fwdekker.randomness.ui.JSpinnerRange
 import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_ENCLOSURE
+import com.fwdekker.randomness.word.WordScheme.Companion.MAX_LENGTH_DIFFERENCE
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.UIUtil
 import com.jgoodies.forms.factories.DefaultComponentFactory
@@ -33,7 +33,6 @@ class WordSchemeEditor(
     private val dictionarySettings: DictionarySettings = DictionarySettings.default
 ) : StateEditor<WordScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
-    private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
     private lateinit var capitalizationGroup: ButtonGroup
@@ -64,7 +63,7 @@ class WordSchemeEditor(
 
         minLength = JIntSpinner(1, 1, description = "minimum length")
         maxLength = JIntSpinner(1, 1, description = "maximum length")
-        lengthRange = JSpinnerRange(minLength, maxLength, Int.MAX_VALUE.toDouble(), "length")
+        bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE)
         dictionaryTable = DictionaryTable()
         dictionaryPanel = dictionaryTable.panel
         dictionarySeparator = factory.createSeparator(bundle.getString("settings.dictionaries"))
@@ -103,50 +102,9 @@ class WordSchemeEditor(
         }
 
 
-    override fun doValidate(): ValidationInfo? {
-        BundledDictionary.cache.clear()
-        UserDictionary.cache.clear()
-
-        return dictionaryTable.doValidate()
-            ?: validateWordRange()
-            ?: minLength.validateValue()
-            ?: maxLength.validateValue()
-            ?: lengthRange.validateValue()
-    }
-
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
             minLength, maxLength, capitalizationGroup, enclosureGroup, dictionaryTable,
             listener = listener
         )
-
-
-    /**
-     * Returns `null` if the selected word range overlaps with words in the chosen dictionaries, or a `ValidationInfo`
-     * object explaining which input should be changed.
-     *
-     * @return `null` if the selected word range overlaps with words in the chosen dictionaries, or a `ValidationInfo`
-     * object explaining which input should be changed
-     */
-    private fun validateWordRange(): ValidationInfo? {
-        val words = dictionaryTable.activeData.filter { it.isValid() }.flatMap { it.words }
-        val minWordLength = words.map { it.length }.minOrNull() ?: 1
-        val maxWordLength = words.map { it.length }.maxOrNull() ?: Integer.MAX_VALUE
-
-        return when {
-            minLength.value > maxWordLength ->
-                ValidationInfo(
-                    "The longest word in the selected dictionaries is $maxWordLength characters. " +
-                        "Set the minimum length to a value less than or equal to $maxWordLength.",
-                    minLength
-                ) { minLength.value = maxWordLength }
-            maxLength.value < minWordLength ->
-                ValidationInfo(
-                    "The shortest word in the selected dictionaries is $minWordLength characters. " +
-                        "Set the maximum length to a value less than or equal to $minWordLength.",
-                    maxLength
-                ) { maxLength.value = minWordLength }
-            else -> null
-        }
-    }
 }

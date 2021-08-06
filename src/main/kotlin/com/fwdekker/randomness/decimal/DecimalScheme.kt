@@ -48,6 +48,8 @@ data class DecimalScheme(
      * @return a nicely formatted representation of a decimal
      */
     private fun doubleToString(decimal: Double): String {
+        doValidate()?.also { throw DataGenerationException(it) }
+
         val format = DecimalFormat()
         format.isGroupingUsed = groupingSeparator.isNotEmpty()
 
@@ -61,6 +63,13 @@ data class DecimalScheme(
         return prefix + format.format(decimal) + suffix
     }
 
+    override fun doValidate() =
+        when {
+            minValue > maxValue -> "Minimum value should not be larger than maximum value."
+            maxValue - minValue > MAX_VALUE_DIFFERENCE -> "Value range should not exceed $MAX_VALUE_DIFFERENCE."
+            else -> null
+        }
+
 
     override fun deepCopy() = copy()
 
@@ -69,6 +78,11 @@ data class DecimalScheme(
      * Holds constants.
      */
     companion object {
+        /**
+         * The maximum valid difference between the [minValue] and [maxValue] fields.
+         */
+        const val MAX_VALUE_DIFFERENCE = 1E53
+
         /**
          * The default value of the [minValue][minValue] field.
          */

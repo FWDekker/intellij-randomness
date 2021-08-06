@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.literal
 
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -31,7 +30,6 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor
 
     override fun readState() = LiteralScheme(literal = literalInput.text)
 
-    override fun doValidate(): ValidationInfo? = null
 
     override fun addChangeListener(listener: () -> Unit) = addChangeListenerTo(literalInput, listener = listener)
 }
