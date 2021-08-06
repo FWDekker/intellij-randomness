@@ -43,7 +43,7 @@ object DecimalSettingsComponentTest : Spek({
 
         decimalSchemeEditor =
             GuiActionRunner.execute<DecimalSchemeEditor> { DecimalSchemeEditor(decimalSettings) }
-        frame = showInFrame(decimalSchemeEditor.rootPane)
+        frame = showInFrame(decimalSchemeEditor.rootComponent)
     }
 
     afterEachTest {

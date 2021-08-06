@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -23,8 +23,8 @@ import javax.swing.event.ChangeEvent
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEditor<IntegerScheme>() {
-    override lateinit var rootPane: JPanel private set
+class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor<IntegerScheme>(scheme) {
+    override lateinit var rootComponent: JPanel private set
     private lateinit var valueRange: JSpinnerRange
     private lateinit var minValue: JLongSpinner
     private lateinit var maxValue: JLongSpinner
@@ -36,7 +36,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEdito
 
 
     init {
-        loadScheme(scheme)
+        loadState(scheme)
 
         base.addChangeListener {
             groupingSeparatorGroup.forEach { it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE }
@@ -63,18 +63,19 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEdito
         valueRange = JSpinnerRange(minValue, maxValue, maxRange = null, "value")
     }
 
-    override fun loadScheme(scheme: IntegerScheme) =
-        scheme.also {
-            minValue.value = it.minValue
-            maxValue.value = it.maxValue
-            base.value = it.base
-            groupingSeparatorGroup.setValue(it.groupingSeparator)
-            capitalizationGroup.setValue(it.capitalization)
-            prefixInput.text = it.prefix
-            suffixInput.text = it.suffix
-        }.let { }
+    override fun loadState(state: IntegerScheme) {
+        super.loadState(state)
 
-    override fun saveScheme() =
+        minValue.value = state.minValue
+        maxValue.value = state.maxValue
+        base.value = state.base
+        groupingSeparatorGroup.setValue(state.groupingSeparator)
+        capitalizationGroup.setValue(state.capitalization)
+        prefixInput.text = state.prefix
+        suffixInput.text = state.suffix
+    }
+
+    override fun readState() =
         IntegerScheme(
             minValue = minValue.value,
             maxValue = maxValue.value,

@@ -39,7 +39,7 @@ class TemplateInsertAction(private val scheme: TemplateSettings = TemplateSettin
      * @return random template-based strings based on the descriptor
      */
     override fun generateStrings(count: Int) =
-        scheme.templates.first().also { it.random = random }.generateStrings(count)
+        scheme.templates.entries.first().value.also { it.random = random }.generateStrings(count)
 
     /**
      * Inserts an array-like string of template-based strings.
@@ -83,7 +83,7 @@ class TemplateInsertAction(private val scheme: TemplateSettings = TemplateSettin
  * Controller for random string generation settings.
  *
  * @see TemplateSettings
- * @see TemplateSettingsComponent
+ * @see TemplateSettingsEditor
  */
 class TemplateSettingsAction : DataSettingsAction(RandomnessIcons.Data.Settings) {
     override val name = "Template Settings"

@@ -15,12 +15,12 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * Unit tests for [SettingsComponent].
+ * Unit tests for [SettingsEditor].
  */
 object SettingsComponentTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var settings: DummySettings
-    lateinit var settingsComponent: DummySettingsComponent
+    lateinit var settingsComponent: DummySettingsEditor
     lateinit var frame: FrameFixture
 
 
@@ -42,8 +42,8 @@ object SettingsComponentTest : Spek({
                 currentSchemeName = "Scheme2"
             }
 
-        settingsComponent = GuiActionRunner.execute<DummySettingsComponent> { DummySettingsComponent(settings) }
-        frame = Containers.showInFrame(settingsComponent.rootPane)
+        settingsComponent = GuiActionRunner.execute<DummySettingsEditor> { DummySettingsEditor(settings) }
+        frame = Containers.showInFrame(settingsComponent.rootComponent)
     }
 
     afterEachTest {
@@ -53,7 +53,7 @@ object SettingsComponentTest : Spek({
 
 
     describe("schemes") {
-        lateinit var schemesPanel: DummySettingsComponent.DummySchemesPanel
+        lateinit var schemesPanel: DummySettingsEditor.DummySchemesPanel
         lateinit var savedSettings: Settings<*, DummyScheme>
         lateinit var unsavedSettings: Settings<*, DummyScheme>
 

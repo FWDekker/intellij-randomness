@@ -39,7 +39,7 @@ object UuidSettingsComponentTest : Spek({
             }
 
         uuidSchemeEditor = GuiActionRunner.execute<UuidSchemeEditor> { UuidSchemeEditor(uuidSettings) }
-        frame = showInFrame(uuidSchemeEditor.rootPane)
+        frame = showInFrame(uuidSchemeEditor.rootComponent)
     }
 
     afterEachTest {

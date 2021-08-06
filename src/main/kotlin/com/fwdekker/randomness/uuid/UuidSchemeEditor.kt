@@ -1,8 +1,7 @@
 package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemeEditor
-import com.fwdekker.randomness.ValidationInfo
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
@@ -20,8 +19,8 @@ import javax.swing.JPanel
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidScheme>() {
-    override lateinit var rootPane: JPanel private set
+class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidScheme>(scheme) {
+    override lateinit var rootComponent: JPanel private set
     private lateinit var versionGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
@@ -29,27 +28,26 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidSch
 
 
     init {
-        loadScheme(scheme)
+        loadState(scheme)
     }
 
 
-    override fun loadScheme(scheme: UuidScheme) =
-        scheme.also {
-            versionGroup.setValue(it.version.toString())
-            enclosureGroup.setValue(it.enclosure)
-            capitalizationGroup.setValue(it.capitalization)
-            addDashesCheckBox.isSelected = it.addDashes
-        }.let {}
+    override fun loadState(state: UuidScheme) {
+        super.loadState(state)
 
-    override fun saveScheme(): UuidScheme =
+        versionGroup.setValue(state.version.toString())
+        enclosureGroup.setValue(state.enclosure)
+        capitalizationGroup.setValue(state.capitalization)
+        addDashesCheckBox.isSelected = state.addDashes
+    }
+
+    override fun readState(): UuidScheme =
         UuidScheme(
             version = versionGroup.getValue()?.toInt() ?: DEFAULT_VERSION,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             addDashes = addDashesCheckBox.isSelected
         )
-
-    override fun doValidate(): ValidationInfo? = null
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(

@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.SettingsComponent
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArraySettings.Companion.DEFAULT_BRACKETS
 import com.fwdekker.randomness.array.ArraySettings.Companion.DEFAULT_SEPARATOR
 import com.fwdekker.randomness.array.ArraySettings.Companion.default
@@ -22,8 +22,8 @@ import javax.swing.event.ChangeEvent
  * @see ArraySettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class ArraySettingsComponent(settings: ArraySettings = default) : SettingsComponent<ArraySettings>(settings) {
-    override lateinit var rootPane: JPanel private set
+class ArraySettingsEditor(settings: ArraySettings = default) : StateEditor<ArraySettings>(settings) {
+    override lateinit var rootComponent: JPanel private set
     private lateinit var countSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
     private lateinit var separatorGroup: ButtonGroup
@@ -32,7 +32,7 @@ class ArraySettingsComponent(settings: ArraySettings = default) : SettingsCompon
 
 
     init {
-        loadSettings()
+        loadState()
 
         newlineSeparatorButton.addChangeListener {
             spaceAfterSeparatorCheckBox.isEnabled = !newlineSeparatorButton.isSelected
@@ -51,19 +51,22 @@ class ArraySettingsComponent(settings: ArraySettings = default) : SettingsCompon
         countSpinner = JIntSpinner(value = 1, minValue = 1, description = "count")
     }
 
-    override fun loadSettings(settings: ArraySettings) {
-        countSpinner.value = settings.count
-        bracketsGroup.setValue(settings.brackets)
-        separatorGroup.setValue(settings.separator)
-        spaceAfterSeparatorCheckBox.isSelected = settings.isSpaceAfterSeparator
+    override fun loadState(state: ArraySettings) {
+        super.loadState(state)
+
+        countSpinner.value = state.count
+        bracketsGroup.setValue(state.brackets)
+        separatorGroup.setValue(state.separator)
+        spaceAfterSeparatorCheckBox.isSelected = state.isSpaceAfterSeparator
     }
 
-    override fun saveSettings(settings: ArraySettings) {
-        settings.count = countSpinner.value
-        settings.brackets = bracketsGroup.getValue() ?: DEFAULT_BRACKETS
-        settings.separator = separatorGroup.getValue() ?: DEFAULT_SEPARATOR
-        settings.isSpaceAfterSeparator = spaceAfterSeparatorCheckBox.isSelected
-    }
+    override fun readState(): ArraySettings =
+        ArraySettings(
+            count = countSpinner.value,
+            brackets = bracketsGroup.getValue() ?: DEFAULT_BRACKETS,
+            separator = separatorGroup.getValue() ?: DEFAULT_SEPARATOR,
+            isSpaceAfterSeparator = spaceAfterSeparatorCheckBox.isSelected
+        )
 
     override fun doValidate() = countSpinner.validateValue()
 

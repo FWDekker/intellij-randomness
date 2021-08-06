@@ -7,7 +7,7 @@ import com.fwdekker.randomness.DataSettingsAction
  * Controller for random array generation settings.
  *
  * @see ArraySettings
- * @see ArraySettingsComponent
+ * @see ArraySettingsEditor
  */
 class ArraySettingsAction : DataSettingsAction() {
     override val name = "Array Settings"

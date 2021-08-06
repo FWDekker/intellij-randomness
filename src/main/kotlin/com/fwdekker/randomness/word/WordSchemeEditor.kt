@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JSpinnerRange
@@ -31,8 +31,8 @@ import javax.swing.JTextArea
 class WordSchemeEditor(
     scheme: WordScheme = WordScheme(),
     private val dictionarySettings: DictionarySettings = DictionarySettings.default
-) : SchemeEditor<WordScheme>() {
-    override lateinit var rootPane: JPanel private set
+) : StateEditor<WordScheme>(scheme) {
+    override lateinit var rootComponent: JPanel private set
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -45,7 +45,7 @@ class WordSchemeEditor(
 
 
     init {
-        loadScheme(scheme)
+        loadState(scheme)
 
         dictionaryHelp.border = null
         dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
@@ -70,24 +70,25 @@ class WordSchemeEditor(
         dictionarySeparator = factory.createSeparator(bundle.getString("settings.dictionaries"))
     }
 
-    override fun loadScheme(scheme: WordScheme) =
-        scheme.also {
-            minLength.value = it.minLength
-            maxLength.value = it.maxLength
-            enclosureGroup.setValue(it.enclosure)
-            capitalizationGroup.setValue(it.capitalization)
-            dictionaryTable.data = dictionarySettings.bundledDictionaries + dictionarySettings.userDictionaries
-            dictionaryTable.activeData = it.activeBundledDictionaries + it.activeUserDictionaries
-                .filter { dictionary -> dictionary in dictionaryTable.data }
+    override fun loadState(state: WordScheme) {
+        super.loadState(state)
 
-        }.let {}
+        minLength.value = state.minLength
+        maxLength.value = state.maxLength
+        enclosureGroup.setValue(state.enclosure)
+        capitalizationGroup.setValue(state.capitalization)
+        dictionaryTable.data = dictionarySettings.bundledDictionaries + dictionarySettings.userDictionaries
+        dictionaryTable.activeData = state.activeBundledDictionaries + state.activeUserDictionaries
+            .filter { dictionary -> dictionary in dictionaryTable.data }
+    }
 
-    override fun saveScheme() =
-        WordScheme().also {
-            it.minLength = minLength.value
-            it.maxLength = maxLength.value
-            it.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
-            it.capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION
+    override fun readState() =
+        WordScheme(
+            minLength = minLength.value,
+            maxLength = maxLength.value,
+            enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
+            capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION
+        ).also {
             dictionarySettings.bundledDictionaries = dictionaryTable.data
                 .filter { file -> file.isBundled }.toSet()
             it.activeBundledDictionaries = dictionaryTable.activeData

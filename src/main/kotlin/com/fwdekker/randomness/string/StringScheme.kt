@@ -9,14 +9,12 @@ import com.intellij.util.xmlb.annotations.Transient
 /**
  * Contains settings for generating random strings.
  *
+ * @property symbolSetSettings Persistent storage of available symbol sets.
  * @property minLength The minimum length of the generated string, inclusive.
  * @property maxLength The maximum length of the generated string, inclusive.
  * @property enclosure The string that encloses the generated string on both sides.
  * @property capitalization The capitalization mode of the generated string.
- * @property serializedSymbolSets The symbol sets that are available for generating strings. Emoji have been serialized
- * for compatibility with JetBrains' serializer.
- * @property serializedActiveSymbolSets The symbol sets that are actually used for generating strings; a subset of
- * [symbolSets]. Emoji have been serialized for compatibility with JetBrains' serializer.
+ * @property activeSymbolSets The names of the symbol sets that are available for generating strings.
  * @property excludeLookAlikeSymbols Whether the symbols in [SymbolSet.lookAlikeCharacters] should be excluded.
  */
 data class StringScheme(
@@ -57,13 +55,7 @@ data class StringScheme(
 
 
     override fun deepCopy() =
-        StringScheme().also {
-            it.minLength = minLength
-            it.maxLength = maxLength
-            it.enclosure = enclosure
-            it.capitalization = capitalization
-            it.activeSymbolSets = activeSymbolSets.map { name -> name }.toSet()
-        }
+        copy().also { it.activeSymbolSets = activeSymbolSets.toSet() }
 
 
     /**

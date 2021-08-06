@@ -62,10 +62,7 @@ data class DecimalScheme(
     }
 
 
-    override fun deepCopy() =
-        DecimalScheme(
-            minValue, maxValue, decimalCount, showTrailingZeroes, groupingSeparator, decimalSeparator, prefix, suffix
-        )
+    override fun deepCopy() = copy()
 
 
     /**

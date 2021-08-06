@@ -1,25 +1,35 @@
 package com.fwdekker.randomness.literal
 
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.ValidationInfo
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import javax.swing.JPanel
 import javax.swing.JTextField
 
 
-class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : SchemeEditor<LiteralScheme>() {
-    override lateinit var rootPane: JPanel private set
+/**
+ * Component for editing fixed literal settings.
+ *
+ * @param scheme the scheme to edit in the component
+ */
+@Suppress("LateinitUsage") // Initialized by scene builder
+class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor<LiteralScheme>(scheme) {
+    override lateinit var rootComponent: JPanel private set
     private lateinit var literalInput: JTextField
 
 
     init {
-        loadScheme(scheme)
+        loadState(scheme)
     }
 
 
-    override fun loadScheme(scheme: LiteralScheme) = scheme.also { literalInput.text = scheme.literal }.let { }
+    override fun loadState(state: LiteralScheme) {
+        super.loadState(state)
 
-    override fun saveScheme() = LiteralScheme(literal = literalInput.text)
+        literalInput.text = state.literal
+    }
+
+    override fun readState() = LiteralScheme(literal = literalInput.text)
 
     override fun doValidate(): ValidationInfo? = null
 

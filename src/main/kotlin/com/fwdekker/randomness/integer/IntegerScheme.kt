@@ -72,7 +72,7 @@ data class IntegerScheme(
     }
 
 
-    override fun deepCopy() = IntegerScheme(minValue, maxValue, base, groupingSeparator, capitalization, prefix, suffix)
+    override fun deepCopy() = copy()
 
 
     /**

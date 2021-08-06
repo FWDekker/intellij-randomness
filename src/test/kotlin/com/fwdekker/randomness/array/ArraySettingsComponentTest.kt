@@ -12,12 +12,12 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * GUI tests for [ArraySettingsComponent].
+ * GUI tests for [ArraySettingsEditor].
  */
 object ArraySettingsComponentTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var arraySettings: ArraySettings
-    lateinit var arraySettingsComponent: ArraySettingsComponent
+    lateinit var arraySettingsComponent: ArraySettingsEditor
     lateinit var frame: FrameFixture
 
 
@@ -38,8 +38,8 @@ object ArraySettingsComponentTest : Spek({
             }
 
         arraySettingsComponent =
-            GuiActionRunner.execute<ArraySettingsComponent> { ArraySettingsComponent(arraySettings) }
-        frame = showInFrame(arraySettingsComponent.rootPane)
+            GuiActionRunner.execute<ArraySettingsEditor> { ArraySettingsEditor(arraySettings) }
+        frame = showInFrame(arraySettingsComponent.rootComponent)
     }
 
     afterEachTest {

@@ -47,7 +47,7 @@ object WordSettingsComponentTest : Spek({
             }
 
         wordSchemeEditor = GuiActionRunner.execute<WordSchemeEditor> { WordSchemeEditor(wordSettings) }
-        frame = showInFrame(wordSchemeEditor.rootPane)
+        frame = showInFrame(wordSchemeEditor.rootComponent)
 
         dictionaryTable = frame.table().target() as TableView<EditableDatum<Dictionary>>
     }

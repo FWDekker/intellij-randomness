@@ -73,14 +73,11 @@ data class WordScheme(
     }
 
 
-    override fun deepCopy() = WordScheme().also {
-        it.minLength = minLength
-        it.maxLength = maxLength
-        it.enclosure = enclosure
-        it.capitalization = capitalization
-        it.activeBundledDictionaries = activeBundledDictionaries.map(DictionaryReference::copy).toSet()
-        it.activeUserDictionaries = activeUserDictionaries.map(DictionaryReference::copy).toSet()
-    }
+    override fun deepCopy() =
+        copy().also {
+            it.activeBundledDictionaries = activeBundledDictionaries.map(DictionaryReference::copy).toSet()
+            it.activeUserDictionaries = activeUserDictionaries.map(DictionaryReference::copy).toSet()
+        }
 
 
     /**

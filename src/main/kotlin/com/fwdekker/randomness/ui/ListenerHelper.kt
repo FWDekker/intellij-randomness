@@ -20,6 +20,7 @@ import javax.swing.text.Document
  * @param components the components to add the listener to
  * @param listener the listener to invoke whenever any of the given components changes state
  */
+@Suppress("SpreadOperator") // Acceptable because this method is called rarely
 fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
     components.forEach { component ->
         when (component) {
@@ -38,7 +39,7 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
 /**
  * Adds a `ChangeListener` to a text field.
  *
- * Code taken from [StackOverflow](https://stackoverflow.com/a/27190162/3307872), but without the `invokeLater`.
+ * Code taken from [StackOverflow][https://stackoverflow.com/a/27190162/3307872], but without the `invokeLater`.
  *
  * @param changeListener the change listener that responds to changes in the text field
  */

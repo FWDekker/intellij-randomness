@@ -1,8 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SettingsComponent
-import com.fwdekker.randomness.ValidationInfo
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.decimal.DecimalSchemeEditor
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -24,6 +23,7 @@ import com.intellij.openapi.actionSystem.CommonShortcuts
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.ui.AnActionButton
+import com.intellij.ui.JBColor
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.LayeredIcon
 import com.intellij.ui.ToolbarDecorator
@@ -43,19 +43,17 @@ import javax.swing.ListSelectionModel
  * Component for editing a list of templates.
  *
  * @param settings the settings to edit in the component
- *
  * @see TemplateSettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class TemplateSettingsComponent(val settings: TemplateSettings = default) :
-    SettingsComponent<TemplateSettings>(settings) {
-    override lateinit var rootPane: JPanel private set
+class TemplateSettingsEditor(settings: TemplateSettings = default) : StateEditor<TemplateSettings>(settings) {
+    override lateinit var rootComponent: JPanel private set
     private lateinit var templatePanel: JPanel
-    private lateinit var templateListEditor: TemplateListEditor
+    private lateinit var templateMapEditor: TemplateMapEditor
 
 
     init {
-        loadSettings()
+        loadState()
     }
 
 
@@ -66,55 +64,69 @@ class TemplateSettingsComponent(val settings: TemplateSettings = default) :
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        templateListEditor = TemplateListEditor()
-        templatePanel = templateListEditor
+        templateMapEditor = TemplateMapEditor()
+        templatePanel = templateMapEditor
     }
 
 
-    override fun loadSettings(settings: TemplateSettings) = templateListEditor.loadTemplateList(settings.templates)
+    override fun loadState(state: TemplateSettings) {
+        super.loadState(state)
 
-    override fun saveSettings(settings: TemplateSettings) {
-        settings.templates = templateListEditor.saveTemplateList()
+        templateMapEditor.loadTemplateList(state.templates)
     }
 
-    // TODO: Implement validation
-    override fun doValidate(): ValidationInfo? = null
+    override fun readState() = TemplateSettings(templateMapEditor.saveTemplateList().toMap())
+
+    override fun isModified(): Boolean {
+        val loadedTemplates = originalState.templates
+        val unsavedTemplates = templateMapEditor.saveTemplateList()
+
+        return super.isModified() ||
+            loadedTemplates.size != unsavedTemplates.size ||
+            loadedTemplates.entries.zip(unsavedTemplates.toMap().entries).any { it.first != it.second }
+    }
 
 
-    override fun addChangeListener(listener: () -> Unit) = templateListEditor.addChangeListener(listener)
+    override fun addChangeListener(listener: () -> Unit) = templateMapEditor.addChangeListener(listener)
 }
 
 /**
- * Component for editing a list of [Template]s.
+ * Component for editing a map of [Template]s.
  *
- * Template lists can be loaded into and saved from this component. When a template list is loaded, its templates are
+ * Template maps can be loaded into and saved from this component. When a template map is loaded, its templates are
  * displayed in a list. When a template is selected by the user, a [TemplateEditor] is displayed inside this component.
  * Changes made through the template's editor are reflected in the state of this component.
  *
  * @see TemplateEditor
  */
-private class TemplateListEditor : JPanel(BorderLayout()) {
-    val rootPane = JBSplitter(false, .2f)
+private class TemplateMapEditor : JPanel(BorderLayout()) {
+    val rootPane = JBSplitter(false, DEFAULT_SPLITTER_PROPORTION)
 
+    private var loadedTemplateList: Map<String, Template>? = null
     private val changeListeners = mutableListOf<() -> Unit>()
     private var isAdjusting: Boolean = false
 
-    private val templateList: JList<Template>
-    private val templateListModel = DefaultListModel<Template>()
+    private val templateList: JList<Pair<String, Template>>
+    private val templateListModel = DefaultListModel<Pair<String, Template>>()
     private val templateEditor: TemplateEditor
 
 
     init {
         templateList = JBList(templateListModel)
         templateList.selectionMode = ListSelectionModel.SINGLE_SELECTION
-        templateList.setCellRenderer { _, value, _, _, _ -> JBLabel("Template (${value.schemes.size})") }
+        templateList.setCellRenderer { _, entry, _, _, _ ->
+            JBLabel(entry.first).apply {
+                if (loadedTemplateList?.get(entry.first) != entry.second)
+                    foreground = MODIFIED_COLOR
+            }
+        }
         rootPane.firstComponent = JBScrollPane(decorateTemplateList(templateList))
 
         templateEditor = TemplateEditor()
         templateEditor.addChangeListener {
             val index = templateList.selectedIndex
             if (index in 0 until templateListModel.size)
-                templateListModel.set(index, templateEditor.saveTemplate())
+                templateListModel.set(index, templateListModel.get(index).first to templateEditor.saveTemplate())
 
             changeListeners.forEach { it() }
         }
@@ -125,7 +137,7 @@ private class TemplateListEditor : JPanel(BorderLayout()) {
 
             val index = templateList.selectedIndex
             if (!event.valueIsAdjusting && index in 0 until templateListModel.size)
-                templateEditor.loadTemplate(templateListModel.get(index))
+                templateEditor.loadTemplate(templateListModel.get(index).second)
         }
         add(rootPane, BorderLayout.CENTER)
     }
@@ -136,25 +148,27 @@ private class TemplateListEditor : JPanel(BorderLayout()) {
      * @param templateList the list to decorate
      * @return a panel containing both the decorator and the given list
      */
-    private fun decorateTemplateList(templateList: JBList<Template>) =
+    private fun decorateTemplateList(templateList: JBList<Pair<String, Template>>) =
         ToolbarDecorator.createDecorator(templateList)
             .setToolbarPosition(ActionToolbarPosition.TOP)
             .setPanelBorder(JBUI.Borders.empty())
             .setScrollPaneBorder(JBUI.Borders.empty())
             .disableAddAction()
-            .addExtraAction(AnActionButton.GroupPopupWrapper(
-                DefaultActionGroupBuilder(templateList, templateListModel)
-                    .addAction("Integer") { Template(listOf(IntegerScheme())) }
-                    .addAction("Decimal") { Template(listOf(DecimalScheme())) }
-                    .addAction("String") { Template(listOf(StringScheme())) }
-                    .addAction("Word") { Template(listOf(WordScheme())) }
-                    .addAction("UUID") { Template(listOf(UuidScheme())) }
-                    .buildActionGroup()
-            ))
+            .addExtraAction(
+                AnActionButton.GroupPopupWrapper(
+                    DefaultActionGroupBuilder(templateList, templateListModel)
+                        .addAction("Integer") { "Integer" to Template(listOf(IntegerScheme())) }
+                        .addAction("Decimal") { "Decimal" to Template(listOf(DecimalScheme())) }
+                        .addAction("String") { "String" to Template(listOf(StringScheme())) }
+                        .addAction("Word") { "Word" to Template(listOf(WordScheme())) }
+                        .addAction("UUID") { "UUID" to Template(listOf(UuidScheme())) }
+                        .buildActionGroup()
+                )
+            )
             .addExtraAction(object : AnActionButton("Copy", PlatformIcons.COPY_ICON) {
                 override fun actionPerformed(e: AnActionEvent) {
                     templateList.selectedValue?.let { template ->
-                        templateListModel.addElement(template.deepCopy())
+                        templateListModel.addElement(template.first to template.second.deepCopy())
                         templateList.selectedIndex = templateListModel.size - 1
                     }
                 }
@@ -168,18 +182,19 @@ private class TemplateListEditor : JPanel(BorderLayout()) {
     /**
      * Unloads the current template list (if any) and loads the given template list.
      *
-     * @param templates the template list to load for editing
+     * @param templateList the template list to load for editing
      * @see addChangeListener
      */
-    fun loadTemplateList(templates: List<Template>) {
+    fun loadTemplateList(templateList: Map<String, Template>) {
         isAdjusting = true
+        loadedTemplateList = templateList
         templateListModel.removeAllElements()
-        templateListModel.addAll(templates)
-        templateList.selectedIndex = -1
+        templateListModel.addAll(templateList.toList())
+        this.templateList.selectedIndex = -1
         isAdjusting = false
 
         if (!templateListModel.isEmpty) {
-            templateList.selectedIndex = 0
+            this.templateList.selectedIndex = 0
             changeListeners.forEach { it() }
         }
     }
@@ -205,21 +220,33 @@ private class TemplateListEditor : JPanel(BorderLayout()) {
         addChangeListenerTo(templateList, listener = suppressibleListener)
         changeListeners += suppressibleListener
     }
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The default proportion of the splitter component.
+         */
+        const val DEFAULT_SPLITTER_PROPORTION = .2f
+    }
 }
 
 /**
  * Component for editing [Template]s.
  *
  * Templates can be loaded into and saved from this component. When a template is loaded, its schemes are displayed in a
- * list. When a scheme is selected by the user, the corresponding [com.fwdekker.randomness.SchemeEditor](SchemeEditor)
+ * list. When a scheme is selected by the user, the corresponding [StateEditor][com.fwdekker.randomness.StateEditor]
  * is displayed inside this component. Changes made through the scheme's editor are reflected in the state of this
  * component.
  *
- * @see TemplateListEditor
+ * @see TemplateMapEditor
  */
 private class TemplateEditor : JPanel(BorderLayout()) {
-    val rootPane = JBSplitter(false, .2f)
+    val rootPane = JBSplitter(false, DEFAULT_SPLITTER_PROPORTION)
 
+    private var loadedTemplate: Template? = null
     private val changeListeners = mutableListOf<() -> Unit>()
     private var isAdjusting: Boolean = false
 
@@ -232,7 +259,7 @@ private class TemplateEditor : JPanel(BorderLayout()) {
     init {
         schemeList = JBList(schemeListModel)
         schemeList.selectionMode = ListSelectionModel.SINGLE_SELECTION
-        schemeList.setCellRenderer { _, value, _, _, _ -> JBLabel(value::class.simpleName ?: "Scheme") }
+        schemeList.setCellRenderer { _, value, _, _, _ -> JBLabel(value::class.simpleName ?: "Unnamed scheme") }
         rootPane.firstComponent = JBScrollPane(decorateSchemeList(schemeList))
 
         schemeEditorPanel = JPanel(BorderLayout())
@@ -246,7 +273,7 @@ private class TemplateEditor : JPanel(BorderLayout()) {
         rootPane.secondComponent = schemeEditorPanel
         add(rootPane, BorderLayout.CENTER)
 
-        previewPanel = PreviewPanel { TemplateInsertAction(TemplateSettings(listOf(saveTemplate()))) }
+        previewPanel = PreviewPanel { TemplateInsertAction(TemplateSettings(mapOf("" to saveTemplate()))) }
         addChangeListener { previewPanel.updatePreview() }
         add(previewPanel.rootPane, BorderLayout.SOUTH)
     }
@@ -264,20 +291,22 @@ private class TemplateEditor : JPanel(BorderLayout()) {
             .setPanelBorder(JBUI.Borders.empty())
             .setScrollPaneBorder(JBUI.Borders.empty())
             .disableAddAction()
-            .addExtraAction(AnActionButton.GroupPopupWrapper(
-                DefaultActionGroupBuilder(schemeList, schemeListModel)
-                    .addAction("Literal") { LiteralScheme() }
-                    .addAction("Integer") { IntegerScheme() }
-                    .addAction("Decimal") { DecimalScheme() }
-                    .addAction("String") { StringScheme() }
-                    .addAction("Word") { WordScheme() }
-                    .addAction("UUID") { UuidScheme() }
-                    .buildActionGroup()
-            ))
+            .addExtraAction(
+                AnActionButton.GroupPopupWrapper(
+                    DefaultActionGroupBuilder(schemeList, schemeListModel)
+                        .addAction("Literal") { LiteralScheme() }
+                        .addAction("Integer") { IntegerScheme() }
+                        .addAction("Decimal") { DecimalScheme() }
+                        .addAction("String") { StringScheme() }
+                        .addAction("Word") { WordScheme() }
+                        .addAction("UUID") { UuidScheme() }
+                        .buildActionGroup()
+                )
+            )
             .addExtraAction(object : AnActionButton("Copy", PlatformIcons.COPY_ICON) {
                 override fun actionPerformed(e: AnActionEvent) {
                     schemeList.selectedValue?.let { scheme ->
-                        schemeListModel.addElement(scheme.deepCopy() as Scheme<*>)
+                        schemeListModel.addElement(scheme.deepCopy())
                         schemeList.selectedIndex = schemeListModel.size - 1
                     }
                 }
@@ -306,12 +335,12 @@ private class TemplateEditor : JPanel(BorderLayout()) {
         editor.addChangeListener {
             if (isAdjusting) return@addChangeListener
 
-            schemeListModel.set(listIndex, editor.saveScheme())
+            schemeListModel.set(listIndex, editor.readState())
             changeListeners.forEach { it() }
         }
 
         schemeEditorPanel.removeAll()
-        schemeEditorPanel.add(editor.rootPane)
+        schemeEditorPanel.add(editor.rootComponent)
         changeListeners.forEach { it() }
     }
 
@@ -324,6 +353,7 @@ private class TemplateEditor : JPanel(BorderLayout()) {
      */
     fun loadTemplate(template: Template) {
         isAdjusting = true
+        loadedTemplate = template
         schemeListModel.removeAllElements()
         schemeListModel.addAll(template.schemes)
         schemeList.selectedIndex = -1
@@ -356,7 +386,19 @@ private class TemplateEditor : JPanel(BorderLayout()) {
         addChangeListenerTo(schemeList, listener = suppressibleListener)
         changeListeners += suppressibleListener
     }
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The default proportion of the splitter component.
+         */
+        const val DEFAULT_SPLITTER_PROPORTION = .2f
+    }
 }
+
 
 /**
  * Utility class for building a `DefaultActionGroup` consisting of actions that add a specified element to a list.
@@ -401,3 +443,7 @@ private class DefaultActionGroupBuilder<T>(
             registerCustomShortcutSet(CommonShortcuts.getNewForDialogs(), null)
         }
 }
+
+
+private val MODIFIED_COLOR = JBColor.namedColor("Tree.modifiedItemForeground", JBColor.BLUE)
+private val ERROR_COLOR = JBColor.namedColor("Tree.errorForeground", JBColor.RED)

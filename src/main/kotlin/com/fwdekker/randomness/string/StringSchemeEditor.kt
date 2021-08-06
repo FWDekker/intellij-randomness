@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -29,8 +29,8 @@ import javax.swing.JPanel
 class StringSchemeEditor(
     scheme: StringScheme = StringScheme(),
     private val symbolSetSettings: SymbolSetSettings = SymbolSetSettings.default
-) : SchemeEditor<StringScheme>() {
-    override lateinit var rootPane: JPanel private set
+) : StateEditor<StringScheme>(scheme) {
+    override lateinit var rootComponent: JPanel private set
     private lateinit var lengthRange: JSpinnerRange
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -43,7 +43,7 @@ class StringSchemeEditor(
 
 
     init {
-        loadScheme(scheme)
+        loadState(scheme)
 
         excludeLookAlikeSymbolsCheckBox.font = excludeLookAlikeSymbolsCheckBox.font.attributes.toMutableMap()
             .also { it[TextAttribute.UNDERLINE] = TextAttribute.UNDERLINE_LOW_DOTTED }
@@ -71,20 +71,21 @@ class StringSchemeEditor(
         symbolSetSeparator = factory.createSeparator(bundle.getString("settings.symbol_sets"))
     }
 
-    override fun loadScheme(scheme: StringScheme) =
-        scheme.also {
-            minLength.value = it.minLength
-            maxLength.value = it.maxLength
-            enclosureGroup.setValue(it.enclosure)
-            capitalizationGroup.setValue(it.capitalization)
-            excludeLookAlikeSymbolsCheckBox.isSelected = it.excludeLookAlikeSymbols
+    override fun loadState(state: StringScheme) {
+        super.loadState(state)
 
-            symbolSetTable.data = symbolSetSettings.symbolSetList
-            symbolSetTable.activeData =
-                symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in it.activeSymbolSets }
-        }.let {}
+        minLength.value = state.minLength
+        maxLength.value = state.maxLength
+        enclosureGroup.setValue(state.enclosure)
+        capitalizationGroup.setValue(state.capitalization)
+        excludeLookAlikeSymbolsCheckBox.isSelected = state.excludeLookAlikeSymbols
 
-    override fun saveScheme() =
+        symbolSetTable.data = symbolSetSettings.symbolSetList
+        symbolSetTable.activeData =
+            symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
+    }
+
+    override fun readState() =
         StringScheme().also {
             it.minLength = minLength.value
             it.maxLength = maxLength.value

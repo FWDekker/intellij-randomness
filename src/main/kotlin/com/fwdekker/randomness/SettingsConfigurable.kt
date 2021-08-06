@@ -21,9 +21,9 @@ import javax.swing.JComponent
  */
 abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
     /**
-     * The user interface for changing the settings.
+     * The user interface for changing the settings, displayed in IntelliJ's settings window.
      */
-    protected abstract val component: SettingsComponent<S>
+    protected abstract val component: StateEditor<S>
 
 
     /**
@@ -52,7 +52,7 @@ abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
             throw ConfigurationException(validationInfo.message, "Failed to save settings")
                 .also { it.quickFix = validationInfo.quickFix }
 
-        component.saveSettings()
+        component.applyState()
     }
 
     /**
@@ -65,10 +65,11 @@ abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
      *
      * @return the root pane of the settings component
      */
-    override fun createComponent(): JComponent? = component.rootPane
+    override fun createComponent(): JComponent? = component.rootComponent
 }
 
 
+// TODO: Remove this configurable
 /**
  * Randomness' root configurable; all other configurables are its children.
  */

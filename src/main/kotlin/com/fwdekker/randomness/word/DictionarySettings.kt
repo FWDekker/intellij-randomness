@@ -4,13 +4,12 @@ import com.fwdekker.randomness.Settings
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
-import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.Transient
 
 
 /**
- * TODO
+ * The user-configurable persistent collection of all [Dictionaries][Dictionary] available to the user.
  *
  * @property bundledDictionaryFiles The list of all dictionary files provided by the plugin.
  * @property userDictionaryFiles The list of all dictionary files registered by the user.
@@ -19,12 +18,12 @@ import com.intellij.util.xmlb.annotations.Transient
     name = "com.fwdekker.randomness.word.DictionarySettings",
     storages = [Storage("\$APP_CONFIG\$/randomness.xml")]
 )
-class DictionarySettings(
+data class DictionarySettings(
     @MapAnnotation(sortBeforeSave = false)
     var bundledDictionaryFiles: MutableSet<String> = DEFAULT_BUNDLED_DICTIONARY_FILES,
     @MapAnnotation(sortBeforeSave = false)
     var userDictionaryFiles: MutableSet<String> = DEFAULT_USER_DICTIONARY_FILES
-) : Settings<DictionarySettings> {
+) : Settings<DictionarySettings>() {
     /**
      * A mutable view of the filenames of the files in [bundledDictionaryFiles].
      */
@@ -46,14 +45,13 @@ class DictionarySettings(
         }
 
 
-    override fun deepCopy() = DictionarySettings(
-        bundledDictionaryFiles.map { it }.toMutableSet(),
-        userDictionaryFiles.map { it }.toMutableSet()
-    )
-
     override fun getState() = this
 
-    override fun loadState(state: DictionarySettings) = XmlSerializerUtil.copyBean(state, this)
+    override fun deepCopy() =
+        copy().also {
+            it.bundledDictionaryFiles = bundledDictionaryFiles.toMutableSet()
+            it.userDictionaryFiles = userDictionaryFiles.toMutableSet()
+        }
 
 
     /**

@@ -18,7 +18,7 @@ data class LiteralScheme(var literal: String = DEFAULT_LITERAL) : Scheme<Literal
     override fun generateStrings(count: Int) = List(count) { literal }
 
 
-    override fun deepCopy() = LiteralScheme(literal)
+    override fun deepCopy() = copy()
 
 
     /**

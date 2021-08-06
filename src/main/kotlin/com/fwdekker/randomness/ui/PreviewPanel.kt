@@ -38,10 +38,12 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
         previewLabel.border = null
         previewLabel.isFocusable = false
 
-        refreshButton.addMouseListener(MouseClickListener {
-            seed = Random.nextInt()
-            updatePreview()
-        })
+        refreshButton.addMouseListener(
+            MouseClickListener {
+                seed = Random.nextInt()
+                updatePreview()
+            }
+        )
     }
 
 

@@ -5,12 +5,15 @@ import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
-import com.intellij.util.xmlb.XmlSerializerUtil
 
 
 /**
  * The user-configurable collection of schemes applicable to generating arrays.
  *
+ * @property count The number of elements to generate.
+ * @property brackets The brackets to surround arrays with.
+ * @property separator The string to place between generated elements.
+ * @property isSpaceAfterSeparator True iff a space should be placed after each separator.
  * @see ArraySettingsAction
  * @see ArraySettingsConfigurable
  */
@@ -23,12 +26,10 @@ data class ArraySettings(
     var brackets: String = DEFAULT_BRACKETS,
     var separator: String = DEFAULT_SEPARATOR,
     var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR
-) : Settings<ArraySettings> {
-    override fun deepCopy() = ArraySettings(count, brackets, separator, isSpaceAfterSeparator)
-
+) : Settings<ArraySettings>() {
     override fun getState() = this
 
-    override fun loadState(state: ArraySettings) = XmlSerializerUtil.copyBean(state, this)
+    override fun deepCopy() = copy()
 
 
     /**
@@ -83,7 +84,7 @@ data class ArraySettings(
  *
  * @see ArraySettingsAction
  */
-class ArraySettingsConfigurable(override val component: ArraySettingsComponent = ArraySettingsComponent()) :
+class ArraySettingsConfigurable(override val component: ArraySettingsEditor = ArraySettingsEditor()) :
     SettingsConfigurable<ArraySettings>() {
     override fun getDisplayName() = "Arrays"
 }

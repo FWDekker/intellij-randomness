@@ -45,7 +45,7 @@ data class UuidScheme(
                     )
                 )
             4 -> Generators.randomBasedGenerator(random.asJavaRandom())
-            else -> throw DataGenerationException("Unknown UUID version `${version}`.")
+            else -> throw DataGenerationException("Unknown UUID version `$version`.")
         }
 
         return List(count) { generator.generate().toString() }
@@ -58,7 +58,7 @@ data class UuidScheme(
     }
 
 
-    override fun deepCopy() = UuidScheme(version, enclosure, capitalization, addDashes)
+    override fun deepCopy() = copy()
 
 
     /**

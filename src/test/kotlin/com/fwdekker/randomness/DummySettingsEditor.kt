@@ -66,13 +66,13 @@ data class DummyScheme(
 
 
 /**
- * Dummy implementation of [SettingsComponent].
+ * Dummy implementation of [SettingsEditor].
  *
  * @param settings the settings to edit in the component
  */
-class DummySettingsComponent(settings: DummySettings = DummySettings()) :
-    SettingsComponent<DummySettings, DummyScheme>(settings) {
-    override val rootPane = JPanel()
+class DummySettingsEditor(settings: DummySettings = DummySettings()) :
+    StateEditor<DummySettings, DummyScheme>(settings) {
+    val rootComponent = JPanel()
     private val countSpinner = JIntSpinner(minValue = 0)
         .also { it.name = "count" }
 
@@ -84,8 +84,8 @@ class DummySettingsComponent(settings: DummySettings = DummySettings()) :
     init {
         loadSettings()
 
-        rootPane.add(countSpinner)
-        rootPane.add(schemesPanel)
+        rootComponent.add(countSpinner)
+        rootComponent.add(schemesPanel)
     }
 
 
@@ -117,7 +117,7 @@ class DummySettingsComponent(settings: DummySettings = DummySettings()) :
 /**
  * Dummy implementation of [SettingsConfigurable].
  */
-class DummySettingsConfigurable(override val component: DummySettingsComponent = DummySettingsComponent()) :
+class DummySettingsConfigurable(override val component: DummySettingsEditor = DummySettingsEditor()) :
     SettingsConfigurable<DummySettings, DummyScheme>() {
     override fun getDisplayName() = "Dummy"
 }

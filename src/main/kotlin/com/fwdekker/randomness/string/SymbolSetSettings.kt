@@ -4,22 +4,29 @@ import com.fwdekker.randomness.Settings
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
-import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.Transient
 import com.vdurmont.emoji.EmojiParser
 
 
+/**
+ * The user-configurable persistent collection of all [SymbolSet]s available to the user.
+ *
+ * @property serializedSymbolSets The symbol sets that are available for generating strings. Emoji have been serialized
+ * for compatibility with JetBrains' serializer.
+ * @property placeholder A placeholder value used to trick the serializer into working.
+ * @see StringScheme
+ */
 @State(
     name = "com.fwdekker.randomness.string.SymbolSetSettings",
     storages = [Storage("\$APP_CONFIG\$/randomness.xml")]
 )
-class SymbolSetSettings(
+data class SymbolSetSettings(
     @MapAnnotation(sortBeforeSave = false)
     var serializedSymbolSets: Map<String, String> = DEFAULT_SYMBOL_SETS,
     @Suppress("unused") // At least two fields are required for serialization to work
-    val placeholder: String = ""
-) : Settings<SymbolSetSettings> {
+    private val placeholder: String = ""
+) : Settings<SymbolSetSettings>() {
     /**
      * Same as [symbolSets], except that serialized emoji have been deserialized.
      */
@@ -41,11 +48,12 @@ class SymbolSetSettings(
         }
 
 
-    override fun deepCopy() = SymbolSetSettings(serializedSymbolSets.map { it.key to it.value }.toMap())
-
     override fun getState() = this
 
-    override fun loadState(state: SymbolSetSettings) = XmlSerializerUtil.copyBean(state, this)
+    override fun deepCopy() =
+        copy().also { copy ->
+            copy.symbolSetList = symbolSetList.map { it.copy() }
+        }
 
 
     /**

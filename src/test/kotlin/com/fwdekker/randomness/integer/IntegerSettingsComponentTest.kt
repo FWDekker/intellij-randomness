@@ -43,7 +43,7 @@ object IntegerSettingsComponentTest : Spek({
 
         integerSchemeEditor =
             GuiActionRunner.execute<IntegerSchemeEditor> { IntegerSchemeEditor(integerSettings) }
-        frame = showInFrame(integerSchemeEditor.rootPane)
+        frame = showInFrame(integerSchemeEditor.rootComponent)
     }
 
     afterEachTest {

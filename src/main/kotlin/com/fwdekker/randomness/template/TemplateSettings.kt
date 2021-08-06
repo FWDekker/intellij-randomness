@@ -12,13 +12,16 @@ import com.fwdekker.randomness.word.WordScheme
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
-import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.XCollection
 
 
 /**
- * The user-configurable collection of schemes applicable to generating arbitrary strings using template syntax.
+ * The user-configurable persistent collection of schemes applicable to generating arbitrary strings using template
+ * syntax.
  *
+ * @property templates The templates defined by the user.
+ * @property placeholder A placeholder value used to trick the serializer into working.
  * @see TemplateSettingsAction
  * @see TemplateSettingsConfigurable
  */
@@ -26,16 +29,18 @@ import com.intellij.util.xmlb.annotations.XCollection
     name = "com.fwdekker.randomness.template.TemplateSettings",
     storages = [Storage("\$APP_CONFIG\$/randomness.xml")]
 )
-class TemplateSettings(
-    var templates: List<Template> = DEFAULT_TEMPLATES.map { it.deepCopy() },
+data class TemplateSettings(
+    @MapAnnotation(sortBeforeSave = false)
+    var templates: Map<String, Template> = DEFAULT_TEMPLATES,
     @Suppress("unused") // At least two fields are required for serialization to work
-    val placeholder: String = ""
-) : Settings<TemplateSettings> {
-    override fun deepCopy() = TemplateSettings(templates.map { it.deepCopy() })
-
+    private val placeholder: String = ""
+) : Settings<TemplateSettings>() {
     override fun getState() = this
 
-    override fun loadState(state: TemplateSettings) = XmlSerializerUtil.copyBean(state, this)
+    override fun deepCopy() =
+        copy().also { copy ->
+            copy.templates = templates.map { it.key to it.value.deepCopy() }.toMap()
+        }
 
 
     /**
@@ -45,10 +50,10 @@ class TemplateSettings(
         /**
          * The default value of the [templates][templates] field.
          */
-        val DEFAULT_TEMPLATES: List<Template>
-            get() = listOf(
-                Template(listOf(IntegerScheme())),
-                Template(listOf(LiteralScheme("start"), StringScheme(), LiteralScheme("end")))
+        val DEFAULT_TEMPLATES: Map<String, Template>
+            get() = mapOf(
+                "The Integer" to Template(listOf(IntegerScheme())),
+                "My String" to Template(listOf(LiteralScheme("start"), StringScheme(), LiteralScheme("end")))
             )
 
         /**
@@ -62,7 +67,7 @@ class TemplateSettings(
 /**
  * Generates random data by concatenating the random outputs of a list of [Scheme]s.
  *
- * @property schemes the ordered list of underlying schemes
+ * @property schemes The ordered list of underlying schemes.
  */
 data class Template(
     @get:XCollection(
@@ -81,7 +86,9 @@ data class Template(
         schemes.onEach { it.random = random }.map { it.generateStrings(count) }
             .let { data -> (0 until count).map { i -> data.joinToString(separator = "") { it[i] } } }
 
-    override fun deepCopy() = Template(schemes.map { it.deepCopy() as Scheme<*> })
+
+    override fun deepCopy() =
+        copy().also { copy -> copy.schemes = this.schemes.map { it.deepCopy() } }
 
 
     /**
@@ -102,7 +109,7 @@ data class Template(
  * @see TemplateSettingsAction
  */
 class TemplateSettingsConfigurable(
-    override val component: TemplateSettingsComponent = TemplateSettingsComponent()
+    override val component: TemplateSettingsEditor = TemplateSettingsEditor()
 ) : SettingsConfigurable<TemplateSettings>() {
     override fun getDisplayName() = "Templates"
 }
