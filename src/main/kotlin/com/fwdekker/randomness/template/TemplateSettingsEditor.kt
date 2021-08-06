@@ -12,7 +12,6 @@ import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.StringSchemeEditor
 import com.fwdekker.randomness.template.TemplateSettings.Companion.default
 import com.fwdekker.randomness.ui.PreviewPanel
-import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
@@ -40,106 +39,47 @@ import javax.swing.ListSelectionModel
 
 
 /**
- * Component for editing a list of templates.
+ * Component for editing [TemplateSettings].
  *
- * @param settings the settings to edit in the component
- * @see TemplateSettingsAction
+ * @param templates the settings to edit
  */
-@Suppress("LateinitUsage") // Initialized by scene builder
-class TemplateSettingsEditor(settings: TemplateSettings = default) : StateEditor<TemplateSettings>(settings) {
-    override lateinit var rootComponent: JPanel private set
-    private lateinit var templatePanel: JPanel
-    private lateinit var templateMapEditor: TemplateMapEditor
-
-
-    init {
-        loadState()
-    }
-
-
-    /**
-     * Initialises custom UI components.
-     *
-     * This method is called by the scene builder at the start of the constructor.
-     */
-    @Suppress("UnusedPrivateMember") // Used by scene builder
-    private fun createUIComponents() {
-        templateMapEditor = TemplateMapEditor()
-        templatePanel = templateMapEditor
-    }
-
-
-    override fun loadState(state: TemplateSettings) {
-        super.loadState(state)
-
-        templateMapEditor.loadTemplateList(state.templates)
-    }
-
-    override fun readState() = TemplateSettings(templateMapEditor.saveTemplateList().toMap())
-
-    override fun isModified(): Boolean {
-        val loadedTemplates = originalState.templates
-        val unsavedTemplates = templateMapEditor.saveTemplateList()
-
-        return super.isModified() ||
-            loadedTemplates.size != unsavedTemplates.size ||
-            loadedTemplates.entries.zip(unsavedTemplates.toMap().entries).any { it.first != it.second }
-    }
-
-
-    override fun addChangeListener(listener: () -> Unit) = templateMapEditor.addChangeListener(listener)
-}
-
-/**
- * Component for editing a map of [Template]s.
- *
- * Template maps can be loaded into and saved from this component. When a template map is loaded, its templates are
- * displayed in a list. When a template is selected by the user, a [TemplateEditor] is displayed inside this component.
- * Changes made through the template's editor are reflected in the state of this component.
- *
- * @see TemplateEditor
- */
-private class TemplateMapEditor : JPanel(BorderLayout()) {
-    val rootPane = JBSplitter(false, DEFAULT_SPLITTER_PROPORTION)
-
-    private var loadedTemplateList: Map<String, Template>? = null
-    private val changeListeners = mutableListOf<() -> Unit>()
-    private var isAdjusting: Boolean = false
-
-    private val templateList: JList<Pair<String, Template>>
+class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEditor<TemplateSettings>(templates) {
+    override val rootComponent = JPanel(BorderLayout())
+    private val templateList: JBList<Pair<String, Template>>
     private val templateListModel = DefaultListModel<Pair<String, Template>>()
-    private val templateEditor: TemplateEditor
+
+    private val unsavedState = TemplateSettings(emptyMap())
+    private val changeListeners = mutableListOf<() -> Unit>()
 
 
     init {
+        val splitter = JBSplitter(false, DEFAULT_SPLITTER_PROPORTION)
+        rootComponent.add(splitter, BorderLayout.CENTER)
+
         templateList = JBList(templateListModel)
         templateList.selectionMode = ListSelectionModel.SINGLE_SELECTION
         templateList.setCellRenderer { _, entry, _, _, _ ->
-            JBLabel(entry.first).apply {
-                if (loadedTemplateList?.get(entry.first) != entry.second)
-                    foreground = MODIFIED_COLOR
-            }
+            JBLabel(entry.first)
+                .also {
+                    if (originalState.templates[entry.first] != entry.second)
+                        it.foreground = MODIFIED_COLOR
+                }
         }
-        rootPane.firstComponent = JBScrollPane(decorateTemplateList(templateList))
-
-        templateEditor = TemplateEditor()
-        templateEditor.addChangeListener {
-            val index = templateList.selectedIndex
-            if (index in 0 until templateListModel.size)
-                templateListModel.set(index, templateListModel.get(index).first to templateEditor.saveTemplate())
-
-            changeListeners.forEach { it() }
-        }
-        rootPane.secondComponent = templateEditor
+        splitter.firstComponent = JBScrollPane(decorateTemplateList(templateList))
 
         templateList.addListSelectionListener { event ->
-            if (isAdjusting) return@addListSelectionListener
-
             val index = templateList.selectedIndex
-            if (!event.valueIsAdjusting && index in 0 until templateListModel.size)
-                templateEditor.loadTemplate(templateListModel.get(index).second)
+            if (!event.valueIsAdjusting && index in 0 until templateListModel.size) {
+                val editor = TemplateEditor(templateListModel.get(index).second)
+                editor.addChangeListener {
+                    editor.applyState()
+                    changeListeners.forEach { it() }
+                }
+                splitter.secondComponent = editor.rootComponent
+            }
         }
-        add(rootPane, BorderLayout.CENTER)
+
+        loadState()
     }
 
     /**
@@ -179,46 +119,33 @@ private class TemplateMapEditor : JPanel(BorderLayout()) {
             .createPanel()
 
 
-    /**
-     * Unloads the current template list (if any) and loads the given template list.
-     *
-     * @param templateList the template list to load for editing
-     * @see addChangeListener
-     */
-    fun loadTemplateList(templateList: Map<String, Template>) {
-        isAdjusting = true
-        loadedTemplateList = templateList
-        templateListModel.removeAllElements()
-        templateListModel.addAll(templateList.toList())
-        this.templateList.selectedIndex = -1
-        isAdjusting = false
+    override fun loadState(state: TemplateSettings) {
+        super.loadState(state)
+        unsavedState.loadState(state.deepCopy())
 
-        if (!templateListModel.isEmpty) {
-            this.templateList.selectedIndex = 0
-            changeListeners.forEach { it() }
-        }
+        templateListModel.removeAllElements()
+        templateListModel.addAll(unsavedState.templates.toList())
+        templateList.selectedIndex = -1
+
+        changeListeners.forEach { it() }
+        if (!templateListModel.isEmpty)
+            templateList.selectedIndex = 0
     }
 
-    /**
-     * Returns the template list as adjusted through this editor.
-     *
-     * @return the template list as adjusted through this editor
-     */
-    fun saveTemplateList() = templateListModel.elements().toList()
+    override fun readState() = unsavedState
 
 
-    /**
-     * Adds a listener that is invoked whenever the user changes the list of templates or any of its templates.
-     *
-     * When `loadTemplateList` is invoked, the listener is invoked once when a template editor is opened to edit the
-     * loaded template list's first template, if there is one.
-     *
-     * @param listener the function to invoke when the template list or any of its templates are changed
-     */
-    fun addChangeListener(listener: () -> Unit) {
-        val suppressibleListener = { if (!isAdjusting) listener() }
-        addChangeListenerTo(templateList, listener = suppressibleListener)
-        changeListeners += suppressibleListener
+    override fun isModified(): Boolean {
+        val loadedTemplates = originalState.templates
+        val unsavedTemplates = unsavedState.templates
+
+        return super.isModified() ||
+            loadedTemplates.size != unsavedTemplates.size ||
+            loadedTemplates.entries.zip(unsavedTemplates.toMap().entries).any { it.first != it.second }
+    }
+
+    override fun addChangeListener(listener: () -> Unit) {
+        changeListeners += listener
     }
 
 
@@ -234,48 +161,51 @@ private class TemplateMapEditor : JPanel(BorderLayout()) {
 }
 
 /**
- * Component for editing [Template]s.
+ * Component for editing an individual [Template].
  *
- * Templates can be loaded into and saved from this component. When a template is loaded, its schemes are displayed in a
- * list. When a scheme is selected by the user, the corresponding [StateEditor][com.fwdekker.randomness.StateEditor]
- * is displayed inside this component. Changes made through the scheme's editor are reflected in the state of this
- * component.
- *
- * @see TemplateMapEditor
+ * @param template
+ * @see TemplateSettingsEditor
  */
-private class TemplateEditor : JPanel(BorderLayout()) {
-    val rootPane = JBSplitter(false, DEFAULT_SPLITTER_PROPORTION)
-
-    private var loadedTemplate: Template? = null
-    private val changeListeners = mutableListOf<() -> Unit>()
-    private var isAdjusting: Boolean = false
-
+private class TemplateEditor(template: Template) : StateEditor<Template>(template) {
+    override val rootComponent = JPanel(BorderLayout())
     private val schemeList: JList<Scheme<*>>
     private val schemeListModel = DefaultListModel<Scheme<*>>()
     private val schemeEditorPanel: JPanel
-    private val previewPanel: PreviewPanel
+
+    private val changeListeners = mutableListOf<() -> Unit>()
 
 
     init {
+        val splitter = JBSplitter(false, DEFAULT_SPLITTER_PROPORTION)
+        rootComponent.add(splitter, BorderLayout.CENTER)
+
         schemeList = JBList(schemeListModel)
         schemeList.selectionMode = ListSelectionModel.SINGLE_SELECTION
         schemeList.setCellRenderer { _, value, _, _, _ -> JBLabel(value::class.simpleName ?: "Unnamed scheme") }
-        rootPane.firstComponent = JBScrollPane(decorateSchemeList(schemeList))
+        splitter.firstComponent = JBScrollPane(decorateSchemeList(schemeList))
 
         schemeEditorPanel = JPanel(BorderLayout())
         schemeList.addListSelectionListener { event ->
-            if (isAdjusting) return@addListSelectionListener
+            val selection = schemeList.selectedValue
+            if (!event.valueIsAdjusting && selection != null) {
+                val editor = getSchemeEditor(selection)
+                editor.addChangeListener {
+                    editor.applyState()
+                    changeListeners.forEach { it() }
+                }
 
-            val index = schemeList.selectedIndex
-            if (!event.valueIsAdjusting && index in 0 until schemeListModel.size)
-                displaySchemeEditor(index)
+                schemeEditorPanel.removeAll()
+                schemeEditorPanel.add(editor.rootComponent)
+                changeListeners.forEach { it() }
+            }
         }
-        rootPane.secondComponent = schemeEditorPanel
-        add(rootPane, BorderLayout.CENTER)
+        splitter.secondComponent = schemeEditorPanel
 
-        previewPanel = PreviewPanel { TemplateInsertAction(TemplateSettings(mapOf("" to saveTemplate()))) }
+        val previewPanel = PreviewPanel { TemplateInsertAction(TemplateSettings(mapOf("" to readState()))) }
         addChangeListener { previewPanel.updatePreview() }
-        add(previewPanel.rootPane, BorderLayout.SOUTH)
+        rootComponent.add(previewPanel.rootPane, BorderLayout.SOUTH)
+
+        loadState()
     }
 
     /**
@@ -317,13 +247,12 @@ private class TemplateEditor : JPanel(BorderLayout()) {
             .createPanel()
 
     /**
-     * Removes the current scheme editor and replaces it with another one for the indicated scheme.
+     * Creates a scheme editor for the given scheme.
      *
-     * @param listIndex the index in the scheme list of the scheme to be edited
+     * @param scheme the scheme to create an editor for
      */
-    private fun displaySchemeEditor(listIndex: Int) {
-        val scheme = schemeListModel.get(listIndex)
-        val editor = when (scheme) {
+    private fun getSchemeEditor(scheme: Scheme<*>): StateEditor<*> {
+        return when (scheme) {
             is IntegerScheme -> IntegerSchemeEditor(scheme)
             is DecimalScheme -> DecimalSchemeEditor(scheme)
             is StringScheme -> StringSchemeEditor(scheme)
@@ -332,59 +261,26 @@ private class TemplateEditor : JPanel(BorderLayout()) {
             is LiteralScheme -> LiteralSchemeEditor(scheme)
             else -> error("Unknown scheme type '${scheme.javaClass.canonicalName}'.")
         }
-        editor.addChangeListener {
-            if (isAdjusting) return@addChangeListener
+    }
 
-            schemeListModel.set(listIndex, editor.readState())
-            changeListeners.forEach { it() }
-        }
 
-        schemeEditorPanel.removeAll()
-        schemeEditorPanel.add(editor.rootComponent)
+    override fun loadState(state: Template) {
+        super.loadState(state)
+
+        schemeListModel.removeAllElements()
+        schemeListModel.addAll(state.schemes)
+        schemeList.selectedIndex = -1
+
+        if (!schemeListModel.isEmpty)
+            schemeList.selectedIndex = 0
         changeListeners.forEach { it() }
     }
 
-
-    /**
-     * Unloads the current template (if any) and loads the given template.
-     *
-     * @param template the template to load for editing
-     * @see addChangeListener
-     */
-    fun loadTemplate(template: Template) {
-        isAdjusting = true
-        loadedTemplate = template
-        schemeListModel.removeAllElements()
-        schemeListModel.addAll(template.schemes)
-        schemeList.selectedIndex = -1
-        isAdjusting = false
-
-        if (!schemeListModel.isEmpty) {
-            schemeList.selectedIndex = 0
-            changeListeners.forEach { it() }
-        }
-    }
-
-    /**
-     * Returns the template as adjusted through this editor.
-     *
-     * @return the template as adjusted through this editor
-     */
-    fun saveTemplate() = Template(schemeListModel.elements().toList())
+    override fun readState() = Template(schemeListModel.elements().toList())
 
 
-    /**
-     * Adds a listener that is invoked whenever the user changes the template or any of its schemes.
-     *
-     * When `loadTemplate` is invoked, the listener is invoked once when a scheme editor is opened to edit the loaded
-     * template's first scheme, if there is one.
-     *
-     * @param listener the function to invoke when the template or any of its schemes are changed
-     */
-    fun addChangeListener(listener: () -> Unit) {
-        val suppressibleListener = { if (!isAdjusting) listener() }
-        addChangeListenerTo(schemeList, listener = suppressibleListener)
-        changeListeners += suppressibleListener
+    override fun addChangeListener(listener: () -> Unit) {
+        changeListeners += listener
     }
 
 
@@ -446,4 +342,4 @@ private class DefaultActionGroupBuilder<T>(
 
 
 private val MODIFIED_COLOR = JBColor.namedColor("Tree.modifiedItemForeground", JBColor.BLUE)
-private val ERROR_COLOR = JBColor.namedColor("Tree.errorForeground", JBColor.RED)
+// private val ERROR_COLOR = JBColor.namedColor("Tree.errorForeground", JBColor.RED)

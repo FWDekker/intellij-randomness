@@ -5,7 +5,6 @@ import java.awt.event.MouseListener
 import java.beans.PropertyChangeEvent
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
-import javax.swing.JList
 import javax.swing.JRadioButton
 import javax.swing.JSpinner
 import javax.swing.JTextField
@@ -27,7 +26,6 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
             is ActivityTableModelEditor<*> -> component.addChangeListener(listener)
             is ButtonGroup -> addChangeListenerTo(*component.buttons(), listener = listener)
             is JCheckBox -> component.addItemListener { listener() }
-            is JList<*> -> component.addPropertyChangeListener { listener() }
             is JRadioButton -> component.addItemListener { listener() }
             is JSpinner -> component.addChangeListener { listener() }
             is JTextField -> component.addChangeListener { listener() }
