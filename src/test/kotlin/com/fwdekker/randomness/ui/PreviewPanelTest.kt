@@ -38,7 +38,7 @@ object PreviewPanelTest : Spek({
         panel = GuiActionRunner.execute<PreviewPanel> {
             PreviewPanel { DummyInsertAction { randomText }.also { action = it } }
         }
-        frame = Containers.showInFrame(panel.rootPane)
+        frame = Containers.showInFrame(panel.rootComponent)
 
         assertThat(frame.textBox("previewLabel").text()).isEqualTo(placeholder)
     }

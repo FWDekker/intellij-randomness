@@ -3,6 +3,7 @@ package com.fwdekker.randomness.integer
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import java.text.DecimalFormat
 
 
@@ -16,6 +17,7 @@ import java.text.DecimalFormat
  * @property capitalization The capitalization mode of the generated integer, applicable for bases higher than 10.
  * @property prefix The string to prepend to the generated value.
  * @property suffix The string to append to the generated value.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class IntegerScheme(
     var minValue: Long = DEFAULT_MIN_VALUE,
@@ -24,7 +26,8 @@ data class IntegerScheme(
     var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var prefix: String = DEFAULT_PREFIX,
-    var suffix: String = DEFAULT_SUFFIX
+    var suffix: String = DEFAULT_SUFFIX,
+    override var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme<IntegerScheme>() {
     /**
      * Returns random integers between the minimum and maximum value, inclusive.
@@ -32,7 +35,7 @@ data class IntegerScheme(
      * @param count the number of integers to generate
      * @return random integers between the minimum and maximum value, inclusive
      */
-    override fun generateStrings(count: Int): List<String> {
+    override fun generateUndecoratedStrings(count: Int): List<String> {
         doValidate()?.also { throw DataGenerationException(it) }
 
         return List(count) { prefix + longToString(randomLong(minValue, maxValue)) + suffix }

@@ -1,6 +1,5 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySettingsAction
 import com.fwdekker.randomness.template.TemplateGroupAction
 import com.fwdekker.randomness.template.TemplateSettingsAction
 import com.fwdekker.randomness.ui.registerModifierActions
@@ -8,7 +7,6 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.popup.list.ListPopupImpl
 import icons.RandomnessIcons
@@ -101,11 +99,7 @@ class PopupAction : AnAction() {
          * @param event carries information on the invocation place
          */
         override fun getChildren(event: AnActionEvent?) =
-            arrayOf(
-                TemplateGroupAction(),
-                Separator(),
-                ArraySettingsAction()
-            )
+            arrayOf(TemplateGroupAction())
     }
 
     /**
@@ -118,11 +112,7 @@ class PopupAction : AnAction() {
          * @param event carries information on the invocation place
          */
         override fun getChildren(event: AnActionEvent?) =
-            arrayOf(
-                TemplateSettingsAction(),
-                Separator(),
-                ArraySettingsAction()
-            )
+            arrayOf(TemplateSettingsAction())
     }
 
 

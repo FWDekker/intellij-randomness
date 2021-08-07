@@ -226,7 +226,7 @@ private class TemplateEditor(template: Template) : StateEditor<Template>(templat
 
         val previewPanel = PreviewPanel { TemplateInsertAction(TemplateSettings(listOf(readState()))) }
         addChangeListener { previewPanel.updatePreview() }
-        rootComponent.add(previewPanel.rootPane, BorderLayout.SOUTH)
+        rootComponent.add(previewPanel.rootComponent, BorderLayout.SOUTH)
 
         loadState()
     }

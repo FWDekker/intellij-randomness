@@ -9,26 +9,18 @@
     <idea-version since-build="0.0" />  <!-- Patched in from `gradle.properties` -->
 
     <extensions defaultExtensionNs="com.intellij">
-        <errorHandler implementation="com.fwdekker.randomness.ErrorReporter"/>
+        <errorHandler implementation="com.fwdekker.randomness.ErrorReporter" />
 
         <!-- Persistence -->
-        <applicationService serviceImplementation="com.fwdekker.randomness.array.ArraySettings" />
         <applicationService serviceImplementation="com.fwdekker.randomness.string.SymbolSetSettings" />
         <applicationService serviceImplementation="com.fwdekker.randomness.template.TemplateSettings" />
         <applicationService serviceImplementation="com.fwdekker.randomness.word.DictionarySettings" />
 
         <!-- Settings window -->
-        <applicationConfigurable instance="com.fwdekker.randomness.RandomnessConfigurable"
-                                 id="com.fwdekker.randomness.RandomnessConfigurable"
+        <applicationConfigurable instance="com.fwdekker.randomness.template.TemplateSettingsConfigurable"
+                                 id="com.fwdekker.randomness.template.TemplateSettingsConfigurable"
                                  groupId="tools"
-                                 bundle="randomness">
-            <configurable instance="com.fwdekker.randomness.array.ArraySettingsConfigurable"
-                          id="com.fwdekker.randomness.array.ArraySettingsConfigurable"
-                          parentId="com.fwdekker.randomness.RandomnessConfigurable" />
-            <configurable instance="com.fwdekker.randomness.template.TemplateSettingsConfigurable"
-                          id="com.fwdekker.randomness.template.TemplateSettingsConfigurable"
-                          parentId="com.fwdekker.randomness.RandomnessConfigurable" />
-        </applicationConfigurable>
+                                 bundle="randomness" />
     </extensions>
 
     <actions>
@@ -41,34 +33,17 @@
             <add-to-group group-id="ToolsMenu" anchor="last" />
         </action>
 
-        <!-- Arrays -->
-        <action id="randomness.ArraySettings"
-                class="com.fwdekker.randomness.array.ArraySettingsAction"
-                text="Array Settings"
-                description="Settings for inserting arrays of data."
-                icon="/icons/data-settings.svg" />
-
         <!-- Template -->
         <action id="com.fwdekker.randomness.template.TemplateInsertAction"
                 class="com.fwdekker.randomness.template.TemplateInsertAction"
                 text="Random Template"
                 description="Inserts a random template at each caret."
                 icon="/icons/data.svg" />
-        <action id="com.fwdekker.randomness.template.TemplateInsertAction$ArrayAction"
-                class="com.fwdekker.randomness.template.TemplateInsertAction$ArrayAction"
-                text="Random Template Array"
-                description="Inserts an array of random templates at each caret."
-                icon="/icons/data-array.svg" />
         <action id="com.fwdekker.randomness.template.TemplateInsertAction$RepeatAction"
                 class="com.fwdekker.randomness.template.TemplateInsertAction$RepeatAction"
                 text="Random Repeated Template"
                 description="Inserts the same random template at each caret."
                 icon="/icons/data-repeat.svg" />
-        <action id="com.fwdekker.randomness.template.TemplateInsertAction$RepeatArrayAction"
-                class="com.fwdekker.randomness.template.TemplateInsertAction$RepeatArrayAction"
-                text="Random Repeated Template Array"
-                description="Inserts the same array of random templates at each caret."
-                icon="/icons/data-repeat-array.svg" />
         <action id="com.fwdekker.randomness.template.TemplateSettingsAction"
                 class="com.fwdekker.randomness.template.TemplateSettingsAction"
                 text="Template Settings"

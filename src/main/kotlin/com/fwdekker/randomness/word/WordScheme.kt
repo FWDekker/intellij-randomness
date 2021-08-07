@@ -3,6 +3,7 @@ package com.fwdekker.randomness.word
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 
 
@@ -15,6 +16,7 @@ import com.intellij.util.xmlb.annotations.Transient
  * @property capitalization The way in which the generated word should be capitalized.
  * @property activeBundledDictionaryFiles The list of bundled dictionary files that are currently active.
  * @property activeUserDictionaryFiles The list of user dictionary files that are currently active.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class WordScheme(
     var minLength: Int = DEFAULT_MIN_LENGTH,
@@ -22,7 +24,8 @@ data class WordScheme(
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var activeBundledDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES,
-    var activeUserDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES
+    var activeUserDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES,
+    override var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme<WordScheme>() {
     /**
      * A mutable view of the filenames of the files in [activeBundledDictionaryFiles].
@@ -52,7 +55,7 @@ data class WordScheme(
      * @return random words from the dictionaries in `settings`
      * @throws InvalidDictionaryException if no words could be found using the settings in `settings`
      */
-    override fun generateStrings(count: Int): List<String> {
+    override fun generateUndecoratedStrings(count: Int): List<String> {
         doValidate()?.also { throw DataGenerationException(it) }
 
         val dictionaries = (activeBundledDictionaries + activeUserDictionaries)

@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.literal.LiteralScheme
@@ -15,6 +16,7 @@ import com.intellij.util.xmlb.annotations.XCollection
  *
  * @property name The unique name of the template.
  * @property schemes The ordered list of underlying schemes.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class Template(
     var name: String = DEFAULT_NAME,
@@ -28,9 +30,10 @@ data class Template(
             LiteralScheme::class
         ]
     )
-    var schemes: List<Scheme<*>> = DEFAULT_SCHEMES
+    var schemes: List<Scheme<*>> = DEFAULT_SCHEMES,
+    override var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator(),
 ) : Scheme<Template>() {
-    override fun generateStrings(count: Int) =
+    override fun generateUndecoratedStrings(count: Int) =
         schemes.onEach { it.random = random }.map { it.generateStrings(count) }
             .let { data -> (0 until count).map { i -> data.joinToString(separator = "") { it[i] } } }
 

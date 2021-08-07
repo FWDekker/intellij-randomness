@@ -2,6 +2,7 @@ package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import java.text.DecimalFormat
 import kotlin.math.nextUp
 
@@ -17,6 +18,7 @@ import kotlin.math.nextUp
  * @property decimalSeparator The character that should separate decimals.
  * @property prefix The string to prepend to the generated value.
  * @property suffix The string to append to the generated value.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class DecimalScheme(
     var minValue: Double = DEFAULT_MIN_VALUE,
@@ -26,7 +28,8 @@ data class DecimalScheme(
     var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
     var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR,
     var prefix: String = DEFAULT_PREFIX,
-    var suffix: String = DEFAULT_SUFFIX
+    var suffix: String = DEFAULT_SUFFIX,
+    override var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme<DecimalScheme>() {
     /**
      * Returns random decimals between the minimum and maximum value, inclusive.
@@ -34,7 +37,7 @@ data class DecimalScheme(
      * @param count the number of decimals to generate
      * @return random decimals between the minimum and maximum value, inclusive
      */
-    override fun generateStrings(count: Int): List<String> {
+    override fun generateUndecoratedStrings(count: Int): List<String> {
         if (minValue > maxValue)
             throw DataGenerationException("Minimum value is larger than maximum value.")
 

@@ -78,5 +78,5 @@ data class TemplateSettings(
 class TemplateSettingsConfigurable(
     override val component: TemplateSettingsEditor = TemplateSettingsEditor()
 ) : SettingsConfigurable<TemplateSettings>() {
-    override fun getDisplayName() = "Templates"
+    override fun getDisplayName() = "Randomness"
 }

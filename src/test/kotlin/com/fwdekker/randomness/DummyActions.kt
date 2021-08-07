@@ -1,6 +1,6 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySettings
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import icons.RandomnessIcons
 import kotlin.random.Random
 
@@ -23,13 +23,13 @@ class DummyInsertAction(private val dummySupplier: (Random) -> String) : DataIns
  *
  * Mostly for testing and demonstration purposes.
  *
- * @param arrayScheme the scheme to use for generating arrays
+ * @param arraySchemeDecorator the scheme to use for generating arrays
  * @param dummySupplier generates dummy values to insert
  */
 class DummyInsertArrayAction(
-    arrayScheme: ArraySettings = ArraySettings.default,
+    arraySchemeDecorator: ArraySchemeDecorator = ArraySchemeDecorator.default,
     dummySupplier: (Random) -> String
-) : DataInsertArrayAction(arrayScheme, DummyInsertAction(dummySupplier), RandomnessIcons.Data.Array) {
+) : DataInsertArrayAction(arraySchemeDecorator, DummyInsertAction(dummySupplier), RandomnessIcons.Data.Array) {
     override val name = "Random Dummy Array"
 }
 
@@ -50,12 +50,12 @@ class DummyInsertRepeatAction(dummySupplier: (Random) -> String) :
  *
  * Mostly for testing and demonstration purposes.
  *
- * @param arrayScheme the scheme to use for generating arrays
+ * @param arraySchemeDecorator the scheme to use for generating arrays
  * @param dummySupplier generates dummy values to insert
  */
 class DummyInsertRepeatArrayAction(
-    arrayScheme: ArraySettings = ArraySettings.default,
+    arraySchemeDecorator: ArraySchemeDecorator = ArraySchemeDecorator.default,
     dummySupplier: (Random) -> String
-) : DataInsertRepeatArrayAction(DummyInsertArrayAction(arrayScheme, dummySupplier), RandomnessIcons.Data.Repeat) {
+) : DataInsertRepeatArrayAction(DummyInsertArrayAction(arraySchemeDecorator, dummySupplier), RandomnessIcons.Data.Repeat) {
     override val name = "Random Repeat Dummy"
 }

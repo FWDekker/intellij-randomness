@@ -2,6 +2,7 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
@@ -41,6 +42,8 @@ class WordSchemeEditor(
     private lateinit var dictionarySeparator: JComponent
     private lateinit var dictionaryTable: DictionaryTable
     private lateinit var dictionaryHelp: JTextArea
+    private lateinit var arrayDecoratorPanel: JPanel
+    private lateinit var arrayDecoratorEditor: ArraySchemeDecoratorEditor
 
 
     init {
@@ -49,7 +52,6 @@ class WordSchemeEditor(
         dictionaryHelp.border = null
         dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
     }
-
 
     /**
      * Initialises custom UI components.
@@ -64,10 +66,15 @@ class WordSchemeEditor(
         minLength = JIntSpinner(1, 1, description = "minimum length")
         maxLength = JIntSpinner(1, 1, description = "maximum length")
         bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE)
+
+        dictionarySeparator = factory.createSeparator(bundle.getString("settings.dictionaries"))
         dictionaryTable = DictionaryTable()
         dictionaryPanel = dictionaryTable.panel
-        dictionarySeparator = factory.createSeparator(bundle.getString("settings.dictionaries"))
+
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator)
+        arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
+
 
     override fun loadState(state: WordScheme) {
         super.loadState(state)
@@ -79,6 +86,7 @@ class WordSchemeEditor(
         dictionaryTable.data = dictionarySettings.bundledDictionaries + dictionarySettings.userDictionaries
         dictionaryTable.activeData = state.activeBundledDictionaries + state.activeUserDictionaries
             .filter { dictionary -> dictionary in dictionaryTable.data }
+        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
@@ -86,7 +94,8 @@ class WordSchemeEditor(
             minLength = minLength.value,
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
-            capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION
+            capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
+            arrayDecorator = arrayDecoratorEditor.readState()
         ).also {
             dictionarySettings.bundledDictionaries = dictionaryTable.data
                 .filter { file -> file.isBundled }.toSet()
@@ -104,7 +113,7 @@ class WordSchemeEditor(
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            minLength, maxLength, capitalizationGroup, enclosureGroup, dictionaryTable,
+            minLength, maxLength, capitalizationGroup, enclosureGroup, dictionaryTable, arrayDecoratorEditor,
             listener = listener
         )
 }

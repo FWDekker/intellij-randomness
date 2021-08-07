@@ -1,7 +1,5 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySettings
-import com.fwdekker.randomness.array.ArraySettingsAction
 import com.intellij.codeInsight.hint.HintManager
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
@@ -41,19 +39,9 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
     abstract val insertAction: DataInsertAction
 
     /**
-     * The action used to insert arrays of data.
-     */
-    abstract val insertArrayAction: DataInsertArrayAction
-
-    /**
      * The action used to insert repeated single data.
      */
     abstract val insertRepeatAction: DataInsertRepeatAction
-
-    /**
-     * The action used to insert repeated arrays of data.
-     */
-    abstract val insertRepeatArrayAction: DataInsertRepeatArrayAction
 
     /**
      * The action used to edit the generator settings for this data type.
@@ -68,7 +56,7 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
      * @return the insert action, array insert action, and settings action
      */
     override fun getChildren(event: AnActionEvent?) =
-        arrayOf(insertArrayAction, insertRepeatAction, insertRepeatArrayAction, settingsAction)
+        arrayOf(insertRepeatAction, settingsAction)
 
     /**
      * Returns `true`.
@@ -86,15 +74,11 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
     override fun actionPerformed(event: AnActionEvent) {
         val altPressed = event.modifiers and ActionEvent.ALT_MASK != 0
         val ctrlPressed = event.modifiers and ActionEvent.CTRL_MASK != 0
-        val shiftPressed = event.modifiers and ActionEvent.SHIFT_MASK != 0
 
         // alt behavior is handled by implementation of `actionPerformed`
         when {
-            altPressed && shiftPressed -> insertRepeatArrayAction.actionPerformed(event)
-            ctrlPressed && shiftPressed -> ArraySettingsAction().actionPerformed(event)
             altPressed -> insertRepeatAction.actionPerformed(event)
             ctrlPressed -> settingsAction.actionPerformed(event)
-            shiftPressed -> insertArrayAction.actionPerformed(event)
             else -> insertAction.actionPerformed(event)
         }
     }
@@ -265,38 +249,6 @@ abstract class DataInsertAction(private val icon: Icon) : AnAction() {
 
 
 /**
- * Inserts randomly generated arrays of strings at the event's editor's carets.
- *
- * @param arrayScheme the scheme to use for generating arrays
- * @param dataInsertAction the action to generate data with
- * @param icon the icon to display with the action
- */
-abstract class DataInsertArrayAction(
-    private val arrayScheme: ArraySettings,
-    private val dataInsertAction: DataInsertAction,
-    icon: Icon = RandomnessIcons.Data.Array
-) : DataInsertAction(icon) {
-    /**
-     * Generates array-like strings of random data.
-     *
-     * @param count the number of array-like strings to generate
-     * @return array-like strings of random data
-     * @throws DataGenerationException if data could not be generated
-     */
-    @Throws(DataGenerationException::class)
-    override fun generateStrings(count: Int): List<String> {
-        if (arrayScheme.count <= 0)
-            throw DataGenerationException("Array cannot have fewer than 1 element.")
-
-        dataInsertAction.random = random
-        return dataInsertAction.generateStrings(count * arrayScheme.count)
-            .chunked(arrayScheme.count)
-            .map { arrayScheme.arrayify(it) }
-    }
-}
-
-
-/**
  * Inserts the same randomly generated string at the event's editor's carets.
  *
  * @param dataInsertAction the action to generate data with
@@ -318,29 +270,6 @@ abstract class DataInsertRepeatAction(
         dataInsertAction.random = random
         return dataInsertAction.generateString().let { string -> List(count) { string } }
     }
-}
-
-
-/**
- * Inserts the same randomly generated array of strings at the event's editor's carets.
- *
- * @param dataInsertArrayAction the action to generate data with
- * @param icon the icon to display with the action
- */
-abstract class DataInsertRepeatArrayAction(
-    private val dataInsertArrayAction: DataInsertArrayAction,
-    icon: Icon = RandomnessIcons.Data.Array
-) : DataInsertAction(icon) {
-    /**
-     * Generates a random array-like string of random data and repeats it [count] times.
-     *
-     * @param count the number of times to repeat the data
-     * @return a random array-like string of random data and repeats it [count] times
-     * @throws DataGenerationException if data could not be generated
-     */
-    @Throws(DataGenerationException::class)
-    override fun generateStrings(count: Int) =
-        dataInsertArrayAction.generateString().let { string -> List(count) { string } }
 }
 
 

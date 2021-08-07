@@ -3,6 +3,7 @@ package com.fwdekker.randomness.string
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 
 
@@ -16,6 +17,7 @@ import com.intellij.util.xmlb.annotations.Transient
  * @property capitalization The capitalization mode of the generated string.
  * @property activeSymbolSets The names of the symbol sets that are available for generating strings.
  * @property excludeLookAlikeSymbols Whether the symbols in [SymbolSet.lookAlikeCharacters] should be excluded.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class StringScheme(
     @Transient
@@ -25,7 +27,8 @@ data class StringScheme(
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var activeSymbolSets: Set<String> = DEFAULT_ACTIVE_SYMBOL_SETS,
-    var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS
+    var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS,
+    override var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme<StringScheme>() {
     private val activeSymbols: List<String>
         get() =
@@ -40,7 +43,7 @@ data class StringScheme(
      * @param count the number of strings to generate
      * @return strings of random alphanumerical characters
      */
-    override fun generateStrings(count: Int): List<String> {
+    override fun generateUndecoratedStrings(count: Int): List<String> {
         doValidate()?.also { throw DataGenerationException(it) }
 
         val symbols = activeSymbols

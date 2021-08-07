@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_DECIMAL_SEPARATOR
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.MAX_VALUE_DIFFERENCE
@@ -33,6 +34,8 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
     private lateinit var decimalSeparatorGroup: ButtonGroup
     private lateinit var prefixInput: JTextField
     private lateinit var suffixInput: JTextField
+    private lateinit var arrayDecoratorPanel: JPanel
+    private lateinit var arrayDecoratorEditor: ArraySchemeDecoratorEditor
 
 
     init {
@@ -41,7 +44,6 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
         decimalCount.addChangeListener { showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0 }
         decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
     }
-
 
     /**
      * Initialises custom UI components.
@@ -54,7 +56,11 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
         maxValue = JDoubleSpinner(description = "maximum value")
         bindSpinners(minValue, maxValue, MAX_VALUE_DIFFERENCE)
         decimalCount = JIntSpinner(0, 0, description = "decimal count")
+
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator)
+        arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
+
 
     override fun loadState(state: DecimalScheme) {
         super.loadState(state)
@@ -67,6 +73,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
         decimalSeparatorGroup.setValue(state.decimalSeparator)
         prefixInput.text = state.prefix
         suffixInput.text = state.suffix
+        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
@@ -78,14 +85,15 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
             groupingSeparator = groupingSeparatorGroup.getValue() ?: DEFAULT_GROUPING_SEPARATOR,
             decimalSeparator = decimalSeparatorGroup.getValue() ?: DEFAULT_DECIMAL_SEPARATOR,
             prefix = prefixInput.text,
-            suffix = suffixInput.text
+            suffix = suffixInput.text,
+            arrayDecorator = arrayDecoratorEditor.readState()
         )
 
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
             minValue, maxValue, decimalCount, showTrailingZeroesCheckBox, groupingSeparatorGroup, decimalSeparatorGroup,
-            prefixInput, suffixInput,
+            prefixInput, suffixInput, arrayDecoratorEditor,
             listener = listener
         )
 }

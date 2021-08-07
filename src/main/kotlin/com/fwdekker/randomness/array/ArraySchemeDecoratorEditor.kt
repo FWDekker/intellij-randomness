@@ -1,16 +1,19 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.array.ArraySettings.Companion.DEFAULT_BRACKETS
-import com.fwdekker.randomness.array.ArraySettings.Companion.DEFAULT_SEPARATOR
-import com.fwdekker.randomness.array.ArraySettings.Companion.MIN_COUNT
-import com.fwdekker.randomness.array.ArraySettings.Companion.default
+import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.DEFAULT_BRACKETS
+import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.DEFAULT_SEPARATOR
+import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.MIN_COUNT
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
+import com.fwdekker.randomness.ui.setEnabled
 import com.fwdekker.randomness.ui.setValue
+import com.jgoodies.forms.factories.DefaultComponentFactory
+import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
+import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JRadioButton
 import javax.swing.event.ChangeEvent
@@ -20,11 +23,12 @@ import javax.swing.event.ChangeEvent
  * Component for settings of random array generation.
  *
  * @param settings the settings to edit in the component
- * @see ArraySettingsAction
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class ArraySettingsEditor(settings: ArraySettings = default) : StateEditor<ArraySettings>(settings) {
+class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<ArraySchemeDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
+    private lateinit var separator: JComponent
+    private lateinit var enabledCheckBox: JCheckBox
     private lateinit var countSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
     private lateinit var separatorGroup: ButtonGroup
@@ -33,14 +37,22 @@ class ArraySettingsEditor(settings: ArraySettings = default) : StateEditor<Array
 
 
     init {
-        loadState()
+        enabledCheckBox.addChangeListener {
+            countSpinner.isEnabled = enabledCheckBox.isSelected
+            bracketsGroup.setEnabled(enabledCheckBox.isSelected)
+            separatorGroup.setEnabled(enabledCheckBox.isSelected)
+            newlineSeparatorButton.isEnabled = enabledCheckBox.isSelected
+            spaceAfterSeparatorCheckBox.isEnabled = enabledCheckBox.isSelected && !newlineSeparatorButton.isSelected
+        }
+        enabledCheckBox.changeListeners.forEach { it.stateChanged(ChangeEvent(enabledCheckBox)) }
 
         newlineSeparatorButton.addChangeListener {
-            spaceAfterSeparatorCheckBox.isEnabled = !newlineSeparatorButton.isSelected
+            spaceAfterSeparatorCheckBox.isEnabled = enabledCheckBox.isSelected && !newlineSeparatorButton.isSelected
         }
         newlineSeparatorButton.changeListeners.forEach { it.stateChanged(ChangeEvent(newlineSeparatorButton)) }
-    }
 
+        loadState()
+    }
 
     /**
      * Initialises custom UI components.
@@ -49,20 +61,27 @@ class ArraySettingsEditor(settings: ArraySettings = default) : StateEditor<Array
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        val bundle = ResourceBundle.getBundle("randomness")
+        val factory = DefaultComponentFactory.getInstance()
+
         countSpinner = JIntSpinner(value = 1, minValue = MIN_COUNT, description = "count")
+        separator = factory.createSeparator(bundle.getString("settings.array"))
     }
 
-    override fun loadState(state: ArraySettings) {
+
+    override fun loadState(state: ArraySchemeDecorator) {
         super.loadState(state)
 
+        enabledCheckBox.isSelected = state.enabled
         countSpinner.value = state.count
         bracketsGroup.setValue(state.brackets)
         separatorGroup.setValue(state.separator)
         spaceAfterSeparatorCheckBox.isSelected = state.isSpaceAfterSeparator
     }
 
-    override fun readState(): ArraySettings =
-        ArraySettings(
+    override fun readState(): ArraySchemeDecorator =
+        ArraySchemeDecorator(
+            enabled = enabledCheckBox.isSelected,
             count = countSpinner.value,
             brackets = bracketsGroup.getValue() ?: DEFAULT_BRACKETS,
             separator = separatorGroup.getValue() ?: DEFAULT_SEPARATOR,
@@ -72,7 +91,7 @@ class ArraySettingsEditor(settings: ArraySettings = default) : StateEditor<Array
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            countSpinner, bracketsGroup, separatorGroup, spaceAfterSeparatorCheckBox,
+            enabledCheckBox, countSpinner, bracketsGroup, separatorGroup, spaceAfterSeparatorCheckBox,
             listener = listener
         )
 }

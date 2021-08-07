@@ -1,5 +1,6 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.util.xmlb.XmlSerializerUtil
 import kotlin.random.Random
@@ -11,6 +12,13 @@ import kotlin.random.Random
  * @param SELF the type of state that is stored; should be a self-reference
  */
 interface State<SELF : State<SELF>> {
+    /**
+     * Validates the state, and indicates whether and why it is invalid.
+     *
+     * @return `null` if the state is valid, or a string explaining why the state is invalid
+     */
+    fun doValidate(): String? = null
+
     /**
      * Copies the fields of `state` into `this`.
      *
@@ -24,13 +32,6 @@ interface State<SELF : State<SELF>> {
      * @return a deep copy of itself
      */
     fun deepCopy(): State<SELF>
-
-    /**
-     * Validates the state, and indicates whether and why it is invalid.
-     *
-     * @return `null` if the state is valid, or a string explaining why the state is invalid
-     */
-    fun doValidate(): String? = null
 }
 
 /**
@@ -54,9 +55,16 @@ abstract class Settings<SELF : Settings<SELF>> : PersistentStateComponent<SELF>,
 /**
  * A scheme is a configurable random number generator.
  *
+ * Schemes can additionally be given [SchemeDecorator]s that extend their functionality.
+ *
  * @param SELF the type of scheme that is stored; should be a self-reference
  */
 abstract class Scheme<SELF : Scheme<SELF>> : State<SELF> {
+    /**
+     * Settings that determine whether the output should be an array of values.
+     */
+    abstract var arrayDecorator: ArraySchemeDecorator
+
     /**
      * The random number generator used to generate random values.
      */
@@ -65,17 +73,36 @@ abstract class Scheme<SELF : Scheme<SELF>> : State<SELF> {
 
 
     /**
-     * Generates random data according to the settings in this scheme.
+     * Generates random data according to the settings in this scheme, including settings from decorators.
      *
      * @param count the number of data to generate
      * @return random data
      * @throws DataGenerationException if data could not be generated
      */
     @Throws(DataGenerationException::class)
-    abstract fun generateStrings(count: Int = 1): List<String>
+    fun generateStrings(count: Int) = arrayDecorator.decorate(::generateUndecoratedStrings, count)
+
+    /**
+     * Generates random data according to the settings in this scheme, ignoring settings from decorators.
+     *
+     * @param count the number of data to generate
+     * @return random data
+     * @throws DataGenerationException if data could not be generated
+     */
+    @Throws(DataGenerationException::class)
+    abstract fun generateUndecoratedStrings(count: Int = 1): List<String>
 
 
     override fun loadState(state: SELF) = XmlSerializerUtil.copyBean(state, this)
 
     abstract override fun deepCopy(): Scheme<SELF>
+}
+
+/**
+ * Transparently extends the functionality of a [Scheme] with a decorating function.
+ *
+ * @param SELF the type of decorator; should be a self-reference
+ */
+interface SchemeDecorator<SELF : SchemeDecorator<SELF>> : State<SELF> {
+    fun decorate(generator: (Int) -> List<String>, count: Int = 1): List<String>
 }

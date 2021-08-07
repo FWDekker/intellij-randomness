@@ -7,6 +7,7 @@ import com.fasterxml.uuid.UUIDTimer
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import kotlin.random.asJavaRandom
 
 
@@ -22,7 +23,8 @@ data class UuidScheme(
     var version: Int = DEFAULT_VERSION,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var addDashes: Boolean = DEFAULT_ADD_DASHES
+    var addDashes: Boolean = DEFAULT_ADD_DASHES,
+    override var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme<UuidScheme>() {
     /**
      * Returns random type 4 UUIDs.
@@ -30,7 +32,7 @@ data class UuidScheme(
      * @param count the number of type 4 UUIDs to generate
      * @return random type 4 UUIDs
      */
-    override fun generateStrings(count: Int): List<String> {
+    override fun generateUndecoratedStrings(count: Int): List<String> {
         @Suppress("MagicNumber") // UUID version is not magic
         val generator = when (version) {
             1 ->

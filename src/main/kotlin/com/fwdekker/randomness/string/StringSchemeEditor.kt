@@ -2,6 +2,7 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.string.StringScheme.Companion.MAX_LENGTH_DIFFERENCE
@@ -41,6 +42,8 @@ class StringSchemeEditor(
     private lateinit var symbolSetSeparator: JComponent
     private lateinit var symbolSetTable: SymbolSetTable
     private lateinit var excludeLookAlikeSymbolsCheckBox: JCheckBox
+    private lateinit var arrayDecoratorPanel: JPanel
+    private lateinit var arrayDecoratorEditor: ArraySchemeDecoratorEditor
 
 
     init {
@@ -52,7 +55,6 @@ class StringSchemeEditor(
         excludeLookAlikeSymbolsCheckBox.toolTipText =
             "Excludes the following characters from all generated strings: ${SymbolSet.lookAlikeCharacters}"
     }
-
 
     /**
      * Initialises custom UI components.
@@ -67,10 +69,15 @@ class StringSchemeEditor(
         minLength = JIntSpinner(1, MIN_LENGTH, description = "minimum length")
         maxLength = JIntSpinner(1, MIN_LENGTH, description = "maximum length")
         bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE)
+
+        symbolSetSeparator = factory.createSeparator(bundle.getString("settings.symbol_sets"))
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.panel
-        symbolSetSeparator = factory.createSeparator(bundle.getString("settings.symbol_sets"))
+
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator)
+        arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
+
 
     override fun loadState(state: StringScheme) {
         super.loadState(state)
@@ -84,23 +91,26 @@ class StringSchemeEditor(
         symbolSetTable.data = symbolSetSettings.symbolSetList
         symbolSetTable.activeData =
             symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
+
+        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
-        StringScheme().also {
-            it.minLength = minLength.value
-            it.maxLength = maxLength.value
-            it.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
-            it.capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION
-            it.excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected
-
+        StringScheme(
+            minLength = minLength.value,
+            maxLength = maxLength.value,
+            enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
+            capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
+            excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
+            arrayDecorator = arrayDecoratorEditor.readState()
+        ).also {
             symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
             it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet()
         }
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            minLength, maxLength, enclosureGroup, capitalizationGroup, symbolSetTable,
+            minLength, maxLength, enclosureGroup, capitalizationGroup, symbolSetTable, arrayDecoratorEditor,
             listener = listener
         )
 }

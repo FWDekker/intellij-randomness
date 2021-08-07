@@ -26,7 +26,7 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
     /**
      * The root panel containing the preview elements.
      */
-    lateinit var rootPane: JPanel private set
+    lateinit var rootComponent: JPanel private set
     private lateinit var separator: JComponent
     private lateinit var refreshButton: JButton
     private lateinit var previewLabel: JTextArea

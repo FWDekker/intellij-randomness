@@ -2,6 +2,7 @@ package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -32,6 +33,8 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var prefixInput: JTextField
     private lateinit var suffixInput: JTextField
+    private lateinit var arrayDecoratorPanel: JPanel
+    private lateinit var arrayDecoratorEditor: ArraySchemeDecoratorEditor
 
 
     init {
@@ -43,7 +46,6 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
         }
         base.changeListeners.forEach { it.stateChanged(ChangeEvent(base)) }
     }
-
 
     /**
      * Initialises custom UI components.
@@ -60,7 +62,11 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
             IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE,
             description = "base"
         )
+
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator)
+        arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
+
 
     override fun loadState(state: IntegerScheme) {
         super.loadState(state)
@@ -72,6 +78,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
         capitalizationGroup.setValue(state.capitalization)
         prefixInput.text = state.prefix
         suffixInput.text = state.suffix
+        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
@@ -82,12 +89,14 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
             groupingSeparator = groupingSeparatorGroup.getValue() ?: DEFAULT_GROUPING_SEPARATOR,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             prefix = prefixInput.text,
-            suffix = suffixInput.text
+            suffix = suffixInput.text,
+            arrayDecorator = arrayDecoratorEditor.readState()
         )
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
             minValue, maxValue, base, groupingSeparatorGroup, capitalizationGroup, prefixInput, suffixInput,
+            arrayDecoratorEditor,
             listener = listener
         )
 }
