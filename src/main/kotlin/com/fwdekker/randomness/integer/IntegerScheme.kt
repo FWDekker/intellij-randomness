@@ -17,7 +17,7 @@ import java.text.DecimalFormat
  * @property capitalization The capitalization mode of the generated integer, applicable for bases higher than 10.
  * @property prefix The string to prepend to the generated value.
  * @property suffix The string to append to the generated value.
- * @property arrayDecorator Settings that determine whether the output should be an array of values.
+ * @property decorator Settings that determine whether the output should be an array of values.
  */
 data class IntegerScheme(
     var minValue: Long = DEFAULT_MIN_VALUE,
@@ -27,8 +27,8 @@ data class IntegerScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX,
-    override var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
-) : Scheme<IntegerScheme>() {
+    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+) : Scheme() {
     /**
      * Returns random integers between the minimum and maximum value, inclusive.
      *

@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.addChangeListenerTo
@@ -11,6 +11,7 @@ import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.word.WordScheme.Companion.MAX_LENGTH_DIFFERENCE
+import com.fwdekker.randomness.word.WordScheme.Companion.MIN_LENGTH
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.UIUtil
 import com.jgoodies.forms.factories.DefaultComponentFactory
@@ -32,7 +33,7 @@ import javax.swing.JTextArea
 class WordSchemeEditor(
     scheme: WordScheme = WordScheme(),
     private val dictionarySettings: DictionarySettings = DictionarySettings.default
-) : StateEditor<WordScheme>(scheme) {
+) : SchemeEditor<WordScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -63,15 +64,15 @@ class WordSchemeEditor(
         val bundle = ResourceBundle.getBundle("randomness")
         val factory = DefaultComponentFactory.getInstance()
 
-        minLength = JIntSpinner(1, 1, description = "minimum length")
-        maxLength = JIntSpinner(1, 1, description = "maximum length")
+        minLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
+        maxLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE)
 
         dictionarySeparator = factory.createSeparator(bundle.getString("settings.dictionaries"))
         dictionaryTable = DictionaryTable()
         dictionaryPanel = dictionaryTable.panel
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
@@ -86,7 +87,7 @@ class WordSchemeEditor(
         dictionaryTable.data = dictionarySettings.bundledDictionaries + dictionarySettings.userDictionaries
         dictionaryTable.activeData = state.activeBundledDictionaries + state.activeUserDictionaries
             .filter { dictionary -> dictionary in dictionaryTable.data }
-        arrayDecoratorEditor.loadState(state.arrayDecorator)
+        arrayDecoratorEditor.loadState(state.decorator)
     }
 
     override fun readState() =
@@ -95,7 +96,7 @@ class WordSchemeEditor(
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
-            arrayDecorator = arrayDecoratorEditor.readState()
+            decorator = arrayDecoratorEditor.readState()
         ).also {
             dictionarySettings.bundledDictionaries = dictionaryTable.data
                 .filter { file -> file.isBundled }.toSet()

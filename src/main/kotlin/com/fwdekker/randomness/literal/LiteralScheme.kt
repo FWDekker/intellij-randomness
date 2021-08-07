@@ -8,12 +8,12 @@ import com.fwdekker.randomness.array.ArraySchemeDecorator
  * Contains settings for generating non-random literals.
  *
  * @property literal The literal string.
- * @property arrayDecorator Settings that determine whether the output should be an array of values.
+ * @property decorator Settings that determine whether the output should be an array of values.
  */
 data class LiteralScheme(
     var literal: String = DEFAULT_LITERAL,
-    override var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
-) : Scheme<LiteralScheme>() {
+    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+) : Scheme() {
     /**
      * Returns a list containing the given number of copies of the literal.
      *

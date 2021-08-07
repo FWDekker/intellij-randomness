@@ -17,7 +17,7 @@ import com.intellij.util.xmlb.annotations.Transient
  * @property capitalization The capitalization mode of the generated string.
  * @property activeSymbolSets The names of the symbol sets that are available for generating strings.
  * @property excludeLookAlikeSymbols Whether the symbols in [SymbolSet.lookAlikeCharacters] should be excluded.
- * @property arrayDecorator Settings that determine whether the output should be an array of values.
+ * @property decorator Settings that determine whether the output should be an array of values.
  */
 data class StringScheme(
     @Transient
@@ -28,8 +28,8 @@ data class StringScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var activeSymbolSets: Set<String> = DEFAULT_ACTIVE_SYMBOL_SETS,
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS,
-    override var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
-) : Scheme<StringScheme>() {
+    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+) : Scheme() {
     private val activeSymbols: List<String>
         get() =
             symbolSetSettings.symbolSetList

@@ -1,9 +1,10 @@
 package com.fwdekker.randomness.word
 
-import com.fwdekker.randomness.Settings
+import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
+import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.Transient
 
@@ -23,7 +24,7 @@ data class DictionarySettings(
     var bundledDictionaryFiles: MutableSet<String> = DEFAULT_BUNDLED_DICTIONARY_FILES,
     @MapAnnotation(sortBeforeSave = false)
     var userDictionaryFiles: MutableSet<String> = DEFAULT_USER_DICTIONARY_FILES
-) : Settings<DictionarySettings>() {
+) : PersistentStateComponent<DictionarySettings> {
     /**
      * A mutable view of the filenames of the files in [bundledDictionaryFiles].
      */
@@ -47,11 +48,7 @@ data class DictionarySettings(
 
     override fun getState() = this
 
-    override fun deepCopy() =
-        copy().also {
-            it.bundledDictionaryFiles = bundledDictionaryFiles.toMutableSet()
-            it.userDictionaryFiles = userDictionaryFiles.toMutableSet()
-        }
+    override fun loadState(state: DictionarySettings) = XmlSerializerUtil.copyBean(state, this)
 
 
     /**

@@ -1,22 +1,17 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsConfigurable
-import com.fwdekker.randomness.integer.IntegerScheme
-import com.fwdekker.randomness.literal.LiteralScheme
-import com.fwdekker.randomness.string.StringScheme
+import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
-import com.intellij.util.xmlb.annotations.MapAnnotation
 
 
 /**
  * The user-configurable persistent collection of schemes applicable to generating arbitrary strings using template
  * syntax.
  *
- * @property templates The templates defined by the user.
- * @property placeholder A placeholder value used to trick the serializer into working.
+ * @property templateList The list of templates to be stored persistently.
  * @see TemplateSettingsAction
  * @see TemplateSettingsConfigurable
  */
@@ -24,48 +19,19 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
     name = "com.fwdekker.randomness.template.TemplateSettings",
     storages = [Storage("\$APP_CONFIG\$/randomness.xml")]
 )
-data class TemplateSettings(
-    @MapAnnotation(sortBeforeSave = false)
-    var templates: List<Template> = DEFAULT_TEMPLATES,
-    @Suppress("unused") // At least two fields are required for serialization to work
-    private val placeholder: String = ""
-) : Settings<TemplateSettings>() {
-    override fun getState() = this
-
-    override fun deepCopy() =
-        copy().also { copy ->
-            copy.templates = templates.map { it.deepCopy() }
-        }
+class TemplateSettings : PersistentStateComponent<TemplateList> {
+    private val templateList: TemplateList = TemplateList()
 
 
-    override fun doValidate(): String? {
-        val duplicate =
-            templates.firstOrNull { templates.indexOf(it) != templates.lastIndexOf(it) }?.name
-        val invalid =
-            templates.firstNotNullOfOrNull { template -> template.doValidate()?.let { "${template.name} > $it" } }
+    override fun getState() = templateList
 
-        return when {
-            templates.isEmpty() -> "Configure at least one template."
-            duplicate != null -> "There are multiple templates with the name '$duplicate'."
-            invalid != null -> invalid
-            else -> null
-        }
-    }
+    override fun loadState(state: TemplateList) = templateList.loadState(state)
 
 
     /**
      * Holds constants.
      */
     companion object {
-        /**
-         * The default value of the [templates][templates] field.
-         */
-        val DEFAULT_TEMPLATES: List<Template>
-            get() = listOf(
-                Template("The Integer", listOf(IntegerScheme())),
-                Template("My String", listOf(LiteralScheme("start"), StringScheme(), LiteralScheme("end")))
-            )
-
         /**
          * The persistent `TemplateSettings` instance.
          */
@@ -74,13 +40,14 @@ data class TemplateSettings(
     }
 }
 
+
 /**
  * The configurable for template settings.
  *
  * @see TemplateSettingsAction
  */
 class TemplateSettingsConfigurable(
-    override val component: TemplateSettingsEditor = TemplateSettingsEditor()
-) : SettingsConfigurable<TemplateSettings>() {
+    override val component: TemplateListEditor = TemplateListEditor()
+) : SettingsConfigurable() {
     override fun getDisplayName() = "Randomness"
 }

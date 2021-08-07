@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.beans.PropertyChangeEvent
@@ -30,7 +30,7 @@ fun addChangeListenerTo(vararg components: Any?, listener: () -> Unit) {
             is JRadioButton -> component.addItemListener { listener() }
             is JSpinner -> component.addChangeListener { listener() }
             is JTextField -> component.addChangeListener { listener() }
-            is StateEditor<*> -> component.addChangeListener { listener() }
+            is SchemeEditor<*> -> component.addChangeListener { listener() }
             else -> throw IllegalArgumentException("Unknown component type '${component?.javaClass?.canonicalName}'.")
         }
     }

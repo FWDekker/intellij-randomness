@@ -18,7 +18,7 @@ import kotlin.math.nextUp
  * @property decimalSeparator The character that should separate decimals.
  * @property prefix The string to prepend to the generated value.
  * @property suffix The string to append to the generated value.
- * @property arrayDecorator Settings that determine whether the output should be an array of values.
+ * @property decorator Settings that determine whether the output should be an array of values.
  */
 data class DecimalScheme(
     var minValue: Double = DEFAULT_MIN_VALUE,
@@ -29,8 +29,8 @@ data class DecimalScheme(
     var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR,
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX,
-    override var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
-) : Scheme<DecimalScheme>() {
+    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+) : Scheme() {
     /**
      * Returns random decimals between the minimum and maximum value, inclusive.
      *
@@ -70,6 +70,7 @@ data class DecimalScheme(
         when {
             minValue > maxValue -> "Minimum value should not be larger than maximum value."
             maxValue - minValue > MAX_VALUE_DIFFERENCE -> "Value range should not exceed $MAX_VALUE_DIFFERENCE."
+            decimalCount < MIN_DECIMAL_COUNT -> "Decimal count should be at least $MIN_DECIMAL_COUNT."
             else -> null
         }
 
@@ -95,6 +96,11 @@ data class DecimalScheme(
          * The default value of the [maxValue][maxValue] field.
          */
         const val DEFAULT_MAX_VALUE = 1_000.0
+
+        /**
+         * The minimum valid value for the [decimalCount] field.
+         */
+        const val MIN_DECIMAL_COUNT = 0
 
         /**
          * The default value of the [decimalCount][decimalCount] field.

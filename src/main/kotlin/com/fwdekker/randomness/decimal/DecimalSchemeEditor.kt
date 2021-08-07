@@ -1,10 +1,11 @@
 package com.fwdekker.randomness.decimal
 
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_DECIMAL_SEPARATOR
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.MAX_VALUE_DIFFERENCE
+import com.fwdekker.randomness.decimal.DecimalScheme.Companion.MIN_DECIMAL_COUNT
 import com.fwdekker.randomness.ui.JDoubleSpinner
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.addChangeListenerTo
@@ -24,7 +25,7 @@ import javax.swing.event.ChangeEvent
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor<DecimalScheme>(scheme) {
+class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : SchemeEditor<DecimalScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var minValue: JDoubleSpinner
     private lateinit var maxValue: JDoubleSpinner
@@ -52,12 +53,12 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        minValue = JDoubleSpinner(description = "minimum value")
-        maxValue = JDoubleSpinner(description = "maximum value")
+        minValue = JDoubleSpinner()
+        maxValue = JDoubleSpinner()
         bindSpinners(minValue, maxValue, MAX_VALUE_DIFFERENCE)
-        decimalCount = JIntSpinner(0, 0, description = "decimal count")
+        decimalCount = JIntSpinner(value = MIN_DECIMAL_COUNT, minValue = MIN_DECIMAL_COUNT)
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
@@ -73,7 +74,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
         decimalSeparatorGroup.setValue(state.decimalSeparator)
         prefixInput.text = state.prefix
         suffixInput.text = state.suffix
-        arrayDecoratorEditor.loadState(state.arrayDecorator)
+        arrayDecoratorEditor.loadState(state.decorator)
     }
 
     override fun readState() =
@@ -86,7 +87,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
             decimalSeparator = decimalSeparatorGroup.getValue() ?: DEFAULT_DECIMAL_SEPARATOR,
             prefix = prefixInput.text,
             suffix = suffixInput.text,
-            arrayDecorator = arrayDecoratorEditor.readState()
+            decorator = arrayDecoratorEditor.readState()
         )
 
 

@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.SchemeDecorator
-import com.intellij.util.xmlb.XmlSerializerUtil
 
 
 /**
@@ -19,8 +18,11 @@ data class ArraySchemeDecorator(
     var brackets: String = DEFAULT_BRACKETS,
     var separator: String = DEFAULT_SEPARATOR,
     var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR
-) : SchemeDecorator<ArraySchemeDecorator> {
-    override fun decorate(generator: (Int) -> List<String>, count: Int): List<String> =
+) : SchemeDecorator() {
+    override val decorator: Nothing? = null
+
+
+    override fun generateUndecoratedStrings(count: Int): List<String> =
         if (!enabled)
             generator(count)
         else
@@ -37,8 +39,6 @@ data class ArraySchemeDecorator(
     override fun doValidate() =
         if (count < MIN_COUNT) "Minimum count should be at least $MIN_COUNT, but is $count."
         else null
-
-    override fun loadState(state: ArraySchemeDecorator) = XmlSerializerUtil.copyBean(state, this)
 
     override fun deepCopy() = copy()
 

@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_ENCLOSURE
@@ -32,7 +32,7 @@ import javax.swing.JPanel
 class StringSchemeEditor(
     scheme: StringScheme = StringScheme(),
     private val symbolSetSettings: SymbolSetSettings = SymbolSetSettings.default
-) : StateEditor<StringScheme>(scheme) {
+) : SchemeEditor<StringScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -66,15 +66,15 @@ class StringSchemeEditor(
         val bundle = ResourceBundle.getBundle("randomness")
         val factory = DefaultComponentFactory.getInstance()
 
-        minLength = JIntSpinner(1, MIN_LENGTH, description = "minimum length")
-        maxLength = JIntSpinner(1, MIN_LENGTH, description = "maximum length")
+        minLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
+        maxLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE)
 
         symbolSetSeparator = factory.createSeparator(bundle.getString("settings.symbol_sets"))
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.panel
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
@@ -92,7 +92,7 @@ class StringSchemeEditor(
         symbolSetTable.activeData =
             symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
 
-        arrayDecoratorEditor.loadState(state.arrayDecorator)
+        arrayDecoratorEditor.loadState(state.decorator)
     }
 
     override fun readState() =
@@ -102,7 +102,7 @@ class StringSchemeEditor(
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
-            arrayDecorator = arrayDecoratorEditor.readState()
+            decorator = arrayDecoratorEditor.readState()
         ).also {
             symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
             it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet()

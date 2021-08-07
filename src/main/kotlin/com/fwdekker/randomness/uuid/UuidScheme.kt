@@ -18,14 +18,15 @@ import kotlin.random.asJavaRandom
  * @property enclosure The string that encloses the generated UUID on both sides.
  * @property capitalization The capitalization mode of the generated UUID.
  * @property addDashes True if and only if the UUID should have dashes in it.
+ * @property decorator Settings that determine whether the output should be an array of values.
  */
 data class UuidScheme(
     var version: Int = DEFAULT_VERSION,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
-    override var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
-) : Scheme<UuidScheme>() {
+    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+) : Scheme() {
     /**
      * Returns random type 4 UUIDs.
      *

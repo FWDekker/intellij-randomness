@@ -4,7 +4,7 @@ import javax.swing.JPanel
 
 
 /**
- * A component that can be used to edit a [State].
+ * A component that can be used to edit a [Scheme].
  *
  * The editor's state is initially read from [originalState]. Changes in the editor are written into [originalState]
  * when they are applied using [applyState].
@@ -12,7 +12,7 @@ import javax.swing.JPanel
  * @param S the type of state that is edited; should be a self-reference
  * @property originalState the state object to write changes into
  */
-abstract class StateEditor<S : State<S>>(val originalState: S) {
+abstract class SchemeEditor<S : Scheme>(val originalState: S) {
     /**
      * The root component of the editor.
      */

@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.decimal.DecimalSchemeEditor
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -47,13 +47,13 @@ import javax.swing.ListSelectionModel
  *
  * @param templates the settings to edit
  */
-class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEditor<TemplateSettings>(templates) {
+class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor<TemplateList>(templates) {
     override val rootComponent = JPanel(BorderLayout())
     private val templateList: JBList<Template>
     private val templateListModel = DefaultListModel<Template>()
     private var templateEditor: TemplateEditor? = null
 
-    private val unsavedState = TemplateSettings(listOf())
+    private val unsavedState = TemplateList(listOf())
     private val changeListeners = mutableListOf<() -> Unit>()
 
 
@@ -130,7 +130,7 @@ class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEdito
             .createPanel()
 
 
-    override fun loadState(state: TemplateSettings) {
+    override fun loadState(state: TemplateList) {
         super.loadState(state)
         unsavedState.loadState(state.deepCopy())
 
@@ -178,15 +178,15 @@ class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEdito
  * Component for editing an individual [Template].
  *
  * @param template
- * @see TemplateSettingsEditor
+ * @see TemplateListEditor
  */
-private class TemplateEditor(template: Template) : StateEditor<Template>(template) {
+private class TemplateEditor(template: Template) : SchemeEditor<Template>(template) {
     override val rootComponent = JPanel(BorderLayout())
     private val nameInput: JTextField
-    private val schemeList: JList<Scheme<*>>
-    private val schemeListModel = DefaultListModel<Scheme<*>>()
+    private val schemeList: JList<Scheme>
+    private val schemeListModel = DefaultListModel<Scheme>()
     private val schemeEditorPanel: JPanel
-    private var schemeEditor: StateEditor<*>? = null
+    private var schemeEditor: SchemeEditor<*>? = null
 
     private val changeListeners = mutableListOf<() -> Unit>()
 
@@ -232,7 +232,7 @@ private class TemplateEditor(template: Template) : StateEditor<Template>(templat
         }
         splitter.secondComponent = schemeEditorPanel
 
-        val previewPanel = PreviewPanel { TemplateInsertAction(TemplateSettings(listOf(readState()))) }
+        val previewPanel = PreviewPanel { TemplateList(listOf(readState())) }
         addChangeListener { previewPanel.updatePreview() }
         rootComponent.add(previewPanel.rootComponent, BorderLayout.SOUTH)
 
@@ -245,7 +245,7 @@ private class TemplateEditor(template: Template) : StateEditor<Template>(templat
      * @param schemeList the list to decorate
      * @return a panel containing both the decorator and the given list
      */
-    private fun decorateSchemeList(schemeList: JBList<Scheme<*>>) =
+    private fun decorateSchemeList(schemeList: JBList<Scheme>) =
         ToolbarDecorator
             .createDecorator(schemeList)
             .setToolbarPosition(ActionToolbarPosition.TOP)
@@ -282,7 +282,7 @@ private class TemplateEditor(template: Template) : StateEditor<Template>(templat
      *
      * @param scheme the scheme to create an editor for
      */
-    private fun getSchemeEditor(scheme: Scheme<*>): StateEditor<*> {
+    private fun getSchemeEditor(scheme: Scheme): SchemeEditor<*> {
         return when (scheme) {
             is IntegerScheme -> IntegerSchemeEditor(scheme)
             is DecimalScheme -> DecimalSchemeEditor(scheme)

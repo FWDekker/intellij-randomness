@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.DEFAULT_BRACKETS
 import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.DEFAULT_SEPARATOR
 import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.MIN_COUNT
@@ -25,7 +25,7 @@ import javax.swing.event.ChangeEvent
  * @param settings the settings to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<ArraySchemeDecorator>(settings) {
+class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : SchemeEditor<ArraySchemeDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var separator: JComponent
     private lateinit var enabledCheckBox: JCheckBox
@@ -64,7 +64,7 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<A
         val bundle = ResourceBundle.getBundle("randomness")
         val factory = DefaultComponentFactory.getInstance()
 
-        countSpinner = JIntSpinner(value = 1, minValue = MIN_COUNT, description = "count")
+        countSpinner = JIntSpinner(value = MIN_COUNT, minValue = MIN_COUNT)
         separator = factory.createSeparator(bundle.getString("settings.array"))
     }
 

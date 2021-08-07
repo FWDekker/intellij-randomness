@@ -6,17 +6,15 @@ import javax.swing.JComponent
 
 
 /**
- * A configurable to change settings of type [S].
+ * A configurable to change settings of some type.
  *
  * Allows the settings to be displayed in IntelliJ's settings window.
- *
- * @param S the type of settings the configurable changes.
  */
-abstract class SettingsConfigurable<S : Settings<S>> : Configurable {
+abstract class SettingsConfigurable : Configurable {
     /**
      * The user interface for changing the settings, displayed in IntelliJ's settings window.
      */
-    protected abstract val component: StateEditor<S>
+    protected abstract val component: SchemeEditor<*>
 
 
     /**

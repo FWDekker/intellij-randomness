@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.literal
 
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import javax.swing.JPanel
@@ -13,7 +13,7 @@ import javax.swing.JTextField
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor<LiteralScheme>(scheme) {
+class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : SchemeEditor<LiteralScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var literalInput: JTextField
     private lateinit var arrayDecoratorPanel: JPanel
@@ -31,7 +31,7 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
@@ -40,12 +40,12 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor
         super.loadState(state)
 
         literalInput.text = state.literal
-        arrayDecoratorEditor.loadState(state.arrayDecorator)
+        arrayDecoratorEditor.loadState(state.decorator)
     }
 
     override fun readState() = LiteralScheme(
         literal = literalInput.text,
-        arrayDecorator = arrayDecoratorEditor.readState()
+        decorator = arrayDecoratorEditor.readState()
     )
 
 

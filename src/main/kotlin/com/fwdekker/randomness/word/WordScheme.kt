@@ -16,7 +16,7 @@ import com.intellij.util.xmlb.annotations.Transient
  * @property capitalization The way in which the generated word should be capitalized.
  * @property activeBundledDictionaryFiles The list of bundled dictionary files that are currently active.
  * @property activeUserDictionaryFiles The list of user dictionary files that are currently active.
- * @property arrayDecorator Settings that determine whether the output should be an array of values.
+ * @property decorator Settings that determine whether the output should be an array of values.
  */
 data class WordScheme(
     var minLength: Int = DEFAULT_MIN_LENGTH,
@@ -25,8 +25,8 @@ data class WordScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var activeBundledDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES,
     var activeUserDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES,
-    override var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
-) : Scheme<WordScheme>() {
+    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+) : Scheme() {
     /**
      * A mutable view of the filenames of the files in [activeBundledDictionaryFiles].
      */

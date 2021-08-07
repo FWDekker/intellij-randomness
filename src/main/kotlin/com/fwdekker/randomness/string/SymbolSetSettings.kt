@@ -1,9 +1,10 @@
 package com.fwdekker.randomness.string
 
-import com.fwdekker.randomness.Settings
+import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
+import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.Transient
 import com.vdurmont.emoji.EmojiParser
@@ -26,7 +27,7 @@ data class SymbolSetSettings(
     var serializedSymbolSets: Map<String, String> = DEFAULT_SYMBOL_SETS,
     @Suppress("unused") // At least two fields are required for serialization to work
     private val placeholder: String = ""
-) : Settings<SymbolSetSettings>() {
+) : PersistentStateComponent<SymbolSetSettings> {
     /**
      * Same as [symbolSets], except that serialized emoji have been deserialized.
      */
@@ -50,10 +51,7 @@ data class SymbolSetSettings(
 
     override fun getState() = this
 
-    override fun deepCopy() =
-        copy().also { copy ->
-            copy.symbolSetList = symbolSetList.map { it.copy() }
-        }
+    override fun loadState(state: SymbolSetSettings) = XmlSerializerUtil.copyBean(state, this)
 
 
     /**
