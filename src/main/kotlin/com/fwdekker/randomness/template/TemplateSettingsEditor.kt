@@ -66,7 +66,9 @@ class TemplateSettingsEditor(templates: TemplateSettings = default) : StateEdito
         templateList.setCellRenderer { _, entry, _, _, _ ->
             JBLabel(entry.name.ifBlank { "<empty>" })
                 .also { label ->
-                    if (originalState.templates.firstOrNull { it.name == entry.name } != entry)
+                    if (entry.doValidate() != null)
+                        label.foreground = ERROR_COLOR
+                    else if (originalState.templates.firstOrNull { it.name == entry.name } != entry)
                         label.foreground = MODIFIED_COLOR
                 }
         }
@@ -201,7 +203,13 @@ private class TemplateEditor(template: Template) : StateEditor<Template>(templat
 
         schemeList = JBList(schemeListModel)
         schemeList.selectionMode = ListSelectionModel.SINGLE_SELECTION
-        schemeList.setCellRenderer { _, value, _, _, _ -> JBLabel(value::class.simpleName ?: "Unnamed scheme") }
+        schemeList.setCellRenderer { _, entry, _, _, _ ->
+            JBLabel(entry::class.simpleName ?: "Unnamed scheme")
+                .also { label ->
+                    if (entry.doValidate() != null)
+                        label.foreground = ERROR_COLOR
+                }
+        }
         splitter.firstComponent = JBScrollPane(decorateSchemeList(schemeList))
 
         schemeEditorPanel = JPanel(BorderLayout())
@@ -373,4 +381,4 @@ private class DefaultActionGroupBuilder<T>(
 
 
 private val MODIFIED_COLOR = JBColor.namedColor("Tree.modifiedItemForeground", JBColor.BLUE)
-// private val ERROR_COLOR = JBColor.namedColor("Tree.errorForeground", JBColor.RED)
+private val ERROR_COLOR = JBColor.namedColor("Tree.errorForeground", JBColor.RED)

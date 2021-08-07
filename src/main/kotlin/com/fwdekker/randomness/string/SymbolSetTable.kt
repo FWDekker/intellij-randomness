@@ -108,11 +108,3 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
         private fun createElement() = EditableSymbolSet(DEFAULT_STATE, SymbolSet("", ""))
     }
 }
-
-
-/**
- * Returns the first string that occurs multiple times, or `null` if there is no such string.
- *
- * @return the first string that occurs multiple times, or `null` if there is no such string
- */
-private fun List<String>.firstNonDistinctOrNull() = firstOrNull { indexOf(it) != lastIndexOf(it) }

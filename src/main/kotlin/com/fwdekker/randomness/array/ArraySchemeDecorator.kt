@@ -35,10 +35,8 @@ data class ArraySchemeDecorator(
 
 
     override fun doValidate() =
-        when {
-            count < MIN_COUNT -> "Minimum count should be at least $MIN_COUNT, but is $count."
-            else -> null
-        }
+        if (count < MIN_COUNT) "Minimum count should be at least $MIN_COUNT, but is $count."
+        else null
 
     override fun loadState(state: ArraySchemeDecorator) = XmlSerializerUtil.copyBean(state, this)
 

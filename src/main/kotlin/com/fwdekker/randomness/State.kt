@@ -78,6 +78,7 @@ abstract class Scheme<SELF : Scheme<SELF>> : State<SELF> {
      * @param count the number of data to generate
      * @return random data
      * @throws DataGenerationException if data could not be generated
+     * @see SchemeDecorator.decorate
      */
     @Throws(DataGenerationException::class)
     fun generateStrings(count: Int) = arrayDecorator.decorate(::generateUndecoratedStrings, count)
@@ -104,5 +105,14 @@ abstract class Scheme<SELF : Scheme<SELF>> : State<SELF> {
  * @param SELF the type of decorator; should be a self-reference
  */
 interface SchemeDecorator<SELF : SchemeDecorator<SELF>> : State<SELF> {
+    /**
+     * Decorates the given string generator function according to this scheme decorator's behavior.
+     *
+     * @param generator the string generator to decorate; this is usually a reference to
+     * [Scheme.generateUndecoratedStrings]
+     * @param count the number of decorated strings to generate
+     * @return decorated strings
+     * @see Scheme.generateStrings
+     */
     fun decorate(generator: (Int) -> List<String>, count: Int = 1): List<String>
 }

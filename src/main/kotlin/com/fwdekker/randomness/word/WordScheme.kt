@@ -58,9 +58,8 @@ data class WordScheme(
     override fun generateUndecoratedStrings(count: Int): List<String> {
         doValidate()?.also { throw DataGenerationException(it) }
 
-        val dictionaries = (activeBundledDictionaries + activeUserDictionaries)
         val words =
-            dictionaries
+            (activeBundledDictionaries + activeUserDictionaries)
                 .flatMap { it.words }
                 .filter { it.length in minLength..maxLength }
                 .toSet()
@@ -89,11 +88,11 @@ data class WordScheme(
 
         return when {
             minLength < MIN_LENGTH ->
-                "Minimum length should not be smaller than ${MIN_LENGTH}."
+                "Minimum length should not be smaller than $MIN_LENGTH."
             minLength > maxLength ->
                 "Minimum length should not be larger than maximum length."
             maxLength - minLength > MAX_LENGTH_DIFFERENCE ->
-                "Value range should not exceed ${MAX_LENGTH_DIFFERENCE}."
+                "Value range should not exceed $MAX_LENGTH_DIFFERENCE."
             (activeBundledDictionaryFiles + activeUserDictionaryFiles).isEmpty() ->
                 "Activate at least one dictionary."
             minLength > maxWordLength ->
