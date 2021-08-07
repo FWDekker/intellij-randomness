@@ -6,13 +6,13 @@ import javax.swing.JPanel
 /**
  * A component that can be used to edit a [Scheme].
  *
- * The editor's state is initially read from [originalState]. Changes in the editor are written into [originalState]
- * when they are applied using [applyState].
+ * The editor's scheme is initially read from [originalScheme]. Changes in the editor are written into [originalScheme]
+ * when they are applied using [applyScheme].
  *
- * @param S the type of state that is edited; should be a self-reference
- * @property originalState the state object to write changes into
+ * @param S the type of scheme that is edited; should be a self-reference
+ * @property originalScheme the scheme object to write changes into
  */
-abstract class SchemeEditor<S : Scheme>(val originalState: S) {
+abstract class SchemeEditor<S : Scheme>(val originalScheme: S) {
     /**
      * The root component of the editor.
      */
@@ -20,56 +20,56 @@ abstract class SchemeEditor<S : Scheme>(val originalState: S) {
 
 
     /**
-     * Loads the given state into the editor and into [originalState].
+     * Loads the given scheme into the editor and into [originalScheme].
      *
-     * @param state the state to load
+     * @param scheme the scheme to load
      */
-    open fun loadState(state: S = originalState) {
-        originalState.loadState(state)
+    open fun loadScheme(scheme: S = originalScheme) {
+        originalScheme.copyFrom(scheme)
     }
 
     /**
-     * Returns the editor's current state, including potentially unsaved changes.
+     * Returns the editor's current scheme, including potentially unsaved changes.
      *
-     * @return the editor's current state, including potentially unsaved changes
+     * @return the editor's current scheme, including potentially unsaved changes
      */
-    abstract fun readState(): S
+    abstract fun readScheme(): S
 
     /**
-     * Saves the editor's state into [originalState].
+     * Saves the editor's scheme into [originalScheme].
      *
      * Does nothing if and only if [isModified] returns false.
      */
-    fun applyState() = originalState.loadState(readState())
+    fun applyScheme() = originalScheme.copyFrom(readScheme())
 
 
     /**
-     * Returns true if and only if the editor contains modifications relative to the last saved state.
+     * Returns true if and only if the editor contains modifications relative to the last saved scheme.
      *
      * Override this method if the default equals method of [S] is not sufficient to detect changes.
      */
-    open fun isModified() = originalState != readState()
+    open fun isModified() = originalScheme != readScheme()
 
     /**
-     * Resets the editor's state to the last saved state.
+     * Resets the editor's scheme to the last saved scheme.
      *
      * Does nothing if and only if [isModified] return false.
      */
-    fun reset() = loadState(originalState)
+    fun reset() = loadScheme(originalScheme)
 
     /**
-     * Validates the state of the editor, i.e. of [readState], and indicates whether and why it is invalid.
+     * Validates the scheme of the editor, i.e. of [readScheme], and indicates whether and why it is invalid.
      *
-     * @return `null` if the state is valid, or a string explaining why the state is invalid
+     * @return `null` if the scheme is valid, or a string explaining why the scheme is invalid
      */
-    open fun doValidate(): String? = readState().doValidate()
+    open fun doValidate(): String? = readScheme().doValidate()
 
 
     /**
-     * Adds a listener that is invoked whenever the editor's state is modified.
+     * Adds a listener that is invoked whenever the editor's scheme is modified.
      *
-     * The editor's state is defined by [readState], such that this method is triggered when a change occurs such that
-     * [readState] returns a value that is non-equal to the value before the change was made.
+     * The editor's scheme is defined by [readScheme], such that this method is triggered when a change occurs such that
+     * [readScheme] returns a value that is non-equal to the value before the change was made.
      *
      * @param listener the listener that is invoked
      */

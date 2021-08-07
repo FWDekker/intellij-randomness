@@ -42,7 +42,7 @@ abstract class SettingsConfigurable : Configurable {
         if (validationInfo != null)
             throw ConfigurationException(validationInfo, "Failed to save settings")
 
-        component.applyState()
+        component.applyScheme()
     }
 
     /**

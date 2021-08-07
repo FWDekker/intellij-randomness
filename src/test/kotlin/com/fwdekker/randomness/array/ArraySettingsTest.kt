@@ -33,7 +33,7 @@ object ArraySettingsTest : Spek({
             arraySchemeDecorator.currentScheme.isSpaceAfterSeparator = false
 
             val newArraySchemeDecorator = ArraySchemeDecorator()
-            newArraySchemeDecorator.loadState(arraySchemeDecorator.state)
+            newArraySchemeDecorator.copyFrom(arraySchemeDecorator.state)
 
             assertThat(newArraySchemeDecorator.currentScheme.count).isEqualTo(997)
             assertThat(newArraySchemeDecorator.currentScheme.brackets).isEqualTo("0fWx<i6jTJ")

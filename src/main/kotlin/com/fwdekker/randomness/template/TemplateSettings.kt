@@ -25,7 +25,7 @@ class TemplateSettings : PersistentStateComponent<TemplateList> {
 
     override fun getState() = templateList
 
-    override fun loadState(state: TemplateList) = templateList.loadState(state)
+    override fun loadState(state: TemplateList) = templateList.copyFrom(state)
 
 
     /**

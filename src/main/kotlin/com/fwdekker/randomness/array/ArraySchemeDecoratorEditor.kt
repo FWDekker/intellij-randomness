@@ -51,7 +51,7 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : SchemeEditor<
         }
         newlineSeparatorButton.changeListeners.forEach { it.stateChanged(ChangeEvent(newlineSeparatorButton)) }
 
-        loadState()
+        loadScheme()
     }
 
     /**
@@ -69,17 +69,17 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : SchemeEditor<
     }
 
 
-    override fun loadState(state: ArraySchemeDecorator) {
-        super.loadState(state)
+    override fun loadScheme(scheme: ArraySchemeDecorator) {
+        super.loadScheme(scheme)
 
-        enabledCheckBox.isSelected = state.enabled
-        countSpinner.value = state.count
-        bracketsGroup.setValue(state.brackets)
-        separatorGroup.setValue(state.separator)
-        spaceAfterSeparatorCheckBox.isSelected = state.isSpaceAfterSeparator
+        enabledCheckBox.isSelected = scheme.enabled
+        countSpinner.value = scheme.count
+        bracketsGroup.setValue(scheme.brackets)
+        separatorGroup.setValue(scheme.separator)
+        spaceAfterSeparatorCheckBox.isSelected = scheme.isSpaceAfterSeparator
     }
 
-    override fun readState(): ArraySchemeDecorator =
+    override fun readScheme(): ArraySchemeDecorator =
         ArraySchemeDecorator(
             enabled = enabledCheckBox.isSelected,
             count = countSpinner.value,

@@ -40,7 +40,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : SchemeEdito
 
 
     init {
-        loadState(scheme)
+        loadScheme(scheme)
 
         decimalCount.addChangeListener { showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0 }
         decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
@@ -58,26 +58,26 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : SchemeEdito
         bindSpinners(minValue, maxValue, MAX_VALUE_DIFFERENCE)
         decimalCount = JIntSpinner(value = MIN_DECIMAL_COUNT, minValue = MIN_DECIMAL_COUNT)
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalScheme.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
-    override fun loadState(state: DecimalScheme) {
-        super.loadState(state)
+    override fun loadScheme(scheme: DecimalScheme) {
+        super.loadScheme(scheme)
 
-        minValue.value = state.minValue
-        maxValue.value = state.maxValue
-        decimalCount.value = state.decimalCount
-        showTrailingZeroesCheckBox.isSelected = state.showTrailingZeroes
-        groupingSeparatorGroup.setValue(state.groupingSeparator)
-        decimalSeparatorGroup.setValue(state.decimalSeparator)
-        prefixInput.text = state.prefix
-        suffixInput.text = state.suffix
-        arrayDecoratorEditor.loadState(state.decorator)
+        minValue.value = scheme.minValue
+        maxValue.value = scheme.maxValue
+        decimalCount.value = scheme.decimalCount
+        showTrailingZeroesCheckBox.isSelected = scheme.showTrailingZeroes
+        groupingSeparatorGroup.setValue(scheme.groupingSeparator)
+        decimalSeparatorGroup.setValue(scheme.decimalSeparator)
+        prefixInput.text = scheme.prefix
+        suffixInput.text = scheme.suffix
+        arrayDecoratorEditor.loadScheme(scheme.decorator)
     }
 
-    override fun readState() =
+    override fun readScheme() =
         DecimalScheme(
             minValue = minValue.value,
             maxValue = maxValue.value,
@@ -87,7 +87,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : SchemeEdito
             decimalSeparator = decimalSeparatorGroup.getValue() ?: DEFAULT_DECIMAL_SEPARATOR,
             prefix = prefixInput.text,
             suffix = suffixInput.text,
-            decorator = arrayDecoratorEditor.readState()
+            decorator = arrayDecoratorEditor.readScheme()
         )
 
 

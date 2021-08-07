@@ -48,7 +48,7 @@ class WordSchemeEditor(
 
 
     init {
-        loadState(scheme)
+        loadScheme(scheme)
 
         dictionaryHelp.border = null
         dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
@@ -72,31 +72,31 @@ class WordSchemeEditor(
         dictionaryTable = DictionaryTable()
         dictionaryPanel = dictionaryTable.panel
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalScheme.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
-    override fun loadState(state: WordScheme) {
-        super.loadState(state)
+    override fun loadScheme(scheme: WordScheme) {
+        super.loadScheme(scheme)
 
-        minLength.value = state.minLength
-        maxLength.value = state.maxLength
-        enclosureGroup.setValue(state.enclosure)
-        capitalizationGroup.setValue(state.capitalization)
+        minLength.value = scheme.minLength
+        maxLength.value = scheme.maxLength
+        enclosureGroup.setValue(scheme.enclosure)
+        capitalizationGroup.setValue(scheme.capitalization)
         dictionaryTable.data = dictionarySettings.bundledDictionaries + dictionarySettings.userDictionaries
-        dictionaryTable.activeData = state.activeBundledDictionaries + state.activeUserDictionaries
+        dictionaryTable.activeData = scheme.activeBundledDictionaries + scheme.activeUserDictionaries
             .filter { dictionary -> dictionary in dictionaryTable.data }
-        arrayDecoratorEditor.loadState(state.decorator)
+        arrayDecoratorEditor.loadScheme(scheme.decorator)
     }
 
-    override fun readState() =
+    override fun readScheme() =
         WordScheme(
             minLength = minLength.value,
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
-            decorator = arrayDecoratorEditor.readState()
+            decorator = arrayDecoratorEditor.readScheme()
         ).also {
             dictionarySettings.bundledDictionaries = dictionaryTable.data
                 .filter { file -> file.isBundled }.toSet()

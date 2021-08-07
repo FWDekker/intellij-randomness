@@ -31,7 +31,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidSch
 
 
     init {
-        loadState(scheme)
+        loadScheme(scheme)
     }
 
     /**
@@ -41,28 +41,28 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidSch
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalScheme.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
-    override fun loadState(state: UuidScheme) {
-        super.loadState(state)
+    override fun loadScheme(scheme: UuidScheme) {
+        super.loadScheme(scheme)
 
-        versionGroup.setValue(state.version.toString())
-        enclosureGroup.setValue(state.enclosure)
-        capitalizationGroup.setValue(state.capitalization)
-        addDashesCheckBox.isSelected = state.addDashes
-        arrayDecoratorEditor.loadState(state.decorator)
+        versionGroup.setValue(scheme.version.toString())
+        enclosureGroup.setValue(scheme.enclosure)
+        capitalizationGroup.setValue(scheme.capitalization)
+        addDashesCheckBox.isSelected = scheme.addDashes
+        arrayDecoratorEditor.loadScheme(scheme.decorator)
     }
 
-    override fun readState(): UuidScheme =
+    override fun readScheme(): UuidScheme =
         UuidScheme(
             version = versionGroup.getValue()?.toInt() ?: DEFAULT_VERSION,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             addDashes = addDashesCheckBox.isSelected,
-            decorator = arrayDecoratorEditor.readState()
+            decorator = arrayDecoratorEditor.readScheme()
         )
 
     override fun addChangeListener(listener: () -> Unit) =

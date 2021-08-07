@@ -47,7 +47,7 @@ class StringSchemeEditor(
 
 
     init {
-        loadState(scheme)
+        loadScheme(scheme)
 
         excludeLookAlikeSymbolsCheckBox.font = excludeLookAlikeSymbolsCheckBox.font.attributes.toMutableMap()
             .also { it[TextAttribute.UNDERLINE] = TextAttribute.UNDERLINE_LOW_DOTTED }
@@ -74,35 +74,35 @@ class StringSchemeEditor(
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.panel
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalScheme.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
-    override fun loadState(state: StringScheme) {
-        super.loadState(state)
+    override fun loadScheme(scheme: StringScheme) {
+        super.loadScheme(scheme)
 
-        minLength.value = state.minLength
-        maxLength.value = state.maxLength
-        enclosureGroup.setValue(state.enclosure)
-        capitalizationGroup.setValue(state.capitalization)
-        excludeLookAlikeSymbolsCheckBox.isSelected = state.excludeLookAlikeSymbols
+        minLength.value = scheme.minLength
+        maxLength.value = scheme.maxLength
+        enclosureGroup.setValue(scheme.enclosure)
+        capitalizationGroup.setValue(scheme.capitalization)
+        excludeLookAlikeSymbolsCheckBox.isSelected = scheme.excludeLookAlikeSymbols
 
         symbolSetTable.data = symbolSetSettings.symbolSetList
         symbolSetTable.activeData =
-            symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
+            symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in scheme.activeSymbolSets }
 
-        arrayDecoratorEditor.loadState(state.decorator)
+        arrayDecoratorEditor.loadScheme(scheme.decorator)
     }
 
-    override fun readState() =
+    override fun readScheme() =
         StringScheme(
             minLength = minLength.value,
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
-            decorator = arrayDecoratorEditor.readState()
+            decorator = arrayDecoratorEditor.readScheme()
         ).also {
             symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
             it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet()

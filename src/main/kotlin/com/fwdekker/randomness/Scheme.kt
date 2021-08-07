@@ -49,15 +49,25 @@ abstract class Scheme {
 
 
     /**
-     * Validates the state, and indicates whether and why it is invalid.
+     * Validates the scheme, and indicates whether and why it is invalid.
      *
-     * @return `null` if the state is valid, or a string explaining why the state is invalid
+     * @return `null` if the scheme is valid, or a string explaining why the scheme is invalid
      */
     open fun doValidate(): String? = null
 
+    /**
+     * Copies the given scheme into this scheme.
+     *
+     * @param scheme the scheme to copy into this scheme; should be a subclass of this scheme
+     */
+    // TODO: Is this a deep copy?
+    fun copyFrom(scheme: Scheme) = XmlSerializerUtil.copyBean(scheme, this)
 
-    fun loadState(state: Scheme) = XmlSerializerUtil.copyBean(state, this)
-
+    /**
+     * Returns a deep copy of this scheme.
+     *
+     * @return a deep copy of this scheme
+     */
     abstract fun deepCopy(): Scheme
 }
 

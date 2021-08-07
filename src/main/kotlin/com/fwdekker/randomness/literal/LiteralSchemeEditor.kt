@@ -21,7 +21,7 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : SchemeEdito
 
 
     init {
-        loadState(scheme)
+        loadScheme(scheme)
     }
 
     /**
@@ -31,21 +31,21 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : SchemeEdito
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalScheme.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
-    override fun loadState(state: LiteralScheme) {
-        super.loadState(state)
+    override fun loadScheme(scheme: LiteralScheme) {
+        super.loadScheme(scheme)
 
-        literalInput.text = state.literal
-        arrayDecoratorEditor.loadState(state.decorator)
+        literalInput.text = scheme.literal
+        arrayDecoratorEditor.loadScheme(scheme.decorator)
     }
 
-    override fun readState() = LiteralScheme(
+    override fun readScheme() = LiteralScheme(
         literal = literalInput.text,
-        decorator = arrayDecoratorEditor.readState()
+        decorator = arrayDecoratorEditor.readScheme()
     )
 
 

@@ -17,6 +17,7 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
+import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionToolbarPosition
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonShortcuts
@@ -43,54 +44,66 @@ import javax.swing.ListSelectionModel
 
 
 /**
- * Component for editing [TemplateSettings].
+ * A component that can be used to edit a scheme of type [S] which consists of a list of schemes of type [E].
  *
- * @param templates the settings to edit
+ * The interface consists of a list on the left, containing the instances of [E] inside [originalScheme], and displays
+ * an editor on the right whenever an entry in the list is pressed.
+ *
+ * @param S the type of scheme that can be edited in this component
+ * @param E the type of scheme that [S] consists of
+ * @property stateToEntryList converts an instance of [S] into a list of type [E]
+ * @property addActionGroupGenerator returns the actions that can be taken when the "Add" button is pressed
+ * @param originalScheme the scheme to be edited in this component
+ * @param dummyStateGenerator returns a simple placeholder instance of type [S]
  */
-class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor<TemplateList>(templates) {
-    override val rootComponent = JPanel(BorderLayout())
-    private val templateList: JBList<Template>
-    private val templateListModel = DefaultListModel<Template>()
-    private var templateEditor: TemplateEditor? = null
-
-    private val unsavedState = TemplateList(listOf())
+abstract class ListSchemeEditor<S : Scheme, E : Scheme>(
+    originalScheme: S,
+    private val stateToEntryList: (S) -> List<E>,
+    dummyStateGenerator: () -> S,
+    private val addActionGroupGenerator: (JBList<E>, DefaultListModel<E>) -> ActionGroup
+) : SchemeEditor<S>(originalScheme) {
+    private val unsavedState = dummyStateGenerator()
+    private val stateListModel = DefaultListModel<E>()
     private val changeListeners = mutableListOf<() -> Unit>()
+
+    final override val rootComponent = JPanel(BorderLayout())
+
+    /**
+     * The list of entries of type [E].
+     *
+     * This list includes possibly unsaved entries.
+     */
+    val stateList = JBList(stateListModel)
+
+    /**
+     * The current entry editor displayed on the right.
+     */
+    var entryEditor: SchemeEditor<out E>? = null
 
 
     init {
         val splitter = JBSplitter(false, DEFAULT_SPLITTER_PROPORTION)
         rootComponent.add(splitter, BorderLayout.CENTER)
 
-        templateList = JBList(templateListModel)
-        templateList.selectionMode = ListSelectionModel.SINGLE_SELECTION
-        templateList.setCellRenderer { _, entry, _, _, _ ->
-            JBLabel(entry.name.ifBlank { "<empty>" })
-                .also { label ->
-                    if (entry.doValidate() != null)
-                        label.foreground = ERROR_COLOR
-                    else if (originalState.templates.firstOrNull { it.name == entry.name } != entry)
-                        label.foreground = MODIFIED_COLOR
-                }
-        }
-        splitter.firstComponent = JBScrollPane(decorateTemplateList(templateList))
+        stateList.selectionMode = ListSelectionModel.SINGLE_SELECTION
+        splitter.firstComponent = JBScrollPane(decorateTemplateList(stateList))
 
-        templateList.addListSelectionListener { event ->
-            val selection = templateList.selectedValue
-            if (event.valueIsAdjusting || selection == null)
+        stateList.addListSelectionListener { event ->
+            val entry = stateList.selectedValue
+            if (event.valueIsAdjusting || entry == null)
                 return@addListSelectionListener
 
-            templateEditor = TemplateEditor(selection)
+            entryEditor = createEditor(entry)
                 .also { editor ->
                     editor.addChangeListener {
-                        editor.applyState()
+                        editor.applyScheme()
                         changeListeners.forEach { it() }
-                        templateList.repaint() // Force template names to update
+                        stateList.repaint() // Force updates to be visible
                     }
-                    splitter.secondComponent = editor.rootComponent
+
+                    splitter.secondComponent = JBScrollPane(editor.rootComponent)
                 }
         }
-
-        loadState()
     }
 
     /**
@@ -99,28 +112,19 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
      * @param templateList the list to decorate
      * @return a panel containing both the decorator and the given list
      */
-    private fun decorateTemplateList(templateList: JBList<Template>) =
+    private fun decorateTemplateList(templateList: JBList<E>) =
         ToolbarDecorator.createDecorator(templateList)
             .setToolbarPosition(ActionToolbarPosition.TOP)
             .setPanelBorder(JBUI.Borders.empty())
             .setScrollPaneBorder(JBUI.Borders.empty())
             .disableAddAction()
-            .addExtraAction(
-                AnActionButton.GroupPopupWrapper(
-                    DefaultActionGroupBuilder(templateList, templateListModel)
-                        .addAction("Integer") { Template("Integer", listOf(IntegerScheme())) }
-                        .addAction("Decimal") { Template("Decimal", listOf(DecimalScheme())) }
-                        .addAction("String") { Template("String", listOf(StringScheme())) }
-                        .addAction("Word") { Template("Word", listOf(WordScheme())) }
-                        .addAction("UUID") { Template("UUID", listOf(UuidScheme())) }
-                        .buildActionGroup()
-                )
-            )
+            .addExtraAction(AnActionButton.GroupPopupWrapper(addActionGroupGenerator(stateList, stateListModel)))
             .addExtraAction(object : AnActionButton("Copy", PlatformIcons.COPY_ICON) {
                 override fun actionPerformed(e: AnActionEvent) {
-                    templateList.selectedValue?.let { template ->
-                        templateListModel.addElement(template.deepCopy())
-                        templateList.selectedIndex = templateListModel.size - 1
+                    templateList.selectedValue?.let { entry ->
+                        @Suppress("UNCHECKED_CAST") // `deepCopy` always returns instance of its own class
+                        stateListModel.addElement(entry.deepCopy() as E)
+                        templateList.selectedIndex = stateListModel.size - 1
                     }
                 }
 
@@ -130,32 +134,42 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
             .createPanel()
 
 
-    override fun loadState(state: TemplateList) {
-        super.loadState(state)
-        unsavedState.loadState(state.deepCopy())
+    /**
+     * Creates an editor for the given entry.
+     *
+     * @param entry the entry to edit
+     * @return an editor for the given entry
+     */
+    abstract fun createEditor(entry: E): SchemeEditor<out E>
 
-        templateListModel.removeAllElements()
-        templateListModel.addAll(unsavedState.templates.toList())
-        templateList.selectedIndex = -1
+
+    override fun loadScheme(scheme: S) {
+        super.loadScheme(scheme)
+
+        unsavedState.copyFrom(scheme.deepCopy())
+
+        stateListModel.removeAllElements()
+        stateListModel.addAll(stateToEntryList(unsavedState).toList())
+        stateList.selectedIndex = -1
 
         changeListeners.forEach { it() }
-        if (!templateListModel.isEmpty)
-            templateList.selectedIndex = 0
+        if (!stateListModel.isEmpty)
+            stateList.selectedIndex = 0
     }
 
-    override fun readState() = unsavedState
+    override fun readScheme() = unsavedState
 
 
     override fun isModified(): Boolean {
-        val loadedTemplates = originalState.templates
-        val unsavedTemplates = unsavedState.templates
+        val originalEntries = stateToEntryList(originalScheme)
+        val unsavedEntries = stateToEntryList(unsavedState)
 
         return super.isModified() ||
-            loadedTemplates.size != unsavedTemplates.size ||
-            loadedTemplates.zip(unsavedTemplates).any { it.first != it.second }
+            originalEntries.size != unsavedEntries.size ||
+            originalEntries.zip(unsavedEntries).any { it.first != it.second }
     }
 
-    override fun doValidate() = templateEditor?.doValidate() ?: unsavedState.doValidate()
+    override fun doValidate() = entryEditor?.doValidate() ?: unsavedState.doValidate()
 
 
     override fun addChangeListener(listener: () -> Unit) {
@@ -174,21 +188,65 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
     }
 }
 
+
+/**
+ * Component for editing [TemplateSettings].
+ *
+ * @param templates the templates to edit in this list
+ */
+class TemplateListEditor(templates: TemplateList = default.state) : ListSchemeEditor<TemplateList, Template>(
+    templates,
+    { it.templates },
+    { TemplateList() },
+    ADD_ACTION_GROUP_GENERATOR
+) {
+    init {
+        stateList.setCellRenderer { _, entry, _, _, _ ->
+            JBLabel(entry.name.ifBlank { "<empty>" })
+                .also { label ->
+                    if (entry.doValidate() != null)
+                        label.foreground = ERROR_COLOR
+                    else if (originalScheme.templates.firstOrNull { it.name == entry.name } != entry)
+                        label.foreground = MODIFIED_COLOR
+                }
+        }
+
+        loadScheme()
+    }
+
+
+    override fun createEditor(entry: Template) = TemplateEditor(entry)
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The group of available actions when the "Add" button is pressed.
+         */
+        val ADD_ACTION_GROUP_GENERATOR: (JBList<Template>, DefaultListModel<Template>) -> ActionGroup =
+            { stateList, stateListModel ->
+                DefaultActionGroupBuilder(stateList, stateListModel)
+                    .addAction("Integer") { Template("Integer", listOf(IntegerScheme())) }
+                    .addAction("Decimal") { Template("Decimal", listOf(DecimalScheme())) }
+                    .addAction("String") { Template("String", listOf(StringScheme())) }
+                    .addAction("Word") { Template("Word", listOf(WordScheme())) }
+                    .addAction("UUID") { Template("UUID", listOf(UuidScheme())) }
+                    .buildActionGroup()
+            }
+    }
+}
+
 /**
  * Component for editing an individual [Template].
  *
  * @param template
  * @see TemplateListEditor
  */
-private class TemplateEditor(template: Template) : SchemeEditor<Template>(template) {
-    override val rootComponent = JPanel(BorderLayout())
+class TemplateEditor(template: Template) :
+    ListSchemeEditor<Template, Scheme>(template, { it.schemes }, { Template() }, ADD_ACTION_GROUP_GENERATOR) {
     private val nameInput: JTextField
-    private val schemeList: JList<Scheme>
-    private val schemeListModel = DefaultListModel<Scheme>()
-    private val schemeEditorPanel: JPanel
-    private var schemeEditor: SchemeEditor<*>? = null
-
-    private val changeListeners = mutableListOf<() -> Unit>()
 
 
     init {
@@ -198,128 +256,48 @@ private class TemplateEditor(template: Template) : SchemeEditor<Template>(templa
         namePanel.add(nameInput)
         rootComponent.add(namePanel, BorderLayout.NORTH)
 
-        val splitter = JBSplitter(false, DEFAULT_SPLITTER_PROPORTION)
-        rootComponent.add(splitter, BorderLayout.CENTER)
-
-        schemeList = JBList(schemeListModel)
-        schemeList.selectionMode = ListSelectionModel.SINGLE_SELECTION
-        schemeList.setCellRenderer { _, entry, _, _, _ ->
+        stateList.setCellRenderer { _, entry, _, _, _ ->
             JBLabel(entry::class.simpleName ?: "Unnamed scheme")
                 .also { label ->
                     if (entry.doValidate() != null)
                         label.foreground = ERROR_COLOR
                 }
         }
-        splitter.firstComponent = JBScrollPane(decorateSchemeList(schemeList))
 
-        schemeEditorPanel = JPanel(BorderLayout())
-        schemeList.addListSelectionListener { event ->
-            val selection = schemeList.selectedValue
-            if (event.valueIsAdjusting || selection == null)
-                return@addListSelectionListener
-
-            schemeEditor = getSchemeEditor(selection)
-                .also { editor ->
-                    editor.addChangeListener {
-                        editor.applyState()
-                        changeListeners.forEach { it() }
-                    }
-
-                    schemeEditorPanel.removeAll()
-                    schemeEditorPanel.add(editor.rootComponent)
-                    changeListeners.forEach { it() }
-                }
-        }
-        splitter.secondComponent = schemeEditorPanel
-
-        val previewPanel = PreviewPanel { TemplateList(listOf(readState())) }
+        val previewPanel = PreviewPanel { TemplateList(listOf(readScheme())) }
         addChangeListener { previewPanel.updatePreview() }
         rootComponent.add(previewPanel.rootComponent, BorderLayout.SOUTH)
 
-        loadState()
+        loadScheme()
     }
 
-    /**
-     * Decorates the given list with buttons for adding, removing, copying, etc.
-     *
-     * @param schemeList the list to decorate
-     * @return a panel containing both the decorator and the given list
-     */
-    private fun decorateSchemeList(schemeList: JBList<Scheme>) =
-        ToolbarDecorator
-            .createDecorator(schemeList)
-            .setToolbarPosition(ActionToolbarPosition.TOP)
-            .setPanelBorder(JBUI.Borders.empty())
-            .setScrollPaneBorder(JBUI.Borders.empty())
-            .disableAddAction()
-            .addExtraAction(
-                AnActionButton.GroupPopupWrapper(
-                    DefaultActionGroupBuilder(schemeList, schemeListModel)
-                        .addAction("Literal") { LiteralScheme() }
-                        .addAction("Integer") { IntegerScheme() }
-                        .addAction("Decimal") { DecimalScheme() }
-                        .addAction("String") { StringScheme() }
-                        .addAction("Word") { WordScheme() }
-                        .addAction("UUID") { UuidScheme() }
-                        .buildActionGroup()
-                )
-            )
-            .addExtraAction(object : AnActionButton("Copy", PlatformIcons.COPY_ICON) {
-                override fun actionPerformed(e: AnActionEvent) {
-                    schemeList.selectedValue?.let { scheme ->
-                        schemeListModel.addElement(scheme.deepCopy())
-                        schemeList.selectedIndex = schemeListModel.size - 1
-                    }
-                }
-
-                override fun isEnabled() = schemeList.selectedValue != null
-            })
-            .setButtonComparator("Add", "Remove", "Copy", "Up", "Down")
-            .createPanel()
-
-    /**
-     * Creates a scheme editor for the given scheme.
-     *
-     * @param scheme the scheme to create an editor for
-     */
-    private fun getSchemeEditor(scheme: Scheme): SchemeEditor<*> {
-        return when (scheme) {
-            is IntegerScheme -> IntegerSchemeEditor(scheme)
-            is DecimalScheme -> DecimalSchemeEditor(scheme)
-            is StringScheme -> StringSchemeEditor(scheme)
-            is UuidScheme -> UuidSchemeEditor(scheme)
-            is WordScheme -> WordSchemeEditor(scheme)
-            is LiteralScheme -> LiteralSchemeEditor(scheme)
-            else -> error("Unknown scheme type '${scheme.javaClass.canonicalName}'.")
+    override fun createEditor(entry: Scheme): SchemeEditor<out Scheme> {
+        return when (entry) {
+            is IntegerScheme -> IntegerSchemeEditor(entry)
+            is DecimalScheme -> DecimalSchemeEditor(entry)
+            is StringScheme -> StringSchemeEditor(entry)
+            is UuidScheme -> UuidSchemeEditor(entry)
+            is WordScheme -> WordSchemeEditor(entry)
+            is LiteralScheme -> LiteralSchemeEditor(entry)
+            else -> error("Unknown scheme type '${entry.javaClass.canonicalName}'.")
         }
     }
 
 
-    override fun loadState(state: Template) {
-        super.loadState(state)
+    override fun loadScheme(scheme: Template) = super.loadScheme(scheme).also { nameInput.text = scheme.name }
 
-        nameInput.text = state.name
-
-        schemeListModel.removeAllElements()
-        schemeListModel.addAll(state.schemes)
-        schemeList.selectedIndex = -1
-
-        if (!schemeListModel.isEmpty)
-            schemeList.selectedIndex = 0
-        changeListeners.forEach { it() }
-    }
-
-    override fun readState() = Template(nameInput.text, schemeListModel.elements().toList())
+    override fun readScheme() = super.readScheme().also { it.name = nameInput.text }
 
 
     override fun doValidate(): String? =
         if (nameInput.text.isBlank()) "Template name should not be empty."
-        else schemeEditor?.doValidate()
+        else super.doValidate()
 
 
     override fun addChangeListener(listener: () -> Unit) {
+        super.addChangeListener(listener)
+
         addChangeListenerTo(nameInput, listener = listener)
-        changeListeners += listener
     }
 
 
@@ -328,9 +306,19 @@ private class TemplateEditor(template: Template) : SchemeEditor<Template>(templa
      */
     companion object {
         /**
-         * The default proportion of the splitter component.
+         * The group of available actions when the "Add" button is pressed.
          */
-        const val DEFAULT_SPLITTER_PROPORTION = .2f
+        val ADD_ACTION_GROUP_GENERATOR: (JBList<Scheme>, DefaultListModel<Scheme>) -> ActionGroup =
+            { stateList, stateListModel ->
+                DefaultActionGroupBuilder(stateList, stateListModel)
+                    .addAction("Literal") { LiteralScheme() }
+                    .addAction("Integer") { IntegerScheme() }
+                    .addAction("Decimal") { DecimalScheme() }
+                    .addAction("String") { StringScheme() }
+                    .addAction("Word") { WordScheme() }
+                    .addAction("UUID") { UuidScheme() }
+                    .buildActionGroup()
+            }
     }
 }
 

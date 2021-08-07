@@ -38,7 +38,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEdito
 
 
     init {
-        loadState(scheme)
+        loadScheme(scheme)
 
         base.addChangeListener {
             groupingSeparatorGroup.forEach { it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE }
@@ -59,25 +59,25 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEdito
         bindSpinners(minValue, maxValue, maxRange = null)
         base = JIntSpinner(IntegerScheme.DECIMAL_BASE, IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE)
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalScheme.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
-    override fun loadState(state: IntegerScheme) {
-        super.loadState(state)
+    override fun loadScheme(scheme: IntegerScheme) {
+        super.loadScheme(scheme)
 
-        minValue.value = state.minValue
-        maxValue.value = state.maxValue
-        base.value = state.base
-        groupingSeparatorGroup.setValue(state.groupingSeparator)
-        capitalizationGroup.setValue(state.capitalization)
-        prefixInput.text = state.prefix
-        suffixInput.text = state.suffix
-        arrayDecoratorEditor.loadState(state.decorator)
+        minValue.value = scheme.minValue
+        maxValue.value = scheme.maxValue
+        base.value = scheme.base
+        groupingSeparatorGroup.setValue(scheme.groupingSeparator)
+        capitalizationGroup.setValue(scheme.capitalization)
+        prefixInput.text = scheme.prefix
+        suffixInput.text = scheme.suffix
+        arrayDecoratorEditor.loadScheme(scheme.decorator)
     }
 
-    override fun readState() =
+    override fun readScheme() =
         IntegerScheme(
             minValue = minValue.value,
             maxValue = maxValue.value,
@@ -86,7 +86,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEdito
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             prefix = prefixInput.text,
             suffix = suffixInput.text,
-            decorator = arrayDecoratorEditor.readState()
+            decorator = arrayDecoratorEditor.readScheme()
         )
 
     override fun addChangeListener(listener: () -> Unit) =
