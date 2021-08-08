@@ -61,7 +61,7 @@ data class UuidScheme(
     }
 
 
-    override fun deepCopy() = copy()
+    override fun deepCopy() = copy(decorator = decorator.deepCopy())
 
 
     /**

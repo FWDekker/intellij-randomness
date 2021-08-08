@@ -23,7 +23,7 @@ data class LiteralScheme(
     override fun generateUndecoratedStrings(count: Int) = List(count) { literal }
 
 
-    override fun deepCopy() = copy()
+    override fun deepCopy() = copy(decorator = decorator.deepCopy())
 
 
     /**

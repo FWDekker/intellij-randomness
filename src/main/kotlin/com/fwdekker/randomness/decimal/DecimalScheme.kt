@@ -75,7 +75,7 @@ data class DecimalScheme(
         }
 
 
-    override fun deepCopy() = copy()
+    override fun deepCopy() = copy(decorator = decorator.deepCopy())
 
 
     /**

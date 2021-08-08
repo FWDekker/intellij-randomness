@@ -107,10 +107,11 @@ data class WordScheme(
 
 
     override fun deepCopy() =
-        copy().also {
-            it.activeBundledDictionaries = activeBundledDictionaries.map(DictionaryReference::copy).toSet()
-            it.activeUserDictionaries = activeUserDictionaries.map(DictionaryReference::copy).toSet()
-        }
+        copy(decorator = decorator.deepCopy())
+            .also {
+                it.activeBundledDictionaries = activeBundledDictionaries.map(DictionaryReference::copy).toSet()
+                it.activeUserDictionaries = activeUserDictionaries.map(DictionaryReference::copy).toSet()
+            }
 
 
     /**

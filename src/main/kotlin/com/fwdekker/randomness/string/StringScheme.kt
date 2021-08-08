@@ -89,7 +89,9 @@ data class StringScheme(
     }
 
 
-    override fun deepCopy() = copy().also { it.activeSymbolSets = activeSymbolSets.toSet() }
+    override fun deepCopy() =
+        copy(decorator = decorator.deepCopy())
+            .also { it.activeSymbolSets = activeSymbolSets.toSet() }
 
 
     /**

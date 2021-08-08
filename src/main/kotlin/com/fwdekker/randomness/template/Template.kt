@@ -42,7 +42,10 @@ data class Template(
 
 
     override fun deepCopy() =
-        copy().also { copy -> copy.schemes = this.schemes.map { it.deepCopy() } }
+        Template(
+            name = name,
+            schemes = schemes.map { it.deepCopy() }
+        )
 
 
     /**
@@ -106,7 +109,7 @@ data class TemplateList(
          */
         val DEFAULT_TEMPLATES: List<Template>
             get() = listOf(
-                Template("Integer", listOf(IntegerScheme())),
+                Template("Integer", listOf(IntegerScheme(), IntegerScheme())),
                 Template("Decimal", listOf(DecimalScheme())),
                 Template("String", listOf(StringScheme())),
                 Template("Word", listOf(WordScheme())),

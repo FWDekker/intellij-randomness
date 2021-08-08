@@ -81,7 +81,7 @@ data class IntegerScheme(
         }
 
 
-    override fun deepCopy() = copy()
+    override fun deepCopy() = copy(decorator = decorator.deepCopy())
 
 
     /**
