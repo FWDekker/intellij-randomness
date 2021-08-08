@@ -7,7 +7,6 @@ import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.MIN_COUNT
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
-import com.fwdekker.randomness.ui.setEnabled
 import com.fwdekker.randomness.ui.setValue
 import com.jgoodies.forms.factories.DefaultComponentFactory
 import java.util.ResourceBundle
@@ -29,6 +28,7 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : SchemeEditor<
     override lateinit var rootComponent: JPanel private set
     private lateinit var separator: JComponent
     private lateinit var enabledCheckBox: JCheckBox
+    private lateinit var arrayDetailsPanel: JPanel
     private lateinit var countSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
     private lateinit var separatorGroup: ButtonGroup
@@ -37,17 +37,11 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : SchemeEditor<
 
 
     init {
-        enabledCheckBox.addChangeListener {
-            countSpinner.isEnabled = enabledCheckBox.isSelected
-            bracketsGroup.setEnabled(enabledCheckBox.isSelected)
-            separatorGroup.setEnabled(enabledCheckBox.isSelected)
-            newlineSeparatorButton.isEnabled = enabledCheckBox.isSelected
-            spaceAfterSeparatorCheckBox.isEnabled = enabledCheckBox.isSelected && !newlineSeparatorButton.isSelected
-        }
+        enabledCheckBox.addChangeListener { arrayDetailsPanel.isVisible = enabledCheckBox.isSelected }
         enabledCheckBox.changeListeners.forEach { it.stateChanged(ChangeEvent(enabledCheckBox)) }
 
         newlineSeparatorButton.addChangeListener {
-            spaceAfterSeparatorCheckBox.isEnabled = enabledCheckBox.isSelected && !newlineSeparatorButton.isSelected
+            spaceAfterSeparatorCheckBox.isEnabled = !newlineSeparatorButton.isSelected
         }
         newlineSeparatorButton.changeListeners.forEach { it.stateChanged(ChangeEvent(newlineSeparatorButton)) }
 

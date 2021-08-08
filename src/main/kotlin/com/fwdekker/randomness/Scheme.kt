@@ -58,10 +58,11 @@ abstract class Scheme {
     /**
      * Copies the given scheme into this scheme.
      *
+     * Works by copying all references in a [deepCopy] of [scheme] into `this`.
+     *
      * @param scheme the scheme to copy into this scheme; should be a subclass of this scheme
      */
-    // TODO: Is this a deep copy?
-    fun copyFrom(scheme: Scheme) = XmlSerializerUtil.copyBean(scheme, this)
+    fun copyFrom(scheme: Scheme) = XmlSerializerUtil.copyBean(scheme.deepCopy(), this)
 
     /**
      * Returns a deep copy of this scheme.

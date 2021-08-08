@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.literal.LiteralScheme
@@ -32,7 +31,7 @@ data class Template(
         ]
     )
     var schemes: List<Scheme> = DEFAULT_SCHEMES,
-    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator(),
+    override var decorator: Nothing? = null
 ) : Scheme() {
     override fun generateUndecoratedStrings(count: Int) =
         schemes.onEach { it.random = random }.map { it.generateStrings(count) }
@@ -88,7 +87,6 @@ data class TemplateList(
             templates.firstNotNullOfOrNull { template -> template.doValidate()?.let { "${template.name} > $it" } }
 
         return when {
-            templates.isEmpty() -> "Configure at least one template."
             duplicate != null -> "There are multiple templates with the name '$duplicate'."
             invalid != null -> invalid
             else -> null
@@ -108,8 +106,11 @@ data class TemplateList(
          */
         val DEFAULT_TEMPLATES: List<Template>
             get() = listOf(
-                Template("The Integer", listOf(IntegerScheme())),
-                Template("My String", listOf(LiteralScheme("start"), StringScheme(), LiteralScheme("end")))
+                Template("Integer", listOf(IntegerScheme())),
+                Template("Decimal", listOf(DecimalScheme())),
+                Template("String", listOf(StringScheme())),
+                Template("Word", listOf(WordScheme())),
+                Template("UUID", listOf(UuidScheme()))
             )
     }
 }
