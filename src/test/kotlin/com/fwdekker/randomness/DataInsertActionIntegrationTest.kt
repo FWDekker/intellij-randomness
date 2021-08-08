@@ -1,6 +1,6 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArrayScheme
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Document
@@ -131,7 +131,7 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         setSelection(5, 9)
 
         var insertValue = 0
-        myFixture.testAction(DummyInsertArrayAction(ArrayScheme(count = 2)) { insertValue++.toString() })
+        myFixture.testAction(DummyInsertArrayAction(ArraySchemeDecorator(count = 2)) { insertValue++.toString() })
 
         assertThat(document.text).isEqualTo("wizar[${"0"}, ${"1"}]rens\nvanity")
     }
@@ -157,7 +157,7 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         addCaret(13)
 
         var insertValue = 0
-        myFixture.testAction(DummyInsertRepeatArrayAction(ArrayScheme(count = 2)) { insertValue++.toString() })
+        myFixture.testAction(DummyInsertRepeatArrayAction(ArraySchemeDecorator(count = 2)) { insertValue++.toString() })
 
         assertThat(document.text).isEqualTo("he${"[0, 1]"}avy\nb${"[0, 1]"}egin\nc${"[0, 1]"}are")
     }

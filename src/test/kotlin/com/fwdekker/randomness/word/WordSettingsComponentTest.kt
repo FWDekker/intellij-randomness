@@ -15,13 +15,13 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * GUI tests for [WordSettingsComponent].
+ * GUI tests for [WordSchemeEditor].
  */
 object WordSettingsComponentTest : Spek({
     lateinit var tempFileHelper: TempFileHelper
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var wordSettings: WordSettings
-    lateinit var wordSettingsComponent: WordSettingsComponent
+    lateinit var wordSchemeEditor: WordSchemeEditor
     lateinit var dictionaryTable: TableView<EditableDatum<Dictionary>>
     lateinit var frame: FrameFixture
 
@@ -46,8 +46,8 @@ object WordSettingsComponentTest : Spek({
                 currentScheme.activeBundledDictionaryFiles = mutableSetOf(BundledDictionary.SIMPLE_DICTIONARY)
             }
 
-        wordSettingsComponent = GuiActionRunner.execute<WordSettingsComponent> { WordSettingsComponent(wordSettings) }
-        frame = showInFrame(wordSettingsComponent.rootPane)
+        wordSchemeEditor = GuiActionRunner.execute<WordSchemeEditor> { WordSchemeEditor(wordSettings) }
+        frame = showInFrame(wordSchemeEditor.rootComponent)
 
         dictionaryTable = frame.table().target() as TableView<EditableDatum<Dictionary>>
     }
@@ -100,7 +100,7 @@ object WordSettingsComponentTest : Spek({
                 frame.radioButton("capitalizationLower").target().isSelected = true
             }
 
-            wordSettingsComponent.saveSettings()
+            wordSchemeEditor.saveSettings()
 
             assertThat(wordSettings.currentScheme.minLength).isEqualTo(840)
             assertThat(wordSettings.currentScheme.maxLength).isEqualTo(861)
@@ -127,44 +127,44 @@ object WordSettingsComponentTest : Spek({
 
     describe("modification detection") {
         it("is not modified by default") {
-            assertThat(wordSettingsComponent.isModified()).isFalse()
+            assertThat(wordSchemeEditor.isModified()).isFalse()
         }
 
         it("is modified if a different number of dictionaries is present") {
             wordSettings.currentScheme.userDictionaryFiles = mutableSetOf("user1.dic")
-            GuiActionRunner.execute { wordSettingsComponent.loadSettings() }
+            GuiActionRunner.execute { wordSchemeEditor.loadSettings() }
 
             val resizedSettings = wordSettings.deepCopy()
             resizedSettings.currentScheme.userDictionaryFiles = mutableSetOf("user1.dic", "user2.dic")
-            GuiActionRunner.execute { wordSettingsComponent.loadSettings(resizedSettings) }
+            GuiActionRunner.execute { wordSchemeEditor.loadSettings(resizedSettings) }
 
-            assertThat(wordSettingsComponent.isModified()).isTrue()
+            assertThat(wordSchemeEditor.isModified()).isTrue()
         }
 
         it("is modified if the user reorders dictionaries") {
             wordSettings.currentScheme.userDictionaryFiles = mutableSetOf("user1.dic", "user2.dic")
-            GuiActionRunner.execute { wordSettingsComponent.loadSettings() }
+            GuiActionRunner.execute { wordSchemeEditor.loadSettings() }
 
             val reorderedSettings = wordSettings.deepCopy()
             reorderedSettings.currentScheme.userDictionaryFiles = mutableSetOf("user2.dic", "user1.dic")
-            GuiActionRunner.execute { wordSettingsComponent.loadSettings(reorderedSettings) }
+            GuiActionRunner.execute { wordSchemeEditor.loadSettings(reorderedSettings) }
 
-            assertThat(wordSettingsComponent.isModified()).isTrue()
+            assertThat(wordSchemeEditor.isModified()).isTrue()
         }
     }
 
     describe("validation") {
         it("passes for the default settings") {
-            GuiActionRunner.execute { wordSettingsComponent.loadSettings(WordSettings()) }
+            GuiActionRunner.execute { wordSchemeEditor.loadSettings(WordSettings()) }
 
-            assertThat(wordSettingsComponent.doValidate()).isNull()
+            assertThat(wordSchemeEditor.doValidate()).isNull()
         }
 
         describe("length range") {
             it("fails if the minimum length is negative") {
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = -780 }
 
-                val validationInfo = wordSettingsComponent.doValidate()
+                val validationInfo = wordSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
@@ -176,7 +176,7 @@ object WordSettingsComponentTest : Spek({
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = 0 }
                 GuiActionRunner.execute { frame.spinner("maxLength").target().value = 0 }
 
-                val validationInfo = wordSettingsComponent.doValidate()
+                val validationInfo = wordSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxLength").target())
@@ -190,7 +190,7 @@ object WordSettingsComponentTest : Spek({
                 GuiActionRunner.execute { frame.spinner("minLength").target().value = 1000 }
                 GuiActionRunner.execute { frame.spinner("maxLength").target().value = 1000 }
 
-                val validationInfo = wordSettingsComponent.doValidate()
+                val validationInfo = wordSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("minLength").target())
@@ -211,7 +211,7 @@ object WordSettingsComponentTest : Spek({
                     dictionaryTable.listTableModel.addRow(EditableDatum(true, dictionary))
                 }
 
-                val validationInfo = wordSettingsComponent.doValidate()
+                val validationInfo = wordSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
@@ -225,7 +225,7 @@ object WordSettingsComponentTest : Spek({
                     dictionaryTable.setValueAt(false, 1, 0)
                 }
 
-                val validationInfo = wordSettingsComponent.doValidate()
+                val validationInfo = wordSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
@@ -235,9 +235,9 @@ object WordSettingsComponentTest : Spek({
             it("fails if one of the dictionaries is invalid") {
                 wordSettings.currentScheme.userDictionaryFiles = mutableSetOf("does_not_exist.dic")
                 wordSettings.currentScheme.activeUserDictionaryFiles = wordSettings.currentScheme.userDictionaryFiles
-                GuiActionRunner.execute { wordSettingsComponent.loadSettings(wordSettings) }
+                GuiActionRunner.execute { wordSchemeEditor.loadSettings(wordSettings) }
 
-                val validationInfo = wordSettingsComponent.doValidate()
+                val validationInfo = wordSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
@@ -251,9 +251,9 @@ object WordSettingsComponentTest : Spek({
 
                 wordSettings.currentScheme.userDictionaries = setOf(dictionary)
                 wordSettings.currentScheme.activeUserDictionaries = wordSettings.currentScheme.userDictionaries
-                GuiActionRunner.execute { wordSettingsComponent.loadSettings(wordSettings) }
+                GuiActionRunner.execute { wordSchemeEditor.loadSettings(wordSettings) }
 
-                val validationInfo = wordSettingsComponent.doValidate()
+                val validationInfo = wordSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())
@@ -267,12 +267,12 @@ object WordSettingsComponentTest : Spek({
                 wordSettings.currentScheme.userDictionaries = setOf(dictionary)
                 wordSettings.currentScheme.activeUserDictionaries = wordSettings.currentScheme.userDictionaries
                 GuiActionRunner.execute {
-                    wordSettingsComponent.loadSettings(wordSettings)
+                    wordSchemeEditor.loadSettings(wordSettings)
                     dictionaryTable.listTableModel.addRow(EditableDatum(true, dictionary))
                     dictionaryTable.listTableModel.addRow(EditableDatum(true, dictionary))
                 }
 
-                val validationInfo = wordSettingsComponent.doValidate()
+                val validationInfo = wordSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.panel("dictionaryPanel").target())

@@ -1,24 +1,12 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySettingsAction
-import com.fwdekker.randomness.decimal.DecimalGroupAction
-import com.fwdekker.randomness.decimal.DecimalSettingsAction
-import com.fwdekker.randomness.integer.IntegerGroupAction
-import com.fwdekker.randomness.integer.IntegerSettingsAction
-import com.fwdekker.randomness.string.StringGroupAction
-import com.fwdekker.randomness.string.StringSettingsAction
-import com.fwdekker.randomness.uds.UDSGroupAction
-import com.fwdekker.randomness.uds.UDSSettingsAction
+import com.fwdekker.randomness.template.TemplateGroupAction
+import com.fwdekker.randomness.template.TemplateSettingsAction
 import com.fwdekker.randomness.ui.registerModifierActions
-import com.fwdekker.randomness.uuid.UuidGroupAction
-import com.fwdekker.randomness.uuid.UuidSettingsAction
-import com.fwdekker.randomness.word.WordGroupAction
-import com.fwdekker.randomness.word.WordSettingsAction
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.popup.list.ListPopupImpl
 import icons.RandomnessIcons
@@ -111,16 +99,7 @@ class PopupAction : AnAction() {
          * @param event carries information on the invocation place
          */
         override fun getChildren(event: AnActionEvent?) =
-            arrayOf(
-                IntegerGroupAction(),
-                DecimalGroupAction(),
-                StringGroupAction(),
-                WordGroupAction(),
-                UuidGroupAction(),
-                UDSGroupAction(),
-                Separator(),
-                ArraySettingsAction()
-            )
+            arrayOf(TemplateGroupAction())
     }
 
     /**
@@ -133,16 +112,7 @@ class PopupAction : AnAction() {
          * @param event carries information on the invocation place
          */
         override fun getChildren(event: AnActionEvent?) =
-            arrayOf(
-                IntegerSettingsAction(),
-                DecimalSettingsAction(),
-                StringSettingsAction(),
-                WordSettingsAction(),
-                UuidSettingsAction(),
-                UDSSettingsAction(),
-                Separator(),
-                ArraySettingsAction()
-            )
+            arrayOf(TemplateSettingsAction())
     }
 
 

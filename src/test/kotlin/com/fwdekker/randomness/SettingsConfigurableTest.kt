@@ -19,7 +19,7 @@ import org.spekframework.spek2.style.specification.describe
 object SettingsConfigurableTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var settings: DummySettings
-    lateinit var settingsComponent: DummySettingsComponent
+    lateinit var settingsComponent: DummySettingsEditor
     lateinit var settingsComponentConfigurable: DummySettingsConfigurable
     lateinit var frame: FrameFixture
 
@@ -35,9 +35,9 @@ object SettingsConfigurableTest : Spek({
         settings = DummySettings()
             .apply { currentScheme.count = 6 }
 
-        settingsComponent = GuiActionRunner.execute<DummySettingsComponent> { DummySettingsComponent(settings) }
+        settingsComponent = GuiActionRunner.execute<DummySettingsEditor> { DummySettingsEditor(settings) }
         settingsComponentConfigurable = DummySettingsConfigurable(settingsComponent)
-        frame = Containers.showInFrame(settingsComponent.rootPane)
+        frame = Containers.showInFrame(settingsComponent.rootComponent)
     }
 
     afterEachTest {

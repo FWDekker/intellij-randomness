@@ -7,7 +7,6 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    id("java")
     id("org.jetbrains.kotlin.jvm") version "1.5.10"  // See also `gradle.properties`
     id("org.jetbrains.intellij") version "0.7.3"
 

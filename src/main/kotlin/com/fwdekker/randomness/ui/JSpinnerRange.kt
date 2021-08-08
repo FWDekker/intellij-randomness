@@ -1,63 +1,36 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.ValidationInfo
 import javax.swing.JSpinner
 
 
 /**
- * A container for two [JSpinner]s that indicate a range of values.
+ * Binds two spinners that form a range of valid values together.
+ *
+ * This function adds listeners to the spinners so that if one spinner's value is adjusted, the other's value is also
+ * adjusted if not doing so would make the range invalid. Specifically, this function guarantees that the minimum value
+ * never becomes larger than the maximum value, and guarantees that the difference between the minimum and the maximum
+ * never exceeds [maxRange].
  *
  * @param min the `JSpinner` that represents the minimum value
  * @param max the `JSpinner` that represents the maximum value
  * @param maxRange the maximum difference between `min` and `max`
- * @param name the name to use in error messages
  */
-class JSpinnerRange(
-    private val min: JSpinner,
-    private val max: JSpinner,
-    private val maxRange: Double? = null,
-    name: String? = null
-) {
-    /**
-     * The `name` parameter preceded by a whitespace if it was not null, or an empty string otherwise.
-     */
-    val name = if (name != null) " $name" else ""
+fun bindSpinners(min: JSpinner, max: JSpinner, maxRange: Double? = null) {
+    if (maxRange != null)
+        require(maxRange >= 0) { "maxRange must be a positive number." }
 
-    /**
-     * The current minimum value of the range.
-     */
-    val minValue: Double
-        get() = (this.min.value as Number).toDouble()
+    min.addChangeListener {
+        val minValue = (min.value as Number).toDouble()
+        val maxValue = (max.value as Number).toDouble()
 
-    /**
-     * The current maximum value of the range.
-     */
-    val maxValue: Double
-        get() = (this.max.value as Number).toDouble()
-
-
-    init {
-        if (maxRange != null)
-            require(maxRange >= 0) { "maxRange must be a positive number." }
-
-        min.addChangeListener { if (minValue > maxValue) max.value = minValue }
-        max.addChangeListener { if (maxValue < minValue) min.value = maxValue }
+        if (minValue > maxValue) max.value = minValue
+        if (maxRange != null && maxValue - minValue > maxRange) max.value = minValue + maxRange
     }
+    max.addChangeListener {
+        val minValue = (min.value as Number).toDouble()
+        val maxValue = (max.value as Number).toDouble()
 
-
-    /**
-     * Validates this range.
-     *
-     * @return `null` if the current value is valid, or a `ValidationInfo` object explaining why the current value is
-     * invalid
-     */
-    fun validateValue() =
-        when {
-            minValue > maxValue ->
-                ValidationInfo("The maximum$name should not be smaller than the minimum$name.", max)
-            maxRange != null && maxValue - minValue > maxRange ->
-                ValidationInfo("The$name range should not exceed $maxRange.", max)
-            else ->
-                null
-        }
+        if (maxValue < minValue) min.value = maxValue
+        if (maxRange != null && maxValue - minValue > maxRange) min.value = maxValue - maxRange
+    }
 }

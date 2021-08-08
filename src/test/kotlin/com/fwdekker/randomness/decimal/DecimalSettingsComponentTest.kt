@@ -12,12 +12,12 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * GUI tests for [DecimalSettingsComponent].
+ * GUI tests for [DecimalSchemeEditor].
  */
 object DecimalSettingsComponentTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var decimalSettings: DecimalSettings
-    lateinit var decimalSettingsComponent: DecimalSettingsComponent
+    lateinit var decimalSchemeEditor: DecimalSchemeEditor
     lateinit var frame: FrameFixture
 
 
@@ -41,9 +41,9 @@ object DecimalSettingsComponentTest : Spek({
                 currentScheme.suffix = ""
             }
 
-        decimalSettingsComponent =
-            GuiActionRunner.execute<DecimalSettingsComponent> { DecimalSettingsComponent(decimalSettings) }
-        frame = showInFrame(decimalSettingsComponent.rootPane)
+        decimalSchemeEditor =
+            GuiActionRunner.execute<DecimalSchemeEditor> { DecimalSchemeEditor(decimalSettings) }
+        frame = showInFrame(decimalSchemeEditor.rootComponent)
     }
 
     afterEachTest {
@@ -103,7 +103,7 @@ object DecimalSettingsComponentTest : Spek({
                 frame.textBox("suffix").target().text = "court"
             }
 
-            decimalSettingsComponent.saveSettings()
+            decimalSchemeEditor.saveSettings()
 
             assertThat(decimalSettings.currentScheme.minValue).isEqualTo(112.54)
             assertThat(decimalSettings.currentScheme.maxValue).isEqualTo(644.74)
@@ -126,9 +126,9 @@ object DecimalSettingsComponentTest : Spek({
 
     describe("validation") {
         it("passes for the default settings") {
-            GuiActionRunner.execute { decimalSettingsComponent.loadSettings(DecimalSettings()) }
+            GuiActionRunner.execute { decimalSchemeEditor.loadSettings(DecimalSettings()) }
 
-            assertThat(decimalSettingsComponent.doValidate()).isNull()
+            assertThat(decimalSchemeEditor.doValidate()).isNull()
         }
 
         describe("value range") {
@@ -138,7 +138,7 @@ object DecimalSettingsComponentTest : Spek({
                     frame.spinner("maxValue").target().value = 1E53
                 }
 
-                val validationInfo = decimalSettingsComponent.doValidate()
+                val validationInfo = decimalSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("maxValue").target())
@@ -150,13 +150,13 @@ object DecimalSettingsComponentTest : Spek({
             it("passes if the decimal count is zero") {
                 GuiActionRunner.execute { frame.spinner("decimalCount").target().value = 0 }
 
-                assertThat(decimalSettingsComponent.doValidate()).isNull()
+                assertThat(decimalSchemeEditor.doValidate()).isNull()
             }
 
             it("fails if the decimal count is negative") {
                 GuiActionRunner.execute { frame.spinner("decimalCount").target().value = -851 }
 
-                val validationInfo = decimalSettingsComponent.doValidate()
+                val validationInfo = decimalSchemeEditor.doValidate()
 
                 assertThat(validationInfo).isNotNull()
                 assertThat(validationInfo?.component).isEqualTo(frame.spinner("decimalCount").target())

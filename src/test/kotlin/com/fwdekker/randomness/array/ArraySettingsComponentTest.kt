@@ -12,12 +12,12 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * GUI tests for [ArraySettingsComponent].
+ * GUI tests for [ArraySchemeDecoratorEditor].
  */
 object ArraySettingsComponentTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
-    lateinit var arraySettings: ArraySettings
-    lateinit var arraySettingsComponent: ArraySettingsComponent
+    lateinit var arraySchemeDecorator: ArraySchemeDecorator
+    lateinit var arraySettingsComponent: ArraySchemeDecoratorEditor
     lateinit var frame: FrameFixture
 
 
@@ -29,7 +29,7 @@ object ArraySettingsComponentTest : Spek({
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        arraySettings = ArraySettings()
+        arraySchemeDecorator = ArraySchemeDecorator()
             .apply {
                 currentScheme.count = 6
                 currentScheme.brackets = "[]"
@@ -38,8 +38,8 @@ object ArraySettingsComponentTest : Spek({
             }
 
         arraySettingsComponent =
-            GuiActionRunner.execute<ArraySettingsComponent> { ArraySettingsComponent(arraySettings) }
-        frame = showInFrame(arraySettingsComponent.rootPane)
+            GuiActionRunner.execute<ArraySchemeDecoratorEditor> { ArraySchemeDecoratorEditor(arraySchemeDecorator) }
+        frame = showInFrame(arraySettingsComponent.rootComponent)
     }
 
     afterEachTest {
@@ -80,7 +80,7 @@ object ArraySettingsComponentTest : Spek({
                 frame.checkBox("spaceAfterSeparator").target().isSelected = false
             }
 
-            val scheme = ArrayScheme()
+            val scheme = ArraySchemeDecorator()
             arraySettingsComponent.saveScheme(scheme)
 
             assertThat(scheme.count).isEqualTo(642)
@@ -100,7 +100,7 @@ object ArraySettingsComponentTest : Spek({
 
     describe("validation") {
         it("passes for the default settings") {
-            GuiActionRunner.execute { arraySettingsComponent.loadSettings(ArraySettings()) }
+            GuiActionRunner.execute { arraySettingsComponent.loadSettings(ArraySchemeDecorator()) }
 
             assertThat(arraySettingsComponent.doValidate()).isNull()
         }
