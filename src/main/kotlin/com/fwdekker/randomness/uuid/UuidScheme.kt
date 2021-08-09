@@ -8,6 +8,8 @@ import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.intellij.util.xmlb.annotations.Transient
+import icons.RandomnessIcons
 import kotlin.random.asJavaRandom
 
 
@@ -27,6 +29,11 @@ data class UuidScheme(
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
+    @Transient
+    override val name = "UUID"
+    override val icons = RandomnessIcons.Uuid
+
+
     /**
      * Returns random type 4 UUIDs.
      *
@@ -61,7 +68,7 @@ data class UuidScheme(
     }
 
 
-    override fun deepCopy() = copy()
+    override fun deepCopy() = copy(decorator = decorator.deepCopy())
 
 
     /**

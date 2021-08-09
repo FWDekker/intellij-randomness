@@ -38,13 +38,13 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEdito
 
 
     init {
-        loadScheme(scheme)
-
         base.addChangeListener {
             groupingSeparatorGroup.forEach { it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE }
             capitalizationGroup.forEach { it.isEnabled = base.value > IntegerScheme.DECIMAL_BASE }
         }
         base.changeListeners.forEach { it.stateChanged(ChangeEvent(base)) }
+
+        loadScheme(scheme)
     }
 
     /**

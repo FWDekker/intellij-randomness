@@ -2,6 +2,8 @@ package com.fwdekker.randomness.literal
 
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.intellij.util.xmlb.annotations.Transient
+import icons.RandomnessIcons
 
 
 /**
@@ -14,6 +16,12 @@ data class LiteralScheme(
     var literal: String = DEFAULT_LITERAL,
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
+    @Transient
+    override val name = "Literal"
+
+    override val icons = RandomnessIcons.String
+
+
     /**
      * Returns a list containing the given number of copies of the literal.
      *
@@ -23,7 +31,7 @@ data class LiteralScheme(
     override fun generateUndecoratedStrings(count: Int) = List(count) { literal }
 
 
-    override fun deepCopy() = copy()
+    override fun deepCopy() = copy(decorator = decorator.deepCopy())
 
 
     /**

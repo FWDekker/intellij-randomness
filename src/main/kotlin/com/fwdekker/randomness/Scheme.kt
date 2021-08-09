@@ -1,7 +1,10 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.Transient
+import icons.RandomnessIcons
+import javax.swing.Icon
 import kotlin.random.Random
 
 
@@ -14,7 +17,26 @@ abstract class Scheme {
     /**
      * Settings that determine whether the output should be an array of values.
      */
-    abstract val decorator: SchemeDecorator?
+    abstract val decorator: ArraySchemeDecorator?
+
+    /**
+     * The name of the scheme as shown to the user.
+     */
+    abstract val name: String
+
+    /**
+     * The icons that represent schemes of this type.
+     */
+    @Transient
+    open val icons: RandomnessIcons? = null
+
+    /**
+     * The icon that represents this scheme instance.
+     */
+    @get:Transient
+    open val icon: Icon?
+        get() = if (decorator?.enabled == true) icons?.Array
+        else icons?.Base
 
     /**
      * The random number generator used to generate random values.
@@ -70,6 +92,17 @@ abstract class Scheme {
      * @return a deep copy of this scheme
      */
     abstract fun deepCopy(): Scheme
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The default value of the [name] field.
+         */
+        const val DEFAULT_NAME: String = "Unnamed scheme"
+    }
 }
 
 /**

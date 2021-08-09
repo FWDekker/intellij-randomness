@@ -5,6 +5,7 @@ import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
+import icons.RandomnessIcons
 
 
 /**
@@ -27,6 +28,10 @@ data class WordScheme(
     var activeUserDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES,
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
+    @Transient
+    override val name = "Word"
+    override val icons = RandomnessIcons.Word
+
     /**
      * A mutable view of the filenames of the files in [activeBundledDictionaryFiles].
      */
@@ -107,10 +112,11 @@ data class WordScheme(
 
 
     override fun deepCopy() =
-        copy().also {
-            it.activeBundledDictionaries = activeBundledDictionaries.map(DictionaryReference::copy).toSet()
-            it.activeUserDictionaries = activeUserDictionaries.map(DictionaryReference::copy).toSet()
-        }
+        copy(decorator = decorator.deepCopy())
+            .also {
+                it.activeBundledDictionaries = activeBundledDictionaries.map(DictionaryReference::copy).toSet()
+                it.activeUserDictionaries = activeUserDictionaries.map(DictionaryReference::copy).toSet()
+            }
 
 
     /**
