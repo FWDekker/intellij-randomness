@@ -2,7 +2,6 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeEditor
-import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.decimal.DecimalSchemeEditor
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -26,9 +25,9 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.ui.AnActionButton
 import com.intellij.ui.AnActionButtonRunnable
 import com.intellij.ui.ColoredTreeCellRenderer
-import com.intellij.ui.JBColor
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.LayeredIcon
+import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextField
@@ -77,13 +76,9 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
         templateTree.selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         templateTree.cellRenderer = object : ColoredTreeCellRenderer() {
             override fun customizeCellRenderer(
-                tree: JTree,
-                value: Any?,
-                selected: Boolean,
-                expanded: Boolean,
-                leaf: Boolean,
-                row: Int,
-                hasFocus: Boolean
+                tree: JTree, value: Any?,
+                selected: Boolean, expanded: Boolean, leaf: Boolean,
+                row: Int, hasFocus: Boolean
             ) {
                 val scheme = (value as? DefaultMutableTreeNode)?.userObject as? Scheme
                 if (scheme == null) {
@@ -91,12 +86,20 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
                     return
                 }
 
-                icon =
-                    if ((scheme.decorator as? ArraySchemeDecorator)?.enabled == true) scheme.icons?.Array
-                    else scheme.icons?.Base
-                append(scheme.name.ifBlank { "<empty>" })
+                icon = scheme.icon
+                append(
+                    scheme.name.ifBlank { "<empty>" },
+                    when {
+                        scheme.doValidate() != null ->
+                            SimpleTextAttributes.ERROR_ATTRIBUTES
+                        scheme is Template &&
+                            originalScheme.templates.firstOrNull { it.name == scheme.name } != scheme ->
+                            SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES
+                        else ->
+                            SimpleTextAttributes.REGULAR_ATTRIBUTES
+                    }
+                )
             }
-
         }
         templateTree.setExpandableItemsEnabled(false)
         templateTree.emptyText.text = EMPTY_TEXT
@@ -117,12 +120,20 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
 
                     schemeEditorPanel.add(editor.rootComponent)
                     schemeEditorPanel.revalidate()
+                    changeListeners.forEach { it() }
                 }
         }
         splitter.firstComponent = JBScrollPane(decorateTemplateList(templateTree))
 
         // Right half
-        val previewPanel = PreviewPanel { readScheme() }
+        val previewPanel = PreviewPanel {
+            val selectedNode = templateTree.getSelectedNode() ?: return@PreviewPanel LiteralScheme()
+            val selectedTemplate = selectedNode.userObject as? Template
+                ?: (selectedNode.parent as? DefaultMutableTreeNode)?.userObject as? Template
+                ?: return@PreviewPanel LiteralScheme()
+
+            readScheme().templates.first { it.name == selectedTemplate.name }
+        }
         addChangeListener { previewPanel.updatePreview() }
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
 
@@ -325,6 +336,8 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
          * The [Template]-related entries in [AddPopupStep].
          */
         private inner class AddTemplatePopupStep : BaseListPopupStep<Template>(null, TemplateList.DEFAULT_TEMPLATES) {
+            override fun getIconFor(value: Template?) = value?.icon
+
             override fun getTextFor(value: Template?) = value?.name ?: Template.DEFAULT_NAME
 
             override fun onChosen(value: Template?, finalChoice: Boolean): Nothing? =
@@ -340,6 +353,8 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
             null,
             listOf(LiteralScheme(), IntegerScheme(), DecimalScheme(), StringScheme(), WordScheme(), UuidScheme())
         ) {
+            override fun getIconFor(value: Scheme?) = value?.icon
+
             override fun getTextFor(value: Scheme?) = value?.name ?: Scheme.DEFAULT_NAME
 
             override fun onChosen(value: Scheme?, finalChoice: Boolean): Nothing? =
@@ -463,7 +478,3 @@ private fun JTree.getSelectedNode() =
             if (!isRootVisible && it == getRoot()) null
             else it
         }
-
-
-private val MODIFIED_COLOR = JBColor.namedColor("Tree.modifiedItemForeground", JBColor.BLUE)
-private val ERROR_COLOR = JBColor.namedColor("Tree.errorForeground", JBColor.RED)

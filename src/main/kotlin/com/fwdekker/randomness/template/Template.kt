@@ -110,7 +110,7 @@ data class TemplateList(
          */
         val DEFAULT_TEMPLATES: List<Template>
             get() = listOf(
-                Template("Integer", listOf(IntegerScheme(), IntegerScheme())),
+                Template("Integer", listOf(IntegerScheme())),
                 Template("Decimal", listOf(DecimalScheme())),
                 Template("String", listOf(StringScheme())),
                 Template("Word", listOf(WordScheme())),
