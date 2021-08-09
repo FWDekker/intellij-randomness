@@ -21,6 +21,8 @@ data class ArraySchemeDecorator(
 ) : SchemeDecorator() {
     override val decorator: Nothing? = null
 
+    override val name = "Array"
+
 
     override fun generateUndecoratedStrings(count: Int): List<String> =
         if (!enabled)

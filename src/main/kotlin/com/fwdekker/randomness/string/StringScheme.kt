@@ -5,6 +5,7 @@ import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
+import icons.RandomnessIcons
 
 
 /**
@@ -30,6 +31,11 @@ data class StringScheme(
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS,
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
+    @Transient
+    override val name = "String"
+
+    override val icons = RandomnessIcons.String
+
     private val activeSymbols: List<String>
         get() =
             symbolSetSettings.symbolSetList

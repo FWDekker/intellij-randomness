@@ -19,7 +19,7 @@ import com.intellij.util.xmlb.annotations.XCollection
  * @property decorator Settings that determine whether the output should be an array of values.
  */
 data class Template(
-    var name: String = DEFAULT_NAME,
+    override var name: String = DEFAULT_NAME,
     @get:XCollection(
         elementTypes = [
             IntegerScheme::class,
@@ -77,6 +77,7 @@ data class TemplateList(
     var templates: List<Template> = DEFAULT_TEMPLATES
 ) : Scheme() {
     override val decorator: Nothing? = null
+    override val name = "TemplateList"
 
 
     override fun generateUndecoratedStrings(count: Int) =

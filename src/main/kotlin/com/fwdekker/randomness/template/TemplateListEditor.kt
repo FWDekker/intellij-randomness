@@ -2,6 +2,7 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.decimal.DecimalSchemeEditor
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -12,6 +13,7 @@ import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.StringSchemeEditor
 import com.fwdekker.randomness.template.TemplateSettings.Companion.default
 import com.fwdekker.randomness.ui.PreviewPanel
+import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
@@ -19,21 +21,21 @@ import com.fwdekker.randomness.word.WordSchemeEditor
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionToolbarPosition
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.CommonShortcuts
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.ui.AnActionButton
+import com.intellij.ui.AnActionButtonRunnable
+import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.JBColor
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.LayeredIcon
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.JBUI
 import java.awt.BorderLayout
-import javax.swing.DefaultListModel
 import javax.swing.JLabel
-import javax.swing.JList
 import javax.swing.JPanel
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
@@ -44,7 +46,7 @@ import kotlin.math.min
 
 
 /**
- * Component for editing [TemplateList].
+ * Component for editing [TemplateList]s.
  *
  * The editor consists of a left side and a right side. The left side contains a tree with the templates as roots and
  * their schemes as the leaves. When the user selects a scheme, the appropriate [SchemeEditor] for that scheme is loaded
@@ -73,14 +75,28 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
         // Left half
         templateTree.isRootVisible = false
         templateTree.selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
-        templateTree.setCellRenderer { _, value, _, _, _, _, _ ->
-            JLabel((value as? DefaultMutableTreeNode)?.userObject?.let { scheme ->
-                when (scheme) {
-                    is Template -> scheme.name
-                    is Scheme -> scheme::class.simpleName?.dropLast("Scheme".length) ?: "Scheme"
-                    else -> "Scheme"
+        templateTree.cellRenderer = object : ColoredTreeCellRenderer() {
+            override fun customizeCellRenderer(
+                tree: JTree,
+                value: Any?,
+                selected: Boolean,
+                expanded: Boolean,
+                leaf: Boolean,
+                row: Int,
+                hasFocus: Boolean
+            ) {
+                val scheme = (value as? DefaultMutableTreeNode)?.userObject as? Scheme
+                if (scheme == null) {
+                    append("<unknown>")
+                    return
                 }
-            })
+
+                icon =
+                    if ((scheme.decorator as? ArraySchemeDecorator)?.enabled == true) scheme.icons?.Array
+                    else scheme.icons?.Base
+                append(scheme.name.ifBlank { "<empty>" })
+            }
+
         }
         templateTree.setExpandableItemsEnabled(false)
         templateTree.emptyText.text = EMPTY_TEXT
@@ -88,15 +104,15 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
             schemeEditor?.also { schemeEditorPanel.remove(it.rootComponent) }
 
             val selectedObject = templateTree.getSelectedNode()?.userObject as? Scheme
-            if (selectedObject == null || selectedObject is Template) {
-                return@addTreeSelectionListener
-            }
+                ?: return@addTreeSelectionListener
 
             schemeEditor = createEditor(selectedObject)
                 .also { editor ->
                     editor.addChangeListener {
                         editor.applyScheme()
                         changeListeners.forEach { it() }
+
+                        templateTree.updateUI()
                     }
 
                     schemeEditorPanel.add(editor.rootComponent)
@@ -127,95 +143,21 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
             .setPanelBorder(JBUI.Borders.empty())
             .setScrollPaneBorder(JBUI.Borders.empty())
             .setAddAction {
-                val selectedNode = templateTree.getSelectedNode()
-                val (parent, child) =
-                    when {
-                        selectedNode == null -> templateTree.getRoot() to DefaultMutableTreeNode(Template())
-                        selectedNode.userObject is Template -> selectedNode to DefaultMutableTreeNode(IntegerScheme())
-                        else -> selectedNode.parent as DefaultMutableTreeNode to DefaultMutableTreeNode(IntegerScheme())
-                    }
-
-                parent.insert(child, parent.getIndex(selectedNode) + 1)
-                templateTreeModel.reload()
-                templateTree.expandAll()
-                templateTree.select(child)
+                it.preferredPopupPoint?.let { point ->
+                    JBPopupFactory.getInstance().createListPopup(AddPopupStep()).show(point)
+                }
             }
             .setAddActionName("Add")
-            .setRemoveAction {
-                val selectedNode = templateTree.getSelectedNode() ?: return@setRemoveAction
-                val parent = selectedNode.parent ?: return@setRemoveAction
-                val childIndex = parent.getIndex(selectedNode)
-
-                templateTreeModel.removeNodeFromParent(templateTree.getSelectedNode())
-
-                templateTree.select(
-                    if (parent.childCount == 0) parent as DefaultMutableTreeNode
-                    else parent.getChildAt(min(childIndex, parent.childCount - 1)) as DefaultMutableTreeNode
-                )
-            }
+            .setAddIcon(LayeredIcon.ADD_WITH_DROPDOWN)
+            .setRemoveAction(RemovePopupAction())
             .setRemoveActionName("Remove")
-            .setRemoveActionUpdater { templateTree.lastSelectedPathComponent != templateTree.getRoot() }
-            .addExtraAction(object : AnActionButton("Copy", AllIcons.Actions.Copy) {
-                override fun actionPerformed(event: AnActionEvent) {
-                    val selectedNode = templateTree.getSelectedNode()
-                    val selectedScheme = selectedNode?.userObject as? Scheme ?: return
-                    val parent = selectedNode.parent as? DefaultMutableTreeNode ?: return
-
-                    val newNode = DefaultMutableTreeNode(selectedScheme.deepCopy())
-                    parent.add(newNode)
-                    templateTreeModel.reload()
-                    templateTree.expandAll()
-                    templateTree.select(newNode)
-                }
-
-                override fun isEnabled() = templateTree.lastSelectedPathComponent != templateTree.getRoot()
-            })
-            .addExtraAction(object : AnActionButton("Up", AllIcons.Actions.MoveUp) {
-                override fun actionPerformed(event: AnActionEvent) {
-                    val child = templateTree.getSelectedNode()
-                    val parent = child?.parent as? DefaultMutableTreeNode ?: return
-
-                    val currentIndex = parent.getIndex(child)
-                    parent.remove(child)
-                    parent.insert(child, currentIndex - 1)
-
-                    templateTreeModel.reload()
-                    templateTree.expandAll()
-                    templateTree.select(child)
-                }
-
-                override fun isEnabled(): Boolean {
-                    val node = templateTree.getSelectedNode()
-                    val parent = node?.parent ?: return false
-                    val value = node.userObject
-
-                    return value != null && parent.getIndex(node) > 0
-                }
-            })
-            .addExtraAction(object : AnActionButton("Down", AllIcons.Actions.MoveDown) {
-                override fun actionPerformed(event: AnActionEvent) {
-                    val child = templateTree.getSelectedNode()
-                    val parent = child?.parent as? DefaultMutableTreeNode ?: return
-
-                    val currentIndex = parent.getIndex(child)
-                    parent.remove(child)
-                    parent.insert(child, currentIndex + 1)
-
-                    templateTreeModel.reload()
-                    templateTree.expandAll()
-                    templateTree.select(child)
-                }
-
-                override fun isEnabled(): Boolean {
-                    val node = templateTree.getSelectedNode()
-                    val parent = node?.parent ?: return false
-                    val value = node.userObject
-
-                    return value != null && parent.getIndex(node) < parent.childCount - 1
-                }
-            })
+            .setRemoveActionUpdater { templateTree.lastSelectedPathComponent != null }
+            .addExtraAction(CopyActionButton())
+            .addExtraAction(UpActionButton())
+            .addExtraAction(DownActionButton())
             .setButtonComparator("Add", "Remove", "Copy", "Up", "Down")
             .createPanel()
+
 
     /**
      * Creates an editor to edit the given scheme.
@@ -230,8 +172,60 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
             is UuidScheme -> UuidSchemeEditor(scheme)
             is WordScheme -> WordSchemeEditor(scheme)
             is LiteralScheme -> LiteralSchemeEditor(scheme)
+            is Template -> TemplateEditor(scheme)
             else -> error("Unknown scheme type '${scheme.javaClass.canonicalName}'.")
         }
+
+    /**
+     * Adds the given scheme at an appropriate location in the tree based on the currently selected node.
+     *
+     * @param scheme the scheme to add
+     */
+    private fun addScheme(scheme: Scheme) {
+        val selectedNode = templateTree.getSelectedNode()
+        val child = DefaultMutableTreeNode(scheme)
+        val parent =
+            when {
+                selectedNode == null ->
+                    if (scheme is Template) templateTree.getRoot()
+                    else error("Cannot add non-template to root.")
+                selectedNode.userObject is Template ->
+                    if (scheme !is Template) selectedNode
+                    else templateTree.getRoot()
+                else ->
+                    if (scheme !is Template) selectedNode.parent as DefaultMutableTreeNode
+                    else templateTree.getRoot()
+            }
+
+        if (selectedNode == null)
+            parent.add(child)
+        else
+            parent.insert(child, parent.getIndex(selectedNode) + 1)
+
+        templateTreeModel.reload()
+        templateTree.expandAll()
+        templateTree.select(child)
+    }
+
+    /**
+     * Moves the given node down the given number of positions.
+     *
+     * The node will be moved down relative to its siblings. The parent does not change.
+     *
+     * @param node the node to move down
+     * @param positions the number of positions to move the node down by within its parent; can be negative
+     */
+    private fun moveNodeDownBy(node: DefaultMutableTreeNode, positions: Int) {
+        val parent = node.parent as? DefaultMutableTreeNode ?: return
+        val oldIndex = parent.getIndex(node)
+
+        parent.remove(node)
+        parent.insert(node, oldIndex + positions)
+
+        templateTreeModel.reload()
+        templateTree.expandAll()
+        templateTree.select(node)
+    }
 
 
     override fun loadScheme(scheme: TemplateList) {
@@ -285,6 +279,139 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
 
 
     /**
+     * Component for editing only the name of [Template]s.
+     *
+     * @param template the template to edit
+     */
+    private class TemplateEditor(template: Template) : SchemeEditor<Template>(template) {
+        override val rootComponent = JPanel(BorderLayout())
+        private val nameInput = JBTextField()
+
+
+        init {
+            val namePanel = JPanel(BorderLayout())
+            namePanel.add(JLabel("Name:"), BorderLayout.WEST)
+            namePanel.add(nameInput)
+            rootComponent.add(namePanel, BorderLayout.NORTH)
+
+            loadScheme()
+        }
+
+
+        override fun loadScheme(scheme: Template) = super.loadScheme(scheme).also { nameInput.text = scheme.name }
+
+        override fun readScheme() = originalScheme.deepCopy().also { it.name = nameInput.text }
+
+
+        override fun addChangeListener(listener: () -> Unit) = addChangeListenerTo(nameInput, listener = listener)
+    }
+
+
+    /**
+     * The entries to display in a popup when the add button is pressed.
+     */
+    private inner class AddPopupStep : BaseListPopupStep<String>(null, listOf("Template", "Scheme")) {
+        override fun hasSubstep(selectedValue: String?) = true
+
+        override fun onChosen(selectedValue: String?, finalChoice: Boolean) =
+            when (selectedValue) {
+                "Template" -> AddTemplatePopupStep()
+                "Scheme" -> AddSchemePopupStep()
+                else -> null
+            }
+
+
+        /**
+         * The [Template]-related entries in [AddPopupStep].
+         */
+        private inner class AddTemplatePopupStep : BaseListPopupStep<Template>(null, TemplateList.DEFAULT_TEMPLATES) {
+            override fun getTextFor(value: Template?) = value?.name ?: Template.DEFAULT_NAME
+
+            override fun onChosen(value: Template?, finalChoice: Boolean): Nothing? =
+                value?.also { addScheme(it.deepCopy()) }?.let { null }
+
+            override fun isSpeedSearchEnabled() = true
+        }
+
+        /**
+         * The [Scheme]-related entries in [AddPopupStep].
+         */
+        private inner class AddSchemePopupStep : BaseListPopupStep<Scheme>(
+            null,
+            listOf(LiteralScheme(), IntegerScheme(), DecimalScheme(), StringScheme(), WordScheme(), UuidScheme())
+        ) {
+            override fun getTextFor(value: Scheme?) = value?.name ?: Scheme.DEFAULT_NAME
+
+            override fun onChosen(value: Scheme?, finalChoice: Boolean): Nothing? =
+                value?.also { addScheme(it.deepCopy()) }?.let { null }
+
+            override fun isSpeedSearchEnabled() = true
+        }
+    }
+
+    /**
+     * The action to invoke when the remove button is pressed.
+     */
+    private inner class RemovePopupAction : AnActionButtonRunnable {
+        override fun run(t: AnActionButton?) {
+            val selectedNode = templateTree.getSelectedNode()
+            val parent = selectedNode?.parent ?: return
+            val childIndex = parent.getIndex(selectedNode)
+
+            templateTreeModel.removeNodeFromParent(selectedNode)
+
+            templateTree.select(
+                if (parent.childCount == 0) parent as DefaultMutableTreeNode
+                else parent.getChildAt(min(childIndex, parent.childCount - 1)) as DefaultMutableTreeNode
+            )
+        }
+    }
+
+    /**
+     * The button to display for copying an entry in the tree.
+     */
+    private inner class CopyActionButton : AnActionButton("Copy", AllIcons.Actions.Copy) {
+        override fun actionPerformed(event: AnActionEvent) {
+            (templateTree.getSelectedNode()?.userObject as? Scheme)?.also { addScheme(it.deepCopy()) }
+        }
+
+        override fun isEnabled() = templateTree.lastSelectedPathComponent != null
+    }
+
+    /**
+     * The button to display for moving an entry up the tree.
+     */
+    private inner class UpActionButton : AnActionButton("Up", AllIcons.Actions.MoveUp) {
+        override fun actionPerformed(event: AnActionEvent) {
+            templateTree.getSelectedNode()?.also { moveNodeDownBy(it, -1) }
+        }
+
+        override fun isEnabled(): Boolean {
+            val node = templateTree.getSelectedNode()
+            val parent = node?.parent ?: return false
+
+            return node.userObject != null && parent.getIndex(node) > 0
+        }
+    }
+
+    /**
+     * The button to display for moving an entry down the tree.
+     */
+    private inner class DownActionButton : AnActionButton("Down", AllIcons.Actions.MoveDown) {
+        override fun actionPerformed(event: AnActionEvent) {
+            templateTree.getSelectedNode()?.also { moveNodeDownBy(it, 1) }
+        }
+
+        override fun isEnabled(): Boolean {
+            val node = templateTree.getSelectedNode()
+            val parent = node?.parent ?: return false
+
+            return node.userObject != null && parent.getIndex(node) < parent.childCount - 1
+        }
+    }
+
+
+    /**
      * Holds constants.
      */
     companion object {
@@ -302,61 +429,40 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
 
 
 /**
- * Utility class for building a `DefaultActionGroup` consisting of actions that add a specified element to a list.
+ * Returns the root of the tree as a [DefaultMutableTreeNode].
  *
- * @param T the type of element
- * @property list the list that actions add items to
- * @property listModel the model of the list that actions add items to
+ * @return the root of the tree as a [DefaultMutableTreeNode]
  */
-private class DefaultActionGroupBuilder<T>(
-    private val list: JList<T>,
-    private val listModel: DefaultListModel<T>,
-) {
-    private val actions = mutableListOf<DumbAwareAction>()
-
-
-    /**
-     * Adds an action to the group.
-     *
-     * @param name the name of the action to add
-     * @param item returns the item to be added whenever the action is invoked
-     * @return this `DefaultActionGroupBuilder`
-     */
-    fun addAction(name: String, item: () -> T): DefaultActionGroupBuilder<T> {
-        actions.add(object : DumbAwareAction(name) {
-            override fun actionPerformed(e: AnActionEvent) {
-                listModel.addElement(item())
-                list.selectedIndex = listModel.size - 1
-            }
-        })
-        return this
-    }
-
-    /**
-     * Builds the `DefaultActionGroup` consisting of the added actions.
-     *
-     * @return the `DefaultActionGroup` consisting of the added actions
-     */
-    fun buildActionGroup() =
-        DefaultActionGroup(actions).apply {
-            templatePresentation.icon = LayeredIcon.ADD_WITH_DROPDOWN
-            templatePresentation.text = "Add"
-            registerCustomShortcutSet(CommonShortcuts.getNewForDialogs(), null)
-        }
-}
-
-
 private fun JTree.getRoot() = (model as DefaultTreeModel).root as DefaultMutableTreeNode
 
+/**
+ * Expands all nodes in the tree.
+ */
 private fun JTree.expandAll() {
     getRoot().children().toList().forEach { expandPath(TreePath((it as DefaultMutableTreeNode).path)) }
 }
 
+/**
+ * Selects the given node.
+ *
+ * @param node the node to select
+ */
 private fun JTree.select(node: DefaultMutableTreeNode) {
     selectionModel.selectionPath = TreePath(node.path)
 }
 
-private fun JTree.getSelectedNode() = lastSelectedPathComponent as? DefaultMutableTreeNode?
+/**
+ * Returns the currently selected node, or `null` if no node is selected, or `null` if the root is not visible and the
+ * root is selected.
+ *
+ * @return the currently selected node
+ */
+private fun JTree.getSelectedNode() =
+    (lastSelectedPathComponent as? DefaultMutableTreeNode?)
+        ?.let {
+            if (!isRootVisible && it == getRoot()) null
+            else it
+        }
 
 
 private val MODIFIED_COLOR = JBColor.namedColor("Tree.modifiedItemForeground", JBColor.BLUE)

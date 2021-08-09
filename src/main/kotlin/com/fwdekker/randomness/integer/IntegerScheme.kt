@@ -4,6 +4,8 @@ import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.intellij.util.xmlb.annotations.Transient
+import icons.RandomnessIcons
 import java.text.DecimalFormat
 
 
@@ -29,6 +31,11 @@ data class IntegerScheme(
     var suffix: String = DEFAULT_SUFFIX,
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
+    @Transient
+    override val name = "Integer"
+    override val icons = RandomnessIcons.Integer
+
+
     /**
      * Returns random integers between the minimum and maximum value, inclusive.
      *
