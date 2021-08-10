@@ -1,6 +1,5 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.DataInsertAction.Companion.GENERATOR_TIMEOUT
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit

@@ -1,6 +1,7 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.template.TemplateGroupAction
+import com.fwdekker.randomness.template.TemplateSettings
 import com.fwdekker.randomness.template.TemplateSettingsAction
 import com.fwdekker.randomness.ui.registerModifierActions
 import com.intellij.openapi.actionSystem.ActionGroup
@@ -99,7 +100,7 @@ class PopupAction : AnAction() {
          * @param event carries information on the invocation place
          */
         override fun getChildren(event: AnActionEvent?) =
-            arrayOf(TemplateGroupAction())
+            TemplateSettings.default.state.templates.map { TemplateGroupAction(it) }.toTypedArray()
     }
 
     /**

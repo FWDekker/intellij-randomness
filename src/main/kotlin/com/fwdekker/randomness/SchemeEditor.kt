@@ -55,7 +55,7 @@ abstract class SchemeEditor<S : Scheme>(val originalScheme: S) {
      *
      * Does nothing if and only if [isModified] return false.
      */
-    fun reset() = loadScheme(originalScheme)
+    open fun reset() = loadScheme(originalScheme)
 
     /**
      * Validates the scheme of the editor, i.e. of [readScheme], and indicates whether and why it is invalid.
