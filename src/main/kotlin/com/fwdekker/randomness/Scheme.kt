@@ -106,7 +106,7 @@ abstract class Scheme {
 }
 
 /**
- * Transparently extends the functionality of a [Scheme] with a decorating function.
+ * Transparently extends or alters the functionality of a [Scheme] with a decorating function.
  */
 abstract class SchemeDecorator : Scheme() {
     /**

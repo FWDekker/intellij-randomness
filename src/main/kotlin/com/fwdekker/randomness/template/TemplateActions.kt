@@ -23,6 +23,7 @@ class TemplateGroupAction(
     private val template: Template = TemplateSettings.default.state.templates.first()
 ) : ActionGroup() {
     private val insertAction = TemplateInsertAction(template)
+    private val repeatInsertAction = TemplateInsertAction(template, repeat=true)
     private val settingsAction = TemplateSettingsAction(template)
 
 
@@ -35,7 +36,7 @@ class TemplateGroupAction(
         super.update(event)
 
         event.presentation.icon = template.icon ?: RandomnessIcons.Data.Base
-        event.presentation.text = "Random ${template.name}"
+        event.presentation.text = template.name
     }
 
     /**
@@ -52,8 +53,8 @@ class TemplateGroupAction(
      * @param event carries information on the invocation place
      */
     override fun actionPerformed(event: AnActionEvent) =
-        // alt behavior is handled by implementation of `actionPerformed`
         if (event.modifiers and ActionEvent.CTRL_MASK != 0) settingsAction.actionPerformed(event)
+        else if (event.modifiers and ActionEvent.ALT_MASK != 0) repeatInsertAction.actionPerformed(event)
         else insertAction.actionPerformed(event)
 
     /**
@@ -69,7 +70,7 @@ class TemplateGroupAction(
      * @param event carries information on the invocation place
      * @return variant actions for the main insertion action
      */
-    override fun getChildren(event: AnActionEvent?) = arrayOf(settingsAction)
+    override fun getChildren(event: AnActionEvent?) = arrayOf(repeatInsertAction, settingsAction)
 }
 
 
@@ -77,9 +78,10 @@ class TemplateGroupAction(
  * Inserts random strings in the editor based on the given template.
  *
  * @property template The template to use for inserting data.
+ * @property repeat True if and only if the same value should be inserted at each caret.
  * @see TemplateGroupAction
  */
-class TemplateInsertAction(private val template: Template) : AnAction() {
+class TemplateInsertAction(private val template: Template, private val repeat: Boolean = false) : AnAction() {
     /**
      * Sets the title of this action and disables this action if no editor is currently opened.
      *
@@ -90,7 +92,7 @@ class TemplateInsertAction(private val template: Template) : AnAction() {
         val editor = event.getData(CommonDataKeys.EDITOR)
 
         presentation.icon = template.icon
-        presentation.text = "Random ${template.name}"
+        presentation.text = (if (repeat) "Repeat " else "") + template.name
         presentation.isEnabled = editor != null
     }
 
@@ -107,7 +109,13 @@ class TemplateInsertAction(private val template: Template) : AnAction() {
 
         val data =
             try {
-                generateTimely { template.generateStrings(editor.caretModel.caretCount) }
+                generateTimely {
+                    if (repeat)
+                        template.generateStrings(1).single()
+                            .let { string -> List(editor.caretModel.caretCount) { string } }
+                    else
+                        template.generateStrings(editor.caretModel.caretCount)
+                }
             } catch (e: DataGenerationException) {
                 HintManager.getInstance().showErrorHint(
                     editor,

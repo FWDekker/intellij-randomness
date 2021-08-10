@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.literal.LiteralScheme
@@ -32,7 +33,7 @@ data class Template(
         ]
     )
     var schemes: List<Scheme> = DEFAULT_SCHEMES,
-    override var decorator: Nothing? = null
+    override var decorator: ArraySchemeDecorator? = null
 ) : Scheme() {
     override val icons: RandomnessIcons
         get() = schemes.singleOrNull()?.icons ?: RandomnessIcons.Data

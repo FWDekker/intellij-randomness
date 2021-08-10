@@ -60,22 +60,22 @@ data class ArraySchemeDecorator(
         const val MIN_COUNT = 1
 
         /**
-         * The default value of the [count][count] field.
+         * The default value of the [count] field.
          */
         const val DEFAULT_COUNT = 5
 
         /**
-         * The default value of the [brackets][brackets] field.
+         * The default value of the [brackets] field.
          */
         const val DEFAULT_BRACKETS = "[]"
 
         /**
-         * The default value of the [separator][separator] field.
+         * The default value of the [separator] field.
          */
         const val DEFAULT_SEPARATOR = ","
 
         /**
-         * The default value of the [isSpaceAfterSeparator][isSpaceAfterSeparator] field.
+         * The default value of the [isSpaceAfterSeparator] field.
          */
         const val DEFAULT_SPACE_AFTER_SEPARATOR = true
     }
