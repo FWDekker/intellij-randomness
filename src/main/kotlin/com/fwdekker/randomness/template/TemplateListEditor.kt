@@ -65,6 +65,7 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
     private var schemeEditor: SchemeEditor<*>? = null
 
     private val changeListeners = mutableListOf<() -> Unit>()
+    var queueSelection: String? = null
 
 
     init {
@@ -270,6 +271,25 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
                     )
                 }
         )
+
+    override fun reset() {
+        super.reset()
+
+        queueSelection?.also { select(it) }
+        queueSelection = null
+    }
+
+    /**
+     * Selects the template with the given name.
+     *
+     * @param name the name of the template to select
+     */
+    private fun select(name: String) {
+        templateTree.getRoot()
+            .children().toList().filterIsInstance<DefaultMutableTreeNode>()
+            .firstOrNull { (it.userObject as? Template)?.name?.equals(name, ignoreCase = true) == true }
+            ?.also { templateTree.select(it) }
+    }
 
 
     override fun isModified(): Boolean {

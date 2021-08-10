@@ -9,6 +9,7 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.XCollection
+import icons.RandomnessIcons
 
 
 /**
@@ -33,6 +34,10 @@ data class Template(
     var schemes: List<Scheme> = DEFAULT_SCHEMES,
     override var decorator: Nothing? = null
 ) : Scheme() {
+    override val icons: RandomnessIcons
+        get() = schemes.singleOrNull()?.icons ?: RandomnessIcons.Data
+
+
     override fun generateUndecoratedStrings(count: Int) =
         schemes.onEach { it.random = random }.map { it.generateStrings(count) }
             .let { data -> (0 until count).map { i -> data.joinToString(separator = "") { it[i] } } }

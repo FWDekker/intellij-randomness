@@ -115,3 +115,11 @@ abstract class SchemeDecorator : Scheme() {
     @Transient
     var generator: (Int) -> List<String> = { emptyList() }
 }
+
+/**
+ * Thrown if a random datum could not be generated.
+ *
+ * @param message the detail message
+ * @param cause the cause
+ */
+class DataGenerationException(message: String? = null, cause: Throwable? = null) : Exception(message, cause)
