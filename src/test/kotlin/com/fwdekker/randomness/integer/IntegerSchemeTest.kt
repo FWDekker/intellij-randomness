@@ -42,7 +42,7 @@ object IntegerSchemeTest : Spek({
                     integerScheme.minValue = minValue
                     integerScheme.maxValue = maxValue
 
-                    assertThat(integerScheme.generateStrings()).isEqualTo(expectedString)
+                    assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
                 }
             }
 
@@ -69,7 +69,7 @@ object IntegerSchemeTest : Spek({
                     integerScheme.base = base
                     integerScheme.groupingSeparator = groupingSeparator
 
-                    assertThat(integerScheme.generateStrings()).isEqualTo(expectedString)
+                    assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
                 }
             }
         }
@@ -85,7 +85,7 @@ object IntegerSchemeTest : Spek({
                     integerScheme.maxValue = value
                     integerScheme.groupingSeparator = groupingSeparator
 
-                    assertThat(integerScheme.generateStrings()).isEqualTo(expectedString)
+                    assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
                 }
             }
         }
@@ -105,7 +105,7 @@ object IntegerSchemeTest : Spek({
                     integerScheme.prefix = prefix
                     integerScheme.capitalization = capitalization
 
-                    assertThat(integerScheme.generateStrings()).isEqualTo(expectedString)
+                    assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
                 }
             }
         }
@@ -122,7 +122,7 @@ object IntegerSchemeTest : Spek({
                     integerScheme.maxValue = value
                     integerScheme.prefix = prefix
                     integerScheme.suffix = suffix
-                    assertThat(integerScheme.generateStrings()).isEqualTo(expectedString)
+                    assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
                 }
             }
         }
@@ -138,25 +138,25 @@ object IntegerSchemeTest : Spek({
             it("fails if the base is negative") {
                 integerScheme.base = -189
 
-                assertThat(integerScheme.doValidate()).isEqualTo("The base should be greater than or equal to 2.")
+                assertThat(integerScheme.doValidate()).isEqualTo("Base should be in range 2..36 but is -189.")
             }
 
             it("fails if the base is 0") {
                 integerScheme.base = 0
 
-                assertThat(integerScheme.doValidate()).isEqualTo("The base should be greater than or equal to 2.")
+                assertThat(integerScheme.doValidate()).isEqualTo("Base should be in range 2..36 but is 0.")
             }
 
             it("fails if the base is 1") {
                 integerScheme.base = 1
 
-                assertThat(integerScheme.doValidate()).isEqualTo("The base should be greater than or equal to 2.")
+                assertThat(integerScheme.doValidate()).isEqualTo("Base should be in range 2..36 but is 1.")
             }
 
             it("fails if the base is greater than 36") {
                 integerScheme.base = 68
 
-                assertThat(integerScheme.doValidate()).isEqualTo("The base should be greater than or equal to 2.")
+                assertThat(integerScheme.doValidate()).isEqualTo("Base should be in range 2..36 but is 68.")
             }
         }
     }

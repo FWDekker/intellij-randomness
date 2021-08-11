@@ -78,7 +78,7 @@ object WordSchemeEditorTest : Spek({
         }
 
         it("loads the settings' enclosure") {
-            GuiActionRunner.execute { editor.loadScheme(WordScheme(enclosure = "''")) }
+            GuiActionRunner.execute { editor.loadScheme(WordScheme(enclosure = "'")) }
 
             frame.radioButton("enclosureNone").requireSelected(false)
             frame.radioButton("enclosureSingle").requireSelected(true)
@@ -140,7 +140,7 @@ object WordSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.spinner("minLength").target().value = 840 }
             assertThat(editor.isModified()).isTrue()
 
-            editor.loadScheme(editor.readScheme())
+            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)

@@ -53,11 +53,18 @@ abstract class Scheme {
      * @throws DataGenerationException if data could not be generated
      */
     @Throws(DataGenerationException::class)
-    fun generateStrings(count: Int = 1): List<String> =
-        decorator?.let {
-            it.generator = ::generateUndecoratedStrings
-            it.generateStrings(count)
-        } ?: generateUndecoratedStrings(count)
+    fun generateStrings(count: Int = 1): List<String> {
+        doValidate()?.also { throw DataGenerationException(it) }
+
+        return decorator.let { decorator ->
+            if (decorator == null) {
+                generateUndecoratedStrings(count)
+            } else {
+                decorator.generator = ::generateUndecoratedStrings
+                decorator.generateStrings(count)
+            }
+        }
+    }
 
     /**
      * Generates random data according to the settings in this scheme, ignoring settings from decorators.

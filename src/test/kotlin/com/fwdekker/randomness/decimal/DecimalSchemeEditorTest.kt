@@ -129,34 +129,10 @@ object DecimalSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.spinner("minValue").target().value = 112.54 }
             assertThat(editor.isModified()).isEqualTo(true)
 
-            editor.loadScheme(editor.readScheme())
+            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
             assertThat(editor.isModified()).isEqualTo(false)
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
-        }
-    }
-
-    describe("addChangeListener") {
-        mapOf(
-            "minValue" to { frame.spinner("minValue").target().value = 511.35 },
-            "maxValue" to { frame.spinner("maxValue").target().value = 900.08 },
-            "decimalCount" to { frame.spinner("decimalCount").target().value = 89 },
-            "showTrailingZeroes" to { frame.checkBox("showTrailingZeroes").target().isSelected = false },
-            "groupingSeparatorUnderscore" to {
-                frame.radioButton("groupingSeparatorUnderscore").target().isSelected = true
-            },
-            "decimalSeparatorComma" to { frame.radioButton("decimalSeparatorComma").target().isSelected = true },
-            "prefix" to { frame.textBox("prefix").target().text = "bend" },
-            "suffix" to { frame.textBox("suffix").target().text = "earth" },
-        ).forEach { (title, updater) ->
-            it("invokes the listener one when changing $title") {
-                var invokedCount = 0
-                editor.addChangeListener { invokedCount++ }
-
-                GuiActionRunner.execute(updater)
-
-                assertThat(invokedCount).isEqualTo(1)
-            }
         }
     }
 })

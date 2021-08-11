@@ -140,7 +140,7 @@ object IntegerSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.spinner("minValue").target().value = 242L }
             assertThat(editor.isModified()).isEqualTo(true)
 
-            editor.loadScheme(editor.readScheme())
+            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)

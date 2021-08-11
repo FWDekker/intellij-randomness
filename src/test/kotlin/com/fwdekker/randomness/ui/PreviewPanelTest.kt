@@ -21,9 +21,7 @@ import javax.swing.JSpinner
  */
 object PreviewPanelTest : Spek({
     var scheme: DummyScheme? = null
-
     val placeholder = ResourceBundle.getBundle("randomness").getString("settings.placeholder")
-    val randomText = "random_value"
 
     lateinit var panel: PreviewPanel
     lateinit var frame: FrameFixture
@@ -34,9 +32,7 @@ object PreviewPanelTest : Spek({
     }
 
     beforeEachTest {
-        panel = GuiActionRunner.execute<PreviewPanel> {
-            PreviewPanel { DummyScheme({ randomText }).also { scheme = it } }
-        }
+        panel = GuiActionRunner.execute<PreviewPanel> { PreviewPanel { DummyScheme().also { scheme = it } } }
         frame = Containers.showInFrame(panel.rootComponent)
 
         assertThat(frame.textBox("previewLabel").text()).isEqualTo(placeholder)
@@ -51,7 +47,7 @@ object PreviewPanelTest : Spek({
         it("updates the label's contents") {
             GuiActionRunner.execute { panel.updatePreview() }
 
-            assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
+            assertThat(frame.textBox("previewLabel").text()).isEqualTo(DummyScheme.DEFAULT_OUTPUT)
         }
     }
 
@@ -63,7 +59,7 @@ object PreviewPanelTest : Spek({
                 spinner.value = 5
             }
 
-            assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
+            assertThat(frame.textBox("previewLabel").text()).isEqualTo(DummyScheme.DEFAULT_OUTPUT)
         }
 
         it("updates when a JCheckBox is updated") {
@@ -73,7 +69,7 @@ object PreviewPanelTest : Spek({
                 checkBox.isSelected = true
             }
 
-            assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
+            assertThat(frame.textBox("previewLabel").text()).isEqualTo(DummyScheme.DEFAULT_OUTPUT)
         }
 
         // Requires dependency on IntelliJ classes
@@ -91,7 +87,7 @@ object PreviewPanelTest : Spek({
                 table.data = listOf("a")
             }
 
-            assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
+            assertThat(frame.textBox("previewLabel").text()).isEqualTo(DummyScheme.DEFAULT_OUTPUT)
         }
 
         it("updates when a group of JRadioButtons is updated") {

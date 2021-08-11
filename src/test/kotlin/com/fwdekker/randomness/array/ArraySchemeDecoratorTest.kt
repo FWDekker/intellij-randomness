@@ -31,9 +31,9 @@ object ArraySchemeDecoratorTest : Spek({
 
         it("returns non-array values if disabled") {
             arraySchemeDecorator.enabled = false
-            dummyScheme.producer = { "Heal" }
+            dummyScheme.literals = listOf("Heal")
 
-            assertThat(dummyScheme.generateStrings()).isEqualTo("Heal")
+            assertThat(dummyScheme.generateStrings()).containsExactly("Heal")
         }
 
         it("returns an array-like string given a non-singular separator") {
@@ -41,9 +41,9 @@ object ArraySchemeDecoratorTest : Spek({
             arraySchemeDecorator.brackets = "@#"
             arraySchemeDecorator.separator = ";;"
             arraySchemeDecorator.isSpaceAfterSeparator = true
-            dummyScheme.producer = { listOf("Garhwali", "Pattypan", "Troll")[it % 3] }
+            dummyScheme.literals = listOf("Garhwali", "Pattypan", "Troll")
 
-            assertThat(dummyScheme.generateStrings()).isEqualTo("@Garhwali;; Pattypan;; Troll#")
+            assertThat(dummyScheme.generateStrings()).containsExactly("@Garhwali;; Pattypan;; Troll#")
         }
 
         it("returns an array-like string given no brackets") {
@@ -51,9 +51,9 @@ object ArraySchemeDecoratorTest : Spek({
             arraySchemeDecorator.brackets = ""
             arraySchemeDecorator.separator = "h"
             arraySchemeDecorator.isSpaceAfterSeparator = false
-            dummyScheme.producer = { listOf("Elvish", "Stride")[it % 4] }
+            dummyScheme.literals = listOf("Elvish", "Stride")
 
-            assertThat(dummyScheme.generateStrings()).isEqualTo("ElvishhStridehElvishhStride")
+            assertThat(dummyScheme.generateStrings()).containsExactly("ElvishhStridehElvishhStride")
         }
 
         it("returns an array-like string given a disabled separator") {
@@ -61,9 +61,9 @@ object ArraySchemeDecoratorTest : Spek({
             arraySchemeDecorator.brackets = "<>"
             arraySchemeDecorator.separator = "-"
             arraySchemeDecorator.isSpaceAfterSeparator = false
-            dummyScheme.producer = { listOf("Remain", "Pound")[it % 2] }
+            dummyScheme.literals = listOf("Remain", "Pound")
 
-            assertThat(dummyScheme.generateStrings()).isEqualTo("<Remain-Pound-Remain>")
+            assertThat(dummyScheme.generateStrings()).containsExactly("<Remain-Pound-Remain>")
         }
 
         it("returns an array-like string without space after separator given the newline separator") {
@@ -71,14 +71,14 @@ object ArraySchemeDecoratorTest : Spek({
             arraySchemeDecorator.brackets = "[]"
             arraySchemeDecorator.separator = "\n"
             arraySchemeDecorator.isSpaceAfterSeparator = true
-            dummyScheme.producer = { listOf("Union", "Bell")[it % 2] }
+            dummyScheme.literals = listOf("Union", "Bell")
 
-            assertThat(dummyScheme.generateStrings()).isEqualTo("[Union\nBell]")
+            assertThat(dummyScheme.generateStrings()).containsExactly("[Union\nBell]")
         }
 
         it("returns multiple array-like strings that appropriately chunk the underlying generator's outputs") {
             arraySchemeDecorator.count = 2
-            dummyScheme.producer = { listOf("Flesh", "Strap", "Stem")[it % 3] }
+            dummyScheme.literals = listOf("Flesh", "Strap", "Stem")
 
             assertThat(dummyScheme.generateStrings(3)).containsExactly(
                 "[Flesh, Strap]",

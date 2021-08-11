@@ -16,7 +16,7 @@ object StringSchemeTest : Spek({
 
 
     beforeEachTest {
-        stringScheme = StringScheme()
+        stringScheme = StringScheme(SymbolSetSettings())
     }
 
 
@@ -38,10 +38,10 @@ object StringSchemeTest : Spek({
             )
 
             mapOf(
-                Param(0, 0, "", CapitalizationMode.RETAIN, mapOf("x" to "x")) to "",
-                Param(0, 0, "'", CapitalizationMode.UPPER, mapOf("x" to "x")) to "''",
-                Param(0, 0, "a", CapitalizationMode.LOWER, mapOf("x" to "x")) to "aa",
-                Param(0, 0, "2Rv", CapitalizationMode.FIRST_LETTER, mapOf("x" to "x")) to "2Rv2Rv",
+                Param(1, 1, "", CapitalizationMode.RETAIN, mapOf("x" to "x")) to "x",
+                Param(1, 1, "'", CapitalizationMode.UPPER, mapOf("x" to "x")) to "'X'",
+                Param(1, 1, "a", CapitalizationMode.LOWER, mapOf("x" to "x")) to "axa",
+                Param(1, 1, "2Rv", CapitalizationMode.FIRST_LETTER, mapOf("x" to "x")) to "2RvX2Rv",
                 Param(723, 723, "", CapitalizationMode.UPPER, mapOf("x" to "x")) to "X".repeat(723),
                 Param(466, 466, "z", CapitalizationMode.LOWER, mapOf("x" to "x")) to "z${"x".repeat(466)}z"
             ).forEach { (minLength, maxLength, enclosure, capitalization, symbolSets), expectedString ->
@@ -53,7 +53,7 @@ object StringSchemeTest : Spek({
                     stringScheme.capitalization = capitalization
                     stringScheme.activeSymbolSets = symbolSets.values.toSet()
 
-                    assertThat(stringScheme.generateStrings()).isEqualTo(expectedString)
+                    assertThat(stringScheme.generateStrings()).containsExactly(expectedString)
                 }
             }
 
@@ -66,9 +66,9 @@ object StringSchemeTest : Spek({
                 stringScheme.maxLength = 1
                 stringScheme.enclosure = ""
                 stringScheme.capitalization = CapitalizationMode.RETAIN
-                stringScheme.activeSymbolSets = symbolSets.values.toSet()
+                stringScheme.activeSymbolSets = symbolSets.keys.toSet()
 
-                assertThat(stringScheme.generateStrings()).isEqualTo(emoji)
+                assertThat(stringScheme.generateStrings()).containsExactly(emoji)
             }
         }
     }
@@ -76,39 +76,35 @@ object StringSchemeTest : Spek({
 
     describe("doValidate") {
         it("passes for the default settings") {
-            assertThat(StringScheme().doValidate()).isNull()
+            assertThat(StringScheme(SymbolSetSettings()).doValidate()).isNull()
         }
 
         describe("length range") {
             it("fails if the minimum length is negative") {
                 stringScheme.minLength = -161
 
-                assertThat(stringScheme.doValidate())
-                    .isEqualTo("The minimum length should be greater than or equal to 1.")
+                assertThat(stringScheme.doValidate()).isEqualTo("Minimum length should not be smaller than 1.")
             }
         }
 
         describe("symbol sets") {
             it("fails if there are no symbol sets") {
                 stringScheme.symbolSetSettings = SymbolSetSettings(emptyMap())
+                stringScheme.activeSymbolSets = emptySet()
 
                 assertThat(stringScheme.doValidate()).isEqualTo("Add at least one symbol set.")
             }
 
             it("fails if a symbol set does not have a name") {
                 stringScheme.symbolSetSettings = SymbolSetSettings(mapOf("" to "abc"))
+                stringScheme.activeSymbolSets = setOf("")
 
                 assertThat(stringScheme.doValidate()).isEqualTo("All symbol sets should have a name.")
             }
 
-            it("fails if two symbol sets have the same name") {
-                stringScheme.symbolSetSettings = SymbolSetSettings(mapOf("name" to "hFbq", "name" to "jbe"))
-
-                assertThat(stringScheme.doValidate()).isEqualTo("There are multiple symbol sets with the name `name`.")
-            }
-
             it("fails if a symbol set does not have symbols") {
                 stringScheme.symbolSetSettings = SymbolSetSettings(mapOf("name" to ""))
+                stringScheme.activeSymbolSets = setOf("name")
 
                 assertThat(stringScheme.doValidate()).isEqualTo("Symbol set `name` should contain at least one symbol.")
             }
@@ -121,6 +117,8 @@ object StringSchemeTest : Spek({
 
             it("fails if only look-alike symbols are selected and look-alike symbols are excluded") {
                 stringScheme.symbolSetSettings = SymbolSetSettings(mapOf("Look-alike" to "l01"))
+                stringScheme.activeSymbolSets = setOf("Look-alike")
+                stringScheme.excludeLookAlikeSymbols = true
 
                 assertThat(stringScheme.doValidate()).isEqualTo(
                     "Active symbol sets should contain at least one non-look-alike character if look-alike " +
@@ -151,7 +149,7 @@ object StringSchemeTest : Spek({
             stringScheme.activeSymbolSets = symbolSets
             stringScheme.excludeLookAlikeSymbols = true
 
-            val newScheme = StringScheme()
+            val newScheme = StringScheme(SymbolSetSettings())
             newScheme.copyFrom(stringScheme)
 
             assertThat(newScheme).isEqualTo(stringScheme)

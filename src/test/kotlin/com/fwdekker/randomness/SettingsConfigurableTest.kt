@@ -33,7 +33,8 @@ object SettingsConfigurableTest : Spek({
         ideaFixture.setUp()
 
         configurable = DummySettingsConfigurable()
-        editor = GuiActionRunner.execute<DummySchemeEditor> { configurable.createEditor() }
+        GuiActionRunner.execute { configurable.createComponent() }
+        editor = configurable.editor as DummySchemeEditor
         scheme = editor.originalScheme
         frame = Containers.showInFrame(editor.rootComponent)
     }
@@ -52,15 +53,15 @@ object SettingsConfigurableTest : Spek({
 
     describe("saving modifications") {
         it("accepts correct settings") {
-            GuiActionRunner.execute { frame.textBox("producer").target().text = "for" }
+            GuiActionRunner.execute { frame.textBox("literals").target().text = "for" }
 
             configurable.apply()
 
-            assertThat(editor.originalScheme.producer(0)).isEqualTo("for")
+            assertThat(editor.originalScheme.literals).containsExactly("for")
         }
 
         it("rejects incorrect settings") {
-            GuiActionRunner.execute { frame.textBox("producer").target().text = DummyScheme.INVALID_OUTPUT }
+            GuiActionRunner.execute { frame.textBox("literals").target().text = DummyScheme.INVALID_OUTPUT }
 
             assertThatThrownBy { configurable.apply() }.isInstanceOf(ConfigurationException::class.java)
         }
@@ -68,38 +69,39 @@ object SettingsConfigurableTest : Spek({
 
     describe("modification detection") {
         it("is initially unmodified") {
+            assertThat(configurable.editor.isModified()).isFalse()
+            assertThat(configurable.editor.doValidate()).isNull()
             assertThat(configurable.isModified).isFalse()
         }
 
         it("detects a single modification") {
-            GuiActionRunner.execute { frame.textBox("producer").target().text = "rush" }
+            GuiActionRunner.execute { frame.textBox("literals").target().text = "rush" }
 
             assertThat(configurable.isModified).isTrue()
         }
 
         it("declares itself modified if settings are invalid, even though no modifications have been made") {
             // Ground truth: `isModified` is false after reloading valid settings
-            val validSettings = DummyScheme({ "could" })
-            GuiActionRunner.execute { editor.loadScheme(validSettings) }
+            GuiActionRunner.execute { editor.loadScheme() }
             assertThat(configurable.isModified).isFalse()
 
             // Actual test: `isModified` is true after reloading invalid settings
-            val invalidSettings = DummyScheme({ DummyScheme.INVALID_OUTPUT })
+            val invalidSettings = DummyScheme(listOf(DummyScheme.INVALID_OUTPUT))
             GuiActionRunner.execute { editor.loadScheme(invalidSettings) }
             assertThat(configurable.isModified).isTrue()
         }
 
         it("ignores an undone modification") {
-            GuiActionRunner.execute { frame.textBox("producer").target().text = "vowel" }
+            GuiActionRunner.execute { frame.textBox("literals").target().text = "vowel" }
             assertThat(configurable.isModified).isTrue()
 
-            GuiActionRunner.execute { frame.textBox("producer").target().text = scheme.producer(0) }
+            GuiActionRunner.execute { frame.textBox("literals").target().text = scheme.literals.joinToString(",") }
 
             assertThat(configurable.isModified).isFalse()
         }
 
         it("ignores saved modifications") {
-            GuiActionRunner.execute { frame.textBox("producer").target().text = "salt" }
+            GuiActionRunner.execute { frame.textBox("literals").target().text = "salt" }
             assertThat(configurable.isModified).isTrue()
 
             configurable.apply()
@@ -111,17 +113,17 @@ object SettingsConfigurableTest : Spek({
     describe("resets") {
         it("resets all fields to their initial values") {
             GuiActionRunner.execute {
-                frame.textBox("producer").target().text = "for"
+                frame.textBox("literals").target().text = "for"
 
                 configurable.reset()
             }
 
-            assertThat(frame.textBox("producer").target().text).isEqualTo(DummyScheme.DEFAULT_OUTPUT)
+            assertThat(frame.textBox("literals").target().text).isEqualTo(DummyScheme.DEFAULT_OUTPUT)
         }
 
         it("is no longer marked as modified after a reset") {
             GuiActionRunner.execute {
-                frame.textBox("producer").target().text = "rice"
+                frame.textBox("literals").target().text = "rice"
 
                 configurable.reset()
             }

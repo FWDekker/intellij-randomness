@@ -83,7 +83,7 @@ data class WordScheme(
         BundledDictionary.cache.clear()
         UserDictionary.cache.clear()
 
-        val words = activeBundledDictionaries.flatMap { dictionary ->
+        val words = (activeBundledDictionaries + activeUserDictionaries).flatMap { dictionary ->
             try {
                 dictionary.words.also {
                     if (it.isEmpty())

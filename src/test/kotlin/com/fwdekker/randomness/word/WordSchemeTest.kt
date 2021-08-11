@@ -20,14 +20,13 @@ object WordSchemeTest : Spek({
     describe("generateStrings") {
         describe("pattern") {
             listOf(
-                Triple(0, 1, ""),
                 Triple(1, 1, ""),
                 Triple(12, 12, ""),
                 Triple(3, 15, "\""),
                 Triple(3, 13, "`"),
                 Triple(7, 9, "delim")
             ).forEach { (minLength, maxLength, enclosure) ->
-                it("generates a formatted word") {
+                it("generates a formatted word between $minLength and $maxLength characters") {
                     wordScheme.minLength = minLength
                     wordScheme.maxLength = maxLength
                     wordScheme.enclosure = enclosure
@@ -63,17 +62,21 @@ object WordSchemeTest : Spek({
             it("fails if the minimum length is negative") {
                 wordScheme.minLength = -780
 
-                assertThat(wordScheme.doValidate())
-                    .isEqualTo("The minimum length should be greater than or equal to 1.")
+                assertThat(wordScheme.doValidate()).isEqualTo("Minimum length should not be smaller than 1.")
             }
 
             it("fails if the length range ends too low to match any words") {
-                wordScheme.minLength = 0
-                wordScheme.maxLength = 0
+                val dictionaryFile = tempFileHelper.createFile("save", ".dic")
+                val dictionary = DictionaryReference(isBundled = false, dictionaryFile.absolutePath)
+
+                wordScheme.activeBundledDictionaries = emptySet()
+                wordScheme.activeUserDictionaries = setOf(dictionary)
+                wordScheme.minLength = 1
+                wordScheme.maxLength = 1
 
                 assertThat(wordScheme.doValidate()).isEqualTo(
-                    "The shortest word in the selected dictionaries is 1 characters. Set the maximum length to a " +
-                        "value less than or equal to 1."
+                    "The shortest word in the selected dictionaries is 4 characters. Set the maximum length to a " +
+                        "value less than or equal to 4."
                 )
             }
 
@@ -95,20 +98,21 @@ object WordSchemeTest : Spek({
 
                 wordScheme.activeUserDictionaries = setOf(dictionary)
 
-                assertThat(wordScheme.doValidate()).matches("Dictionary .*\\.dic is invalid: File not found\\.")
+                assertThat(wordScheme.doValidate()).matches("Dictionary '.*\\.dic' is invalid: File not found\\.")
             }
 
             it("fails if no dictionaries are selected") {
+                wordScheme.activeBundledDictionaries = emptySet()
                 wordScheme.activeUserDictionaries = emptySet()
 
-                assertThat(wordScheme.doValidate()).isEqualTo("Select at least one dictionary.")
+                assertThat(wordScheme.doValidate()).isEqualTo("Activate at least one dictionary.")
             }
 
             it("fails if one of the dictionaries is invalid") {
                 wordScheme.activeUserDictionaries = setOf(DictionaryReference(isBundled = false, "does_not_exist.dic"))
 
                 assertThat(wordScheme.doValidate())
-                    .isEqualTo("Dictionary does_not_exist.dic is invalid: File not found.")
+                    .isEqualTo("Dictionary 'does_not_exist.dic' is invalid: File not found.")
             }
 
             it("fails if one the dictionaries is empty") {
@@ -117,7 +121,7 @@ object WordSchemeTest : Spek({
 
                 wordScheme.activeUserDictionaries = setOf(dictionary)
 
-                assertThat(wordScheme.doValidate()).matches("Dictionary .*\\.dic is empty\\.")
+                assertThat(wordScheme.doValidate()).matches("Dictionary '.*\\.dic' is empty\\.")
             }
         }
     }

@@ -104,32 +104,13 @@ object ArraySchemeDecoratorEditorTest : Spek({
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.checkBox("enabled").target().isSelected = true }
+            GuiActionRunner.execute { frame.checkBox("enabled").target().isSelected = false }
             assertThat(editor.isModified()).isEqualTo(true)
 
-            editor.loadScheme(editor.readScheme())
+            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
             assertThat(editor.isModified()).isEqualTo(false)
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
-        }
-    }
-
-    describe("addChangeListener") {
-        mapOf(
-            "enabled" to { frame.checkBox("enabled").target().isEnabled = true },
-            "count" to { frame.spinner("count").target().value = 9 },
-            "brackets" to { frame.radioButton("bracketsRound").target().isSelected = true },
-            "separator" to { frame.radioButton("separatorNewline").target().isSelected = true },
-            "isSpaceAfterSeparator" to { frame.checkBox("spaceAfterSeparator").target().isSelected = false }
-        ).forEach { (title, updater) ->
-            it("invokes the listener one when changing $title") {
-                var invokedCount = 0
-                editor.addChangeListener { invokedCount++ }
-
-                GuiActionRunner.execute(updater)
-
-                assertThat(invokedCount).isEqualTo(1)
-            }
         }
     }
 })

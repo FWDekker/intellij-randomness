@@ -13,7 +13,7 @@ abstract class SettingsConfigurable : Configurable {
     /**
      * The user interface for changing the settings, displayed in IntelliJ's settings window.
      */
-    private lateinit var component: SchemeEditor<*>
+    lateinit var editor: SchemeEditor<*> private set
 
 
     /**
@@ -21,7 +21,7 @@ abstract class SettingsConfigurable : Configurable {
      *
      * @return true if the settings were modified since they were loaded or they are invalid
      */
-    override fun isModified() = component.isModified() || component.doValidate() != null
+    override fun isModified() = editor.isModified() || editor.doValidate() != null
 
     /**
      * Saves the changes in the settings component to the default settings object.
@@ -30,17 +30,17 @@ abstract class SettingsConfigurable : Configurable {
      */
     @Throws(ConfigurationException::class)
     override fun apply() {
-        val validationInfo = component.doValidate()
+        val validationInfo = editor.doValidate()
         if (validationInfo != null)
             throw ConfigurationException(validationInfo, "Failed to save settings")
 
-        component.applyScheme()
+        editor.applyScheme()
     }
 
     /**
      * Discards unsaved changes in the settings component.
      */
-    override fun reset() = component.reset()
+    override fun reset() = editor.reset()
 
 
     /**
@@ -50,7 +50,7 @@ abstract class SettingsConfigurable : Configurable {
      */
     override fun createComponent(): JComponent =
         createEditor().let {
-            component = it
+            editor = it
             it.rootComponent
         }
 

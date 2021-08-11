@@ -87,7 +87,7 @@ object UuidSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
             assertThat(editor.isModified()).isTrue()
 
-            editor.loadScheme(editor.readScheme())
+            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)

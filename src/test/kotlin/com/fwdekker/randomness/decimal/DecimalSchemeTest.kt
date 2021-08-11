@@ -67,7 +67,7 @@ object DecimalSchemeTest : Spek({
                     decimalScheme.decimalCount = decimalCount
                     decimalScheme.showTrailingZeroes = showTrailingZeroes
 
-                    assertThat(decimalScheme.generateStrings()).isEqualTo(expectedString)
+                    assertThat(decimalScheme.generateStrings()).containsExactly(expectedString)
                 }
             }
         }
@@ -106,7 +106,7 @@ object DecimalSchemeTest : Spek({
                     decimalScheme.groupingSeparator = groupingSeparator
                     decimalScheme.decimalSeparator = decimalSeparator
 
-                    assertThat(decimalScheme.generateStrings()).isEqualTo(expectedString)
+                    assertThat(decimalScheme.generateStrings()).containsExactly(expectedString)
                 }
             }
         }
@@ -124,7 +124,7 @@ object DecimalSchemeTest : Spek({
                     decimalScheme.prefix = prefix
                     decimalScheme.suffix = suffix
 
-                    assertThat(decimalScheme.generateStrings()).isEqualTo(expectedString)
+                    assertThat(decimalScheme.generateStrings()).containsExactly(expectedString)
                 }
             }
         }
@@ -141,7 +141,7 @@ object DecimalSchemeTest : Spek({
                 decimalScheme.minValue = -1E53
                 decimalScheme.maxValue = 1E53
 
-                assertThat(decimalScheme.doValidate()).isEqualTo("The value range should not exceed 1.0E53.")
+                assertThat(decimalScheme.doValidate()).isEqualTo("Value range should not exceed 1.0E53.")
             }
         }
 
@@ -155,8 +155,7 @@ object DecimalSchemeTest : Spek({
             it("fails if the decimal count is negative") {
                 decimalScheme.decimalCount = -851
 
-                assertThat(decimalScheme.doValidate())
-                    .isEqualTo("The decimal count should be greater than or equal to 0.")
+                assertThat(decimalScheme.doValidate()).isEqualTo("Decimal count should be at least 0.")
             }
         }
     }

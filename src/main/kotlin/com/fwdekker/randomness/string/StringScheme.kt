@@ -65,7 +65,6 @@ data class StringScheme(
 
     override fun doValidate(): String? {
         val allSymbolSets = symbolSetSettings.symbolSetList
-        val duplicate = allSymbolSets.map { it.name }.firstNonDistinctOrNull()
         val empty = allSymbolSets.firstOrNull { it.symbols.isEmpty() }?.name
         val unknown = activeSymbolSets.firstOrNull { it !in allSymbolSets.map(SymbolSet::name) }
 
@@ -80,8 +79,6 @@ data class StringScheme(
                 "Add at least one symbol set."
             allSymbolSets.any { it.name.isEmpty() } ->
                 "All symbol sets should have a name."
-            duplicate != null ->
-                "There are multiple symbol sets with the name `$duplicate`."
             empty != null ->
                 "Symbol set `$empty` should contain at least one symbol."
             unknown != null ->
@@ -146,10 +143,3 @@ data class StringScheme(
         const val DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS = false
     }
 }
-
-/**
- * Returns the first string that occurs multiple times, or `null` if there is no such string.
- *
- * @return the first string that occurs multiple times, or `null` if there is no such string
- */
-private fun List<String>.firstNonDistinctOrNull() = firstOrNull { indexOf(it) != lastIndexOf(it) }

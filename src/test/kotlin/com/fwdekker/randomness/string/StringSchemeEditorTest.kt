@@ -139,7 +139,7 @@ object StringSchemeEditorTest : Spek({
             assertThat(readScheme.maxLength).isEqualTo(803)
             assertThat(readScheme.enclosure).isEqualTo("`")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
-            assertThat(readScheme.activeSymbolSets).isEqualTo(listOf(SymbolSet.BRACKETS.name, SymbolSet.MINUS.name))
+            assertThat(readScheme.activeSymbolSets).containsExactly(SymbolSet.MINUS.name)
             assertThat(readScheme.excludeLookAlikeSymbols).isEqualTo(false)
         }
 
@@ -147,7 +147,7 @@ object StringSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.spinner("minLength").target().value = 445 }
             assertThat(editor.isModified()).isTrue()
 
-            editor.loadScheme(editor.readScheme())
+            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
