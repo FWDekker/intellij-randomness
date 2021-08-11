@@ -3,8 +3,8 @@ package com.fwdekker.randomness
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
@@ -18,9 +18,9 @@ import org.spekframework.spek2.style.specification.describe
  */
 object SettingsConfigurableTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
-    lateinit var settings: DummySettings
-    lateinit var settingsComponent: DummySettingsEditor
-    lateinit var settingsComponentConfigurable: DummySettingsConfigurable
+    lateinit var scheme: DummyScheme
+    lateinit var editor: DummySchemeEditor
+    lateinit var configurable: DummySettingsConfigurable
     lateinit var frame: FrameFixture
 
 
@@ -32,12 +32,10 @@ object SettingsConfigurableTest : Spek({
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        settings = DummySettings()
-            .apply { currentScheme.count = 6 }
-
-        settingsComponent = GuiActionRunner.execute<DummySettingsEditor> { DummySettingsEditor(settings) }
-        settingsComponentConfigurable = DummySettingsConfigurable(settingsComponent)
-        frame = Containers.showInFrame(settingsComponent.rootComponent)
+        configurable = DummySettingsConfigurable()
+        editor = GuiActionRunner.execute<DummySchemeEditor> { configurable.createEditor() }
+        scheme = editor.originalScheme
+        frame = Containers.showInFrame(editor.rootComponent)
     }
 
     afterEachTest {
@@ -48,91 +46,87 @@ object SettingsConfigurableTest : Spek({
 
     describe("display name") {
         it("returns the correct display name") {
-            assertThat(settingsComponentConfigurable.displayName).isEqualTo("Dummy")
+            assertThat(configurable.displayName).isEqualTo("Dummy")
         }
     }
 
     describe("saving modifications") {
         it("accepts correct settings") {
-            GuiActionRunner.execute { frame.spinner("count").target().value = 39 }
+            GuiActionRunner.execute { frame.textBox("producer").target().text = "for" }
 
-            settingsComponentConfigurable.apply()
+            configurable.apply()
 
-            assertThat(settings.currentScheme.count).isEqualTo(39)
+            assertThat(editor.originalScheme.producer(0)).isEqualTo("for")
         }
 
         it("rejects incorrect settings") {
-            GuiActionRunner.execute { frame.spinner("count").target().value = -3 }
+            GuiActionRunner.execute { frame.textBox("producer").target().text = DummyScheme.INVALID_OUTPUT }
 
-            Assertions.assertThatThrownBy { settingsComponentConfigurable.apply() }
-                .isInstanceOf(ConfigurationException::class.java)
+            assertThatThrownBy { configurable.apply() }.isInstanceOf(ConfigurationException::class.java)
         }
     }
 
     describe("modification detection") {
         it("is initially unmodified") {
-            assertThat(settingsComponentConfigurable.isModified).isFalse()
+            assertThat(configurable.isModified).isFalse()
         }
 
         it("detects a single modification") {
-            GuiActionRunner.execute { frame.spinner("count").target().value = 124 }
+            GuiActionRunner.execute { frame.textBox("producer").target().text = "rush" }
 
-            assertThat(settingsComponentConfigurable.isModified).isTrue()
+            assertThat(configurable.isModified).isTrue()
         }
 
         it("declares itself modified if settings are invalid, even though no modifications have been made") {
             // Ground truth: `isModified` is false after reloading valid settings
-            val validSettings = DummySettings(mutableListOf(DummyScheme(count = 584)))
-            GuiActionRunner.execute {
-                settings.loadState(validSettings)
-                settingsComponent.loadSettings()
-            }
-            assertThat(settingsComponentConfigurable.isModified).isFalse()
+            val validSettings = DummyScheme({ "could" })
+            GuiActionRunner.execute { editor.loadScheme(validSettings) }
+            assertThat(configurable.isModified).isFalse()
 
             // Actual test: `isModified` is true after reloading invalid settings
-            val invalidSettings = DummySettings(mutableListOf(DummyScheme(count = -3)))
-            GuiActionRunner.execute {
-                settings.loadState(invalidSettings)
-                settingsComponent.loadSettings()
-            }
-            assertThat(settingsComponentConfigurable.isModified).isTrue()
+            val invalidSettings = DummyScheme({ DummyScheme.INVALID_OUTPUT })
+            GuiActionRunner.execute { editor.loadScheme(invalidSettings) }
+            assertThat(configurable.isModified).isTrue()
         }
 
         it("ignores an undone modification") {
-            GuiActionRunner.execute { frame.spinner("count").target().value = 17 }
-            GuiActionRunner.execute { frame.spinner("count").target().value = settings.currentScheme.count }
+            GuiActionRunner.execute { frame.textBox("producer").target().text = "vowel" }
+            assertThat(configurable.isModified).isTrue()
 
-            assertThat(settingsComponentConfigurable.isModified).isFalse()
+            GuiActionRunner.execute { frame.textBox("producer").target().text = scheme.producer(0) }
+
+            assertThat(configurable.isModified).isFalse()
         }
 
         it("ignores saved modifications") {
-            GuiActionRunner.execute { frame.spinner("count").target().value = 110 }
+            GuiActionRunner.execute { frame.textBox("producer").target().text = "salt" }
+            assertThat(configurable.isModified).isTrue()
 
-            settingsComponentConfigurable.apply()
+            configurable.apply()
 
-            assertThat(settingsComponentConfigurable.isModified).isFalse()
+            assertThat(configurable.isModified).isFalse()
         }
     }
 
     describe("resets") {
         it("resets all fields to their initial values") {
             GuiActionRunner.execute {
-                frame.spinner("count").target().value = 23
+                frame.textBox("producer").target().text = "for"
 
-                settingsComponentConfigurable.reset()
+                configurable.reset()
             }
 
-            assertThat(frame.spinner("count").target().value).isEqualTo(6)
+            assertThat(frame.textBox("producer").target().text).isEqualTo(DummyScheme.DEFAULT_OUTPUT)
         }
 
         it("is no longer marked as modified after a reset") {
             GuiActionRunner.execute {
-                frame.spinner("count").target().value = 80
+                frame.textBox("producer").target().text = "rice"
 
-                settingsComponentConfigurable.reset()
+                configurable.reset()
             }
 
-            assertThat(settingsComponentConfigurable.isModified).isFalse()
+            assertThat(configurable.isModified).isFalse()
         }
     }
 })

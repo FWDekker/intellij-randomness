@@ -1,6 +1,5 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Document
@@ -9,11 +8,11 @@ import org.assertj.core.api.Assertions.assertThat
 
 
 /**
- * Integration tests for [DataInsertAction].
+ * Integration tests for [InsertAction].
  *
- * @see DataInsertAction
+ * @see InsertActionTest
  */
-class DataInsertActionIntegrationTest : BasePlatformTestCase() {
+class InsertActionIntegrationTest : BasePlatformTestCase() {
     private lateinit var insertAction: DummyInsertAction
     private lateinit var document: Document
     private lateinit var caretModel: CaretModel
@@ -125,17 +124,6 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         assertThat(document.text).isEqualTo("XOppz${"0"}V${"1"}j\nZhAa${"2"}VfQynW\nk3${"3"}kdAg")
     }
 
-    fun testInsertArray() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("wizard\nsirens\nvanity") }
-
-        setSelection(5, 9)
-
-        var insertValue = 0
-        myFixture.testAction(DummyInsertArrayAction(ArraySchemeDecorator(count = 2)) { insertValue++.toString() })
-
-        assertThat(document.text).isEqualTo("wizar[${"0"}, ${"1"}]rens\nvanity")
-    }
-
     fun testInsertRepeat() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("evening\nplease\nfew") }
 
@@ -144,22 +132,9 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         addCaret(12)
 
         var insertValue = 0
-        myFixture.testAction(DummyInsertRepeatAction { insertValue++.toString() })
+        myFixture.testAction(DummyInsertAction(repeat = true) { insertValue++.toString() })
 
         assertThat(document.text).isEqualTo("eveni${"0"}ng\npl${"0"}ea${"0"}se\nfew")
-    }
-
-    fun testInsertRepeatArray() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("heavy\nbegin\ncare") }
-
-        caretModel.moveToOffset(2)
-        addCaret(7)
-        addCaret(13)
-
-        var insertValue = 0
-        myFixture.testAction(DummyInsertRepeatArrayAction(ArraySchemeDecorator(count = 2)) { insertValue++.toString() })
-
-        assertThat(document.text).isEqualTo("he${"[0, 1]"}avy\nb${"[0, 1]"}egin\nc${"[0, 1]"}are")
     }
 
 

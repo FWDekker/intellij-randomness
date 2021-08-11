@@ -30,10 +30,7 @@ import javax.swing.JTextArea
  * @see DictionaryTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class WordSchemeEditor(
-    scheme: WordScheme = WordScheme(),
-    private val dictionarySettings: DictionarySettings = DictionarySettings.default
-) : SchemeEditor<WordScheme>(scheme) {
+class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -48,10 +45,10 @@ class WordSchemeEditor(
 
 
     init {
-        loadScheme(scheme)
-
         dictionaryHelp.border = null
         dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
+
+        loadScheme(scheme)
     }
 
     /**
@@ -84,9 +81,11 @@ class WordSchemeEditor(
         maxLength.value = scheme.maxLength
         enclosureGroup.setValue(scheme.enclosure)
         capitalizationGroup.setValue(scheme.capitalization)
-        dictionaryTable.data = dictionarySettings.bundledDictionaries + dictionarySettings.userDictionaries
-        dictionaryTable.activeData = scheme.activeBundledDictionaries + scheme.activeUserDictionaries
-            .filter { dictionary -> dictionary in dictionaryTable.data }
+        dictionaryTable.data =
+            scheme.dictionarySettings.bundledDictionaries + scheme.dictionarySettings.userDictionaries
+        dictionaryTable.activeData =
+            (scheme.activeBundledDictionaries + scheme.activeUserDictionaries)
+                .filter { dictionary -> dictionary in dictionaryTable.data }
         arrayDecoratorEditor.loadScheme(scheme.decorator)
     }
 
@@ -98,14 +97,14 @@ class WordSchemeEditor(
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             decorator = arrayDecoratorEditor.readScheme()
         ).also {
-            dictionarySettings.bundledDictionaries = dictionaryTable.data
+            it.dictionarySettings.bundledDictionaries = dictionaryTable.data
                 .filter { file -> file.isBundled }.toSet()
             it.activeBundledDictionaries = dictionaryTable.activeData
-                .filter { file -> file.isBundled && file in dictionarySettings.bundledDictionaries }.toSet()
-            dictionarySettings.userDictionaries = dictionaryTable.data
+                .filter { file -> file.isBundled && file in it.dictionarySettings.bundledDictionaries }.toSet()
+            it.dictionarySettings.userDictionaries = dictionaryTable.data
                 .filter { file -> !file.isBundled }.toSet()
             it.activeUserDictionaries = dictionaryTable.activeData
-                .filter { file -> !file.isBundled && file in dictionarySettings.userDictionaries }.toSet()
+                .filter { file -> !file.isBundled && file in it.dictionarySettings.userDictionaries }.toSet()
 
             BundledDictionary.cache.clear()
             UserDictionary.cache.clear()

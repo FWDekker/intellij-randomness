@@ -65,6 +65,13 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
     private var schemeEditor: SchemeEditor<*>? = null
 
     private val changeListeners = mutableListOf<() -> Unit>()
+
+    /**
+     * The name of the template to select after the next invocation of [reset].
+     *
+     * @see TemplateSettingsConfigurable
+     * @see TemplateSettingsAction
+     */
     var queueSelection: String? = null
 
 
@@ -77,9 +84,13 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
         templateTree.selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         templateTree.cellRenderer = object : ColoredTreeCellRenderer() {
             override fun customizeCellRenderer(
-                tree: JTree, value: Any?,
-                selected: Boolean, expanded: Boolean, leaf: Boolean,
-                row: Int, hasFocus: Boolean
+                tree: JTree,
+                value: Any?,
+                selected: Boolean,
+                expanded: Boolean,
+                leaf: Boolean,
+                row: Int,
+                hasFocus: Boolean
             ) {
                 val scheme = (value as? DefaultMutableTreeNode)?.userObject as? Scheme
                 if (scheme == null) {

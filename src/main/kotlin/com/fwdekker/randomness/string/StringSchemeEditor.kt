@@ -29,10 +29,7 @@ import javax.swing.JPanel
  * @see SymbolSetTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class StringSchemeEditor(
-    scheme: StringScheme = StringScheme(),
-    private val symbolSetSettings: SymbolSetSettings = SymbolSetSettings.default
-) : SchemeEditor<StringScheme>(scheme) {
+class StringSchemeEditor(scheme: StringScheme = StringScheme()) : SchemeEditor<StringScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -47,13 +44,13 @@ class StringSchemeEditor(
 
 
     init {
-        loadScheme(scheme)
-
         excludeLookAlikeSymbolsCheckBox.font = excludeLookAlikeSymbolsCheckBox.font.attributes.toMutableMap()
             .also { it[TextAttribute.UNDERLINE] = TextAttribute.UNDERLINE_LOW_DOTTED }
             .let { excludeLookAlikeSymbolsCheckBox.font.deriveFont(it) }
         excludeLookAlikeSymbolsCheckBox.toolTipText =
             "Excludes the following characters from all generated strings: ${SymbolSet.lookAlikeCharacters}"
+
+        loadScheme(scheme)
     }
 
     /**
@@ -88,9 +85,9 @@ class StringSchemeEditor(
         capitalizationGroup.setValue(scheme.capitalization)
         excludeLookAlikeSymbolsCheckBox.isSelected = scheme.excludeLookAlikeSymbols
 
-        symbolSetTable.data = symbolSetSettings.symbolSetList
+        symbolSetTable.data = scheme.symbolSetSettings.symbolSetList
         symbolSetTable.activeData =
-            symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in scheme.activeSymbolSets }
+            scheme.symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in scheme.activeSymbolSets }
 
         arrayDecoratorEditor.loadScheme(scheme.decorator)
     }
@@ -104,7 +101,7 @@ class StringSchemeEditor(
             excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
             decorator = arrayDecoratorEditor.readScheme()
         ).also {
-            symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
+            it.symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
             it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet()
         }
 

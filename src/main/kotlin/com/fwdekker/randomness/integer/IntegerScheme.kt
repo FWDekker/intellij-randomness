@@ -80,13 +80,13 @@ data class IntegerScheme(
         return format.format(value)
     }
 
+
     override fun doValidate() =
         when {
             minValue > maxValue -> "Minimum value should not be larger than maximum value."
             base !in MIN_BASE..MAX_BASE -> "Base should be in range $MIN_BASE..$MAX_BASE but is $base."
             else -> null
         }
-
 
     override fun deepCopy() = copy(decorator = decorator.deepCopy())
 

@@ -43,9 +43,9 @@ data class Template(
         schemes.onEach { it.random = random }.map { it.generateStrings(count) }
             .let { data -> (0 until count).map { i -> data.joinToString(separator = "") { it[i] } } }
 
+
     override fun doValidate() =
         schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme::class.simpleName} > $it" } }
-
 
     override fun deepCopy() =
         Template(
@@ -102,7 +102,6 @@ data class TemplateList(
             else -> null
         }
     }
-
 
     override fun deepCopy() = TemplateList(templates.map { it.deepCopy() })
 

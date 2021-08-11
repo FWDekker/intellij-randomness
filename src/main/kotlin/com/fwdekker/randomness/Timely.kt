@@ -33,4 +33,4 @@ fun <T> generateTimely(generator: () -> T): T {
 /**
  * The timeout in milliseconds before the generator should be interrupted when generating a value.
  */
-private const val GENERATOR_TIMEOUT = 5000L
+const val GENERATOR_TIMEOUT = 5000L

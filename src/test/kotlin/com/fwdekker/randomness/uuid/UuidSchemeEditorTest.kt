@@ -1,8 +1,6 @@
 package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode
-import com.intellij.testFramework.fixtures.IdeaTestFixture
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -15,10 +13,9 @@ import org.spekframework.spek2.style.specification.describe
 /**
  * GUI tests for [UuidSchemeEditor].
  */
-object UuidSettingsComponentTest : Spek({
-    lateinit var ideaFixture: IdeaTestFixture
-    lateinit var uuidSettings: UuidSettings
-    lateinit var uuidSchemeEditor: UuidSchemeEditor
+object UuidSchemeEditorTest : Spek({
+    lateinit var scheme: UuidScheme
+    lateinit var editor: UuidSchemeEditor
     lateinit var frame: FrameFixture
 
 
@@ -27,34 +24,27 @@ object UuidSettingsComponentTest : Spek({
     }
 
     beforeEachTest {
-        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-        ideaFixture.setUp()
-
-        uuidSettings = UuidSettings()
-            .apply {
-                currentScheme.version = 4
-                currentScheme.enclosure = "'"
-                currentScheme.capitalization = CapitalizationMode.UPPER
-                currentScheme.addDashes = false
-            }
-
-        uuidSchemeEditor = GuiActionRunner.execute<UuidSchemeEditor> { UuidSchemeEditor(uuidSettings) }
-        frame = showInFrame(uuidSchemeEditor.rootComponent)
+        scheme = UuidScheme()
+        editor = GuiActionRunner.execute<UuidSchemeEditor> { UuidSchemeEditor(scheme) }
+        frame = showInFrame(editor.rootComponent)
     }
 
     afterEachTest {
-        ideaFixture.tearDown()
         frame.cleanUp()
     }
 
 
-    describe("loading settings") {
+    describe("loadScheme") {
         it("loads the settings' version") {
+            GuiActionRunner.execute { editor.loadScheme(UuidScheme(version = 4)) }
+
             frame.radioButton("version1").requireSelected(false)
             frame.radioButton("version4").requireSelected(true)
         }
 
         it("loads the settings' enclosure") {
+            GuiActionRunner.execute { editor.loadScheme(UuidScheme(enclosure = "'")) }
+
             frame.radioButton("enclosureNone").requireSelected(false)
             frame.radioButton("enclosureSingle").requireSelected(true)
             frame.radioButton("enclosureDouble").requireSelected(false)
@@ -62,36 +52,45 @@ object UuidSettingsComponentTest : Spek({
         }
 
         it("loads the settings' capitalization mode") {
+            GuiActionRunner.execute { editor.loadScheme(UuidScheme(capitalization = CapitalizationMode.UPPER)) }
+
             frame.radioButton("capitalizationLower").requireSelected(false)
             frame.radioButton("capitalizationUpper").requireSelected(true)
         }
 
         it("loads the settings' add dashes option") {
+            GuiActionRunner.execute { editor.loadScheme(UuidScheme(addDashes = false)) }
+
             frame.checkBox("addDashesCheckBox").requireSelected(false)
         }
     }
 
-    describe("saving settings") {
-        it("correctly saves settings to a settings object") {
+    describe("readScheme") {
+        it("returns the original state if no editor changes are made") {
+            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+        }
+
+        it("returns the editor's state") {
             GuiActionRunner.execute { frame.radioButton("version1").target().isSelected = true }
             GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
             GuiActionRunner.execute { frame.radioButton("capitalizationUpper").target().isSelected = true }
             GuiActionRunner.execute { frame.checkBox("addDashesCheckBox").target().isSelected = true }
 
-            uuidSchemeEditor.saveSettings()
-
-            assertThat(uuidSettings.currentScheme.version).isEqualTo(1)
-            assertThat(uuidSettings.currentScheme.enclosure).isEqualTo("`")
-            assertThat(uuidSettings.currentScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
-            assertThat(uuidSettings.currentScheme.addDashes).isEqualTo(true)
+            val readScheme = editor.readScheme()
+            assertThat(readScheme.version).isEqualTo(1)
+            assertThat(readScheme.enclosure).isEqualTo("`")
+            assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
+            assertThat(readScheme.addDashes).isTrue()
         }
-    }
 
-    describe("validation") {
-        it("passes for the default settings") {
-            GuiActionRunner.execute { uuidSchemeEditor.loadSettings(UuidSettings()) }
+        it("returns the loaded state if no editor changes are made") {
+            GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
+            assertThat(editor.isModified()).isTrue()
 
-            assertThat(uuidSchemeEditor.doValidate()).isNull()
+            editor.loadScheme(editor.readScheme())
+            assertThat(editor.isModified()).isFalse()
+
+            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
         }
     }
 })

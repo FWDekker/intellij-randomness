@@ -11,6 +11,7 @@ import icons.RandomnessIcons
 /**
  * Contains settings for generating random words.
  *
+ * @property dictionarySettings Persistent storage of available dictionaries.
  * @property minLength The minimum length of the generated word, inclusive.
  * @property maxLength The maximum length of the generated word, inclusive.
  * @property enclosure The string that encloses the generated word on both sides.
@@ -20,12 +21,14 @@ import icons.RandomnessIcons
  * @property decorator Settings that determine whether the output should be an array of values.
  */
 data class WordScheme(
+    @Transient
+    var dictionarySettings: DictionarySettings = DictionarySettings.default,
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var activeBundledDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES,
-    var activeUserDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES,
+    var activeBundledDictionaryFiles: Set<String> = DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES,
+    var activeUserDictionaryFiles: Set<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES,
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
     @Transient
@@ -33,23 +36,23 @@ data class WordScheme(
     override val icons = RandomnessIcons.Word
 
     /**
-     * A mutable view of the filenames of the files in [activeBundledDictionaryFiles].
+     * A view of the filenames of the files in [activeBundledDictionaryFiles].
      */
     var activeBundledDictionaries: Set<DictionaryReference>
         @Transient
         get() = activeBundledDictionaryFiles.map { DictionaryReference(true, it) }.toSet()
         set(value) {
-            activeBundledDictionaryFiles = value.map { it.filename }.toMutableSet()
+            activeBundledDictionaryFiles = value.map { it.filename }.toSet()
         }
 
     /**
-     * A mutable view of the filenames of the files in [activeUserDictionaryFiles].
+     * A view of the filenames of the files in [activeUserDictionaryFiles].
      */
     var activeUserDictionaries: Set<DictionaryReference>
         @Transient
         get() = activeUserDictionaryFiles.map { DictionaryReference(false, it) }.toSet()
         set(value) {
-            activeUserDictionaryFiles = value.map { it.filename }.toMutableSet()
+            activeUserDictionaryFiles = value.map { it.filename }.toSet()
         }
 
 
@@ -74,6 +77,8 @@ data class WordScheme(
             .map { enclosure + it + enclosure }
     }
 
+
+    @Suppress("ReturnCount") // Acceptable for validation functions
     override fun doValidate(): String? {
         BundledDictionary.cache.clear()
         UserDictionary.cache.clear()
@@ -109,7 +114,6 @@ data class WordScheme(
             else -> null
         }
     }
-
 
     override fun deepCopy() =
         copy(decorator = decorator.deepCopy())
@@ -156,13 +160,13 @@ data class WordScheme(
         /**
          * The default value of the [activeBundledDictionaryFiles][activeBundledDictionaryFiles] field.
          */
-        val DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES: MutableSet<String>
-            get() = mutableSetOf(BundledDictionary.SIMPLE_DICTIONARY)
+        val DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES: Set<String>
+            get() = setOf(BundledDictionary.SIMPLE_DICTIONARY)
 
         /**
          * The default value of the [activeUserDictionaryFiles][activeUserDictionaryFiles] field.
          */
-        val DEFAULT_ACTIVE_USER_DICTIONARY_FILES: MutableSet<String>
-            get() = mutableSetOf()
+        val DEFAULT_ACTIVE_USER_DICTIONARY_FILES: Set<String>
+            get() = setOf()
     }
 }

@@ -1,9 +1,8 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.DummyInsertAction
+import com.fwdekker.randomness.DummyScheme
 import com.intellij.util.ui.CollectionItemEditor
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
@@ -21,7 +20,7 @@ import javax.swing.JSpinner
  * Unit tests for [PreviewPanel].
  */
 object PreviewPanelTest : Spek({
-    var action: DummyInsertAction? = null
+    var scheme: DummyScheme? = null
 
     val placeholder = ResourceBundle.getBundle("randomness").getString("settings.placeholder")
     val randomText = "random_value"
@@ -36,7 +35,7 @@ object PreviewPanelTest : Spek({
 
     beforeEachTest {
         panel = GuiActionRunner.execute<PreviewPanel> {
-            PreviewPanel { DummyInsertAction { randomText }.also { action = it } }
+            PreviewPanel { DummyScheme({ randomText }).also { scheme = it } }
         }
         frame = Containers.showInFrame(panel.rootComponent)
 
@@ -60,7 +59,7 @@ object PreviewPanelTest : Spek({
         it("updates when a JSpinner is updated") {
             GuiActionRunner.execute {
                 val spinner = JSpinner()
-                panel.updatePreviewOnUpdateOf(spinner)
+                addChangeListenerTo(spinner) { panel.updatePreview() }
                 spinner.value = 5
             }
 
@@ -69,9 +68,9 @@ object PreviewPanelTest : Spek({
 
         it("updates when a JCheckBox is updated") {
             GuiActionRunner.execute {
-                val spinner = JCheckBox()
-                panel.updatePreviewOnUpdateOf(spinner)
-                spinner.isSelected = true
+                val checkBox = JCheckBox()
+                addChangeListenerTo(checkBox) { panel.updatePreview() }
+                checkBox.isSelected = true
             }
 
             assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
@@ -88,7 +87,7 @@ object PreviewPanelTest : Spek({
                 }
                 val table = object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, "", "") {}
 
-                panel.updatePreviewOnUpdateOf(table)
+                addChangeListenerTo(table) { panel.updatePreview() }
                 table.data = listOf("a")
             }
 
@@ -102,38 +101,33 @@ object PreviewPanelTest : Spek({
                 JRadioButton("b").also { group.add(it) }
                 JRadioButton("c").also { group.add(it) }
 
-                panel.updatePreviewOnUpdateOf(group)
+                addChangeListenerTo(group) { panel.updatePreview() }
                 group.buttons()[1].isSelected = true
             }
-        }
-
-        it("throws an exception if the component type is unknown") {
-            assertThatThrownBy { panel.updatePreviewOnUpdateOf("string") }
-                .isInstanceOf(IllegalArgumentException::class.java)
         }
     }
 
     describe("seed") {
         it("reuses the old seed if the button is not pressed") {
             GuiActionRunner.execute { panel.updatePreview() }
-            val oldRandom = action?.random
+            val oldRandom = scheme?.random
 
             GuiActionRunner.execute { panel.updatePreview() }
-            val newRandom = action?.random
+            val newRandom = scheme?.random
 
             assertThat(newRandom?.nextInt()).isEqualTo(oldRandom?.nextInt())
         }
 
         it("uses a new seed when the button is pressed") {
             GuiActionRunner.execute { panel.updatePreview() }
-            val oldRandom = action?.random
+            val oldRandom = scheme?.random
 
             GuiActionRunner.execute {
                 frame.button("refreshButton").target().mouseListeners.forEach { it.mouseClicked(null) }
             }
 
             GuiActionRunner.execute { panel.updatePreview() }
-            val newRandom = action?.random
+            val newRandom = scheme?.random
 
             assertThat(newRandom?.nextInt()).isNotEqualTo(oldRandom?.nextInt())
         }

@@ -21,28 +21,28 @@ import com.intellij.util.xmlb.annotations.Transient
 )
 data class DictionarySettings(
     @MapAnnotation(sortBeforeSave = false)
-    var bundledDictionaryFiles: MutableSet<String> = DEFAULT_BUNDLED_DICTIONARY_FILES,
+    var bundledDictionaryFiles: Set<String> = DEFAULT_BUNDLED_DICTIONARY_FILES,
     @MapAnnotation(sortBeforeSave = false)
-    var userDictionaryFiles: MutableSet<String> = DEFAULT_USER_DICTIONARY_FILES
+    var userDictionaryFiles: Set<String> = DEFAULT_USER_DICTIONARY_FILES
 ) : PersistentStateComponent<DictionarySettings> {
     /**
-     * A mutable view of the filenames of the files in [bundledDictionaryFiles].
+     * A view of the filenames of the files in [bundledDictionaryFiles].
      */
     var bundledDictionaries: Set<DictionaryReference>
         @Transient
         get() = bundledDictionaryFiles.map { DictionaryReference(true, it) }.toSet()
         set(value) {
-            bundledDictionaryFiles = value.map { it.filename }.toMutableSet()
+            bundledDictionaryFiles = value.map { it.filename }.toSet()
         }
 
     /**
-     * A mutable view of the filenames of the files in [userDictionaryFiles].
+     * A view of the filenames of the files in [userDictionaryFiles].
      */
     var userDictionaries: Set<DictionaryReference>
         @Transient
         get() = userDictionaryFiles.map { DictionaryReference(false, it) }.toSet()
         set(value) {
-            userDictionaryFiles = value.map { it.filename }.toMutableSet()
+            userDictionaryFiles = value.map { it.filename }.toSet()
         }
 
 
@@ -58,14 +58,14 @@ data class DictionarySettings(
         /**
          * The default value of the [bundledDictionaryFiles][bundledDictionaryFiles] field.
          */
-        val DEFAULT_BUNDLED_DICTIONARY_FILES: MutableSet<String>
-            get() = mutableSetOf(BundledDictionary.SIMPLE_DICTIONARY)
+        val DEFAULT_BUNDLED_DICTIONARY_FILES: Set<String>
+            get() = setOf(BundledDictionary.SIMPLE_DICTIONARY)
 
         /**
          * The default value of the [userDictionaryFiles][userDictionaryFiles] field.
          */
-        val DEFAULT_USER_DICTIONARY_FILES: MutableSet<String>
-            get() = mutableSetOf()
+        val DEFAULT_USER_DICTIONARY_FILES: Set<String>
+            get() = setOf()
 
         /**
          * The persistent `DictionarySettings` instance.

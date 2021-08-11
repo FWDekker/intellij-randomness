@@ -73,6 +73,7 @@ data class DecimalScheme(
         return prefix + format.format(decimal) + suffix
     }
 
+
     override fun doValidate() =
         when {
             minValue > maxValue -> "Minimum value should not be larger than maximum value."
@@ -80,7 +81,6 @@ data class DecimalScheme(
             decimalCount < MIN_DECIMAL_COUNT -> "Decimal count should be at least $MIN_DECIMAL_COUNT."
             else -> null
         }
-
 
     override fun deepCopy() = copy(decorator = decorator.deepCopy())
 

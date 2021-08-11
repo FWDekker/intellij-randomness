@@ -32,13 +32,6 @@ fun ButtonGroup.setValue(value: Any?) {
 }
 
 /**
- * Enables or disables all buttons.
- *
- * @param enabled true if all buttons should be enabled, false if all buttons should be disabled
- */
-fun ButtonGroup.setEnabled(enabled: Boolean) = forEach { it.isEnabled = enabled }
-
-/**
  * Returns the buttons in this button group as a typed array.
  *
  * @return the buttons in this button group as a typed array

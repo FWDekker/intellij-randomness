@@ -40,10 +40,10 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : SchemeEdito
 
 
     init {
-        loadScheme(scheme)
-
         decimalCount.addChangeListener { showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0 }
         decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
+
+        loadScheme(scheme)
     }
 
     /**

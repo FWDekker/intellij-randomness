@@ -62,6 +62,7 @@ data class StringScheme(
         }
     }
 
+
     override fun doValidate(): String? {
         val allSymbolSets = symbolSetSettings.symbolSetList
         val duplicate = allSymbolSets.map { it.name }.firstNonDistinctOrNull()
@@ -93,7 +94,6 @@ data class StringScheme(
             else -> null
         }
     }
-
 
     override fun deepCopy() =
         copy(decorator = decorator.deepCopy())
