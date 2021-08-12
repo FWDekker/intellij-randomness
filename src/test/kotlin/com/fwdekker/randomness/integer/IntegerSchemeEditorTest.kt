@@ -111,6 +111,20 @@ object IntegerSchemeEditorTest : Spek({
     }
 
     describe("readScheme") {
+        describe("defaults") {
+            it("returns default brackets if no brackets are selected") {
+                GuiActionRunner.execute { editor.loadScheme(IntegerScheme(groupingSeparator = "unsupported")) }
+
+                assertThat(editor.readScheme().groupingSeparator).isEqualTo(IntegerScheme.DEFAULT_GROUPING_SEPARATOR)
+            }
+
+            it("returns default brackets if no brackets are selected") {
+                GuiActionRunner.execute { editor.loadScheme(IntegerScheme(capitalization = CapitalizationMode.DUMMY)) }
+
+                assertThat(editor.readScheme().capitalization).isEqualTo(IntegerScheme.DEFAULT_CAPITALIZATION)
+            }
+        }
+
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
         }
@@ -122,8 +136,8 @@ object IntegerSchemeEditorTest : Spek({
                 frame.spinner("base").target().value = 14
                 frame.radioButton("groupingSeparatorPeriod").target().isSelected = true
                 frame.radioButton("capitalizationUpper").target().isSelected = true
-                frame.textBox("prefix").target().text = "prefix"
-                frame.textBox("suffix").target().text = "suffix"
+                frame.textBox("prefix").target().text = "silent"
+                frame.textBox("suffix").target().text = "pain"
             }
 
             val readScheme = editor.readScheme()
@@ -132,8 +146,8 @@ object IntegerSchemeEditorTest : Spek({
             assertThat(readScheme.base).isEqualTo(14)
             assertThat(readScheme.groupingSeparator).isEqualTo(".")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
-            assertThat(readScheme.prefix).isEqualTo("prefix")
-            assertThat(readScheme.suffix).isEqualTo("suffix")
+            assertThat(readScheme.prefix).isEqualTo("silent")
+            assertThat(readScheme.suffix).isEqualTo("pain")
         }
 
         it("returns the loaded state if no editor changes are made") {
@@ -144,6 +158,18 @@ object IntegerSchemeEditorTest : Spek({
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+        }
+    }
+
+
+    describe("addChangeListener") {
+        it("invokes the listener if a field changes") {
+            var listenerInvoked = false
+            editor.addChangeListener { listenerInvoked = true }
+
+            GuiActionRunner.execute { frame.spinner("minValue").target().value = 76L }
+
+            assertThat(listenerInvoked).isTrue()
         }
     }
 })

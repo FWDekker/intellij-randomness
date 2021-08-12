@@ -65,7 +65,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : SchemeEditor<S
 
         minLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         maxLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
-        bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE)
+        bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE.toDouble())
 
         symbolSetSeparator = factory.createSeparator(bundle.getString("settings.symbol_sets"))
         symbolSetTable = SymbolSetTable()

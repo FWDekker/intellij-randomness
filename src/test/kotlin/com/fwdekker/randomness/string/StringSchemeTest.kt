@@ -85,6 +85,14 @@ object StringSchemeTest : Spek({
 
                 assertThat(stringScheme.doValidate()).isEqualTo("Minimum length should not be smaller than 1.")
             }
+
+            it("fails if the minimum length is greater than the maximum length") {
+                stringScheme.minLength = 878
+                stringScheme.maxLength = 841
+
+                assertThat(stringScheme.doValidate())
+                    .isEqualTo("Minimum length should not be larger than maximum length.")
+            }
         }
 
         describe("symbol sets") {
@@ -107,6 +115,13 @@ object StringSchemeTest : Spek({
                 stringScheme.activeSymbolSets = setOf("name")
 
                 assertThat(stringScheme.doValidate()).isEqualTo("Symbol set `name` should contain at least one symbol.")
+            }
+
+            it("fails if an undefined symbol set is selected") {
+                stringScheme.symbolSetSettings = SymbolSetSettings(mapOf("name" to "symbols"))
+                stringScheme.activeSymbolSets = setOf("unknown")
+
+                assertThat(stringScheme.doValidate()).isEqualTo("Unknown symbol set `unknown`.")
             }
 
             it("fails if no symbol sets are active") {

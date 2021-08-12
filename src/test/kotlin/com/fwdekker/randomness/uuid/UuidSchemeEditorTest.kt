@@ -66,6 +66,26 @@ object UuidSchemeEditorTest : Spek({
     }
 
     describe("readScheme") {
+        describe("defaults") {
+            it("returns default version if no version is selected") {
+                GuiActionRunner.execute { editor.loadScheme(UuidScheme(version = 967)) }
+
+                assertThat(editor.readScheme().version).isEqualTo(UuidScheme.DEFAULT_VERSION)
+            }
+
+            it("returns default enclosure if no enclosure is selected") {
+                GuiActionRunner.execute { editor.loadScheme(UuidScheme(enclosure = "unsupported")) }
+
+                assertThat(editor.readScheme().enclosure).isEqualTo(UuidScheme.DEFAULT_ENCLOSURE)
+            }
+
+            it("returns default capitalization if no capitalization is selected") {
+                GuiActionRunner.execute { editor.loadScheme(UuidScheme(capitalization = CapitalizationMode.DUMMY)) }
+
+                assertThat(editor.readScheme().capitalization).isEqualTo(UuidScheme.DEFAULT_CAPITALIZATION)
+            }
+        }
+
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
         }
@@ -91,6 +111,18 @@ object UuidSchemeEditorTest : Spek({
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+        }
+    }
+
+
+    describe("addChangeListener") {
+        it("invokes the listener if a field changes") {
+            var listenerInvoked = false
+            editor.addChangeListener { listenerInvoked = true }
+
+            GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
+
+            assertThat(listenerInvoked).isTrue()
         }
     }
 })

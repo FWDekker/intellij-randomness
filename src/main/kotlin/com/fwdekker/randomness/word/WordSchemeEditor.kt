@@ -63,7 +63,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
 
         minLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         maxLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
-        bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE)
+        bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE.toDouble())
 
         dictionarySeparator = factory.createSeparator(bundle.getString("settings.dictionaries"))
         dictionaryTable = DictionaryTable()

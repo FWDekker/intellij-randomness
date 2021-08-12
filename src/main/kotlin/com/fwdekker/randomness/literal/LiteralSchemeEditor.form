@@ -33,7 +33,7 @@
               </grid>
             </constraints>
             <properties>
-              <name value="literalInput"/>
+              <name value="literal"/>
             </properties>
           </component>
         </children>

@@ -39,6 +39,20 @@ object ArraySchemeDecoratorEditorTest : Spek({
 
             frame.spinner("count").requireValue(983)
         }
+
+        describe("toggles space after separator depending on newline separator") {
+            it("disables space after separator if newline separator is checked") {
+                GuiActionRunner.execute { frame.radioButton("separatorNewline").target().isSelected = true }
+
+                frame.checkBox("spaceAfterSeparator").requireDisabled()
+            }
+
+            it("enables space after separator if newline separator is unchecked") {
+                GuiActionRunner.execute { frame.radioButton("separatorNewline").target().isSelected = false }
+
+                frame.checkBox("spaceAfterSeparator").requireEnabled()
+            }
+        }
     }
 
 
@@ -82,6 +96,24 @@ object ArraySchemeDecoratorEditorTest : Spek({
     }
 
     describe("readScheme") {
+        describe("defaults") {
+            it("returns default brackets if no brackets are selected") {
+                GuiActionRunner.execute {
+                    editor.loadScheme(ArraySchemeDecorator(enabled = true, brackets = "unsupported"))
+                }
+
+                assertThat(editor.readScheme().brackets).isEqualTo(ArraySchemeDecorator.DEFAULT_BRACKETS)
+            }
+
+            it("returns default separator if no separator is selected") {
+                GuiActionRunner.execute {
+                    editor.loadScheme(ArraySchemeDecorator(enabled = true, separator = "unsupported"))
+                }
+
+                assertThat(editor.readScheme().separator).isEqualTo(ArraySchemeDecorator.DEFAULT_SEPARATOR)
+            }
+        }
+
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
         }
@@ -111,6 +143,18 @@ object ArraySchemeDecoratorEditorTest : Spek({
             assertThat(editor.isModified()).isEqualTo(false)
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+        }
+    }
+
+
+    describe("addChangeListener") {
+        it("invokes the listener if a field changes") {
+            var listenerInvoked = false
+            editor.addChangeListener { listenerInvoked = true }
+
+            GuiActionRunner.execute { frame.spinner("count").target().value = 433 }
+
+            assertThat(listenerInvoked).isTrue()
         }
     }
 })

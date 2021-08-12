@@ -65,6 +65,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidSch
             decorator = arrayDecoratorEditor.readScheme()
         )
 
+
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
             versionGroup, enclosureGroup, capitalizationGroup, addDashesCheckBox, arrayDecoratorEditor,

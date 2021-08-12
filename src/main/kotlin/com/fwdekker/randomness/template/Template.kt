@@ -45,7 +45,7 @@ data class Template(
 
 
     override fun doValidate() =
-        schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme::class.simpleName} > $it" } }
+        schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
 
     override fun deepCopy() =
         Template(

@@ -21,7 +21,7 @@ object UuidSchemeTest : Spek({
 
 
     describe("generateStrings") {
-        it("throws an exception if an invalid UUID version is given") {
+        it("throws an exception if the scheme is invalid") {
             uuidScheme.version = 9
 
             assertThatThrownBy { uuidScheme.generateStrings() }.isInstanceOf(DataGenerationException::class.java)
@@ -73,6 +73,12 @@ object UuidSchemeTest : Spek({
     describe("doValidate") {
         it("passes for the default settings") {
             assertThat(UuidScheme().doValidate()).isNull()
+        }
+
+        it("fails for unsupported UUID version") {
+            uuidScheme.version = 2
+
+            assertThat(uuidScheme.doValidate()).isEqualTo("Unknown UUID version '2'.")
         }
     }
 

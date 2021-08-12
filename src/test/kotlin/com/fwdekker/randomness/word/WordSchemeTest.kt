@@ -65,6 +65,14 @@ object WordSchemeTest : Spek({
                 assertThat(wordScheme.doValidate()).isEqualTo("Minimum length should not be smaller than 1.")
             }
 
+            it("fails if the minimum length is larger than the maximum length") {
+                wordScheme.minLength = 198
+                wordScheme.maxLength = 98
+
+                assertThat(wordScheme.doValidate())
+                    .isEqualTo("Minimum length should not be larger than maximum length.")
+            }
+
             it("fails if the length range ends too low to match any words") {
                 val dictionaryFile = tempFileHelper.createFile("save", ".dic")
                 val dictionary = DictionaryReference(isBundled = false, dictionaryFile.absolutePath)

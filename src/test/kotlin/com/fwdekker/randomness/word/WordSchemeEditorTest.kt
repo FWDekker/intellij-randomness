@@ -117,6 +117,20 @@ object WordSchemeEditorTest : Spek({
     }
 
     describe("readScheme") {
+        describe("defaults") {
+            it("returns default enclosure if no enclosure is selected") {
+                GuiActionRunner.execute { editor.loadScheme(WordScheme(enclosure = "unsupported")) }
+
+                assertThat(editor.readScheme().enclosure).isEqualTo(WordScheme.DEFAULT_ENCLOSURE)
+            }
+
+            it("returns default brackets if no brackets are selected") {
+                GuiActionRunner.execute { editor.loadScheme(WordScheme(capitalization = CapitalizationMode.DUMMY)) }
+
+                assertThat(editor.readScheme().capitalization).isEqualTo(WordScheme.DEFAULT_CAPITALIZATION)
+            }
+        }
+
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
         }
@@ -144,6 +158,18 @@ object WordSchemeEditorTest : Spek({
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+        }
+    }
+
+
+    describe("addChangeListener") {
+        it("invokes the listener if a field changes") {
+            var listenerInvoked = false
+            editor.addChangeListener { listenerInvoked = true }
+
+            GuiActionRunner.execute { frame.spinner("minLength").target().value = 840 }
+
+            assertThat(listenerInvoked).isTrue()
         }
     }
 })

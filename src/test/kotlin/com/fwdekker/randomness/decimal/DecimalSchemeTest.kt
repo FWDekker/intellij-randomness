@@ -82,10 +82,10 @@ object DecimalSchemeTest : Spek({
 
             mapOf(
                 // Decimal separator only
-                Param(4.21, 2, ".", ".") to "4.21",
-                Param(4.21, 2, ".", ",") to "4,21",
-                Param(4.21, 2, ",", ".") to "4.21",
-                Param(4.21, 2, ",", ",") to "4,21",
+                Param(4.21, 2, "", ".") to "4.21",
+                Param(4.21, 2, "", ",") to "4,21",
+                Param(4.21, 2, "", ".") to "4.21",
+                Param(4.21, 2, "", ",") to "4,21",
                 // Grouping separator only
                 Param(15_616.0, 0, ".", ".") to "15.616",
                 Param(15_616.0, 0, ".", ",") to "15.616",
@@ -137,6 +137,14 @@ object DecimalSchemeTest : Spek({
         }
 
         describe("value range") {
+            it("fails if the minimum value is larger than the maximum value") {
+                decimalScheme.minValue = 395.0
+                decimalScheme.maxValue = 264.0
+
+                assertThat(decimalScheme.doValidate())
+                    .isEqualTo("Minimum value should not be larger than maximum value.")
+            }
+
             it("fails if the range size overflows") {
                 decimalScheme.minValue = -1E53
                 decimalScheme.maxValue = 1E53
@@ -156,6 +164,14 @@ object DecimalSchemeTest : Spek({
                 decimalScheme.decimalCount = -851
 
                 assertThat(decimalScheme.doValidate()).isEqualTo("Decimal count should be at least 0.")
+            }
+        }
+
+        describe("grouping separator") {
+            it("fails if no decimal separator was selected") {
+                decimalScheme.decimalSeparator = ""
+
+                assertThat(decimalScheme.doValidate()).isEqualTo("Select a decimal separator.")
             }
         }
     }

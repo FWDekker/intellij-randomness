@@ -98,6 +98,20 @@ object DecimalSchemeEditorTest : Spek({
     }
 
     describe("readScheme") {
+        describe("defaults") {
+            it("returns default grouping separator if no grouping separator is selected") {
+                GuiActionRunner.execute { editor.loadScheme(DecimalScheme(groupingSeparator = "unsupported")) }
+
+                assertThat(editor.readScheme().groupingSeparator).isEqualTo(DecimalScheme.DEFAULT_GROUPING_SEPARATOR)
+            }
+
+            it("returns default decimal separator if no decimal separator is selected") {
+                GuiActionRunner.execute { editor.loadScheme(DecimalScheme(decimalSeparator = "unsupported")) }
+
+                assertThat(editor.readScheme().decimalSeparator).isEqualTo(DecimalScheme.DEFAULT_DECIMAL_SEPARATOR)
+            }
+        }
+
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
         }
@@ -133,6 +147,18 @@ object DecimalSchemeEditorTest : Spek({
             assertThat(editor.isModified()).isEqualTo(false)
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+        }
+    }
+
+
+    describe("addChangeListener") {
+        it("invokes the listener if a field changes") {
+            var listenerInvoked = false
+            editor.addChangeListener { listenerInvoked = true }
+
+            GuiActionRunner.execute { frame.spinner("minValue").target().value = 121.95 }
+
+            assertThat(listenerInvoked).isTrue()
         }
     }
 })

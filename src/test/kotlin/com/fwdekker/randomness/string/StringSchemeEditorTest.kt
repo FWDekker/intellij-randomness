@@ -117,6 +117,20 @@ object StringSchemeEditorTest : Spek({
     }
 
     describe("readScheme") {
+        describe("defaults") {
+            it("returns default enclosure if no enclosure is selected") {
+                GuiActionRunner.execute { editor.loadScheme(StringScheme(enclosure = "unsupported")) }
+
+                assertThat(editor.readScheme().enclosure).isEqualTo(StringScheme.DEFAULT_ENCLOSURE)
+            }
+
+            it("returns default brackets if no capitalization is selected") {
+                GuiActionRunner.execute { editor.loadScheme(StringScheme(capitalization = CapitalizationMode.DUMMY)) }
+
+                assertThat(editor.readScheme().capitalization).isEqualTo(StringScheme.DEFAULT_CAPITALIZATION)
+            }
+        }
+
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
         }
@@ -151,6 +165,18 @@ object StringSchemeEditorTest : Spek({
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+        }
+    }
+
+
+    describe("addChangeListener") {
+        it("invokes the listener if a field changes") {
+            var listenerInvoked = false
+            editor.addChangeListener { listenerInvoked = true }
+
+            GuiActionRunner.execute { frame.spinner("minLength").target().value = 206 }
+
+            assertThat(listenerInvoked).isTrue()
         }
     }
 })
