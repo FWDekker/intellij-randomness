@@ -46,6 +46,15 @@ data class DummyScheme(
          * The magic string contained in [literals] to make the scheme invalid according to [doValidate].
          */
         const val INVALID_OUTPUT = "invalid"
+
+
+        /**
+         * Convenience method for creating a [DummyScheme] using vararg notation.
+         *
+         * @param literals the literals for the dummy scheme
+         * @return a [DummyScheme] with the given literals
+         */
+        fun from(vararg literals: String) = DummyScheme(literals = literals.toList())
     }
 }
 

@@ -45,31 +45,31 @@ object DecimalSchemeEditorTest : Spek({
 
 
     describe("loadScheme") {
-        it("loads the settings' minimum value") {
+        it("loads the scheme's minimum value") {
             GuiActionRunner.execute { editor.loadScheme(DecimalScheme(minValue = 157.61, maxValue = 637.03)) }
 
             frame.spinner("minValue").requireValue(157.61)
         }
 
-        it("loads the settings' maximum value") {
+        it("loads the scheme's maximum value") {
             GuiActionRunner.execute { editor.loadScheme(DecimalScheme(minValue = 212.79, maxValue = 408.68)) }
 
             frame.spinner("maxValue").requireValue(408.68)
         }
 
-        it("loads the settings' decimal count") {
+        it("loads the scheme's decimal count") {
             GuiActionRunner.execute { editor.loadScheme(DecimalScheme(decimalCount = 18)) }
 
             frame.spinner("decimalCount").requireValue(18)
         }
 
-        it("loads the settings' value for showing trailing zeroes") {
+        it("loads the scheme's value for showing trailing zeroes") {
             GuiActionRunner.execute { editor.loadScheme(DecimalScheme(showTrailingZeroes = false)) }
 
             frame.checkBox("showTrailingZeroes").requireSelected(false)
         }
 
-        it("loads the settings' grouping separator") {
+        it("loads the scheme's grouping separator") {
             GuiActionRunner.execute { editor.loadScheme(DecimalScheme(groupingSeparator = "_")) }
 
             frame.radioButton("groupingSeparatorNone").requireSelected(false)
@@ -78,20 +78,20 @@ object DecimalSchemeEditorTest : Spek({
             frame.radioButton("groupingSeparatorUnderscore").requireSelected(true)
         }
 
-        it("loads the settings' decimal separator") {
+        it("loads the scheme's decimal separator") {
             GuiActionRunner.execute { editor.loadScheme(DecimalScheme(decimalSeparator = ".")) }
 
             frame.radioButton("decimalSeparatorComma").requireSelected(false)
             frame.radioButton("decimalSeparatorPeriod").requireSelected(true)
         }
 
-        it("loads the settings' prefix") {
+        it("loads the scheme's prefix") {
             GuiActionRunner.execute { editor.loadScheme(DecimalScheme(prefix = "x")) }
 
             frame.textBox("prefix").requireText("x")
         }
 
-        it("loads the settings' suffix") {
+        it("loads the scheme's suffix") {
             GuiActionRunner.execute { editor.loadScheme(DecimalScheme(suffix = "rough")) }
 
             frame.textBox("suffix").requireText("rough")

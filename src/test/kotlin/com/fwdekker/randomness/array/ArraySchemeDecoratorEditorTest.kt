@@ -57,19 +57,19 @@ object ArraySchemeDecoratorEditorTest : Spek({
 
 
     describe("loadScheme") {
-        it("loads the settings' enabled state") {
+        it("loads the scheme's enabled state") {
             GuiActionRunner.execute { editor.loadScheme(ArraySchemeDecorator(enabled = true)) }
 
             frame.checkBox("arrayEnabled").requireEnabled()
         }
 
-        it("loads the settings' count") {
+        it("loads the scheme's count") {
             GuiActionRunner.execute { editor.loadScheme(ArraySchemeDecorator(enabled = true, count = 14)) }
 
             frame.spinner("arrayCount").requireValue(14)
         }
 
-        it("loads the settings' brackets") {
+        it("loads the scheme's brackets") {
             GuiActionRunner.execute { editor.loadScheme(ArraySchemeDecorator(enabled = true, brackets = "{}")) }
 
             frame.radioButton("arrayBracketsNone").requireSelected(false)
@@ -78,7 +78,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
             frame.radioButton("arrayBracketsRound").requireSelected(false)
         }
 
-        it("loads the settings' separator") {
+        it("loads the scheme's separator") {
             GuiActionRunner.execute { editor.loadScheme(ArraySchemeDecorator(enabled = true, separator = ";")) }
 
             frame.radioButton("arraySeparatorComma").requireSelected(false)
@@ -86,7 +86,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
             frame.radioButton("arraySeparatorNewline").requireSelected(false)
         }
 
-        it("loads the settings' settings for using a space after separator") {
+        it("loads the scheme's settings for using a space after separator") {
             GuiActionRunner.execute {
                 editor.loadScheme(ArraySchemeDecorator(enabled = true, isSpaceAfterSeparator = false))
             }

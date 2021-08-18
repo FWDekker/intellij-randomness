@@ -62,19 +62,19 @@ object StringSchemeEditorTest : Spek({
 
 
     describe("loadScheme") {
-        it("loads the settings' minimum length") {
+        it("loads the scheme's minimum length") {
             GuiActionRunner.execute { editor.loadScheme(StringScheme(minLength = 144, maxLength = 163)) }
 
             frame.spinner("minLength").requireValue(144)
         }
 
-        it("loads the settings' maximum length") {
+        it("loads the scheme's maximum length") {
             GuiActionRunner.execute { editor.loadScheme(StringScheme(minLength = 372, maxLength = 719)) }
 
             frame.spinner("maxLength").requireValue(719)
         }
 
-        it("loads the settings' enclosure") {
+        it("loads the scheme's enclosure") {
             GuiActionRunner.execute { editor.loadScheme(StringScheme(enclosure = "\"")) }
 
             frame.radioButton("enclosureNone").requireSelected(false)
@@ -83,7 +83,7 @@ object StringSchemeEditorTest : Spek({
             frame.radioButton("enclosureBacktick").requireSelected(false)
         }
 
-        it("loads the settings' capitalization") {
+        it("loads the scheme's capitalization") {
             GuiActionRunner.execute { editor.loadScheme(StringScheme(capitalization = CapitalizationMode.RANDOM)) }
 
             frame.radioButton("capitalizationLower").requireSelected(false)
@@ -91,7 +91,7 @@ object StringSchemeEditorTest : Spek({
             frame.radioButton("capitalizationRandom").requireSelected(true)
         }
 
-        it("loads the settings' symbol sets") {
+        it("loads the scheme's symbol sets") {
             val allSymbolSets = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS, SymbolSet.HEXADECIMAL)
             val activeSymbolSets = listOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
 
@@ -110,7 +110,7 @@ object StringSchemeEditorTest : Spek({
                 .containsExactlyElementsOf(activeSymbolSets)
         }
 
-        it("loads the settings' setting for excluding look-alike symbols") {
+        it("loads the scheme's setting for excluding look-alike symbols") {
             GuiActionRunner.execute { editor.loadScheme(StringScheme(excludeLookAlikeSymbols = true)) }
 
             frame.checkBox("excludeLookAlikeSymbolsCheckBox").requireSelected()

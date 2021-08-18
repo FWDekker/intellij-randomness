@@ -86,7 +86,7 @@ object SettingsConfigurableTest : Spek({
             assertThat(configurable.isModified).isFalse()
 
             // Actual test: `isModified` is true after reloading invalid settings
-            val invalidSettings = DummyScheme(listOf(DummyScheme.INVALID_OUTPUT))
+            val invalidSettings = DummyScheme.from(DummyScheme.INVALID_OUTPUT)
             GuiActionRunner.execute { editor.loadScheme(invalidSettings) }
             assertThat(configurable.isModified).isTrue()
         }

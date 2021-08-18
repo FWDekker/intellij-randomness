@@ -66,19 +66,19 @@ object WordSchemeEditorTest : Spek({
 
 
     describe("loadScheme") {
-        it("loads the settings' minimum length") {
+        it("loads the scheme's minimum length") {
             GuiActionRunner.execute { editor.loadScheme(WordScheme(minLength = 4, maxLength = 12)) }
 
             frame.spinner("minLength").requireValue(4)
         }
 
-        it("loads the settings' maximum length") {
+        it("loads the scheme's maximum length") {
             GuiActionRunner.execute { editor.loadScheme(WordScheme(minLength = 2, maxLength = 6)) }
 
             frame.spinner("maxLength").requireValue(6)
         }
 
-        it("loads the settings' enclosure") {
+        it("loads the scheme's enclosure") {
             GuiActionRunner.execute { editor.loadScheme(WordScheme(enclosure = "'")) }
 
             frame.radioButton("enclosureNone").requireSelected(false)
@@ -87,7 +87,7 @@ object WordSchemeEditorTest : Spek({
             frame.radioButton("enclosureBacktick").requireSelected(false)
         }
 
-        it("loads the settings' capitalization") {
+        it("loads the scheme's capitalization") {
             GuiActionRunner.execute { editor.loadScheme(WordScheme(capitalization = CapitalizationMode.LOWER)) }
 
             frame.radioButton("capitalizationRetain").requireSelected(false)
@@ -98,7 +98,7 @@ object WordSchemeEditorTest : Spek({
             frame.radioButton("capitalizationFirstLetter").requireSelected(false)
         }
 
-        it("loads the settings' bundled dictionaries") {
+        it("loads the scheme's bundled dictionaries") {
             val allUserDictionaries = setOf("dictionary1.dic", "dictionary2.dic")
             val activeUserDictionaries = setOf("dictionary1.dic")
 

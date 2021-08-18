@@ -36,14 +36,14 @@ object UuidSchemeEditorTest : Spek({
 
 
     describe("loadScheme") {
-        it("loads the settings' version") {
+        it("loads the scheme's version") {
             GuiActionRunner.execute { editor.loadScheme(UuidScheme(version = 4)) }
 
             frame.radioButton("version1").requireSelected(false)
             frame.radioButton("version4").requireSelected(true)
         }
 
-        it("loads the settings' enclosure") {
+        it("loads the scheme's enclosure") {
             GuiActionRunner.execute { editor.loadScheme(UuidScheme(enclosure = "'")) }
 
             frame.radioButton("enclosureNone").requireSelected(false)
@@ -52,14 +52,14 @@ object UuidSchemeEditorTest : Spek({
             frame.radioButton("enclosureBacktick").requireSelected(false)
         }
 
-        it("loads the settings' capitalization mode") {
+        it("loads the scheme's capitalization mode") {
             GuiActionRunner.execute { editor.loadScheme(UuidScheme(capitalization = CapitalizationMode.UPPER)) }
 
             frame.radioButton("capitalizationLower").requireSelected(false)
             frame.radioButton("capitalizationUpper").requireSelected(true)
         }
 
-        it("loads the settings' add dashes option") {
+        it("loads the scheme's add dashes option") {
             GuiActionRunner.execute { editor.loadScheme(UuidScheme(addDashes = false)) }
 
             frame.checkBox("addDashesCheckBox").requireSelected(false)

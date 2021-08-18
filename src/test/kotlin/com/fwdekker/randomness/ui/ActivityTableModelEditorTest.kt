@@ -3,7 +3,7 @@ package com.fwdekker.randomness.ui
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.util.ui.CollectionItemEditor
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.GuiActionRunner
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
@@ -40,13 +40,13 @@ object ActivityTableModelEditorTest : Spek({
 
     describe("data") {
         it("returns an empty list by default") {
-            Assertions.assertThat(modelEditor.data).isEmpty()
+            assertThat(modelEditor.data).isEmpty()
         }
 
         it("adds entries to the underlying model") {
             GuiActionRunner.execute { modelEditor.data = listOf("overflow") }
 
-            Assertions.assertThat(modelEditor.model.items)
+            assertThat(modelEditor.model.items)
                 .containsExactly(EditableDatum(ActivityTableModelEditor.DEFAULT_STATE, "overflow"))
         }
 
@@ -56,19 +56,19 @@ object ActivityTableModelEditorTest : Spek({
                 modelEditor.data = listOf()
             }
 
-            Assertions.assertThat(modelEditor.model.items).isEmpty()
+            assertThat(modelEditor.model.items).isEmpty()
         }
 
         it("returns items that were added directly to the model") {
             GuiActionRunner.execute { modelEditor.model.addRow(EditableDatum(false, "hole")) }
 
-            Assertions.assertThat(modelEditor.data).containsExactly("hole")
+            assertThat(modelEditor.data).containsExactly("hole")
         }
     }
 
     describe("activeData") {
         it("returns an empty list by default") {
-            Assertions.assertThat(modelEditor.activeData).isEmpty()
+            assertThat(modelEditor.activeData).isEmpty()
         }
 
         it("returns only active symbol sets") {
@@ -77,7 +77,7 @@ object ActivityTableModelEditorTest : Spek({
                 modelEditor.model.addRow(EditableDatum(true, "limit"))
             }
 
-            Assertions.assertThat(modelEditor.activeData).containsExactly("limit")
+            assertThat(modelEditor.activeData).containsExactly("limit")
         }
 
         it("activates the given symbol sets") {
@@ -86,18 +86,17 @@ object ActivityTableModelEditorTest : Spek({
                 modelEditor.activeData = listOf("press")
             }
 
-            Assertions.assertThat(modelEditor.activeData).containsExactly("press")
+            assertThat(modelEditor.activeData).containsExactly("press")
         }
 
         it("deactivates all other symbol sets") {
-
             GuiActionRunner.execute {
                 modelEditor.data = listOf("receipt", "mine")
                 modelEditor.activeData = listOf("receipt")
                 modelEditor.activeData = listOf("mine")
             }
 
-            Assertions.assertThat(modelEditor.activeData).containsExactly("mine")
+            assertThat(modelEditor.activeData).containsExactly("mine")
         }
     }
 
@@ -107,7 +106,7 @@ object ActivityTableModelEditorTest : Spek({
 
             GuiActionRunner.execute { modelEditor.model.setValueAt(false, 0, 0) }
 
-            Assertions.assertThat(modelEditor.model.items[0].active).isFalse()
+            assertThat(modelEditor.model.items[0].active).isFalse()
         }
 
         it("activates the symbol sets if the activity cell is set to true") {
@@ -115,7 +114,7 @@ object ActivityTableModelEditorTest : Spek({
 
             GuiActionRunner.execute { modelEditor.model.setValueAt(true, 0, 0) }
 
-            Assertions.assertThat(modelEditor.model.items[0].active).isTrue()
+            assertThat(modelEditor.model.items[0].active).isTrue()
         }
     }
 

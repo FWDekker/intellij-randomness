@@ -64,25 +64,25 @@ object IntegerSchemeEditorTest : Spek({
 
 
     describe("loadScheme") {
-        it("loads the settings' minimum value") {
+        it("loads the scheme's minimum value") {
             GuiActionRunner.execute { editor.loadScheme(IntegerScheme(minValue = 145L, maxValue = 341L)) }
 
             frame.spinner("minValue").requireValue(145L)
         }
 
-        it("loads the settings' maximum value") {
+        it("loads the scheme's maximum value") {
             GuiActionRunner.execute { editor.loadScheme(IntegerScheme(minValue = 337L, maxValue = 614L)) }
 
             frame.spinner("maxValue").requireValue(614L)
         }
 
-        it("loads the settings' base value") {
+        it("loads the scheme's base value") {
             GuiActionRunner.execute { editor.loadScheme(IntegerScheme(base = 25)) }
 
             frame.spinner("base").requireValue(25)
         }
 
-        it("loads the settings' grouping separator") {
+        it("loads the scheme's grouping separator") {
             GuiActionRunner.execute { editor.loadScheme(IntegerScheme(groupingSeparator = "_")) }
 
             frame.radioButton("groupingSeparatorNone").requireSelected(false)
@@ -91,20 +91,20 @@ object IntegerSchemeEditorTest : Spek({
             frame.radioButton("groupingSeparatorUnderscore").requireSelected(true)
         }
 
-        it("loads the settings' capitalization mode") {
+        it("loads the scheme's capitalization mode") {
             GuiActionRunner.execute { editor.loadScheme(IntegerScheme(capitalization = CapitalizationMode.LOWER)) }
 
             frame.radioButton("capitalizationLower").requireSelected(true)
             frame.radioButton("capitalizationUpper").requireSelected(false)
         }
 
-        it("loads the settings' prefix") {
+        it("loads the scheme's prefix") {
             GuiActionRunner.execute { editor.loadScheme(IntegerScheme(prefix = "wage")) }
 
             frame.textBox("prefix").requireText("wage")
         }
 
-        it("loads the settings' suffix") {
+        it("loads the scheme's suffix") {
             GuiActionRunner.execute { editor.loadScheme(IntegerScheme(suffix = "fat")) }
 
             frame.textBox("suffix").requireText("fat")
