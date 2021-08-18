@@ -88,6 +88,8 @@ object SettingsConfigurableTest : Spek({
             // Actual test: `isModified` is true after reloading invalid settings
             val invalidSettings = DummyScheme.from(DummyScheme.INVALID_OUTPUT)
             GuiActionRunner.execute { editor.loadScheme(invalidSettings) }
+
+            require(!editor.isModified()) { "Editor is incorrectly marked as modified." }
             assertThat(configurable.isModified).isTrue()
         }
 

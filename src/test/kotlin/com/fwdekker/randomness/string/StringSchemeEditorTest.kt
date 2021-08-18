@@ -155,7 +155,7 @@ object StringSchemeEditorTest : Spek({
             assertThat(readScheme.enclosure).isEqualTo("`")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
             assertThat(readScheme.activeSymbolSets).containsExactly(SymbolSet.MINUS.name)
-            assertThat(readScheme.excludeLookAlikeSymbols).isEqualTo(false)
+            assertThat(readScheme.excludeLookAlikeSymbols).isFalse()
         }
 
         it("returns the loaded state if no editor changes are made") {

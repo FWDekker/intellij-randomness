@@ -35,8 +35,9 @@ abstract class Scheme {
      */
     @get:Transient
     open val icon: Icon?
-        get() = if (decorator?.enabled == true) icons?.Array
-        else icons?.Base
+        get() =
+            if (decorator?.enabled == true) icons?.Array
+            else icons?.Base
 
     /**
      * The random number generator used to generate random values.

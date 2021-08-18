@@ -102,8 +102,8 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
     override fun update(event: AnActionEvent) {
         super.update(event)
 
-        event.presentation.text = "${template?.name ?: "Template"} Settings"
         event.presentation.icon = template?.icons?.Settings ?: RandomnessIcons.Data.Settings
+        event.presentation.text = "${template?.name ?: "Template"} Settings"
     }
 
     /**

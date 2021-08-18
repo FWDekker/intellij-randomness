@@ -3,6 +3,7 @@ package com.fwdekker.randomness
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
+import icons.RandomnessIcons
 import java.awt.BorderLayout
 import javax.swing.Icon
 import javax.swing.JPanel
@@ -20,7 +21,8 @@ data class DummyScheme(
     var literals: List<String> = listOf(DEFAULT_OUTPUT),
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
-    override val name = "Dummy"
+    override var icons: RandomnessIcons? = RandomnessIcons.Data
+    override var name = "Dummy"
 
 
     override fun generateUndecoratedStrings(count: Int) = List(count) { literals[it % literals.size] }
@@ -81,6 +83,8 @@ class DummySchemeEditor(scheme: DummyScheme = DummyScheme()) : SchemeEditor<Dumm
 
 
     override fun loadScheme(scheme: DummyScheme) {
+        super.loadScheme(scheme)
+
         literalsInput.text = scheme.literals.joinToString(separator = ",")
         arrayDecoratorEditor.loadScheme(scheme.decorator)
     }

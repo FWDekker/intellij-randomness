@@ -133,7 +133,7 @@ object DecimalSchemeEditorTest : Spek({
             assertThat(readScheme.minValue).isEqualTo(112.54)
             assertThat(readScheme.maxValue).isEqualTo(644.74)
             assertThat(readScheme.decimalCount).isEqualTo(485)
-            assertThat(readScheme.showTrailingZeroes).isEqualTo(false)
+            assertThat(readScheme.showTrailingZeroes).isFalse()
             assertThat(readScheme.groupingSeparator).isEqualTo("_")
             assertThat(readScheme.decimalSeparator).isEqualTo(",")
             assertThat(readScheme.prefix).isEqualTo("exercise")
@@ -142,10 +142,10 @@ object DecimalSchemeEditorTest : Spek({
 
         it("returns the loaded state if no editor changes are made") {
             GuiActionRunner.execute { frame.spinner("minValue").target().value = 112.54 }
-            assertThat(editor.isModified()).isEqualTo(true)
+            assertThat(editor.isModified()).isTrue()
 
             GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
-            assertThat(editor.isModified()).isEqualTo(false)
+            assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
         }

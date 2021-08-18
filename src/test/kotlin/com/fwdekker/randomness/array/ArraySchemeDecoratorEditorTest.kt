@@ -128,19 +128,19 @@ object ArraySchemeDecoratorEditorTest : Spek({
             }
 
             val readScheme = editor.readScheme()
-            assertThat(readScheme.enabled).isEqualTo(true)
+            assertThat(readScheme.enabled).isTrue()
             assertThat(readScheme.count).isEqualTo(642)
             assertThat(readScheme.brackets).isEqualTo("{}")
             assertThat(readScheme.separator).isEqualTo(";")
-            assertThat(readScheme.isSpaceAfterSeparator).isEqualTo(false)
+            assertThat(readScheme.isSpaceAfterSeparator).isFalse()
         }
 
         it("returns the loaded state if no editor changes are made") {
             GuiActionRunner.execute { frame.checkBox("arrayEnabled").target().isSelected = false }
-            assertThat(editor.isModified()).isEqualTo(true)
+            assertThat(editor.isModified()).isTrue()
 
             GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
-            assertThat(editor.isModified()).isEqualTo(false)
+            assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
         }
