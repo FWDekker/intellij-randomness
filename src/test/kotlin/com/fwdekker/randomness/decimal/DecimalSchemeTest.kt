@@ -178,11 +178,15 @@ object DecimalSchemeTest : Spek({
 
     describe("deepCopy") {
         it("creates an independent copy") {
-            val copy = decimalScheme.deepCopy()
             decimalScheme.minValue = 613.24
+            decimalScheme.decorator.count = 926
+
+            val copy = decimalScheme.deepCopy()
             copy.minValue = 10.21
+            copy.decorator.count = 983
 
             assertThat(decimalScheme.minValue).isEqualTo(613.24)
+            assertThat(decimalScheme.decorator.count).isEqualTo(926)
         }
     }
 
@@ -196,12 +200,17 @@ object DecimalSchemeTest : Spek({
             decimalScheme.decimalSeparator = "D"
             decimalScheme.prefix = "baby"
             decimalScheme.suffix = "many"
+            decimalScheme.decorator.count = 19
 
             val newScheme = DecimalScheme()
             newScheme.copyFrom(decimalScheme)
 
-            assertThat(newScheme).isEqualTo(decimalScheme)
-            assertThat(newScheme).isNotSameAs(decimalScheme)
+            assertThat(newScheme)
+                .isEqualTo(decimalScheme)
+                .isNotSameAs(decimalScheme)
+            assertThat(newScheme.decorator)
+                .isEqualTo(decimalScheme.decorator)
+                .isNotSameAs(decimalScheme.decorator)
         }
     }
 })

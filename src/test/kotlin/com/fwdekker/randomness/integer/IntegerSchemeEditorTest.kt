@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -159,6 +160,15 @@ object IntegerSchemeEditorTest : Spek({
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
         }
+
+        it("returns a different instance from the loaded scheme") {
+            assertThat(editor.readScheme())
+                .isEqualTo(editor.originalScheme)
+                .isNotSameAs(editor.originalScheme)
+            assertThat(editor.readScheme().decorator)
+                .isEqualTo(editor.originalScheme.decorator)
+                .isNotSameAs(editor.originalScheme.decorator)
+        }
     }
 
 
@@ -168,6 +178,19 @@ object IntegerSchemeEditorTest : Spek({
             editor.addChangeListener { listenerInvoked = true }
 
             GuiActionRunner.execute { frame.spinner("minValue").target().value = 76L }
+
+            assertThat(listenerInvoked).isTrue()
+        }
+
+        it("invokes the listener if the array decorator changes") {
+            GuiActionRunner.execute {
+                editor.loadScheme(IntegerScheme(decorator = ArraySchemeDecorator(enabled = true)))
+            }
+
+            var listenerInvoked = false
+            editor.addChangeListener { listenerInvoked = true }
+
+            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 528 }
 
             assertThat(listenerInvoked).isTrue()
         }

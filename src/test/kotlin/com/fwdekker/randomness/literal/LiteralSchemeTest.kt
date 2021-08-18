@@ -41,23 +41,31 @@ object LiteralSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             literalScheme.literal = "boast"
+            literalScheme.decorator.count = 815
 
             val copy = literalScheme.deepCopy()
             copy.literal = "strict"
+            copy.decorator.count = 844
 
             assertThat(literalScheme.literal).isEqualTo("boast")
+            assertThat(literalScheme.decorator.count).isEqualTo(815)
         }
     }
 
     describe("copyFrom") {
         it("copies state from another instance") {
             literalScheme.literal = "tame"
+            literalScheme.decorator.count = 555
 
             val newScheme = LiteralScheme()
             newScheme.copyFrom(literalScheme)
 
-            assertThat(newScheme).isEqualTo(literalScheme)
-            assertThat(newScheme).isNotSameAs(literalScheme)
+            assertThat(newScheme)
+                .isEqualTo(literalScheme)
+                .isNotSameAs(literalScheme)
+            assertThat(newScheme.decorator)
+                .isEqualTo(literalScheme.decorator)
+                .isNotSameAs(literalScheme.decorator)
         }
     }
 })

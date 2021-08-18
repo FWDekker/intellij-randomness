@@ -35,22 +35,22 @@ object ArraySchemeDecoratorEditorTest : Spek({
 
     describe("event handling") {
         it("truncates decimals in the count") {
-            GuiActionRunner.execute { frame.spinner("count").target().value = 983.24f }
+            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 983.24f }
 
-            frame.spinner("count").requireValue(983)
+            frame.spinner("arrayCount").requireValue(983)
         }
 
         describe("toggles space after separator depending on newline separator") {
             it("disables space after separator if newline separator is checked") {
-                GuiActionRunner.execute { frame.radioButton("separatorNewline").target().isSelected = true }
+                GuiActionRunner.execute { frame.radioButton("arraySeparatorNewline").target().isSelected = true }
 
-                frame.checkBox("spaceAfterSeparator").requireDisabled()
+                frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
             }
 
             it("enables space after separator if newline separator is unchecked") {
-                GuiActionRunner.execute { frame.radioButton("separatorNewline").target().isSelected = false }
+                GuiActionRunner.execute { frame.radioButton("arraySeparatorNewline").target().isSelected = false }
 
-                frame.checkBox("spaceAfterSeparator").requireEnabled()
+                frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
             }
         }
     }
@@ -60,30 +60,30 @@ object ArraySchemeDecoratorEditorTest : Spek({
         it("loads the settings' enabled state") {
             GuiActionRunner.execute { editor.loadScheme(ArraySchemeDecorator(enabled = true)) }
 
-            frame.checkBox("enabled").requireEnabled()
+            frame.checkBox("arrayEnabled").requireEnabled()
         }
 
         it("loads the settings' count") {
             GuiActionRunner.execute { editor.loadScheme(ArraySchemeDecorator(enabled = true, count = 14)) }
 
-            frame.spinner("count").requireValue(14)
+            frame.spinner("arrayCount").requireValue(14)
         }
 
         it("loads the settings' brackets") {
             GuiActionRunner.execute { editor.loadScheme(ArraySchemeDecorator(enabled = true, brackets = "{}")) }
 
-            frame.radioButton("bracketsNone").requireSelected(false)
-            frame.radioButton("bracketsSquare").requireSelected(false)
-            frame.radioButton("bracketsCurly").requireSelected(true)
-            frame.radioButton("bracketsRound").requireSelected(false)
+            frame.radioButton("arrayBracketsNone").requireSelected(false)
+            frame.radioButton("arrayBracketsSquare").requireSelected(false)
+            frame.radioButton("arrayBracketsCurly").requireSelected(true)
+            frame.radioButton("arrayBracketsRound").requireSelected(false)
         }
 
         it("loads the settings' separator") {
             GuiActionRunner.execute { editor.loadScheme(ArraySchemeDecorator(enabled = true, separator = ";")) }
 
-            frame.radioButton("separatorComma").requireSelected(false)
-            frame.radioButton("separatorSemicolon").requireSelected(true)
-            frame.radioButton("separatorNewline").requireSelected(false)
+            frame.radioButton("arraySeparatorComma").requireSelected(false)
+            frame.radioButton("arraySeparatorSemicolon").requireSelected(true)
+            frame.radioButton("arraySeparatorNewline").requireSelected(false)
         }
 
         it("loads the settings' settings for using a space after separator") {
@@ -91,7 +91,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
                 editor.loadScheme(ArraySchemeDecorator(enabled = true, isSpaceAfterSeparator = false))
             }
 
-            frame.checkBox("spaceAfterSeparator").requireSelected(false)
+            frame.checkBox("arraySpaceAfterSeparator").requireSelected(false)
         }
     }
 
@@ -120,11 +120,11 @@ object ArraySchemeDecoratorEditorTest : Spek({
 
         it("returns the editor's state") {
             GuiActionRunner.execute {
-                frame.checkBox("enabled").target().isSelected = true
-                frame.spinner("count").target().value = 642
-                frame.radioButton("bracketsCurly").target().isSelected = true
-                frame.radioButton("separatorSemicolon").target().isSelected = true
-                frame.checkBox("spaceAfterSeparator").target().isSelected = false
+                frame.checkBox("arrayEnabled").target().isSelected = true
+                frame.spinner("arrayCount").target().value = 642
+                frame.radioButton("arrayBracketsCurly").target().isSelected = true
+                frame.radioButton("arraySeparatorSemicolon").target().isSelected = true
+                frame.checkBox("arraySpaceAfterSeparator").target().isSelected = false
             }
 
             val readScheme = editor.readScheme()
@@ -136,7 +136,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.checkBox("enabled").target().isSelected = false }
+            GuiActionRunner.execute { frame.checkBox("arrayEnabled").target().isSelected = false }
             assertThat(editor.isModified()).isEqualTo(true)
 
             GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
@@ -152,7 +152,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("count").target().value = 433 }
+            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 433 }
 
             assertThat(listenerInvoked).isTrue()
         }

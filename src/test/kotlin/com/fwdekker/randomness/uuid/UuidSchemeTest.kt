@@ -85,11 +85,14 @@ object UuidSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             uuidScheme.version = 4
+            uuidScheme.decorator.count = 754
 
             val copy = uuidScheme.deepCopy()
             copy.version = 1
+            copy.decorator.count = 640
 
             assertThat(uuidScheme.version).isEqualTo(4)
+            assertThat(uuidScheme.decorator.count).isEqualTo(754)
         }
     }
 
@@ -99,12 +102,17 @@ object UuidSchemeTest : Spek({
             uuidScheme.enclosure = "nvpB"
             uuidScheme.capitalization = CapitalizationMode.FIRST_LETTER
             uuidScheme.addDashes = true
+            uuidScheme.decorator.count = 264
 
             val newScheme = UuidScheme()
             newScheme.copyFrom(uuidScheme)
 
-            assertThat(newScheme).isEqualTo(uuidScheme)
-            assertThat(newScheme).isNotSameAs(uuidScheme)
+            assertThat(newScheme)
+                .isEqualTo(uuidScheme)
+                .isNotSameAs(uuidScheme)
+            assertThat(newScheme.decorator)
+                .isEqualTo(uuidScheme.decorator)
+                .isNotSameAs(uuidScheme.decorator)
         }
     }
 })

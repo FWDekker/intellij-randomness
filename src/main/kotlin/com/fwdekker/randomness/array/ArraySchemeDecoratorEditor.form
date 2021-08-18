@@ -18,7 +18,7 @@
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <name value="enabled"/>
+          <name value="arrayEnabled"/>
           <text resource-bundle="randomness" key="settings.enabled"/>
         </properties>
       </component>
@@ -46,7 +46,7 @@
               </grid>
             </constraints>
             <properties>
-              <name value="count" noi18n="true"/>
+              <name value="arrayCount" noi18n="true"/>
             </properties>
           </component>
           <component id="37af5" class="javax.swing.JLabel">
@@ -71,7 +71,7 @@
                 </constraints>
                 <properties>
                   <actionCommand value=""/>
-                  <name value="bracketsNone" noi18n="true"/>
+                  <name value="arrayBracketsNone" noi18n="true"/>
                   <text resource-bundle="randomness" key="settings.none"/>
                 </properties>
               </component>
@@ -80,7 +80,7 @@
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <name value="bracketsSquare" noi18n="true"/>
+                  <name value="arrayBracketsSquare" noi18n="true"/>
                   <text value="[]" noi18n="true"/>
                 </properties>
               </component>
@@ -89,7 +89,7 @@
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <name value="bracketsCurly" noi18n="true"/>
+                  <name value="arrayBracketsCurly" noi18n="true"/>
                   <text value="{}" noi18n="true"/>
                 </properties>
               </component>
@@ -98,7 +98,7 @@
                   <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <name value="bracketsRound" noi18n="true"/>
+                  <name value="arrayBracketsRound" noi18n="true"/>
                   <text value="()" noi18n="true"/>
                 </properties>
               </component>
@@ -130,7 +130,7 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <name value="separatorComma" noi18n="true"/>
+                  <name value="arraySeparatorComma" noi18n="true"/>
                   <text value="," noi18n="true"/>
                 </properties>
               </component>
@@ -139,7 +139,7 @@
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <name value="separatorSemicolon" noi18n="true"/>
+                  <name value="arraySeparatorSemicolon" noi18n="true"/>
                   <text value=";" noi18n="true"/>
                 </properties>
               </component>
@@ -150,7 +150,7 @@
                 <properties>
                   <actionCommand value="&#10;"/>
                   <hideActionText value="false"/>
-                  <name value="separatorNewline" noi18n="true"/>
+                  <name value="arraySeparatorNewline" noi18n="true"/>
                   <text value="\n" noi18n="true"/>
                 </properties>
               </component>
@@ -166,7 +166,7 @@
               <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <name value="spaceAfterSeparator" noi18n="true"/>
+              <name value="arraySpaceAfterSeparator" noi18n="true"/>
               <text resource-bundle="randomness" key="settings.space_after_separator"/>
             </properties>
           </component>

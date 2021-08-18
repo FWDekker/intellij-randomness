@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.literal
 
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -64,6 +65,15 @@ object LiteralSchemeEditorTest : Spek({
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
         }
+
+        it("returns a different instance from the loaded scheme") {
+            assertThat(editor.readScheme())
+                .isEqualTo(editor.originalScheme)
+                .isNotSameAs(editor.originalScheme)
+            assertThat(editor.readScheme().decorator)
+                .isEqualTo(editor.originalScheme.decorator)
+                .isNotSameAs(editor.originalScheme.decorator)
+        }
     }
 
 
@@ -73,6 +83,19 @@ object LiteralSchemeEditorTest : Spek({
             editor.addChangeListener { listenerInvoked = true }
 
             GuiActionRunner.execute { frame.textBox("literal").target().text = "boil" }
+
+            assertThat(listenerInvoked).isTrue()
+        }
+
+        it("invokes the listener if the array decorator changes") {
+            GuiActionRunner.execute {
+                editor.loadScheme(LiteralScheme(decorator = ArraySchemeDecorator(enabled = true)))
+            }
+
+            var listenerInvoked = false
+            editor.addChangeListener { listenerInvoked = true }
+
+            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 528 }
 
             assertThat(listenerInvoked).isTrue()
         }

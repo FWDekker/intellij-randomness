@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.ui.table.TableView
 import org.assertj.core.api.Assertions.assertThat
@@ -90,10 +91,11 @@ object WordSchemeEditorTest : Spek({
             GuiActionRunner.execute { editor.loadScheme(WordScheme(capitalization = CapitalizationMode.LOWER)) }
 
             frame.radioButton("capitalizationRetain").requireSelected(false)
+            frame.radioButton("capitalizationLower").requireSelected(true)
+            frame.radioButton("capitalizationUpper").requireSelected(false)
+            frame.radioButton("capitalizationRandom").requireSelected(false)
             frame.radioButton("capitalizationSentence").requireSelected(false)
             frame.radioButton("capitalizationFirstLetter").requireSelected(false)
-            frame.radioButton("capitalizationUpper").requireSelected(false)
-            frame.radioButton("capitalizationLower").requireSelected(true)
         }
 
         it("loads the settings' bundled dictionaries") {
@@ -159,6 +161,15 @@ object WordSchemeEditorTest : Spek({
 
             assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
         }
+
+        it("returns a different instance from the loaded scheme") {
+            assertThat(editor.readScheme())
+                .isEqualTo(editor.originalScheme)
+                .isNotSameAs(editor.originalScheme)
+            assertThat(editor.readScheme().decorator)
+                .isEqualTo(editor.originalScheme.decorator)
+                .isNotSameAs(editor.originalScheme.decorator)
+        }
     }
 
 
@@ -168,6 +179,17 @@ object WordSchemeEditorTest : Spek({
             editor.addChangeListener { listenerInvoked = true }
 
             GuiActionRunner.execute { frame.spinner("minLength").target().value = 840 }
+
+            assertThat(listenerInvoked).isTrue()
+        }
+
+        it("invokes the listener if the array decorator changes") {
+            GuiActionRunner.execute { editor.loadScheme(WordScheme(decorator = ArraySchemeDecorator(enabled = true))) }
+
+            var listenerInvoked = false
+            editor.addChangeListener { listenerInvoked = true }
+
+            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 528 }
 
             assertThat(listenerInvoked).isTrue()
         }

@@ -87,7 +87,8 @@ abstract class Scheme {
     /**
      * Copies the given scheme into this scheme.
      *
-     * Works by copying all references in a [deepCopy] of [scheme] into `this`.
+     * Works by copying all references in a [deepCopy] of [scheme] into `this`. Note that fields marked with [Transient]
+     * will be shallow-copied.
      *
      * @param scheme the scheme to copy into this scheme; should be a subclass of this scheme
      */
@@ -95,6 +96,8 @@ abstract class Scheme {
 
     /**
      * Returns a deep copy of this scheme.
+     *
+     * Fields marked with [Transient] will be shallow-copied.
      *
      * @return a deep copy of this scheme
      */

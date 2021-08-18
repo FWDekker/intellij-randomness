@@ -146,11 +146,18 @@ object StringSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             stringScheme.minLength = 49
+            stringScheme.decorator.count = 943
 
             val copy = stringScheme.deepCopy()
             copy.minLength = 244
+            copy.decorator.count = 173
 
             assertThat(stringScheme.minLength).isEqualTo(49)
+            assertThat(stringScheme.decorator.count).isEqualTo(943)
+        }
+
+        it("retains the reference to the symbol set settings") {
+            assertThat(stringScheme.deepCopy().symbolSetSettings).isSameAs(stringScheme.symbolSetSettings)
         }
     }
 
@@ -163,12 +170,17 @@ object StringSchemeTest : Spek({
             stringScheme.enclosure = "Qh7"
             stringScheme.activeSymbolSets = symbolSets
             stringScheme.excludeLookAlikeSymbols = true
+            stringScheme.decorator.count = 249
 
             val newScheme = StringScheme(SymbolSetSettings())
             newScheme.copyFrom(stringScheme)
 
-            assertThat(newScheme).isEqualTo(stringScheme)
-            assertThat(newScheme).isNotSameAs(stringScheme)
+            assertThat(newScheme)
+                .isEqualTo(stringScheme)
+                .isNotSameAs(stringScheme)
+            assertThat(newScheme.decorator)
+                .isEqualTo(stringScheme.decorator)
+                .isNotSameAs(stringScheme.decorator)
         }
     }
 })

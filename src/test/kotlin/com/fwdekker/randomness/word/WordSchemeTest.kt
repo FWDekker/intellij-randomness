@@ -137,11 +137,18 @@ object WordSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             wordScheme.minLength = 156
+            wordScheme.decorator.count = 333
 
             val copy = wordScheme.deepCopy()
             copy.minLength = 37
+            copy.decorator.count = 531
 
             assertThat(wordScheme.minLength).isEqualTo(156)
+            assertThat(wordScheme.decorator.count).isEqualTo(333)
+        }
+
+        it("retains the reference to the dictionary settings") {
+            assertThat(wordScheme.deepCopy().dictionarySettings).isSameAs(wordScheme.dictionarySettings)
         }
     }
 
@@ -150,12 +157,17 @@ object WordSchemeTest : Spek({
             wordScheme.minLength = 502
             wordScheme.maxLength = 812
             wordScheme.enclosure = "QJ8S4UrFaa"
+            wordScheme.decorator.count = 513
 
             val newScheme = WordScheme(DictionarySettings())
             newScheme.copyFrom(wordScheme)
 
-            assertThat(newScheme).isEqualTo(wordScheme)
-            assertThat(newScheme).isNotSameAs(wordScheme)
+            assertThat(newScheme)
+                .isEqualTo(wordScheme)
+                .isNotSameAs(wordScheme)
+            assertThat(newScheme.decorator)
+                .isEqualTo(wordScheme.decorator)
+                .isNotSameAs(wordScheme.decorator)
         }
     }
 })

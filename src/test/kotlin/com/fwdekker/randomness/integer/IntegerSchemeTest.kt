@@ -164,11 +164,14 @@ object IntegerSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             integerScheme.minValue = 159
+            integerScheme.decorator.count = 757
 
             val copy = integerScheme.deepCopy()
             copy.minValue = 48
+            copy.decorator.count = 554
 
             assertThat(integerScheme.minValue).isEqualTo(159)
+            assertThat(integerScheme.decorator.count).isEqualTo(757)
         }
     }
 
@@ -177,12 +180,17 @@ object IntegerSchemeTest : Spek({
             integerScheme.minValue = 742
             integerScheme.maxValue = 908
             integerScheme.base = 12
+            integerScheme.decorator.count = 963
 
             val newScheme = IntegerScheme()
             newScheme.copyFrom(integerScheme)
 
-            assertThat(newScheme).isEqualTo(integerScheme)
-            assertThat(newScheme).isNotSameAs(integerScheme)
+            assertThat(newScheme)
+                .isEqualTo(integerScheme)
+                .isNotSameAs(integerScheme)
+            assertThat(newScheme.decorator)
+                .isEqualTo(integerScheme.decorator)
+                .isNotSameAs(integerScheme.decorator)
         }
     }
 })
