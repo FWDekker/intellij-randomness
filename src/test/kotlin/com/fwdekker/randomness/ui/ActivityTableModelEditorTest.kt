@@ -1,133 +1,230 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.clickActionButton
+import com.fwdekker.randomness.ui.ActivityTableModelEditor.Companion.DEFAULT_STATE
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.util.ui.CollectionItemEditor
+import com.intellij.util.ui.ColumnInfo
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
+import org.assertj.swing.fixture.Containers
+import org.assertj.swing.fixture.FrameFixture
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import org.spekframework.spek2.style.specification.xdescribe
 
 
 /**
- * Unit tests for [ActivityTableModelEditor].
+ * GUI tests for [ActivityTableModelEditor].
  */
 object ActivityTableModelEditorTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
-    lateinit var modelEditor: ActivityTableModelEditor<String>
+    lateinit var frame: FrameFixture
 
+    lateinit var stringTable: StringTable
+
+
+    beforeGroup {
+        FailOnThreadViolationRepaintManager.install()
+    }
 
     beforeEachTest {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        val itemEditor = object : CollectionItemEditor<EditableDatum<String>> {
-            override fun getItemClass() = EditableDatum(false, "")::class.java
-
-            override fun clone(item: EditableDatum<String>, forInPlaceEditing: Boolean) =
-                EditableDatum(item.active, item.datum)
-        }
-        modelEditor = GuiActionRunner.execute<ActivityTableModelEditor<String>> {
-            object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, "", "") {}
-        }
+        stringTable = GuiActionRunner.execute<StringTable> { StringTable() }
+        frame = Containers.showInFrame(stringTable.panel)
     }
 
     afterEachTest {
+        frame.cleanUp()
         ideaFixture.tearDown()
     }
 
 
     describe("data") {
         it("returns an empty list by default") {
-            assertThat(modelEditor.data).isEmpty()
+            assertThat(stringTable.data).isEmpty()
         }
 
         it("adds entries to the underlying model") {
-            GuiActionRunner.execute { modelEditor.data = listOf("overflow") }
+            GuiActionRunner.execute { stringTable.data = listOf("overflow") }
 
-            assertThat(modelEditor.model.items)
-                .containsExactly(EditableDatum(ActivityTableModelEditor.DEFAULT_STATE, "overflow"))
+            assertThat(stringTable.model.items).containsExactly(EditableDatum(DEFAULT_STATE, "overflow"))
         }
 
         it("removes entries from the underlying model") {
             GuiActionRunner.execute {
-                modelEditor.data = listOf("bucket")
-                modelEditor.data = listOf()
+                stringTable.data = listOf("bucket")
+                stringTable.data = listOf()
             }
 
-            assertThat(modelEditor.model.items).isEmpty()
+            assertThat(stringTable.model.items).isEmpty()
         }
 
         it("returns items that were added directly to the model") {
-            GuiActionRunner.execute { modelEditor.model.addRow(EditableDatum(false, "hole")) }
+            GuiActionRunner.execute { stringTable.model.addRow(EditableDatum(false, "hole")) }
 
-            assertThat(modelEditor.data).containsExactly("hole")
+            assertThat(stringTable.data).containsExactly("hole")
         }
     }
 
     describe("activeData") {
         it("returns an empty list by default") {
-            assertThat(modelEditor.activeData).isEmpty()
+            assertThat(stringTable.activeData).isEmpty()
         }
 
         it("returns only active symbol sets") {
             GuiActionRunner.execute {
-                modelEditor.model.addRow(EditableDatum(false, "passage"))
-                modelEditor.model.addRow(EditableDatum(true, "limit"))
+                stringTable.model.addRow(EditableDatum(false, "passage"))
+                stringTable.model.addRow(EditableDatum(true, "limit"))
             }
 
-            assertThat(modelEditor.activeData).containsExactly("limit")
+            assertThat(stringTable.activeData).containsExactly("limit")
         }
 
         it("activates the given symbol sets") {
             GuiActionRunner.execute {
-                modelEditor.data = listOf("press", "thin")
-                modelEditor.activeData = listOf("press")
+                stringTable.data = listOf("press", "thin")
+                stringTable.activeData = listOf("press")
             }
 
-            assertThat(modelEditor.activeData).containsExactly("press")
+            assertThat(stringTable.activeData).containsExactly("press")
         }
 
         it("deactivates all other symbol sets") {
             GuiActionRunner.execute {
-                modelEditor.data = listOf("receipt", "mine")
-                modelEditor.activeData = listOf("receipt")
-                modelEditor.activeData = listOf("mine")
+                stringTable.data = listOf("receipt", "mine")
+                stringTable.activeData = listOf("receipt")
+                stringTable.activeData = listOf("mine")
             }
 
-            assertThat(modelEditor.activeData).containsExactly("mine")
+            assertThat(stringTable.activeData).containsExactly("mine")
         }
     }
 
     describe("activity column") {
         it("deactivates the symbol set if the activity cell is set to false") {
-            GuiActionRunner.execute { modelEditor.model.addRow(EditableDatum(true, "there")) }
+            GuiActionRunner.execute { stringTable.model.addRow(EditableDatum(true, "there")) }
 
-            GuiActionRunner.execute { modelEditor.model.setValueAt(false, 0, 0) }
+            GuiActionRunner.execute { stringTable.model.setValueAt(false, 0, 0) }
 
-            assertThat(modelEditor.model.items[0].active).isFalse()
+            assertThat(stringTable.model.items[0].active).isFalse()
         }
 
         it("activates the symbol sets if the activity cell is set to true") {
-            GuiActionRunner.execute { modelEditor.model.addRow(EditableDatum(false, "flash")) }
+            GuiActionRunner.execute { stringTable.model.addRow(EditableDatum(false, "flash")) }
 
-            GuiActionRunner.execute { modelEditor.model.setValueAt(true, 0, 0) }
+            GuiActionRunner.execute { stringTable.model.setValueAt(true, 0, 0) }
 
-            assertThat(modelEditor.model.items[0].active).isTrue()
+            assertThat(stringTable.model.items[0].active).isTrue()
         }
     }
 
-    // TODO: Copy functionality is not accessible from tests
-    xdescribe("copying") {
-        it("copies a copyable element") {}
 
-        it("copies copyable elements") {}
+    describe("buttons") {
+        describe("add") {
+            it("adds a new row to the table") {
+                val oldSize = stringTable.model.items.size
 
-        it("does not copy an uncopyable element") {}
+                GuiActionRunner.execute { frame.clickActionButton("Add") }
 
-        it("does not copy uncopyable elements") {}
+                assertThat(stringTable.model.items).hasSize(oldSize + 1)
+                assertThat(stringTable.data.last()).isEqualTo(StringTable.DEFAULT_STRING)
+            }
+        }
 
-        it("does not copy a mixture of copyable and uncopyable elements") {}
+        describe("copy") {
+            it("copies a copyable element") {
+                GuiActionRunner.execute { stringTable.data = listOf("sacred", "wealth") }
+
+                GuiActionRunner.execute {
+                    frame.table().target().setRowSelectionInterval(0, 0)
+                    frame.clickActionButton("Copy")
+                }
+
+                assertThat(stringTable.data).containsExactly("sacred", "wealth", "sacred")
+            }
+        }
+    }
+
+
+    describe("addChangeListener") {
+        var listenerInvoked = false
+
+
+        beforeEachTest {
+            listenerInvoked = false
+            stringTable.addChangeListener { listenerInvoked = true }
+        }
+
+
+        it("invokes the listener when value is changed") {
+            GuiActionRunner.execute { stringTable.data = listOf("cart", "wife") }
+            listenerInvoked = false
+
+            GuiActionRunner.execute { stringTable.model.setValueAt("deer", 0, 1) }
+
+            assertThat(listenerInvoked).isTrue()
+        }
+
+        it("invokes the listener when a row is added") {
+            GuiActionRunner.execute { frame.clickActionButton("Add") }
+
+            assertThat(listenerInvoked).isTrue()
+        }
+
+        it("invokes the listener when a row is removed") {
+            GuiActionRunner.execute { stringTable.data = listOf("sun", "sport") }
+            listenerInvoked = false
+
+            GuiActionRunner.execute {
+                frame.table().target().setRowSelectionInterval(0, 0)
+                frame.clickActionButton("Remove")
+            }
+
+            assertThat(listenerInvoked).isTrue()
+        }
     }
 })
+
+
+/**
+ * Dummy implementation that provides one column to edit a string in.
+ */
+private class StringTable : ActivityTableModelEditor<String>(arrayOf(DATA_COLUMN), DATA_EDITOR, "", "") {
+    override fun createElement() = EditableDatum(DEFAULT_STATE, DEFAULT_STRING)
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The default value in new rows in this table.
+         */
+        const val DEFAULT_STRING = "default"
+
+        /**
+         * The column showing the string of the datum.
+         */
+        private val DATA_COLUMN = object : ColumnInfo<EditableDatum<String>, String>("Data") {
+            override fun getColumnClass() = String::class.java
+
+            override fun valueOf(item: EditableDatum<String>) = item.datum
+
+            override fun isCellEditable(item: EditableDatum<String>?) = true
+        }
+
+        /**
+         * Describes how table rows are edited.
+         */
+        private val DATA_EDITOR = object : CollectionItemEditor<EditableDatum<String>> {
+            override fun getItemClass() = EditableDatum(false, "")::class.java
+
+            override fun clone(item: EditableDatum<String>, forInPlaceEditing: Boolean) =
+                EditableDatum(item.active, item.datum)
+        }
+    }
+}

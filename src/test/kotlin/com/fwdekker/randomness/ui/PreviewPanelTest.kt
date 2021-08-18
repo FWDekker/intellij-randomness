@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.DummyScheme
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.util.ui.CollectionItemEditor
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -72,22 +73,28 @@ object PreviewPanelTest : Spek({
             assertThat(frame.textBox("previewLabel").text()).isEqualTo(DummyScheme.DEFAULT_OUTPUT)
         }
 
-        // Requires dependency on IntelliJ classes
-        xit("updates when an activity table is updated") {
-            GuiActionRunner.execute {
-                val itemEditor = object : CollectionItemEditor<EditableDatum<String>> {
-                    override fun getItemClass() = EditableDatum(false, "")::class.java
+        it("updates when an activity table is updated") {
+            val ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+            ideaFixture.setUp()
 
-                    override fun clone(item: EditableDatum<String>, forInPlaceEditing: Boolean) =
-                        EditableDatum(item.active, item.datum)
+            try {
+                GuiActionRunner.execute {
+                    val itemEditor = object : CollectionItemEditor<EditableDatum<String>> {
+                        override fun getItemClass() = EditableDatum(false, "")::class.java
+
+                        override fun clone(item: EditableDatum<String>, forInPlaceEditing: Boolean) =
+                            EditableDatum(item.active, item.datum)
+                    }
+                    val table = object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, "", "") {}
+
+                    addChangeListenerTo(table) { panel.updatePreview() }
+                    table.data = listOf("a")
                 }
-                val table = object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, "", "") {}
 
-                addChangeListenerTo(table) { panel.updatePreview() }
-                table.data = listOf("a")
+                assertThat(frame.textBox("previewLabel").text()).isEqualTo(DummyScheme.DEFAULT_OUTPUT)
+            } finally {
+                ideaFixture.tearDown()
             }
-
-            assertThat(frame.textBox("previewLabel").text()).isEqualTo(DummyScheme.DEFAULT_OUTPUT)
         }
 
         it("updates when a group of JRadioButtons is updated") {

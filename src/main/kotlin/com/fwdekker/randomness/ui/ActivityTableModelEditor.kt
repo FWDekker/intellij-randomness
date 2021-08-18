@@ -140,6 +140,13 @@ abstract class ActivityTableModelEditor<T>(
         })
     }
 
+    /**
+     * Returns true.
+     *
+     * @return true
+     */
+    final override fun canCreateElement() = true
+
 
     /**
      * Adds a new item to the table, brings that item into view, and applies focus to that item's first editable column.
@@ -151,16 +158,15 @@ abstract class ActivityTableModelEditor<T>(
         TableUtil.stopEditing(table)
 
         table.rowCount.let { rowCount ->
-            if (canCreateElement()) model.addRow(createElement())
-            else model.addRow()
+            model.addRow(createElement())
 
             if (rowCount == table.rowCount) return
         }
 
         val newRowIndex = model.rowCount - 1
-        val firstEditableColumn = (1..model.columnCount).first { model.isCellEditable(newRowIndex, it) }
+        val firstEditableColumn = (1 until model.columnCount).first { model.isCellEditable(newRowIndex, it) }
         table.setRowSelectionInterval(newRowIndex, newRowIndex)
-        table.setColumnSelectionInterval(0, 0)
+        table.setColumnSelectionInterval(firstEditableColumn, firstEditableColumn)
         table.editCellAt(newRowIndex, firstEditableColumn)
 
         TableUtil.updateScroller(table)
@@ -176,9 +182,7 @@ abstract class ActivityTableModelEditor<T>(
     private fun copySelectedItems(table: TableView<EditableDatum<T>>) {
         TableUtil.stopEditing(table)
 
-        table.selectedObjects
-            .also { if (it.isEmpty()) return }
-            .forEach { model.addRow(itemEditor.clone(it, false)) }
+        table.selectedObjects.forEach { model.addRow(itemEditor.clone(it, false)) }
 
         TableUtil.updateScroller(table)
     }

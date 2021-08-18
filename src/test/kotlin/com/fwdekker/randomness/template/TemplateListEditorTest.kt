@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.clickActionButton
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.literal.LiteralScheme
@@ -8,12 +9,10 @@ import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.DictionarySettings
 import com.fwdekker.randomness.word.WordScheme
-import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.assertj.swing.core.GenericTypeMatcher
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
@@ -62,8 +61,8 @@ object TemplateListEditorTest : Spek({
     }
 
     afterEachTest {
-        ideaFixture.tearDown()
         frame.cleanUp()
+        ideaFixture.tearDown()
     }
 
 
@@ -526,7 +525,7 @@ object TemplateListEditorTest : Spek({
                     editor.addScheme(IntegerScheme())
                 }
 
-                assertThat(editor.readScheme().templates[0].schemes.size).isEqualTo(3)
+                assertThat(editor.readScheme().templates[0].schemes).hasSize(3)
             }
 
             it("returns the list with a scheme removed") {
@@ -544,7 +543,7 @@ object TemplateListEditorTest : Spek({
                     frame.clickActionButton("Copy")
                 }
 
-                assertThat(editor.readScheme().templates.last().schemes.size).isEqualTo(4)
+                assertThat(editor.readScheme().templates.last().schemes).hasSize(4)
             }
 
             it("returns the list with a scheme moved up") {
@@ -812,19 +811,6 @@ object TemplateListEditorTest : Spek({
     }
 })
 
-
-/**
- * Clicks the action button with the given accessible name.
- *
- * @param accessibleName the name of the button to click
- */
-private fun FrameFixture.clickActionButton(accessibleName: String) =
-    robot().finder()
-        .find(object : GenericTypeMatcher<ActionButton>(ActionButton::class.java) {
-            override fun isMatching(component: ActionButton) =
-                component.isValid && component.accessibleContext.accessibleName == accessibleName
-        })
-        .click()
 
 /**
  * Returns the templates contained in the given model by extracting them from all first-level children of the root.

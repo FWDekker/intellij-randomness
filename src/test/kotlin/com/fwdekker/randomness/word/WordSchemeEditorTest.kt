@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.TempFileHelper
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.ui.table.TableView

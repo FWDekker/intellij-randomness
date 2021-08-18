@@ -1,4 +1,4 @@
-package com.fwdekker.randomness.word
+package com.fwdekker.randomness
 
 import org.junit.jupiter.api.fail
 import java.io.File

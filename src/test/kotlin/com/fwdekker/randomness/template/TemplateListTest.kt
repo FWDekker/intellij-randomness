@@ -2,6 +2,7 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.literal.LiteralScheme
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
@@ -29,9 +30,15 @@ object TemplateListTest : Spek({
 
 
     describe("doValidate") {
-        // TODO: Cannot get default SymbolSetSettings; make it work without needing IntelliJ test fixture
-        xit("passes for the default settings") {
-            assertThat(TemplateList().doValidate()).isNull()
+        it("passes for the default settings") {
+            val ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+            ideaFixture.setUp()
+
+            try {
+                assertThat(TemplateList().doValidate()).isNull()
+            } finally {
+                ideaFixture.tearDown()
+            }
         }
 
         it("passes for a template list without templates") {

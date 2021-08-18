@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.TempFileHelper
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatCode
 import org.assertj.core.api.Assertions.assertThatThrownBy
