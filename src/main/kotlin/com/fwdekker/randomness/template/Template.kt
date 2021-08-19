@@ -53,7 +53,8 @@ data class Template(
 
 
     override fun doValidate() =
-        schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
+        if (name.isBlank()) "Templates must have a name."
+        else schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
 
     override fun deepCopy() = copy(schemes = schemes.map { it.deepCopy() })
 

@@ -37,8 +37,7 @@ object TemplateListTest : Spek({
         }
 
         it("fails if the single template is invalid") {
-            templateList.templates =
-                listOf(Template(name = "Gold", schemes = listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))))
+            templateList.templates = listOf(Template("Gold", listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))))
 
             assertThat(templateList.doValidate()).isEqualTo("Gold > Dummy > Invalid input!")
         }

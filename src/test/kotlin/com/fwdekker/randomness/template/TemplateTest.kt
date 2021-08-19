@@ -107,7 +107,15 @@ object TemplateTest : Spek({
         }
 
         it("passes for a template without schemes") {
-            assertThat(Template(schemes = emptyList()).doValidate()).isNull()
+            template.schemes = emptyList()
+
+            assertThat(template.doValidate()).isNull()
+        }
+
+        it("fails if the template does not have a name") {
+            template.name = ""
+
+            assertThat(template.doValidate()).isEqualTo("Templates must have a name.")
         }
 
         it("fails if the single scheme is invalid") {

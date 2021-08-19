@@ -339,9 +339,9 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
         }
 
 
-        override fun loadState(state: Template) = super.loadState(state).also { nameInput.text = state.name }
+        override fun loadState(state: Template) = super.loadState(state).also { nameInput.text = state.name.trim() }
 
-        override fun readState() = originalState.deepCopy().also { it.name = nameInput.text }
+        override fun readState() = originalState.deepCopy().also { it.name = nameInput.text.trim() }
 
 
         override fun addChangeListener(listener: () -> Unit) = addChangeListenerTo(nameInput, listener = listener)

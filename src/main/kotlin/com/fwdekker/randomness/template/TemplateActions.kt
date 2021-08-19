@@ -103,7 +103,7 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
         super.update(event)
 
         event.presentation.icon = template?.icons?.Settings ?: RandomnessIcons.Data.Settings
-        event.presentation.text = "${template?.name ?: "Template"} Settings"
+        event.presentation.text = "${if (template != null) template.name + " " else ""}Settings"
     }
 
     /**
