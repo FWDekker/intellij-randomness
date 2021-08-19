@@ -36,7 +36,7 @@ object LiteralSchemeEditorTest : Spek({
 
     describe("loadScheme") {
         it("loads the scheme's literal") {
-            GuiActionRunner.execute { editor.loadScheme(LiteralScheme(literal = "scrape")) }
+            GuiActionRunner.execute { editor.loadState(LiteralScheme(literal = "scrape")) }
 
             frame.textBox("literal").requireText("scrape")
         }
@@ -44,7 +44,7 @@ object LiteralSchemeEditorTest : Spek({
 
     describe("readScheme") {
         it("returns the original state if no editor changes are made") {
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns the editor's state") {
@@ -52,7 +52,7 @@ object LiteralSchemeEditorTest : Spek({
                 frame.textBox("literal").target().text = "waste"
             }
 
-            val readScheme = editor.readScheme()
+            val readScheme = editor.readState()
             assertThat(readScheme.literal).isEqualTo("waste")
         }
 
@@ -60,19 +60,19 @@ object LiteralSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.textBox("literal").target().text = "tie" }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
+            GuiActionRunner.execute { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns a different instance from the loaded scheme") {
-            assertThat(editor.readScheme())
-                .isEqualTo(editor.originalScheme)
-                .isNotSameAs(editor.originalScheme)
-            assertThat(editor.readScheme().decorator)
-                .isEqualTo(editor.originalScheme.decorator)
-                .isNotSameAs(editor.originalScheme.decorator)
+            assertThat(editor.readState())
+                .isEqualTo(editor.originalState)
+                .isNotSameAs(editor.originalState)
+            assertThat(editor.readState().decorator)
+                .isEqualTo(editor.originalState.decorator)
+                .isNotSameAs(editor.originalState.decorator)
         }
     }
 
@@ -89,7 +89,7 @@ object LiteralSchemeEditorTest : Spek({
 
         it("invokes the listener if the array decorator changes") {
             GuiActionRunner.execute {
-                editor.loadScheme(LiteralScheme(decorator = ArraySchemeDecorator(enabled = true)))
+                editor.loadState(LiteralScheme(decorator = ArraySchemeDecorator(enabled = true)))
             }
 
             var listenerInvoked = false

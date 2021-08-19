@@ -6,14 +6,14 @@ import javax.swing.JComponent
 
 
 /**
- * Tells IntelliJ how to use a [SchemeEditor] in the settings dialog.
+ * Tells IntelliJ how to use a [StateEditor] in the settings dialog.
  */
 @Suppress("LateinitUsage") // `createComponent` is invoked before any of the other methods
 abstract class SettingsConfigurable : Configurable {
     /**
      * The user interface for changing the settings, displayed in IntelliJ's settings window.
      */
-    lateinit var editor: SchemeEditor<*> private set
+    lateinit var editor: StateEditor<*> private set
 
 
     /**
@@ -34,7 +34,7 @@ abstract class SettingsConfigurable : Configurable {
         if (validationInfo != null)
             throw ConfigurationException(validationInfo, "Failed to save settings")
 
-        editor.applyScheme()
+        editor.applyState()
     }
 
     /**
@@ -59,5 +59,5 @@ abstract class SettingsConfigurable : Configurable {
      *
      * @return a new editor
      */
-    abstract fun createEditor(): SchemeEditor<*>
+    abstract fun createEditor(): StateEditor<*>
 }

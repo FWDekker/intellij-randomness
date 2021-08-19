@@ -63,19 +63,19 @@ object StringSchemeEditorTest : Spek({
 
     describe("loadScheme") {
         it("loads the scheme's minimum length") {
-            GuiActionRunner.execute { editor.loadScheme(StringScheme(minLength = 144, maxLength = 163)) }
+            GuiActionRunner.execute { editor.loadState(StringScheme(minLength = 144, maxLength = 163)) }
 
             frame.spinner("minLength").requireValue(144)
         }
 
         it("loads the scheme's maximum length") {
-            GuiActionRunner.execute { editor.loadScheme(StringScheme(minLength = 372, maxLength = 719)) }
+            GuiActionRunner.execute { editor.loadState(StringScheme(minLength = 372, maxLength = 719)) }
 
             frame.spinner("maxLength").requireValue(719)
         }
 
         it("loads the scheme's enclosure") {
-            GuiActionRunner.execute { editor.loadScheme(StringScheme(enclosure = "\"")) }
+            GuiActionRunner.execute { editor.loadState(StringScheme(enclosure = "\"")) }
 
             frame.radioButton("enclosureNone").requireSelected(false)
             frame.radioButton("enclosureSingle").requireSelected(false)
@@ -84,7 +84,7 @@ object StringSchemeEditorTest : Spek({
         }
 
         it("loads the scheme's capitalization") {
-            GuiActionRunner.execute { editor.loadScheme(StringScheme(capitalization = CapitalizationMode.RANDOM)) }
+            GuiActionRunner.execute { editor.loadState(StringScheme(capitalization = CapitalizationMode.RANDOM)) }
 
             frame.radioButton("capitalizationLower").requireSelected(false)
             frame.radioButton("capitalizationUpper").requireSelected(false)
@@ -96,7 +96,7 @@ object StringSchemeEditorTest : Spek({
             val activeSymbolSets = listOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
 
             GuiActionRunner.execute {
-                editor.loadScheme(
+                editor.loadState(
                     StringScheme(
                         SymbolSetSettings().also { it.symbolSetList = allSymbolSets },
                         activeSymbolSets = activeSymbolSets.map { it.name }.toSet()
@@ -111,7 +111,7 @@ object StringSchemeEditorTest : Spek({
         }
 
         it("loads the scheme's setting for excluding look-alike symbols") {
-            GuiActionRunner.execute { editor.loadScheme(StringScheme(excludeLookAlikeSymbols = true)) }
+            GuiActionRunner.execute { editor.loadState(StringScheme(excludeLookAlikeSymbols = true)) }
 
             frame.checkBox("excludeLookAlikeSymbolsCheckBox").requireSelected()
         }
@@ -120,20 +120,20 @@ object StringSchemeEditorTest : Spek({
     describe("readScheme") {
         describe("defaults") {
             it("returns default enclosure if no enclosure is selected") {
-                GuiActionRunner.execute { editor.loadScheme(StringScheme(enclosure = "unsupported")) }
+                GuiActionRunner.execute { editor.loadState(StringScheme(enclosure = "unsupported")) }
 
-                assertThat(editor.readScheme().enclosure).isEqualTo(StringScheme.DEFAULT_ENCLOSURE)
+                assertThat(editor.readState().enclosure).isEqualTo(StringScheme.DEFAULT_ENCLOSURE)
             }
 
             it("returns default brackets if no capitalization is selected") {
-                GuiActionRunner.execute { editor.loadScheme(StringScheme(capitalization = CapitalizationMode.DUMMY)) }
+                GuiActionRunner.execute { editor.loadState(StringScheme(capitalization = CapitalizationMode.DUMMY)) }
 
-                assertThat(editor.readScheme().capitalization).isEqualTo(StringScheme.DEFAULT_CAPITALIZATION)
+                assertThat(editor.readState().capitalization).isEqualTo(StringScheme.DEFAULT_CAPITALIZATION)
             }
         }
 
         it("returns the original state if no editor changes are made") {
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns the editor's state") {
@@ -149,7 +149,7 @@ object StringSchemeEditorTest : Spek({
                 symbolSetTable.listTableModel.addRow(EditableDatum(true, SymbolSet.MINUS))
             }
 
-            val readScheme = editor.readScheme()
+            val readScheme = editor.readState()
             assertThat(readScheme.minLength).isEqualTo(445)
             assertThat(readScheme.maxLength).isEqualTo(803)
             assertThat(readScheme.enclosure).isEqualTo("`")
@@ -162,19 +162,19 @@ object StringSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.spinner("minLength").target().value = 445 }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
+            GuiActionRunner.execute { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns a different instance from the loaded scheme") {
-            assertThat(editor.readScheme())
-                .isEqualTo(editor.originalScheme)
-                .isNotSameAs(editor.originalScheme)
-            assertThat(editor.readScheme().decorator)
-                .isEqualTo(editor.originalScheme.decorator)
-                .isNotSameAs(editor.originalScheme.decorator)
+            assertThat(editor.readState())
+                .isEqualTo(editor.originalState)
+                .isNotSameAs(editor.originalState)
+            assertThat(editor.readState().decorator)
+                .isEqualTo(editor.originalState.decorator)
+                .isNotSameAs(editor.originalState.decorator)
         }
     }
 
@@ -191,7 +191,7 @@ object StringSchemeEditorTest : Spek({
 
         it("invokes the listener if the array decorator changes") {
             GuiActionRunner.execute {
-                editor.loadScheme(StringScheme(decorator = ArraySchemeDecorator(enabled = true)))
+                editor.loadState(StringScheme(decorator = ArraySchemeDecorator(enabled = true)))
             }
 
             var listenerInvoked = false

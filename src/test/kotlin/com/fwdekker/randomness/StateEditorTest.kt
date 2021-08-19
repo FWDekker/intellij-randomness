@@ -10,9 +10,9 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * Unit tests for [SchemeEditor].
+ * Unit tests for [StateEditor].
  */
-object SchemeEditorTest : Spek({
+object StateEditorTest : Spek({
     lateinit var frame: FrameFixture
 
     lateinit var scheme: DummyScheme
@@ -38,7 +38,7 @@ object SchemeEditorTest : Spek({
         it("writes the given scheme into the original scheme") {
             val newScheme = DummyScheme.from("satisfy", "faint")
 
-            GuiActionRunner.execute { editor.loadScheme(newScheme) }
+            GuiActionRunner.execute { editor.loadState(newScheme) }
 
             assertThat(scheme.literals).containsExactly("satisfy", "faint")
             assertThat(scheme).isNotSameAs(newScheme)
@@ -47,7 +47,7 @@ object SchemeEditorTest : Spek({
 
     describe("readScheme") {
         it("returns an identical copy of the original scheme") {
-            val readScheme = editor.readScheme()
+            val readScheme = editor.readState()
 
             assertThat(readScheme.literals).containsExactly("ashamed", "bathe")
             assertThat(readScheme).isNotSameAs(scheme)
@@ -57,7 +57,7 @@ object SchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.textBox("literals").target().text = "reflect,cover" }
 
             assertThat(scheme.literals).containsExactly("ashamed", "bathe")
-            assertThat(editor.readScheme().literals).containsExactly("reflect", "cover")
+            assertThat(editor.readState().literals).containsExactly("reflect", "cover")
         }
     }
 
@@ -65,7 +65,7 @@ object SchemeEditorTest : Spek({
         it("writes changes into the original scheme") {
             GuiActionRunner.execute { frame.textBox("literals").target().text = "puzzle,once" }
 
-            editor.applyScheme()
+            editor.applyState()
 
             assertThat(scheme.literals).containsExactly("puzzle", "once")
         }
@@ -85,7 +85,7 @@ object SchemeEditorTest : Spek({
         it("returns false if the modifications have been applied") {
             GuiActionRunner.execute { frame.textBox("literals").target().text = "sympathy,arch" }
 
-            editor.applyScheme()
+            editor.applyState()
 
             assertThat(editor.isModified()).isFalse()
         }
@@ -112,7 +112,7 @@ object SchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.textBox("literals").target().text = "father" }
 
             GuiActionRunner.execute { editor.reset() }
-            editor.applyScheme()
+            editor.applyState()
 
             assertThat(scheme.literals).containsExactly("ashamed", "bathe")
         }

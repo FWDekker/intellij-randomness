@@ -37,14 +37,14 @@ object UuidSchemeEditorTest : Spek({
 
     describe("loadScheme") {
         it("loads the scheme's version") {
-            GuiActionRunner.execute { editor.loadScheme(UuidScheme(version = 4)) }
+            GuiActionRunner.execute { editor.loadState(UuidScheme(version = 4)) }
 
             frame.radioButton("version1").requireSelected(false)
             frame.radioButton("version4").requireSelected(true)
         }
 
         it("loads the scheme's enclosure") {
-            GuiActionRunner.execute { editor.loadScheme(UuidScheme(enclosure = "'")) }
+            GuiActionRunner.execute { editor.loadState(UuidScheme(enclosure = "'")) }
 
             frame.radioButton("enclosureNone").requireSelected(false)
             frame.radioButton("enclosureSingle").requireSelected(true)
@@ -53,14 +53,14 @@ object UuidSchemeEditorTest : Spek({
         }
 
         it("loads the scheme's capitalization mode") {
-            GuiActionRunner.execute { editor.loadScheme(UuidScheme(capitalization = CapitalizationMode.UPPER)) }
+            GuiActionRunner.execute { editor.loadState(UuidScheme(capitalization = CapitalizationMode.UPPER)) }
 
             frame.radioButton("capitalizationLower").requireSelected(false)
             frame.radioButton("capitalizationUpper").requireSelected(true)
         }
 
         it("loads the scheme's add dashes option") {
-            GuiActionRunner.execute { editor.loadScheme(UuidScheme(addDashes = false)) }
+            GuiActionRunner.execute { editor.loadState(UuidScheme(addDashes = false)) }
 
             frame.checkBox("addDashesCheckBox").requireSelected(false)
         }
@@ -69,26 +69,26 @@ object UuidSchemeEditorTest : Spek({
     describe("readScheme") {
         describe("defaults") {
             it("returns default version if no version is selected") {
-                GuiActionRunner.execute { editor.loadScheme(UuidScheme(version = 967)) }
+                GuiActionRunner.execute { editor.loadState(UuidScheme(version = 967)) }
 
-                assertThat(editor.readScheme().version).isEqualTo(UuidScheme.DEFAULT_VERSION)
+                assertThat(editor.readState().version).isEqualTo(UuidScheme.DEFAULT_VERSION)
             }
 
             it("returns default enclosure if no enclosure is selected") {
-                GuiActionRunner.execute { editor.loadScheme(UuidScheme(enclosure = "unsupported")) }
+                GuiActionRunner.execute { editor.loadState(UuidScheme(enclosure = "unsupported")) }
 
-                assertThat(editor.readScheme().enclosure).isEqualTo(UuidScheme.DEFAULT_ENCLOSURE)
+                assertThat(editor.readState().enclosure).isEqualTo(UuidScheme.DEFAULT_ENCLOSURE)
             }
 
             it("returns default capitalization if no capitalization is selected") {
-                GuiActionRunner.execute { editor.loadScheme(UuidScheme(capitalization = CapitalizationMode.DUMMY)) }
+                GuiActionRunner.execute { editor.loadState(UuidScheme(capitalization = CapitalizationMode.DUMMY)) }
 
-                assertThat(editor.readScheme().capitalization).isEqualTo(UuidScheme.DEFAULT_CAPITALIZATION)
+                assertThat(editor.readState().capitalization).isEqualTo(UuidScheme.DEFAULT_CAPITALIZATION)
             }
         }
 
         it("returns the original state if no editor changes are made") {
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns the editor's state") {
@@ -97,7 +97,7 @@ object UuidSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.radioButton("capitalizationUpper").target().isSelected = true }
             GuiActionRunner.execute { frame.checkBox("addDashesCheckBox").target().isSelected = true }
 
-            val readScheme = editor.readScheme()
+            val readScheme = editor.readState()
             assertThat(readScheme.version).isEqualTo(1)
             assertThat(readScheme.enclosure).isEqualTo("`")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
@@ -108,19 +108,19 @@ object UuidSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
+            GuiActionRunner.execute { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns a different instance from the loaded scheme") {
-            assertThat(editor.readScheme())
-                .isEqualTo(editor.originalScheme)
-                .isNotSameAs(editor.originalScheme)
-            assertThat(editor.readScheme().decorator)
-                .isEqualTo(editor.originalScheme.decorator)
-                .isNotSameAs(editor.originalScheme.decorator)
+            assertThat(editor.readState())
+                .isEqualTo(editor.originalState)
+                .isNotSameAs(editor.originalState)
+            assertThat(editor.readState().decorator)
+                .isEqualTo(editor.originalState.decorator)
+                .isNotSameAs(editor.originalState.decorator)
         }
     }
 
@@ -136,7 +136,7 @@ object UuidSchemeEditorTest : Spek({
         }
 
         it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute { editor.loadScheme(UuidScheme(decorator = ArraySchemeDecorator(enabled = true))) }
+            GuiActionRunner.execute { editor.loadState(UuidScheme(decorator = ArraySchemeDecorator(enabled = true))) }
 
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }

@@ -94,7 +94,7 @@ object TemplateListEditorTest : Spek({
                         editor.addScheme(Template(name = "Elephant"))
                     }
 
-                    assertThat(editor.readScheme().templates.map { it.name })
+                    assertThat(editor.readState().templates.map { it.name })
                         .containsExactly("Further", "Enclose", "Student", "Elephant")
                 }
 
@@ -104,7 +104,7 @@ object TemplateListEditorTest : Spek({
                         editor.addScheme(Template(name = "Flower"))
                     }
 
-                    assertThat(editor.readScheme().templates.map { it.name })
+                    assertThat(editor.readState().templates.map { it.name })
                         .containsExactly("Further", "Enclose", "Flower", "Student")
                 }
 
@@ -114,7 +114,7 @@ object TemplateListEditorTest : Spek({
                         editor.addScheme(Template(name = "Shoe"))
                     }
 
-                    assertThat(editor.readScheme().templates.map { it.name })
+                    assertThat(editor.readState().templates.map { it.name })
                         .containsExactly("Further", "Enclose", "Shoe", "Student")
                 }
             }
@@ -155,7 +155,7 @@ object TemplateListEditorTest : Spek({
                         editor.addScheme(UuidScheme())
                     }
 
-                    assertThat(editor.readScheme().templates[1].schemes)
+                    assertThat(editor.readState().templates[1].schemes)
                         .containsExactly(LiteralScheme("else"), UuidScheme())
                 }
 
@@ -165,7 +165,7 @@ object TemplateListEditorTest : Spek({
                         editor.addScheme(DecimalScheme())
                     }
 
-                    assertThat(editor.readScheme().templates[0].schemes)
+                    assertThat(editor.readState().templates[0].schemes)
                         .containsExactly(IntegerScheme(), DecimalScheme(), IntegerScheme(minValue = 7))
                 }
             }
@@ -190,7 +190,7 @@ object TemplateListEditorTest : Spek({
 
                     it("marks the editor as modified if the last template is removed") {
                         GuiActionRunner.execute {
-                            editor.loadScheme(TemplateList(listOf(Template(schemes = listOf(LiteralScheme())))))
+                            editor.loadState(TemplateList(listOf(Template(schemes = listOf(LiteralScheme())))))
                         }
                         require(!editor.isModified()) { "Editor incorrectly marked as modified." }
 
@@ -350,7 +350,7 @@ object TemplateListEditorTest : Spek({
 
         it("selects the first template if it does not have any schemes") {
             GuiActionRunner.execute {
-                editor.loadScheme(
+                editor.loadState(
                     TemplateList(listOf(Template("Flame", emptyList()), Template("Pen", listOf(IntegerScheme()))))
                 )
             }
@@ -359,7 +359,7 @@ object TemplateListEditorTest : Spek({
         }
 
         it("does nothing if no templates or schemes are loaded") {
-            GuiActionRunner.execute { editor.loadScheme(TemplateList(emptyList())) }
+            GuiActionRunner.execute { editor.loadState(TemplateList(emptyList())) }
 
             assertThat(frame.tree().target().selectionRows).isNull()
         }
@@ -400,7 +400,7 @@ object TemplateListEditorTest : Spek({
         it("loads the list's templates") {
             val templates = TemplateList(listOf(Template(name = "Limb"), Template(name = "Pot")))
 
-            GuiActionRunner.execute { editor.loadScheme(templates) }
+            GuiActionRunner.execute { editor.loadState(templates) }
 
             assertThat(treeModel.getTemplates()).containsExactlyElementsOf(templates.templates)
         }
@@ -419,13 +419,13 @@ object TemplateListEditorTest : Spek({
                 )
             )
 
-            GuiActionRunner.execute { editor.loadScheme(templates) }
+            GuiActionRunner.execute { editor.loadState(templates) }
 
             assertThat(treeModel.getSchemes()).containsExactlyElementsOf(schemes)
         }
 
         it("loads an empty tree if no templates are loaded") {
-            GuiActionRunner.execute { editor.loadScheme(TemplateList(emptyList())) }
+            GuiActionRunner.execute { editor.loadState(TemplateList(emptyList())) }
 
             assertThat(treeModel.getTemplates()).isEmpty()
         }
@@ -434,13 +434,13 @@ object TemplateListEditorTest : Spek({
     describe("readScheme") {
         describe("no changes made") {
             it("returns the original state if no editor changes are made") {
-                assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+                assertThat(editor.readState()).isEqualTo(editor.originalState)
             }
 
             it("returns a different instance from the loaded scheme") {
-                assertThat(editor.readScheme())
-                    .isEqualTo(editor.originalScheme)
-                    .isNotSameAs(editor.originalScheme)
+                assertThat(editor.readState())
+                    .isEqualTo(editor.originalState)
+                    .isNotSameAs(editor.originalState)
             }
         }
 
@@ -448,7 +448,7 @@ object TemplateListEditorTest : Spek({
             it("returns the list with a template added") {
                 GuiActionRunner.execute { editor.addScheme(Template(name = "Prize")) }
 
-                assertThat(editor.readScheme().templates).contains(Template(name = "Prize"))
+                assertThat(editor.readState().templates).contains(Template(name = "Prize"))
             }
 
             it("returns the list with a template and all its children added") {
@@ -456,7 +456,7 @@ object TemplateListEditorTest : Spek({
 
                 GuiActionRunner.execute { editor.addScheme(template) }
 
-                assertThat(editor.readScheme().templates).contains(template)
+                assertThat(editor.readState().templates).contains(template)
             }
 
             it("returns the list with a template removed") {
@@ -465,7 +465,7 @@ object TemplateListEditorTest : Spek({
                     frame.clickActionButton("Remove")
                 }
 
-                assertThat(editor.readScheme().templates.map { it.name }).doesNotContain("Further")
+                assertThat(editor.readState().templates.map { it.name }).doesNotContain("Further")
             }
 
             it("returns the list with a template copied") {
@@ -475,7 +475,7 @@ object TemplateListEditorTest : Spek({
                     frame.textBox("templateName").target().text = "Enjoy"
                 }
 
-                assertThat(editor.readScheme().templates.map { it.name }).contains("Enclose", "Enjoy")
+                assertThat(editor.readState().templates.map { it.name }).contains("Enclose", "Enjoy")
             }
 
             it("returns the list with a template moved up") {
@@ -484,7 +484,7 @@ object TemplateListEditorTest : Spek({
                     frame.clickActionButton("Up")
                 }
 
-                assertThat(editor.readScheme().templates.map { it.name })
+                assertThat(editor.readState().templates.map { it.name })
                     .containsExactly("Enclose", "Further", "Student")
             }
 
@@ -494,7 +494,7 @@ object TemplateListEditorTest : Spek({
                     frame.clickActionButton("Down")
                 }
 
-                assertThat(editor.readScheme().templates.map { it.name })
+                assertThat(editor.readState().templates.map { it.name })
                     .containsExactly("Further", "Student", "Enclose")
             }
 
@@ -506,15 +506,15 @@ object TemplateListEditorTest : Spek({
                     }
                 }
 
-                assertThat(editor.readScheme().templates).isEmpty()
+                assertThat(editor.readState().templates).isEmpty()
             }
 
             it("returns a list of the single template if a first template is added") {
-                GuiActionRunner.execute { editor.loadScheme(TemplateList(emptyList())) }
+                GuiActionRunner.execute { editor.loadState(TemplateList(emptyList())) }
 
                 GuiActionRunner.execute { editor.addScheme(Template(name = "Seem")) }
 
-                assertThat(editor.readScheme().templates).contains(Template(name = "Seem"))
+                assertThat(editor.readState().templates).contains(Template(name = "Seem"))
             }
         }
 
@@ -525,7 +525,7 @@ object TemplateListEditorTest : Spek({
                     editor.addScheme(IntegerScheme())
                 }
 
-                assertThat(editor.readScheme().templates[0].schemes).hasSize(3)
+                assertThat(editor.readState().templates[0].schemes).hasSize(3)
             }
 
             it("returns the list with a scheme removed") {
@@ -534,7 +534,7 @@ object TemplateListEditorTest : Spek({
                     frame.clickActionButton("Remove")
                 }
 
-                assertThat(editor.readScheme().templates[0].schemes).containsExactly(IntegerScheme(minValue = 7))
+                assertThat(editor.readState().templates[0].schemes).containsExactly(IntegerScheme(minValue = 7))
             }
 
             it("returns the list with a scheme copied") {
@@ -543,7 +543,7 @@ object TemplateListEditorTest : Spek({
                     frame.clickActionButton("Copy")
                 }
 
-                assertThat(editor.readScheme().templates.last().schemes).hasSize(4)
+                assertThat(editor.readState().templates.last().schemes).hasSize(4)
             }
 
             it("returns the list with a scheme moved up") {
@@ -552,7 +552,7 @@ object TemplateListEditorTest : Spek({
                     frame.clickActionButton("Up")
                 }
 
-                assertThat(editor.readScheme().templates.last().schemes)
+                assertThat(editor.readState().templates.last().schemes)
                     .containsExactly(LiteralScheme("envelope"), StringScheme(), IntegerScheme())
             }
 
@@ -562,7 +562,7 @@ object TemplateListEditorTest : Spek({
                     frame.clickActionButton("Down")
                 }
 
-                assertThat(editor.readScheme().templates.last().schemes)
+                assertThat(editor.readState().templates.last().schemes)
                     .containsExactly(LiteralScheme("envelope"), StringScheme(), IntegerScheme())
             }
 
@@ -574,18 +574,18 @@ object TemplateListEditorTest : Spek({
                     }
                 }
 
-                assertThat(editor.readScheme().templates).isEmpty()
+                assertThat(editor.readState().templates).isEmpty()
             }
 
             it("returns a list of the single scheme if a first scheme is added to a template") {
-                GuiActionRunner.execute { editor.loadScheme(TemplateList(listOf(Template(schemes = emptyList())))) }
+                GuiActionRunner.execute { editor.loadState(TemplateList(listOf(Template(schemes = emptyList())))) }
 
                 GuiActionRunner.execute {
                     frame.tree().target().setSelectionRow(0)
                     editor.addScheme(LiteralScheme("behavior"))
                 }
 
-                assertThat(editor.readScheme().templates[0].schemes).containsExactly(LiteralScheme("behavior"))
+                assertThat(editor.readState().templates[0].schemes).containsExactly(LiteralScheme("behavior"))
             }
         }
 
@@ -596,7 +596,7 @@ object TemplateListEditorTest : Spek({
                     frame.spinner("minValue").target().value = 182
                 }
 
-                assertThat(editor.readScheme().templates[0].schemes[0])
+                assertThat(editor.readState().templates[0].schemes[0])
                     .isEqualTo(IntegerScheme(minValue = 182))
             }
 
@@ -609,7 +609,7 @@ object TemplateListEditorTest : Spek({
 
                 frame.textBox("literal").requireText("else") // Require that new editor has opened
 
-                assertThat(editor.readScheme().templates[0].schemes[0])
+                assertThat(editor.readState().templates[0].schemes[0])
                     .isEqualTo(IntegerScheme(minValue = 593))
             }
 
@@ -622,7 +622,7 @@ object TemplateListEditorTest : Spek({
 
                 frame.spinner("minValue").requireValue(7L) // Require that new editor has opened
 
-                assertThat(editor.readScheme().templates[0].schemes[0])
+                assertThat(editor.readState().templates[0].schemes[0])
                     .isEqualTo(IntegerScheme(minValue = 746))
             }
 
@@ -635,7 +635,7 @@ object TemplateListEditorTest : Spek({
                     frame.spinner("minValue").target().value = 471
                 }
 
-                assertThat(editor.readScheme().templates[0].schemes)
+                assertThat(editor.readState().templates[0].schemes)
                     .containsExactly(IntegerScheme(minValue = 867), IntegerScheme(minValue = 471))
             }
 
@@ -650,7 +650,7 @@ object TemplateListEditorTest : Spek({
                     frame.spinner("maxValue").target().value = 502
                 }
 
-                assertThat(editor.readScheme().templates[0].schemes)
+                assertThat(editor.readState().templates[0].schemes)
                     .contains(IntegerScheme(minValue = 494, maxValue = 502))
             }
         }
@@ -665,7 +665,7 @@ object TemplateListEditorTest : Spek({
         it("is invalid if the scheme in the current editor is invalid") {
             GuiActionRunner.execute {
                 val template = Template("Faith", listOf(WordScheme(DictionarySettings())))
-                editor.loadScheme(TemplateList(listOf(template)))
+                editor.loadState(TemplateList(listOf(template)))
 
                 frame.spinner("minLength").target().value = 299
             }
@@ -677,7 +677,7 @@ object TemplateListEditorTest : Spek({
 
             GuiActionRunner.execute {
                 val template = Template("Avoid", listOf(WordScheme(DictionarySettings()), IntegerScheme()))
-                editor.loadScheme(TemplateList(listOf(template)))
+                editor.loadState(TemplateList(listOf(template)))
 
                 frame.spinner("minLength").target().value = 299
                 frame.tree().target().setSelectionRow(2)

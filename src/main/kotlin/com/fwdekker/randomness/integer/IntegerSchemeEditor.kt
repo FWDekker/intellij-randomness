@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_GROUPING_SEPARATOR
@@ -24,7 +24,7 @@ import javax.swing.event.ChangeEvent
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEditor<IntegerScheme>(scheme) {
+class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor<IntegerScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var minValue: JLongSpinner
     private lateinit var maxValue: JLongSpinner
@@ -44,7 +44,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEdito
         }
         base.changeListeners.forEach { it.stateChanged(ChangeEvent(base)) }
 
-        loadScheme(scheme)
+        loadState(scheme)
     }
 
     /**
@@ -59,25 +59,25 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEdito
         bindSpinners(minValue, maxValue, maxRange = null)
         base = JIntSpinner(IntegerScheme.DECIMAL_BASE, IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE)
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalScheme.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
-    override fun loadScheme(scheme: IntegerScheme) {
-        super.loadScheme(scheme)
+    override fun loadState(state: IntegerScheme) {
+        super.loadState(state)
 
-        minValue.value = scheme.minValue
-        maxValue.value = scheme.maxValue
-        base.value = scheme.base
-        groupingSeparatorGroup.setValue(scheme.groupingSeparator)
-        capitalizationGroup.setValue(scheme.capitalization)
-        prefixInput.text = scheme.prefix
-        suffixInput.text = scheme.suffix
-        arrayDecoratorEditor.loadScheme(scheme.decorator)
+        minValue.value = state.minValue
+        maxValue.value = state.maxValue
+        base.value = state.base
+        groupingSeparatorGroup.setValue(state.groupingSeparator)
+        capitalizationGroup.setValue(state.capitalization)
+        prefixInput.text = state.prefix
+        suffixInput.text = state.suffix
+        arrayDecoratorEditor.loadState(state.decorator)
     }
 
-    override fun readScheme() =
+    override fun readState() =
         IntegerScheme(
             minValue = minValue.value,
             maxValue = maxValue.value,
@@ -86,7 +86,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEdito
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             prefix = prefixInput.text,
             suffix = suffixInput.text,
-            decorator = arrayDecoratorEditor.readScheme()
+            decorator = arrayDecoratorEditor.readState()
         )
 
     override fun addChangeListener(listener: () -> Unit) =

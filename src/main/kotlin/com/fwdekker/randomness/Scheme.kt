@@ -1,40 +1,26 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArraySchemeDecorator
-import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.Transient
-import icons.RandomnessIcons
 import javax.swing.Icon
 import kotlin.random.Random
 
 
 /**
- * A scheme is a configurable random number generator.
+ * A scheme is a [State] that is also a configurable random number generator.
  *
  * Schemes can additionally be given [SchemeDecorator]s that extend their functionality.
  */
-abstract class Scheme {
+abstract class Scheme : State() {
     /**
      * Settings that determine whether the output should be an array of values.
      */
     abstract val decorator: ArraySchemeDecorator?
 
     /**
-     * The name of the scheme as shown to the user.
+     * The icon for this scheme; depends on whether its array decorator is enabled.
      */
-    abstract val name: String
-
-    /**
-     * The icons that represent schemes of this type.
-     */
-    @Transient
-    open val icons: RandomnessIcons? = null
-
-    /**
-     * The icon that represents this scheme instance.
-     */
-    @get:Transient
-    open val icon: Icon?
+    override val icon: Icon?
         get() =
             if (decorator?.enabled == true) icons?.Array
             else icons?.Base
@@ -78,42 +64,7 @@ abstract class Scheme {
     abstract fun generateUndecoratedStrings(count: Int = 1): List<String>
 
 
-    /**
-     * Validates the scheme, and indicates whether and why it is invalid.
-     *
-     * @return `null` if the scheme is valid, or a string explaining why the scheme is invalid
-     */
-    open fun doValidate(): String? = null
-
-    /**
-     * Copies the given scheme into this scheme.
-     *
-     * Works by copying all references in a [deepCopy] of [scheme] into `this`. Note that fields marked with [Transient]
-     * will be shallow-copied.
-     *
-     * @param scheme the scheme to copy into this scheme; should be a subclass of this scheme
-     */
-    fun copyFrom(scheme: Scheme) = XmlSerializerUtil.copyBean(scheme.deepCopy(), this)
-
-    /**
-     * Returns a deep copy of this scheme.
-     *
-     * Fields marked with [Transient] will be shallow-copied.
-     *
-     * @return a deep copy of this scheme
-     */
-    abstract fun deepCopy(): Scheme
-
-
-    /**
-     * Holds constants.
-     */
-    companion object {
-        /**
-         * The default value of the [name] field.
-         */
-        const val DEFAULT_NAME: String = "Unnamed scheme"
-    }
+    abstract override fun deepCopy(): Scheme
 }
 
 /**

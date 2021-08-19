@@ -115,7 +115,7 @@ object ListenerHelperTest : Spek({
 
                 addChangeListenerTo(editor, listener = listener)
 
-                editor.loadScheme(DummyScheme.from("prove"))
+                editor.loadState(DummyScheme.from("prove"))
             }
 
             assertThat(listenerInvoked).isTrue()

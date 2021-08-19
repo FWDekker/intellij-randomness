@@ -46,31 +46,31 @@ object DecimalSchemeEditorTest : Spek({
 
     describe("loadScheme") {
         it("loads the scheme's minimum value") {
-            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(minValue = 157.61, maxValue = 637.03)) }
+            GuiActionRunner.execute { editor.loadState(DecimalScheme(minValue = 157.61, maxValue = 637.03)) }
 
             frame.spinner("minValue").requireValue(157.61)
         }
 
         it("loads the scheme's maximum value") {
-            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(minValue = 212.79, maxValue = 408.68)) }
+            GuiActionRunner.execute { editor.loadState(DecimalScheme(minValue = 212.79, maxValue = 408.68)) }
 
             frame.spinner("maxValue").requireValue(408.68)
         }
 
         it("loads the scheme's decimal count") {
-            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(decimalCount = 18)) }
+            GuiActionRunner.execute { editor.loadState(DecimalScheme(decimalCount = 18)) }
 
             frame.spinner("decimalCount").requireValue(18)
         }
 
         it("loads the scheme's value for showing trailing zeroes") {
-            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(showTrailingZeroes = false)) }
+            GuiActionRunner.execute { editor.loadState(DecimalScheme(showTrailingZeroes = false)) }
 
             frame.checkBox("showTrailingZeroes").requireSelected(false)
         }
 
         it("loads the scheme's grouping separator") {
-            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(groupingSeparator = "_")) }
+            GuiActionRunner.execute { editor.loadState(DecimalScheme(groupingSeparator = "_")) }
 
             frame.radioButton("groupingSeparatorNone").requireSelected(false)
             frame.radioButton("groupingSeparatorPeriod").requireSelected(false)
@@ -79,20 +79,20 @@ object DecimalSchemeEditorTest : Spek({
         }
 
         it("loads the scheme's decimal separator") {
-            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(decimalSeparator = ".")) }
+            GuiActionRunner.execute { editor.loadState(DecimalScheme(decimalSeparator = ".")) }
 
             frame.radioButton("decimalSeparatorComma").requireSelected(false)
             frame.radioButton("decimalSeparatorPeriod").requireSelected(true)
         }
 
         it("loads the scheme's prefix") {
-            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(prefix = "x")) }
+            GuiActionRunner.execute { editor.loadState(DecimalScheme(prefix = "x")) }
 
             frame.textBox("prefix").requireText("x")
         }
 
         it("loads the scheme's suffix") {
-            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(suffix = "rough")) }
+            GuiActionRunner.execute { editor.loadState(DecimalScheme(suffix = "rough")) }
 
             frame.textBox("suffix").requireText("rough")
         }
@@ -101,20 +101,20 @@ object DecimalSchemeEditorTest : Spek({
     describe("readScheme") {
         describe("defaults") {
             it("returns default grouping separator if no grouping separator is selected") {
-                GuiActionRunner.execute { editor.loadScheme(DecimalScheme(groupingSeparator = "unsupported")) }
+                GuiActionRunner.execute { editor.loadState(DecimalScheme(groupingSeparator = "unsupported")) }
 
-                assertThat(editor.readScheme().groupingSeparator).isEqualTo(DecimalScheme.DEFAULT_GROUPING_SEPARATOR)
+                assertThat(editor.readState().groupingSeparator).isEqualTo(DecimalScheme.DEFAULT_GROUPING_SEPARATOR)
             }
 
             it("returns default decimal separator if no decimal separator is selected") {
-                GuiActionRunner.execute { editor.loadScheme(DecimalScheme(decimalSeparator = "unsupported")) }
+                GuiActionRunner.execute { editor.loadState(DecimalScheme(decimalSeparator = "unsupported")) }
 
-                assertThat(editor.readScheme().decimalSeparator).isEqualTo(DecimalScheme.DEFAULT_DECIMAL_SEPARATOR)
+                assertThat(editor.readState().decimalSeparator).isEqualTo(DecimalScheme.DEFAULT_DECIMAL_SEPARATOR)
             }
         }
 
         it("returns the original state if no editor changes are made") {
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns the editor's state") {
@@ -129,7 +129,7 @@ object DecimalSchemeEditorTest : Spek({
                 frame.textBox("suffix").target().text = "court"
             }
 
-            val readScheme = editor.readScheme()
+            val readScheme = editor.readState()
             assertThat(readScheme.minValue).isEqualTo(112.54)
             assertThat(readScheme.maxValue).isEqualTo(644.74)
             assertThat(readScheme.decimalCount).isEqualTo(485)
@@ -144,19 +144,19 @@ object DecimalSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.spinner("minValue").target().value = 112.54 }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
+            GuiActionRunner.execute { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns a different instance from the loaded scheme") {
-            assertThat(editor.readScheme())
-                .isEqualTo(editor.originalScheme)
-                .isNotSameAs(editor.originalScheme)
-            assertThat(editor.readScheme().decorator)
-                .isEqualTo(editor.originalScheme.decorator)
-                .isNotSameAs(editor.originalScheme.decorator)
+            assertThat(editor.readState())
+                .isEqualTo(editor.originalState)
+                .isNotSameAs(editor.originalState)
+            assertThat(editor.readState().decorator)
+                .isEqualTo(editor.originalState.decorator)
+                .isNotSameAs(editor.originalState.decorator)
         }
     }
 
@@ -173,7 +173,7 @@ object DecimalSchemeEditorTest : Spek({
 
         it("invokes the listener if the array decorator changes") {
             GuiActionRunner.execute {
-                editor.loadScheme(DecimalScheme(decorator = ArraySchemeDecorator(enabled = true)))
+                editor.loadState(DecimalScheme(decorator = ArraySchemeDecorator(enabled = true)))
             }
 
             var listenerInvoked = false

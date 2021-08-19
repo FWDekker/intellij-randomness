@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.addChangeListenerTo
@@ -30,7 +30,7 @@ import javax.swing.JTextArea
  * @see DictionaryTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordScheme>(scheme) {
+class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -48,7 +48,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
         dictionaryHelp.border = null
         dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
 
-        loadScheme(scheme)
+        loadState(scheme)
     }
 
     /**
@@ -69,33 +69,33 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
         dictionaryTable = DictionaryTable()
         dictionaryPanel = dictionaryTable.panel
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalScheme.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
-    override fun loadScheme(scheme: WordScheme) {
-        super.loadScheme(scheme)
+    override fun loadState(state: WordScheme) {
+        super.loadState(state)
 
-        minLength.value = scheme.minLength
-        maxLength.value = scheme.maxLength
-        enclosureGroup.setValue(scheme.enclosure)
-        capitalizationGroup.setValue(scheme.capitalization)
+        minLength.value = state.minLength
+        maxLength.value = state.maxLength
+        enclosureGroup.setValue(state.enclosure)
+        capitalizationGroup.setValue(state.capitalization)
         dictionaryTable.data =
-            scheme.dictionarySettings.bundledDictionaries + scheme.dictionarySettings.userDictionaries
+            state.dictionarySettings.bundledDictionaries + state.dictionarySettings.userDictionaries
         dictionaryTable.activeData =
-            (scheme.activeBundledDictionaries + scheme.activeUserDictionaries)
+            (state.activeBundledDictionaries + state.activeUserDictionaries)
                 .filter { dictionary -> dictionary in dictionaryTable.data }
-        arrayDecoratorEditor.loadScheme(scheme.decorator)
+        arrayDecoratorEditor.loadState(state.decorator)
     }
 
-    override fun readScheme() =
+    override fun readState() =
         WordScheme(
             minLength = minLength.value,
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
-            decorator = arrayDecoratorEditor.readScheme()
+            decorator = arrayDecoratorEditor.readState()
         ).also {
             it.dictionarySettings.bundledDictionaries = dictionaryTable.data
                 .filter { file -> file.isBundled }.toSet()

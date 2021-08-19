@@ -35,7 +35,7 @@ object SettingsConfigurableTest : Spek({
         configurable = DummySettingsConfigurable()
         GuiActionRunner.execute { configurable.createComponent() }
         editor = configurable.editor as DummySchemeEditor
-        scheme = editor.originalScheme
+        scheme = editor.originalState
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
@@ -57,7 +57,7 @@ object SettingsConfigurableTest : Spek({
 
             configurable.apply()
 
-            assertThat(editor.originalScheme.literals).containsExactly("for")
+            assertThat(editor.originalState.literals).containsExactly("for")
         }
 
         it("rejects incorrect settings") {
@@ -82,12 +82,12 @@ object SettingsConfigurableTest : Spek({
 
         it("declares itself modified if settings are invalid, even though no modifications have been made") {
             // Ground truth: `isModified` is false after reloading valid settings
-            GuiActionRunner.execute { editor.loadScheme() }
+            GuiActionRunner.execute { editor.loadState() }
             assertThat(configurable.isModified).isFalse()
 
             // Actual test: `isModified` is true after reloading invalid settings
             val invalidSettings = DummyScheme.from(DummyScheme.INVALID_OUTPUT)
-            GuiActionRunner.execute { editor.loadScheme(invalidSettings) }
+            GuiActionRunner.execute { editor.loadState(invalidSettings) }
 
             require(!editor.isModified()) { "Editor is incorrectly marked as modified." }
             assertThat(configurable.isModified).isTrue()

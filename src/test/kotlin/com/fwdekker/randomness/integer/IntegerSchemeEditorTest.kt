@@ -65,25 +65,25 @@ object IntegerSchemeEditorTest : Spek({
 
     describe("loadScheme") {
         it("loads the scheme's minimum value") {
-            GuiActionRunner.execute { editor.loadScheme(IntegerScheme(minValue = 145L, maxValue = 341L)) }
+            GuiActionRunner.execute { editor.loadState(IntegerScheme(minValue = 145L, maxValue = 341L)) }
 
             frame.spinner("minValue").requireValue(145L)
         }
 
         it("loads the scheme's maximum value") {
-            GuiActionRunner.execute { editor.loadScheme(IntegerScheme(minValue = 337L, maxValue = 614L)) }
+            GuiActionRunner.execute { editor.loadState(IntegerScheme(minValue = 337L, maxValue = 614L)) }
 
             frame.spinner("maxValue").requireValue(614L)
         }
 
         it("loads the scheme's base value") {
-            GuiActionRunner.execute { editor.loadScheme(IntegerScheme(base = 25)) }
+            GuiActionRunner.execute { editor.loadState(IntegerScheme(base = 25)) }
 
             frame.spinner("base").requireValue(25)
         }
 
         it("loads the scheme's grouping separator") {
-            GuiActionRunner.execute { editor.loadScheme(IntegerScheme(groupingSeparator = "_")) }
+            GuiActionRunner.execute { editor.loadState(IntegerScheme(groupingSeparator = "_")) }
 
             frame.radioButton("groupingSeparatorNone").requireSelected(false)
             frame.radioButton("groupingSeparatorPeriod").requireSelected(false)
@@ -92,20 +92,20 @@ object IntegerSchemeEditorTest : Spek({
         }
 
         it("loads the scheme's capitalization mode") {
-            GuiActionRunner.execute { editor.loadScheme(IntegerScheme(capitalization = CapitalizationMode.LOWER)) }
+            GuiActionRunner.execute { editor.loadState(IntegerScheme(capitalization = CapitalizationMode.LOWER)) }
 
             frame.radioButton("capitalizationLower").requireSelected(true)
             frame.radioButton("capitalizationUpper").requireSelected(false)
         }
 
         it("loads the scheme's prefix") {
-            GuiActionRunner.execute { editor.loadScheme(IntegerScheme(prefix = "wage")) }
+            GuiActionRunner.execute { editor.loadState(IntegerScheme(prefix = "wage")) }
 
             frame.textBox("prefix").requireText("wage")
         }
 
         it("loads the scheme's suffix") {
-            GuiActionRunner.execute { editor.loadScheme(IntegerScheme(suffix = "fat")) }
+            GuiActionRunner.execute { editor.loadState(IntegerScheme(suffix = "fat")) }
 
             frame.textBox("suffix").requireText("fat")
         }
@@ -114,20 +114,20 @@ object IntegerSchemeEditorTest : Spek({
     describe("readScheme") {
         describe("defaults") {
             it("returns default brackets if no brackets are selected") {
-                GuiActionRunner.execute { editor.loadScheme(IntegerScheme(groupingSeparator = "unsupported")) }
+                GuiActionRunner.execute { editor.loadState(IntegerScheme(groupingSeparator = "unsupported")) }
 
-                assertThat(editor.readScheme().groupingSeparator).isEqualTo(IntegerScheme.DEFAULT_GROUPING_SEPARATOR)
+                assertThat(editor.readState().groupingSeparator).isEqualTo(IntegerScheme.DEFAULT_GROUPING_SEPARATOR)
             }
 
             it("returns default brackets if no brackets are selected") {
-                GuiActionRunner.execute { editor.loadScheme(IntegerScheme(capitalization = CapitalizationMode.DUMMY)) }
+                GuiActionRunner.execute { editor.loadState(IntegerScheme(capitalization = CapitalizationMode.DUMMY)) }
 
-                assertThat(editor.readScheme().capitalization).isEqualTo(IntegerScheme.DEFAULT_CAPITALIZATION)
+                assertThat(editor.readState().capitalization).isEqualTo(IntegerScheme.DEFAULT_CAPITALIZATION)
             }
         }
 
         it("returns the original state if no editor changes are made") {
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns the editor's state") {
@@ -141,7 +141,7 @@ object IntegerSchemeEditorTest : Spek({
                 frame.textBox("suffix").target().text = "pain"
             }
 
-            val readScheme = editor.readScheme()
+            val readScheme = editor.readState()
             assertThat(readScheme.minValue).isEqualTo(2_147_483_648L)
             assertThat(readScheme.maxValue).isEqualTo(2_147_483_649L)
             assertThat(readScheme.base).isEqualTo(14)
@@ -155,19 +155,19 @@ object IntegerSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.spinner("minValue").target().value = 242L }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
+            GuiActionRunner.execute { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns a different instance from the loaded scheme") {
-            assertThat(editor.readScheme())
-                .isEqualTo(editor.originalScheme)
-                .isNotSameAs(editor.originalScheme)
-            assertThat(editor.readScheme().decorator)
-                .isEqualTo(editor.originalScheme.decorator)
-                .isNotSameAs(editor.originalScheme.decorator)
+            assertThat(editor.readState())
+                .isEqualTo(editor.originalState)
+                .isNotSameAs(editor.originalState)
+            assertThat(editor.readState().decorator)
+                .isEqualTo(editor.originalState.decorator)
+                .isNotSameAs(editor.originalState.decorator)
         }
     }
 
@@ -184,7 +184,7 @@ object IntegerSchemeEditorTest : Spek({
 
         it("invokes the listener if the array decorator changes") {
             GuiActionRunner.execute {
-                editor.loadScheme(IntegerScheme(decorator = ArraySchemeDecorator(enabled = true)))
+                editor.loadState(IntegerScheme(decorator = ArraySchemeDecorator(enabled = true)))
             }
 
             var listenerInvoked = false

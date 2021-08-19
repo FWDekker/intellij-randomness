@@ -20,15 +20,6 @@ object TemplateListTest : Spek({
     }
 
 
-    describe("generateStrings") {
-        it("returns empty strings regardless of the defined templates") {
-            templateList.templates = listOf(Template(schemes = listOf(DummyScheme())))
-
-            assertThat(templateList.generateStrings()).containsExactly("")
-        }
-    }
-
-
     describe("doValidate") {
         it("passes for the default settings") {
             val ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()

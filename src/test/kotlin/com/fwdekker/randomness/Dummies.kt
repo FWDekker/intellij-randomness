@@ -61,38 +61,38 @@ data class DummyScheme(
 }
 
 /**
- * Dummy implementation of [SchemeEditor] for a [DummyScheme].
+ * Dummy implementation of [StateEditor] for a [DummyScheme].
  *
  * Dummy schemes have a producer, but this editor only supports returning a producer of a single string.
  *
  * @param scheme the scheme to edit in the component
  */
-class DummySchemeEditor(scheme: DummyScheme = DummyScheme()) : SchemeEditor<DummyScheme>(scheme) {
+class DummySchemeEditor(scheme: DummyScheme = DummyScheme()) : StateEditor<DummyScheme>(scheme) {
     override val rootComponent = JPanel(BorderLayout())
 
     private val literalsInput = JTextField()
         .also { it.name = "literals" }
         .also { rootComponent.add(it, BorderLayout.NORTH) }
-    private val arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalScheme.decorator)
+    private val arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
         .also { rootComponent.add(it.rootComponent, BorderLayout.SOUTH) }
 
 
     init {
-        loadScheme()
+        loadState()
     }
 
 
-    override fun loadScheme(scheme: DummyScheme) {
-        super.loadScheme(scheme)
+    override fun loadState(state: DummyScheme) {
+        super.loadState(state)
 
-        literalsInput.text = scheme.literals.joinToString(separator = ",")
-        arrayDecoratorEditor.loadScheme(scheme.decorator)
+        literalsInput.text = state.literals.joinToString(separator = ",")
+        arrayDecoratorEditor.loadState(state.decorator)
     }
 
-    override fun readScheme() =
+    override fun readState() =
         DummyScheme(
             literals = literalsInput.text.split(','),
-            decorator = arrayDecoratorEditor.readScheme()
+            decorator = arrayDecoratorEditor.readState()
         )
 
 

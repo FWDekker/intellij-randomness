@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_ENCLOSURE
@@ -29,7 +29,7 @@ import javax.swing.JPanel
  * @see SymbolSetTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class StringSchemeEditor(scheme: StringScheme = StringScheme()) : SchemeEditor<StringScheme>(scheme) {
+class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<StringScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
@@ -50,7 +50,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : SchemeEditor<S
         excludeLookAlikeSymbolsCheckBox.toolTipText =
             "Excludes the following characters from all generated strings: ${SymbolSet.lookAlikeCharacters}"
 
-        loadScheme(scheme)
+        loadState(scheme)
     }
 
     /**
@@ -71,35 +71,35 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : SchemeEditor<S
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.panel
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalScheme.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
-    override fun loadScheme(scheme: StringScheme) {
-        super.loadScheme(scheme)
+    override fun loadState(state: StringScheme) {
+        super.loadState(state)
 
-        minLength.value = scheme.minLength
-        maxLength.value = scheme.maxLength
-        enclosureGroup.setValue(scheme.enclosure)
-        capitalizationGroup.setValue(scheme.capitalization)
-        excludeLookAlikeSymbolsCheckBox.isSelected = scheme.excludeLookAlikeSymbols
+        minLength.value = state.minLength
+        maxLength.value = state.maxLength
+        enclosureGroup.setValue(state.enclosure)
+        capitalizationGroup.setValue(state.capitalization)
+        excludeLookAlikeSymbolsCheckBox.isSelected = state.excludeLookAlikeSymbols
 
-        symbolSetTable.data = scheme.symbolSetSettings.symbolSetList
+        symbolSetTable.data = state.symbolSetSettings.symbolSetList
         symbolSetTable.activeData =
-            scheme.symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in scheme.activeSymbolSets }
+            state.symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
 
-        arrayDecoratorEditor.loadScheme(scheme.decorator)
+        arrayDecoratorEditor.loadState(state.decorator)
     }
 
-    override fun readScheme() =
+    override fun readState() =
         StringScheme(
             minLength = minLength.value,
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
-            decorator = arrayDecoratorEditor.readScheme()
+            decorator = arrayDecoratorEditor.readState()
         ).also {
             it.symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
             it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet()

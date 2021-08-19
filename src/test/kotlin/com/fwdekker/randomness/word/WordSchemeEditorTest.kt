@@ -68,19 +68,19 @@ object WordSchemeEditorTest : Spek({
 
     describe("loadScheme") {
         it("loads the scheme's minimum length") {
-            GuiActionRunner.execute { editor.loadScheme(WordScheme(minLength = 4, maxLength = 12)) }
+            GuiActionRunner.execute { editor.loadState(WordScheme(minLength = 4, maxLength = 12)) }
 
             frame.spinner("minLength").requireValue(4)
         }
 
         it("loads the scheme's maximum length") {
-            GuiActionRunner.execute { editor.loadScheme(WordScheme(minLength = 2, maxLength = 6)) }
+            GuiActionRunner.execute { editor.loadState(WordScheme(minLength = 2, maxLength = 6)) }
 
             frame.spinner("maxLength").requireValue(6)
         }
 
         it("loads the scheme's enclosure") {
-            GuiActionRunner.execute { editor.loadScheme(WordScheme(enclosure = "'")) }
+            GuiActionRunner.execute { editor.loadState(WordScheme(enclosure = "'")) }
 
             frame.radioButton("enclosureNone").requireSelected(false)
             frame.radioButton("enclosureSingle").requireSelected(true)
@@ -89,7 +89,7 @@ object WordSchemeEditorTest : Spek({
         }
 
         it("loads the scheme's capitalization") {
-            GuiActionRunner.execute { editor.loadScheme(WordScheme(capitalization = CapitalizationMode.LOWER)) }
+            GuiActionRunner.execute { editor.loadState(WordScheme(capitalization = CapitalizationMode.LOWER)) }
 
             frame.radioButton("capitalizationRetain").requireSelected(false)
             frame.radioButton("capitalizationLower").requireSelected(true)
@@ -104,7 +104,7 @@ object WordSchemeEditorTest : Spek({
             val activeUserDictionaries = setOf("dictionary1.dic")
 
             GuiActionRunner.execute {
-                editor.loadScheme(
+                editor.loadState(
                     WordScheme(
                         dictionarySettings = DictionarySettings(emptySet(), allUserDictionaries),
                         activeUserDictionaryFiles = activeUserDictionaries
@@ -122,20 +122,20 @@ object WordSchemeEditorTest : Spek({
     describe("readScheme") {
         describe("defaults") {
             it("returns default enclosure if no enclosure is selected") {
-                GuiActionRunner.execute { editor.loadScheme(WordScheme(enclosure = "unsupported")) }
+                GuiActionRunner.execute { editor.loadState(WordScheme(enclosure = "unsupported")) }
 
-                assertThat(editor.readScheme().enclosure).isEqualTo(WordScheme.DEFAULT_ENCLOSURE)
+                assertThat(editor.readState().enclosure).isEqualTo(WordScheme.DEFAULT_ENCLOSURE)
             }
 
             it("returns default brackets if no brackets are selected") {
-                GuiActionRunner.execute { editor.loadScheme(WordScheme(capitalization = CapitalizationMode.DUMMY)) }
+                GuiActionRunner.execute { editor.loadState(WordScheme(capitalization = CapitalizationMode.DUMMY)) }
 
-                assertThat(editor.readScheme().capitalization).isEqualTo(WordScheme.DEFAULT_CAPITALIZATION)
+                assertThat(editor.readState().capitalization).isEqualTo(WordScheme.DEFAULT_CAPITALIZATION)
             }
         }
 
         it("returns the original state if no editor changes are made") {
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns the editor's state") {
@@ -146,7 +146,7 @@ object WordSchemeEditorTest : Spek({
                 frame.radioButton("capitalizationLower").target().isSelected = true
             }
 
-            val readScheme = editor.readScheme()
+            val readScheme = editor.readState()
             assertThat(readScheme.minLength).isEqualTo(840)
             assertThat(readScheme.maxLength).isEqualTo(861)
             assertThat(readScheme.enclosure).isEqualTo("'")
@@ -157,19 +157,19 @@ object WordSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.spinner("minLength").target().value = 840 }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
+            GuiActionRunner.execute { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns a different instance from the loaded scheme") {
-            assertThat(editor.readScheme())
-                .isEqualTo(editor.originalScheme)
-                .isNotSameAs(editor.originalScheme)
-            assertThat(editor.readScheme().decorator)
-                .isEqualTo(editor.originalScheme.decorator)
-                .isNotSameAs(editor.originalScheme.decorator)
+            assertThat(editor.readState())
+                .isEqualTo(editor.originalState)
+                .isNotSameAs(editor.originalState)
+            assertThat(editor.readState().decorator)
+                .isEqualTo(editor.originalState.decorator)
+                .isNotSameAs(editor.originalState.decorator)
         }
     }
 
@@ -185,7 +185,7 @@ object WordSchemeEditorTest : Spek({
         }
 
         it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute { editor.loadScheme(WordScheme(decorator = ArraySchemeDecorator(enabled = true))) }
+            GuiActionRunner.execute { editor.loadState(WordScheme(decorator = ArraySchemeDecorator(enabled = true))) }
 
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }

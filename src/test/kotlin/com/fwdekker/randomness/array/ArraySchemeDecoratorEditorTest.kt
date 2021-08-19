@@ -58,19 +58,19 @@ object ArraySchemeDecoratorEditorTest : Spek({
 
     describe("loadScheme") {
         it("loads the scheme's enabled state") {
-            GuiActionRunner.execute { editor.loadScheme(ArraySchemeDecorator(enabled = true)) }
+            GuiActionRunner.execute { editor.loadState(ArraySchemeDecorator(enabled = true)) }
 
             frame.checkBox("arrayEnabled").requireEnabled()
         }
 
         it("loads the scheme's count") {
-            GuiActionRunner.execute { editor.loadScheme(ArraySchemeDecorator(enabled = true, count = 14)) }
+            GuiActionRunner.execute { editor.loadState(ArraySchemeDecorator(enabled = true, count = 14)) }
 
             frame.spinner("arrayCount").requireValue(14)
         }
 
         it("loads the scheme's brackets") {
-            GuiActionRunner.execute { editor.loadScheme(ArraySchemeDecorator(enabled = true, brackets = "{}")) }
+            GuiActionRunner.execute { editor.loadState(ArraySchemeDecorator(enabled = true, brackets = "{}")) }
 
             frame.radioButton("arrayBracketsNone").requireSelected(false)
             frame.radioButton("arrayBracketsSquare").requireSelected(false)
@@ -79,7 +79,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
         }
 
         it("loads the scheme's separator") {
-            GuiActionRunner.execute { editor.loadScheme(ArraySchemeDecorator(enabled = true, separator = ";")) }
+            GuiActionRunner.execute { editor.loadState(ArraySchemeDecorator(enabled = true, separator = ";")) }
 
             frame.radioButton("arraySeparatorComma").requireSelected(false)
             frame.radioButton("arraySeparatorSemicolon").requireSelected(true)
@@ -88,7 +88,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
 
         it("loads the scheme's settings for using a space after separator") {
             GuiActionRunner.execute {
-                editor.loadScheme(ArraySchemeDecorator(enabled = true, isSpaceAfterSeparator = false))
+                editor.loadState(ArraySchemeDecorator(enabled = true, isSpaceAfterSeparator = false))
             }
 
             frame.checkBox("arraySpaceAfterSeparator").requireSelected(false)
@@ -99,23 +99,23 @@ object ArraySchemeDecoratorEditorTest : Spek({
         describe("defaults") {
             it("returns default brackets if no brackets are selected") {
                 GuiActionRunner.execute {
-                    editor.loadScheme(ArraySchemeDecorator(enabled = true, brackets = "unsupported"))
+                    editor.loadState(ArraySchemeDecorator(enabled = true, brackets = "unsupported"))
                 }
 
-                assertThat(editor.readScheme().brackets).isEqualTo(ArraySchemeDecorator.DEFAULT_BRACKETS)
+                assertThat(editor.readState().brackets).isEqualTo(ArraySchemeDecorator.DEFAULT_BRACKETS)
             }
 
             it("returns default separator if no separator is selected") {
                 GuiActionRunner.execute {
-                    editor.loadScheme(ArraySchemeDecorator(enabled = true, separator = "unsupported"))
+                    editor.loadState(ArraySchemeDecorator(enabled = true, separator = "unsupported"))
                 }
 
-                assertThat(editor.readScheme().separator).isEqualTo(ArraySchemeDecorator.DEFAULT_SEPARATOR)
+                assertThat(editor.readState().separator).isEqualTo(ArraySchemeDecorator.DEFAULT_SEPARATOR)
             }
         }
 
         it("returns the original state if no editor changes are made") {
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns the editor's state") {
@@ -127,7 +127,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
                 frame.checkBox("arraySpaceAfterSeparator").target().isSelected = false
             }
 
-            val readScheme = editor.readScheme()
+            val readScheme = editor.readState()
             assertThat(readScheme.enabled).isTrue()
             assertThat(readScheme.count).isEqualTo(642)
             assertThat(readScheme.brackets).isEqualTo("{}")
@@ -139,10 +139,10 @@ object ArraySchemeDecoratorEditorTest : Spek({
             GuiActionRunner.execute { frame.checkBox("arrayEnabled").target().isSelected = false }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
+            GuiActionRunner.execute { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
-            assertThat(editor.readScheme()).isEqualTo(editor.originalScheme)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
     }
 
