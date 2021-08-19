@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.DEFAULT_BRACKETS
 import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.DEFAULT_SEPARATOR
 import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.MIN_COUNT
@@ -24,7 +24,7 @@ import javax.swing.event.ChangeEvent
  * @param settings the settings to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : SchemeEditor<ArraySchemeDecorator>(settings) {
+class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<ArraySchemeDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var separator: JComponent
     private lateinit var enabledCheckBox: JCheckBox
@@ -45,7 +45,7 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : SchemeEditor<
         }
         newlineSeparatorButton.changeListeners.forEach { it.stateChanged(ChangeEvent(newlineSeparatorButton)) }
 
-        loadScheme()
+        loadState()
     }
 
     /**
@@ -63,17 +63,17 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : SchemeEditor<
     }
 
 
-    override fun loadScheme(scheme: ArraySchemeDecorator) {
-        super.loadScheme(scheme)
+    override fun loadState(state: ArraySchemeDecorator) {
+        super.loadState(state)
 
-        enabledCheckBox.isSelected = scheme.enabled
-        countSpinner.value = scheme.count
-        bracketsGroup.setValue(scheme.brackets)
-        separatorGroup.setValue(scheme.separator)
-        spaceAfterSeparatorCheckBox.isSelected = scheme.isSpaceAfterSeparator
+        enabledCheckBox.isSelected = state.enabled
+        countSpinner.value = state.count
+        bracketsGroup.setValue(state.brackets)
+        separatorGroup.setValue(state.separator)
+        spaceAfterSeparatorCheckBox.isSelected = state.isSpaceAfterSeparator
     }
 
-    override fun readScheme(): ArraySchemeDecorator =
+    override fun readState(): ArraySchemeDecorator =
         ArraySchemeDecorator(
             enabled = enabledCheckBox.isSelected,
             count = countSpinner.value,

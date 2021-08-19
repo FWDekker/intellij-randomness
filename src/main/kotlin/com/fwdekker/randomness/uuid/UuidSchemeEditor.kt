@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
@@ -20,7 +20,7 @@ import javax.swing.JPanel
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidScheme>(scheme) {
+class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var versionGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup
@@ -31,7 +31,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidSch
 
 
     init {
-        loadScheme(scheme)
+        loadState(scheme)
     }
 
     /**
@@ -41,29 +41,30 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidSch
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalScheme.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
-    override fun loadScheme(scheme: UuidScheme) {
-        super.loadScheme(scheme)
+    override fun loadState(state: UuidScheme) {
+        super.loadState(state)
 
-        versionGroup.setValue(scheme.version.toString())
-        enclosureGroup.setValue(scheme.enclosure)
-        capitalizationGroup.setValue(scheme.capitalization)
-        addDashesCheckBox.isSelected = scheme.addDashes
-        arrayDecoratorEditor.loadScheme(scheme.decorator)
+        versionGroup.setValue(state.version.toString())
+        enclosureGroup.setValue(state.enclosure)
+        capitalizationGroup.setValue(state.capitalization)
+        addDashesCheckBox.isSelected = state.addDashes
+        arrayDecoratorEditor.loadState(state.decorator)
     }
 
-    override fun readScheme(): UuidScheme =
+    override fun readState(): UuidScheme =
         UuidScheme(
             version = versionGroup.getValue()?.toInt() ?: DEFAULT_VERSION,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             addDashes = addDashesCheckBox.isSelected,
-            decorator = arrayDecoratorEditor.readScheme()
+            decorator = arrayDecoratorEditor.readState()
         )
+
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(

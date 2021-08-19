@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
@@ -42,11 +41,8 @@ data class IntegerScheme(
      * @param count the number of integers to generate
      * @return random integers between the minimum and maximum value, inclusive
      */
-    override fun generateUndecoratedStrings(count: Int): List<String> {
-        doValidate()?.also { throw DataGenerationException(it) }
-
-        return List(count) { prefix + longToString(randomLong(minValue, maxValue)) + suffix }
-    }
+    override fun generateUndecoratedStrings(count: Int) =
+        List(count) { prefix + longToString(randomLong(minValue, maxValue)) + suffix }
 
     /**
      * Returns a random long in the given inclusive range without causing overflow.
@@ -80,13 +76,13 @@ data class IntegerScheme(
         return format.format(value)
     }
 
+
     override fun doValidate() =
         when {
             minValue > maxValue -> "Minimum value should not be larger than maximum value."
             base !in MIN_BASE..MAX_BASE -> "Base should be in range $MIN_BASE..$MAX_BASE but is $base."
             else -> null
         }
-
 
     override fun deepCopy() = copy(decorator = decorator.deepCopy())
 

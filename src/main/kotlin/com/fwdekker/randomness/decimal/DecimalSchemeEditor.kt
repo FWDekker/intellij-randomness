@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.decimal
 
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_DECIMAL_SEPARATOR
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_GROUPING_SEPARATOR
@@ -25,7 +25,7 @@ import javax.swing.event.ChangeEvent
  * @param scheme the scheme to edit in the component
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : SchemeEditor<DecimalScheme>(scheme) {
+class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor<DecimalScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var minValue: JDoubleSpinner
     private lateinit var maxValue: JDoubleSpinner
@@ -40,10 +40,10 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : SchemeEdito
 
 
     init {
-        loadScheme(scheme)
-
         decimalCount.addChangeListener { showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0 }
         decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
+
+        loadState(scheme)
     }
 
     /**
@@ -58,26 +58,26 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : SchemeEdito
         bindSpinners(minValue, maxValue, MAX_VALUE_DIFFERENCE)
         decimalCount = JIntSpinner(value = MIN_DECIMAL_COUNT, minValue = MIN_DECIMAL_COUNT)
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalScheme.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
-    override fun loadScheme(scheme: DecimalScheme) {
-        super.loadScheme(scheme)
+    override fun loadState(state: DecimalScheme) {
+        super.loadState(state)
 
-        minValue.value = scheme.minValue
-        maxValue.value = scheme.maxValue
-        decimalCount.value = scheme.decimalCount
-        showTrailingZeroesCheckBox.isSelected = scheme.showTrailingZeroes
-        groupingSeparatorGroup.setValue(scheme.groupingSeparator)
-        decimalSeparatorGroup.setValue(scheme.decimalSeparator)
-        prefixInput.text = scheme.prefix
-        suffixInput.text = scheme.suffix
-        arrayDecoratorEditor.loadScheme(scheme.decorator)
+        minValue.value = state.minValue
+        maxValue.value = state.maxValue
+        decimalCount.value = state.decimalCount
+        showTrailingZeroesCheckBox.isSelected = state.showTrailingZeroes
+        groupingSeparatorGroup.setValue(state.groupingSeparator)
+        decimalSeparatorGroup.setValue(state.decimalSeparator)
+        prefixInput.text = state.prefix
+        suffixInput.text = state.suffix
+        arrayDecoratorEditor.loadState(state.decorator)
     }
 
-    override fun readScheme() =
+    override fun readState() =
         DecimalScheme(
             minValue = minValue.value,
             maxValue = maxValue.value,
@@ -87,7 +87,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : SchemeEdito
             decimalSeparator = decimalSeparatorGroup.getValue() ?: DEFAULT_DECIMAL_SEPARATOR,
             prefix = prefixInput.text,
             suffix = suffixInput.text,
-            decorator = arrayDecoratorEditor.readScheme()
+            decorator = arrayDecoratorEditor.readState()
         )
 
 

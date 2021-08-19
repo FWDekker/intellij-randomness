@@ -59,7 +59,7 @@ data class SymbolSetSettings(
      */
     companion object {
         /**
-         * The default value of the [symbolSets][symbolSets] field.
+         * The default value of the [symbolSets] field.
          */
         val DEFAULT_SYMBOL_SETS: Map<String, String>
             get() = SymbolSet.defaultSymbolSets.toMap()

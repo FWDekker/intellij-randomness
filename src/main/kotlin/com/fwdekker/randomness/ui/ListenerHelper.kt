@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.StateEditor
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.beans.PropertyChangeEvent
@@ -21,7 +21,7 @@ import javax.swing.text.Document
  * @param listener the listener to invoke whenever any of the given components changes state
  */
 @Suppress("SpreadOperator") // Acceptable because this method is called rarely
-fun addChangeListenerTo(vararg components: Any?, listener: () -> Unit) {
+fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
     components.forEach { component ->
         when (component) {
             is ActivityTableModelEditor<*> -> component.addChangeListener(listener)
@@ -30,8 +30,8 @@ fun addChangeListenerTo(vararg components: Any?, listener: () -> Unit) {
             is JRadioButton -> component.addItemListener { listener() }
             is JSpinner -> component.addChangeListener { listener() }
             is JTextField -> component.addChangeListener { listener() }
-            is SchemeEditor<*> -> component.addChangeListener { listener() }
-            else -> throw IllegalArgumentException("Unknown component type '${component?.javaClass?.canonicalName}'.")
+            is StateEditor<*> -> component.addChangeListener { listener() }
+            else -> throw IllegalArgumentException("Unknown component type '${component.javaClass.canonicalName}'.")
         }
     }
 }
@@ -69,6 +69,7 @@ fun JTextField.addChangeListener(changeListener: (JTextField) -> Unit) {
     }
     this.document.addDocumentListener(dl)
 }
+
 
 /**
  * A [MouseListener] that listens only to mouse clicks.

@@ -1,7 +1,9 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.ActuallyPrivate
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.State
+import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.decimal.DecimalSchemeEditor
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -21,6 +23,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionToolbarPosition
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.ui.AnActionButton
 import com.intellij.ui.AnActionButtonRunnable
@@ -48,23 +51,30 @@ import kotlin.math.min
  * Component for editing [TemplateList]s.
  *
  * The editor consists of a left side and a right side. The left side contains a tree with the templates as roots and
- * their schemes as the leaves. When the user selects a scheme, the appropriate [SchemeEditor] for that scheme is loaded
+ * their schemes as the leaves. When the user selects a scheme, the appropriate [StateEditor] for that scheme is loaded
  * on the right side.
  *
  * The tree itself contains copies of the entries in the given [TemplateList]. Changes in the editor are immediately
  * written to these copies so that when another scheme editor is displayed the changes are not lost. The changes in the
- * copies are written into the given template list only when [applyScheme] is invoked.
+ * copies are written into the given template list only when [applyState] is invoked.
  *
  * @param templates the list of templates to edit
  */
-class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor<TemplateList>(templates) {
+class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<TemplateList>(templates) {
     override val rootComponent = JPanel(BorderLayout())
     private val templateTreeModel = DefaultTreeModel(DefaultMutableTreeNode("Root"))
     private val templateTree = Tree(templateTreeModel)
     private var schemeEditorPanel = JPanel(BorderLayout())
-    private var schemeEditor: SchemeEditor<*>? = null
+    private var schemeEditor: StateEditor<*>? = null
 
     private val changeListeners = mutableListOf<() -> Unit>()
+
+    /**
+     * The name of the template to select after the next invocation of [reset].
+     *
+     * @see TemplateSettingsConfigurable
+     * @see TemplateSettingsAction
+     */
     var queueSelection: String? = null
 
 
@@ -77,11 +87,15 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
         templateTree.selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         templateTree.cellRenderer = object : ColoredTreeCellRenderer() {
             override fun customizeCellRenderer(
-                tree: JTree, value: Any?,
-                selected: Boolean, expanded: Boolean, leaf: Boolean,
-                row: Int, hasFocus: Boolean
+                tree: JTree,
+                value: Any?,
+                selected: Boolean,
+                expanded: Boolean,
+                leaf: Boolean,
+                row: Int,
+                hasFocus: Boolean
             ) {
-                val scheme = (value as? DefaultMutableTreeNode)?.userObject as? Scheme
+                val scheme = (value as DefaultMutableTreeNode).userObject as? Scheme
                 if (scheme == null) {
                     append("<unknown>")
                     return
@@ -94,7 +108,7 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
                         scheme.doValidate() != null ->
                             SimpleTextAttributes.ERROR_ATTRIBUTES
                         scheme is Template &&
-                            originalScheme.templates.firstOrNull { it.name == scheme.name } != scheme ->
+                            originalState.templates.firstOrNull { it.name == scheme.name } != scheme ->
                             SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES
                         else ->
                             SimpleTextAttributes.REGULAR_ATTRIBUTES
@@ -107,13 +121,16 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
         templateTree.addTreeSelectionListener {
             schemeEditor?.also { schemeEditorPanel.remove(it.rootComponent) }
 
-            val selectedObject = templateTree.getSelectedNode()?.userObject as? Scheme
-                ?: return@addTreeSelectionListener
+            val selectedObject = templateTree.getSelectedNode()?.userObject
+            if (selectedObject !is Scheme) {
+                changeListeners.forEach { it() }
+                return@addTreeSelectionListener
+            }
 
             schemeEditor = createEditor(selectedObject)
                 .also { editor ->
                     editor.addChangeListener {
-                        editor.applyScheme()
+                        editor.applyState()
                         changeListeners.forEach { it() }
 
                         templateTree.updateUI()
@@ -128,19 +145,18 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
 
         // Right half
         val previewPanel = PreviewPanel {
-            val selectedNode = templateTree.getSelectedNode() ?: return@PreviewPanel LiteralScheme()
+            val selectedNode = templateTree.getSelectedNode() ?: return@PreviewPanel LiteralScheme("")
             val selectedTemplate = selectedNode.userObject as? Template
-                ?: (selectedNode.parent as? DefaultMutableTreeNode)?.userObject as? Template
-                ?: return@PreviewPanel LiteralScheme()
+                ?: (selectedNode.parent as DefaultMutableTreeNode).userObject as Template
 
-            readScheme().templates.first { it.name == selectedTemplate.name }
+            readState().templates.first { it.name == selectedTemplate.name }
         }
         addChangeListener { previewPanel.updatePreview() }
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
 
         splitter.secondComponent = JBScrollPane(schemeEditorPanel)
 
-        loadScheme()
+        loadState()
     }
 
     /**
@@ -161,14 +177,18 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
             }
             .setAddActionName("Add")
             .setAddIcon(LayeredIcon.ADD_WITH_DROPDOWN)
-            .setRemoveAction(RemovePopupAction())
+            .setRemoveAction(RemoveAction())
             .setRemoveActionName("Remove")
-            .setRemoveActionUpdater { templateTree.lastSelectedPathComponent != null }
+            .setRemoveActionUpdater { templateTree.getSelectedNode() != null }
             .addExtraAction(CopyActionButton())
             .addExtraAction(UpActionButton())
             .addExtraAction(DownActionButton())
             .setButtonComparator("Add", "Remove", "Copy", "Up", "Down")
-            .createPanel()
+            .let {
+                val panel = it.createPanel()
+                it.actionsPanel.name = "templateListToolbar"
+                panel
+            }
 
 
     /**
@@ -193,26 +213,27 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
      *
      * @param scheme the scheme to add
      */
-    private fun addScheme(scheme: Scheme) {
+    @ActuallyPrivate("Exposed for testing.")
+    internal fun addScheme(scheme: Scheme) {
         val selectedNode = templateTree.getSelectedNode()
         val child = DefaultMutableTreeNode(scheme)
-        val parent =
-            when {
-                selectedNode == null ->
-                    if (scheme is Template) templateTree.getRoot()
-                    else error("Cannot add non-template to root.")
-                selectedNode.userObject is Template ->
-                    if (scheme !is Template) selectedNode
-                    else templateTree.getRoot()
-                else ->
-                    if (scheme !is Template) selectedNode.parent as DefaultMutableTreeNode
-                    else templateTree.getRoot()
-            }
+        if (scheme is Template)
+            scheme.schemes.forEach { child.add(DefaultMutableTreeNode(it)) }
 
-        if (selectedNode == null)
-            parent.add(child)
-        else
-            parent.insert(child, parent.getIndex(selectedNode) + 1)
+        when {
+            selectedNode == null ->
+                if (scheme is Template) templateTree.getRoot().add(child)
+                else error("Cannot add non-template to root.")
+            selectedNode.userObject is Template ->
+                if (scheme !is Template) selectedNode.add(child)
+                else templateTree.getRoot().insert(child, templateTree.getRoot().getIndex(selectedNode) + 1)
+            else ->
+                if (scheme !is Template)
+                    (selectedNode.parent as DefaultMutableTreeNode)
+                        .insert(child, selectedNode.parent.getIndex(selectedNode) + 1)
+                else
+                    templateTree.getRoot().insert(child, templateTree.getRoot().getIndex(selectedNode.parent) + 1)
+        }
 
         templateTreeModel.reload()
         templateTree.expandAll()
@@ -228,7 +249,7 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
      * @param positions the number of positions to move the node down by within its parent; can be negative
      */
     private fun moveNodeDownBy(node: DefaultMutableTreeNode, positions: Int) {
-        val parent = node.parent as? DefaultMutableTreeNode ?: return
+        val parent = node.parent as DefaultMutableTreeNode
         val oldIndex = parent.getIndex(node)
 
         parent.remove(node)
@@ -240,12 +261,12 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
     }
 
 
-    override fun loadScheme(scheme: TemplateList) {
-        super.loadScheme(scheme)
+    override fun loadState(state: TemplateList) {
+        super.loadState(state)
 
         val root = templateTreeModel.root as DefaultMutableTreeNode
         root.removeAllChildren()
-        scheme.deepCopy().templates.forEach { template ->
+        state.deepCopy().templates.forEach { template ->
             val templateNode = DefaultMutableTreeNode(template)
             template.schemes.forEach { templateNode.add(DefaultMutableTreeNode(it)) }
             root.add(templateNode)
@@ -253,18 +274,16 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
         templateTreeModel.reload()
 
         templateTree.expandAll()
-        templateTree.getRoot().firstLeaf?.also { templateTree.select(it) }
+        templateTree.select(templateTree.getRoot().firstLeaf)
     }
 
-    override fun readScheme() =
+    override fun readState() =
         TemplateList(
             templateTree.getRoot().children()
                 .toList().filterIsInstance<DefaultMutableTreeNode>()
-                .mapNotNull { templateNode ->
-                    val template = templateNode.userObject as? Template ?: return@mapNotNull null
-
+                .map { templateNode ->
                     Template(
-                        template.name,
+                        (templateNode.userObject as Template).name,
                         templateNode.children()
                             .toList().filterIsInstance<DefaultMutableTreeNode>()
                             .map { it.userObject }.filterIsInstance<Scheme>()
@@ -287,21 +306,12 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
     private fun select(name: String) {
         templateTree.getRoot()
             .children().toList().filterIsInstance<DefaultMutableTreeNode>()
-            .firstOrNull { (it.userObject as? Template)?.name?.equals(name, ignoreCase = true) == true }
+            .firstOrNull { (it.userObject as Template).name.equals(name, ignoreCase = true) }
             ?.also { templateTree.select(it) }
     }
 
 
-    override fun isModified(): Boolean {
-        val originalEntries = originalScheme.templates
-        val unsavedEntries = readScheme().templates
-
-        return super.isModified() ||
-            originalEntries.size != unsavedEntries.size ||
-            originalEntries.zip(unsavedEntries).any { it.first != it.second }
-    }
-
-    override fun doValidate() = schemeEditor?.doValidate() ?: readScheme().doValidate()
+    override fun doValidate() = readState().doValidate()
 
 
     override fun addChangeListener(listener: () -> Unit) {
@@ -314,9 +324,9 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
      *
      * @param template the template to edit
      */
-    private class TemplateEditor(template: Template) : SchemeEditor<Template>(template) {
+    private class TemplateEditor(template: Template) : StateEditor<Template>(template) {
         override val rootComponent = JPanel(BorderLayout())
-        private val nameInput = JBTextField()
+        private val nameInput = JBTextField().also { it.name = "templateName" }
 
 
         init {
@@ -325,13 +335,13 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
             namePanel.add(nameInput)
             rootComponent.add(namePanel, BorderLayout.NORTH)
 
-            loadScheme()
+            loadState()
         }
 
 
-        override fun loadScheme(scheme: Template) = super.loadScheme(scheme).also { nameInput.text = scheme.name }
+        override fun loadState(state: Template) = super.loadState(state).also { nameInput.text = state.name }
 
-        override fun readScheme() = originalScheme.deepCopy().also { it.name = nameInput.text }
+        override fun readState() = originalState.deepCopy().also { it.name = nameInput.text }
 
 
         override fun addChangeListener(listener: () -> Unit) = addChangeListenerTo(nameInput, listener = listener)
@@ -360,7 +370,7 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
 
             override fun getTextFor(value: Template?) = value?.name ?: Template.DEFAULT_NAME
 
-            override fun onChosen(value: Template?, finalChoice: Boolean): Nothing? =
+            override fun onChosen(value: Template?, finalChoice: Boolean): PopupStep<*>? =
                 value?.also { addScheme(it.deepCopy()) }?.let { null }
 
             override fun isSpeedSearchEnabled() = true
@@ -375,9 +385,9 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
         ) {
             override fun getIconFor(value: Scheme?) = value?.icon
 
-            override fun getTextFor(value: Scheme?) = value?.name ?: Scheme.DEFAULT_NAME
+            override fun getTextFor(value: Scheme?) = value?.name ?: State.DEFAULT_NAME
 
-            override fun onChosen(value: Scheme?, finalChoice: Boolean): Nothing? =
+            override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? =
                 value?.also { addScheme(it.deepCopy()) }?.let { null }
 
             override fun isSpeedSearchEnabled() = true
@@ -387,10 +397,10 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
     /**
      * The action to invoke when the remove button is pressed.
      */
-    private inner class RemovePopupAction : AnActionButtonRunnable {
+    private inner class RemoveAction : AnActionButtonRunnable {
         override fun run(t: AnActionButton?) {
-            val selectedNode = templateTree.getSelectedNode()
-            val parent = selectedNode?.parent ?: return
+            val selectedNode = templateTree.getSelectedNode() ?: return
+            val parent = selectedNode.parent
             val childIndex = parent.getIndex(selectedNode)
 
             templateTreeModel.removeNodeFromParent(selectedNode)
@@ -407,10 +417,12 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
      */
     private inner class CopyActionButton : AnActionButton("Copy", AllIcons.Actions.Copy) {
         override fun actionPerformed(event: AnActionEvent) {
-            (templateTree.getSelectedNode()?.userObject as? Scheme)?.also { addScheme(it.deepCopy()) }
+            val node = templateTree.getSelectedNode() ?: return
+
+            addScheme((node.userObject as Scheme).deepCopy())
         }
 
-        override fun isEnabled() = templateTree.lastSelectedPathComponent != null
+        override fun isEnabled() = templateTree.getSelectedNode() != null
     }
 
     /**
@@ -422,10 +434,9 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
         }
 
         override fun isEnabled(): Boolean {
-            val node = templateTree.getSelectedNode()
-            val parent = node?.parent ?: return false
+            val node = templateTree.getSelectedNode() ?: return false
 
-            return node.userObject != null && parent.getIndex(node) > 0
+            return node.parent.getIndex(node) > 0
         }
     }
 
@@ -438,10 +449,9 @@ class TemplateListEditor(templates: TemplateList = default.state) : SchemeEditor
         }
 
         override fun isEnabled(): Boolean {
-            val node = templateTree.getSelectedNode()
-            val parent = node?.parent ?: return false
+            val node = templateTree.getSelectedNode() ?: return false
 
-            return node.userObject != null && parent.getIndex(node) < parent.childCount - 1
+            return node.parent.getIndex(node) < node.parent.childCount - 1
         }
     }
 

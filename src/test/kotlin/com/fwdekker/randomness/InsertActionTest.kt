@@ -1,6 +1,8 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Document
@@ -9,14 +11,13 @@ import org.assertj.core.api.Assertions.assertThat
 
 
 /**
- * Integration tests for [DataInsertAction].
- *
- * @see DataInsertAction
+ * Integration tests for [InsertAction].
  */
-class DataInsertActionIntegrationTest : BasePlatformTestCase() {
-    private lateinit var insertAction: DummyInsertAction
+class InsertActionTest : BasePlatformTestCase() {
     private lateinit var document: Document
     private lateinit var caretModel: CaretModel
+
+    private lateinit var insertAction: DummyInsertAction
 
 
     override fun setUp() {
@@ -35,40 +36,40 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
     override fun getTestDataPath() = javaClass.classLoader.getResource("integration-project/")?.path
 
 
-    fun testInsertIntoEmpty() {
+    fun `test that it inserts text into an empty document`() {
         myFixture.testAction(insertAction)
 
         assertThat(document.text).isEqualTo("0")
     }
 
-    fun testInsertBefore() {
+    fun `test that it inserts text in front of existing text`() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("RkpjkS9Itb") }
 
         caretModel.moveToOffset(0)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("${"0"}RkpjkS9Itb")
+        assertThat(document.text).isEqualTo("0RkpjkS9Itb")
     }
 
-    fun testInsertAfter() {
+    fun `test that it inserts text behind existing text`() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("0aiMbK5hK5") }
 
         caretModel.moveToOffset(10)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("0aiMbK5hK5${"0"}")
+        assertThat(document.text).isEqualTo("0aiMbK5hK50")
     }
 
-    fun testInsertBetween() {
+    fun `test that it inserts text in the middle of existing text`() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("U6jBDMh8Nq") }
 
         caretModel.moveToOffset(5)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("U6jBD${"0"}Mh8Nq")
+        assertThat(document.text).isEqualTo("U6jBD0Mh8Nq")
     }
 
-    fun testReplaceAll() {
+    fun `test that it replaces the entire document if selected`() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("fMhAajjDw6") }
 
         setSelection(0, 10)
@@ -77,16 +78,16 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         assertThat(document.text).isEqualTo("0")
     }
 
-    fun testReplacePart() {
+    fun `test that it replaces an incomplete selection of text`() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("qZPGZDEcPS") }
 
         setSelection(3, 7)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("qZP${"0"}cPS")
+        assertThat(document.text).isEqualTo("qZP0cPS")
     }
 
-    fun testInsertMultiple() {
+    fun `test that it inserts text at multiple carets`() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) {
             document.setText("DCtD41lFOk\nOCnrdYk9gE\nn1HAPKotDq")
         }
@@ -95,10 +96,10 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         addCaret(22)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("${"0"}DCtD41lFOk\n${"1"}OCnrdYk9gE\n${"2"}n1HAPKotDq")
+        assertThat(document.text).isEqualTo("0DCtD41lFOk\n1OCnrdYk9gE\n2n1HAPKotDq")
     }
 
-    fun testReplaceMultiple() {
+    fun `test that it replaces text at multiple carets`() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) {
             document.setText("YXSncq4FC9\nG31Ybbn1c4\nTNCqAhqPnh")
         }
@@ -108,10 +109,10 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         addSelection(29, 29)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("YX${"0"}cq4FC9\nG31Ybbn${"1"}NCqAhq${"2"}Pnh")
+        assertThat(document.text).isEqualTo("YX0cq4FC9\nG31Ybbn1NCqAhq2Pnh")
     }
 
-    fun testInsertAndReplace() {
+    fun `test that it simultaneously inserts at carets and replaces at selections`() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) {
             document.setText("XOppzVdZTj\nZhAaVfQynW\nk3kWemkdAg")
         }
@@ -122,21 +123,10 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         addSelection(24, 28)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("XOppz${"0"}V${"1"}j\nZhAa${"2"}VfQynW\nk3${"3"}kdAg")
+        assertThat(document.text).isEqualTo("XOppz0V1j\nZhAa2VfQynW\nk33kdAg")
     }
 
-    fun testInsertArray() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("wizard\nsirens\nvanity") }
-
-        setSelection(5, 9)
-
-        var insertValue = 0
-        myFixture.testAction(DummyInsertArrayAction(ArraySchemeDecorator(count = 2)) { insertValue++.toString() })
-
-        assertThat(document.text).isEqualTo("wizar[${"0"}, ${"1"}]rens\nvanity")
-    }
-
-    fun testInsertRepeat() {
+    fun `test that it inserts the same value at multiple carets`() {
         WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("evening\nplease\nfew") }
 
         caretModel.moveToOffset(5)
@@ -144,22 +134,62 @@ class DataInsertActionIntegrationTest : BasePlatformTestCase() {
         addCaret(12)
 
         var insertValue = 0
-        myFixture.testAction(DummyInsertRepeatAction { insertValue++.toString() })
+        myFixture.testAction(DummyInsertAction(repeat = true) { insertValue++.toString() })
 
-        assertThat(document.text).isEqualTo("eveni${"0"}ng\npl${"0"}ea${"0"}se\nfew")
+        assertThat(document.text).isEqualTo("eveni0ng\npl0ea0se\nfew")
     }
 
-    fun testInsertRepeatArray() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("heavy\nbegin\ncare") }
+    fun `test that it inserts nothing if the scheme is invalid`() {
+        myFixture.testAction(DummyInsertAction { throw DataGenerationException("Invalid input!") })
 
-        caretModel.moveToOffset(2)
-        addCaret(7)
-        addCaret(13)
+        assertThat(document.text).isEqualTo("")
+    }
 
-        var insertValue = 0
-        myFixture.testAction(DummyInsertRepeatArrayAction(ArraySchemeDecorator(count = 2)) { insertValue++.toString() })
+    fun `test that it inserts nothing if the scheme is invalid with an empty message`() {
+        myFixture.testAction(DummyInsertAction { throw DataGenerationException() })
 
-        assertThat(document.text).isEqualTo("he${"[0, 1]"}avy\nb${"[0, 1]"}egin\nc${"[0, 1]"}are")
+        assertThat(document.text).isEqualTo("")
+    }
+
+
+    fun `test that it inserts nothing if the project is null`() {
+        val event = AnActionEvent.createFromDataContext("", null) {
+            if (it == CommonDataKeys.PROJECT.name) myFixture.project
+            else null
+        }
+
+        insertAction.actionPerformed(event)
+
+        assertThat(document.text).isEqualTo("")
+    }
+
+    fun `test that it inserts nothing if the editor is null`() {
+        val event = AnActionEvent.createFromDataContext("", null) {
+            if (it == CommonDataKeys.EDITOR.name) myFixture.editor
+            else null
+        }
+
+        insertAction.actionPerformed(event)
+
+        assertThat(document.text).isEqualTo("")
+    }
+
+    fun `test that it disables the presentation if the editor is null`() {
+        val presentation = Presentation()
+        val event = AnActionEvent.createFromDataContext("", presentation) { null }
+
+        insertAction.update(event)
+
+        assertThat(presentation.isEnabled).isFalse()
+    }
+
+    fun `test that it enables the presentation if the editor is not null`() {
+        val presentation = Presentation()
+        val event = AnActionEvent.createFromDataContext("", presentation) { myFixture.editor }
+
+        insertAction.update(event)
+
+        assertThat(presentation.isEnabled).isTrue()
     }
 
 

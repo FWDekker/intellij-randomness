@@ -1,13 +1,10 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.SettingsConfigurable
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
-import com.intellij.openapi.options.Configurable
-import com.intellij.openapi.options.ConfigurationException
-import javax.swing.JComponent
 
 
 /**
@@ -45,20 +42,15 @@ class TemplateSettings : PersistentStateComponent<TemplateList> {
 
 
 /**
- * The configurable for template settings, containing information on how the IDE should interact with the
- * [SchemeEditor].
+ * A configurable for editing [TemplateSettings].
  *
- * Set [templateToSelect] to determine which template should be selected when the configurable opens.
+ * Set [templateToSelect] before [createComponent] is invoked to determine which template should be selected when the
+ * configurable opens.
  *
  * @see TemplateListEditor
  * @see TemplateSettingsAction
  */
-class TemplateSettingsConfigurable : Configurable {
-    /**
-     * The user interface for changing the settings, displayed in IntelliJ's settings window.
-     */
-    private lateinit var component: SchemeEditor<*>
-
+class TemplateSettingsConfigurable : SettingsConfigurable() {
     /**
      * The template to select after calling [createEditor].
      */
@@ -72,43 +64,5 @@ class TemplateSettingsConfigurable : Configurable {
      */
     override fun getDisplayName() = "Randomness"
 
-    /**
-     * Returns true if the settings were modified since they were loaded or they are invalid.
-     *
-     * @return true if the settings were modified since they were loaded or they are invalid
-     */
-    override fun isModified() = component.isModified() || component.doValidate() != null
-
-    /**
-     * Saves the changes in the settings component to the default settings object.
-     *
-     * @throws ConfigurationException if the changes cannot be saved
-     */
-    @Throws(ConfigurationException::class)
-    override fun apply() {
-        val validationInfo = component.doValidate()
-        if (validationInfo != null)
-            throw ConfigurationException(validationInfo, "Failed to save settings")
-
-        component.applyScheme()
-    }
-
-    /**
-     * Discards unsaved changes in the settings component.
-     */
-    override fun reset() = component.reset()
-
-
-    /**
-     * Returns the root pane of the settings component.
-     *
-     * @return the root pane of the settings component
-     */
-    override fun createComponent(): JComponent =
-        createEditor().let {
-            component = it
-            it.rootComponent
-        }
-
-    private fun createEditor() = TemplateListEditor().also { it.queueSelection = templateToSelect }
+    override fun createEditor() = TemplateListEditor().also { it.queueSelection = templateToSelect }
 }

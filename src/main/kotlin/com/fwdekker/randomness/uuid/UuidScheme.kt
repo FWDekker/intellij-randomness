@@ -5,7 +5,6 @@ import com.fasterxml.uuid.Generators
 import com.fasterxml.uuid.UUIDClock
 import com.fasterxml.uuid.UUIDTimer
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
@@ -41,9 +40,8 @@ data class UuidScheme(
      * @return random type 4 UUIDs
      */
     override fun generateUndecoratedStrings(count: Int): List<String> {
-        @Suppress("MagicNumber") // UUID version is not magic
         val generator = when (version) {
-            1 ->
+            TYPE_1 ->
                 Generators.timeBasedGenerator(
                     EthernetAddress(random.nextLong()),
                     UUIDTimer(
@@ -54,8 +52,8 @@ data class UuidScheme(
                         }
                     )
                 )
-            4 -> Generators.randomBasedGenerator(random.asJavaRandom())
-            else -> throw DataGenerationException("Unknown UUID version `$version`.")
+            TYPE_4 -> Generators.randomBasedGenerator(random.asJavaRandom())
+            else -> error("Unknown UUID version '$version'.")
         }
 
         return List(count) { generator.generate().toString() }
@@ -67,6 +65,10 @@ data class UuidScheme(
             .map { enclosure + it + enclosure }
     }
 
+
+    override fun doValidate() =
+        if (version == TYPE_1 || version == TYPE_4) null
+        else "Unknown UUID version '$version'."
 
     override fun deepCopy() = copy(decorator = decorator.deepCopy())
 
@@ -94,5 +96,16 @@ data class UuidScheme(
          * The default value of the [addDashes][addDashes] field.
          */
         const val DEFAULT_ADD_DASHES = true
+
+
+        /**
+         * Integer representing a type-1 UUID.
+         */
+        const val TYPE_1 = 1
+
+        /**
+         * Integer representing a type-4 UUID.
+         */
+        const val TYPE_4 = 4
     }
 }

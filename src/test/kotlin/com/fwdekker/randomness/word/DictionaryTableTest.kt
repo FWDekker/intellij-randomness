@@ -1,12 +1,14 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.clickActionButton
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.GuiActionRunner
+import org.assertj.swing.fixture.Containers
+import org.assertj.swing.fixture.FrameFixture
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import org.spekframework.spek2.style.specification.xdescribe
 
 
 /**
@@ -14,6 +16,8 @@ import org.spekframework.spek2.style.specification.xdescribe
  */
 object DictionaryTableTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
+    lateinit var frame: FrameFixture
+
     lateinit var dictionaryTable: DictionaryTable
 
 
@@ -22,9 +26,11 @@ object DictionaryTableTest : Spek({
         ideaFixture.setUp()
 
         dictionaryTable = GuiActionRunner.execute<DictionaryTable> { DictionaryTable() }
+        frame = Containers.showInFrame(dictionaryTable.panel)
     }
 
     afterEachTest {
+        frame.cleanUp()
         ideaFixture.tearDown()
     }
 
@@ -79,20 +85,32 @@ object DictionaryTableTest : Spek({
         }
     }
 
-    // TODO: Remove and copy buttons are not accessible from tests
-    xdescribe("itemEditor") {
+
+    describe("itemEditor") {
         describe("remove") {
-            it("does not remove a bundled dictionary") {}
+            it("does not remove a bundled dictionary") {
+                val bundledDictionary = DictionaryReference(true, "dictionary.dic")
+                GuiActionRunner.execute { dictionaryTable.data = listOf(bundledDictionary) }
 
-            it("removes a user dictionary") {}
-        }
+                GuiActionRunner.execute {
+                    frame.table().target().setRowSelectionInterval(0, 0)
+                    frame.clickActionButton("Remove")
+                }
 
-        describe("copy") {
-            it("copies a bundled dictionary to a user dictionary") {}
+                assertThat(dictionaryTable.data).hasSize(1)
+            }
 
-            it("copies a user dictionary to a user dictionary") {}
+            it("removes a user dictionary") {
+                val userDictionary = DictionaryReference(false, "dictionary.dic")
+                GuiActionRunner.execute { dictionaryTable.data = listOf(userDictionary) }
 
-            it("cannot copy a different type of dictionary") {}
+                GuiActionRunner.execute {
+                    frame.table().target().setRowSelectionInterval(0, 0)
+                    frame.clickActionButton("Remove")
+                }
+
+                assertThat(dictionaryTable.data).hasSize(0)
+            }
         }
     }
 })

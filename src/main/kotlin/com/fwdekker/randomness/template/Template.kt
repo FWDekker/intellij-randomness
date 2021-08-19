@@ -8,7 +8,6 @@ import com.fwdekker.randomness.literal.LiteralScheme
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
-import com.intellij.util.xmlb.annotations.MapAnnotation
 import com.intellij.util.xmlb.annotations.XCollection
 import icons.RandomnessIcons
 
@@ -39,19 +38,24 @@ data class Template(
         get() = schemes.singleOrNull()?.icons ?: RandomnessIcons.Data
 
 
+    /**
+     * Generates random strings by concatenating the outputs of the [schemes].
+     *
+     * The schemes are first all given a reference to the same [random] before each generating [count] random strings.
+     * These results are then concatenated into the output.
+     *
+     * @param count the number of random strings to generate
+     * @return random strings generated from this template's underlying schemes
+     */
     override fun generateUndecoratedStrings(count: Int) =
         schemes.onEach { it.random = random }.map { it.generateStrings(count) }
             .let { data -> (0 until count).map { i -> data.joinToString(separator = "") { it[i] } } }
 
+
     override fun doValidate() =
-        schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme::class.simpleName} > $it" } }
+        schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
 
-
-    override fun deepCopy() =
-        Template(
-            name = name,
-            schemes = schemes.map { it.deepCopy() }
-        )
+    override fun deepCopy() = copy(schemes = schemes.map { it.deepCopy() })
 
 
     /**
@@ -68,59 +72,5 @@ data class Template(
          */
         val DEFAULT_SCHEMES: List<Scheme>
             get() = listOf(IntegerScheme())
-    }
-}
-
-
-/**
- * A collection of different templates.
- *
- * @property templates the collection of templates, each with a unique [Template.name]
- * @see TemplateSettings
- */
-data class TemplateList(
-    @MapAnnotation(sortBeforeSave = false)
-    var templates: List<Template> = DEFAULT_TEMPLATES
-) : Scheme() {
-    override val decorator: Nothing? = null
-    override val name = "TemplateList"
-
-
-    override fun generateUndecoratedStrings(count: Int) =
-        templates.first().also { it.random = random }.generateStrings(count)
-
-
-    override fun doValidate(): String? {
-        val duplicate =
-            templates.firstOrNull { templates.indexOf(it) != templates.lastIndexOf(it) }?.name
-        val invalid =
-            templates.firstNotNullOfOrNull { template -> template.doValidate()?.let { "${template.name} > $it" } }
-
-        return when {
-            duplicate != null -> "There are multiple templates with the name '$duplicate'."
-            invalid != null -> invalid
-            else -> null
-        }
-    }
-
-
-    override fun deepCopy() = TemplateList(templates.map { it.deepCopy() })
-
-
-    /**
-     * Holds constants.
-     */
-    companion object {
-        /**
-         * The default value of the [templates][templates] field.
-         */
-        val DEFAULT_TEMPLATES: List<Template>
-            get() = listOf(
-                Template("Integer", listOf(IntegerScheme())),
-                Template("Decimal", listOf(DecimalScheme())),
-                Template("String", listOf(StringScheme())),
-                Template("Word", listOf(WordScheme())),
-                Template("UUID", listOf(UuidScheme()))
-            )
     }
 }

@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.decimal
 
-import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
@@ -44,12 +43,8 @@ data class DecimalScheme(
      * @param count the number of decimals to generate
      * @return random decimals between the minimum and maximum value, inclusive
      */
-    override fun generateUndecoratedStrings(count: Int): List<String> {
-        if (minValue > maxValue)
-            throw DataGenerationException("Minimum value is larger than maximum value.")
-
-        return List(count) { doubleToString(random.nextDouble(minValue, maxValue.nextUp())) }
-    }
+    override fun generateUndecoratedStrings(count: Int) =
+        List(count) { doubleToString(random.nextDouble(minValue, maxValue.nextUp())) }
 
     /**
      * Returns a nicely formatted representation of a decimal.
@@ -58,29 +53,30 @@ data class DecimalScheme(
      * @return a nicely formatted representation of a decimal
      */
     private fun doubleToString(decimal: Double): String {
-        doValidate()?.also { throw DataGenerationException(it) }
-
         val format = DecimalFormat()
         format.isGroupingUsed = groupingSeparator.isNotEmpty()
 
-        val symbols = format.decimalFormatSymbols
-        symbols.groupingSeparator = groupingSeparator.getOrElse(0) { Char.MIN_VALUE }
-        symbols.decimalSeparator = decimalSeparator.getOrElse(0) { Char.MIN_VALUE }
         if (showTrailingZeroes) format.minimumFractionDigits = decimalCount
+        format.isGroupingUsed = groupingSeparator.isNotEmpty()
         format.maximumFractionDigits = decimalCount
-        format.decimalFormatSymbols = symbols
+        format.decimalFormatSymbols = format.decimalFormatSymbols
+            .also {
+                it.groupingSeparator = groupingSeparator.getOrElse(0) { Char.MIN_VALUE }
+                it.decimalSeparator = decimalSeparator[0]
+            }
 
         return prefix + format.format(decimal) + suffix
     }
+
 
     override fun doValidate() =
         when {
             minValue > maxValue -> "Minimum value should not be larger than maximum value."
             maxValue - minValue > MAX_VALUE_DIFFERENCE -> "Value range should not exceed $MAX_VALUE_DIFFERENCE."
             decimalCount < MIN_DECIMAL_COUNT -> "Decimal count should be at least $MIN_DECIMAL_COUNT."
+            decimalSeparator.isEmpty() -> "Select a decimal separator."
             else -> null
         }
-
 
     override fun deepCopy() = copy(decorator = decorator.deepCopy())
 
