@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.clickActionButton
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -20,8 +19,6 @@ import org.assertj.swing.fixture.FrameFixture
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.util.regex.Pattern
-import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.DefaultTreeModel
 
 
 /**
@@ -36,7 +33,6 @@ object TemplateListEditorTest : Spek({
 
     lateinit var templateList: TemplateList
     lateinit var editor: TemplateListEditor
-    lateinit var treeModel: DefaultTreeModel
 
 
     beforeGroup {
@@ -56,8 +52,6 @@ object TemplateListEditorTest : Spek({
         )
         editor = GuiActionRunner.execute<TemplateListEditor> { TemplateListEditor(templateList) }
         frame = Containers.showInFrame(editor.rootComponent)
-
-        treeModel = GuiActionRunner.execute<DefaultTreeModel> { frame.tree().target().model as DefaultTreeModel }
     }
 
     afterEachTest {
@@ -210,7 +204,7 @@ object TemplateListEditorTest : Spek({
                             }
                         }
 
-                        assertThat(frame.tree().target().selectionRows).isNull()
+                        frame.tree().requireNoSelection()
                     }
 
                     it("selects the next template if a non-bottom template is removed") {
@@ -291,10 +285,11 @@ object TemplateListEditorTest : Spek({
                         frame.textBox("literal").target().text = "speech"
                     }
 
-                    assertThat(treeModel.getTemplates().map { it.name })
+                    val readList = editor.readState()
+                    assertThat(readList.templates.map { it.name })
                         .containsExactly("Further", "Enclose", "Ring", "Student")
-                    assertThat(treeModel.getSchemes()[1][0]).isEqualTo(LiteralScheme("else"))
-                    assertThat(treeModel.getSchemes()[2][0]).isEqualTo(LiteralScheme("speech"))
+                    assertThat(readList.templates.map { it.schemes }[1][0]).isEqualTo(LiteralScheme("else"))
+                    assertThat(readList.templates.map { it.schemes }[2][0]).isEqualTo(LiteralScheme("speech"))
                 }
 
                 it("places a copy of the scheme underneath the selected scheme") {
@@ -306,8 +301,9 @@ object TemplateListEditorTest : Spek({
                         frame.textBox("literal").target().text = "what"
                     }
 
-                    assertThat(treeModel.getSchemes()[1][0]).isEqualTo(LiteralScheme("else"))
-                    assertThat(treeModel.getSchemes()[1][1]).isEqualTo(LiteralScheme("what"))
+                    val readList = editor.readState()
+                    assertThat(readList.templates.map { it.schemes }[1][0]).isEqualTo(LiteralScheme("else"))
+                    assertThat(readList.templates.map { it.schemes }[1][1]).isEqualTo(LiteralScheme("what"))
                 }
             }
 
@@ -361,7 +357,7 @@ object TemplateListEditorTest : Spek({
         it("does nothing if no templates or schemes are loaded") {
             GuiActionRunner.execute { editor.loadState(TemplateList(emptyList())) }
 
-            assertThat(frame.tree().target().selectionRows).isNull()
+            frame.tree().requireNoSelection()
         }
 
 
@@ -402,7 +398,7 @@ object TemplateListEditorTest : Spek({
 
             GuiActionRunner.execute { editor.loadState(templates) }
 
-            assertThat(treeModel.getTemplates()).containsExactlyElementsOf(templates.templates)
+            assertThat(editor.readState().templates).containsExactlyElementsOf(templates.templates)
         }
 
         it("loads the list's templates' schemes") {
@@ -421,13 +417,13 @@ object TemplateListEditorTest : Spek({
 
             GuiActionRunner.execute { editor.loadState(templates) }
 
-            assertThat(treeModel.getSchemes()).containsExactlyElementsOf(schemes)
+            assertThat(editor.readState().templates.map { it.schemes }).containsExactlyElementsOf(schemes)
         }
 
         it("loads an empty tree if no templates are loaded") {
             GuiActionRunner.execute { editor.loadState(TemplateList(emptyList())) }
 
-            assertThat(treeModel.getTemplates()).isEmpty()
+            assertThat(editor.readState().templates).isEmpty()
         }
     }
 
@@ -810,27 +806,3 @@ object TemplateListEditorTest : Spek({
         }
     }
 })
-
-
-/**
- * Returns the templates contained in the given model by extracting them from all first-level children of the root.
- *
- * @return the templates contained in the given model
- */
-private fun DefaultTreeModel.getTemplates() =
-    (root as DefaultMutableTreeNode)
-        .children().toList().filterIsInstance<DefaultMutableTreeNode>()
-        .map { it.userObject }.filterIsInstance<Template>()
-
-/**
- * Returns the schemes contained in the given model by extracting them from all second-level children of the root.
- *
- * @return the schemes contained in the given model
- */
-private fun DefaultTreeModel.getSchemes() =
-    (root as DefaultMutableTreeNode)
-        .children().toList().filterIsInstance<DefaultMutableTreeNode>()
-        .map { templateNode ->
-            templateNode.children().toList().filterIsInstance<DefaultMutableTreeNode>()
-                .map { it.userObject }.filterIsInstance<Scheme>()
-        }
