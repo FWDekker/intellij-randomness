@@ -42,7 +42,7 @@ data class ArraySchemeDecorator(
         if (count < MIN_COUNT) "Minimum count should be at least $MIN_COUNT, but is $count."
         else null
 
-    override fun deepCopy() = copy()
+    override fun deepCopy(retainUuid: Boolean) = copy().also { if (retainUuid) it.uuid = this.uuid }
 
 
     /**

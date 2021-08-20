@@ -25,6 +25,7 @@ abstract class Scheme : State() {
             if (decorator?.enabled == true) icons?.Array
             else icons?.Base
 
+
     /**
      * The random number generator used to generate random values.
      */
@@ -64,7 +65,7 @@ abstract class Scheme : State() {
     abstract fun generateUndecoratedStrings(count: Int = 1): List<String>
 
 
-    abstract override fun deepCopy(): Scheme
+    abstract override fun deepCopy(retainUuid: Boolean): Scheme
 }
 
 /**

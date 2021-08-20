@@ -31,7 +31,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
 
 
     init {
-        loadState(scheme)
+        loadState()
     }
 
     /**

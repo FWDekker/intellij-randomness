@@ -39,6 +39,7 @@ import com.intellij.util.ui.JBUI
 import java.awt.BorderLayout
 import java.util.Collections
 import java.util.Enumeration
+import java.util.UUID
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTree
@@ -75,12 +76,12 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
     private val changeListeners = mutableListOf<() -> Unit>()
 
     /**
-     * The name of the template to select after the next invocation of [reset].
+     * The UUID of the template to select after the next invocation of [reset].
      *
      * @see TemplateSettingsConfigurable
      * @see TemplateSettingsAction
      */
-    var queueSelection: String? = null
+    var queueSelection: UUID? = null
 
 
     init {
@@ -112,9 +113,8 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
                     when {
                         scheme.doValidate() != null ->
                             SimpleTextAttributes.ERROR_ATTRIBUTES
-                        // TODO: Select by UUID
                         scheme is Template &&
-                            originalState.templates.firstOrNull { it.name == scheme.name } != scheme ->
+                            originalState.templates.firstOrNull { it.uuid == scheme.uuid } != scheme ->
                             SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES
                         else ->
                             SimpleTextAttributes.REGULAR_ATTRIBUTES
@@ -126,9 +126,10 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
         templateTree.addTreeSelectionListener {
             schemeEditor?.also { schemeEditorPanel.remove(it.rootComponent) }
 
-            val selectedObject = templateTree.getSelectedNode()?.state
+            val selectedNode = templateTree.getSelectedNode()
+            val selectedObject = selectedNode?.state
             if (selectedObject !is Scheme) {
-                changeListeners.forEach { it() }
+                templateTreeModel.nodeChanged(selectedNode)
                 return@addTreeSelectionListener
             }
 
@@ -136,45 +137,14 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
                 .also { editor ->
                     editor.addChangeListener {
                         editor.applyState()
-                        changeListeners.forEach { it() }
-
-                        templateTree.updateUI()
+                        templateTreeModel.nodeChanged(selectedNode)
+                        templateTreeModel.nodeStructureChanged(selectedNode)
                     }
 
                     schemeEditorPanel.add(editor.rootComponent)
-                    schemeEditorPanel.revalidate()
-                    changeListeners.forEach { it() }
+                    schemeEditorPanel.revalidate() // Show editor immediately
                 }
         }
-        templateTreeModel.addTreeModelListener(object : TreeModelListener {
-            override fun treeNodesChanged(event: TreeModelEvent) {
-                // Do nothing
-            }
-
-            override fun treeNodesInserted(event: TreeModelEvent) {
-                templateTree.selectionPath = event.treePath.pathByAddingChild(event.children.first())
-                templateTree.expandPath(templateTree.selectionPath)
-            }
-
-            override fun treeNodesRemoved(event: TreeModelEvent) {
-                val parent = event.treePath.lastPathComponent as StateTreeNode<*>
-
-                if (parent.isLeaf && parent == templateTreeModel.root)
-                    templateTree.clearSelection()
-                else
-                    templateTree.selectionPath =
-                        if (parent.isLeaf)
-                            event.treePath
-                        else
-                            event.treePath.pathByAddingChild(
-                                parent.getChildAt(min(event.childIndices.first(), parent.childCount - 1))
-                            )
-            }
-
-            override fun treeStructureChanged(event: TreeModelEvent) {
-                // Do nothing
-            }
-        })
         splitter.firstComponent = JBScrollPane(decorateTemplateList(templateTree))
 
         // Right half
@@ -186,8 +156,7 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
                     else selectedNode.parent!!.state as Scheme
                 }
 
-            // TODO: Select by UUID
-            readState().templates.first { it.name == selectedTemplate.name }
+            readState().templates.first { it.uuid == selectedTemplate.uuid }
         }
         addChangeListener { previewPanel.updatePreview() }
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
@@ -252,31 +221,31 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
         val root = templateTreeModel.root as TemplateListTreeNode
         val selectedNode = templateTree.getSelectedNode()
 
-        if (selectedNode == null) {
-            if (newScheme is Template)
-                templateTreeModel.insertNodeInto(TemplateTreeNode(newScheme), root, root.childCount)
-            else
-                error("Cannot add non-template to root.")
-        } else if (selectedNode is TemplateTreeNode) {
-            if (newScheme is Template)
-                templateTreeModel.insertNodeInto(TemplateTreeNode(newScheme), root, root.getIndex(selectedNode) + 1)
-            else
-                templateTreeModel.insertNodeInto(SchemeTreeNode(newScheme), selectedNode, selectedNode.childCount)
-        } else if (selectedNode is SchemeTreeNode) {
-            if (newScheme is Template) {
-                templateTreeModel.insertNodeInto(
-                    TemplateTreeNode(newScheme),
-                    root,
-                    root.getIndex(selectedNode.parent) + 1
-                )
+        val (childNode, parent, index) =
+            if (selectedNode == null) {
+                if (newScheme is Template)
+                    Triple(TemplateTreeNode(newScheme), root, root.childCount)
+                else
+                    error("Cannot add non-template to root.")
+            } else if (selectedNode is TemplateTreeNode) {
+                if (newScheme is Template)
+                    Triple(TemplateTreeNode(newScheme), root, root.getIndex(selectedNode) + 1)
+                else
+                    Triple(SchemeTreeNode(newScheme), selectedNode, selectedNode.childCount)
+            } else if (selectedNode is SchemeTreeNode) {
+                if (newScheme is Template) {
+                    Triple(TemplateTreeNode(newScheme), root, root.getIndex(selectedNode.parent) + 1)
+                } else {
+                    selectedNode.parent!!
+                        .let { Triple(SchemeTreeNode(newScheme), it, it.getIndex(selectedNode) + 1) }
+                }
             } else {
-                templateTreeModel.insertNodeInto(
-                    SchemeTreeNode(newScheme),
-                    selectedNode.parent!!,
-                    selectedNode.parent!!.getIndex(selectedNode) + 1
-                )
+                error("Unknown node type '${selectedNode.javaClass.canonicalName}'.")
             }
-        }
+
+        templateTreeModel.insertNodeInto(childNode, parent, index)
+        templateTree.selectionPath = templateTree.getPathToRoot(childNode)
+        templateTree.expandPath(templateTree.selectionPath)
     }
 
     /**
@@ -299,15 +268,16 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
     override fun loadState(state: TemplateList) {
         super.loadState(state)
 
-        templateTreeModel.setRoot(TemplateListTreeNode(state.deepCopy()))
+        templateTreeModel.setRoot(TemplateListTreeNode(state.deepCopy(retainUuid = true)))
         templateTreeModel.reload()
 
         val root = templateTreeModel.root as TemplateListTreeNode
-        root.children().toList().forEach { templateTree.expandPath(TreePath(templateTreeModel.getPathToRoot(it))) }
-        root.firstLeaf()?.also { templateTree.selectionPath = TreePath(templateTreeModel.getPathToRoot(it)) }
+        root.children().toList().forEach { templateTree.expandPath(templateTree.getPathToRoot(it)) }
+        root.firstLeaf()?.also { templateTree.selectionPath = templateTree.getPathToRoot(it) }
     }
 
-    override fun readState() = (templateTreeModel.root as TemplateListTreeNode).state.deepCopy()
+    override fun readState() =
+        (templateTreeModel.root as TemplateListTreeNode).state.deepCopy(retainUuid = true)
 
     override fun reset() {
         super.reset()
@@ -315,10 +285,8 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
         queueSelection?.also { selection ->
             (templateTreeModel.root as TemplateListTreeNode)
                 .children().toList()
-                // TODO: Select by UUID
-                .firstOrNull { it.state.name == selection }
-                ?.let { templateTreeModel.getPathToRoot(it) }
-                ?.also { templateTree.selectionPath = TreePath(it) }
+                .firstOrNull { it.state.uuid == selection }
+                ?.also { templateTree.selectionPath = templateTree.getPathToRoot(it) }
 
             queueSelection = null
         }
@@ -329,6 +297,24 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
 
 
     override fun addChangeListener(listener: () -> Unit) {
+        templateTreeModel.addTreeModelListener(object : TreeModelListener {
+            override fun treeNodesChanged(event: TreeModelEvent) {
+                listener()
+            }
+
+            override fun treeNodesInserted(event: TreeModelEvent) {
+                listener()
+            }
+
+            override fun treeNodesRemoved(event: TreeModelEvent) {
+                listener()
+            }
+
+            override fun treeStructureChanged(event: TreeModelEvent) {
+                listener()
+            }
+        })
+        templateTree.addTreeSelectionListener { listener() }
         changeListeners += listener
     }
 
@@ -355,7 +341,7 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
 
         override fun loadState(state: Template) = super.loadState(state).also { nameInput.text = state.name.trim() }
 
-        override fun readState() = originalState.deepCopy().also { it.name = nameInput.text.trim() }
+        override fun readState() = originalState.deepCopy(retainUuid = true).also { it.name = nameInput.text.trim() }
 
 
         override fun addChangeListener(listener: () -> Unit) = addChangeListenerTo(nameInput, listener = listener)
@@ -414,7 +400,18 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
     private inner class RemoveAction : AnActionButtonRunnable {
         override fun run(t: AnActionButton?) {
             val selectedNode = templateTree.getSelectedNode() ?: return
+            val parent = selectedNode.parent as StateTreeNode<*>
+            val oldIndex = parent.getIndex(selectedNode)
+
             templateTreeModel.removeNodeFromParent(selectedNode)
+            if (parent.isLeaf && parent == templateTreeModel.root)
+                templateTree.clearSelection()
+            else
+                templateTree.selectionPath =
+                    templateTree.getPathToRoot(
+                        if (parent.isLeaf) parent
+                        else parent.getChildAt(min(oldIndex, parent.childCount - 1))
+                    )
         }
     }
 
@@ -490,6 +487,14 @@ private fun JTree.getSelectedNode() =
             if (it == model.root) null
             else it
         }
+
+/**
+ * Returns the path from the given node to the root path, including both ends.
+ *
+ * @param treeNode the node to return the path to root from
+ * @return the path from the given node to the root path, including both ends
+ */
+private fun JTree.getPathToRoot(treeNode: TreeNode) = TreePath((model as DefaultTreeModel).getPathToRoot(treeNode))
 
 
 /**
@@ -575,27 +580,22 @@ private sealed class StateTreeNode<S : State> : MutableTreeNode {
 /**
  * A [StateTreeNode] of which the children correspond directly to a field in [state].
  *
- * Modifications to the children of this node directly affect the entries in [state] through the [entries] field. At the
- * same time, the [children] field tracks the child nodes contained in this node, and is synchronized with [entries] at
- * all times. As such, externally modifying the entries in [state] does not apply those changes to this node, and
- * further modifications though this node will overwrite the external changes.
+ * Modifications to the children of this node directly affect the entries in [state] through the [entries] field.
  *
  * @param S the type of state represented by this node
  * @param T the type of state contained as children in an [S]
  */
 private sealed class StateTreeListNode<S : State, T : State> : StateTreeNode<S>() {
     /**
-     * The child nodes of this node; corresponds exactly to [entries].
-     */
-    protected val children = mutableListOf<StateTreeNode<T>>()
-
-    /**
-     * The entries of [T] contained in [state]; corresponds exactly to [children].
+     * The entries of [T] contained in [state].
      *
      * This field connects this node's children to the backing field in [state], so that this field can be modified to
      * modify [state] whenever the children of this node are changed.
      */
     protected abstract var entries: List<T>
+
+
+    abstract fun createChildNodeFor(child: T): StateTreeNode<T>
 
 
     /**
@@ -612,7 +612,8 @@ private sealed class StateTreeListNode<S : State, T : State> : StateTreeNode<S>(
      *
      * @return the schemes in [state] mapped to nodes
      */
-    override fun children(): Enumeration<StateTreeNode<T>> = Collections.enumeration(children)
+    override fun children(): Enumeration<StateTreeNode<T>> =
+        Collections.enumeration(entries.map { createChildNodeFor(it) }.onEach { it.setParent(this) })
 
     /**
      * Returns the child at the given index.
@@ -622,21 +623,22 @@ private sealed class StateTreeListNode<S : State, T : State> : StateTreeNode<S>(
      * @param childIndex the index of the child to retrieve, corresponding to the ordering in [children]
      * @return the child at the given index
      */
-    override fun getChildAt(childIndex: Int): StateTreeNode<T> = children[childIndex]
+    override fun getChildAt(childIndex: Int): StateTreeNode<T> =
+        createChildNodeFor(entries[childIndex]).also { it.setParent(this) }
 
     /**
      * Returns the number of schemes in [state].
      *
      * @return the number of schemes in [state]
      */
-    override fun getChildCount() = children.size
+    override fun getChildCount() = entries.size
 
     /**
      * Returns true if and only if [state] has no schemes.
      *
      * @return true if and only if [state] has no schemes
      */
-    override fun isLeaf() = children.isEmpty()
+    override fun isLeaf() = entries.isEmpty()
 
 
     /**
@@ -648,8 +650,7 @@ private sealed class StateTreeListNode<S : State, T : State> : StateTreeNode<S>(
     override fun getIndex(child: TreeNode?): Int {
         if (child !is StateTreeNode<*>) return -1
 
-        // TODO: Find by UUID
-        return children.indexOfFirst { it.state == child.state }
+        return entries.indexOfFirst { it.uuid == child.state.uuid }
     }
 
     /**
@@ -663,8 +664,7 @@ private sealed class StateTreeListNode<S : State, T : State> : StateTreeNode<S>(
         require(node is StateTreeNode<*>) { "Cannot add child that does not contain a Scheme." }
 
         node.setParent(this)
-        children.add(index, node as StateTreeNode<T>)
-        entries = entries.toMutableList().also { it.add(index, node.state) }
+        entries = entries.toMutableList().also { it.add(index, node.state as T) }
     }
 
     /**
@@ -676,7 +676,6 @@ private sealed class StateTreeListNode<S : State, T : State> : StateTreeNode<S>(
      */
     override fun remove(index: Int) {
         getChildAt(index).setParent(null)
-        children.removeAt(index)
         entries = entries.toMutableList().also { it.removeAt(index) }
     }
 
@@ -703,9 +702,7 @@ private class TemplateListTreeNode(override val state: TemplateList) : StateTree
         }
 
 
-    init {
-        entries.forEach { entry -> children += TemplateTreeNode(entry).also { it.setParent(this) } }
-    }
+    override fun createChildNodeFor(child: Template) = TemplateTreeNode(child)
 
 
     /**
@@ -734,9 +731,7 @@ private class TemplateTreeNode(override val state: Template) : StateTreeListNode
         }
 
 
-    init {
-        entries.forEach { entry -> children += SchemeTreeNode(entry).also { it.setParent(this) } }
-    }
+    override fun createChildNodeFor(child: Scheme) = SchemeTreeNode(child)
 }
 
 /**

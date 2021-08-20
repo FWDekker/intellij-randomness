@@ -5,6 +5,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
+import java.util.UUID
 
 
 /**
@@ -52,9 +53,9 @@ class TemplateSettings : PersistentStateComponent<TemplateList> {
  */
 class TemplateSettingsConfigurable : SettingsConfigurable() {
     /**
-     * The template to select after calling [createEditor].
+     * The UUID of the template to select after calling [createEditor].
      */
-    var templateToSelect: String? = null
+    var templateToSelect: UUID? = null
 
 
     /**

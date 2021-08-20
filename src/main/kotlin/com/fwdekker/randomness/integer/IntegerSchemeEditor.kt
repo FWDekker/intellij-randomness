@@ -44,7 +44,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
         }
         base.changeListeners.forEach { it.stateChanged(ChangeEvent(base)) }
 
-        loadState(scheme)
+        loadState()
     }
 
     /**

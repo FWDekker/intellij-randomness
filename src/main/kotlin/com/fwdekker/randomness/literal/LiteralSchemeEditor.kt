@@ -21,7 +21,7 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor
 
 
     init {
-        loadState(scheme)
+        loadState()
     }
 
     /**

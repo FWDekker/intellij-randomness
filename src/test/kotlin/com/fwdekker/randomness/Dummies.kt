@@ -32,7 +32,9 @@ data class DummyScheme(
         if (literals[0] == INVALID_OUTPUT) "Invalid input!"
         else null
 
-    override fun deepCopy() = copy(decorator = decorator.deepCopy())
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(decorator = decorator.deepCopy(retainUuid))
+            .also { if (retainUuid) it.uuid = this.uuid }
 
 
     /**

@@ -87,9 +87,13 @@ data class StringScheme(
         }
     }
 
-    override fun deepCopy() =
-        copy(decorator = decorator.deepCopy())
-            .also { it.activeSymbolSets = activeSymbolSets.toSet() }
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(decorator = decorator.deepCopy(retainUuid))
+            .also {
+                if (retainUuid) it.uuid = this.uuid
+
+                it.activeSymbolSets = activeSymbolSets.toSet()
+            }
 
 
     /**

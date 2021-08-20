@@ -364,7 +364,7 @@ object TemplateListEditorTest : Spek({
         describe("queueSelection") {
             it("selects the desired queued selection if it exists") {
                 GuiActionRunner.execute {
-                    editor.queueSelection = "Student"
+                    editor.queueSelection = templateList.templates[2].uuid
                     editor.reset()
                 }
 
@@ -373,7 +373,7 @@ object TemplateListEditorTest : Spek({
 
             it("selects the first scheme if the queued selection is invalid") {
                 GuiActionRunner.execute {
-                    editor.queueSelection = "Invalid"
+                    editor.queueSelection = IntegerScheme().uuid
                     editor.reset()
                 }
 

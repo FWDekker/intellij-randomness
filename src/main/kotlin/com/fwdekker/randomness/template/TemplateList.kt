@@ -35,7 +35,9 @@ data class TemplateList(
         }
     }
 
-    override fun deepCopy() = TemplateList(templates.map { it.deepCopy() })
+    override fun deepCopy(retainUuid: Boolean) =
+        TemplateList(templates.map { it.deepCopy(retainUuid) })
+            .also { if (retainUuid) it.uuid = this.uuid }
 
 
     /**

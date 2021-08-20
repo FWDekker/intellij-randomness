@@ -43,5 +43,6 @@ private data class DummyState(override var name: String = DEFAULT_NAME) : State(
     override var icons: RandomnessIcons? = null
 
 
-    override fun deepCopy() = copy()
+    override fun deepCopy(retainUuid: Boolean) =
+        copy().also { if (retainUuid) it.uuid = this.uuid }
 }

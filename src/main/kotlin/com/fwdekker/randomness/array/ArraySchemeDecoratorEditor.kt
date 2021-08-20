@@ -22,13 +22,9 @@ import javax.swing.event.ChangeEvent
  * Component for settings of random array generation.
  *
  * @param settings the settings to edit in the component
- * @param forceEnabled true if and only if the decorator cannot be toggled off
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class ArraySchemeDecoratorEditor(
-    settings: ArraySchemeDecorator,
-    forceEnabled: Boolean = false
-) : StateEditor<ArraySchemeDecorator>(settings) {
+class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<ArraySchemeDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
     private lateinit var separator: JComponent
     private lateinit var enabledCheckBox: JCheckBox
@@ -48,11 +44,6 @@ class ArraySchemeDecoratorEditor(
             spaceAfterSeparatorCheckBox.isEnabled = !newlineSeparatorButton.isSelected
         }
         newlineSeparatorButton.changeListeners.forEach { it.stateChanged(ChangeEvent(newlineSeparatorButton)) }
-
-        if (forceEnabled) {
-            enabledCheckBox.isSelected = true
-            enabledCheckBox.isVisible = false
-        }
 
         loadState()
     }

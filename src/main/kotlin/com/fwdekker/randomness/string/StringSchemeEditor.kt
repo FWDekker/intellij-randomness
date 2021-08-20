@@ -50,7 +50,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         excludeLookAlikeSymbolsCheckBox.toolTipText =
             "Excludes the following characters from all generated strings: ${SymbolSet.lookAlikeCharacters}"
 
-        loadState(scheme)
+        loadState()
     }
 
     /**

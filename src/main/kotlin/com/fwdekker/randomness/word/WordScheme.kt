@@ -110,9 +110,11 @@ data class WordScheme(
         }
     }
 
-    override fun deepCopy() =
-        copy(decorator = decorator.deepCopy())
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(decorator = decorator.deepCopy(retainUuid))
             .also {
+                if (retainUuid) it.uuid = this.uuid
+
                 it.activeBundledDictionaries = activeBundledDictionaries.map(DictionaryReference::copy).toSet()
                 it.activeUserDictionaries = activeUserDictionaries.map(DictionaryReference::copy).toSet()
             }
