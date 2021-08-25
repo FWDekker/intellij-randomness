@@ -94,7 +94,7 @@ data class StringScheme(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(decorator = decorator.deepCopy(retainUuid))
+        copy(symbolSetSettings = symbolSetSettings, decorator = decorator.deepCopy(retainUuid))
             .also {
                 if (retainUuid) it.uuid = this.uuid
 

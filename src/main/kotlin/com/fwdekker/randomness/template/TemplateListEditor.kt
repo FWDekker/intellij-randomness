@@ -56,7 +56,7 @@ import kotlin.math.min
 
 
 /**
- * Component for editing [TemplateList]s.
+ * Component for editing [TemplateList]s while keeping in mind the overall [SettingsState].
  *
  * The editor consists of a left side and a right side. The left side contains a tree with the templates as roots and
  * their schemes as the leaves. When the user selects a scheme, the appropriate [StateEditor] for that scheme is loaded
@@ -66,18 +66,18 @@ import kotlin.math.min
  * written to these copies so that when another scheme editor is displayed the changes are not lost. The changes in the
  * copies are written into the given template list only when [applyState] is invoked.
  *
- * @param templates the list of templates to edit
+ * @param settings the settings containing the templates to edit
  */
-class TemplateListEditor(templates: TemplateList = TemplateSettings.default.state) :
-    StateEditor<TemplateList>(templates) {
+class TemplateListEditor(settings: SettingsState = SettingsState.default) : StateEditor<SettingsState>(settings) {
     override val rootComponent = JPanel(BorderLayout())
+    private var dictionarySettings: DictionarySettings = DictionarySettings()
+    private var symbolSetSettings: SymbolSetSettings = SymbolSetSettings()
     private val templateTreeModel = DefaultTreeModel(TemplateListTreeNode(TemplateList(emptyList())))
     private val templateTree = Tree(templateTreeModel)
     private var schemeEditorPanel = JPanel(BorderLayout())
     private var schemeEditor: StateEditor<*>? = null
 
     private val changeListeners = mutableListOf<() -> Unit>()
-    private val symbolSetSettings = SymbolSetSettings.default.deepCopy()
 
     /**
      * The UUID of the template to select after the next invocation of [reset].
@@ -118,7 +118,7 @@ class TemplateListEditor(templates: TemplateList = TemplateSettings.default.stat
                         scheme.doValidate() != null ->
                             SimpleTextAttributes.ERROR_ATTRIBUTES
                         scheme is Template &&
-                            originalState.templates.firstOrNull { it.uuid == scheme.uuid } != scheme ->
+                            originalState.templateList.templates.firstOrNull { it.uuid == scheme.uuid } != scheme ->
                             SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES
                         else ->
                             SimpleTextAttributes.REGULAR_ATTRIBUTES
@@ -160,7 +160,7 @@ class TemplateListEditor(templates: TemplateList = TemplateSettings.default.stat
                     else selectedNode.parent!!.state as Scheme
                 }
 
-            readState().templates.first { it.uuid == selectedTemplate.uuid }
+            readState().templateList.templates.first { it.uuid == selectedTemplate.uuid }
         }
         addChangeListener { previewPanel.updatePreview() }
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
@@ -269,15 +269,13 @@ class TemplateListEditor(templates: TemplateList = TemplateSettings.default.stat
     }
 
 
-    override fun loadState(state: TemplateList) {
+    override fun loadState(state: SettingsState) {
         super.loadState(state)
 
-        templateTreeModel.setRoot(
-            TemplateListTreeNode(
-                state.deepCopy(retainUuid = true)
-                    .withSettingsState(SettingsState(readState(), symbolSetSettings, DictionarySettings.default))
-            )
-        )
+        val stateCopy = state.deepCopy(retainUuid = true)
+        dictionarySettings = stateCopy.dictionarySettings
+        symbolSetSettings = stateCopy.symbolSetSettings
+        templateTreeModel.setRoot(TemplateListTreeNode(stateCopy.templateList.withSettingsState(stateCopy)))
         templateTreeModel.reload()
 
         val root = templateTreeModel.root as TemplateListTreeNode
@@ -286,11 +284,15 @@ class TemplateListEditor(templates: TemplateList = TemplateSettings.default.stat
     }
 
     override fun readState() =
-        (templateTreeModel.root as TemplateListTreeNode).state.deepCopy(retainUuid = true)
+        SettingsState(
+            (templateTreeModel.root as TemplateListTreeNode).state.deepCopy(retainUuid = true),
+            symbolSetSettings.deepCopy(retainUuid = true),
+            dictionarySettings.deepCopy(retainUuid = true)
+        )
 
     override fun applyState() {
-        originalState.copyFrom(readState().withSettingsState(SettingsState.default))
-        SymbolSetSettings.default.copyFrom(symbolSetSettings)
+        val readState = readState()
+        originalState.copyFrom(readState.also { it.templateList.withSettingsState(readState) })
     }
 
     override fun reset() {

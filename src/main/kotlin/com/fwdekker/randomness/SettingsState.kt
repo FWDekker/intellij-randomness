@@ -18,6 +18,9 @@ data class SettingsState(
     var symbolSetSettings: SymbolSetSettings = SymbolSetSettings(emptyMap()),
     var dictionarySettings: DictionarySettings = DictionarySettings(emptySet())
 ) : State() {
+    override fun doValidate() =
+        templateList.doValidate() ?: symbolSetSettings.doValidate() ?: dictionarySettings.doValidate()
+
     override fun deepCopy(retainUuid: Boolean) =
         copy(
             templateList = templateList.deepCopy(retainUuid = retainUuid),
