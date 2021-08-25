@@ -26,7 +26,6 @@ import javax.swing.JTextArea
  * Component for editing random word settings.
  *
  * @param scheme the scheme to edit in the component
- *
  * @see DictionaryTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
@@ -97,6 +96,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             decorator = arrayDecoratorEditor.readState()
         ).also {
+            it.dictionarySettings = originalState.dictionarySettings
             it.dictionarySettings.bundledDictionaries = dictionaryTable.data
                 .filter { file -> file.isBundled }.toSet()
             it.activeBundledDictionaries = dictionaryTable.activeData

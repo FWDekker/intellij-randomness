@@ -2,6 +2,7 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
@@ -57,6 +58,11 @@ data class StringScheme(
 
             enclosure + capitalizedText + enclosure
         }
+    }
+
+    override fun setSettingsState(settingsState: SettingsState) {
+        super.setSettingsState(settingsState)
+        symbolSetSettings = settingsState.symbolSetSettings
     }
 
 

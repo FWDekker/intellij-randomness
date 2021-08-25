@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.State
+import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.string.StringScheme
@@ -18,8 +19,17 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
 data class TemplateList(
     @MapAnnotation(sortBeforeSave = false)
     var templates: List<Template> = DEFAULT_TEMPLATES
-) : State() {
-    override val name = "TemplateList"
+) : Settings() {
+    /**
+     * Sets the [SettingsState] for each template in this list and returns this instance.
+     *
+     * @param settingsState the settings state for each template in this list
+     * @return this instance
+     */
+    fun withSettingsState(settingsState: SettingsState): TemplateList {
+        templates.forEach { it.setSettingsState(settingsState) }
+        return this
+    }
 
 
     override fun doValidate(): String? {

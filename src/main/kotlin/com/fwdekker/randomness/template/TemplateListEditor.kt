@@ -2,6 +2,7 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.ActuallyPrivate
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.decimal.DecimalScheme
@@ -12,11 +13,12 @@ import com.fwdekker.randomness.literal.LiteralScheme
 import com.fwdekker.randomness.literal.LiteralSchemeEditor
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.StringSchemeEditor
-import com.fwdekker.randomness.template.TemplateSettings.Companion.default
+import com.fwdekker.randomness.string.SymbolSetSettings
 import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
+import com.fwdekker.randomness.word.DictionarySettings
 import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
 import com.intellij.icons.AllIcons
@@ -66,7 +68,8 @@ import kotlin.math.min
  *
  * @param templates the list of templates to edit
  */
-class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<TemplateList>(templates) {
+class TemplateListEditor(templates: TemplateList = TemplateSettings.default.state) :
+    StateEditor<TemplateList>(templates) {
     override val rootComponent = JPanel(BorderLayout())
     private val templateTreeModel = DefaultTreeModel(TemplateListTreeNode(TemplateList(emptyList())))
     private val templateTree = Tree(templateTreeModel)
@@ -74,6 +77,7 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
     private var schemeEditor: StateEditor<*>? = null
 
     private val changeListeners = mutableListOf<() -> Unit>()
+    private val symbolSetSettings = SymbolSetSettings.default.deepCopy()
 
     /**
      * The UUID of the template to select after the next invocation of [reset].
@@ -268,7 +272,12 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
     override fun loadState(state: TemplateList) {
         super.loadState(state)
 
-        templateTreeModel.setRoot(TemplateListTreeNode(state.deepCopy(retainUuid = true)))
+        templateTreeModel.setRoot(
+            TemplateListTreeNode(
+                state.deepCopy(retainUuid = true)
+                    .withSettingsState(SettingsState(readState(), symbolSetSettings, DictionarySettings.default))
+            )
+        )
         templateTreeModel.reload()
 
         val root = templateTreeModel.root as TemplateListTreeNode
@@ -278,6 +287,11 @@ class TemplateListEditor(templates: TemplateList = default.state) : StateEditor<
 
     override fun readState() =
         (templateTreeModel.root as TemplateListTreeNode).state.deepCopy(retainUuid = true)
+
+    override fun applyState() {
+        originalState.copyFrom(readState().withSettingsState(SettingsState.default))
+        SymbolSetSettings.default.copyFrom(symbolSetSettings)
+    }
 
     override fun reset() {
         super.reset()

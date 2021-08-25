@@ -2,6 +2,7 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
@@ -72,6 +73,11 @@ data class WordScheme(
         return List(count) { words.random(random) }
             .map { capitalization.transform(it) }
             .map { enclosure + it + enclosure }
+    }
+
+    override fun setSettingsState(settingsState: SettingsState) {
+        super.setSettingsState(settingsState)
+        dictionarySettings = settingsState.dictionarySettings
     }
 
 
