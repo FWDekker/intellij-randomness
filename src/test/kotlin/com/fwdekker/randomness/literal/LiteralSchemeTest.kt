@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.literal
 
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
@@ -37,6 +38,21 @@ object LiteralSchemeTest : Spek({
         }
     }
 
+
+    describe("doValidate") {
+        it("passes for the default settings") {
+            assertThat(LiteralScheme().doValidate()).isNull()
+        }
+
+        describe("decorator") {
+            it("fails if the decorator is invalid") {
+                literalScheme.decorator.count = -422
+
+                assertThat(literalScheme.doValidate())
+                    .isEqualTo("Minimum count should be at least ${ArraySchemeDecorator.MIN_COUNT}, but is -422.")
+            }
+        }
+    }
 
     describe("deepCopy") {
         it("creates an independent copy") {

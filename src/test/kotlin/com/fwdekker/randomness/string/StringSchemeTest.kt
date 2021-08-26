@@ -2,6 +2,8 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -73,6 +75,16 @@ object StringSchemeTest : Spek({
         }
     }
 
+    describe("setSettingsState") {
+        it("overwrites the constructor's symbol set settings") {
+            val newSettings = SettingsState(symbolSetSettings = SymbolSetSettings())
+
+            stringScheme.setSettingsState(newSettings)
+
+            assertThat(stringScheme.symbolSetSettings).isSameAs(newSettings.symbolSetSettings)
+        }
+    }
+
 
     describe("doValidate") {
         it("passes for the default settings") {
@@ -141,6 +153,15 @@ object StringSchemeTest : Spek({
                 )
             }
         }
+
+        describe("decorator") {
+            it("fails if the decorator is invalid") {
+                stringScheme.decorator.count = -985
+
+                assertThat(stringScheme.doValidate())
+                    .isEqualTo("Minimum count should be at least ${ArraySchemeDecorator.MIN_COUNT}, but is -985.")
+            }
+        }
     }
 
     describe("deepCopy") {
@@ -181,6 +202,14 @@ object StringSchemeTest : Spek({
             assertThat(newScheme.decorator)
                 .isEqualTo(stringScheme.decorator)
                 .isNotSameAs(stringScheme.decorator)
+        }
+
+        it("retains the reference to the symbol set settings") {
+            val newSettings = SymbolSetSettings()
+
+            stringScheme.copyFrom(StringScheme(newSettings))
+
+            assertThat(stringScheme.symbolSetSettings).isSameAs(newSettings)
         }
     }
 })

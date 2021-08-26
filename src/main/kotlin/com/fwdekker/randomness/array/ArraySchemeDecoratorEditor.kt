@@ -80,7 +80,7 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<A
             brackets = bracketsGroup.getValue() ?: DEFAULT_BRACKETS,
             separator = separatorGroup.getValue() ?: DEFAULT_SEPARATOR,
             isSpaceAfterSeparator = spaceAfterSeparatorCheckBox.isSelected
-        )
+        ).also { it.uuid = originalState.uuid }
 
 
     override fun addChangeListener(listener: () -> Unit) =

@@ -47,7 +47,7 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor
         LiteralScheme(
             literal = literalInput.text,
             decorator = arrayDecoratorEditor.readState()
-        )
+        ).also { it.uuid = originalState.uuid }
 
 
     override fun addChangeListener(listener: () -> Unit) =

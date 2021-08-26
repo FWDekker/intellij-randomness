@@ -101,6 +101,8 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
             decorator = arrayDecoratorEditor.readState()
         ).also {
+            it.uuid = originalState.uuid
+
             it.symbolSetSettings = originalState.symbolSetSettings
             it.symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
 

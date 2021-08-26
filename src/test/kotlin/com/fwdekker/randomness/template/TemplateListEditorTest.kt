@@ -6,14 +6,19 @@ import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.literal.LiteralScheme
 import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.string.SymbolSet
 import com.fwdekker.randomness.string.SymbolSetSettings
+import com.fwdekker.randomness.ui.EditableDatum
 import com.fwdekker.randomness.uuid.UuidScheme
+import com.fwdekker.randomness.word.DictionaryReference
 import com.fwdekker.randomness.word.DictionarySettings
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import com.intellij.ui.table.TableView
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.swing.data.TableCell.row
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
@@ -34,6 +39,7 @@ object TemplateListEditorTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
+    lateinit var settingsState: SettingsState
     lateinit var editor: TemplateListEditor
 
 
@@ -45,18 +51,24 @@ object TemplateListEditorTest : Spek({
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        editor = GuiActionRunner.execute<TemplateListEditor> {
-            val symbolSetSettings = SymbolSetSettings()
-            val templateList = TemplateList(
-                listOf(
-                    Template("Further", listOf(IntegerScheme(), IntegerScheme(minValue = 7))),
-                    Template("Enclose", listOf(LiteralScheme("else"))),
-                    Template("Student", listOf(StringScheme(symbolSetSettings), LiteralScheme("dog"), IntegerScheme()))
-                )
+        val symbolSetSettings = SymbolSetSettings()
+        val dictionarySettings = DictionarySettings()
+        val templateList = TemplateList(
+            listOf(
+                Template("Further", listOf(IntegerScheme(), IntegerScheme(minValue = 7))),
+                Template("Enclose", listOf(LiteralScheme("else"), WordScheme(dictionarySettings))),
+                Template("Student", listOf(StringScheme(symbolSetSettings), LiteralScheme("dog"), IntegerScheme()))
+            )
+        )
+
+        settingsState =
+            SettingsState(
+                templateList = templateList,
+                symbolSetSettings = symbolSetSettings,
+                dictionarySettings = dictionarySettings
             )
 
-            TemplateListEditor(SettingsState(templateList = templateList, symbolSetSettings = symbolSetSettings))
-        }
+        editor = GuiActionRunner.execute<TemplateListEditor> { TemplateListEditor(settingsState) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
@@ -156,7 +168,11 @@ object TemplateListEditorTest : Spek({
                     }
 
                     assertThat(editor.readState().templateList.templates[1].schemes)
-                        .containsExactly(LiteralScheme("else"), UuidScheme())
+                        .containsExactly(
+                            LiteralScheme("else"),
+                            WordScheme(settingsState.dictionarySettings),
+                            UuidScheme()
+                        )
                 }
 
                 it("adds the scheme underneath the currently selected scheme") {
@@ -189,10 +205,7 @@ object TemplateListEditorTest : Spek({
                     }
 
                     it("marks the editor as modified if the last template is removed") {
-                        GuiActionRunner.execute {
-                            val template = Template(schemes = listOf(LiteralScheme()))
-                            editor.loadState(SettingsState(TemplateList(listOf(template))))
-                        }
+                        GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList.from(LiteralScheme()))) }
                         require(!editor.isModified()) { "Editor incorrectly marked as modified." }
 
                         GuiActionRunner.execute {
@@ -226,7 +239,7 @@ object TemplateListEditorTest : Spek({
 
                     it("selects the new bottom template if the bottom template is removed") {
                         GuiActionRunner.execute {
-                            frame.tree().target().setSelectionRow(5)
+                            frame.tree().target().setSelectionRow(6)
                             frame.clickActionButton("Remove")
                         }
 
@@ -238,6 +251,9 @@ object TemplateListEditorTest : Spek({
                 describe("remove scheme") {
                     it("selects the template if its last scheme is removed") {
                         GuiActionRunner.execute {
+                            frame.tree().target().setSelectionRow(4)
+                            frame.clickActionButton("Remove")
+
                             frame.tree().target().setSelectionRow(4)
                             frame.clickActionButton("Remove")
                         }
@@ -257,21 +273,21 @@ object TemplateListEditorTest : Spek({
 
                     it("selects the next scheme if a non-bottom scheme is removed") {
                         GuiActionRunner.execute {
-                            frame.tree().target().setSelectionRow(6)
+                            frame.tree().target().setSelectionRow(7)
                             frame.clickActionButton("Remove")
                         }
 
-                        frame.tree().requireSelection(6)
+                        frame.tree().requireSelection(7)
                         frame.textBox("literal").requireText("dog")
                     }
 
                     it("selects the new bottom scheme if the bottom scheme is removed") {
                         GuiActionRunner.execute {
-                            frame.tree().target().setSelectionRow(8)
+                            frame.tree().target().setSelectionRow(9)
                             frame.clickActionButton("Remove")
                         }
 
-                        frame.tree().requireSelection(7)
+                        frame.tree().requireSelection(8)
                         frame.textBox("literal").requireText("dog")
                     }
                 }
@@ -284,11 +300,11 @@ object TemplateListEditorTest : Spek({
                         frame.clickActionButton("Copy")
 
                         // Update new template's name
-                        frame.tree().target().setSelectionRow(5)
+                        frame.tree().target().setSelectionRow(6)
                         frame.textBox("templateName").target().text = "Ring"
 
                         // Adjust new template's scheme
-                        frame.tree().target().setSelectionRow(6)
+                        frame.tree().target().setSelectionRow(7)
                         frame.textBox("literal").target().text = "speech"
                     }
 
@@ -315,6 +331,24 @@ object TemplateListEditorTest : Spek({
                         .isEqualTo(LiteralScheme("else"))
                     assertThat(readList.templateList.templates.map { it.schemes }[1][1])
                         .isEqualTo(LiteralScheme("what"))
+                }
+
+                it("selects the newly created template") {
+                    GuiActionRunner.execute {
+                        frame.tree().target().setSelectionRow(0)
+                        frame.clickActionButton("Copy")
+                    }
+
+                    frame.tree().requireSelection(3)
+                }
+
+                it("expands the newly created template") {
+                    GuiActionRunner.execute {
+                        frame.tree().target().setSelectionRow(3)
+                        frame.clickActionButton("Copy")
+                    }
+
+                    GuiActionRunner.execute { assertThat(frame.tree().target().rowCount).isEqualTo(13) }
                 }
             }
 
@@ -347,6 +381,28 @@ object TemplateListEditorTest : Spek({
                 GuiActionRunner.execute { frame.tree().target().clearSelection() }
                 frame.textBox("previewLabel").requireEmpty()
             }
+
+            @Suppress("UNCHECKED_CAST") // I checked it myself!
+            it("does not change the original symbol sets when a string scheme is changed") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(7)
+                    (frame.table().target() as TableView<EditableDatum<SymbolSet>>).listTableModel
+                        .addRow(EditableDatum(active = true, SymbolSet("ancient", "Fq9ohzV8")))
+                }
+
+                assertThat(editor.originalState.symbolSetSettings.symbolSets).doesNotContainKey("ancient")
+            }
+
+            @Suppress("UNCHECKED_CAST") // I checked it myself!
+            it("does not change the original dictionaries when a word scheme is changed") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(5)
+                    (frame.table().target() as TableView<EditableDatum<DictionaryReference>>).listTableModel
+                        .addRow(EditableDatum(active = true, DictionaryReference(isBundled = false, "nest")))
+                }
+
+                assertThat(editor.originalState.dictionarySettings.userDictionaryFiles).doesNotContain("nest")
+            }
         }
     }
 
@@ -378,7 +434,7 @@ object TemplateListEditorTest : Spek({
                     editor.reset()
                 }
 
-                frame.tree().requireSelection(5)
+                frame.tree().requireSelection(6)
             }
 
             it("selects the first scheme if the queued selection is invalid") {
@@ -556,7 +612,7 @@ object TemplateListEditorTest : Spek({
 
             it("returns the list with a scheme moved up") {
                 GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(7)
+                    frame.tree().target().setSelectionRow(8)
                     frame.clickActionButton("Up")
                 }
 
@@ -566,7 +622,7 @@ object TemplateListEditorTest : Spek({
 
             it("returns the list with a scheme moved down") {
                 GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(6)
+                    frame.tree().target().setSelectionRow(7)
                     frame.clickActionButton("Down")
                 }
 
@@ -665,6 +721,106 @@ object TemplateListEditorTest : Spek({
                     .contains(IntegerScheme(minValue = 494, maxValue = 502))
             }
         }
+
+        describe("settingsState") {
+            @Suppress("UNCHECKED_CAST") // I checked it myself!
+            it("retains changes to symbol sets between different string schemes") {
+                GuiActionRunner.execute {
+                    editor.loadState(
+                        SettingsState(
+                            templateList = TemplateList.from(StringScheme(), StringScheme()),
+                            symbolSetSettings = SymbolSetSettings(mapOf("pocket" to "0MLnYk5"))
+                        )
+                    )
+                }
+
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(1)
+                    (frame.table().target() as TableView<EditableDatum<SymbolSet>>).listTableModel
+                        .addRow(EditableDatum(active = true, SymbolSet("finger", "Xg24tQ")))
+
+                    frame.tree().target().setSelectionRow(2)
+                }
+
+                frame.table().requireCellValue(row(1).column(1), "finger")
+            }
+
+            @Suppress("UNCHECKED_CAST") // I checked it myself!
+            it("retains changes to dictionaries between different word schemes") {
+                GuiActionRunner.execute {
+                    editor.loadState(
+                        SettingsState(
+                            templateList = TemplateList.from(WordScheme(), WordScheme()),
+                            dictionarySettings = DictionarySettings()
+                        )
+                    )
+                }
+
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(1)
+                    (frame.table().target() as TableView<EditableDatum<DictionaryReference>>).listTableModel
+                        .addRow(EditableDatum(active = true, DictionaryReference(isBundled = false, "rank")))
+
+                    frame.tree().target().setSelectionRow(2)
+                }
+
+                frame.table().requireCellValue(row(1).column(2), "rank")
+            }
+        }
+    }
+
+    describe("applyScheme") {
+        @Suppress("UNCHECKED_CAST") // I checked it myself!
+        it("applies changes to symbol sets") {
+            GuiActionRunner.execute {
+                frame.tree().target().setSelectionRow(7)
+                (frame.table().target() as TableView<EditableDatum<SymbolSet>>).listTableModel
+                    .addRow(EditableDatum(active = true, SymbolSet("thumb", "4Tch7x7")))
+            }
+
+            GuiActionRunner.execute { editor.applyState() }
+
+            assertThat(editor.originalState.symbolSetSettings.symbolSets).containsKey("thumb")
+        }
+
+        @Suppress("UNCHECKED_CAST") // I checked it myself!
+        it("does not apply changes to symbol sets after a reset") {
+            GuiActionRunner.execute {
+                frame.tree().target().setSelectionRow(7)
+                (frame.table().target() as TableView<EditableDatum<SymbolSet>>).listTableModel
+                    .addRow(EditableDatum(active = true, SymbolSet("tell", "9Zchc3qs")))
+            }
+
+            GuiActionRunner.execute { editor.reset() }
+
+            assertThat(editor.originalState.symbolSetSettings.symbolSets).doesNotContainKey("tell")
+        }
+
+        @Suppress("UNCHECKED_CAST") // I checked it myself!
+        it("applies changes to dictionaries") {
+            GuiActionRunner.execute {
+                frame.tree().target().setSelectionRow(5)
+                (frame.table().target() as TableView<EditableDatum<DictionaryReference>>).listTableModel
+                    .addRow(EditableDatum(active = true, DictionaryReference(isBundled = false, "basis")))
+            }
+
+            GuiActionRunner.execute { editor.applyState() }
+
+            assertThat(editor.originalState.dictionarySettings.userDictionaryFiles).contains("basis")
+        }
+
+        @Suppress("UNCHECKED_CAST") // I checked it myself!
+        it("does not apply changes to dictionaries after a reset") {
+            GuiActionRunner.execute {
+                frame.tree().target().setSelectionRow(5)
+                (frame.table().target() as TableView<EditableDatum<DictionaryReference>>).listTableModel
+                    .addRow(EditableDatum(active = true, DictionaryReference(isBundled = false, "guide")))
+            }
+
+            GuiActionRunner.execute { editor.reset() }
+
+            assertThat(editor.originalState.dictionarySettings.userDictionaryFiles).doesNotContain("guide")
+        }
     }
 
 
@@ -677,7 +833,7 @@ object TemplateListEditorTest : Spek({
             GuiActionRunner.execute {
                 editor.loadState(
                     SettingsState(
-                        templateList = TemplateList(listOf(Template("Faith", listOf(WordScheme())))),
+                        templateList = TemplateList.from(WordScheme(), name = "Faith"),
                         dictionarySettings = DictionarySettings()
                     )
                 )
@@ -692,7 +848,7 @@ object TemplateListEditorTest : Spek({
             GuiActionRunner.execute {
                 editor.loadState(
                     SettingsState(
-                        templateList = TemplateList(listOf(Template("Avoid", listOf(WordScheme(), IntegerScheme())))),
+                        templateList = TemplateList.from(WordScheme(), IntegerScheme(), name = "Avoid"),
                         dictionarySettings = DictionarySettings()
                     )
                 )
@@ -702,6 +858,14 @@ object TemplateListEditorTest : Spek({
             }
 
             assertThat(editor.doValidate()).startsWith("Avoid > Word > The longest word in the selected")
+        }
+
+        it("validates string schemes based on the unsaved symbol sets") {
+//
+        }
+
+        it("validates word schemes based on the unsaved dictionaries") {
+//
         }
     }
 

@@ -2,8 +2,11 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DummyScheme
+import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.literal.LiteralScheme
+import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.string.SymbolSetSettings
 import icons.RandomnessIcons
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -97,6 +100,18 @@ object TemplateTest : Spek({
             val combinedOutputs = outputsA.zip(outputsB) { a, b -> a + b }.zip(outputsC) { a, b -> a + b }
 
             assertThat(template.generateStrings(3)).containsExactlyElementsOf(combinedOutputs)
+        }
+    }
+
+    describe("setSettingsState") {
+        it("overwrites the symbol set settings of the contained schemes") {
+            val newSettings = SettingsState(symbolSetSettings = SymbolSetSettings())
+            val stringScheme = StringScheme(SymbolSetSettings())
+            template.schemes = listOf(stringScheme)
+
+            template.setSettingsState(newSettings)
+
+            assertThat(stringScheme.symbolSetSettings).isSameAs(newSettings.symbolSetSettings)
         }
     }
 

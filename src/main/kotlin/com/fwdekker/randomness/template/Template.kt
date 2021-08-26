@@ -63,7 +63,7 @@ data class Template(
         else schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(schemes = schemes.map { it.deepCopy(retainUuid) })
+        copy(schemes = schemes.map { it.deepCopy(retainUuid) }, decorator = decorator)
             .also { if (retainUuid) it.uuid = this.uuid }
 
 

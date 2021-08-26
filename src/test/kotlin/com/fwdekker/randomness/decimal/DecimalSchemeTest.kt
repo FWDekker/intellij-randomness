@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -172,6 +173,15 @@ object DecimalSchemeTest : Spek({
                 decimalScheme.decimalSeparator = ""
 
                 assertThat(decimalScheme.doValidate()).isEqualTo("Select a decimal separator.")
+            }
+        }
+
+        describe("decorator") {
+            it("fails if the decorator is invalid") {
+                decimalScheme.decorator.count = -284
+
+                assertThat(decimalScheme.doValidate())
+                    .isEqualTo("Minimum count should be at least ${ArraySchemeDecorator.MIN_COUNT}, but is -284.")
             }
         }
     }

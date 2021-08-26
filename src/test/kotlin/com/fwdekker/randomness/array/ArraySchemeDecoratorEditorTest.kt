@@ -144,6 +144,16 @@ object ArraySchemeDecoratorEditorTest : Spek({
 
             assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
+
+        it("returns a different instance from the loaded scheme") {
+            assertThat(editor.readState())
+                .isEqualTo(editor.originalState)
+                .isNotSameAs(editor.originalState)
+        }
+
+        it("retains the scheme's UUID") {
+            assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
+        }
     }
 
 

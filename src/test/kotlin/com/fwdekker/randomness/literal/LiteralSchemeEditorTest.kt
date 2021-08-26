@@ -67,12 +67,18 @@ object LiteralSchemeEditorTest : Spek({
         }
 
         it("returns a different instance from the loaded scheme") {
-            assertThat(editor.readState())
+            val readState = editor.readState()
+
+            assertThat(readState)
                 .isEqualTo(editor.originalState)
                 .isNotSameAs(editor.originalState)
-            assertThat(editor.readState().decorator)
+            assertThat(readState.decorator)
                 .isEqualTo(editor.originalState.decorator)
                 .isNotSameAs(editor.originalState.decorator)
+        }
+
+        it("retains the scheme's UUID") {
+            assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
         }
     }
 

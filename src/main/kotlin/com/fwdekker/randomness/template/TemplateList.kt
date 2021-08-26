@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.decimal.DecimalScheme
@@ -26,7 +27,7 @@ data class TemplateList(
      * @param settingsState the settings state for each template in this list
      * @return this instance
      */
-    fun withSettingsState(settingsState: SettingsState): TemplateList {
+    fun applySettingsState(settingsState: SettingsState): TemplateList {
         templates.forEach { it.setSettingsState(settingsState) }
         return this
     }
@@ -65,5 +66,15 @@ data class TemplateList(
                 Template("Word", listOf(WordScheme())),
                 Template("UUID", listOf(UuidScheme()))
             )
+
+
+        /**
+         * Constructs a [TemplateList] consisting of a single template with the given schemes.
+         *
+         * @param schemes the schemes to give to the list's single template
+         * @param name the name of the template
+         */
+        fun from(vararg schemes: Scheme, name: String = Template.DEFAULT_NAME) =
+            TemplateList(listOf(Template(name, schemes.toList())))
     }
 }

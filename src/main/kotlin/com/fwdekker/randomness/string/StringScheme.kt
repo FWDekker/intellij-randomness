@@ -89,7 +89,7 @@ data class StringScheme(
             activeSymbols.isEmpty() ->
                 "Active symbol sets should contain at least one non-look-alike character if look-alike characters " +
                     "are excluded."
-            else -> null
+            else -> decorator.doValidate()
         }
     }
 

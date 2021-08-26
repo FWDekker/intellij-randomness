@@ -34,7 +34,7 @@ abstract class State {
      *
      * @param scheme the scheme to copy into this scheme; should be a subclass of this scheme
      */
-    fun copyFrom(scheme: State) = XmlSerializerUtil.copyBean(scheme.deepCopy(retainUuid = true), this)
+    open fun copyFrom(scheme: State) = XmlSerializerUtil.copyBean(scheme.deepCopy(retainUuid = true), this)
 
     /**
      * Returns a deep copy of this scheme.

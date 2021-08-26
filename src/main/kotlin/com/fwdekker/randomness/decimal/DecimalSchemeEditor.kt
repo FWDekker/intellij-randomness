@@ -88,7 +88,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
             prefix = prefixInput.text,
             suffix = suffixInput.text,
             decorator = arrayDecoratorEditor.readState()
-        )
+        ).also { it.uuid = originalState.uuid }
 
 
     override fun addChangeListener(listener: () -> Unit) =

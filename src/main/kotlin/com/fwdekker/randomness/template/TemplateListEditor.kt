@@ -15,7 +15,6 @@ import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.StringSchemeEditor
 import com.fwdekker.randomness.string.SymbolSetSettings
 import com.fwdekker.randomness.ui.PreviewPanel
-import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.DictionarySettings
@@ -35,14 +34,12 @@ import com.intellij.ui.LayeredIcon
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.components.JBTextField
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.JBUI
 import java.awt.BorderLayout
 import java.util.Collections
 import java.util.Enumeration
 import java.util.UUID
-import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTree
 import javax.swing.event.TreeModelEvent
@@ -77,8 +74,6 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     private var schemeEditorPanel = JPanel(BorderLayout())
     private var schemeEditor: StateEditor<*>? = null
 
-    private val changeListeners = mutableListOf<() -> Unit>()
-
     /**
      * The UUID of the template to select after the next invocation of [reset].
      *
@@ -112,13 +107,17 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
                 }
 
                 icon = scheme.icon
+
+                val templates = originalState.templateList.templates
+                val schemes = templates.flatMap { it.schemes }
                 append(
                     scheme.name.ifBlank { "<empty>" },
                     when {
                         scheme.doValidate() != null ->
                             SimpleTextAttributes.ERROR_ATTRIBUTES
-                        scheme is Template &&
-                            originalState.templateList.templates.firstOrNull { it.uuid == scheme.uuid } != scheme ->
+                        scheme is Template && templates.firstOrNull { it.uuid == scheme.uuid } != scheme ->
+                            SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES
+                        scheme !is Template && schemes.firstOrNull { it.uuid == scheme.uuid } != scheme ->
                             SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES
                         else ->
                             SimpleTextAttributes.REGULAR_ATTRIBUTES
@@ -211,7 +210,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             is UuidScheme -> UuidSchemeEditor(scheme)
             is WordScheme -> WordSchemeEditor(scheme)
             is LiteralScheme -> LiteralSchemeEditor(scheme)
-            is Template -> TemplateEditor(scheme)
+            is Template -> TemplateNameEditor(scheme)
             else -> error("Unknown scheme type '${scheme.javaClass.canonicalName}'.")
         }
 
@@ -237,12 +236,10 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
                 else
                     Triple(SchemeTreeNode(newScheme), selectedNode, selectedNode.childCount)
             } else if (selectedNode is SchemeTreeNode) {
-                if (newScheme is Template) {
+                if (newScheme is Template)
                     Triple(TemplateTreeNode(newScheme), root, root.getIndex(selectedNode.parent) + 1)
-                } else {
-                    selectedNode.parent!!
-                        .let { Triple(SchemeTreeNode(newScheme), it, it.getIndex(selectedNode) + 1) }
-                }
+                else
+                    selectedNode.parent!!.let { Triple(SchemeTreeNode(newScheme), it, it.getIndex(selectedNode) + 1) }
             } else {
                 error("Unknown node type '${selectedNode.javaClass.canonicalName}'.")
             }
@@ -266,6 +263,8 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
         templateTreeModel.removeNodeFromParent(node)
         templateTreeModel.insertNodeInto(node, parent, oldIndex + positions)
+        templateTree.selectionPath = templateTree.getPathToRoot(node)
+        templateTree.expandPath(templateTree.selectionPath)
     }
 
 
@@ -275,7 +274,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         val stateCopy = state.deepCopy(retainUuid = true)
         dictionarySettings = stateCopy.dictionarySettings
         symbolSetSettings = stateCopy.symbolSetSettings
-        templateTreeModel.setRoot(TemplateListTreeNode(stateCopy.templateList.withSettingsState(stateCopy)))
+        templateTreeModel.setRoot(TemplateListTreeNode(stateCopy.templateList.applySettingsState(stateCopy)))
         templateTreeModel.reload()
 
         val root = templateTreeModel.root as TemplateListTreeNode
@@ -288,12 +287,9 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             (templateTreeModel.root as TemplateListTreeNode).state.deepCopy(retainUuid = true),
             symbolSetSettings.deepCopy(retainUuid = true),
             dictionarySettings.deepCopy(retainUuid = true)
-        )
+        ).also { it.uuid = originalState.uuid }
 
-    override fun applyState() {
-        val readState = readState()
-        originalState.copyFrom(readState.also { it.templateList.withSettingsState(readState) })
-    }
+    override fun applyState() = originalState.copyFrom(readState().also { it.templateList.applySettingsState(it) })
 
     override fun reset() {
         super.reset()
@@ -331,36 +327,6 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             }
         })
         templateTree.addTreeSelectionListener { listener() }
-        changeListeners += listener
-    }
-
-
-    /**
-     * Component for editing only the name of [Template]s.
-     *
-     * @param template the template to edit
-     */
-    private class TemplateEditor(template: Template) : StateEditor<Template>(template) {
-        override val rootComponent = JPanel(BorderLayout())
-        private val nameInput = JBTextField().also { it.name = "templateName" }
-
-
-        init {
-            val namePanel = JPanel(BorderLayout())
-            namePanel.add(JLabel("Name:"), BorderLayout.WEST)
-            namePanel.add(nameInput)
-            rootComponent.add(namePanel, BorderLayout.NORTH)
-
-            loadState()
-        }
-
-
-        override fun loadState(state: Template) = super.loadState(state).also { nameInput.text = state.name.trim() }
-
-        override fun readState() = originalState.deepCopy(retainUuid = true).also { it.name = nameInput.text.trim() }
-
-
-        override fun addChangeListener(listener: () -> Unit) = addChangeListenerTo(nameInput, listener = listener)
     }
 
 

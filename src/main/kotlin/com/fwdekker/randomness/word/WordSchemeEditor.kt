@@ -96,6 +96,8 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             decorator = arrayDecoratorEditor.readState()
         ).also {
+            it.uuid = originalState.uuid
+
             it.dictionarySettings = originalState.dictionarySettings
             it.dictionarySettings.bundledDictionaries = dictionaryTable.data
                 .filter { file -> file.isBundled }.toSet()

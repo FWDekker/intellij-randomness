@@ -61,6 +61,7 @@ object SchemeTest : Spek({
         }
     }
 
+
     describe("generateStrings") {
         it("throws an exception if the scheme is invalid") {
             scheme.literals = listOf(DummyScheme.INVALID_OUTPUT)

@@ -112,7 +112,7 @@ data class WordScheme(
             maxLength < minWordLength ->
                 "The shortest word in the selected dictionaries is $minWordLength characters. " +
                     "Set the maximum length to a value less than or equal to $minWordLength."
-            else -> null
+            else -> decorator.doValidate()
         }
     }
 
