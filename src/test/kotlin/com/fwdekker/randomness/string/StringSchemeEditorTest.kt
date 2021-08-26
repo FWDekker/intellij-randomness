@@ -3,6 +3,8 @@ package com.fwdekker.randomness.string
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.ui.EditableDatum
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.table.TableView
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -17,6 +19,7 @@ import org.spekframework.spek2.style.specification.describe
  * GUI tests for [StringSchemeEditor].
  */
 object StringSchemeEditorTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
     lateinit var symbolSetSettings: SymbolSetSettings
@@ -31,6 +34,9 @@ object StringSchemeEditorTest : Spek({
 
     @Suppress("UNCHECKED_CAST") // I checked it myself!
     beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         symbolSetSettings = SymbolSetSettings()
         scheme = StringScheme(symbolSetSettings)
         editor = GuiActionRunner.execute<StringSchemeEditor> { StringSchemeEditor(scheme) }
@@ -41,6 +47,7 @@ object StringSchemeEditorTest : Spek({
 
     afterEachTest {
         frame.cleanUp()
+        ideaFixture.tearDown()
     }
 
 

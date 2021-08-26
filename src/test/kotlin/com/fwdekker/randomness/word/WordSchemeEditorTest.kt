@@ -4,6 +4,8 @@ import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.TempFileHelper
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.ui.EditableDatum
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.table.TableView
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -18,6 +20,7 @@ import org.spekframework.spek2.style.specification.describe
  * GUI tests for [WordSchemeEditor].
  */
 object WordSchemeEditorTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
     lateinit var tempFileHelper: TempFileHelper
     lateinit var frame: FrameFixture
 
@@ -34,6 +37,8 @@ object WordSchemeEditorTest : Spek({
     @Suppress("UNCHECKED_CAST") // I checked it myself!
     beforeEachTest {
         tempFileHelper = TempFileHelper()
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
 
         dictionarySettings = DictionarySettings()
         scheme = WordScheme(dictionarySettings)
@@ -45,6 +50,7 @@ object WordSchemeEditorTest : Spek({
 
     afterEachTest {
         frame.cleanUp()
+        ideaFixture.tearDown()
         tempFileHelper.cleanUp()
     }
 
