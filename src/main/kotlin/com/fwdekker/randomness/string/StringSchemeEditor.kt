@@ -50,7 +50,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         excludeLookAlikeSymbolsCheckBox.toolTipText =
             "Excludes the following characters from all generated strings: ${SymbolSet.lookAlikeCharacters}"
 
-        loadState(scheme)
+        loadState()
     }
 
     /**
@@ -101,7 +101,11 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
             decorator = arrayDecoratorEditor.readState()
         ).also {
+            it.uuid = originalState.uuid
+
+            it.symbolSetSettings = originalState.symbolSetSettings
             it.symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
+
             it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet()
         }
 

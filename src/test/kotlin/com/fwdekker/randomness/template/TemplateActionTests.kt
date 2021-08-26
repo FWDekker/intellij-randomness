@@ -110,7 +110,7 @@ object TemplateSettingsActionTest : Spek({
                 val event = TestActionEvent(settingsAction)
                 TemplateSettingsAction(template = null).update(event)
 
-                assertThat(event.presentation.text).isEqualTo("Template Settings")
+                assertThat(event.presentation.text).isEqualTo("Settings")
             }
 
             it("uses the template's name if the template is not null") {

@@ -2,8 +2,11 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DummyScheme
+import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.literal.LiteralScheme
+import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.string.SymbolSetSettings
 import icons.RandomnessIcons
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -100,6 +103,18 @@ object TemplateTest : Spek({
         }
     }
 
+    describe("setSettingsState") {
+        it("overwrites the symbol set settings of the contained schemes") {
+            val newSettings = SettingsState(symbolSetSettings = SymbolSetSettings())
+            val stringScheme = StringScheme(SymbolSetSettings())
+            template.schemes = listOf(stringScheme)
+
+            template.setSettingsState(newSettings)
+
+            assertThat(stringScheme.symbolSetSettings).isSameAs(newSettings.symbolSetSettings)
+        }
+    }
+
 
     describe("doValidate") {
         it("passes for the default settings") {
@@ -107,7 +122,15 @@ object TemplateTest : Spek({
         }
 
         it("passes for a template without schemes") {
-            assertThat(Template(schemes = emptyList()).doValidate()).isNull()
+            template.schemes = emptyList()
+
+            assertThat(template.doValidate()).isNull()
+        }
+
+        it("fails if the template does not have a name") {
+            template.name = ""
+
+            assertThat(template.doValidate()).isEqualTo("Templates must have a name.")
         }
 
         it("fails if the single scheme is invalid") {

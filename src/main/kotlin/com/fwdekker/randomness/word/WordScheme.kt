@@ -2,6 +2,7 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
@@ -74,6 +75,11 @@ data class WordScheme(
             .map { enclosure + it + enclosure }
     }
 
+    override fun setSettingsState(settingsState: SettingsState) {
+        super.setSettingsState(settingsState)
+        dictionarySettings = settingsState.dictionarySettings
+    }
+
 
     @Suppress("ReturnCount") // Acceptable for validation functions
     override fun doValidate(): String? {
@@ -106,13 +112,15 @@ data class WordScheme(
             maxLength < minWordLength ->
                 "The shortest word in the selected dictionaries is $minWordLength characters. " +
                     "Set the maximum length to a value less than or equal to $minWordLength."
-            else -> null
+            else -> decorator.doValidate()
         }
     }
 
-    override fun deepCopy() =
-        copy(decorator = decorator.deepCopy())
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(dictionarySettings = dictionarySettings, decorator = decorator.deepCopy(retainUuid))
             .also {
+                if (retainUuid) it.uuid = this.uuid
+
                 it.activeBundledDictionaries = activeBundledDictionaries.map(DictionaryReference::copy).toSet()
                 it.activeUserDictionaries = activeUserDictionaries.map(DictionaryReference::copy).toSet()
             }

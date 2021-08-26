@@ -67,10 +67,12 @@ data class UuidScheme(
 
 
     override fun doValidate() =
-        if (version == TYPE_1 || version == TYPE_4) null
-        else "Unknown UUID version '$version'."
+        if (version !in listOf(TYPE_1, TYPE_4)) "Unknown UUID version '$version'."
+        else decorator.doValidate()
 
-    override fun deepCopy() = copy(decorator = decorator.deepCopy())
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(decorator = decorator.deepCopy(retainUuid))
+            .also { if (retainUuid) it.uuid = this.uuid }
 
 
     /**

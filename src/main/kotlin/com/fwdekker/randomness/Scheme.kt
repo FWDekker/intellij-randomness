@@ -2,6 +2,7 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
+import icons.RandomnessIcons
 import javax.swing.Icon
 import kotlin.random.Random
 
@@ -18,12 +19,25 @@ abstract class Scheme : State() {
     abstract val decorator: ArraySchemeDecorator?
 
     /**
+     * The name of the scheme as shown to the user.
+     */
+    abstract val name: String
+
+    /**
+     * The icons that represent schemes of this type.
+     */
+    @Transient
+    open val icons: RandomnessIcons? = null
+
+    /**
      * The icon for this scheme; depends on whether its array decorator is enabled.
      */
-    override val icon: Icon?
+    @get:Transient
+    val icon: Icon?
         get() =
             if (decorator?.enabled == true) icons?.Array
             else icons?.Base
+
 
     /**
      * The random number generator used to generate random values.
@@ -63,8 +77,17 @@ abstract class Scheme : State() {
     @Throws(DataGenerationException::class)
     abstract fun generateUndecoratedStrings(count: Int = 1): List<String>
 
+    /**
+     * Sets the [SettingsState] that may be used by this scheme.
+     *
+     * Useful in case the scheme's behavior depends not only on its own internal state, but also that of other settings.
+     */
+    open fun setSettingsState(settingsState: SettingsState) {
+        decorator?.setSettingsState(settingsState)
+    }
 
-    abstract override fun deepCopy(): Scheme
+
+    abstract override fun deepCopy(retainUuid: Boolean): Scheme
 }
 
 /**

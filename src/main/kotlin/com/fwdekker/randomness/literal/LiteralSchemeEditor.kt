@@ -21,7 +21,7 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor
 
 
     init {
-        loadState(scheme)
+        loadState()
     }
 
     /**
@@ -43,10 +43,11 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor
         arrayDecoratorEditor.loadState(state.decorator)
     }
 
-    override fun readState() = LiteralScheme(
-        literal = literalInput.text,
-        decorator = arrayDecoratorEditor.readState()
-    )
+    override fun readState() =
+        LiteralScheme(
+            literal = literalInput.text,
+            decorator = arrayDecoratorEditor.readState()
+        ).also { it.uuid = originalState.uuid }
 
 
     override fun addChangeListener(listener: () -> Unit) =

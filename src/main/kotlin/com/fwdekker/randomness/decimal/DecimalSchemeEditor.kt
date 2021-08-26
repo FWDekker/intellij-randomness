@@ -43,7 +43,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
         decimalCount.addChangeListener { showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0 }
         decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
 
-        loadState(scheme)
+        loadState()
     }
 
     /**
@@ -88,7 +88,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
             prefix = prefixInput.text,
             suffix = suffixInput.text,
             decorator = arrayDecoratorEditor.readState()
-        )
+        ).also { it.uuid = originalState.uuid }
 
 
     override fun addChangeListener(listener: () -> Unit) =

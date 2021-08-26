@@ -20,6 +20,20 @@ object SchemeTest : Spek({
     }
 
 
+    describe("uuid") {
+        it("assigns different UUIDs for different instances") {
+            assertThat(DummyScheme().uuid).isNotEqualTo(DummyScheme().uuid)
+        }
+
+        it("changes the scheme's UUID when it is copied with `retainUuid` set to false") {
+            assertThat(scheme.deepCopy(retainUuid = false).uuid).isNotEqualTo(scheme.uuid)
+        }
+
+        it("does not change the scheme's UUID when it is copied with `retainUuid` set to true") {
+            assertThat(scheme.deepCopy(retainUuid = true).uuid).isEqualTo(scheme.uuid)
+        }
+    }
+
     describe("icon") {
         it("returns null if there are no icons") {
             scheme.icons = null
@@ -46,6 +60,7 @@ object SchemeTest : Spek({
             assertThat(scheme.icon).isEqualTo(RandomnessIcons.Data.Array)
         }
     }
+
 
     describe("generateStrings") {
         it("throws an exception if the scheme is invalid") {

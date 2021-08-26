@@ -44,7 +44,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
         }
         base.changeListeners.forEach { it.stateChanged(ChangeEvent(base)) }
 
-        loadState(scheme)
+        loadState()
     }
 
     /**
@@ -87,7 +87,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
             prefix = prefixInput.text,
             suffix = suffixInput.text,
             decorator = arrayDecoratorEditor.readState()
-        )
+        ).also { it.uuid = originalState.uuid }
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(

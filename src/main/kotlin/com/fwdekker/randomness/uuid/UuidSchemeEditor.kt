@@ -31,7 +31,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
 
 
     init {
-        loadState(scheme)
+        loadState()
     }
 
     /**
@@ -63,7 +63,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             addDashes = addDashesCheckBox.isSelected,
             decorator = arrayDecoratorEditor.readState()
-        )
+        ).also { it.uuid = originalState.uuid }
 
 
     override fun addChangeListener(listener: () -> Unit) =

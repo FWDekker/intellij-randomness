@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -51,11 +52,19 @@ data class Template(
         schemes.onEach { it.random = random }.map { it.generateStrings(count) }
             .let { data -> (0 until count).map { i -> data.joinToString(separator = "") { it[i] } } }
 
+    override fun setSettingsState(settingsState: SettingsState) {
+        super.setSettingsState(settingsState)
+        schemes.forEach { it.setSettingsState(settingsState) }
+    }
+
 
     override fun doValidate() =
-        schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
+        if (name.isBlank()) "Templates must have a name."
+        else schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
 
-    override fun deepCopy() = copy(schemes = schemes.map { it.deepCopy() })
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(schemes = schemes.map { it.deepCopy(retainUuid) }, decorator = decorator)
+            .also { if (retainUuid) it.uuid = this.uuid }
 
 
     /**

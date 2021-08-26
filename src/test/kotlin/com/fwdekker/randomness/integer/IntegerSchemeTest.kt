@@ -2,6 +2,7 @@ package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -157,6 +158,15 @@ object IntegerSchemeTest : Spek({
                 integerScheme.base = 68
 
                 assertThat(integerScheme.doValidate()).isEqualTo("Base should be in range 2..36 but is 68.")
+            }
+        }
+
+        describe("decorator") {
+            it("fails if the decorator is invalid") {
+                integerScheme.decorator.count = -584
+
+                assertThat(integerScheme.doValidate())
+                    .isEqualTo("Minimum count should be at least ${ArraySchemeDecorator.MIN_COUNT}, but is -584.")
             }
         }
     }

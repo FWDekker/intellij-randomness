@@ -1,7 +1,10 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
+import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.literal.LiteralScheme
+import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.string.SymbolSetSettings
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek
@@ -17,6 +20,23 @@ object TemplateListTest : Spek({
 
     beforeEachTest {
         templateList = TemplateList(emptyList())
+    }
+
+
+    describe("applySettingsState") {
+        it("returns itself") {
+            assertThat(templateList.applySettingsState(SettingsState())).isSameAs(templateList)
+        }
+
+        it("overwrites the settings of contained schemes") {
+            val newSettings = SettingsState(symbolSetSettings = SymbolSetSettings())
+            val stringScheme = StringScheme(SymbolSetSettings())
+            templateList.templates = listOf(Template(schemes = listOf(stringScheme)))
+
+            templateList.applySettingsState(newSettings)
+
+            assertThat(stringScheme.symbolSetSettings).isSameAs(newSettings.symbolSetSettings)
+        }
     }
 
 
@@ -37,8 +57,7 @@ object TemplateListTest : Spek({
         }
 
         it("fails if the single template is invalid") {
-            templateList.templates =
-                listOf(Template(name = "Gold", schemes = listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))))
+            templateList.templates = listOf(Template("Gold", listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))))
 
             assertThat(templateList.doValidate()).isEqualTo("Gold > Dummy > Invalid input!")
         }

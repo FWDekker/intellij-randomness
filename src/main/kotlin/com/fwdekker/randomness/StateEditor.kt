@@ -40,7 +40,7 @@ abstract class StateEditor<S : State>(val originalState: S) {
      *
      * Does nothing if and only if [isModified] returns false.
      */
-    fun applyState() = originalState.copyFrom(readState())
+    open fun applyState() = originalState.copyFrom(readState())
 
 
     /**

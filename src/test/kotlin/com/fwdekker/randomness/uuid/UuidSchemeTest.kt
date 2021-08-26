@@ -2,6 +2,7 @@ package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -75,10 +76,21 @@ object UuidSchemeTest : Spek({
             assertThat(UuidScheme().doValidate()).isNull()
         }
 
-        it("fails for unsupported UUID version") {
-            uuidScheme.version = 2
+        describe("version") {
+            it("fails for unsupported UUID version") {
+                uuidScheme.version = 2
 
-            assertThat(uuidScheme.doValidate()).isEqualTo("Unknown UUID version '2'.")
+                assertThat(uuidScheme.doValidate()).isEqualTo("Unknown UUID version '2'.")
+            }
+        }
+
+        describe("decorator") {
+            it("fails if the decorator is invalid") {
+                uuidScheme.decorator.count = -671
+
+                assertThat(uuidScheme.doValidate())
+                    .isEqualTo("Minimum count should be at least ${ArraySchemeDecorator.MIN_COUNT}, but is -671.")
+            }
         }
     }
 

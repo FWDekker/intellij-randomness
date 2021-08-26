@@ -2,6 +2,7 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
@@ -59,6 +60,11 @@ data class StringScheme(
         }
     }
 
+    override fun setSettingsState(settingsState: SettingsState) {
+        super.setSettingsState(settingsState)
+        symbolSetSettings = settingsState.symbolSetSettings
+    }
+
 
     override fun doValidate(): String? {
         val allSymbolSets = symbolSetSettings.symbolSetList
@@ -83,13 +89,17 @@ data class StringScheme(
             activeSymbols.isEmpty() ->
                 "Active symbol sets should contain at least one non-look-alike character if look-alike characters " +
                     "are excluded."
-            else -> null
+            else -> decorator.doValidate()
         }
     }
 
-    override fun deepCopy() =
-        copy(decorator = decorator.deepCopy())
-            .also { it.activeSymbolSets = activeSymbolSets.toSet() }
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(symbolSetSettings = symbolSetSettings, decorator = decorator.deepCopy(retainUuid))
+            .also {
+                if (retainUuid) it.uuid = this.uuid
+
+                it.activeSymbolSets = activeSymbolSets.toSet()
+            }
 
 
     /**

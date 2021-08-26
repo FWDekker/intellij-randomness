@@ -75,10 +75,12 @@ data class DecimalScheme(
             maxValue - minValue > MAX_VALUE_DIFFERENCE -> "Value range should not exceed $MAX_VALUE_DIFFERENCE."
             decimalCount < MIN_DECIMAL_COUNT -> "Decimal count should be at least $MIN_DECIMAL_COUNT."
             decimalSeparator.isEmpty() -> "Select a decimal separator."
-            else -> null
+            else -> decorator.doValidate()
         }
 
-    override fun deepCopy() = copy(decorator = decorator.deepCopy())
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(decorator = decorator.deepCopy(retainUuid))
+            .also { if (retainUuid) it.uuid = this.uuid }
 
 
     /**

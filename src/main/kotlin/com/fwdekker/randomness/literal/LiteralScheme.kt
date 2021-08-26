@@ -31,7 +31,11 @@ data class LiteralScheme(
     override fun generateUndecoratedStrings(count: Int) = List(count) { literal }
 
 
-    override fun deepCopy() = copy(decorator = decorator.deepCopy())
+    override fun doValidate() = decorator.doValidate()
+
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(decorator = decorator.deepCopy(retainUuid))
+            .also { if (retainUuid) it.uuid = this.uuid }
 
 
     /**
