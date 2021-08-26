@@ -50,6 +50,24 @@ data class DictionarySettings(
 
     override fun loadState(state: DictionarySettings) = copyFrom(state)
 
+
+    override fun doValidate(): String? {
+        BundledDictionary.cache.clear()
+        UserDictionary.cache.clear()
+
+        return (bundledDictionaries + userDictionaries)
+            .associateWith { dictionary ->
+                try {
+                    dictionary.words
+                } catch (e: InvalidDictionaryException) {
+                    return "Dictionary '$dictionary' is invalid: ${e.message}"
+                }
+            }
+            .toList()
+            .firstOrNull { it.second.isEmpty() }
+            ?.let { "Dictionary '${it.first.filename}' is empty." }
+    }
+
     override fun deepCopy(retainUuid: Boolean) =
         copy(
             bundledDictionaryFiles = bundledDictionaryFiles.toSet(),

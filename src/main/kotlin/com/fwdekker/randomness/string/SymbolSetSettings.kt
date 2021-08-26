@@ -53,6 +53,18 @@ data class SymbolSetSettings(
 
     override fun loadState(state: SymbolSetSettings) = copyFrom(state)
 
+
+    override fun doValidate(): String? {
+        val empty = symbolSetList.firstOrNull { it.symbols.isEmpty() }?.name
+
+        return when {
+            symbolSetList.isEmpty() -> "Add at least one symbol set."
+            symbolSetList.any { it.name.isEmpty() } -> "All symbol sets should have a name."
+            empty != null -> "Symbol set `$empty` should contain at least one symbol."
+            else -> null
+        }
+    }
+
     override fun deepCopy(retainUuid: Boolean) =
         copy(serializedSymbolSets = serializedSymbolSets.toMap())
             .also { if (retainUuid) it.uuid = uuid }

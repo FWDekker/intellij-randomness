@@ -81,21 +81,10 @@ data class WordScheme(
     }
 
 
-    @Suppress("ReturnCount") // Acceptable for validation functions
     override fun doValidate(): String? {
-        BundledDictionary.cache.clear()
-        UserDictionary.cache.clear()
+        dictionarySettings.doValidate()?.also { return it }
 
-        val words = (activeBundledDictionaries + activeUserDictionaries).flatMap { dictionary ->
-            try {
-                dictionary.words.also {
-                    if (it.isEmpty())
-                        return "Dictionary '$dictionary' is empty."
-                }
-            } catch (e: InvalidDictionaryException) {
-                return "Dictionary '$dictionary' is invalid: ${e.message}"
-            }
-        }
+        val words = (activeBundledDictionaries + activeUserDictionaries).flatMap { it.words }
         val minWordLength = words.map { it.length }.minOrNull() ?: 1
         val maxWordLength = words.map { it.length }.maxOrNull() ?: Integer.MAX_VALUE
 

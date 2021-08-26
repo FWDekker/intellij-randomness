@@ -113,13 +113,12 @@ object WordSchemeTest : Spek({
         }
 
         describe("dictionaries") {
-            it("fails if a dictionary of a now-deleted file is given") {
-                val dictionaryFile = tempFileHelper.createFile("explore\nworm\ndamp", ".dic").also { it.delete() }
-                val dictionary = DictionaryReference(isBundled = false, dictionaryFile.absolutePath)
+            it("fails if the dictionary settings are invalid") {
+                val dictionaryFile = tempFileHelper.createFile("heavenly\npet\n", ".dic").also { it.delete() }
 
-                wordScheme.activeUserDictionaries = setOf(dictionary)
+                wordScheme.dictionarySettings.userDictionaryFiles = setOf(dictionaryFile.absolutePath)
 
-                assertThat(wordScheme.doValidate()).matches("Dictionary '.*\\.dic' is invalid: File not found\\.")
+                assertThat(wordScheme.doValidate()).isNotNull()
             }
 
             it("fails if no dictionaries are selected") {
@@ -127,22 +126,6 @@ object WordSchemeTest : Spek({
                 wordScheme.activeUserDictionaries = emptySet()
 
                 assertThat(wordScheme.doValidate()).isEqualTo("Activate at least one dictionary.")
-            }
-
-            it("fails if one of the dictionaries is invalid") {
-                wordScheme.activeUserDictionaries = setOf(DictionaryReference(isBundled = false, "does_not_exist.dic"))
-
-                assertThat(wordScheme.doValidate())
-                    .isEqualTo("Dictionary 'does_not_exist.dic' is invalid: File not found.")
-            }
-
-            it("fails if one the dictionaries is empty") {
-                val dictionaryFile = tempFileHelper.createFile("", ".dic")
-                val dictionary = DictionaryReference(isBundled = false, dictionaryFile.absolutePath)
-
-                wordScheme.activeUserDictionaries = setOf(dictionary)
-
-                assertThat(wordScheme.doValidate()).matches("Dictionary '.*\\.dic' is empty\\.")
             }
         }
 
