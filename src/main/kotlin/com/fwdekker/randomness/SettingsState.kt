@@ -21,12 +21,12 @@ data class SettingsState(
     override fun doValidate() =
         templateList.doValidate() ?: symbolSetSettings.doValidate() ?: dictionarySettings.doValidate()
 
-    override fun copyFrom(scheme: State) {
-        require(scheme is SettingsState) { "Cannot copy from non-SettingsState." }
+    override fun copyFrom(state: State) {
+        require(state is SettingsState) { "Cannot copy from different type." }
 
-        templateList.copyFrom(scheme.templateList)
-        symbolSetSettings.copyFrom(scheme.symbolSetSettings)
-        dictionarySettings.copyFrom(scheme.dictionarySettings)
+        templateList.copyFrom(state.templateList)
+        symbolSetSettings.copyFrom(state.symbolSetSettings)
+        dictionarySettings.copyFrom(state.dictionarySettings)
     }
 
     override fun deepCopy(retainUuid: Boolean) =

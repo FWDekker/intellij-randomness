@@ -67,21 +67,14 @@ data class StringScheme(
 
 
     override fun doValidate(): String? {
-        val allSymbolSets = symbolSetSettings.symbolSetList
-        val empty = allSymbolSets.firstOrNull { it.symbols.isEmpty() }?.name
-        val unknown = activeSymbolSets.firstOrNull { it !in allSymbolSets.map(SymbolSet::name) }
+        symbolSetSettings.doValidate()?.also { return it }
 
+        val unknown = activeSymbolSets.firstOrNull { it !in symbolSetSettings.symbolSetList.map(SymbolSet::name) }
         return when {
             minLength < MIN_LENGTH ->
                 "Minimum length should not be smaller than $MIN_LENGTH."
             minLength > maxLength ->
                 "Minimum length should not be larger than maximum length."
-            allSymbolSets.isEmpty() ->
-                "Add at least one symbol set."
-            allSymbolSets.any { it.name.isEmpty() } ->
-                "All symbol sets should have a name."
-            empty != null ->
-                "Symbol set `$empty` should contain at least one symbol."
             unknown != null ->
                 "Unknown symbol set `$unknown`."
             activeSymbolSets.isEmpty() ->

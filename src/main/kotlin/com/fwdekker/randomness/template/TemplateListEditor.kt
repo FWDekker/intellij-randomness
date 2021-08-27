@@ -39,7 +39,6 @@ import com.intellij.util.ui.JBUI
 import java.awt.BorderLayout
 import java.util.Collections
 import java.util.Enumeration
-import java.util.UUID
 import javax.swing.JPanel
 import javax.swing.JTree
 import javax.swing.event.TreeModelEvent
@@ -80,7 +79,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
      * @see TemplateSettingsConfigurable
      * @see TemplateSettingsAction
      */
-    var queueSelection: UUID? = null
+    var queueSelection: String? = null
 
 
     init {
@@ -138,11 +137,13 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
             schemeEditor = createEditor(selectedObject)
                 .also { editor ->
-                    editor.addChangeListener {
-                        editor.applyState()
-                        templateTreeModel.nodeChanged(selectedNode)
-                        templateTreeModel.nodeStructureChanged(selectedNode)
-                    }
+                    editor.addChangeListener(
+                        {
+                            editor.applyState()
+                            templateTreeModel.nodeChanged(selectedNode)
+                            templateTreeModel.nodeStructureChanged(selectedNode)
+                        }.also { it() } // Invoke listener to apply automatic fixes from editor's constructor
+                    )
 
                     schemeEditorPanel.add(editor.rootComponent)
                     schemeEditorPanel.revalidate() // Show editor immediately
@@ -210,6 +211,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             is UuidScheme -> UuidSchemeEditor(scheme)
             is WordScheme -> WordSchemeEditor(scheme)
             is LiteralScheme -> LiteralSchemeEditor(scheme)
+            is TemplateReference -> TemplateReferenceEditor(scheme)
             is Template -> TemplateNameEditor(scheme)
             else -> error("Unknown scheme type '${scheme.javaClass.canonicalName}'.")
         }
@@ -223,6 +225,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     internal fun addScheme(newScheme: Scheme) {
         val root = templateTreeModel.root as TemplateListTreeNode
         val selectedNode = templateTree.getSelectedNode()
+        newScheme.setSettingsState(SettingsState(root.state, symbolSetSettings, dictionarySettings))
 
         val (childNode, parent, index) =
             if (selectedNode == null) {
@@ -347,7 +350,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         /**
          * The [Template]-related entries in [AddPopupStep].
          */
-        private inner class AddTemplatePopupStep : BaseListPopupStep<Template>(null, TemplateList.DEFAULT_TEMPLATES) {
+        private inner class AddTemplatePopupStep : BaseListPopupStep<Template>(null, AVAILABLE_ADD_TEMPLATES) {
             override fun getIconFor(value: Template?) = value?.icon
 
             override fun getTextFor(value: Template?) = value?.name ?: Template.DEFAULT_NAME
@@ -361,13 +364,10 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         /**
          * The [Scheme]-related entries in [AddPopupStep].
          */
-        private inner class AddSchemePopupStep : BaseListPopupStep<Scheme>(
-            null,
-            listOf(LiteralScheme(), IntegerScheme(), DecimalScheme(), StringScheme(), WordScheme(), UuidScheme())
-        ) {
+        private inner class AddSchemePopupStep : BaseListPopupStep<Scheme>(null, AVAILABLE_ADD_SCHEMES) {
             override fun getIconFor(value: Scheme?) = value?.icon
 
-            override fun getTextFor(value: Scheme?) = value?.name ?: State.DEFAULT_NAME
+            override fun getTextFor(value: Scheme?) = value?.name ?: Scheme.DEFAULT_NAME
 
             override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? =
                 value?.also { addScheme(it.deepCopy()) }?.let { null }
@@ -454,6 +454,26 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
          * The text that is displayed when the table is empty.
          */
         const val EMPTY_TEXT = "No templates configured."
+
+        /**
+         * Returns the list of templates that the user can add from the add action.
+         */
+        val AVAILABLE_ADD_TEMPLATES: List<Template>
+            get() = TemplateList.DEFAULT_TEMPLATES
+
+        /**
+         * Returns the list of schemes that the user can add from the add action.
+         */
+        val AVAILABLE_ADD_SCHEMES: List<Scheme>
+            get() = listOf(
+                LiteralScheme(),
+                IntegerScheme(),
+                DecimalScheme(),
+                StringScheme(),
+                WordScheme(),
+                UuidScheme(),
+                TemplateReference()
+            )
     }
 }
 
@@ -577,6 +597,12 @@ private sealed class StateTreeListNode<S : State, T : State> : StateTreeNode<S>(
     protected abstract var entries: List<T>
 
 
+    /**
+     * Creates a node containing [child] that can be added to this node.
+     *
+     * @param child the child to wrap in a node
+     * @return the child wrapped in a node
+     */
     abstract fun createChildNodeFor(child: T): StateTreeNode<T>
 
 

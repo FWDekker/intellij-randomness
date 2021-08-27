@@ -29,7 +29,8 @@ data class Template(
             StringScheme::class,
             WordScheme::class,
             UuidScheme::class,
-            LiteralScheme::class
+            LiteralScheme::class,
+            TemplateReference::class,
         ]
     )
     var schemes: List<Scheme> = DEFAULT_SCHEMES,

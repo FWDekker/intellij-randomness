@@ -22,4 +22,25 @@ object SymbolSetSettingsTest : Spek({
             assertThat(settings.symbolSets["emoji"]).isEqualTo("👨‍❤️‍👨")
         }
     }
+
+
+    describe("doValidate") {
+        it("passes for the default settings") {
+            assertThat(SymbolSetSettings().doValidate()).isNull()
+        }
+
+        it("fails if no symbol sets are defined") {
+            assertThat(SymbolSetSettings(emptyMap()).doValidate()).isEqualTo("Add at least one symbol set.")
+        }
+
+        it("fails if a symbol set does not have a name") {
+            assertThat(SymbolSetSettings(mapOf("" to "hAA76o")).doValidate())
+                .isEqualTo("All symbol sets should have a name.")
+        }
+
+        it("fails if a symbol set has no symbols") {
+            assertThat(SymbolSetSettings(mapOf("value" to "")).doValidate())
+                .isEqualTo("Symbol set `value` should contain at least one symbol.")
+        }
+    }
 })

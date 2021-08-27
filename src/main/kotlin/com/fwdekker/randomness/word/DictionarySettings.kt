@@ -46,9 +46,37 @@ data class DictionarySettings(
         }
 
 
+    /**
+     * Returns this instance.
+     *
+     * @return this instance
+     */
     override fun getState() = this
 
+    /**
+     * Invokes [copyFrom].
+     *
+     * @param state the state to invoke [copyFrom] on
+     */
     override fun loadState(state: DictionarySettings) = copyFrom(state)
+
+
+    override fun doValidate(): String? {
+        BundledDictionary.cache.clear()
+        UserDictionary.cache.clear()
+
+        return (bundledDictionaries + userDictionaries)
+            .associateWith { dictionary ->
+                try {
+                    dictionary.words
+                } catch (e: InvalidDictionaryException) {
+                    return "Dictionary '$dictionary' is invalid: ${e.message}"
+                }
+            }
+            .toList()
+            .firstOrNull { it.second.isEmpty() }
+            ?.let { "Dictionary '${it.first.filename}' is empty." }
+    }
 
     override fun deepCopy(retainUuid: Boolean) =
         copy(

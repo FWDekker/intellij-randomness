@@ -5,7 +5,6 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
-import java.util.UUID
 
 
 /**
@@ -24,8 +23,18 @@ class TemplateSettings : PersistentStateComponent<TemplateList> {
     private val templateList: TemplateList = TemplateList()
 
 
+    /**
+     * Returns the template list.
+     *
+     * @return the template list
+     */
     override fun getState() = templateList
 
+    /**
+     * Invokes [TemplateList.copyFrom].
+     *
+     * @param state the state to invoke [TemplateList.copyFrom] on
+     */
     override fun loadState(state: TemplateList) = templateList.copyFrom(state)
 
 
@@ -55,7 +64,7 @@ class TemplateSettingsConfigurable : SettingsConfigurable() {
     /**
      * The UUID of the template to select after calling [createEditor].
      */
-    var templateToSelect: UUID? = null
+    var templateToSelect: String? = null
 
 
     /**
