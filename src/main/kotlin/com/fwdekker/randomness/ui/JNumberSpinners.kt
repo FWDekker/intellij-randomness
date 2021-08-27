@@ -1,7 +1,5 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.ValidationInfo
-import com.fwdekker.randomness.ui.JNumberSpinner.Companion.DEFAULT_DESCRIPTION
 import java.awt.Dimension
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -17,19 +15,13 @@ import javax.swing.SpinnerNumberModel
  * @param minValue the smallest number that may be represented
  * @param maxValue the largest number that may be represented
  * @param stepSize the default value to increment and decrement by
- * @param description the description to use in error messages; defaults to [DEFAULT_DESCRIPTION] if `null` is given
  */
-abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T, description: String? = null) :
+abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T) :
     JSpinner(SpinnerNumberModel(value, minValue, maxValue, stepSize)) where T : Number, T : Comparable<T> {
     /**
      * Transforms a [Number] into a [T].
      */
     abstract val numberToT: (Number) -> T
-
-    /**
-     * The description to use in error messages.
-     */
-    private val description = description ?: DEFAULT_DESCRIPTION
 
     /**
      * A helper function to return the super class's model as an instance of [SpinnerNumberModel].
@@ -74,28 +66,9 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
 
 
     /**
-     * Validates the current value.
-     *
-     * @return `null` if the current value is valid, or a `ValidationInfo` object explaining why the current value is
-     * invalid
-     */
-    fun validateValue() =
-        when {
-            value < minValue -> ValidationInfo("The $description should be greater than or equal to $minValue.", this)
-            value > maxValue -> ValidationInfo("The $description should be less than or equal to $maxValue.", this)
-            else -> null
-        }
-
-
-    /**
      * Holds constants.
      */
     companion object {
-        /**
-         * The default description to use in error messages.
-         */
-        const val DEFAULT_DESCRIPTION = "value"
-
         /**
          * The default width of a number spinner.
          */
@@ -116,15 +89,13 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
  * @param minValue the smallest number that may be represented
  * @param maxValue the largest number that may be represented
  * @param stepSize the default value to increment and decrement by
- * @param description the description to use in error messages
  */
 class JDoubleSpinner(
     value: Double = 0.0,
     minValue: Double = -Double.MAX_VALUE,
     maxValue: Double = Double.MAX_VALUE,
-    stepSize: Double = 0.1,
-    description: String? = null
-) : JNumberSpinner<Double>(value, minValue, maxValue, stepSize, description) {
+    stepSize: Double = 0.1
+) : JNumberSpinner<Double>(value, minValue, maxValue, stepSize) {
     override val numberToT: (Number) -> Double
         get() = { it.toDouble() }
 
@@ -144,15 +115,13 @@ class JDoubleSpinner(
  * @param minValue the smallest number that may be represented
  * @param maxValue the largest number that may be represented
  * @param stepSize the default value to increment and decrement by
- * @param description the description to use in error messages
  */
 class JLongSpinner(
     value: Long = 0L,
     minValue: Long = Long.MIN_VALUE,
     maxValue: Long = Long.MAX_VALUE,
-    stepSize: Long = 1L,
-    description: String? = null
-) : JNumberSpinner<Long>(value, minValue, maxValue, stepSize, description) {
+    stepSize: Long = 1L
+) : JNumberSpinner<Long>(value, minValue, maxValue, stepSize) {
     override val numberToT: (Number) -> Long
         get() = { it.toLong() }
 
@@ -172,15 +141,13 @@ class JLongSpinner(
  * @param minValue the smallest number that may be represented
  * @param maxValue the largest number that may be represented
  * @param stepSize the default value to increment and decrement by
- * @param description the description to use in error messages
  */
 class JIntSpinner(
     value: Int = 0,
     minValue: Int = Int.MIN_VALUE,
     maxValue: Int = Int.MAX_VALUE,
-    stepSize: Int = 1,
-    description: String? = null
-) : JNumberSpinner<Int>(value, minValue, maxValue, stepSize, description) {
+    stepSize: Int = 1
+) : JNumberSpinner<Int>(value, minValue, maxValue, stepSize) {
     override val numberToT: (Number) -> Int
         get() = { it.toInt() }
 

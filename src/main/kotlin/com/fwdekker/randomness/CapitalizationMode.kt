@@ -38,7 +38,12 @@ enum class CapitalizationMode(val descriptor: String, val transform: (String) ->
     /**
      * Makes each letter randomly uppercase or lowercase.
      */
-    RANDOM("random", { string -> string.toCharArray().map { it.toRandomCase() }.joinToString("") });
+    RANDOM("random", { string -> string.toCharArray().map { it.toRandomCase() }.joinToString("") }),
+
+    /**
+     * Unused in production code.
+     */
+    DUMMY("dummy", { string -> string });
 
 
     /**

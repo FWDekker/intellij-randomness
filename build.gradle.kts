@@ -7,7 +7,6 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    id("java")
     id("org.jetbrains.kotlin.jvm") version "1.5.10"  // See also `gradle.properties`
     id("org.jetbrains.intellij") version "0.7.3"
 
@@ -34,10 +33,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
-    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:${properties("mockitoKotlinVersion")}")
     testImplementation("org.assertj:assertj-core:${properties("assertjVersion")}")
     testImplementation("org.assertj:assertj-swing-junit:${properties("assertjSwingVersion")}")
-    testImplementation("org.junit.platform:junit-platform-runner:${properties("junitRunnerVersion")}")
+    testRuntimeOnly("org.junit.platform:junit-platform-runner:${properties("junitRunnerVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${properties("junitVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${properties("junitVersion")}")
     testImplementation("org.junit.vintage:junit-vintage-engine:${properties("junitVersion")}")

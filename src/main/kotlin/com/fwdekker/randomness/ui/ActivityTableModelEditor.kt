@@ -14,6 +14,7 @@ import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.StatusText
 import com.intellij.util.ui.table.TableModelEditor
 import javax.swing.JPanel
+import javax.swing.event.TableModelEvent
 import javax.swing.table.TableColumn
 
 
@@ -133,9 +134,18 @@ abstract class ActivityTableModelEditor<T>(
      */
     fun addChangeListener(listener: () -> Unit) {
         modelListener(object : DataChangedListener<EditableDatum<T>>() {
+            override fun tableChanged(e: TableModelEvent) = listener()
+
             override fun dataChanged(columnInfo: ColumnInfo<EditableDatum<T>, *>, rowIndex: Int) = listener()
         })
     }
+
+    /**
+     * Returns true.
+     *
+     * @return true
+     */
+    final override fun canCreateElement() = true
 
 
     /**
@@ -148,16 +158,15 @@ abstract class ActivityTableModelEditor<T>(
         TableUtil.stopEditing(table)
 
         table.rowCount.let { rowCount ->
-            if (canCreateElement()) model.addRow(createElement())
-            else model.addRow()
+            model.addRow(createElement())
 
             if (rowCount == table.rowCount) return
         }
 
         val newRowIndex = model.rowCount - 1
-        val firstEditableColumn = (1..model.columnCount).first { model.isCellEditable(newRowIndex, it) }
+        val firstEditableColumn = (1 until model.columnCount).first { model.isCellEditable(newRowIndex, it) }
         table.setRowSelectionInterval(newRowIndex, newRowIndex)
-        table.setColumnSelectionInterval(0, 0)
+        table.setColumnSelectionInterval(firstEditableColumn, firstEditableColumn)
         table.editCellAt(newRowIndex, firstEditableColumn)
 
         TableUtil.updateScroller(table)
@@ -173,9 +182,7 @@ abstract class ActivityTableModelEditor<T>(
     private fun copySelectedItems(table: TableView<EditableDatum<T>>) {
         TableUtil.stopEditing(table)
 
-        table.selectedObjects
-            .also { if (it.isEmpty()) return }
-            .forEach { model.addRow(itemEditor.clone(it, false)) }
+        table.selectedObjects.forEach { model.addRow(itemEditor.clone(it, false)) }
 
         TableUtil.updateScroller(table)
     }

@@ -52,6 +52,12 @@ object CapitalizationModeTest : Spek({
                     .isEqualToIgnoringCase("GHmdukhNqua")
             }
         }
+
+        describe("dummy mode") {
+            it("does nothing to a string") {
+                assertThat(CapitalizationMode.DUMMY.transform.invoke("i4Oh51O")).isEqualTo("i4Oh51O")
+            }
+        }
     }
 
     describe("descriptor") {
@@ -72,9 +78,9 @@ object CapitalizationModeTest : Spek({
         }
 
         it("throws an exception if the descriptor is not recognized") {
-            assertThatThrownBy { CapitalizationMode.getMode("") }
+            assertThatThrownBy { CapitalizationMode.getMode("river") }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("There does not exist a capitalization mode with name ``.")
+                .hasMessage("There does not exist a capitalization mode with name `river`.")
                 .hasNoCause()
         }
     }

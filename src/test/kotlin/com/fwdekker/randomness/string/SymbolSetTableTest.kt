@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.GuiActionRunner
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import org.spekframework.spek2.style.specification.xdescribe
 
 
 /**
@@ -57,12 +56,6 @@ object SymbolSetTableTest : Spek({
             GuiActionRunner.execute { symbolSetTable.model.setValueAt("drum", 0, 2) }
 
             assertThat(symbolSetTable.data.first().symbols).isEqualTo("drum")
-        }
-    }
-
-    // TODO: Remove button is not accessible from tests
-    xdescribe("itemEditor") {
-        it("removes a symbol set") {
         }
     }
 })

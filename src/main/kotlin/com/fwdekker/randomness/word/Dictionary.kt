@@ -49,7 +49,6 @@ interface Dictionary {
         }
 }
 
-
 /**
  * A `Dictionary` of which the underlying file is a resource in the JAR.
  *
@@ -132,7 +131,6 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
     }
 }
 
-
 /**
  * A `Dictionary` of which the underlying file is a regular file.
  *
@@ -195,7 +193,6 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
         val cache = Cache<String, UserDictionary> { UserDictionary(it) }
     }
 }
-
 
 /**
  * References a dictionary by its properties.

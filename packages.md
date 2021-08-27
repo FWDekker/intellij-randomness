@@ -18,6 +18,10 @@ Insertion of random integers.
 
 Insertion of random strings.
 
+# Package com.fwdekker.randomness.template
+
+Insertion of concatenated data types.
+
 # Package com.fwdekker.randomness.ui
 
 Custom or specialized Swing components.
