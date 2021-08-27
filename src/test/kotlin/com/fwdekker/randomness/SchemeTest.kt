@@ -32,6 +32,14 @@ object SchemeTest : Spek({
         it("does not change the scheme's UUID when it is copied with `retainUuid` set to true") {
             assertThat(scheme.deepCopy(retainUuid = true).uuid).isEqualTo(scheme.uuid)
         }
+
+        it("changes the scheme's UUID to the other's UUID when copied from another instance") {
+            val other = DummyScheme()
+
+            scheme.copyFrom(other)
+
+            assertThat(scheme.uuid).isEqualTo(other.uuid)
+        }
     }
 
     describe("icon") {

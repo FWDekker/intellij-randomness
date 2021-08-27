@@ -33,6 +33,32 @@ data class TemplateList(
     }
 
 
+    /**
+     * Find a recursive path of templates including each other, starting at [reference].
+     *
+     * @param reference the reference to start searching at
+     * @return a recursive path of templates including each other starting at [reference], or `null` if there is no such
+     * path
+     */
+    fun findRecursionFrom(reference: TemplateReference) = findRecursionFrom(reference, mutableListOf())
+
+    /**
+     * @see findRecursionFrom
+     */
+    private fun findRecursionFrom(
+        reference: TemplateReference,
+        history: MutableList<TemplateReference>
+    ): List<Template>? {
+        if (reference in history) return listOf(reference.parent)
+        history += reference
+
+        return reference.template?.schemes
+            ?.filterIsInstance<TemplateReference>()
+            ?.firstNotNullOfOrNull { findRecursionFrom(it, history) }
+            ?.let { it.toMutableList().also { it.add(0, reference.parent) } }
+    }
+
+
     override fun doValidate(): String? {
         val duplicate =
             templates.firstOrNull { templates.indexOf(it) != templates.lastIndexOf(it) }?.name

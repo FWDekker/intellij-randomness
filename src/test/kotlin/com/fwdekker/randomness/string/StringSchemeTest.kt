@@ -3,7 +3,6 @@ package com.fwdekker.randomness.string
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.SettingsState
-import com.fwdekker.randomness.array.ArraySchemeDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -144,8 +143,7 @@ object StringSchemeTest : Spek({
             it("fails if the decorator is invalid") {
                 stringScheme.decorator.count = -985
 
-                assertThat(stringScheme.doValidate())
-                    .isEqualTo("Minimum count should be at least ${ArraySchemeDecorator.MIN_COUNT}, but is -985.")
+                assertThat(stringScheme.doValidate()).isNotNull()
             }
         }
     }

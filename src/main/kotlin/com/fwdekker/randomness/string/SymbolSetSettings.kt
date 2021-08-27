@@ -49,8 +49,18 @@ data class SymbolSetSettings(
         }
 
 
+    /**
+     * Returns this instance.
+     *
+     * @return this instance
+     */
     override fun getState() = this
 
+    /**
+     * Invokes [copyFrom].
+     *
+     * @param state the state to invoke [copyFrom] on
+     */
     override fun loadState(state: SymbolSetSettings) = copyFrom(state)
 
 

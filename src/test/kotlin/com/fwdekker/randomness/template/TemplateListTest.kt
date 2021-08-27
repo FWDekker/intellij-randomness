@@ -59,7 +59,7 @@ object TemplateListTest : Spek({
         it("fails if the single template is invalid") {
             templateList.templates = listOf(Template("Gold", listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))))
 
-            assertThat(templateList.doValidate()).isEqualTo("Gold > Dummy > Invalid input!")
+            assertThat(templateList.doValidate()).startsWith("Gold > Dummy > ")
         }
 
         it("fails if multiple templates have the same name") {
@@ -77,7 +77,7 @@ object TemplateListTest : Spek({
                 Template(name = "Honesty")
             )
 
-            assertThat(templateList.doValidate()).isEqualTo("View > Dummy > Invalid input!")
+            assertThat(templateList.doValidate()).startsWith("View > Dummy > ")
         }
     }
 

@@ -2,7 +2,6 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.TempFileHelper
-import com.fwdekker.randomness.array.ArraySchemeDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
@@ -133,8 +132,7 @@ object WordSchemeTest : Spek({
             it("fails if the decorator is invalid") {
                 wordScheme.decorator.count = -88
 
-                assertThat(wordScheme.doValidate())
-                    .isEqualTo("Minimum count should be at least ${ArraySchemeDecorator.MIN_COUNT}, but is -88.")
+                assertThat(wordScheme.doValidate()).isNotNull()
             }
         }
     }

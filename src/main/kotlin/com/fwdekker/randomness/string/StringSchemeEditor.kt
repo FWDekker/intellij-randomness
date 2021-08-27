@@ -94,6 +94,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
     override fun readState() =
         StringScheme(
+            symbolSetSettings = originalState.symbolSetSettings,
             minLength = minLength.value,
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
@@ -103,9 +104,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         ).also {
             it.uuid = originalState.uuid
 
-            it.symbolSetSettings = originalState.symbolSetSettings
             it.symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
-
             it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet()
         }
 

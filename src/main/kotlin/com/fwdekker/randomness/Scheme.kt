@@ -14,11 +14,6 @@ import kotlin.random.Random
  */
 abstract class Scheme : State() {
     /**
-     * Settings that determine whether the output should be an array of values.
-     */
-    abstract val decorator: ArraySchemeDecorator?
-
-    /**
      * The name of the scheme as shown to the user.
      */
     abstract val name: String
@@ -38,11 +33,16 @@ abstract class Scheme : State() {
             if (decorator?.enabled == true) icons?.Array
             else icons?.Base
 
+    /**
+     * Settings that determine whether the output should be an array of values.
+     */
+    abstract val decorator: ArraySchemeDecorator?
+
 
     /**
      * The random number generator used to generate random values.
      */
-    @Transient
+    @get:Transient
     var random: Random = Random.Default
 
 
@@ -88,6 +88,17 @@ abstract class Scheme : State() {
 
 
     abstract override fun deepCopy(retainUuid: Boolean): Scheme
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The default value of the [name] field.
+         */
+        const val DEFAULT_NAME: String = "Unnamed scheme"
+    }
 }
 
 /**
@@ -97,7 +108,7 @@ abstract class SchemeDecorator : Scheme() {
     /**
      * The generating function that should be decorated.
      */
-    @Transient
+    @get:Transient
     var generator: (Int) -> List<String> = { emptyList() }
 }
 

@@ -90,6 +90,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
     override fun readState() =
         WordScheme(
+            dictionarySettings = originalState.dictionarySettings,
             minLength = minLength.value,
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
@@ -98,7 +99,6 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         ).also {
             it.uuid = originalState.uuid
 
-            it.dictionarySettings = originalState.dictionarySettings
             it.dictionarySettings.bundledDictionaries = dictionaryTable.data
                 .filter { file -> file.isBundled }.toSet()
             it.activeBundledDictionaries = dictionaryTable.activeData
