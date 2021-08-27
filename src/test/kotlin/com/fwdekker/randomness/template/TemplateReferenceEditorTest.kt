@@ -30,10 +30,10 @@ object TemplateReferenceEditorTest : Spek({
 
     beforeEachTest {
         templateList = TemplateList(
-            listOf(
-                Template("cup", listOf(DummyScheme())),
-                Template("instead", listOf(TemplateReference())),
-                Template("gun", listOf(DummyScheme()))
+            mutableListOf(
+                Template("cup", mutableListOf(DummyScheme())),
+                Template("instead", mutableListOf(TemplateReference())),
+                Template("gun", mutableListOf(DummyScheme()))
             )
         )
 

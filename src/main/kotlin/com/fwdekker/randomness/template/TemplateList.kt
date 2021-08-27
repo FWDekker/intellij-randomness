@@ -19,7 +19,7 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
  */
 data class TemplateList(
     @MapAnnotation(sortBeforeSave = false)
-    var templates: List<Template> = DEFAULT_TEMPLATES
+    var templates: MutableList<Template> = DEFAULT_TEMPLATES.toMutableList()
 ) : Settings() {
     /**
      * Sets the [SettingsState] for each template in this list and returns this instance.
@@ -55,7 +55,7 @@ data class TemplateList(
         return reference.template?.schemes
             ?.filterIsInstance<TemplateReference>()
             ?.firstNotNullOfOrNull { findRecursionFrom(it, history) }
-            ?.let { it.toMutableList().also { it.add(0, reference.parent) } }
+            ?.let { listOf(reference.parent) + it }
     }
 
 
@@ -73,7 +73,7 @@ data class TemplateList(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        TemplateList(templates.map { it.deepCopy(retainUuid) })
+        TemplateList(templates.map { it.deepCopy(retainUuid) }.toMutableList())
             .also { if (retainUuid) it.uuid = this.uuid }
 
 
@@ -86,11 +86,11 @@ data class TemplateList(
          */
         val DEFAULT_TEMPLATES: List<Template>
             get() = listOf(
-                Template("Integer", listOf(IntegerScheme())),
-                Template("Decimal", listOf(DecimalScheme())),
-                Template("String", listOf(StringScheme())),
-                Template("Word", listOf(WordScheme())),
-                Template("UUID", listOf(UuidScheme()))
+                Template("Integer", mutableListOf(IntegerScheme())),
+                Template("Decimal", mutableListOf(DecimalScheme())),
+                Template("String", mutableListOf(StringScheme())),
+                Template("Word", mutableListOf(WordScheme())),
+                Template("UUID", mutableListOf(UuidScheme()))
             )
 
 
@@ -101,6 +101,6 @@ data class TemplateList(
          * @param name the name of the template
          */
         fun from(vararg schemes: Scheme, name: String = Template.DEFAULT_NAME) =
-            TemplateList(listOf(Template(name, schemes.toList())))
+            TemplateList(mutableListOf(Template(name, schemes.toMutableList())))
     }
 }

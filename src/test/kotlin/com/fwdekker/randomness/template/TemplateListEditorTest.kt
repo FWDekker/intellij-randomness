@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.clickActionButton
 import com.fwdekker.randomness.decimal.DecimalScheme
@@ -54,10 +55,19 @@ object TemplateListEditorTest : Spek({
         val symbolSetSettings = SymbolSetSettings()
         val dictionarySettings = DictionarySettings()
         val templateList = TemplateList(
-            listOf(
-                Template("Further", listOf(IntegerScheme(), IntegerScheme(minValue = 7))),
-                Template("Enclose", listOf(LiteralScheme("else"), WordScheme(dictionarySettings))),
-                Template("Student", listOf(StringScheme(symbolSetSettings), LiteralScheme("dog"), IntegerScheme()))
+            mutableListOf(
+                Template(
+                    "Further",
+                    mutableListOf(IntegerScheme(), IntegerScheme(minValue = 7))
+                ),
+                Template(
+                    "Enclose",
+                    mutableListOf(LiteralScheme("else"), WordScheme(dictionarySettings))
+                ),
+                Template(
+                    "Student",
+                    mutableListOf(StringScheme(symbolSetSettings), LiteralScheme("dog"), IntegerScheme())
+                )
             )
         )
 
@@ -162,7 +172,7 @@ object TemplateListEditorTest : Spek({
                 }
 
                 it("sets the added scheme's settings") {
-                    val oldSettings = TemplateList(emptyList())
+                    val oldSettings = TemplateList(mutableListOf())
                     val newScheme = TemplateReference().apply { setSettingsState(SettingsState(oldSettings)) }
 
                     GuiActionRunner.execute { editor.addScheme(newScheme) }
@@ -422,7 +432,10 @@ object TemplateListEditorTest : Spek({
 
         it("selects the first template if it does not have any schemes") {
             GuiActionRunner.execute {
-                val templates = listOf(Template("Flame", emptyList()), Template("Pen", listOf(IntegerScheme())))
+                val templates = mutableListOf(
+                    Template("Flame", mutableListOf()),
+                    Template("Pen", mutableListOf(IntegerScheme()))
+                )
                 editor.loadState(SettingsState(TemplateList(templates)))
             }
 
@@ -430,7 +443,7 @@ object TemplateListEditorTest : Spek({
         }
 
         it("does nothing if no templates or schemes are loaded") {
-            GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(emptyList()))) }
+            GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(mutableListOf()))) }
 
             frame.tree().requireNoSelection()
         }
@@ -469,7 +482,7 @@ object TemplateListEditorTest : Spek({
 
     describe("loadScheme") {
         it("loads the list's templates") {
-            val templates = SettingsState(TemplateList(listOf(Template(name = "Limb"), Template(name = "Pot"))))
+            val templates = SettingsState(TemplateList(mutableListOf(Template(name = "Limb"), Template(name = "Pot"))))
 
             GuiActionRunner.execute { editor.loadState(templates) }
 
@@ -478,13 +491,13 @@ object TemplateListEditorTest : Spek({
         }
 
         it("loads the list's templates' schemes") {
-            val schemes = listOf(
-                listOf(IntegerScheme()),
-                emptyList(),
-                listOf(LiteralScheme(), DecimalScheme())
+            val schemes: List<MutableList<Scheme>> = listOf(
+                mutableListOf(IntegerScheme()),
+                mutableListOf(),
+                mutableListOf(LiteralScheme(), DecimalScheme())
             )
             val templates = TemplateList(
-                listOf(
+                mutableListOf(
                     Template("Prevent", schemes[0]),
                     Template("Being", schemes[1]),
                     Template("Coward", schemes[2])
@@ -497,7 +510,7 @@ object TemplateListEditorTest : Spek({
         }
 
         it("loads an empty tree if no templates are loaded") {
-            GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(emptyList()))) }
+            GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(mutableListOf()))) }
 
             assertThat(editor.readState().templateList.templates).isEmpty()
         }
@@ -524,7 +537,7 @@ object TemplateListEditorTest : Spek({
             }
 
             it("returns the list with a template and all its children added") {
-                val template = Template("Danger", listOf(LiteralScheme("Ill"), IntegerScheme(), StringScheme()))
+                val template = Template("Danger", mutableListOf(LiteralScheme("Ill"), IntegerScheme(), StringScheme()))
 
                 GuiActionRunner.execute { editor.addScheme(template) }
 
@@ -582,7 +595,7 @@ object TemplateListEditorTest : Spek({
             }
 
             it("returns a list of the single template if a first template is added") {
-                GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(emptyList()))) }
+                GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(mutableListOf()))) }
 
                 GuiActionRunner.execute { editor.addScheme(Template(name = "Seem")) }
 
@@ -652,7 +665,7 @@ object TemplateListEditorTest : Spek({
 
             it("returns a list of the single scheme if a first scheme is added to a template") {
                 GuiActionRunner.execute {
-                    editor.loadState(SettingsState(TemplateList(listOf(Template(schemes = emptyList())))))
+                    editor.loadState(SettingsState(TemplateList(mutableListOf(Template(schemes = mutableListOf())))))
                 }
 
                 GuiActionRunner.execute {
@@ -738,7 +751,7 @@ object TemplateListEditorTest : Spek({
                     editor.loadState(
                         SettingsState(
                             templateList = TemplateList.from(StringScheme(), StringScheme()),
-                            symbolSetSettings = SymbolSetSettings(mapOf("pocket" to "0MLnYk5"))
+                            symbolSetSettings = SymbolSetSettings(mutableMapOf("pocket" to "0MLnYk5"))
                         )
                     )
                 }

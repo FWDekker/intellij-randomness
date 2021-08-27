@@ -26,13 +26,13 @@ object DictionarySettingsTest : Spek({
         it("fails if a dictionary of a now-deleted file is given") {
             val dictionaryFile = tempFileHelper.createFile("noon\nreason\n", ".dic").also { it.delete() }
 
-            val settings = DictionarySettings(userDictionaryFiles = setOf(dictionaryFile.absolutePath))
+            val settings = DictionarySettings(userDictionaryFiles = mutableSetOf(dictionaryFile.absolutePath))
 
             assertThat(settings.doValidate()).matches("Dictionary '.*\\.dic' is invalid: File not found\\.")
         }
 
         it("fails if one of the dictionaries is invalid") {
-            val settings = DictionarySettings(userDictionaryFiles = setOf("does_not_exist.dic"))
+            val settings = DictionarySettings(userDictionaryFiles = mutableSetOf("does_not_exist.dic"))
 
             assertThat(settings.doValidate()).isEqualTo("Dictionary 'does_not_exist.dic' is invalid: File not found.")
         }
@@ -40,7 +40,7 @@ object DictionarySettingsTest : Spek({
         it("fails if one the dictionaries is empty") {
             val dictionaryFile = tempFileHelper.createFile("", ".dic")
 
-            val settings = DictionarySettings(userDictionaryFiles = setOf(dictionaryFile.absolutePath))
+            val settings = DictionarySettings(userDictionaryFiles = mutableSetOf(dictionaryFile.absolutePath))
 
             assertThat(settings.doValidate()).matches("Dictionary '.*\\.dic' is empty\\.")
         }

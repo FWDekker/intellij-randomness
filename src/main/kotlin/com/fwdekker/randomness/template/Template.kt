@@ -33,7 +33,7 @@ data class Template(
             TemplateReference::class,
         ]
     )
-    var schemes: List<Scheme> = DEFAULT_SCHEMES,
+    var schemes: MutableList<Scheme> = DEFAULT_SCHEMES.toMutableList(),
     override var decorator: ArraySchemeDecorator? = null
 ) : Scheme() {
     override val icons: RandomnessIcons
@@ -64,7 +64,7 @@ data class Template(
         else schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(schemes = schemes.map { it.deepCopy(retainUuid) }, decorator = decorator)
+        copy(schemes = schemes.map { it.deepCopy(retainUuid) }.toMutableList(), decorator = decorator)
             .also { if (retainUuid) it.uuid = this.uuid }
 
 

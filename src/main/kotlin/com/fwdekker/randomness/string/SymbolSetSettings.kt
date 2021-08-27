@@ -24,25 +24,26 @@ import com.vdurmont.emoji.EmojiParser
 )
 data class SymbolSetSettings(
     @MapAnnotation(sortBeforeSave = false)
-    var serializedSymbolSets: Map<String, String> = DEFAULT_SYMBOL_SETS,
+    var serializedSymbolSets: MutableMap<String, String> = DEFAULT_SYMBOL_SETS.toMutableMap(),
     @Suppress("unused") // At least two fields are required for serialization to work
     private val placeholder: String = ""
 ) : PersistentStateComponent<SymbolSetSettings>, Settings() {
     /**
      * Same as [symbolSets], except that serialized emoji have been deserialized.
      */
+    @get:Transient
     var symbolSets: Map<String, String>
-        @Transient
         get() = serializedSymbolSets.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
         set(value) {
-            serializedSymbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
+            serializedSymbolSets =
+                value.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap().toMutableMap()
         }
 
     /**
      * A list view of the `SymbolSet` objects described by [symbolSets].
      */
+    @get:Transient
     var symbolSetList: Collection<SymbolSet>
-        @Transient
         get() = symbolSets.toSymbolSets()
         set(value) {
             symbolSets = value.toMap()
@@ -76,7 +77,7 @@ data class SymbolSetSettings(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(serializedSymbolSets = serializedSymbolSets.toMap())
+        copy(serializedSymbolSets = serializedSymbolSets.toMutableMap())
             .also { if (retainUuid) it.uuid = uuid }
 
 

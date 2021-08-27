@@ -68,7 +68,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     override val rootComponent = JPanel(BorderLayout())
     private var dictionarySettings: DictionarySettings = DictionarySettings()
     private var symbolSetSettings: SymbolSetSettings = SymbolSetSettings()
-    private val templateTreeModel = DefaultTreeModel(TemplateListTreeNode(TemplateList(emptyList())))
+    private val templateTreeModel = DefaultTreeModel(TemplateListTreeNode(TemplateList(mutableListOf())))
     private val templateTree = Tree(templateTreeModel)
     private var schemeEditorPanel = JPanel(BorderLayout())
     private var schemeEditor: StateEditor<*>? = null
@@ -706,7 +706,7 @@ private class TemplateListTreeNode(override val state: TemplateList) : StateTree
     override var entries: List<Template>
         get() = state.templates
         set(value) {
-            state.templates = value
+            state.templates = value.toMutableList()
         }
 
 
@@ -735,7 +735,7 @@ private class TemplateTreeNode(override val state: Template) : StateTreeListNode
     override var entries: List<Scheme>
         get() = state.schemes
         set(value) {
-            state.schemes = value
+            state.schemes = value.toMutableList()
         }
 
 

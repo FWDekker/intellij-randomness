@@ -27,8 +27,8 @@ data class WordScheme(
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var activeBundledDictionaryFiles: Set<String> = DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES,
-    var activeUserDictionaryFiles: Set<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES,
+    var activeBundledDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES.toMutableSet(),
+    var activeUserDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES.toMutableSet(),
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
     @Transient
@@ -42,7 +42,7 @@ data class WordScheme(
         @Transient
         get() = activeBundledDictionaryFiles.map { DictionaryReference(true, it) }.toSet()
         set(value) {
-            activeBundledDictionaryFiles = value.map { it.filename }.toSet()
+            activeBundledDictionaryFiles = value.map { it.filename }.toMutableSet()
         }
 
     /**
@@ -52,7 +52,7 @@ data class WordScheme(
         @Transient
         get() = activeUserDictionaryFiles.map { DictionaryReference(false, it) }.toSet()
         set(value) {
-            activeUserDictionaryFiles = value.map { it.filename }.toSet()
+            activeUserDictionaryFiles = value.map { it.filename }.toMutableSet()
         }
 
 

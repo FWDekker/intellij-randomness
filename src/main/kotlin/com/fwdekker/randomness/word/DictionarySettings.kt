@@ -21,9 +21,9 @@ import com.intellij.util.xmlb.annotations.Transient
 )
 data class DictionarySettings(
     @MapAnnotation(sortBeforeSave = false)
-    var bundledDictionaryFiles: Set<String> = DEFAULT_BUNDLED_DICTIONARY_FILES,
+    var bundledDictionaryFiles: MutableSet<String> = DEFAULT_BUNDLED_DICTIONARY_FILES.toMutableSet(),
     @MapAnnotation(sortBeforeSave = false)
-    var userDictionaryFiles: Set<String> = DEFAULT_USER_DICTIONARY_FILES
+    var userDictionaryFiles: MutableSet<String> = DEFAULT_USER_DICTIONARY_FILES.toMutableSet()
 ) : PersistentStateComponent<DictionarySettings>, Settings() {
     /**
      * A view of the filenames of the files in [bundledDictionaryFiles].
@@ -32,7 +32,7 @@ data class DictionarySettings(
         @Transient
         get() = bundledDictionaryFiles.map { DictionaryReference(true, it) }.toSet()
         set(value) {
-            bundledDictionaryFiles = value.map { it.filename }.toSet()
+            bundledDictionaryFiles = value.map { it.filename }.toMutableSet()
         }
 
     /**
@@ -42,7 +42,7 @@ data class DictionarySettings(
         @Transient
         get() = userDictionaryFiles.map { DictionaryReference(false, it) }.toSet()
         set(value) {
-            userDictionaryFiles = value.map { it.filename }.toSet()
+            userDictionaryFiles = value.map { it.filename }.toMutableSet()
         }
 
 
@@ -80,8 +80,8 @@ data class DictionarySettings(
 
     override fun deepCopy(retainUuid: Boolean) =
         copy(
-            bundledDictionaryFiles = bundledDictionaryFiles.toSet(),
-            userDictionaryFiles = userDictionaryFiles.toSet(),
+            bundledDictionaryFiles = bundledDictionaryFiles.toMutableSet(),
+            userDictionaryFiles = userDictionaryFiles.toMutableSet(),
         ).also { if (retainUuid) it.uuid = uuid }
 
 

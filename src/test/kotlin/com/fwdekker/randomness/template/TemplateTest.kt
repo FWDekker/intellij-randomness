@@ -30,26 +30,26 @@ object TemplateTest : Spek({
     describe("icons") {
         it("returns the single scheme's icons if the single scheme has icons") {
             val scheme = IntegerScheme()
-            template.schemes = listOf(scheme)
+            template.schemes = mutableListOf(scheme)
 
             assertThat(template.icons).isEqualTo(scheme.icons)
         }
 
         it("returns the default icons if the single scheme has no icons") {
             val scheme = DummyScheme()
-            template.schemes = listOf(scheme)
+            template.schemes = mutableListOf(scheme)
 
             assertThat(template.icons).isEqualTo(RandomnessIcons.Data)
         }
 
         it("returns the default icons if no scheme is present") {
-            template.schemes = emptyList()
+            template.schemes = mutableListOf()
 
             assertThat(template.icons).isEqualTo(RandomnessIcons.Data)
         }
 
         it("returns the default icons if multiple schemes are present") {
-            template.schemes = listOf(DummyScheme(), DummyScheme())
+            template.schemes = mutableListOf(DummyScheme(), DummyScheme())
 
             assertThat(template.icons).isEqualTo(RandomnessIcons.Data)
         }
@@ -58,13 +58,13 @@ object TemplateTest : Spek({
 
     describe("generateStrings") {
         it("throws an exception if the template is invalid") {
-            template.schemes = listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))
+            template.schemes = mutableListOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))
 
             assertThatThrownBy { template.generateStrings() }.isInstanceOf(DataGenerationException::class.java)
         }
 
         it("generates empty strings if it contains no schemes") {
-            template.schemes = emptyList()
+            template.schemes = mutableListOf()
 
             assertThat(template.generateStrings()).containsExactly("")
         }
@@ -73,7 +73,7 @@ object TemplateTest : Spek({
             val random = { Random(78) }
 
             val scheme = IntegerScheme()
-            template.schemes = listOf(scheme)
+            template.schemes = mutableListOf(scheme)
 
             val schemeOutput = scheme.also { it.random = random() }.generateStrings(3)
             val templateOutput = template.also { it.random = random() }.generateStrings(3)
@@ -91,7 +91,7 @@ object TemplateTest : Spek({
             val schemeC = IntegerScheme(minValue = 125, maxValue = 607)
                 .also { it.random = schemeB.random }
 
-            template.schemes = listOf(schemeA, schemeB, schemeC)
+            template.schemes = mutableListOf(schemeA, schemeB, schemeC)
             template.random = random()
 
             val outputsA = schemeA.generateStrings(3)
@@ -107,7 +107,7 @@ object TemplateTest : Spek({
         it("overwrites the symbol set settings of the contained schemes") {
             val newSettings = SettingsState(symbolSetSettings = SymbolSetSettings())
             val stringScheme = StringScheme(SymbolSetSettings())
-            template.schemes = listOf(stringScheme)
+            template.schemes = mutableListOf(stringScheme)
 
             template.setSettingsState(newSettings)
 
@@ -122,7 +122,7 @@ object TemplateTest : Spek({
         }
 
         it("passes for a template without schemes") {
-            template.schemes = emptyList()
+            template.schemes = mutableListOf()
 
             assertThat(template.doValidate()).isNull()
         }
@@ -134,13 +134,13 @@ object TemplateTest : Spek({
         }
 
         it("fails if the single scheme is invalid") {
-            template.schemes = listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))
+            template.schemes = mutableListOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))
 
             assertThat(template.doValidate()).isEqualTo("Dummy > Invalid input!")
         }
 
         it("fails if one of multiple schemes is invalid") {
-            template.schemes = listOf(
+            template.schemes = mutableListOf(
                 DummyScheme(),
                 DummyScheme(),
                 DummyScheme.from(DummyScheme.INVALID_OUTPUT),
@@ -153,7 +153,7 @@ object TemplateTest : Spek({
 
     describe("deepCopy") {
         it("creates an independent copy") {
-            template.schemes = listOf(LiteralScheme("rubber"))
+            template.schemes = mutableListOf(LiteralScheme("rubber"))
 
             val copy = template.deepCopy()
             (copy.schemes.first() as LiteralScheme).literal = "ribbon"
@@ -165,7 +165,7 @@ object TemplateTest : Spek({
     describe("copyFrom") {
         it("copies state from another instance") {
             template.name = "become"
-            template.schemes = listOf(LiteralScheme("quarrel"))
+            template.schemes = mutableListOf(LiteralScheme("quarrel"))
 
             val newTemplate = Template()
             newTemplate.copyFrom(template)

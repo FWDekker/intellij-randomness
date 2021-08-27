@@ -115,7 +115,7 @@ object WordSchemeTest : Spek({
             it("fails if the dictionary settings are invalid") {
                 val dictionaryFile = tempFileHelper.createFile("heavenly\npet\n", ".dic").also { it.delete() }
 
-                wordScheme.dictionarySettings.userDictionaryFiles = setOf(dictionaryFile.absolutePath)
+                wordScheme.dictionarySettings.userDictionaryFiles = mutableSetOf(dictionaryFile.absolutePath)
 
                 assertThat(wordScheme.doValidate()).isNotNull()
             }

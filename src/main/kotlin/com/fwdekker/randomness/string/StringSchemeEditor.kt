@@ -105,7 +105,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             it.uuid = originalState.uuid
 
             it.symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
-            it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet()
+            it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toMutableSet()
         }
 
     override fun addChangeListener(listener: () -> Unit) =

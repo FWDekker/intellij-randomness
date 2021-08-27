@@ -20,7 +20,7 @@ object TemplateListTest : Spek({
 
 
     beforeEachTest {
-        templateList = TemplateList(emptyList())
+        templateList = TemplateList(mutableListOf())
     }
 
 
@@ -32,7 +32,7 @@ object TemplateListTest : Spek({
         it("overwrites the settings of contained schemes") {
             val newSettings = SettingsState(symbolSetSettings = SymbolSetSettings())
             val stringScheme = StringScheme(SymbolSetSettings())
-            templateList.templates = listOf(Template(schemes = listOf(stringScheme)))
+            templateList.templates = mutableListOf(Template(schemes = mutableListOf(stringScheme)))
 
             templateList.applySettingsState(newSettings)
 
@@ -42,29 +42,29 @@ object TemplateListTest : Spek({
 
     describe("findRecursionFrom") {
         it("returns null if the reference refers to `null`") {
-            val reference = TemplateReference().also { it.templateList = Box({ TemplateList(emptyList()) }) }
+            val reference = TemplateReference().also { it.templateList = Box({ TemplateList(mutableListOf()) }) }
 
-            assertThat(TemplateList(emptyList()).findRecursionFrom(reference)).isNull()
+            assertThat(TemplateList(mutableListOf()).findRecursionFrom(reference)).isNull()
         }
 
         it("returns null if the reference refers to a template not in this list") {
             val otherList = TemplateList.from(DummyScheme())
             val reference = TemplateReference(otherList.templates[0].uuid).also { it.templateList = Box({ otherList }) }
 
-            assertThat(TemplateList(emptyList()).findRecursionFrom(reference)).isNull()
+            assertThat(TemplateList(mutableListOf()).findRecursionFrom(reference)).isNull()
         }
 
         it("returns null if the recursion occurs only in another part of the list") {
             val otherTemplate = Template(name = "roast")
 
             val goodReference = TemplateReference(otherTemplate.uuid).also { it.templateList = Box({ templateList }) }
-            val goodTemplate = Template("act", listOf(goodReference))
+            val goodTemplate = Template("act", mutableListOf(goodReference))
 
             val badReference = TemplateReference().also { it.templateList = Box({ templateList }) }
-            val badTemplate = Template("sour", listOf(badReference))
+            val badTemplate = Template("sour", mutableListOf(badReference))
             badReference.templateUuid = badTemplate.uuid
 
-            templateList.templates = listOf(otherTemplate, goodTemplate, badTemplate)
+            templateList.templates = mutableListOf(otherTemplate, goodTemplate, badTemplate)
 
             assertThat(templateList.findRecursionFrom(goodReference)).isNull()
         }
@@ -80,17 +80,17 @@ object TemplateListTest : Spek({
 
         it("returns a longer path if the reference consists of a chain") {
             val reference1 = TemplateReference().also { it.templateList = Box({ templateList }) }
-            val template1 = Template("drop", listOf(reference1))
+            val template1 = Template("drop", mutableListOf(reference1))
 
             val reference2 = TemplateReference(template1.uuid).also { it.templateList = Box({ templateList }) }
-            val template2 = Template("salesman", listOf(reference2))
+            val template2 = Template("salesman", mutableListOf(reference2))
 
             val reference3 = TemplateReference(template2.uuid).also { it.templateList = Box({ templateList }) }
-            val template3 = Template("almost", listOf(reference3))
+            val template3 = Template("almost", mutableListOf(reference3))
 
             reference1.templateUuid = template3.uuid
 
-            templateList.templates = listOf(template1, template2, template3)
+            templateList.templates = mutableListOf(template1, template2, template3)
 
             assertThat(templateList.findRecursionFrom(reference2))
                 .containsExactly(template2, template1, template3, template2)
@@ -111,26 +111,27 @@ object TemplateListTest : Spek({
         }
 
         it("passes for a template list without templates") {
-            assertThat(TemplateList(templates = emptyList()).doValidate()).isNull()
+            assertThat(TemplateList(templates = mutableListOf()).doValidate()).isNull()
         }
 
         it("fails if the single template is invalid") {
-            templateList.templates = listOf(Template("Gold", listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))))
+            templateList.templates =
+                mutableListOf(Template("Gold", mutableListOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))))
 
             assertThat(templateList.doValidate()).startsWith("Gold > Dummy > ")
         }
 
         it("fails if multiple templates have the same name") {
             templateList.templates =
-                listOf(Template(name = "Solution"), Template(name = "Leg"), Template(name = "Solution"))
+                mutableListOf(Template(name = "Solution"), Template(name = "Leg"), Template(name = "Solution"))
 
             assertThat(templateList.doValidate()).isEqualTo("There are multiple templates with the name 'Solution'.")
         }
 
         it("fails if one of multiple templates is invalid") {
-            templateList.templates = listOf(
+            templateList.templates = mutableListOf(
                 Template(name = "Moment"),
-                Template(name = "View", schemes = listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))),
+                Template(name = "View", schemes = mutableListOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))),
                 Template(name = "Ahead"),
                 Template(name = "Honesty")
             )
@@ -141,7 +142,7 @@ object TemplateListTest : Spek({
 
     describe("deepCopy") {
         it("creates an independent copy") {
-            templateList.templates = listOf(Template(schemes = listOf(LiteralScheme("refuse"))))
+            templateList.templates = mutableListOf(Template(schemes = mutableListOf(LiteralScheme("refuse"))))
 
             val copy = templateList.deepCopy()
             (copy.templates.first().schemes.first() as LiteralScheme).literal = "cheer"
@@ -152,9 +153,9 @@ object TemplateListTest : Spek({
 
     describe("copyFrom") {
         it("copies state from another instance") {
-            templateList.templates = listOf(Template(name = "Desert"), Template(name = "Care"))
+            templateList.templates = mutableListOf(Template(name = "Desert"), Template(name = "Care"))
 
-            val newTemplateList = TemplateList(emptyList())
+            val newTemplateList = TemplateList(mutableListOf())
             newTemplateList.copyFrom(templateList)
 
             assertThat(newTemplateList)

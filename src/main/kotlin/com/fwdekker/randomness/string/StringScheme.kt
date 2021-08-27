@@ -27,7 +27,7 @@ data class StringScheme(
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var activeSymbolSets: Set<String> = DEFAULT_ACTIVE_SYMBOL_SETS,
+    var activeSymbolSets: MutableSet<String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMutableSet(),
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS,
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
@@ -91,7 +91,7 @@ data class StringScheme(
             .also {
                 if (retainUuid) it.uuid = this.uuid
 
-                it.activeSymbolSets = activeSymbolSets.toSet()
+                it.activeSymbolSets = activeSymbolSets.toMutableSet()
             }
 
 

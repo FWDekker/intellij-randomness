@@ -106,7 +106,7 @@ object StringSchemeEditorTest : Spek({
                 editor.loadState(
                     StringScheme(
                         SymbolSetSettings().also { it.symbolSetList = allSymbolSets },
-                        activeSymbolSets = activeSymbolSets.map { it.name }.toSet()
+                        activeSymbolSets = activeSymbolSets.map { it.name }.toMutableSet()
                     )
                 )
             }
