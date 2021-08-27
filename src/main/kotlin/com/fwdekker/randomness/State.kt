@@ -28,7 +28,7 @@ abstract class State {
      * Copies the given state into this state.
      *
      * Works by copying all references in a [deepCopy] of [state] into `this`. Note that fields marked with [Transient]
-     * will be shallow-copied.
+     * are not copied at all unless the field is defined in the constructor, in which case it is shallow-copied.
      *
      * @param state the state to copy into this state; should be a (sub)class of this state
      */

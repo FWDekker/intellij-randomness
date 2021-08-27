@@ -161,6 +161,15 @@ object TemplateListEditorTest : Spek({
                     }
                 }
 
+                it("sets the added scheme's settings") {
+                    val oldSettings = TemplateList(emptyList())
+                    val newScheme = TemplateReference().apply { setSettingsState(SettingsState(oldSettings)) }
+
+                    GuiActionRunner.execute { editor.addScheme(newScheme) }
+
+                    assertThat(+newScheme.templateList).isNotSameAs(oldSettings)
+                }
+
                 it("adds the scheme at the bottom of the selected template") {
                     GuiActionRunner.execute {
                         frame.tree().target().setSelectionRow(3)

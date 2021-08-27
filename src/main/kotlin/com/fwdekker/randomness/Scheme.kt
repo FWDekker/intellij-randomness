@@ -73,6 +73,7 @@ abstract class Scheme : State() {
      * @param count the number of data to generate
      * @return random data
      * @throws DataGenerationException if data could not be generated
+     * @see generateStrings
      */
     @Throws(DataGenerationException::class)
     abstract fun generateUndecoratedStrings(count: Int = 1): List<String>

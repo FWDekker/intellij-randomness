@@ -4,6 +4,7 @@ import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.State
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
@@ -66,6 +67,13 @@ data class TemplateReference(
         else if (template == null) "Cannot find referenced template."
         else if (recursion != null) "Found recursion: (${recursion.joinToString(separator = " → ") { it.name }})"
         else null
+    }
+
+    override fun copyFrom(state: State) {
+        require(state is TemplateReference) { "Cannot copy from different type." }
+
+        super.copyFrom(state)
+        templateList = state.templateList.copy()
     }
 
     override fun deepCopy(retainUuid: Boolean) =
