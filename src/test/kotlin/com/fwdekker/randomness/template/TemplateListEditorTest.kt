@@ -69,11 +69,18 @@ object TemplateListEditorTest : Spek({
                 ),
                 Template(
                     "Enclose",
-                    mutableListOf(LiteralScheme("else"), WordScheme(dictionarySettings))
+                    mutableListOf(
+                        LiteralScheme("else"),
+                        WordScheme().also { it.dictionarySettings += dictionarySettings }
+                    )
                 ),
                 Template(
                     "Student",
-                    mutableListOf(StringScheme(symbolSetSettings), LiteralScheme("dog"), IntegerScheme())
+                    mutableListOf(
+                        StringScheme().also { it.symbolSetSettings += symbolSetSettings },
+                        LiteralScheme("dog"),
+                        IntegerScheme()
+                    )
                 )
             )
         )
@@ -196,7 +203,7 @@ object TemplateListEditorTest : Spek({
                     assertThat(editor.readState().templateList.templates[1].schemes)
                         .containsExactly(
                             LiteralScheme("else"),
-                            WordScheme(settingsState.dictionarySettings),
+                            WordScheme().also { it.dictionarySettings += settingsState.dictionarySettings },
                             UuidScheme()
                         )
                 }

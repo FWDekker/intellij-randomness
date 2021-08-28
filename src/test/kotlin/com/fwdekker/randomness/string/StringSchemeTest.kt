@@ -17,7 +17,8 @@ object StringSchemeTest : Spek({
 
 
     beforeEachTest {
-        stringScheme = StringScheme(SymbolSetSettings())
+        stringScheme = StringScheme()
+        stringScheme.symbolSetSettings += SymbolSetSettings()
     }
 
 
@@ -47,7 +48,7 @@ object StringSchemeTest : Spek({
                 Param(466, 466, "z", CapitalizationMode.LOWER, mapOf("x" to "x")) to "z${"x".repeat(466)}z"
             ).forEach { (minLength, maxLength, enclosure, capitalization, symbolSets), expectedString ->
                 it("generates a formatted string") {
-                    stringScheme.symbolSetSettings = SymbolSetSettings().also { it.symbolSets = symbolSets }
+                    stringScheme.symbolSetSettings += SymbolSetSettings().also { it.symbolSets = symbolSets }
                     stringScheme.minLength = minLength
                     stringScheme.maxLength = maxLength
                     stringScheme.enclosure = enclosure
@@ -62,7 +63,7 @@ object StringSchemeTest : Spek({
                 val emoji = "👩‍👩‍👧‍👧"
                 val symbolSets = mapOf("emoji" to emoji)
 
-                stringScheme.symbolSetSettings = SymbolSetSettings().also { it.symbolSets = symbolSets }
+                stringScheme.symbolSetSettings += SymbolSetSettings().also { it.symbolSets = symbolSets }
                 stringScheme.minLength = 1
                 stringScheme.maxLength = 1
                 stringScheme.enclosure = ""
@@ -75,19 +76,19 @@ object StringSchemeTest : Spek({
     }
 
     describe("setSettingsState") {
-        it("overwrites the constructor's symbol set settings") {
-            val newSettings = SettingsState(symbolSetSettings = SymbolSetSettings())
+        it("overwrites the default symbol set settings") {
+            val newSettings = SymbolSetSettings()
 
-            stringScheme.setSettingsState(newSettings)
+            stringScheme.setSettingsState(SettingsState(symbolSetSettings = newSettings))
 
-            assertThat(stringScheme.symbolSetSettings).isSameAs(newSettings.symbolSetSettings)
+            assertThat(+stringScheme.symbolSetSettings).isSameAs(newSettings)
         }
     }
 
 
     describe("doValidate") {
         it("passes for the default settings") {
-            assertThat(StringScheme(SymbolSetSettings()).doValidate()).isNull()
+            assertThat(stringScheme.doValidate()).isNull()
         }
 
         describe("length range") {
@@ -108,14 +109,14 @@ object StringSchemeTest : Spek({
 
         describe("symbol sets") {
             it("fails if the symbol set settings are invalid") {
-                stringScheme.symbolSetSettings = SymbolSetSettings(mutableMapOf())
+                stringScheme.symbolSetSettings += SymbolSetSettings(mutableMapOf())
                 stringScheme.activeSymbolSets = mutableSetOf()
 
                 assertThat(stringScheme.doValidate()).isEqualTo("Add at least one symbol set.")
             }
 
             it("fails if an undefined symbol set is selected") {
-                stringScheme.symbolSetSettings = SymbolSetSettings(mutableMapOf("name" to "symbols"))
+                stringScheme.symbolSetSettings += SymbolSetSettings(mutableMapOf("name" to "symbols"))
                 stringScheme.activeSymbolSets = mutableSetOf("unknown")
 
                 assertThat(stringScheme.doValidate()).isEqualTo("Unknown symbol set `unknown`.")
@@ -128,7 +129,7 @@ object StringSchemeTest : Spek({
             }
 
             it("fails if only look-alike symbols are selected and look-alike symbols are excluded") {
-                stringScheme.symbolSetSettings = SymbolSetSettings(mutableMapOf("Look-alike" to "l01"))
+                stringScheme.symbolSetSettings += SymbolSetSettings(mutableMapOf("Look-alike" to "l01"))
                 stringScheme.activeSymbolSets = mutableSetOf("Look-alike")
                 stringScheme.excludeLookAlikeSymbols = true
 
@@ -162,7 +163,7 @@ object StringSchemeTest : Spek({
         }
 
         it("retains the reference to the symbol set settings") {
-            assertThat(stringScheme.deepCopy().symbolSetSettings).isSameAs(stringScheme.symbolSetSettings)
+            assertThat(+stringScheme.deepCopy().symbolSetSettings).isSameAs(+stringScheme.symbolSetSettings)
         }
     }
 
@@ -177,23 +178,18 @@ object StringSchemeTest : Spek({
             stringScheme.excludeLookAlikeSymbols = true
             stringScheme.decorator.count = 249
 
-            val newScheme = StringScheme(SymbolSetSettings())
+            val newScheme = StringScheme()
+            newScheme.symbolSetSettings += SymbolSetSettings()
             newScheme.copyFrom(stringScheme)
 
             assertThat(newScheme)
                 .isEqualTo(stringScheme)
                 .isNotSameAs(stringScheme)
+            assertThat(+newScheme.symbolSetSettings)
+                .isSameAs(+stringScheme.symbolSetSettings)
             assertThat(newScheme.decorator)
                 .isEqualTo(stringScheme.decorator)
                 .isNotSameAs(stringScheme.decorator)
-        }
-
-        it("retains the reference to the symbol set settings") {
-            val newSettings = SymbolSetSettings()
-
-            stringScheme.copyFrom(StringScheme(newSettings))
-
-            assertThat(stringScheme.symbolSetSettings).isSameAs(newSettings)
         }
     }
 })

@@ -25,7 +25,6 @@ import javax.swing.JPanel
  * Component for editing random string settings.
  *
  * @param scheme the scheme to edit in the component
- *
  * @see SymbolSetTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
@@ -87,16 +86,16 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         capitalizationGroup.setValue(state.capitalization)
         excludeLookAlikeSymbolsCheckBox.isSelected = state.excludeLookAlikeSymbols
 
-        symbolSetTable.data = state.symbolSetSettings.symbolSetList
+        symbolSetTable.data =
+            (+state.symbolSetSettings).symbolSetList
         symbolSetTable.activeData =
-            state.symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
+            (+state.symbolSetSettings).symbolSetList.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
 
         arrayDecoratorEditor.loadState(state.decorator)
     }
 
     override fun readState() =
         StringScheme(
-            symbolSetSettings = originalState.symbolSetSettings,
             minLength = minLength.value,
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
@@ -106,7 +105,8 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         ).also {
             it.uuid = originalState.uuid
 
-            it.symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
+            it.symbolSetSettings = originalState.symbolSetSettings.copy()
+            (+it.symbolSetSettings).symbolSetList = symbolSetTable.data.toSet()
             it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toMutableSet()
         }
 

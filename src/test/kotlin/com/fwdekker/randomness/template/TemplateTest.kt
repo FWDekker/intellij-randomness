@@ -105,13 +105,13 @@ object TemplateTest : Spek({
 
     describe("setSettingsState") {
         it("overwrites the symbol set settings of the contained schemes") {
-            val newSettings = SettingsState(symbolSetSettings = SymbolSetSettings())
-            val stringScheme = StringScheme(SymbolSetSettings())
+            val newSettings = SymbolSetSettings()
+            val stringScheme = StringScheme()
             template.schemes = mutableListOf(stringScheme)
 
-            template.setSettingsState(newSettings)
+            template.setSettingsState(SettingsState(symbolSetSettings = newSettings))
 
-            assertThat(stringScheme.symbolSetSettings).isSameAs(newSettings.symbolSetSettings)
+            assertThat(+stringScheme.symbolSetSettings).isSameAs(newSettings)
         }
     }
 

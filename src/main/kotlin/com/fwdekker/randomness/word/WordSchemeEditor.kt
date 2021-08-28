@@ -82,7 +82,8 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         maxLength.value = state.maxLength
         enclosureGroup.setValue(state.enclosure)
         capitalizationGroup.setValue(state.capitalization)
-        dictionaryTable.data = state.dictionarySettings.dictionaries
+        dictionaryTable.data =
+            (+state.dictionarySettings).dictionaries
         dictionaryTable.activeData =
             state.activeDictionaries.filter { dictionary -> dictionary in dictionaryTable.data }
         arrayDecoratorEditor.loadState(state.decorator)
@@ -90,7 +91,6 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
     override fun readState() =
         WordScheme(
-            dictionarySettings = originalState.dictionarySettings,
             minLength = minLength.value,
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
@@ -99,10 +99,9 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         ).also {
             it.uuid = originalState.uuid
 
-            it.dictionarySettings.dictionaries =
-                dictionaryTable.data.toMutableSet()
-            it.activeDictionaries =
-                dictionaryTable.activeData.filter { file -> file in it.dictionarySettings.dictionaries }.toMutableSet()
+            it.dictionarySettings = originalState.dictionarySettings.copy()
+            (+it.dictionarySettings).dictionaries = dictionaryTable.data.toMutableSet()
+            it.activeDictionaries = dictionaryTable.activeData.toMutableSet()
 
             UserDictionary.clearCache()
         }

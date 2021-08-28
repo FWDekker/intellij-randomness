@@ -15,7 +15,8 @@ object WordSchemeTest : Spek({
 
 
     beforeEachTest {
-        wordScheme = WordScheme(DictionarySettings())
+        wordScheme = WordScheme()
+        wordScheme.dictionarySettings += DictionarySettings()
     }
 
 
@@ -47,12 +48,12 @@ object WordSchemeTest : Spek({
     }
 
     describe("setSettingsState") {
-        it("overwrites the constructor's symbol set settings") {
+        it("overwrites the default symbol set settings") {
             val newSettings = SettingsState(dictionarySettings = DictionarySettings())
 
             wordScheme.setSettingsState(newSettings)
 
-            assertThat(wordScheme.dictionarySettings).isSameAs(newSettings.dictionarySettings)
+            assertThat(+wordScheme.dictionarySettings).isSameAs(newSettings.dictionarySettings)
         }
     }
 
@@ -67,7 +68,7 @@ object WordSchemeTest : Spek({
 
 
         it("passes for the default settings") {
-            assertThat(WordScheme(DictionarySettings()).doValidate()).isNull()
+            assertThat(wordScheme.doValidate()).isNull()
         }
 
         describe("length range") {
@@ -114,7 +115,7 @@ object WordSchemeTest : Spek({
             it("fails if the dictionary settings are invalid") {
                 val file = tempFileHelper.createFile("heavenly\npet\n", ".dic").also { it.delete() }
 
-                wordScheme.dictionarySettings.dictionaries = mutableSetOf(UserDictionary(file.absolutePath))
+                (+wordScheme.dictionarySettings).dictionaries = mutableSetOf(UserDictionary(file.absolutePath))
 
                 assertThat(wordScheme.doValidate()).isNotNull()
             }
@@ -149,7 +150,7 @@ object WordSchemeTest : Spek({
         }
 
         it("retains the reference to the dictionary settings") {
-            assertThat(wordScheme.deepCopy().dictionarySettings).isSameAs(wordScheme.dictionarySettings)
+            assertThat(+wordScheme.deepCopy().dictionarySettings).isSameAs(+wordScheme.dictionarySettings)
         }
     }
 
@@ -160,23 +161,18 @@ object WordSchemeTest : Spek({
             wordScheme.enclosure = "QJ8S4UrFaa"
             wordScheme.decorator.count = 513
 
-            val newScheme = WordScheme(DictionarySettings())
+            val newScheme = WordScheme()
+            newScheme.dictionarySettings += DictionarySettings()
             newScheme.copyFrom(wordScheme)
 
             assertThat(newScheme)
                 .isEqualTo(wordScheme)
                 .isNotSameAs(wordScheme)
+            assertThat(+newScheme.dictionarySettings)
+                .isSameAs(+wordScheme.dictionarySettings)
             assertThat(newScheme.decorator)
                 .isEqualTo(wordScheme.decorator)
                 .isNotSameAs(wordScheme.decorator)
-        }
-
-        it("retains the reference to the symbol set settings") {
-            val newSettings = DictionarySettings()
-
-            wordScheme.copyFrom(WordScheme(newSettings))
-
-            assertThat(wordScheme.dictionarySettings).isSameAs(newSettings)
         }
     }
 })

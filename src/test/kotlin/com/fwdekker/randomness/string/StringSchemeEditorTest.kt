@@ -38,7 +38,7 @@ object StringSchemeEditorTest : Spek({
         ideaFixture.setUp()
 
         symbolSetSettings = SymbolSetSettings()
-        scheme = StringScheme(symbolSetSettings)
+        scheme = StringScheme().also { it.symbolSetSettings += symbolSetSettings }
         editor = GuiActionRunner.execute<StringSchemeEditor> { StringSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
 
@@ -103,12 +103,12 @@ object StringSchemeEditorTest : Spek({
             val activeSymbolSets = listOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
 
             GuiActionRunner.execute {
-                editor.loadState(
-                    StringScheme(
-                        SymbolSetSettings().also { it.symbolSetList = allSymbolSets },
-                        activeSymbolSets = activeSymbolSets.map { it.name }.toMutableSet()
-                    )
-                )
+                val settings = SymbolSetSettings()
+                settings.symbolSetList = allSymbolSets
+                val newScheme = StringScheme(activeSymbolSets = activeSymbolSets.map { it.name }.toMutableSet())
+                newScheme.symbolSetSettings += settings
+
+                editor.loadState(newScheme)
             }
 
             assertThat(symbolSetTable.items.map { it.datum })
@@ -181,8 +181,8 @@ object StringSchemeEditorTest : Spek({
             assertThat(readState)
                 .isEqualTo(editor.originalState)
                 .isNotSameAs(editor.originalState)
-            assertThat(readState.symbolSetSettings)
-                .isSameAs(editor.originalState.symbolSetSettings)
+            assertThat(+readState.symbolSetSettings)
+                .isSameAs(+editor.originalState.symbolSetSettings)
             assertThat(readState.decorator)
                 .isEqualTo(editor.originalState.decorator)
                 .isNotSameAs(editor.originalState.decorator)

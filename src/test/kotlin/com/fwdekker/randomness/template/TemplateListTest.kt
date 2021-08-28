@@ -30,13 +30,13 @@ object TemplateListTest : Spek({
         }
 
         it("overwrites the settings of contained schemes") {
-            val newSettings = SettingsState(symbolSetSettings = SymbolSetSettings())
-            val stringScheme = StringScheme(SymbolSetSettings())
+            val newSettings = SymbolSetSettings()
+            val stringScheme = StringScheme()
             templateList.templates = mutableListOf(Template(schemes = mutableListOf(stringScheme)))
 
-            templateList.applySettingsState(newSettings)
+            templateList.applySettingsState(SettingsState(symbolSetSettings = newSettings))
 
-            assertThat(stringScheme.symbolSetSettings).isSameAs(newSettings.symbolSetSettings)
+            assertThat(+stringScheme.symbolSetSettings).isSameAs(newSettings)
         }
     }
 

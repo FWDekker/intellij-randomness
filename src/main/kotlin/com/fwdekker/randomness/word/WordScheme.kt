@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
@@ -12,7 +13,6 @@ import icons.RandomnessIcons
 /**
  * Contains settings for generating random words.
  *
- * @property dictionarySettings Persistent storage of available dictionaries.
  * @property minLength The minimum length of the generated word, inclusive.
  * @property maxLength The maximum length of the generated word, inclusive.
  * @property enclosure The string that encloses the generated word on both sides.
@@ -21,8 +21,6 @@ import icons.RandomnessIcons
  * @property decorator Settings that determine whether the output should be an array of values.
  */
 data class WordScheme(
-    @Transient
-    var dictionarySettings: DictionarySettings = DictionarySettings.default,
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
@@ -31,8 +29,15 @@ data class WordScheme(
     var activeDictionaries: MutableSet<Dictionary> = DEFAULT_ACTIVE_DICTIONARIES.toMutableSet(),
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
+    /**
+     * Persistent storage of available dictionaries.
+     */
+    @Transient
+    var dictionarySettings: Box<DictionarySettings> = Box({ DictionarySettings.default })
+
     @Transient
     override val name = "Word"
+
     override val icons = RandomnessIcons.Word
 
 
@@ -57,12 +62,12 @@ data class WordScheme(
 
     override fun setSettingsState(settingsState: SettingsState) {
         super.setSettingsState(settingsState)
-        dictionarySettings = settingsState.dictionarySettings
+        dictionarySettings += settingsState.dictionarySettings
     }
 
 
     override fun doValidate(): String? {
-        dictionarySettings.doValidate()?.also { return it }
+        (+dictionarySettings).doValidate()?.also { return it }
 
         val words = activeDictionaries.flatMap { it.words }
         val minWordLength = words.map { it.length }.minOrNull() ?: 1
@@ -86,10 +91,11 @@ data class WordScheme(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(dictionarySettings = dictionarySettings, decorator = decorator.deepCopy(retainUuid))
+        copy(decorator = decorator.deepCopy(retainUuid))
             .also {
                 if (retainUuid) it.uuid = this.uuid
 
+                it.dictionarySettings = dictionarySettings.copy()
                 it.activeDictionaries = activeDictionaries.map(Dictionary::deepCopy).toMutableSet()
             }
 

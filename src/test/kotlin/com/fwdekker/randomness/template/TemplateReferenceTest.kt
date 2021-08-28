@@ -209,17 +209,11 @@ object TemplateReferenceTest : Spek({
             assertThat(newScheme)
                 .isEqualTo(reference)
                 .isNotSameAs(reference)
+            assertThat(+newScheme.templateList)
+                .isSameAs(+reference.templateList)
             assertThat(newScheme.decorator)
                 .isEqualTo(reference.decorator)
                 .isNotSameAs(reference.decorator)
-        }
-
-        it("retains the reference to the template list") {
-            val newList = TemplateList.from(IntegerScheme(minValue = 9))
-
-            reference.copyFrom(TemplateReference().also { it.templateList = Box({ newList }) })
-
-            assertThat(+reference.templateList).isSameAs(newList)
         }
     }
 })

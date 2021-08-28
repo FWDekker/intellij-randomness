@@ -41,7 +41,7 @@ object WordSchemeEditorTest : Spek({
         ideaFixture.setUp()
 
         dictionarySettings = DictionarySettings()
-        scheme = WordScheme(dictionarySettings)
+        scheme = WordScheme().also { it.dictionarySettings += dictionarySettings }
         editor = GuiActionRunner.execute<WordSchemeEditor> { WordSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
 
@@ -111,10 +111,8 @@ object WordSchemeEditorTest : Spek({
 
             GuiActionRunner.execute {
                 editor.loadState(
-                    WordScheme(
-                        dictionarySettings = DictionarySettings(allDictionaries.toMutableSet()),
-                        activeDictionaries = activeDictionaries.toMutableSet()
-                    )
+                    WordScheme(activeDictionaries = activeDictionaries.toMutableSet())
+                        .also { it.dictionarySettings += DictionarySettings(allDictionaries.toMutableSet()) }
                 )
             }
 
@@ -175,8 +173,8 @@ object WordSchemeEditorTest : Spek({
             assertThat(readState)
                 .isEqualTo(editor.originalState)
                 .isNotSameAs(editor.originalState)
-            assertThat(readState.dictionarySettings)
-                .isSameAs(editor.originalState.dictionarySettings)
+            assertThat(+readState.dictionarySettings)
+                .isSameAs(+editor.originalState.dictionarySettings)
             assertThat(readState.decorator)
                 .isEqualTo(editor.originalState.decorator)
                 .isNotSameAs(editor.originalState.decorator)
