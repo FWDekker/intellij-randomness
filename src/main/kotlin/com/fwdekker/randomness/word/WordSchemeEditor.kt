@@ -82,11 +82,9 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         maxLength.value = state.maxLength
         enclosureGroup.setValue(state.enclosure)
         capitalizationGroup.setValue(state.capitalization)
-        dictionaryTable.data =
-            state.dictionarySettings.bundledDictionaries + state.dictionarySettings.userDictionaries
+        dictionaryTable.data = state.dictionarySettings.dictionaries
         dictionaryTable.activeData =
-            (state.activeBundledDictionaries + state.activeUserDictionaries)
-                .filter { dictionary -> dictionary in dictionaryTable.data }
+            state.activeDictionaries.filter { dictionary -> dictionary in dictionaryTable.data }
         arrayDecoratorEditor.loadState(state.decorator)
     }
 
@@ -101,17 +99,12 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         ).also {
             it.uuid = originalState.uuid
 
-            it.dictionarySettings.bundledDictionaries = dictionaryTable.data
-                .filter { file -> file.isBundled }.toSet()
-            it.activeBundledDictionaries = dictionaryTable.activeData
-                .filter { file -> file.isBundled && file in it.dictionarySettings.bundledDictionaries }.toSet()
-            it.dictionarySettings.userDictionaries = dictionaryTable.data
-                .filter { file -> !file.isBundled }.toSet()
-            it.activeUserDictionaries = dictionaryTable.activeData
-                .filter { file -> !file.isBundled && file in it.dictionarySettings.userDictionaries }.toSet()
+            it.dictionarySettings.dictionaries =
+                dictionaryTable.data.toMutableList()
+            it.activeDictionaries =
+                dictionaryTable.activeData.filter { file -> file in it.dictionarySettings.dictionaries }.toMutableList()
 
-            BundledDictionary.cache.clear()
-            UserDictionary.cache.clear()
+            UserDictionary.clearCache()
         }
 
 

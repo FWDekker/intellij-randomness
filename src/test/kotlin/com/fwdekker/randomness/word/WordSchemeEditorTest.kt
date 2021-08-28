@@ -106,22 +106,22 @@ object WordSchemeEditorTest : Spek({
         }
 
         it("loads the scheme's bundled dictionaries") {
-            val allUserDictionaries = mutableSetOf("dictionary1.dic", "dictionary2.dic")
-            val activeUserDictionaries = mutableSetOf("dictionary1.dic")
+            val allDictionaries = mutableListOf(UserDictionary("dictionary1.dic"), UserDictionary("dictionary2.dic"))
+            val activeDictionaries = mutableListOf(UserDictionary("dictionary1.dic"))
 
             GuiActionRunner.execute {
                 editor.loadState(
                     WordScheme(
-                        dictionarySettings = DictionarySettings(mutableSetOf(), allUserDictionaries),
-                        activeUserDictionaryFiles = activeUserDictionaries
+                        dictionarySettings = DictionarySettings(allDictionaries.toMutableList()),
+                        activeDictionaries = activeDictionaries.toMutableList()
                     )
                 )
             }
 
             assertThat(dictionaryTable.items.map { it.datum })
-                .containsExactlyElementsOf(allUserDictionaries.map { DictionaryReference(isBundled = false, it) })
+                .containsExactlyElementsOf(allDictionaries)
             assertThat(dictionaryTable.items.filter { it.active }.map { it.datum })
-                .containsExactlyElementsOf(activeUserDictionaries.map { DictionaryReference(isBundled = false, it) })
+                .containsExactlyElementsOf(activeDictionaries)
         }
     }
 

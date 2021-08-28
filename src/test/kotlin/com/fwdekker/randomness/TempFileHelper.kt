@@ -26,11 +26,11 @@ internal class TempFileHelper {
      */
     fun createFile(contents: String = "", extension: String? = null): File =
         try {
-            val dictionaryFile = File.createTempFile("intellij-randomness", extension)
-            files.add(dictionaryFile)
-            dictionaryFile.writeText(contents)
+            val file = File.createTempFile("intellij-randomness", extension)
+            files.add(file)
+            file.writeText(contents)
 
-            dictionaryFile
+            file
         } catch (e: IOException) {
             fail("Could not set up dictionary file.", e)
         }

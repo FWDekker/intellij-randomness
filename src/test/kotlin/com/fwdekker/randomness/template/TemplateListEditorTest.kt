@@ -11,8 +11,9 @@ import com.fwdekker.randomness.string.SymbolSet
 import com.fwdekker.randomness.string.SymbolSetSettings
 import com.fwdekker.randomness.ui.EditableDatum
 import com.fwdekker.randomness.uuid.UuidScheme
-import com.fwdekker.randomness.word.DictionaryReference
+import com.fwdekker.randomness.word.Dictionary
 import com.fwdekker.randomness.word.DictionarySettings
+import com.fwdekker.randomness.word.UserDictionary
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -414,13 +415,15 @@ object TemplateListEditorTest : Spek({
 
             @Suppress("UNCHECKED_CAST") // I checked it myself!
             it("does not change the original dictionaries when a word scheme is changed") {
+                val dictionary = UserDictionary("nest")
+
                 GuiActionRunner.execute {
                     frame.tree().target().setSelectionRow(5)
-                    (frame.table().target() as TableView<EditableDatum<DictionaryReference>>).listTableModel
-                        .addRow(EditableDatum(active = true, DictionaryReference(isBundled = false, "nest")))
+                    (frame.table().target() as TableView<EditableDatum<Dictionary>>).listTableModel
+                        .addRow(EditableDatum(active = true, dictionary))
                 }
 
-                assertThat(editor.originalState.dictionarySettings.userDictionaryFiles).doesNotContain("nest")
+                assertThat(editor.originalState.dictionarySettings.dictionaries).doesNotContain(dictionary)
             }
         }
     }
@@ -780,8 +783,8 @@ object TemplateListEditorTest : Spek({
 
                 GuiActionRunner.execute {
                     frame.tree().target().setSelectionRow(1)
-                    (frame.table().target() as TableView<EditableDatum<DictionaryReference>>).listTableModel
-                        .addRow(EditableDatum(active = true, DictionaryReference(isBundled = false, "rank")))
+                    (frame.table().target() as TableView<EditableDatum<Dictionary>>).listTableModel
+                        .addRow(EditableDatum(active = true, UserDictionary("rank")))
 
                     frame.tree().target().setSelectionRow(2)
                 }
@@ -820,28 +823,32 @@ object TemplateListEditorTest : Spek({
 
         @Suppress("UNCHECKED_CAST") // I checked it myself!
         it("applies changes to dictionaries") {
+            val dictionary = UserDictionary("basis")
+
             GuiActionRunner.execute {
                 frame.tree().target().setSelectionRow(5)
-                (frame.table().target() as TableView<EditableDatum<DictionaryReference>>).listTableModel
-                    .addRow(EditableDatum(active = true, DictionaryReference(isBundled = false, "basis")))
+                (frame.table().target() as TableView<EditableDatum<Dictionary>>).listTableModel
+                    .addRow(EditableDatum(active = true, dictionary))
             }
 
             GuiActionRunner.execute { editor.applyState() }
 
-            assertThat(editor.originalState.dictionarySettings.userDictionaryFiles).contains("basis")
+            assertThat(editor.originalState.dictionarySettings.dictionaries).contains(dictionary)
         }
 
         @Suppress("UNCHECKED_CAST") // I checked it myself!
         it("does not apply changes to dictionaries after a reset") {
+            val dictionary = UserDictionary("guide")
+
             GuiActionRunner.execute {
                 frame.tree().target().setSelectionRow(5)
-                (frame.table().target() as TableView<EditableDatum<DictionaryReference>>).listTableModel
-                    .addRow(EditableDatum(active = true, DictionaryReference(isBundled = false, "guide")))
+                (frame.table().target() as TableView<EditableDatum<Dictionary>>).listTableModel
+                    .addRow(EditableDatum(active = true, dictionary))
             }
 
             GuiActionRunner.execute { editor.reset() }
 
-            assertThat(editor.originalState.dictionarySettings.userDictionaryFiles).doesNotContain("guide")
+            assertThat(editor.originalState.dictionarySettings.dictionaries).doesNotContain(dictionary)
         }
     }
 

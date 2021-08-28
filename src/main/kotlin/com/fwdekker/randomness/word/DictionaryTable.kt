@@ -8,7 +8,7 @@ import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.LocalPathCellEditor
 
 
-private typealias EditableDictionary = EditableDatum<DictionaryReference>
+private typealias EditableDictionary = EditableDatum<Dictionary>
 
 
 /**
@@ -16,11 +16,11 @@ private typealias EditableDictionary = EditableDatum<DictionaryReference>
  *
  * @see WordSchemeEditor
  */
-class DictionaryTable : ActivityTableModelEditor<DictionaryReference>(
+class DictionaryTable : ActivityTableModelEditor<Dictionary>(
     arrayOf(TYPE_COLUMN, LOCATION_COLUMN),
     ITEM_EDITOR,
     EMPTY_TEXT, EMPTY_SUB_TEXT,
-    { !it.isBundled },
+    { it !is BundledDictionary },
     columnAdjuster = { it[1].maxWidth = it[1].preferredWidth }
 ) {
     /**
@@ -42,8 +42,8 @@ class DictionaryTable : ActivityTableModelEditor<DictionaryReference>(
             override fun getColumnClass() = String::class.java
 
             override fun valueOf(item: EditableDictionary) =
-                if (item.datum.isBundled) "bundled"
-                else "user"
+                if (item.datum is BundledDictionary) "bundled"
+                else "custom"
         }
 
         /**
@@ -52,13 +52,15 @@ class DictionaryTable : ActivityTableModelEditor<DictionaryReference>(
         private val LOCATION_COLUMN = object : EditableColumnInfo<EditableDictionary, String>("Location") {
             override fun getColumnClass() = String::class.java
 
-            override fun valueOf(item: EditableDictionary) = item.datum.filename
+            override fun valueOf(item: EditableDictionary) = item.datum.toString()
 
             override fun setValue(item: EditableDictionary, value: String) {
-                item.datum.filename = value.removePrefix("file://")
+                val datum = item.datum
+                if (datum is UserDictionary)
+                    datum.filename = value.removePrefix("file://")
             }
 
-            override fun isCellEditable(item: EditableDictionary) = !item.datum.isBundled
+            override fun isCellEditable(item: EditableDictionary) = item.datum !is BundledDictionary
 
             override fun getEditor(item: EditableDictionary?) =
                 LocalPathCellEditor()
@@ -72,10 +74,10 @@ class DictionaryTable : ActivityTableModelEditor<DictionaryReference>(
         private val ITEM_EDITOR = object : CollectionItemEditor<EditableDictionary> {
             override fun getItemClass() = createElement()::class.java
 
-            override fun isRemovable(item: EditableDictionary) = !item.datum.isBundled
+            override fun isRemovable(item: EditableDictionary) = item.datum !is BundledDictionary
 
             override fun clone(item: EditableDictionary, forInPlaceEditing: Boolean) =
-                EditableDatum(item.active, item.datum.copy())
+                EditableDatum(item.active, item.datum.deepCopy())
         }
 
         /**
@@ -94,6 +96,6 @@ class DictionaryTable : ActivityTableModelEditor<DictionaryReference>(
          *
          * @return a new placeholder [Dictionary] instance
          */
-        private fun createElement() = EditableDictionary(DEFAULT_STATE, DictionaryReference(false, ""))
+        private fun createElement() = EditableDictionary(DEFAULT_STATE, UserDictionary(""))
     }
 }

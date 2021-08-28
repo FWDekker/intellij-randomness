@@ -86,11 +86,10 @@ object WordSchemeTest : Spek({
             }
 
             it("fails if the length range ends too low to match any words") {
-                val dictionaryFile = tempFileHelper.createFile("save", ".dic")
-                val dictionary = DictionaryReference(isBundled = false, dictionaryFile.absolutePath)
+                val file = tempFileHelper.createFile("save", ".dic")
+                val dictionary = UserDictionary(file.absolutePath)
 
-                wordScheme.activeBundledDictionaries = emptySet()
-                wordScheme.activeUserDictionaries = setOf(dictionary)
+                wordScheme.activeDictionaries = mutableListOf(dictionary)
                 wordScheme.minLength = 1
                 wordScheme.maxLength = 1
 
@@ -113,16 +112,15 @@ object WordSchemeTest : Spek({
 
         describe("dictionaries") {
             it("fails if the dictionary settings are invalid") {
-                val dictionaryFile = tempFileHelper.createFile("heavenly\npet\n", ".dic").also { it.delete() }
+                val file = tempFileHelper.createFile("heavenly\npet\n", ".dic").also { it.delete() }
 
-                wordScheme.dictionarySettings.userDictionaryFiles = mutableSetOf(dictionaryFile.absolutePath)
+                wordScheme.dictionarySettings.dictionaries = mutableListOf(UserDictionary(file.absolutePath))
 
                 assertThat(wordScheme.doValidate()).isNotNull()
             }
 
             it("fails if no dictionaries are selected") {
-                wordScheme.activeBundledDictionaries = emptySet()
-                wordScheme.activeUserDictionaries = emptySet()
+                wordScheme.activeDictionaries = mutableListOf()
 
                 assertThat(wordScheme.doValidate()).isEqualTo("Activate at least one dictionary.")
             }

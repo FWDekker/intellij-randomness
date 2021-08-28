@@ -16,7 +16,7 @@ class InvalidDictionaryException(message: String? = null, cause: Throwable? = nu
 
 
 /**
- * A collection of words that may become inaccessible at any moment in time.
+ * A collection of words.
  */
 interface Dictionary {
     /**
@@ -27,58 +27,26 @@ interface Dictionary {
 
 
     /**
-     * Throws an [InvalidDictionaryException] iff this dictionary is currently invalid.
+     * Returns a deep copy of this dictionary.
      *
-     * @throws InvalidDictionaryException if this dictionary is currently invalid
+     * @return a deep copy of this dictionary
      */
-    @Throws(InvalidDictionaryException::class)
-    fun validate()
-
-    /**
-     * Returns `true` iff [validate] does not throw an exception.
-     *
-     * @return `true` iff [validate] does not throw an exception
-     */
-    @Suppress("SwallowedException") // That's exactly how this function should work
-    fun isValid(): Boolean =
-        try {
-            validate()
-            true
-        } catch (e: InvalidDictionaryException) {
-            false
-        }
+    fun deepCopy(): Dictionary
 }
 
 /**
- * A `Dictionary` of which the underlying file is a resource in the JAR.
+ * A dictionary of which the underlying file is a resource in the JAR.
  *
- * @property filename the path to the resource file
+ * @property filename The path to the resource file.
  */
-class BundledDictionary private constructor(val filename: String) : Dictionary {
+data class BundledDictionary(var filename: String = "") : Dictionary {
     @get:Throws(InvalidDictionaryException::class)
-    override val words: Set<String> by lazy {
-        validate()
-
-        try {
-            getStream().bufferedReader()
-                .readLines()
-                .filterNot { it.isBlank() }
-                .filterNot { it.startsWith('#') }
-                .toSet()
-        } catch (e: IOException) {
-            throw InvalidDictionaryException(e.message, e)
-        }
-    }
+    override val words: Set<String>
+        get() = cache.get(filename)
 
 
-    @Throws(InvalidDictionaryException::class)
-    override fun validate() {
-        try {
-            getStream()
-        } catch (e: IOException) {
-            throw InvalidDictionaryException(e.message, e)
-        }
-    }
+    override fun deepCopy() = copy()
+
 
     /**
      * Returns `true` iff this dictionary's filename equals [other]'s filename.
@@ -104,18 +72,6 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
 
 
     /**
-     * Returns a stream to the resource file.
-     *
-     * @return a stream to the resource file
-     * @throws IOException if the resource file could not be opened
-     */
-    @Throws(IOException::class)
-    private fun getStream() =
-        BundledDictionary::class.java.classLoader.getResource(filename)?.openStream()
-            ?: throw FileNotFoundException("File not found.")
-
-
-    /**
      * Holds static elements.
      */
     companion object {
@@ -127,28 +83,50 @@ class BundledDictionary private constructor(val filename: String) : Dictionary {
         /**
          * The cache of bundled dictionaries, used to improve word generation times.
          */
-        val cache = Cache<String, BundledDictionary> { BundledDictionary(it) }
+        private val cache = Cache<String, Set<String>> { filename ->
+            try {
+                val stream =
+                    BundledDictionary::class.java.classLoader.getResource(filename)?.openStream()
+                        ?: throw FileNotFoundException("File not found.")
+
+                stream.bufferedReader()
+                    .readLines()
+                    .filterNot { it.isBlank() }
+                    .filterNot { it.startsWith('#') }
+                    .toSet()
+            } catch (e: IOException) {
+                throw InvalidDictionaryException(e.message, e)
+            }
+        }
+
+        /**
+         * Clears the cache of words, forcing bundled dictionaries to re-read their source files.
+         */
+        fun clearCache() = cache.clear()
     }
 }
 
 /**
- * A `Dictionary` of which the underlying file is a regular file.
+ * A dictionary of which the underlying file is a regular file.
  *
- * @property filename the path to the file
+ * @property filename The path to the file.
  */
-class UserDictionary private constructor(val filename: String) : Dictionary {
+data class UserDictionary(var filename: String = "") : Dictionary {
     @get:Throws(InvalidDictionaryException::class)
-    override val words: Set<String> by lazy {
-        validate()
-        File(filename).readLines()
-            .filterNot { it.isBlank() }
-            .filterNot { it.startsWith('#') }
-            .toSet()
-    }
+    override val words: Set<String>
+        get() {
+            validate() // Re-validate file, even if cached
+            return cache.get(filename)
+        }
 
-
+    /**
+     * Does nothing if the underlying file is valid, or throws an exception otherwise.
+     *
+     * @throws InvalidDictionaryException if the underlying file is invalid
+     */
     @Throws(InvalidDictionaryException::class)
-    override fun validate() {
+    @Suppress("ThrowsCount") // Improves error message specificity
+    private fun validate() {
         val file = File(filename)
         if (!file.exists()) throw InvalidDictionaryException("File not found.")
         if (!file.canRead()) throw InvalidDictionaryException("File unreadable.")
@@ -159,6 +137,9 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
             throw InvalidDictionaryException(e.message, e)
         }
     }
+
+    override fun deepCopy() = copy()
+
 
     /**
      * Returns a human-readable string of the dictionary's filename.
@@ -190,67 +171,17 @@ class UserDictionary private constructor(val filename: String) : Dictionary {
         /**
          * The cache of bundled dictionaries, used to improve word generation times.
          */
-        val cache = Cache<String, UserDictionary> { UserDictionary(it) }
-    }
-}
-
-/**
- * References a dictionary by its properties.
- *
- * Using a reference, each access goes through the cache first, so that outdated instances of a dictionary (i.e. those
- * flushed when clearing the cache) are not used anymore. This ensures that only the latest instance of that dictionary
- * is used, which is important when a dictionary has to be used both before and after clearing a cache.
- *
- * @property isBundled True if this dictionary refers to a [BundledDictionary].
- * @property filename The filename of the referred-to dictionary.
- */
-data class DictionaryReference(val isBundled: Boolean, var filename: String) : Dictionary {
-    /**
-     * The dictionary that is referred to by this reference, as fetched from the cache.
-     */
-    val referent: Dictionary
-        get() =
-            if (isBundled) BundledDictionary.cache.get(filename)
-            else UserDictionary.cache.get(filename)
-
-
-    @get:Throws(InvalidDictionaryException::class)
-    override val words: Set<String>
-        get() = referent.words
-
-    @Throws(InvalidDictionaryException::class)
-    override fun validate() = referent.validate()
-
-
-    /**
-     * Returns the string representation of the [referent].
-     *
-     * @return the string representation of the [referent]
-     */
-    override fun toString() = referent.toString()
-
-
-    /**
-     * Holds static elements.
-     */
-    companion object {
-        /**
-         * The error message that is displayed if an unknown dictionary implementation is used.
-         */
-        const val DICTIONARY_CAST_EXCEPTION = "Unexpected dictionary implementation."
-
+        private val cache = Cache<String, Set<String>> { filename ->
+            File(filename)
+                .readLines()
+                .filterNot { it.isBlank() }
+                .filterNot { it.startsWith('#') }
+                .toSet()
+        }
 
         /**
-         * Returns a reference to the given dictionary.
-         *
-         * @param dictionary the dictionary to return a reference to
+         * Clears the cache of words, forcing user dictionaries to re-read their source files.
          */
-        @Suppress("FunctionMinLength") // Function name is clear enough because of class name
-        fun to(dictionary: Dictionary) =
-            when (dictionary) {
-                is BundledDictionary -> DictionaryReference(true, dictionary.filename)
-                is UserDictionary -> DictionaryReference(false, dictionary.filename)
-                else -> error(DICTIONARY_CAST_EXCEPTION)
-            }
+        fun clearCache() = cache.clear()
     }
 }
