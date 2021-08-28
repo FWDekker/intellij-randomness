@@ -41,6 +41,7 @@ import java.util.Collections
 import java.util.Enumeration
 import javax.swing.JPanel
 import javax.swing.JTree
+import javax.swing.SwingUtilities
 import javax.swing.event.TreeModelEvent
 import javax.swing.event.TreeModelListener
 import javax.swing.tree.DefaultTreeModel
@@ -126,7 +127,10 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         }
         templateTree.emptyText.text = EMPTY_TEXT
         templateTree.addTreeSelectionListener {
-            schemeEditor?.also { schemeEditorPanel.remove(it.rootComponent) }
+            schemeEditor?.also {
+                schemeEditorPanel.remove(it.rootComponent)
+                schemeEditor = null
+            }
 
             val selectedNode = templateTree.getSelectedNode()
             val selectedObject = selectedNode?.state
@@ -301,7 +305,10 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             (templateTreeModel.root as TemplateListTreeNode)
                 .children().toList()
                 .firstOrNull { it.state.uuid == selection }
-                ?.also { templateTree.selectionPath = templateTree.getPathToRoot(it) }
+                ?.also {
+                    templateTree.selectionPath = templateTree.getPathToRoot(it)
+                    SwingUtilities.invokeLater { schemeEditor?.preferredFocusedComponent?.requestFocus() }
+                }
 
             queueSelection = null
         }

@@ -20,6 +20,8 @@ import javax.swing.ListSelectionModel
  */
 class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<TemplateReference>(reference) {
     override val rootComponent = JPanel(BorderLayout())
+    override val preferredFocusedComponent by lazy { templateList }
+
     private val templateListModel = DefaultListModel<Template>()
     private val templateList = JBList(templateListModel)
     private val arrayDecoratorEditor: ArraySchemeDecoratorEditor

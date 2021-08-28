@@ -31,6 +31,8 @@ import javax.swing.JPanel
 @Suppress("LateinitUsage") // Initialized by scene builder
 class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<StringScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
+    override val preferredFocusedComponent = minLength.editorComponent
+
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
     private lateinit var enclosureGroup: ButtonGroup

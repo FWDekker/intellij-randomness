@@ -15,6 +15,8 @@ import javax.swing.JTextField
 @Suppress("LateinitUsage") // Initialized by scene builder
 class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor<LiteralScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
+    override val preferredFocusedComponent = literalInput
+
     private lateinit var literalInput: JTextField
     private lateinit var arrayDecoratorPanel: JPanel
     private lateinit var arrayDecoratorEditor: ArraySchemeDecoratorEditor

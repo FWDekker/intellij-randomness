@@ -36,4 +36,4 @@ fun ButtonGroup.setValue(value: Any?) {
  *
  * @return the buttons in this button group as a typed array
  */
-fun ButtonGroup.buttons() = elements.toList().toTypedArray()
+fun ButtonGroup.buttons(): Array<AbstractButton> = elements.toList().toTypedArray()
