@@ -26,6 +26,8 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor<IntegerScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
+    override val preferredFocusedComponent = minValue.editorComponent
+
     private lateinit var minValue: JLongSpinner
     private lateinit var maxValue: JLongSpinner
     private lateinit var base: JIntSpinner

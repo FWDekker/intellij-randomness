@@ -15,6 +15,8 @@ import javax.swing.JPanel
  */
 class TemplateNameEditor(template: Template) : StateEditor<Template>(template) {
     override val rootComponent = JPanel(BorderLayout())
+    override val preferredFocusedComponent by lazy { nameInput }
+
     private val nameInput = JBTextField().also { it.name = "templateName" }
 
 

@@ -27,6 +27,8 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor<DecimalScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
+    override val preferredFocusedComponent = minValue.editorComponent
+
     private lateinit var minValue: JDoubleSpinner
     private lateinit var maxValue: JDoubleSpinner
     private lateinit var decimalCount: JIntSpinner

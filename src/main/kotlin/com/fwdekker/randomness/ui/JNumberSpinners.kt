@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import java.awt.Component
 import java.awt.Dimension
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -46,6 +47,12 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
         set(value) {
             numberModel.maximum = value
         }
+
+    /**
+     * The component that can be used to edit the spinner.
+     */
+    val editorComponent: Component
+        get() = editor.getComponent(0)
 
 
     /**

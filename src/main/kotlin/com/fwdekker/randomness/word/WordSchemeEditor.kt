@@ -31,6 +31,8 @@ import javax.swing.JTextArea
 @Suppress("LateinitUsage") // Initialized by scene builder
 class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
+    override val preferredFocusedComponent = minLength.editorComponent
+
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
     private lateinit var capitalizationGroup: ButtonGroup

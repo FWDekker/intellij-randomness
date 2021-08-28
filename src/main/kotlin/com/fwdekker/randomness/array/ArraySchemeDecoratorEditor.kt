@@ -26,6 +26,8 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<ArraySchemeDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
+    override val preferredFocusedComponent = countSpinner.editorComponent
+
     private lateinit var separator: JComponent
     private lateinit var enabledCheckBox: JCheckBox
     private lateinit var arrayDetailsPanel: JPanel

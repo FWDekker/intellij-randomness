@@ -1,5 +1,6 @@
 package com.fwdekker.randomness
 
+import java.awt.Component
 import javax.swing.JPanel
 
 
@@ -17,6 +18,11 @@ abstract class StateEditor<S : State>(val originalState: S) {
      * The root component of the editor.
      */
     abstract val rootComponent: JPanel
+
+    /**
+     * The component that this editor prefers to be focused when the editor is focused.
+     */
+    open val preferredFocusedComponent: Component? = null
 
 
     /**
