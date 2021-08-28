@@ -194,6 +194,18 @@ object StringSchemeEditorTest : Spek({
     }
 
 
+    describe("doValidate") {
+        it("is invalid if multiple symbol sets with the same name have been defined") {
+            GuiActionRunner.execute {
+                symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("earth", "P3ogL")))
+                symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("earth", "lNp5dG8k")))
+            }
+
+            assertThat(editor.doValidate()).isEqualTo("Multiple symbol sets with name 'earth'.")
+        }
+    }
+
+
     describe("addChangeListener") {
         it("invokes the listener if a field changes") {
             var listenerInvoked = false

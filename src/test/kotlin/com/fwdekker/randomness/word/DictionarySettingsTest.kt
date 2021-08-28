@@ -26,13 +26,13 @@ object DictionarySettingsTest : Spek({
         it("fails if a dictionary of a now-deleted file is given") {
             val file = tempFileHelper.createFile("noon\nreason\n", ".dic").also { it.delete() }
 
-            val settings = DictionarySettings(mutableListOf(UserDictionary(file.absolutePath)))
+            val settings = DictionarySettings(mutableSetOf(UserDictionary(file.absolutePath)))
 
             assertThat(settings.doValidate()).matches("Dictionary '.*\\.dic' is invalid: File not found\\.")
         }
 
         it("fails if one of the dictionaries is invalid") {
-            val settings = DictionarySettings(mutableListOf(UserDictionary("does_not_exist.dic")))
+            val settings = DictionarySettings(mutableSetOf(UserDictionary("does_not_exist.dic")))
 
             assertThat(settings.doValidate()).isEqualTo("Dictionary 'does_not_exist.dic' is invalid: File not found.")
         }
@@ -40,7 +40,7 @@ object DictionarySettingsTest : Spek({
         it("fails if one the dictionaries is empty") {
             val file = tempFileHelper.createFile("", ".dic")
 
-            val settings = DictionarySettings(mutableListOf(UserDictionary(file.absolutePath)))
+            val settings = DictionarySettings(mutableSetOf(UserDictionary(file.absolutePath)))
 
             assertThat(settings.doValidate()).matches("Dictionary '.*\\.dic' is empty\\.")
         }
@@ -49,21 +49,11 @@ object DictionarySettingsTest : Spek({
             val file = tempFileHelper.createFile("rapid\ncloth", ".dic")
             val dictionary = UserDictionary(file.absolutePath)
 
-            val settings = DictionarySettings(mutableListOf(dictionary))
+            val settings = DictionarySettings(mutableSetOf(dictionary))
             dictionary.words // Force cache load
             file.writeText("")
 
             assertThat(settings.doValidate()).matches("Dictionary '.*\\.dic' is empty\\.")
-        }
-
-        it("fails if a duplicate dictionary is given") {
-            val file = tempFileHelper.createFile("degree\ncapital", ".dic")
-            val dictionary1 = UserDictionary(file.absolutePath)
-            val dictionary2 = UserDictionary(file.absolutePath)
-
-            val settings = DictionarySettings(mutableListOf(dictionary1, dictionary2))
-
-            assertThat(settings.doValidate()).matches("Duplicate dictionary '.*\\.dic'\\.")
         }
     }
 
@@ -81,7 +71,7 @@ object DictionarySettingsTest : Spek({
         }
 
         it("contains an independent list of dictionaries") {
-            val settings = DictionarySettings(mutableListOf(BundledDictionary("wait.dic")))
+            val settings = DictionarySettings(mutableSetOf(BundledDictionary("wait.dic")))
 
             val copy = settings.deepCopy()
             copy.dictionaries.add(BundledDictionary("upright.dic"))
@@ -90,12 +80,12 @@ object DictionarySettingsTest : Spek({
         }
 
         it("contains a list of independent dictionaries") {
-            val settings = DictionarySettings(mutableListOf(BundledDictionary("wait.dic")))
+            val settings = DictionarySettings(mutableSetOf(BundledDictionary("wait.dic")))
 
             val copy = settings.deepCopy()
-            (copy.dictionaries[0] as BundledDictionary).filename = "defense.dic"
+            (copy.dictionaries.first() as BundledDictionary).filename = "defense.dic"
 
-            assertThat((settings.dictionaries[0] as BundledDictionary).filename).isEqualTo("wait.dic")
+            assertThat((settings.dictionaries.first() as BundledDictionary).filename).isEqualTo("wait.dic")
         }
     }
 })

@@ -89,7 +89,7 @@ object WordSchemeTest : Spek({
                 val file = tempFileHelper.createFile("save", ".dic")
                 val dictionary = UserDictionary(file.absolutePath)
 
-                wordScheme.activeDictionaries = mutableListOf(dictionary)
+                wordScheme.activeDictionaries = mutableSetOf(dictionary)
                 wordScheme.minLength = 1
                 wordScheme.maxLength = 1
 
@@ -114,13 +114,13 @@ object WordSchemeTest : Spek({
             it("fails if the dictionary settings are invalid") {
                 val file = tempFileHelper.createFile("heavenly\npet\n", ".dic").also { it.delete() }
 
-                wordScheme.dictionarySettings.dictionaries = mutableListOf(UserDictionary(file.absolutePath))
+                wordScheme.dictionarySettings.dictionaries = mutableSetOf(UserDictionary(file.absolutePath))
 
                 assertThat(wordScheme.doValidate()).isNotNull()
             }
 
             it("fails if no dictionaries are selected") {
-                wordScheme.activeDictionaries = mutableListOf()
+                wordScheme.activeDictionaries = mutableSetOf()
 
                 assertThat(wordScheme.doValidate()).isEqualTo("Activate at least one dictionary.")
             }

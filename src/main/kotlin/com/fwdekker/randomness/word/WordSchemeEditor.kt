@@ -100,12 +100,21 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             it.uuid = originalState.uuid
 
             it.dictionarySettings.dictionaries =
-                dictionaryTable.data.toMutableList()
+                dictionaryTable.data.toMutableSet()
             it.activeDictionaries =
-                dictionaryTable.activeData.filter { file -> file in it.dictionarySettings.dictionaries }.toMutableList()
+                dictionaryTable.activeData.filter { file -> file in it.dictionarySettings.dictionaries }.toMutableSet()
 
             UserDictionary.clearCache()
         }
+
+
+    override fun doValidate(): String? {
+        val dictionaries = dictionaryTable.data
+        val duplicate = dictionaries.firstOrNull { dictionary -> dictionaries.count { it == dictionary } > 1 }
+
+        return if (duplicate != null) "Duplicate dictionary '$duplicate'."
+        else super.doValidate()
+    }
 
 
     override fun addChangeListener(listener: () -> Unit) =

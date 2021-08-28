@@ -19,7 +19,7 @@ import com.intellij.util.xmlb.annotations.XCollection
 )
 data class DictionarySettings(
     @get:XCollection(elementTypes = [BundledDictionary::class, UserDictionary::class])
-    var dictionaries: MutableList<Dictionary> = DEFAULT_DICTIONARIES.toMutableList(),
+    var dictionaries: MutableSet<Dictionary> = DEFAULT_DICTIONARIES.toMutableSet(),
 ) : PersistentStateComponent<DictionarySettings>, Settings() {
     /**
      * Returns this instance.
@@ -39,8 +39,7 @@ data class DictionarySettings(
     override fun doValidate(): String? {
         UserDictionary.clearCache()
 
-        val duplicate = dictionaries.firstOrNull { dictionary -> dictionaries.count { it == dictionary } > 1 }
-        val invalid = dictionaries.firstNotNullOfOrNull {
+        return dictionaries.firstNotNullOfOrNull {
             try {
                 if (it.words.isEmpty()) return@firstNotNullOfOrNull "Dictionary '$it' is empty."
                 else null
@@ -48,16 +47,10 @@ data class DictionarySettings(
                 return@firstNotNullOfOrNull "Dictionary '$it' is invalid: ${e.message}"
             }
         }
-
-        return when {
-            duplicate != null -> "Duplicate dictionary '$duplicate'."
-            invalid != null -> invalid
-            else -> null
-        }
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(dictionaries = dictionaries.map { it.deepCopy() }.toMutableList())
+        copy(dictionaries = dictionaries.map { it.deepCopy() }.toMutableSet())
             .also { if (retainUuid) it.uuid = uuid }
 
 
@@ -68,8 +61,8 @@ data class DictionarySettings(
         /**
          * The default value of the [dictionaries] field.
          */
-        val DEFAULT_DICTIONARIES: List<Dictionary>
-            get() = listOf(BundledDictionary(BundledDictionary.SIMPLE_DICTIONARY))
+        val DEFAULT_DICTIONARIES: Set<Dictionary>
+            get() = setOf(BundledDictionary(BundledDictionary.SIMPLE_DICTIONARY))
 
         /**
          * The persistent `DictionarySettings` instance.

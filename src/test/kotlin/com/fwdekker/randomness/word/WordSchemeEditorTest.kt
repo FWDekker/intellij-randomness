@@ -106,14 +106,14 @@ object WordSchemeEditorTest : Spek({
         }
 
         it("loads the scheme's bundled dictionaries") {
-            val allDictionaries = mutableListOf(UserDictionary("dictionary1.dic"), UserDictionary("dictionary2.dic"))
-            val activeDictionaries = mutableListOf(UserDictionary("dictionary1.dic"))
+            val allDictionaries = mutableSetOf(UserDictionary("dictionary1.dic"), UserDictionary("dictionary2.dic"))
+            val activeDictionaries = mutableSetOf(UserDictionary("dictionary1.dic"))
 
             GuiActionRunner.execute {
                 editor.loadState(
                     WordScheme(
-                        dictionarySettings = DictionarySettings(allDictionaries.toMutableList()),
-                        activeDictionaries = activeDictionaries.toMutableList()
+                        dictionarySettings = DictionarySettings(allDictionaries.toMutableSet()),
+                        activeDictionaries = activeDictionaries.toMutableSet()
                     )
                 )
             }
@@ -184,6 +184,19 @@ object WordSchemeEditorTest : Spek({
 
         it("retains the scheme's UUID") {
             assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
+        }
+    }
+
+
+    describe("doValidate") {
+        it("is invalid if a duplicate dictionary has been defined") {
+            val file = tempFileHelper.createFile("lay\ngray", ".dic")
+            GuiActionRunner.execute {
+                dictionaryTable.listTableModel.addRow(EditableDatum(active = true, UserDictionary(file.absolutePath)))
+                dictionaryTable.listTableModel.addRow(EditableDatum(active = true, UserDictionary(file.absolutePath)))
+            }
+
+            assertThat(editor.doValidate()).matches("Duplicate dictionary '.*\\.dic'\\.")
         }
     }
 

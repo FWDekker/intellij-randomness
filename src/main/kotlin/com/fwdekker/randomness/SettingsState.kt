@@ -16,7 +16,7 @@ import com.fwdekker.randomness.word.DictionarySettings
 data class SettingsState(
     var templateList: TemplateList = TemplateList(mutableListOf()),
     var symbolSetSettings: SymbolSetSettings = SymbolSetSettings(mutableMapOf()),
-    var dictionarySettings: DictionarySettings = DictionarySettings(mutableListOf())
+    var dictionarySettings: DictionarySettings = DictionarySettings(mutableSetOf())
 ) : State() {
     override fun doValidate() =
         templateList.doValidate() ?: symbolSetSettings.doValidate() ?: dictionarySettings.doValidate()

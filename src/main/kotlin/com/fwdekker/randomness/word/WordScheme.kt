@@ -28,7 +28,7 @@ data class WordScheme(
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     @get:XCollection(elementTypes = [BundledDictionary::class, UserDictionary::class])
-    var activeDictionaries: MutableList<Dictionary> = DEFAULT_ACTIVE_DICTIONARIES.toMutableList(),
+    var activeDictionaries: MutableSet<Dictionary> = DEFAULT_ACTIVE_DICTIONARIES.toMutableSet(),
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
     @Transient
@@ -90,7 +90,7 @@ data class WordScheme(
             .also {
                 if (retainUuid) it.uuid = this.uuid
 
-                it.activeDictionaries = activeDictionaries.map(Dictionary::deepCopy).toMutableList()
+                it.activeDictionaries = activeDictionaries.map(Dictionary::deepCopy).toMutableSet()
             }
 
 
@@ -131,7 +131,7 @@ data class WordScheme(
         /**
          * The default value of the [activeDictionaries] field.
          */
-        val DEFAULT_ACTIVE_DICTIONARIES: List<Dictionary>
-            get() = listOf(BundledDictionary(BundledDictionary.SIMPLE_DICTIONARY))
+        val DEFAULT_ACTIVE_DICTIONARIES: Set<Dictionary>
+            get() = setOf(BundledDictionary(BundledDictionary.SIMPLE_DICTIONARY))
     }
 }

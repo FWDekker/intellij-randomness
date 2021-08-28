@@ -110,6 +110,16 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toMutableSet()
         }
 
+
+    override fun doValidate(): String? {
+        val symbolSets = symbolSetTable.data.map { it.name }
+        val duplicate = symbolSets.firstOrNull { symbolSet -> symbolSets.count { it == symbolSet } > 1 }
+
+        return if (duplicate != null) "Multiple symbol sets with name '$duplicate'."
+        else super.doValidate()
+    }
+
+
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
             minLength, maxLength, enclosureGroup, capitalizationGroup, symbolSetTable, arrayDecoratorEditor,
