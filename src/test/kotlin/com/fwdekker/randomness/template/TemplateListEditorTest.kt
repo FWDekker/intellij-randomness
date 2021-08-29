@@ -94,6 +94,9 @@ object TemplateListEditorTest : Spek({
                     frame.tree().target().clearSelection()
                     frame.clickActionButton("Remove")
                 }
+
+                assertThat(editor.readState().templateList.templates.map { it.name })
+                    .containsExactly("Further", "Enclose", "Student")
             }
 
             it("removes the selected template") {
@@ -117,6 +120,16 @@ object TemplateListEditorTest : Spek({
         }
 
         describe("copy") {
+            it("does nothing if no node is selected") {
+                GuiActionRunner.execute {
+                    frame.tree().target().clearSelection()
+                    frame.clickActionButton("Copy")
+                }
+
+                assertThat(editor.readState().templateList.templates.map { it.name })
+                    .containsExactly("Further", "Enclose", "Student")
+            }
+
             it("places a copy of the template underneath the selected template") {
                 GuiActionRunner.execute {
                     frame.tree().target().setSelectionRow(3)
@@ -158,6 +171,17 @@ object TemplateListEditorTest : Spek({
         }
 
         describe("move up/down") {
+            it("does nothing if no node is selected") {
+                GuiActionRunner.execute {
+                    frame.tree().target().clearSelection()
+                    frame.clickActionButton("Up")
+                    frame.clickActionButton("Down")
+                }
+
+                assertThat(editor.readState().templateList.templates.map { it.name })
+                    .containsExactly("Further", "Enclose", "Student")
+            }
+
             it("marks the editor as modified if two templates are reordered") {
                 GuiActionRunner.execute {
                     frame.tree().target().setSelectionRow(0)
@@ -169,8 +193,8 @@ object TemplateListEditorTest : Spek({
 
             it("marks the editor as modified if two schemes are reordered") {
                 GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(1)
-                    frame.clickActionButton("Down")
+                    frame.tree().target().setSelectionRow(2)
+                    frame.clickActionButton("Up")
                 }
 
                 assertThat(editor.isModified()).isTrue()
