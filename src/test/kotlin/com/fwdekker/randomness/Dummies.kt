@@ -22,7 +22,7 @@ data class DummyScheme(
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
     override var icons: RandomnessIcons? = RandomnessIcons.Data
-    override var name = "Dummy"
+    override var name = literals.joinToString()
 
 
     override fun generateUndecoratedStrings(count: Int) = List(count) { literals[it % literals.size] }

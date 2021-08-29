@@ -24,9 +24,11 @@ data class SettingsState(
     override fun copyFrom(other: State) {
         require(other is SettingsState) { "Cannot copy from different type." }
 
+        uuid = other.uuid
         templateList.copyFrom(other.templateList)
         symbolSetSettings.copyFrom(other.symbolSetSettings)
         dictionarySettings.copyFrom(other.dictionarySettings)
+        templateList.applySettingsState(this)
     }
 
     override fun deepCopy(retainUuid: Boolean) =
@@ -34,7 +36,11 @@ data class SettingsState(
             templateList = templateList.deepCopy(retainUuid = retainUuid),
             symbolSetSettings = symbolSetSettings.deepCopy(retainUuid = retainUuid),
             dictionarySettings = dictionarySettings.deepCopy(retainUuid = retainUuid)
-        ).also { if (retainUuid) it.uuid = uuid }
+        ).also {
+            if (retainUuid) it.uuid = uuid
+
+            it.templateList.applySettingsState(it)
+        }
 
 
     /**
@@ -44,7 +50,7 @@ data class SettingsState(
         /**
          * The persistent `SettingsState` instance.
          */
-        val default by lazy {
+        val default: SettingsState by lazy {
             SettingsState(
                 TemplateSettings.default.state,
                 SymbolSetSettings.default,

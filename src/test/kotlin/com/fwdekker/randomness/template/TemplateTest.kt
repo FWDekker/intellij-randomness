@@ -136,7 +136,7 @@ object TemplateTest : Spek({
         it("fails if the single scheme is invalid") {
             template.schemes = listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))
 
-            assertThat(template.doValidate()).isEqualTo("Dummy > Invalid input!")
+            assertThat(template.doValidate()).isEqualTo("${DummyScheme.INVALID_OUTPUT} > Invalid input!")
         }
 
         it("fails if one of multiple schemes is invalid") {
@@ -147,7 +147,7 @@ object TemplateTest : Spek({
                 DummyScheme()
             )
 
-            assertThat(template.doValidate()).isEqualTo("Dummy > Invalid input!")
+            assertThat(template.doValidate()).isEqualTo("${DummyScheme.INVALID_OUTPUT} > Invalid input!")
         }
     }
 
