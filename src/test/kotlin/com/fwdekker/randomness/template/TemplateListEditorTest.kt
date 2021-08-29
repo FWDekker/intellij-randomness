@@ -9,7 +9,6 @@ import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.SymbolSet
 import com.fwdekker.randomness.string.SymbolSetSettings
 import com.fwdekker.randomness.ui.EditableDatum
-import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.Dictionary
 import com.fwdekker.randomness.word.DictionarySettings
 import com.fwdekker.randomness.word.UserDictionary
@@ -18,7 +17,6 @@ import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.table.TableView
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.data.TableCell.row
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -34,6 +32,8 @@ import java.util.regex.Pattern
  *
  * The majority of tests relies on the list of templates defined in the first `beforeEachTest`, so try to learn that
  * list by heart!
+ *
+ * @see TemplateTreeTest
  */
 @Suppress("LargeClass") // Acceptable for tests
 object TemplateListEditorTest : Spek({
@@ -58,38 +58,20 @@ object TemplateListEditorTest : Spek({
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        val symbolSetSettings = SymbolSetSettings()
-        val dictionarySettings = DictionarySettings()
         val templateList = TemplateList(
             listOf(
-                Template(
-                    "Further",
-                    listOf(IntegerScheme(), IntegerScheme(minValue = 7))
-                ),
-                Template(
-                    "Enclose",
-                    listOf(
-                        LiteralScheme("else"),
-                        WordScheme().also { it.dictionarySettings += dictionarySettings }
-                    )
-                ),
-                Template(
-                    "Student",
-                    listOf(
-                        StringScheme().also { it.symbolSetSettings += symbolSetSettings },
-                        LiteralScheme("dog"),
-                        IntegerScheme()
-                    )
-                )
+                Template("Further", listOf(IntegerScheme(), IntegerScheme(minValue = 7))),
+                Template("Enclose", listOf(LiteralScheme("else"), WordScheme())),
+                Template("Student", listOf(StringScheme(), LiteralScheme("dog"), IntegerScheme()))
             )
         )
 
-        settingsState =
-            SettingsState(
-                templateList = templateList,
-                symbolSetSettings = symbolSetSettings,
-                dictionarySettings = dictionarySettings
-            )
+        settingsState = SettingsState(
+            templateList = templateList,
+            symbolSetSettings = SymbolSetSettings(),
+            dictionarySettings = DictionarySettings()
+        )
+        templateList.applySettingsState(settingsState)
 
         editor = GuiActionRunner.execute<TemplateListEditor> { TemplateListEditor(settingsState) }
         frame = Containers.showInFrame(editor.rootComponent)
@@ -101,392 +83,127 @@ object TemplateListEditorTest : Spek({
     }
 
 
-    describe("event handling") {
-        describe("buttons") {
-            describe("add template") {
-                it("selects the added template") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(0)
-                        editor.addScheme(Template(name = "Child"))
-                    }
+    describe("buttons") {
+        xdescribe("add") {
+            // TODO: Find a way to test the addition popup
+        }
 
-                    frame.tree().requireSelection(3)
-                    frame.textBox("templateName").requireText("Child")
-                }
-
-                it("marks the editor as modified if a template is added") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(0)
-                        editor.addScheme(Template(name = "Whip"))
-                    }
-
-                    assertThat(editor.isModified()).isTrue()
-                }
-
-                it("adds the template to the bottom if no node is selected") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().clearSelection()
-                        editor.addScheme(Template(name = "Elephant"))
-                    }
-
-                    assertThat(editor.readState().templateList.templates.map { it.name })
-                        .containsExactly("Further", "Enclose", "Student", "Elephant")
-                }
-
-                it("adds the template underneath the currently selected template") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(3)
-                        editor.addScheme(Template(name = "Flower"))
-                    }
-
-                    assertThat(editor.readState().templateList.templates.map { it.name })
-                        .containsExactly("Further", "Enclose", "Flower", "Student")
-                }
-
-                it("adds the template underneath the parent of the currently selected scheme") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(4)
-                        editor.addScheme(Template(name = "Shoe"))
-                    }
-
-                    assertThat(editor.readState().templateList.templates.map { it.name })
-                        .containsExactly("Further", "Enclose", "Shoe", "Student")
+        describe("remove") {
+            it("does nothing if no node is selected") {
+                GuiActionRunner.execute {
+                    frame.tree().target().clearSelection()
+                    frame.clickActionButton("Remove")
                 }
             }
 
-            describe("add scheme") {
-                it("selects the added scheme") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(0)
-                        editor.addScheme(LiteralScheme("beside"))
-                    }
-
-                    frame.tree().requireSelection(3)
-                    frame.textBox("literal").requireText("beside")
+            it("removes the selected template") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(3)
+                    frame.clickActionButton("Remove")
                 }
 
-                it("marks the editor as modified if a scheme is added") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(1)
-                        editor.addScheme(LiteralScheme("extent"))
-                    }
-
-                    assertThat(editor.isModified()).isTrue()
-                }
-
-                it("fails if no node is selected") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().clearSelection()
-
-                        assertThatThrownBy { editor.addScheme(IntegerScheme()) }
-                            .isInstanceOf(IllegalStateException::class.java)
-                            .hasMessage("Cannot add non-template to root.")
-                    }
-                }
-
-                it("sets the added scheme's settings") {
-                    val oldSettings = TemplateList(emptyList())
-                    val newScheme = TemplateReference().apply { setSettingsState(SettingsState(oldSettings)) }
-
-                    GuiActionRunner.execute { editor.addScheme(newScheme) }
-
-                    assertThat(+newScheme.templateList).isNotSameAs(oldSettings)
-                }
-
-                it("adds the scheme at the bottom of the selected template") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(3)
-                        editor.addScheme(UuidScheme())
-                    }
-
-                    assertThat(editor.readState().templateList.templates[1].schemes)
-                        .containsExactly(
-                            LiteralScheme("else"),
-                            WordScheme().also { it.dictionarySettings += settingsState.dictionarySettings },
-                            UuidScheme()
-                        )
-                }
-
-                it("adds the scheme underneath the currently selected scheme") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(1)
-                        editor.addScheme(DecimalScheme())
-                    }
-
-                    assertThat(editor.readState().templateList.templates[0].schemes)
-                        .containsExactly(IntegerScheme(), DecimalScheme(), IntegerScheme(minValue = 7))
-                }
+                assertThat(editor.readState().templateList.templates.map { it.name })
+                    .containsExactly("Further", "Student")
             }
 
-            describe("remove") {
-                it("does nothing if no node is selected") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().clearSelection()
-                        frame.clickActionButton("Remove")
-                    }
+            it("removes the selected scheme") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(2)
+                    frame.clickActionButton("Remove")
                 }
 
-                describe("remove template") {
-                    it("marks the editor as modified if a single template is removed") {
-                        GuiActionRunner.execute {
-                            frame.tree().target().setSelectionRow(0)
-                            frame.clickActionButton("Remove")
-                        }
-
-                        assertThat(editor.isModified()).isTrue()
-                    }
-
-                    it("marks the editor as modified if the last template is removed") {
-                        GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList.from(LiteralScheme()))) }
-                        require(!editor.isModified()) { "Editor incorrectly marked as modified." }
-
-                        GuiActionRunner.execute {
-                            frame.tree().target().setSelectionRow(0)
-                            frame.clickActionButton("Remove")
-                        }
-
-                        assertThat(editor.isModified()).isTrue()
-                    }
-
-                    it("selects nothing if the last template is removed") {
-                        GuiActionRunner.execute {
-                            repeat(3) {
-                                frame.tree().target().setSelectionRow(0)
-                                frame.clickActionButton("Remove")
-                            }
-                        }
-
-                        frame.tree().requireNoSelection()
-                    }
-
-                    it("selects the next template if a non-bottom template is removed") {
-                        GuiActionRunner.execute {
-                            frame.tree().target().setSelectionRow(3)
-                            frame.clickActionButton("Remove")
-                        }
-
-                        frame.tree().requireSelection(3)
-                        frame.textBox("templateName").requireText("Student")
-                    }
-
-                    it("selects the new bottom template if the bottom template is removed") {
-                        GuiActionRunner.execute {
-                            frame.tree().target().setSelectionRow(6)
-                            frame.clickActionButton("Remove")
-                        }
-
-                        frame.tree().requireSelection(3)
-                        frame.textBox("templateName").requireText("Enclose")
-                    }
-                }
-
-                describe("remove scheme") {
-                    it("selects the template if its last scheme is removed") {
-                        GuiActionRunner.execute {
-                            frame.tree().target().setSelectionRow(4)
-                            frame.clickActionButton("Remove")
-
-                            frame.tree().target().setSelectionRow(4)
-                            frame.clickActionButton("Remove")
-                        }
-
-                        frame.tree().requireSelection(3)
-                        frame.textBox("templateName").requireText("Enclose")
-                    }
-
-                    it("marks the editor as modified if a scheme is removed") {
-                        GuiActionRunner.execute {
-                            frame.tree().target().setSelectionRow(4)
-                            frame.clickActionButton("Remove")
-                        }
-
-                        assertThat(editor.isModified()).isTrue()
-                    }
-
-                    it("selects the next scheme if a non-bottom scheme is removed") {
-                        GuiActionRunner.execute {
-                            frame.tree().target().setSelectionRow(7)
-                            frame.clickActionButton("Remove")
-                        }
-
-                        frame.tree().requireSelection(7)
-                        frame.textBox("literal").requireText("dog")
-                    }
-
-                    it("selects the new bottom scheme if the bottom scheme is removed") {
-                        GuiActionRunner.execute {
-                            frame.tree().target().setSelectionRow(9)
-                            frame.clickActionButton("Remove")
-                        }
-
-                        frame.tree().requireSelection(8)
-                        frame.textBox("literal").requireText("dog")
-                    }
-                }
-            }
-
-            describe("copy") {
-                it("places a copy of the template underneath the selected template") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(3)
-                        frame.clickActionButton("Copy")
-
-                        // Update new template's name
-                        frame.tree().target().setSelectionRow(6)
-                        frame.textBox("templateName").target().text = "Ring"
-
-                        // Adjust new template's scheme
-                        frame.tree().target().setSelectionRow(7)
-                        frame.textBox("literal").target().text = "speech"
-                    }
-
-                    val readList = editor.readState()
-                    assertThat(readList.templateList.templates.map { it.name })
-                        .containsExactly("Further", "Enclose", "Ring", "Student")
-                    assertThat(readList.templateList.templates.map { it.schemes }[1][0])
-                        .isEqualTo(LiteralScheme("else"))
-                    assertThat(readList.templateList.templates.map { it.schemes }[2][0])
-                        .isEqualTo(LiteralScheme("speech"))
-                }
-
-                it("places a copy of the scheme underneath the selected scheme") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(4)
-                        frame.clickActionButton("Copy")
-
-                        frame.tree().target().setSelectionRow(5)
-                        frame.textBox("literal").target().text = "what"
-                    }
-
-                    val readList = editor.readState()
-                    assertThat(readList.templateList.templates.map { it.schemes }[1][0])
-                        .isEqualTo(LiteralScheme("else"))
-                    assertThat(readList.templateList.templates.map { it.schemes }[1][1])
-                        .isEqualTo(LiteralScheme("what"))
-                }
-
-                it("selects the newly created template") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(0)
-                        frame.clickActionButton("Copy")
-                    }
-
-                    frame.tree().requireSelection(3)
-                }
-
-                it("expands the newly created template") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(3)
-                        frame.clickActionButton("Copy")
-                    }
-
-                    GuiActionRunner.execute { assertThat(frame.tree().target().rowCount).isEqualTo(13) }
-                }
-            }
-
-            describe("move up/down") {
-                it("marks the editor as modified if two templates are reordered") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(0)
-                        frame.clickActionButton("Down")
-                    }
-
-                    assertThat(editor.isModified()).isTrue()
-                }
-
-                it("marks the editor as modified if two schemes are reordered") {
-                    GuiActionRunner.execute {
-                        frame.tree().target().setSelectionRow(1)
-                        frame.clickActionButton("Down")
-                    }
-
-                    assertThat(editor.isModified()).isTrue()
-                }
+                assertThat(editor.readState().templateList.templates[0].schemes).containsExactly(IntegerScheme())
             }
         }
 
-        describe("scheme editor") {
-            it("unloads the scheme editor if the tree selection is cleared") {
-                GuiActionRunner.execute { frame.tree().target().setSelectionRow(1) }
-                frame.textBox("previewLabel").requireText(Pattern.compile(".+"))
-
-                GuiActionRunner.execute { frame.tree().target().clearSelection() }
-                frame.textBox("previewLabel").requireEmpty()
-            }
-
-            it("does not change the original symbol sets when a string scheme is changed") {
+        describe("copy") {
+            it("places a copy of the template underneath the selected template") {
                 GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(3)
+                    frame.clickActionButton("Copy")
+
+                    // Update new template's name
+                    frame.tree().target().setSelectionRow(6)
+                    frame.textBox("templateName").target().text = "Ring"
+
+                    // Adjust new template's scheme
                     frame.tree().target().setSelectionRow(7)
-                    symbolSetTable().addRow(EditableDatum(active = true, SymbolSet("ancient", "Fq9ohzV8")))
+                    frame.textBox("literal").target().text = "speech"
                 }
 
-                assertThat(editor.originalState.symbolSetSettings.symbolSets).doesNotContainKey("ancient")
+                val readList = editor.readState()
+                assertThat(readList.templateList.templates.map { it.name })
+                    .containsExactly("Further", "Enclose", "Ring", "Student")
+                assertThat(readList.templateList.templates.map { it.schemes }[1][0])
+                    .isEqualTo(LiteralScheme("else"))
+                assertThat(readList.templateList.templates.map { it.schemes }[2][0])
+                    .isEqualTo(LiteralScheme("speech"))
             }
 
-            it("does not change the original dictionaries when a word scheme is changed") {
-                val dictionary = UserDictionary("nest")
-
+            it("places a copy of the scheme underneath the selected scheme") {
                 GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(4)
+                    frame.clickActionButton("Copy")
+
                     frame.tree().target().setSelectionRow(5)
-                    dictionaryTable().addRow(EditableDatum(active = true, dictionary))
+                    frame.textBox("literal").target().text = "what"
                 }
 
-                assertThat(editor.originalState.dictionarySettings.dictionaries).doesNotContain(dictionary)
+                val readList = editor.readState()
+                assertThat(readList.templateList.templates.map { it.schemes }[1][0])
+                    .isEqualTo(LiteralScheme("else"))
+                assertThat(readList.templateList.templates.map { it.schemes }[1][1])
+                    .isEqualTo(LiteralScheme("what"))
+            }
+        }
+
+        describe("move up/down") {
+            it("marks the editor as modified if two templates are reordered") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(0)
+                    frame.clickActionButton("Down")
+                }
+
+                assertThat(editor.isModified()).isTrue()
+            }
+
+            it("marks the editor as modified if two schemes are reordered") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(1)
+                    frame.clickActionButton("Down")
+                }
+
+                assertThat(editor.isModified()).isTrue()
             }
         }
     }
 
     describe("selection after reload") {
-        it("selects the first scheme after reload") {
+        it("selects the desired queued selection if it exists") {
+            GuiActionRunner.execute {
+                editor.queueSelection = editor.originalState.templateList.templates[2].uuid
+                editor.reset()
+            }
+
+            frame.tree().requireSelection(6)
+        }
+
+        it("selects the first scheme if the queued selection is invalid") {
+            GuiActionRunner.execute {
+                editor.queueSelection = IntegerScheme().uuid
+                editor.reset()
+            }
+
             frame.tree().requireSelection(1)
         }
 
-        it("selects the first template if it does not have any schemes") {
+        it("does not override the default selection if the desired queue selection is null") {
             GuiActionRunner.execute {
-                val templates = listOf(
-                    Template("Flame", emptyList()),
-                    Template("Pen", listOf(IntegerScheme()))
-                )
-                editor.loadState(SettingsState(TemplateList(templates)))
+                editor.queueSelection = null
+                editor.reset()
             }
 
-            frame.tree().requireSelection(0)
-        }
-
-        it("does nothing if no templates or schemes are loaded") {
-            GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(emptyList()))) }
-
-            frame.tree().requireNoSelection()
-        }
-
-
-        describe("queueSelection") {
-            it("selects the desired queued selection if it exists") {
-                GuiActionRunner.execute {
-                    editor.queueSelection = editor.originalState.templateList.templates[2].uuid
-                    editor.reset()
-                }
-
-                frame.tree().requireSelection(6)
-            }
-
-            it("selects the first scheme if the queued selection is invalid") {
-                GuiActionRunner.execute {
-                    editor.queueSelection = IntegerScheme().uuid
-                    editor.reset()
-                }
-
-                frame.tree().requireSelection(1)
-            }
-
-            it("does not override the default selection if the desired queue selection is null") {
-                GuiActionRunner.execute {
-                    editor.queueSelection = null
-                    editor.reset()
-                }
-
-                frame.tree().requireSelection(1)
-            }
+            frame.tree().requireSelection(1)
         }
     }
 
@@ -540,156 +257,35 @@ object TemplateListEditorTest : Spek({
             }
         }
 
-        describe("manipulating the list of templates") {
-            it("returns the list with a template added") {
-                GuiActionRunner.execute { editor.addScheme(Template(name = "Prize")) }
-
-                assertThat(editor.readState().templateList.templates).contains(Template(name = "Prize"))
-            }
-
-            it("returns the list with a template and all its children added") {
-                val template = Template("Danger", listOf(LiteralScheme("Ill"), IntegerScheme(), StringScheme()))
-
-                GuiActionRunner.execute { editor.addScheme(template) }
-
-                assertThat(editor.readState().templateList.templates).contains(template)
-            }
-
-            it("returns the list with a template removed") {
-                GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(0)
-                    frame.clickActionButton("Remove")
-                }
-
-                assertThat(editor.readState().templateList.templates.map { it.name }).doesNotContain("Further")
-            }
-
-            it("returns the list with a template copied") {
-                GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(3)
-                    frame.clickActionButton("Copy")
-                    frame.textBox("templateName").target().text = "Enjoy"
-                }
-
-                assertThat(editor.readState().templateList.templates.map { it.name }).contains("Enclose", "Enjoy")
-            }
-
-            it("returns the list with a template moved up") {
-                GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(3)
-                    frame.clickActionButton("Up")
-                }
-
-                assertThat(editor.readState().templateList.templates.map { it.name })
-                    .containsExactly("Enclose", "Further", "Student")
-            }
-
-            it("returns the list with a template moved down") {
-                GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(3)
-                    frame.clickActionButton("Down")
-                }
-
-                assertThat(editor.readState().templateList.templates.map { it.name })
-                    .containsExactly("Further", "Student", "Enclose")
-            }
-
-            it("returns an empty list if all templates are removed") {
-                GuiActionRunner.execute {
-                    repeat(3) {
-                        frame.tree().target().setSelectionRow(0)
-                        frame.clickActionButton("Remove")
-                    }
-                }
-
-                assertThat(editor.readState().templateList.templates).isEmpty()
-            }
-
-            it("returns a list of the single template if a first template is added") {
-                GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(emptyList()))) }
-
-                GuiActionRunner.execute { editor.addScheme(Template(name = "Seem")) }
-
-                assertThat(editor.readState().templateList.templates).contains(Template(name = "Seem"))
-            }
-        }
-
-        describe("manipulating a list of schemes") {
-            it("returns the list with a scheme added") {
-                GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(2)
-                    editor.addScheme(IntegerScheme())
-                }
-
-                assertThat(editor.readState().templateList.templates[0].schemes).hasSize(3)
-            }
-
-            it("returns the list with a scheme removed") {
-                GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(1)
-                    frame.clickActionButton("Remove")
-                }
-
-                assertThat(editor.readState().templateList.templates[0].schemes)
-                    .containsExactly(IntegerScheme(minValue = 7))
-            }
-
-            it("returns the list with a scheme copied") {
-                GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(7)
-                    frame.clickActionButton("Copy")
-                }
-
-                assertThat(editor.readState().templateList.templates.last().schemes).hasSize(4)
-            }
-
-            it("returns the list with a scheme moved up") {
-                GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(8)
-                    frame.clickActionButton("Up")
-                }
-
-                assertThat(editor.readState().templateList.templates.last().schemes)
-                    .containsExactly(LiteralScheme("dog"), StringScheme(), IntegerScheme())
-            }
-
-            it("returns the list with a scheme moved down") {
-                GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(7)
-                    frame.clickActionButton("Down")
-                }
-
-                assertThat(editor.readState().templateList.templates.last().schemes)
-                    .containsExactly(LiteralScheme("dog"), StringScheme(), IntegerScheme())
-            }
-
-            it("returns an empty list if all schemes are removed from a template") {
-                GuiActionRunner.execute {
-                    repeat(3) {
-                        frame.tree().target().setSelectionRow(0)
-                        frame.clickActionButton("Remove")
-                    }
-                }
-
-                assertThat(editor.readState().templateList.templates).isEmpty()
-            }
-
-            it("returns a list of the single scheme if a first scheme is added to a template") {
-                GuiActionRunner.execute {
-                    editor.loadState(SettingsState(TemplateList(listOf(Template(schemes = emptyList())))))
-                }
-
-                GuiActionRunner.execute {
-                    frame.tree().target().setSelectionRow(0)
-                    editor.addScheme(LiteralScheme("behavior"))
-                }
-
-                assertThat(editor.readState().templateList.templates[0].schemes)
-                    .containsExactly(LiteralScheme("behavior"))
-            }
-        }
-
         describe("manipulating a scheme") {
+            it("unloads the scheme editor if the tree selection is cleared") {
+                GuiActionRunner.execute { frame.tree().target().setSelectionRow(1) }
+                frame.textBox("previewLabel").requireText(Pattern.compile(".+"))
+
+                GuiActionRunner.execute { frame.tree().target().clearSelection() }
+                frame.textBox("previewLabel").requireEmpty()
+            }
+
+            it("does not change the original symbol sets when a string scheme is changed") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(7)
+                    symbolSetTable().addRow(EditableDatum(active = true, SymbolSet("ancient", "Fq9ohzV8")))
+                }
+
+                assertThat(editor.originalState.symbolSetSettings.symbolSets).doesNotContainKey("ancient")
+            }
+
+            it("does not change the original dictionaries when a word scheme is changed") {
+                val dictionary = UserDictionary("nest")
+
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(5)
+                    dictionaryTable().addRow(EditableDatum(active = true, dictionary))
+                }
+
+                assertThat(editor.originalState.dictionarySettings.dictionaries).doesNotContain(dictionary)
+            }
+
             it("returns a scheme with the changes in the current editor") {
                 GuiActionRunner.execute {
                     frame.tree().target().setSelectionRow(1)
@@ -886,11 +482,40 @@ object TemplateListEditorTest : Spek({
         }
 
         it("validates string schemes based on the unsaved symbol sets") {
-//
+            GuiActionRunner.execute {
+                editor.loadState(
+                    SettingsState(
+                        templateList = TemplateList.from(StringScheme(), name = "Yes"),
+                        symbolSetSettings = SymbolSetSettings(mapOf("fish" to "Z5a0"))
+                    )
+                )
+            }
+
+            GuiActionRunner.execute {
+                frame.tree().target().setSelectionRow(1)
+                symbolSetTable().removeRow(0)
+            }
+
+            assertThat(editor.doValidate()).isEqualTo("Yes > String > Add at least one symbol set.")
         }
 
         it("validates word schemes based on the unsaved dictionaries") {
-//
+            GuiActionRunner.execute {
+                editor.loadState(
+                    SettingsState(
+                        templateList = TemplateList.from(WordScheme(), name = "War"),
+                        dictionarySettings = DictionarySettings()
+                    )
+                )
+            }
+
+            GuiActionRunner.execute {
+                frame.tree().target().setSelectionRow(1)
+                dictionaryTable().removeRow(0)
+                dictionaryTable().addRow(EditableDatum(active = true, UserDictionary("pearl.dic")))
+            }
+
+            assertThat(editor.doValidate()).isEqualTo("War > Word > Dictionary 'pearl.dic' is invalid: File not found.")
         }
     }
 

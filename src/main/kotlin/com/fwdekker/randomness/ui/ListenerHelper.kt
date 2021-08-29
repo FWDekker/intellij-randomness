@@ -11,6 +11,8 @@ import javax.swing.JSpinner
 import javax.swing.JTextField
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
+import javax.swing.event.TreeModelEvent
+import javax.swing.event.TreeModelListener
 import javax.swing.text.Document
 
 
@@ -112,4 +114,39 @@ class MouseClickListener(private val listener: (MouseEvent?) -> Unit) : MouseLis
      * @param event ignored
      */
     override fun mouseExited(event: MouseEvent?) = Unit
+}
+
+/**
+ * A [TreeModelListener] that invokes the same listener on each event.
+ *
+ * @property listener The listener to invoke on any event.
+ */
+class SimpleTreeModelListener(private val listener: () -> Unit) : TreeModelListener {
+    /**
+     * Invoked after a node has changed.
+     *
+     * @param event ignored
+     */
+    override fun treeNodesChanged(event: TreeModelEvent) = listener()
+
+    /**
+     * Invoked after a node has been inserted.
+     *
+     * @param event ignored
+     */
+    override fun treeNodesInserted(event: TreeModelEvent) = listener()
+
+    /**
+     * Invoked after a node has been removed.
+     *
+     * @param event ignored
+     */
+    override fun treeNodesRemoved(event: TreeModelEvent) = listener()
+
+    /**
+     * Invoked after the structure of the tree has changed.
+     *
+     * @param event ignored
+     */
+    override fun treeStructureChanged(event: TreeModelEvent) = listener()
 }
