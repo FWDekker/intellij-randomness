@@ -57,7 +57,7 @@ object ActivityTableModelEditorTest : Spek({
         it("removes entries from the underlying model") {
             GuiActionRunner.execute {
                 stringTable.data = listOf("bucket")
-                stringTable.data = listOf()
+                stringTable.data = emptyList()
             }
 
             assertThat(stringTable.model.items).isEmpty()

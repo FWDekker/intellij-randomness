@@ -105,7 +105,7 @@ object StringSchemeEditorTest : Spek({
             GuiActionRunner.execute {
                 val settings = SymbolSetSettings()
                 settings.symbolSetList = allSymbolSets
-                val newScheme = StringScheme(activeSymbolSets = activeSymbolSets.map { it.name }.toMutableSet())
+                val newScheme = StringScheme(activeSymbolSets = activeSymbolSets.map { it.name }.toSet())
                 newScheme.symbolSetSettings += settings
 
                 editor.loadState(newScheme)

@@ -90,7 +90,7 @@ object TemplateNameEditorTest : Spek({
         }
 
         it("retains the scheme's schemes") {
-            GuiActionRunner.execute { editor.loadState(Template(schemes = mutableListOf(LiteralScheme()))) }
+            GuiActionRunner.execute { editor.loadState(Template(schemes = listOf(LiteralScheme()))) }
 
             assertThat(editor.readState().schemes).containsExactlyElementsOf(editor.originalState.schemes)
         }

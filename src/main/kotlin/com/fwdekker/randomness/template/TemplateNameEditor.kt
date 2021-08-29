@@ -35,7 +35,7 @@ class TemplateNameEditor(template: Template) : StateEditor<Template>(template) {
     override fun readState() =
         Template(
             name = nameInput.text.trim(),
-            schemes = originalState.schemes.map { it.deepCopy(retainUuid = true) }.toMutableList(),
+            schemes = originalState.schemes.map { it.deepCopy(retainUuid = true) },
             decorator = originalState.decorator
         ).also { it.uuid = originalState.uuid }
 

@@ -19,7 +19,7 @@ import com.intellij.util.xmlb.annotations.XCollection
 )
 data class DictionarySettings(
     @get:XCollection(elementTypes = [BundledDictionary::class, UserDictionary::class])
-    var dictionaries: MutableSet<Dictionary> = DEFAULT_DICTIONARIES.toMutableSet(),
+    var dictionaries: Set<Dictionary> = DEFAULT_DICTIONARIES.toMutableSet(),
 ) : PersistentStateComponent<DictionarySettings>, Settings() {
     /**
      * Returns this instance.
@@ -50,7 +50,7 @@ data class DictionarySettings(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(dictionaries = dictionaries.map { it.deepCopy() }.toMutableSet())
+        copy(dictionaries = dictionaries.map { it.deepCopy() }.toSet())
             .also { if (retainUuid) it.uuid = uuid }
 
 

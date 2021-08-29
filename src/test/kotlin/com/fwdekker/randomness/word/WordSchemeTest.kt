@@ -92,7 +92,7 @@ object WordSchemeTest : Spek({
 
             it("fails if the length range ends too low to match any words") {
                 val file = tempFileHelper.createFile("save", ".dic")
-                wordScheme.activeDictionaries = mutableSetOf(UserDictionary(file.absolutePath))
+                wordScheme.activeDictionaries = setOf(UserDictionary(file.absolutePath))
 
                 wordScheme.minLength = 1
                 wordScheme.maxLength = 1
@@ -118,13 +118,13 @@ object WordSchemeTest : Spek({
             it("fails if the dictionary settings are invalid") {
                 val file = tempFileHelper.createFile("heavenly\npet\n", ".dic").also { it.delete() }
 
-                dictionarySettings.dictionaries = mutableSetOf(UserDictionary(file.absolutePath))
+                dictionarySettings.dictionaries = setOf(UserDictionary(file.absolutePath))
 
                 assertThat(wordScheme.doValidate()).isNotNull()
             }
 
             it("fails if no dictionaries are selected") {
-                wordScheme.activeDictionaries = mutableSetOf()
+                wordScheme.activeDictionaries = emptySet()
 
                 assertThat(wordScheme.doValidate()).isEqualTo("Activate at least one dictionary.")
             }
@@ -160,10 +160,10 @@ object WordSchemeTest : Spek({
         }
 
         it("creates an independent copy of the dictionary settings") {
-            (+wordScheme.dictionarySettings).dictionaries = mutableSetOf(UserDictionary("classify.dic"))
+            (+wordScheme.dictionarySettings).dictionaries = setOf(UserDictionary("classify.dic"))
 
             val copy = wordScheme.deepCopy()
-            (+copy.dictionarySettings).dictionaries = mutableSetOf(UserDictionary("decay.dic"))
+            (+copy.dictionarySettings).dictionaries = setOf(UserDictionary("decay.dic"))
 
             assertThat((+wordScheme.dictionarySettings).dictionaries).containsExactly(UserDictionary("classify.dic"))
         }
@@ -202,12 +202,12 @@ object WordSchemeTest : Spek({
         }
 
         it("writes a deep copy of the given scheme's dictionary settings into the target") {
-            val otherSettings = DictionarySettings(mutableSetOf(UserDictionary("complain.dic")))
+            val otherSettings = DictionarySettings(setOf(UserDictionary("complain.dic")))
             val otherScheme = WordScheme()
             otherScheme.dictionarySettings += otherSettings
 
             wordScheme.copyFrom(otherScheme)
-            (+otherScheme.dictionarySettings).dictionaries = mutableSetOf(UserDictionary("spit.dic"))
+            (+otherScheme.dictionarySettings).dictionaries = setOf(UserDictionary("spit.dic"))
 
             assertThat((+wordScheme.dictionarySettings).dictionaries).containsExactly(UserDictionary("complain.dic"))
         }

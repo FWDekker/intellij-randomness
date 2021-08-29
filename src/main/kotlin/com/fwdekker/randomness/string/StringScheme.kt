@@ -26,14 +26,14 @@ data class StringScheme(
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var activeSymbolSets: MutableSet<String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMutableSet(),
+    var activeSymbolSets: Set<String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMutableSet(),
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS,
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
     /**
      * Persistent storage of available symbol sets.
      */
-    @Transient
+    @get:Transient
     var symbolSetSettings: Box<SymbolSetSettings> = Box({ SymbolSetSettings.default })
 
     @Transient
@@ -104,7 +104,7 @@ data class StringScheme(
 
     override fun deepCopy(retainUuid: Boolean) =
         copy(
-            activeSymbolSets = activeSymbolSets.toMutableSet(),
+            activeSymbolSets = activeSymbolSets.toSet(),
             decorator = decorator.deepCopy(retainUuid)
         ).also {
             if (retainUuid) it.uuid = this.uuid

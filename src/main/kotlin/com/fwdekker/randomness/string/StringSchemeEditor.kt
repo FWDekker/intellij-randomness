@@ -101,7 +101,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
-            activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toMutableSet(),
+            activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet(),
             decorator = arrayDecoratorEditor.readState()
         ).also {
             it.uuid = originalState.uuid

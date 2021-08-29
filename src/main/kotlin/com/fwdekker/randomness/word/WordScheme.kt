@@ -27,13 +27,13 @@ data class WordScheme(
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     @get:XCollection(elementTypes = [BundledDictionary::class, UserDictionary::class])
-    var activeDictionaries: MutableSet<Dictionary> = DEFAULT_ACTIVE_DICTIONARIES.toMutableSet(),
+    var activeDictionaries: Set<Dictionary> = DEFAULT_ACTIVE_DICTIONARIES.toMutableSet(),
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
     /**
      * Persistent storage of available dictionaries.
      */
-    @Transient
+    @get:Transient
     var dictionarySettings: Box<DictionarySettings> = Box({ DictionarySettings.default })
 
     @Transient
@@ -104,7 +104,7 @@ data class WordScheme(
 
     override fun deepCopy(retainUuid: Boolean) =
         copy(
-            activeDictionaries = activeDictionaries.map { it.deepCopy() }.toMutableSet(),
+            activeDictionaries = activeDictionaries.map { it.deepCopy() }.toSet(),
             decorator = decorator.deepCopy(retainUuid)
         ).also {
             if (retainUuid) it.uuid = this.uuid

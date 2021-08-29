@@ -19,7 +19,7 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
  */
 data class TemplateList(
     @MapAnnotation(sortBeforeSave = false)
-    var templates: MutableList<Template> = DEFAULT_TEMPLATES.toMutableList()
+    var templates: List<Template> = DEFAULT_TEMPLATES.toMutableList()
 ) : Settings() {
     /**
      * Sets the [SettingsState] for each template in this list and returns this instance.
@@ -73,7 +73,7 @@ data class TemplateList(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        TemplateList(templates.map { it.deepCopy(retainUuid) }.toMutableList())
+        TemplateList(templates.map { it.deepCopy(retainUuid) })
             .also { if (retainUuid) it.uuid = this.uuid }
 
 
@@ -86,11 +86,11 @@ data class TemplateList(
          */
         val DEFAULT_TEMPLATES: List<Template>
             get() = listOf(
-                Template("Integer", mutableListOf(IntegerScheme())),
-                Template("Decimal", mutableListOf(DecimalScheme())),
-                Template("String", mutableListOf(StringScheme())),
-                Template("Word", mutableListOf(WordScheme())),
-                Template("UUID", mutableListOf(UuidScheme()))
+                Template("Integer", listOf(IntegerScheme())),
+                Template("Decimal", listOf(DecimalScheme())),
+                Template("String", listOf(StringScheme())),
+                Template("Word", listOf(WordScheme())),
+                Template("UUID", listOf(UuidScheme()))
             )
 
 
@@ -101,6 +101,6 @@ data class TemplateList(
          * @param name the name of the template
          */
         fun from(vararg schemes: Scheme, name: String = Template.DEFAULT_NAME) =
-            TemplateList(mutableListOf(Template(name, schemes.toMutableList())))
+            TemplateList(listOf(Template(name, schemes.toList())))
     }
 }

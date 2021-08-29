@@ -29,14 +29,14 @@ object TemplateReferenceTest : Spek({
 
     describe("parent") {
         it("fails if the parent is not in the given template list") {
-            templateList.templates = mutableListOf()
+            templateList.templates = emptyList()
 
             assertThatThrownBy { reference.parent }.isNotNull()
         }
 
         it("returns the template in the template list that contains the reference") {
-            val template = Template("widow", mutableListOf(reference))
-            templateList.templates = mutableListOf(Template("variety", mutableListOf(TemplateReference())), template)
+            val template = Template("widow", listOf(reference))
+            templateList.templates = listOf(Template("variety", listOf(TemplateReference())), template)
 
             assertThat(reference.parent).isEqualTo(template)
         }
@@ -51,7 +51,7 @@ object TemplateReferenceTest : Spek({
             }
 
             it("returns null if there is no template with the given UUID in the template list") {
-                templateList.templates = mutableListOf(Template("oppose", mutableListOf(DummyScheme())))
+                templateList.templates = listOf(Template("oppose", listOf(DummyScheme())))
 
                 reference.templateUuid = "7a9b9822-c99e-41dc-8e6a-220ca4dec181"
 
@@ -59,8 +59,8 @@ object TemplateReferenceTest : Spek({
             }
 
             it("returns the template with the given UUID if it is in the template list") {
-                val template = Template("supply", mutableListOf(DummyScheme()))
-                templateList.templates = mutableListOf(template)
+                val template = Template("supply", listOf(DummyScheme()))
+                templateList.templates = listOf(template)
 
                 reference.templateUuid = template.uuid
 
@@ -70,8 +70,8 @@ object TemplateReferenceTest : Spek({
 
         describe("set") {
             it("sets the template UUID") {
-                val template = Template("hotel", mutableListOf(DummyScheme()))
-                templateList.templates = mutableListOf(template)
+                val template = Template("hotel", listOf(DummyScheme()))
+                templateList.templates = listOf(template)
 
                 reference.template = template
 
@@ -94,8 +94,8 @@ object TemplateReferenceTest : Spek({
         }
 
         it("surrounds the target template's name with square brackets") {
-            val template = Template("milk", mutableListOf(DummyScheme()))
-            templateList.templates = mutableListOf(template)
+            val template = Template("milk", listOf(DummyScheme()))
+            templateList.templates = listOf(template)
 
             reference.templateUuid = template.uuid
 
@@ -111,8 +111,8 @@ object TemplateReferenceTest : Spek({
         }
 
         it("returns the template's icons") {
-            val template = Template("milk", mutableListOf(IntegerScheme()))
-            templateList.templates = mutableListOf(template)
+            val template = Template("milk", listOf(IntegerScheme()))
+            templateList.templates = listOf(template)
 
             reference.templateUuid = template.uuid
 
@@ -129,7 +129,7 @@ object TemplateReferenceTest : Spek({
         }
 
         it("returns the referenced template's value") {
-            templateList.templates = mutableListOf(Template(schemes = mutableListOf(DummyScheme.from("bus"))))
+            templateList.templates = listOf(Template(schemes = listOf(DummyScheme.from("bus"))))
 
             reference.templateUuid = templateList.templates.single().uuid
 
@@ -138,11 +138,8 @@ object TemplateReferenceTest : Spek({
         }
 
         it("returns an array of strings if the referenced scheme returns an array of schemes") {
-            templateList.templates = mutableListOf(
-                Template(
-                    schemes = mutableListOf(DummyScheme.from("bus").also { it.decorator.enabled = true })
-                )
-            )
+            templateList.templates =
+                listOf(Template(schemes = listOf(DummyScheme.from("bus").also { it.decorator.enabled = true })))
 
             reference.templateUuid = templateList.templates.single().uuid
 
@@ -153,7 +150,7 @@ object TemplateReferenceTest : Spek({
 
     describe("setSettingsState") {
         it("overwrites the known list of templates") {
-            val newSettings = SettingsState(templateList = TemplateList(mutableListOf()))
+            val newSettings = SettingsState(templateList = TemplateList(emptyList()))
 
             reference.setSettingsState(newSettings)
 
@@ -164,8 +161,8 @@ object TemplateReferenceTest : Spek({
 
     describe("doValidate") {
         it("passes for valid settings") {
-            val template = Template(schemes = mutableListOf(DummyScheme()))
-            templateList.templates = mutableListOf(template)
+            val template = Template(schemes = listOf(DummyScheme()))
+            templateList.templates = listOf(template)
 
             reference.templateUuid = template.uuid
 
@@ -179,8 +176,8 @@ object TemplateReferenceTest : Spek({
         }
 
         it("fails if the template cannot be found in the list") {
-            val template = Template(schemes = mutableListOf(DummyScheme()))
-            templateList.templates = mutableListOf(template)
+            val template = Template(schemes = listOf(DummyScheme()))
+            templateList.templates = listOf(template)
 
             reference.templateUuid = "ca27e68d-11be-4679-af92-4f5f13c69772"
 
@@ -189,13 +186,13 @@ object TemplateReferenceTest : Spek({
 
         it("fails if the reference is recursive") {
             val otherReference = TemplateReference().also { it.templateList += templateList }
-            val otherTemplate = Template("Ray", mutableListOf(otherReference))
+            val otherTemplate = Template("Ray", listOf(otherReference))
             reference.template = otherTemplate
-            val template = Template("Various", mutableListOf(reference))
+            val template = Template("Various", listOf(reference))
 
             otherReference.template = template
             reference.template = otherTemplate
-            templateList.templates = mutableListOf(template, otherTemplate)
+            templateList.templates = listOf(template, otherTemplate)
 
             assertThat(reference.doValidate()).isEqualTo("Found recursion: (Various → Ray → Various)")
         }
@@ -228,10 +225,10 @@ object TemplateReferenceTest : Spek({
         }
 
         it("creates a shallow copy of the template list") {
-            (+reference.templateList).templates = mutableListOf(Template(schemes = mutableListOf(reference)))
+            (+reference.templateList).templates = listOf(Template(schemes = listOf(reference)))
 
             val copy = reference.deepCopy()
-            (+copy.templateList).templates = mutableListOf(Template(schemes = mutableListOf(copy, DummyScheme())))
+            (+copy.templateList).templates = listOf(Template(schemes = listOf(copy, DummyScheme())))
 
             assertThat((+reference.templateList).templates[0].schemes).hasSize(2)
         }
@@ -260,7 +257,7 @@ object TemplateReferenceTest : Spek({
         }
 
         it("updates the target's reference to the template list") {
-            reference.copyFrom(TemplateReference().also { it.templateList += TemplateList(mutableListOf()) })
+            reference.copyFrom(TemplateReference().also { it.templateList += TemplateList(emptyList()) })
 
             assertThat(+reference.templateList).isNotSameAs(templateList)
         }
@@ -271,7 +268,7 @@ object TemplateReferenceTest : Spek({
             otherScheme.templateList += otherList
 
             reference.copyFrom(otherScheme)
-            (+otherScheme.templateList).templates = mutableListOf(Template(name = "Realize"))
+            (+otherScheme.templateList).templates = listOf(Template(name = "Realize"))
 
             assertThat((+reference.templateList).templates).containsExactly(Template(name = "Realize"))
         }

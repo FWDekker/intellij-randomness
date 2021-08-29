@@ -95,13 +95,13 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
-            activeDictionaries = dictionaryTable.activeData.toMutableSet(),
+            activeDictionaries = dictionaryTable.activeData.toSet(),
             decorator = arrayDecoratorEditor.readState()
         ).also {
             it.uuid = originalState.uuid
 
             it.dictionarySettings += (+originalState.dictionarySettings).deepCopy(retainUuid = true)
-            (+it.dictionarySettings).dictionaries = dictionaryTable.data.toMutableSet()
+            (+it.dictionarySettings).dictionaries = dictionaryTable.data.toSet()
 
             UserDictionary.clearCache()
         }

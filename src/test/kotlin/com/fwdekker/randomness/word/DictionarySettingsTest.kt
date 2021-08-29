@@ -26,13 +26,13 @@ object DictionarySettingsTest : Spek({
         it("fails if a dictionary of a now-deleted file is given") {
             val file = tempFileHelper.createFile("noon\nreason\n", ".dic").also { it.delete() }
 
-            val settings = DictionarySettings(mutableSetOf(UserDictionary(file.absolutePath)))
+            val settings = DictionarySettings(setOf(UserDictionary(file.absolutePath)))
 
             assertThat(settings.doValidate()).matches("Dictionary '.*\\.dic' is invalid: File not found\\.")
         }
 
         it("fails if one of the dictionaries is invalid") {
-            val settings = DictionarySettings(mutableSetOf(UserDictionary("does_not_exist.dic")))
+            val settings = DictionarySettings(setOf(UserDictionary("does_not_exist.dic")))
 
             assertThat(settings.doValidate()).isEqualTo("Dictionary 'does_not_exist.dic' is invalid: File not found.")
         }
@@ -40,7 +40,7 @@ object DictionarySettingsTest : Spek({
         it("fails if one the dictionaries is empty") {
             val file = tempFileHelper.createFile("", ".dic")
 
-            val settings = DictionarySettings(mutableSetOf(UserDictionary(file.absolutePath)))
+            val settings = DictionarySettings(setOf(UserDictionary(file.absolutePath)))
 
             assertThat(settings.doValidate()).matches("Dictionary '.*\\.dic' is empty\\.")
         }
@@ -49,7 +49,7 @@ object DictionarySettingsTest : Spek({
             val file = tempFileHelper.createFile("rapid\ncloth", ".dic")
             val dictionary = UserDictionary(file.absolutePath)
 
-            val settings = DictionarySettings(mutableSetOf(dictionary))
+            val settings = DictionarySettings(setOf(dictionary))
             dictionary.words // Force cache load
             file.writeText("")
 
@@ -71,16 +71,16 @@ object DictionarySettingsTest : Spek({
         }
 
         it("contains an independent list of dictionaries") {
-            val settings = DictionarySettings(mutableSetOf(BundledDictionary("wait.dic")))
+            val settings = DictionarySettings(setOf(BundledDictionary("wait.dic")))
 
             val copy = settings.deepCopy()
-            copy.dictionaries.add(BundledDictionary("upright.dic"))
+            copy.dictionaries = setOf(BundledDictionary("upright.dic"))
 
-            assertThat(settings.dictionaries).hasSize(1)
+            assertThat(settings.dictionaries).containsExactly(BundledDictionary("wait.dic"))
         }
 
         it("contains a list of independent dictionaries") {
-            val settings = DictionarySettings(mutableSetOf(BundledDictionary("wait.dic")))
+            val settings = DictionarySettings(setOf(BundledDictionary("wait.dic")))
 
             val copy = settings.deepCopy()
             (copy.dictionaries.first() as BundledDictionary).filename = "defense.dic"

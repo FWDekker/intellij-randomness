@@ -19,8 +19,8 @@ object StringSchemeTest : Spek({
 
 
     beforeEachTest {
-        symbolSetSettings = SymbolSetSettings(mutableMapOf("steam" to "bH2"))
-        stringScheme = StringScheme(activeSymbolSets = mutableSetOf("steam"))
+        symbolSetSettings = SymbolSetSettings(mapOf("steam" to "bH2"))
+        stringScheme = StringScheme(activeSymbolSets = setOf("steam"))
         stringScheme.symbolSetSettings += symbolSetSettings
     }
 
@@ -56,7 +56,7 @@ object StringSchemeTest : Spek({
                     stringScheme.maxLength = maxLength
                     stringScheme.enclosure = enclosure
                     stringScheme.capitalization = capitalization
-                    stringScheme.activeSymbolSets = symbolSets.values.toMutableSet()
+                    stringScheme.activeSymbolSets = symbolSets.values.toSet()
 
                     assertThat(stringScheme.generateStrings()).containsExactly(expectedString)
                 }
@@ -71,7 +71,7 @@ object StringSchemeTest : Spek({
                 stringScheme.maxLength = 1
                 stringScheme.enclosure = ""
                 stringScheme.capitalization = CapitalizationMode.RETAIN
-                stringScheme.activeSymbolSets = symbolSets.keys.toMutableSet()
+                stringScheme.activeSymbolSets = symbolSets.keys.toSet()
 
                 assertThat(stringScheme.generateStrings()).containsExactly(emoji)
             }
@@ -112,28 +112,28 @@ object StringSchemeTest : Spek({
 
         describe("symbol sets") {
             it("fails if the symbol set settings are invalid") {
-                symbolSetSettings.symbolSets = mutableMapOf()
-                stringScheme.activeSymbolSets = mutableSetOf()
+                symbolSetSettings.symbolSets = emptyMap()
+                stringScheme.activeSymbolSets = emptySet()
 
                 assertThat(stringScheme.doValidate()).isEqualTo("Add at least one symbol set.")
             }
 
             it("fails if an undefined symbol set is selected") {
-                symbolSetSettings.symbolSets = mutableMapOf("name" to "symbols")
-                stringScheme.activeSymbolSets = mutableSetOf("unknown")
+                symbolSetSettings.symbolSets = mapOf("name" to "symbols")
+                stringScheme.activeSymbolSets = setOf("unknown")
 
                 assertThat(stringScheme.doValidate()).isEqualTo("Unknown symbol set `unknown`.")
             }
 
             it("fails if no symbol sets are active") {
-                stringScheme.activeSymbolSets = mutableSetOf()
+                stringScheme.activeSymbolSets = emptySet()
 
                 assertThat(stringScheme.doValidate()).isEqualTo("Activate at least one symbol set.")
             }
 
             it("fails if only look-alike symbols are selected and look-alike symbols are excluded") {
-                symbolSetSettings.symbolSets = mutableMapOf("Look-alike" to "l01")
-                stringScheme.activeSymbolSets = mutableSetOf("Look-alike")
+                symbolSetSettings.symbolSets = mapOf("Look-alike" to "l01")
+                stringScheme.activeSymbolSets = setOf("Look-alike")
                 stringScheme.excludeLookAlikeSymbols = true
 
                 assertThat(stringScheme.doValidate()).isEqualTo(
@@ -173,10 +173,10 @@ object StringSchemeTest : Spek({
         }
 
         it("creates an independent copy of the symbol set settings") {
-            (+stringScheme.symbolSetSettings).symbolSets = mutableMapOf("formal" to "feXw8M")
+            (+stringScheme.symbolSetSettings).symbolSets = mapOf("formal" to "feXw8M")
 
             val copy = stringScheme.deepCopy()
-            (+copy.symbolSetSettings).symbolSets = mutableMapOf("absent" to "9hDt")
+            (+copy.symbolSetSettings).symbolSets = mapOf("absent" to "9hDt")
 
             assertThat((+stringScheme.symbolSetSettings).symbolSets).containsOnlyKeys("formal")
         }
@@ -191,7 +191,7 @@ object StringSchemeTest : Spek({
             stringScheme.minLength = 730
             stringScheme.maxLength = 891
             stringScheme.enclosure = "Qh7"
-            stringScheme.activeSymbolSets = mutableSetOf(SymbolSet.BRACKETS.name)
+            stringScheme.activeSymbolSets = setOf(SymbolSet.BRACKETS.name)
             stringScheme.excludeLookAlikeSymbols = true
             stringScheme.decorator.count = 249
 
@@ -217,12 +217,12 @@ object StringSchemeTest : Spek({
         }
 
         it("writes a deep copy of the given scheme's symbol set settings into the target") {
-            val otherSettings = SymbolSetSettings(mutableMapOf("sew" to "2eNco"))
+            val otherSettings = SymbolSetSettings(mapOf("sew" to "2eNco"))
             val otherScheme = StringScheme()
             otherScheme.symbolSetSettings += otherSettings
 
             stringScheme.copyFrom(otherScheme)
-            (+otherScheme.symbolSetSettings).symbolSets = mutableMapOf("wife" to "4g5X0")
+            (+otherScheme.symbolSetSettings).symbolSets = mapOf("wife" to "4g5X0")
 
             assertThat((+stringScheme.symbolSetSettings).symbolSets).containsOnlyKeys("sew")
         }
