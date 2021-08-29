@@ -101,14 +101,19 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
+            activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toMutableSet(),
             decorator = arrayDecoratorEditor.readState()
         ).also {
             it.uuid = originalState.uuid
 
-            it.symbolSetSettings = originalState.symbolSetSettings.copy()
+            it.symbolSetSettings += (+originalState.symbolSetSettings).deepCopy(retainUuid = true)
             (+it.symbolSetSettings).symbolSetList = symbolSetTable.data.toSet()
-            it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toMutableSet()
         }
+
+    override fun applyState() {
+        super.applyState()
+        (+originalState.symbolSetSettings).copyFrom(+readState().symbolSetSettings)
+    }
 
 
     override fun doValidate(): String? {

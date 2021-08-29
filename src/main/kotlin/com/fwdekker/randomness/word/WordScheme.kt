@@ -4,6 +4,7 @@ import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.State
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
@@ -90,14 +91,26 @@ data class WordScheme(
         }
     }
 
-    override fun deepCopy(retainUuid: Boolean) =
-        copy(decorator = decorator.deepCopy(retainUuid))
-            .also {
-                if (retainUuid) it.uuid = this.uuid
+    override fun copyFrom(other: State) {
+        require(other is WordScheme) { "Cannot copy from different type." }
 
-                it.dictionarySettings = dictionarySettings.copy()
-                it.activeDictionaries = activeDictionaries.map(Dictionary::deepCopy).toMutableSet()
-            }
+        (+dictionarySettings).also {
+            it.copyFrom(+other.dictionarySettings)
+
+            super.copyFrom(other)
+            dictionarySettings += it
+        }
+    }
+
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(
+            activeDictionaries = activeDictionaries.map { it.deepCopy() }.toMutableSet(),
+            decorator = decorator.deepCopy(retainUuid)
+        ).also {
+            if (retainUuid) it.uuid = this.uuid
+
+            it.dictionarySettings += (+dictionarySettings).deepCopy(retainUuid = retainUuid)
+        }
 
 
     /**

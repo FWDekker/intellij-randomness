@@ -4,6 +4,7 @@ import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.State
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
@@ -90,14 +91,26 @@ data class StringScheme(
         }
     }
 
-    override fun deepCopy(retainUuid: Boolean) =
-        copy(decorator = decorator.deepCopy(retainUuid))
-            .also {
-                if (retainUuid) it.uuid = this.uuid
+    override fun copyFrom(other: State) {
+        require(other is StringScheme) { "Cannot copy from different type." }
 
-                it.symbolSetSettings = symbolSetSettings.copy()
-                it.activeSymbolSets = activeSymbolSets.toMutableSet()
-            }
+        (+symbolSetSettings).also {
+            it.copyFrom(+other.symbolSetSettings)
+
+            super.copyFrom(other)
+            symbolSetSettings += it
+        }
+    }
+
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(
+            activeSymbolSets = activeSymbolSets.toMutableSet(),
+            decorator = decorator.deepCopy(retainUuid)
+        ).also {
+            if (retainUuid) it.uuid = this.uuid
+
+            it.symbolSetSettings += (+symbolSetSettings).deepCopy(retainUuid = retainUuid)
+        }
 
 
     /**

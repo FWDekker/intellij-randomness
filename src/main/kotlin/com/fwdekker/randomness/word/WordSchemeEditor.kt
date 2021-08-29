@@ -94,17 +94,22 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             minLength = minLength.value,
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
-            capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
+            capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
+            activeDictionaries = dictionaryTable.activeData.toMutableSet(),
             decorator = arrayDecoratorEditor.readState()
         ).also {
             it.uuid = originalState.uuid
 
-            it.dictionarySettings = originalState.dictionarySettings.copy()
+            it.dictionarySettings += (+originalState.dictionarySettings).deepCopy(retainUuid = true)
             (+it.dictionarySettings).dictionaries = dictionaryTable.data.toMutableSet()
-            it.activeDictionaries = dictionaryTable.activeData.toMutableSet()
 
             UserDictionary.clearCache()
         }
+
+    override fun applyState() {
+        super.applyState()
+        (+originalState.dictionarySettings).copyFrom(+readState().dictionarySettings)
+    }
 
 
     override fun doValidate(): String? {

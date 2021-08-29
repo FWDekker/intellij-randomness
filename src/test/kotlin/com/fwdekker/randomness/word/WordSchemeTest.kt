@@ -1,8 +1,10 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.TempFileHelper
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -11,12 +13,14 @@ import org.spekframework.spek2.style.specification.describe
  * Unit tests for [WordScheme].
  */
 object WordSchemeTest : Spek({
+    lateinit var dictionarySettings: DictionarySettings
     lateinit var wordScheme: WordScheme
 
 
     beforeEachTest {
+        dictionarySettings = DictionarySettings()
         wordScheme = WordScheme()
-        wordScheme.dictionarySettings += DictionarySettings()
+        wordScheme.dictionarySettings += dictionarySettings
     }
 
 
@@ -49,11 +53,11 @@ object WordSchemeTest : Spek({
 
     describe("setSettingsState") {
         it("overwrites the default symbol set settings") {
-            val newSettings = SettingsState(dictionarySettings = DictionarySettings())
+            val newSettings = DictionarySettings()
 
-            wordScheme.setSettingsState(newSettings)
+            wordScheme.setSettingsState(SettingsState(dictionarySettings = newSettings))
 
-            assertThat(+wordScheme.dictionarySettings).isSameAs(newSettings.dictionarySettings)
+            assertThat(+wordScheme.dictionarySettings).isSameAs(newSettings)
         }
     }
 
@@ -88,9 +92,8 @@ object WordSchemeTest : Spek({
 
             it("fails if the length range ends too low to match any words") {
                 val file = tempFileHelper.createFile("save", ".dic")
-                val dictionary = UserDictionary(file.absolutePath)
+                wordScheme.activeDictionaries = mutableSetOf(UserDictionary(file.absolutePath))
 
-                wordScheme.activeDictionaries = mutableSetOf(dictionary)
                 wordScheme.minLength = 1
                 wordScheme.maxLength = 1
 
@@ -115,7 +118,7 @@ object WordSchemeTest : Spek({
             it("fails if the dictionary settings are invalid") {
                 val file = tempFileHelper.createFile("heavenly\npet\n", ".dic").also { it.delete() }
 
-                (+wordScheme.dictionarySettings).dictionaries = mutableSetOf(UserDictionary(file.absolutePath))
+                dictionarySettings.dictionaries = mutableSetOf(UserDictionary(file.absolutePath))
 
                 assertThat(wordScheme.doValidate()).isNotNull()
             }
@@ -149,12 +152,28 @@ object WordSchemeTest : Spek({
             assertThat(wordScheme.decorator.count).isEqualTo(333)
         }
 
-        it("retains the reference to the dictionary settings") {
-            assertThat(+wordScheme.deepCopy().dictionarySettings).isSameAs(+wordScheme.dictionarySettings)
+        it("creates an independent copy of the dictionary settings box") {
+            val copy = wordScheme.deepCopy(retainUuid = true)
+            copy.dictionarySettings += DictionarySettings()
+
+            assertThat(+copy.dictionarySettings).isNotSameAs(+wordScheme.dictionarySettings)
+        }
+
+        it("creates an independent copy of the dictionary settings") {
+            (+wordScheme.dictionarySettings).dictionaries = mutableSetOf(UserDictionary("classify.dic"))
+
+            val copy = wordScheme.deepCopy()
+            (+copy.dictionarySettings).dictionaries = mutableSetOf(UserDictionary("decay.dic"))
+
+            assertThat((+wordScheme.dictionarySettings).dictionaries).containsExactly(UserDictionary("classify.dic"))
         }
     }
 
     describe("copyFrom") {
+        it("cannot copy from a different type") {
+            assertThatThrownBy { wordScheme.copyFrom(DummyScheme()) }.isNotNull()
+        }
+
         it("copies state from another instance") {
             wordScheme.minLength = 502
             wordScheme.maxLength = 812
@@ -169,10 +188,28 @@ object WordSchemeTest : Spek({
                 .isEqualTo(wordScheme)
                 .isNotSameAs(wordScheme)
             assertThat(+newScheme.dictionarySettings)
-                .isSameAs(+wordScheme.dictionarySettings)
+                .isEqualTo(+wordScheme.dictionarySettings)
+                .isNotSameAs(+wordScheme.dictionarySettings)
             assertThat(newScheme.decorator)
                 .isEqualTo(wordScheme.decorator)
                 .isNotSameAs(wordScheme.decorator)
+        }
+
+        it("does not change the target's reference to the dictionary settings") {
+            wordScheme.copyFrom(WordScheme().also { it.dictionarySettings += DictionarySettings() })
+
+            assertThat(+wordScheme.dictionarySettings).isSameAs(dictionarySettings)
+        }
+
+        it("writes a deep copy of the given scheme's dictionary settings into the target") {
+            val otherSettings = DictionarySettings(mutableSetOf(UserDictionary("complain.dic")))
+            val otherScheme = WordScheme()
+            otherScheme.dictionarySettings += otherSettings
+
+            wordScheme.copyFrom(otherScheme)
+            (+otherScheme.dictionarySettings).dictionaries = mutableSetOf(UserDictionary("spit.dic"))
+
+            assertThat((+wordScheme.dictionarySettings).dictionaries).containsExactly(UserDictionary("complain.dic"))
         }
     }
 })

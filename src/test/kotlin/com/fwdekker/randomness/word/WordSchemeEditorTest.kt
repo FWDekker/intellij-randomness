@@ -174,14 +174,46 @@ object WordSchemeEditorTest : Spek({
                 .isEqualTo(editor.originalState)
                 .isNotSameAs(editor.originalState)
             assertThat(+readState.dictionarySettings)
-                .isSameAs(+editor.originalState.dictionarySettings)
+                .isEqualTo(+editor.originalState.dictionarySettings)
+                .isNotSameAs(+editor.originalState.dictionarySettings)
             assertThat(readState.decorator)
                 .isEqualTo(editor.originalState.decorator)
                 .isNotSameAs(editor.originalState.decorator)
         }
 
+        it("returns a scheme with a deep copy of the dictionary settings") {
+            GuiActionRunner.execute {
+                repeat(dictionaryTable.items.size) { dictionaryTable.listTableModel.removeRow(0) }
+                dictionaryTable.listTableModel.addRow(EditableDatum(active = true, UserDictionary("fasten.dic")))
+            }
+
+            assertThat((+editor.readState().dictionarySettings).dictionaries)
+                .containsExactly(UserDictionary("fasten.dic"))
+            assertThat(dictionarySettings.dictionaries)
+                .doesNotContain(UserDictionary("fasten.dic"))
+        }
+
         it("retains the scheme's UUID") {
             assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
+        }
+    }
+
+    describe("applyState") {
+        it("does not change the target's reference to the dictionary settings") {
+            GuiActionRunner.execute { editor.applyState() }
+
+            assertThat(+scheme.dictionarySettings).isSameAs(dictionarySettings)
+        }
+
+        it("copies the changes from the table into the original state's dictionary settings") {
+            GuiActionRunner.execute {
+                repeat(dictionaryTable.items.size) { dictionaryTable.listTableModel.removeRow(0) }
+                dictionaryTable.listTableModel.addRow(EditableDatum(active = true, UserDictionary("fat.dic")))
+            }
+
+            GuiActionRunner.execute { editor.applyState() }
+
+            assertThat(dictionarySettings.dictionaries).containsExactly(UserDictionary("fat.dic"))
         }
     }
 

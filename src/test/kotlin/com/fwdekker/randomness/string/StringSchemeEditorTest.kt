@@ -182,14 +182,46 @@ object StringSchemeEditorTest : Spek({
                 .isEqualTo(editor.originalState)
                 .isNotSameAs(editor.originalState)
             assertThat(+readState.symbolSetSettings)
-                .isSameAs(+editor.originalState.symbolSetSettings)
+                .isEqualTo(+editor.originalState.symbolSetSettings)
+                .isNotSameAs(+editor.originalState.symbolSetSettings)
             assertThat(readState.decorator)
                 .isEqualTo(editor.originalState.decorator)
                 .isNotSameAs(editor.originalState.decorator)
         }
 
+        it("returns a scheme with a deep copy of the symbol set settings") {
+            GuiActionRunner.execute {
+                repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
+                symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("feel", "5vG6eeU")))
+            }
+
+            assertThat((+editor.readState().symbolSetSettings).symbolSetList)
+                .containsExactly(SymbolSet("feel", "5vG6eeU"))
+            assertThat(symbolSetSettings.symbolSetList)
+                .doesNotContain(SymbolSet("feel", "5vG6eeU"))
+        }
+
         it("retains the scheme's UUID") {
             assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
+        }
+    }
+
+    describe("applyState") {
+        it("does not change the target's reference to the symbol set settings") {
+            GuiActionRunner.execute { editor.applyState() }
+
+            assertThat(+scheme.symbolSetSettings).isSameAs(symbolSetSettings)
+        }
+
+        it("copies the changes from the table into the original state's symbol set settings") {
+            GuiActionRunner.execute {
+                repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
+                symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("excess", "uWX4POU")))
+            }
+
+            GuiActionRunner.execute { editor.applyState() }
+
+            assertThat(symbolSetSettings.symbolSetList).containsExactly(SymbolSet("excess", "uWX4POU"))
         }
     }
 
