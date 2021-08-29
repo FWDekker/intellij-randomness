@@ -15,7 +15,7 @@ import org.spekframework.spek2.style.specification.describe
 object StateEditorTest : Spek({
     lateinit var frame: FrameFixture
 
-    lateinit var scheme: DummyScheme
+    lateinit var state: DummyScheme
     lateinit var editor: DummySchemeEditor
 
 
@@ -24,8 +24,8 @@ object StateEditorTest : Spek({
     }
 
     beforeEachTest {
-        scheme = DummyScheme.from("ashamed", "bathe")
-        editor = GuiActionRunner.execute<DummySchemeEditor> { DummySchemeEditor(scheme) }
+        state = DummyScheme.from("ashamed", "bathe")
+        editor = GuiActionRunner.execute<DummySchemeEditor> { DummySchemeEditor(state) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
@@ -34,40 +34,40 @@ object StateEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
-        it("writes the given scheme into the original scheme") {
-            val newScheme = DummyScheme.from("satisfy", "faint")
+    describe("loadState") {
+        it("writes the given state into the original state") {
+            val newState = DummyScheme.from("satisfy", "faint")
 
-            GuiActionRunner.execute { editor.loadState(newScheme) }
+            GuiActionRunner.execute { editor.loadState(newState) }
 
-            assertThat(scheme.literals).containsExactly("satisfy", "faint")
-            assertThat(scheme).isNotSameAs(newScheme)
+            assertThat(state.literals).containsExactly("satisfy", "faint")
+            assertThat(state).isNotSameAs(newState)
         }
     }
 
-    describe("readScheme") {
-        it("returns an identical copy of the original scheme") {
-            val readScheme = editor.readState()
+    describe("readState") {
+        it("returns an identical copy of the original state") {
+            val readState = editor.readState()
 
-            assertThat(readScheme.literals).containsExactly("ashamed", "bathe")
-            assertThat(readScheme).isNotSameAs(scheme)
+            assertThat(readState.literals).containsExactly("ashamed", "bathe")
+            assertThat(readState).isNotSameAs(state)
         }
 
-        it("returns a copy that reflects changes in the editor without adusting the original scheme") {
+        it("returns a copy that reflects changes in the editor without adusting the original state") {
             GuiActionRunner.execute { frame.textBox("literals").target().text = "reflect,cover" }
 
-            assertThat(scheme.literals).containsExactly("ashamed", "bathe")
+            assertThat(state.literals).containsExactly("ashamed", "bathe")
             assertThat(editor.readState().literals).containsExactly("reflect", "cover")
         }
     }
 
-    describe("applyScheme") {
-        it("writes changes into the original scheme") {
+    describe("applyState") {
+        it("writes changes into the original state") {
             GuiActionRunner.execute { frame.textBox("literals").target().text = "puzzle,once" }
 
             editor.applyState()
 
-            assertThat(scheme.literals).containsExactly("puzzle", "once")
+            assertThat(state.literals).containsExactly("puzzle", "once")
         }
     }
 
@@ -108,22 +108,22 @@ object StateEditorTest : Spek({
             assertThat(editor.isModified()).isFalse()
         }
 
-        it("ensures that applying the scheme does not affect the original scheme") {
+        it("ensures that applying the state does not affect the original state") {
             GuiActionRunner.execute { frame.textBox("literals").target().text = "father" }
 
             GuiActionRunner.execute { editor.reset() }
             editor.applyState()
 
-            assertThat(scheme.literals).containsExactly("ashamed", "bathe")
+            assertThat(state.literals).containsExactly("ashamed", "bathe")
         }
     }
 
     describe("doValidate") {
-        it("returns null if the scheme is valid") {
+        it("returns null if the state is valid") {
             assertThat(editor.doValidate()).isNull()
         }
 
-        it("returns an error message if the scheme is invalid") {
+        it("returns an error message if the state is invalid") {
             GuiActionRunner.execute { frame.textBox("literals").target().text = DummyScheme.INVALID_OUTPUT }
 
             assertThat(editor.doValidate()).isEqualTo("Invalid input!")

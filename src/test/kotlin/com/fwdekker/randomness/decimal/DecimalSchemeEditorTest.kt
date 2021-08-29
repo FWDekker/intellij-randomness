@@ -44,7 +44,7 @@ object DecimalSchemeEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("loads the scheme's minimum value") {
             GuiActionRunner.execute { editor.loadState(DecimalScheme(minValue = 157.61, maxValue = 637.03)) }
 
@@ -98,7 +98,7 @@ object DecimalSchemeEditorTest : Spek({
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         describe("defaults") {
             it("returns default grouping separator if no grouping separator is selected") {
                 GuiActionRunner.execute { editor.loadState(DecimalScheme(groupingSeparator = "unsupported")) }

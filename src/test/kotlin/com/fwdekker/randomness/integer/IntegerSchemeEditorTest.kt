@@ -63,7 +63,7 @@ object IntegerSchemeEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("loads the scheme's minimum value") {
             GuiActionRunner.execute { editor.loadState(IntegerScheme(minValue = 145L, maxValue = 341L)) }
 
@@ -111,7 +111,7 @@ object IntegerSchemeEditorTest : Spek({
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         describe("defaults") {
             it("returns default brackets if no brackets are selected") {
                 GuiActionRunner.execute { editor.loadState(IntegerScheme(groupingSeparator = "unsupported")) }

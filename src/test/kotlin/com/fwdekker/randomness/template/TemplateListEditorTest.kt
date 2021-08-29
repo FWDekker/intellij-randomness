@@ -491,7 +491,7 @@ object TemplateListEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("loads the list's templates") {
             val templates = SettingsState(TemplateList(listOf(Template(name = "Limb"), Template(name = "Pot"))))
 
@@ -527,7 +527,7 @@ object TemplateListEditorTest : Spek({
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         describe("no changes made") {
             it("returns the original state if no editor changes are made") {
                 assertThat(editor.readState()).isEqualTo(editor.originalState)
@@ -798,7 +798,7 @@ object TemplateListEditorTest : Spek({
         }
     }
 
-    describe("applyScheme") {
+    describe("applyState") {
         it("applies changes to symbol sets") {
             GuiActionRunner.execute {
                 frame.tree().target().setSelectionRow(7)

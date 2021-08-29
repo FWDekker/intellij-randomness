@@ -50,7 +50,7 @@ object TemplateNameEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("loads the template's name") {
             GuiActionRunner.execute { editor.loadState(Template(name = "Tin")) }
 
@@ -58,7 +58,7 @@ object TemplateNameEditorTest : Spek({
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readState()).isEqualTo(editor.originalState)
         }

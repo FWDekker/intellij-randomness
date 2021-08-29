@@ -35,7 +35,7 @@ object UuidSchemeEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("loads the scheme's version") {
             GuiActionRunner.execute { editor.loadState(UuidScheme(version = 4)) }
 
@@ -66,7 +66,7 @@ object UuidSchemeEditorTest : Spek({
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         describe("defaults") {
             it("returns default version if no version is selected") {
                 GuiActionRunner.execute { editor.loadState(UuidScheme(version = 967)) }

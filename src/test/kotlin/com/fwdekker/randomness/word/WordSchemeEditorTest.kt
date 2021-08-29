@@ -72,7 +72,7 @@ object WordSchemeEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("loads the scheme's minimum length") {
             GuiActionRunner.execute { editor.loadState(WordScheme(minLength = 4, maxLength = 12)) }
 
@@ -123,7 +123,7 @@ object WordSchemeEditorTest : Spek({
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         describe("defaults") {
             it("returns default enclosure if no enclosure is selected") {
                 GuiActionRunner.execute { editor.loadState(WordScheme(enclosure = "unsupported")) }

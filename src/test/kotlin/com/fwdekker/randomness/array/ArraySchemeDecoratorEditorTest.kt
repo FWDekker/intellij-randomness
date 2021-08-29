@@ -56,7 +56,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("loads the scheme's enabled state") {
             GuiActionRunner.execute { editor.loadState(ArraySchemeDecorator(enabled = true)) }
 
@@ -95,7 +95,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         describe("defaults") {
             it("returns default brackets if no brackets are selected") {
                 GuiActionRunner.execute {

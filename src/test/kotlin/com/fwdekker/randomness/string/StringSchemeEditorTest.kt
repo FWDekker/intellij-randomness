@@ -68,7 +68,7 @@ object StringSchemeEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("loads the scheme's minimum length") {
             GuiActionRunner.execute { editor.loadState(StringScheme(minLength = 144, maxLength = 163)) }
 
@@ -124,7 +124,7 @@ object StringSchemeEditorTest : Spek({
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         describe("defaults") {
             it("returns default enclosure if no enclosure is selected") {
                 GuiActionRunner.execute { editor.loadState(StringScheme(enclosure = "unsupported")) }

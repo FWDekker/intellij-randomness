@@ -50,7 +50,7 @@ object TemplateReferenceEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("selects the referenced template") {
             GuiActionRunner.execute {
                 editor.loadState(
@@ -77,7 +77,7 @@ object TemplateReferenceEditorTest : Spek({
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
