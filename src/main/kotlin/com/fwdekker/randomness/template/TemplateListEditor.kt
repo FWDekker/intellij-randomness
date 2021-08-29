@@ -63,12 +63,17 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     private var schemeEditor: StateEditor<*>? = null
 
     /**
-     * The UUID of the template to select after the next invocation of [reset].
+     * The UUID of the scheme to select after the next invocation of [reset].
      *
      * @see TemplateSettingsConfigurable
      * @see TemplateSettingsAction
      */
     var queueSelection: String? = null
+
+    /**
+     * Whether to focus on the scheme editor after the next invocation of [reset].
+     */
+    var queueFocus: Boolean = false
 
 
     init {
@@ -195,13 +200,20 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     override fun readState() = currentSettingsState.deepCopy(retainUuid = true)
 
     override fun reset() {
+        if (queueSelection == null) {
+            queueFocus = false
+            queueSelection = templateTree.selectedNode?.state?.uuid
+        }
+
         super.reset()
 
-        queueSelection?.also { selection ->
-            templateTree.selectTemplate(selection)
-            SwingUtilities.invokeLater { schemeEditor?.preferredFocusedComponent?.requestFocus() }
-
+        if (queueSelection != null) {
+            templateTree.selectScheme(queueSelection)
             queueSelection = null
+        }
+        if (queueFocus) {
+            SwingUtilities.invokeLater { schemeEditor?.preferredFocusedComponent?.requestFocus() }
+            queueFocus = false
         }
     }
 

@@ -492,29 +492,28 @@ object TemplateTreeTest : Spek({
         }
     }
 
-    describe("selectTemplate") {
+    describe("selectScheme") {
         it("does nothing if no template with the specified UUID can be found") {
             GuiActionRunner.execute { tree.loadList(basicTemplates) }
             val initialSelection = tree.selectedNode?.state
 
-            GuiActionRunner.execute { tree.selectTemplate("dae4e446-56de-40ca-8415-5bff1f47f2f4") }
+            GuiActionRunner.execute { tree.selectScheme("dae4e446-56de-40ca-8415-5bff1f47f2f4") }
 
             assertThat(tree.selectedNode?.state).isEqualTo(initialSelection)
         }
 
-        it("does nothing if the UUID belongs to a scheme in the tree") {
+        it("selects the scheme with the given UUID") {
             GuiActionRunner.execute { tree.loadList(basicTemplates) }
-            val initialSelection = tree.selectedNode?.state
 
-            GuiActionRunner.execute { tree.selectTemplate(basicTemplates.templates[1].schemes[0].uuid) }
+            GuiActionRunner.execute { tree.selectScheme(basicTemplates.templates[1].schemes[0].uuid) }
 
-            assertThat(tree.selectedNode?.state).isEqualTo(initialSelection)
+            assertThat(tree.selectedNode?.state).isEqualTo(basicTemplates.templates[1].schemes[0])
         }
 
         it("selects the template with the given UUID") {
             GuiActionRunner.execute { tree.loadList(basicTemplates) }
 
-            GuiActionRunner.execute { tree.selectTemplate(basicTemplates.templates[1].uuid) }
+            GuiActionRunner.execute { tree.selectScheme(basicTemplates.templates[1].uuid) }
 
             assertThat(tree.selectedNode?.state).isEqualTo(basicTemplates.templates[1])
         }

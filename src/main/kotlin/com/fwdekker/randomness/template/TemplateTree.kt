@@ -153,13 +153,13 @@ class TemplateTree(
     }
 
     /**
-     * Selects the template with the given UUID, if it exists; otherwise, nothing happens.
+     * Selects the scheme with the given UUID, if it exists; otherwise, nothing happens.
      *
-     * @param targetUuid the UUID of the template to select
-     * @return true if and only if the template was found and selected
+     * @param targetUuid the UUID of the scheme to select, or `null` if nothing should be done
+     * @return true if and only if the scheme was found and selected
      */
-    fun selectTemplate(targetUuid: String) =
-        root.children().toList().firstOrNull { it.state.uuid == targetUuid }
+    fun selectScheme(targetUuid: String?) =
+        root.recursiveChildren().toList().firstOrNull { it.state.uuid == targetUuid }
             ?.also { selectionPath = getPathToRoot(it) } != null
 
 
@@ -289,6 +289,16 @@ class TemplateTree(
          * @return the children of this node
          */
         abstract override fun children(): Enumeration<out StateTreeNode<*>>
+
+        /**
+         * Returns all nodes recursively contained in this node, in no particular order.
+         *
+         * @return all nodes recursively contained in this node, in no particular order
+         */
+        fun recursiveChildren(): Enumeration<out StateTreeNode<*>> {
+            val children = children().toList()
+            return Collections.enumeration(children.flatMap { it.recursiveChildren().toList() } + children)
+        }
 
         /**
          * Returns the child at the given index.
