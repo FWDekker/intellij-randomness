@@ -4,6 +4,7 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.State
 import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.SimpleTextAttributes
+import com.intellij.ui.TreeSpeedSearch
 import com.intellij.ui.treeStructure.Tree
 import java.util.Collections
 import java.util.Enumeration
@@ -24,7 +25,7 @@ import kotlin.math.min
  *
  * @property isModified Returns true if and only if the given scheme has been modified.
  */
-class TemplateTree(
+class TemplateJTree(
     private val isModified: (Scheme) -> Boolean
 ) : Tree(DefaultTreeModel(TemplateListTreeNode(TemplateList(emptyList())))) {
     /**
@@ -54,6 +55,10 @@ class TemplateTree(
 
 
     init {
+        TreeSpeedSearch(this) { path ->
+            path.path.map { (it as StateTreeNode<*>).state }.filterIsInstance<Scheme>().joinToString { it.name }
+        }
+
         emptyText.text = TemplateListEditor.EMPTY_TEXT
         isRootVisible = false
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
@@ -291,13 +296,13 @@ class TemplateTree(
         abstract override fun children(): Enumeration<out StateTreeNode<*>>
 
         /**
-         * Returns all nodes recursively contained in this node, in no particular order.
+         * Returns all nodes recursively contained in this node in depth-first order.
          *
-         * @return all nodes recursively contained in this node, in no particular order
+         * @return all nodes recursively contained in this node in depth-first order
          */
         fun recursiveChildren(): Enumeration<out StateTreeNode<*>> {
             val children = children().toList()
-            return Collections.enumeration(children.flatMap { it.recursiveChildren().toList() } + children)
+            return Collections.enumeration(children.flatMap { listOf(it) + it.recursiveChildren().toList() })
         }
 
         /**

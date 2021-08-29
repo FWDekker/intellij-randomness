@@ -9,10 +9,8 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.GuiActionRunner
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import java.awt.event.MouseEvent
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
-import javax.swing.JLabel
 import javax.swing.JRadioButton
 import javax.swing.JSpinner
 import javax.swing.JTextField
@@ -125,46 +123,6 @@ object ListenerHelperTest : Spek({
             assertThatThrownBy { addChangeListenerTo("rock") {} }
                 .isInstanceOf(IllegalArgumentException::class.java)
                 .hasMessage("Unknown component type 'java.lang.String'.")
-        }
-    }
-})
-
-
-/**
- * Unit tests for [MouseClickListener].
- */
-object MouseClickListenerTest : Spek({
-    lateinit var label: JLabel
-    var listenerInvoked = false
-
-
-    beforeEachTest {
-        listenerInvoked = false
-
-        label = GuiActionRunner.execute<JLabel> {
-            JLabel().apply { addMouseListener(MouseClickListener { listenerInvoked = true }) }
-        }
-    }
-
-
-    describe("MouseListener") {
-        it("is not invoked if the mouse is pressed, released, entered, or exited") {
-            GuiActionRunner.execute {
-                label.dispatchEvent(MouseEvent(label, MouseEvent.MOUSE_PRESSED, 0, 0, 0, 0, 1, false))
-                label.dispatchEvent(MouseEvent(label, MouseEvent.MOUSE_RELEASED, 0, 0, 0, 0, 1, false))
-                label.dispatchEvent(MouseEvent(label, MouseEvent.MOUSE_ENTERED, 0, 0, 0, 0, 1, false))
-                label.dispatchEvent(MouseEvent(label, MouseEvent.MOUSE_EXITED, 0, 0, 0, 0, 1, false))
-            }
-
-            assertThat(listenerInvoked).isFalse()
-        }
-
-        it("is invoked if the mouse is clicked") {
-            GuiActionRunner.execute {
-                label.dispatchEvent(MouseEvent(label, MouseEvent.MOUSE_CLICKED, 0, 0, 0, 0, 1, false))
-            }
-
-            assertThat(listenerInvoked).isTrue()
         }
     }
 })

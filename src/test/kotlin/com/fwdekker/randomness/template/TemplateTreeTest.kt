@@ -16,7 +16,7 @@ import javax.swing.tree.TreePath
 
 
 /**
- * Unit tests for [TemplateTree].
+ * Unit tests for [TemplateJTree].
  *
  * @see TemplateListEditorTest
  */
@@ -25,7 +25,7 @@ object TemplateTreeTest : Spek({
     lateinit var frame: FrameFixture
 
     lateinit var basicTemplates: TemplateList // Not loaded by default, but easy to reuse
-    lateinit var tree: TemplateTree
+    lateinit var tree: TemplateJTree
 
 
     beforeEachTest {
@@ -39,7 +39,7 @@ object TemplateTreeTest : Spek({
                 Template("Bite", listOf(DummyScheme.from("f"), DummyScheme.from("g")))
             )
         )
-        tree = GuiActionRunner.execute<TemplateTree> { TemplateTree { false } }
+        tree = GuiActionRunner.execute<TemplateJTree> { TemplateJTree { false } }
         frame = Containers.showInFrame(tree)
     }
 

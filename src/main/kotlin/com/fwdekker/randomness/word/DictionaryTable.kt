@@ -30,6 +30,14 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
      */
     override fun createElement() = Companion.createElement()
 
+    /**
+     * Returns true if and only if the given item can be edited.
+     *
+     * @param item the item to check for editability
+     * @return true if and only if the given item can be edited
+     */
+    override fun isEditable(item: EditableDatum<Dictionary>) = item.datum !is BundledDictionary
+
 
     /**
      * Holds constants.

@@ -61,9 +61,7 @@ object PreviewPanelTest : Spek({
             GuiActionRunner.execute { panel.updatePreview() }
             val oldRandom = scheme?.random
 
-            GuiActionRunner.execute {
-                frame.button("refreshButton").target().mouseListeners.forEach { it.mouseClicked(null) }
-            }
+            GuiActionRunner.execute { frame.button("refreshButton").target().doClick() }
 
             GuiActionRunner.execute { panel.updatePreview() }
             val newRandom = scheme?.random
