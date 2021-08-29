@@ -88,7 +88,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
                     else selectedNode.parent!!.state as Scheme
                 }
 
-            readState().templateList.templates.first { it.uuid == selectedTemplate.uuid }
+            currentSettingsState.templateList.templates.first { it.uuid == selectedTemplate.uuid }
         }
         addChangeListener { previewPanel.updatePreview() }
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)

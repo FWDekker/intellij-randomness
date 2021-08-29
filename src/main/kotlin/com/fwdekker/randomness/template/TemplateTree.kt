@@ -84,8 +84,8 @@ class TemplateTree(
      * @param newScheme the scheme to add. Must be an instance of [Template] if [selectedNode] is null.
      */
     fun addScheme(newScheme: Scheme) {
-        val root = myModel.root as TemplateListTreeNode
         val selectedNode = selectedNode
+        if (newScheme is Template) newScheme.name = findUniqueNameFor(newScheme)
 
         val (childNode, parent, index) =
             if (selectedNode == null) {
@@ -170,6 +170,32 @@ class TemplateTree(
      * @return the path from the given node to the root path, including both ends
      */
     private fun getPathToRoot(treeNode: TreeNode) = TreePath(myModel.getPathToRoot(treeNode))
+
+    /**
+     * Finds a good, unique name for the given template so that it can be inserted into this list without conflict.
+     *
+     * If the name is already unique, that name is returned. Otherwise, the name is appended with the first number `i`
+     * such that `$name ($i)` is unique. If the template's current name already ends with a number in parentheses, that
+     * number is taken as the starting number.
+     *
+     * @param template the template to find a good name for
+     * @return a unique name for the given template
+     */
+    private fun findUniqueNameFor(template: Template): String {
+        val templateNames = root.children().toList().map { it.state.name }
+        if (template.name !in templateNames) return template.name
+
+        var i = 1
+        var name = template.name
+
+        if (name.matches(Regex(".* \\([1-9][0-9]*\\)"))) {
+            i = name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')).toInt()
+            name = name.substring(0, name.lastIndexOf('(') - 1)
+        }
+
+        while ("$name ($i)" in templateNames) i++
+        return "$name ($i)"
+    }
 
 
     /**

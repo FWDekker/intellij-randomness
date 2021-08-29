@@ -163,6 +163,49 @@ object TemplateTreeTest : Spek({
                 assertThat(basicTemplates.templates.map { it.name })
                     .containsExactly("Small", "Agency", "Clock", "Bite")
             }
+
+            it("adds a `(1)` suffix if the template name is already taken") {
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    tree.addScheme(Template(name = "Small"))
+                }
+
+                assertThat(basicTemplates.templates.map { it.name })
+                    .containsExactly("Small", "Clock", "Bite", "Small (1)")
+            }
+
+            it("adds a `(2)` suffix if the `(1)` suffix is already taken") {
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    tree.addScheme(Template(name = "Small"))
+                    tree.addScheme(Template(name = "Small"))
+                }
+
+                assertThat(basicTemplates.templates.map { it.name })
+                    .containsExactly("Small", "Clock", "Bite", "Small (1)", "Small (2)")
+            }
+
+            it("replaces and increments the suffix if the name is already taken") {
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    tree.addScheme(Template(name = "Small"))
+                    tree.addScheme(Template(name = "Small (1)"))
+                }
+
+                assertThat(basicTemplates.templates.map { it.name })
+                    .containsExactly("Small", "Clock", "Bite", "Small (1)", "Small (2)")
+            }
+
+            it("replaces and increments the suffix if the name is already taken, even if a lower value is available") {
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    tree.addScheme(Template(name = "Small (9)"))
+                    tree.addScheme(Template(name = "Small (9)"))
+                }
+
+                assertThat(basicTemplates.templates.map { it.name })
+                    .containsExactly("Small", "Clock", "Bite", "Small (9)", "Small (10)")
+            }
         }
 
         describe("add scheme") {
