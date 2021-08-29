@@ -30,10 +30,10 @@ object TemplateReferenceEditorTest : Spek({
 
     beforeEachTest {
         templateList = TemplateList(
-            mutableListOf(
-                Template("cup", mutableListOf(DummyScheme())),
-                Template("instead", mutableListOf(TemplateReference())),
-                Template("gun", mutableListOf(DummyScheme()))
+            listOf(
+                Template("cup", listOf(DummyScheme())),
+                Template("instead", listOf(TemplateReference())),
+                Template("gun", listOf(DummyScheme()))
             )
         )
 
@@ -50,7 +50,7 @@ object TemplateReferenceEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("selects the referenced template") {
             GuiActionRunner.execute {
                 editor.loadState(
@@ -77,7 +77,7 @@ object TemplateReferenceEditorTest : Spek({
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readState()).isEqualTo(editor.originalState)
         }

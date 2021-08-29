@@ -38,7 +38,7 @@ object StringSchemeEditorTest : Spek({
         ideaFixture.setUp()
 
         symbolSetSettings = SymbolSetSettings()
-        scheme = StringScheme(symbolSetSettings)
+        scheme = StringScheme().also { it.symbolSetSettings += symbolSetSettings }
         editor = GuiActionRunner.execute<StringSchemeEditor> { StringSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
 
@@ -68,7 +68,7 @@ object StringSchemeEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("loads the scheme's minimum length") {
             GuiActionRunner.execute { editor.loadState(StringScheme(minLength = 144, maxLength = 163)) }
 
@@ -103,12 +103,12 @@ object StringSchemeEditorTest : Spek({
             val activeSymbolSets = listOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
 
             GuiActionRunner.execute {
-                editor.loadState(
-                    StringScheme(
-                        SymbolSetSettings().also { it.symbolSetList = allSymbolSets },
-                        activeSymbolSets = activeSymbolSets.map { it.name }.toMutableSet()
-                    )
-                )
+                val settings = SymbolSetSettings()
+                settings.symbolSetList = allSymbolSets
+                val newScheme = StringScheme(activeSymbolSets = activeSymbolSets.map { it.name }.toSet())
+                newScheme.symbolSetSettings += settings
+
+                editor.loadState(newScheme)
             }
 
             assertThat(symbolSetTable.items.map { it.datum })
@@ -124,7 +124,7 @@ object StringSchemeEditorTest : Spek({
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         describe("defaults") {
             it("returns default enclosure if no enclosure is selected") {
                 GuiActionRunner.execute { editor.loadState(StringScheme(enclosure = "unsupported")) }
@@ -181,15 +181,59 @@ object StringSchemeEditorTest : Spek({
             assertThat(readState)
                 .isEqualTo(editor.originalState)
                 .isNotSameAs(editor.originalState)
-            assertThat(readState.symbolSetSettings)
-                .isSameAs(editor.originalState.symbolSetSettings)
+            assertThat(+readState.symbolSetSettings)
+                .isEqualTo(+editor.originalState.symbolSetSettings)
+                .isNotSameAs(+editor.originalState.symbolSetSettings)
             assertThat(readState.decorator)
                 .isEqualTo(editor.originalState.decorator)
                 .isNotSameAs(editor.originalState.decorator)
         }
 
+        it("returns a scheme with a deep copy of the symbol set settings") {
+            GuiActionRunner.execute {
+                repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
+                symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("feel", "5vG6eeU")))
+            }
+
+            assertThat((+editor.readState().symbolSetSettings).symbolSetList)
+                .containsExactly(SymbolSet("feel", "5vG6eeU"))
+            assertThat(symbolSetSettings.symbolSetList)
+                .doesNotContain(SymbolSet("feel", "5vG6eeU"))
+        }
+
         it("retains the scheme's UUID") {
             assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
+        }
+    }
+
+    describe("applyState") {
+        it("does not change the target's reference to the symbol set settings") {
+            GuiActionRunner.execute { editor.applyState() }
+
+            assertThat(+scheme.symbolSetSettings).isSameAs(symbolSetSettings)
+        }
+
+        it("copies the changes from the table into the original state's symbol set settings") {
+            GuiActionRunner.execute {
+                repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
+                symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("excess", "uWX4POU")))
+            }
+
+            GuiActionRunner.execute { editor.applyState() }
+
+            assertThat(symbolSetSettings.symbolSetList).containsExactly(SymbolSet("excess", "uWX4POU"))
+        }
+    }
+
+
+    describe("doValidate") {
+        it("is invalid if multiple symbol sets with the same name have been defined") {
+            GuiActionRunner.execute {
+                symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("earth", "P3ogL")))
+                symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("earth", "lNp5dG8k")))
+            }
+
+            assertThat(editor.doValidate()).isEqualTo("Multiple symbol sets with name 'earth'.")
         }
     }
 

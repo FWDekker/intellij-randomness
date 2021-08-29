@@ -14,19 +14,19 @@ import com.fwdekker.randomness.word.DictionarySettings
  * @property dictionarySettings The dictionary settings.
  */
 data class SettingsState(
-    var templateList: TemplateList = TemplateList(mutableListOf()),
-    var symbolSetSettings: SymbolSetSettings = SymbolSetSettings(mutableMapOf()),
-    var dictionarySettings: DictionarySettings = DictionarySettings(mutableSetOf())
+    var templateList: TemplateList = TemplateList(emptyList()),
+    var symbolSetSettings: SymbolSetSettings = SymbolSetSettings(emptyMap()),
+    var dictionarySettings: DictionarySettings = DictionarySettings(emptySet())
 ) : State() {
     override fun doValidate() =
         templateList.doValidate() ?: symbolSetSettings.doValidate() ?: dictionarySettings.doValidate()
 
-    override fun copyFrom(state: State) {
-        require(state is SettingsState) { "Cannot copy from different type." }
+    override fun copyFrom(other: State) {
+        require(other is SettingsState) { "Cannot copy from different type." }
 
-        templateList.copyFrom(state.templateList)
-        symbolSetSettings.copyFrom(state.symbolSetSettings)
-        dictionarySettings.copyFrom(state.dictionarySettings)
+        templateList.copyFrom(other.templateList)
+        symbolSetSettings.copyFrom(other.symbolSetSettings)
+        dictionarySettings.copyFrom(other.dictionarySettings)
     }
 
     override fun deepCopy(retainUuid: Boolean) =

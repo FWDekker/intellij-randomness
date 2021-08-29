@@ -36,7 +36,7 @@ class TemplateGroupActionTest : Spek({
     describe("update") {
         describe("icon") {
             it("uses a default icon if the template's icons are null") {
-                template.schemes = mutableListOf(DummyScheme().also { it.icons = null })
+                template.schemes = listOf(DummyScheme().also { it.icons = null })
 
                 val event = TestActionEvent(groupAction)
                 groupAction.update(event)
@@ -45,7 +45,7 @@ class TemplateGroupActionTest : Spek({
             }
 
             it("uses the template's icon") {
-                template.schemes = mutableListOf(DummyScheme().also { it.icons = RandomnessIcons.Word })
+                template.schemes = listOf(DummyScheme().also { it.icons = RandomnessIcons.Word })
 
                 val event = TestActionEvent(groupAction)
                 groupAction.update(event)
@@ -130,7 +130,7 @@ object TemplateSettingsActionTest : Spek({
             }
 
             it("uses a default icon if the template's icons are null") {
-                template.schemes = mutableListOf(DummyScheme().also { it.icons = null })
+                template.schemes = listOf(DummyScheme().also { it.icons = null })
 
                 val event = TestActionEvent(settingsAction)
                 settingsAction.update(event)
@@ -139,7 +139,7 @@ object TemplateSettingsActionTest : Spek({
             }
 
             it("uses the template's icons if the template is not null") {
-                template.schemes = mutableListOf(DummyScheme().also { it.icons = RandomnessIcons.Word })
+                template.schemes = listOf(DummyScheme().also { it.icons = RandomnessIcons.Word })
 
                 val event = TestActionEvent(settingsAction)
                 settingsAction.update(event)

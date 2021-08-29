@@ -1,59 +1,45 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.State
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
+import com.intellij.util.xmlb.annotations.XCollection
 import icons.RandomnessIcons
 
 
 /**
  * Contains settings for generating random words.
  *
- * @property dictionarySettings Persistent storage of available dictionaries.
  * @property minLength The minimum length of the generated word, inclusive.
  * @property maxLength The maximum length of the generated word, inclusive.
  * @property enclosure The string that encloses the generated word on both sides.
  * @property capitalization The way in which the generated word should be capitalized.
- * @property activeBundledDictionaryFiles The list of bundled dictionary files that are currently active.
- * @property activeUserDictionaryFiles The list of user dictionary files that are currently active.
+ * @property activeDictionaries The list of dictionaries that are currently active.
  * @property decorator Settings that determine whether the output should be an array of values.
  */
 data class WordScheme(
-    @Transient
-    var dictionarySettings: DictionarySettings = DictionarySettings.default,
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var activeBundledDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES.toMutableSet(),
-    var activeUserDictionaryFiles: MutableSet<String> = DEFAULT_ACTIVE_USER_DICTIONARY_FILES.toMutableSet(),
+    @get:XCollection(elementTypes = [BundledDictionary::class, UserDictionary::class])
+    var activeDictionaries: Set<Dictionary> = DEFAULT_ACTIVE_DICTIONARIES.toMutableSet(),
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
+    /**
+     * Persistent storage of available dictionaries.
+     */
+    @get:Transient
+    var dictionarySettings: Box<DictionarySettings> = Box({ DictionarySettings.default })
+
     @Transient
     override val name = "Word"
+
     override val icons = RandomnessIcons.Word
-
-    /**
-     * A view of the filenames of the files in [activeBundledDictionaryFiles].
-     */
-    var activeBundledDictionaries: Set<DictionaryReference>
-        @Transient
-        get() = activeBundledDictionaryFiles.map { DictionaryReference(true, it) }.toSet()
-        set(value) {
-            activeBundledDictionaryFiles = value.map { it.filename }.toMutableSet()
-        }
-
-    /**
-     * A view of the filenames of the files in [activeUserDictionaryFiles].
-     */
-    var activeUserDictionaries: Set<DictionaryReference>
-        @Transient
-        get() = activeUserDictionaryFiles.map { DictionaryReference(false, it) }.toSet()
-        set(value) {
-            activeUserDictionaryFiles = value.map { it.filename }.toMutableSet()
-        }
 
 
     /**
@@ -65,7 +51,7 @@ data class WordScheme(
      */
     override fun generateUndecoratedStrings(count: Int): List<String> {
         val words =
-            (activeBundledDictionaries + activeUserDictionaries)
+            activeDictionaries
                 .flatMap { it.words }
                 .filter { it.length in minLength..maxLength }
                 .toSet()
@@ -77,14 +63,14 @@ data class WordScheme(
 
     override fun setSettingsState(settingsState: SettingsState) {
         super.setSettingsState(settingsState)
-        dictionarySettings = settingsState.dictionarySettings
+        dictionarySettings += settingsState.dictionarySettings
     }
 
 
     override fun doValidate(): String? {
-        dictionarySettings.doValidate()?.also { return it }
+        (+dictionarySettings).doValidate()?.also { return it }
 
-        val words = (activeBundledDictionaries + activeUserDictionaries).flatMap { it.words }
+        val words = activeDictionaries.flatMap { it.words }
         val minWordLength = words.map { it.length }.minOrNull() ?: 1
         val maxWordLength = words.map { it.length }.maxOrNull() ?: Integer.MAX_VALUE
 
@@ -93,7 +79,7 @@ data class WordScheme(
                 "Minimum length should not be smaller than $MIN_LENGTH."
             minLength > maxLength ->
                 "Minimum length should not be larger than maximum length."
-            (activeBundledDictionaryFiles + activeUserDictionaryFiles).isEmpty() ->
+            activeDictionaries.isEmpty() ->
                 "Activate at least one dictionary."
             minLength > maxWordLength ->
                 "The longest word in the selected dictionaries is $maxWordLength characters. " +
@@ -105,14 +91,26 @@ data class WordScheme(
         }
     }
 
-    override fun deepCopy(retainUuid: Boolean) =
-        copy(dictionarySettings = dictionarySettings, decorator = decorator.deepCopy(retainUuid))
-            .also {
-                if (retainUuid) it.uuid = this.uuid
+    override fun copyFrom(other: State) {
+        require(other is WordScheme) { "Cannot copy from different type." }
 
-                it.activeBundledDictionaries = activeBundledDictionaries.map(DictionaryReference::copy).toSet()
-                it.activeUserDictionaries = activeUserDictionaries.map(DictionaryReference::copy).toSet()
-            }
+        (+dictionarySettings).also {
+            it.copyFrom(+other.dictionarySettings)
+
+            super.copyFrom(other)
+            dictionarySettings += it
+        }
+    }
+
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(
+            activeDictionaries = activeDictionaries.map { it.deepCopy() }.toSet(),
+            decorator = decorator.deepCopy(retainUuid)
+        ).also {
+            if (retainUuid) it.uuid = this.uuid
+
+            it.dictionarySettings += (+dictionarySettings).deepCopy(retainUuid = retainUuid)
+        }
 
 
     /**
@@ -130,35 +128,29 @@ data class WordScheme(
         const val MAX_LENGTH_DIFFERENCE = Int.MAX_VALUE
 
         /**
-         * The default value of the [minLength][minLength] field.
+         * The default value of the [minLength] field.
          */
         const val DEFAULT_MIN_LENGTH = 3
 
         /**
-         * The default value of the [maxLength][maxLength] field.
+         * The default value of the [maxLength] field.
          */
         const val DEFAULT_MAX_LENGTH = 8
 
         /**
-         * The default value of the [enclosure][enclosure] field.
+         * The default value of the [enclosure] field.
          */
         const val DEFAULT_ENCLOSURE = "\""
 
         /**
-         * The default value of the [capitalization][capitalization] field.
+         * The default value of the [capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
 
         /**
-         * The default value of the [activeBundledDictionaryFiles][activeBundledDictionaryFiles] field.
+         * The default value of the [activeDictionaries] field.
          */
-        val DEFAULT_ACTIVE_BUNDLED_DICTIONARY_FILES: Set<String>
-            get() = setOf(BundledDictionary.SIMPLE_DICTIONARY)
-
-        /**
-         * The default value of the [activeUserDictionaryFiles][activeUserDictionaryFiles] field.
-         */
-        val DEFAULT_ACTIVE_USER_DICTIONARY_FILES: Set<String>
-            get() = setOf()
+        val DEFAULT_ACTIVE_DICTIONARIES: Set<Dictionary>
+            get() = setOf(BundledDictionary(BundledDictionary.SIMPLE_DICTIONARY))
     }
 }

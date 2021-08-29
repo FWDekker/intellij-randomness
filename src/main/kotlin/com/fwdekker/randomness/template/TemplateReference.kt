@@ -69,11 +69,11 @@ data class TemplateReference(
         else null
     }
 
-    override fun copyFrom(state: State) {
-        require(state is TemplateReference) { "Cannot copy from different type." }
+    override fun copyFrom(other: State) {
+        require(other is TemplateReference) { "Cannot copy from different type." }
 
-        super.copyFrom(state)
-        templateList = state.templateList.copy()
+        super.copyFrom(other)
+        templateList = other.templateList.copy()
     }
 
     override fun deepCopy(retainUuid: Boolean) =

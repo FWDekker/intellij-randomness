@@ -34,7 +34,7 @@ object LiteralSchemeEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("loads the scheme's literal") {
             GuiActionRunner.execute { editor.loadState(LiteralScheme(literal = "scrape")) }
 
@@ -42,7 +42,7 @@ object LiteralSchemeEditorTest : Spek({
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readState()).isEqualTo(editor.originalState)
         }

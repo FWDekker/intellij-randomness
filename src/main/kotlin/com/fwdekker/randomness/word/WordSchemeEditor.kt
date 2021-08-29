@@ -83,36 +83,42 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         enclosureGroup.setValue(state.enclosure)
         capitalizationGroup.setValue(state.capitalization)
         dictionaryTable.data =
-            state.dictionarySettings.bundledDictionaries + state.dictionarySettings.userDictionaries
+            (+state.dictionarySettings).dictionaries
         dictionaryTable.activeData =
-            (state.activeBundledDictionaries + state.activeUserDictionaries)
-                .filter { dictionary -> dictionary in dictionaryTable.data }
+            state.activeDictionaries.filter { dictionary -> dictionary in dictionaryTable.data }
         arrayDecoratorEditor.loadState(state.decorator)
     }
 
     override fun readState() =
         WordScheme(
-            dictionarySettings = originalState.dictionarySettings,
             minLength = minLength.value,
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
-            capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
+            capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
+            activeDictionaries = dictionaryTable.activeData.toSet(),
             decorator = arrayDecoratorEditor.readState()
         ).also {
             it.uuid = originalState.uuid
 
-            it.dictionarySettings.bundledDictionaries = dictionaryTable.data
-                .filter { file -> file.isBundled }.toSet()
-            it.activeBundledDictionaries = dictionaryTable.activeData
-                .filter { file -> file.isBundled && file in it.dictionarySettings.bundledDictionaries }.toSet()
-            it.dictionarySettings.userDictionaries = dictionaryTable.data
-                .filter { file -> !file.isBundled }.toSet()
-            it.activeUserDictionaries = dictionaryTable.activeData
-                .filter { file -> !file.isBundled && file in it.dictionarySettings.userDictionaries }.toSet()
+            it.dictionarySettings += (+originalState.dictionarySettings).deepCopy(retainUuid = true)
+            (+it.dictionarySettings).dictionaries = dictionaryTable.data.toSet()
 
-            BundledDictionary.cache.clear()
-            UserDictionary.cache.clear()
+            UserDictionary.clearCache()
         }
+
+    override fun applyState() {
+        super.applyState()
+        (+originalState.dictionarySettings).copyFrom(+readState().dictionarySettings)
+    }
+
+
+    override fun doValidate(): String? {
+        val dictionaries = dictionaryTable.data
+        val duplicate = dictionaries.firstOrNull { dictionary -> dictionaries.count { it == dictionary } > 1 }
+
+        return if (duplicate != null) "Duplicate dictionary '$duplicate'."
+        else super.doValidate()
+    }
 
 
     override fun addChangeListener(listener: () -> Unit) =

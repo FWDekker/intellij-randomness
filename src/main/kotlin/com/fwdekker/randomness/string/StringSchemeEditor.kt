@@ -25,7 +25,6 @@ import javax.swing.JPanel
  * Component for editing random string settings.
  *
  * @param scheme the scheme to edit in the component
- *
  * @see SymbolSetTable
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
@@ -87,28 +86,44 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         capitalizationGroup.setValue(state.capitalization)
         excludeLookAlikeSymbolsCheckBox.isSelected = state.excludeLookAlikeSymbols
 
-        symbolSetTable.data = state.symbolSetSettings.symbolSetList
+        symbolSetTable.data =
+            (+state.symbolSetSettings).symbolSetList
         symbolSetTable.activeData =
-            state.symbolSetSettings.symbolSetList.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
+            (+state.symbolSetSettings).symbolSetList.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
 
         arrayDecoratorEditor.loadState(state.decorator)
     }
 
     override fun readState() =
         StringScheme(
-            symbolSetSettings = originalState.symbolSetSettings,
             minLength = minLength.value,
             maxLength = maxLength.value,
             enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
+            activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet(),
             decorator = arrayDecoratorEditor.readState()
         ).also {
             it.uuid = originalState.uuid
 
-            it.symbolSetSettings.symbolSetList = symbolSetTable.data.toSet()
-            it.activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toMutableSet()
+            it.symbolSetSettings += (+originalState.symbolSetSettings).deepCopy(retainUuid = true)
+            (+it.symbolSetSettings).symbolSetList = symbolSetTable.data.toSet()
         }
+
+    override fun applyState() {
+        super.applyState()
+        (+originalState.symbolSetSettings).copyFrom(+readState().symbolSetSettings)
+    }
+
+
+    override fun doValidate(): String? {
+        val symbolSets = symbolSetTable.data.map { it.name }
+        val duplicate = symbolSets.firstOrNull { symbolSet -> symbolSets.count { it == symbolSet } > 1 }
+
+        return if (duplicate != null) "Multiple symbol sets with name '$duplicate'."
+        else super.doValidate()
+    }
+
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(

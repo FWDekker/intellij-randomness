@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.clickActionButton
 import com.fwdekker.randomness.decimal.DecimalScheme
@@ -11,8 +10,9 @@ import com.fwdekker.randomness.string.SymbolSet
 import com.fwdekker.randomness.string.SymbolSetSettings
 import com.fwdekker.randomness.ui.EditableDatum
 import com.fwdekker.randomness.uuid.UuidScheme
-import com.fwdekker.randomness.word.DictionaryReference
+import com.fwdekker.randomness.word.Dictionary
 import com.fwdekker.randomness.word.DictionarySettings
+import com.fwdekker.randomness.word.UserDictionary
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -43,6 +43,12 @@ object TemplateListEditorTest : Spek({
     lateinit var settingsState: SettingsState
     lateinit var editor: TemplateListEditor
 
+    @Suppress("UNCHECKED_CAST") // Use with care
+    val symbolSetTable = { (frame.table().target() as TableView<EditableDatum<SymbolSet>>).listTableModel }
+
+    @Suppress("UNCHECKED_CAST") // Use with care
+    val dictionaryTable = { (frame.table().target() as TableView<EditableDatum<Dictionary>>).listTableModel }
+
 
     beforeGroup {
         FailOnThreadViolationRepaintManager.install()
@@ -55,18 +61,25 @@ object TemplateListEditorTest : Spek({
         val symbolSetSettings = SymbolSetSettings()
         val dictionarySettings = DictionarySettings()
         val templateList = TemplateList(
-            mutableListOf(
+            listOf(
                 Template(
                     "Further",
-                    mutableListOf(IntegerScheme(), IntegerScheme(minValue = 7))
+                    listOf(IntegerScheme(), IntegerScheme(minValue = 7))
                 ),
                 Template(
                     "Enclose",
-                    mutableListOf(LiteralScheme("else"), WordScheme(dictionarySettings))
+                    listOf(
+                        LiteralScheme("else"),
+                        WordScheme().also { it.dictionarySettings += dictionarySettings }
+                    )
                 ),
                 Template(
                     "Student",
-                    mutableListOf(StringScheme(symbolSetSettings), LiteralScheme("dog"), IntegerScheme())
+                    listOf(
+                        StringScheme().also { it.symbolSetSettings += symbolSetSettings },
+                        LiteralScheme("dog"),
+                        IntegerScheme()
+                    )
                 )
             )
         )
@@ -172,7 +185,7 @@ object TemplateListEditorTest : Spek({
                 }
 
                 it("sets the added scheme's settings") {
-                    val oldSettings = TemplateList(mutableListOf())
+                    val oldSettings = TemplateList(emptyList())
                     val newScheme = TemplateReference().apply { setSettingsState(SettingsState(oldSettings)) }
 
                     GuiActionRunner.execute { editor.addScheme(newScheme) }
@@ -189,7 +202,7 @@ object TemplateListEditorTest : Spek({
                     assertThat(editor.readState().templateList.templates[1].schemes)
                         .containsExactly(
                             LiteralScheme("else"),
-                            WordScheme(settingsState.dictionarySettings),
+                            WordScheme().also { it.dictionarySettings += settingsState.dictionarySettings },
                             UuidScheme()
                         )
                 }
@@ -401,26 +414,24 @@ object TemplateListEditorTest : Spek({
                 frame.textBox("previewLabel").requireEmpty()
             }
 
-            @Suppress("UNCHECKED_CAST") // I checked it myself!
             it("does not change the original symbol sets when a string scheme is changed") {
                 GuiActionRunner.execute {
                     frame.tree().target().setSelectionRow(7)
-                    (frame.table().target() as TableView<EditableDatum<SymbolSet>>).listTableModel
-                        .addRow(EditableDatum(active = true, SymbolSet("ancient", "Fq9ohzV8")))
+                    symbolSetTable().addRow(EditableDatum(active = true, SymbolSet("ancient", "Fq9ohzV8")))
                 }
 
                 assertThat(editor.originalState.symbolSetSettings.symbolSets).doesNotContainKey("ancient")
             }
 
-            @Suppress("UNCHECKED_CAST") // I checked it myself!
             it("does not change the original dictionaries when a word scheme is changed") {
+                val dictionary = UserDictionary("nest")
+
                 GuiActionRunner.execute {
                     frame.tree().target().setSelectionRow(5)
-                    (frame.table().target() as TableView<EditableDatum<DictionaryReference>>).listTableModel
-                        .addRow(EditableDatum(active = true, DictionaryReference(isBundled = false, "nest")))
+                    dictionaryTable().addRow(EditableDatum(active = true, dictionary))
                 }
 
-                assertThat(editor.originalState.dictionarySettings.userDictionaryFiles).doesNotContain("nest")
+                assertThat(editor.originalState.dictionarySettings.dictionaries).doesNotContain(dictionary)
             }
         }
     }
@@ -432,9 +443,9 @@ object TemplateListEditorTest : Spek({
 
         it("selects the first template if it does not have any schemes") {
             GuiActionRunner.execute {
-                val templates = mutableListOf(
-                    Template("Flame", mutableListOf()),
-                    Template("Pen", mutableListOf(IntegerScheme()))
+                val templates = listOf(
+                    Template("Flame", emptyList()),
+                    Template("Pen", listOf(IntegerScheme()))
                 )
                 editor.loadState(SettingsState(TemplateList(templates)))
             }
@@ -443,7 +454,7 @@ object TemplateListEditorTest : Spek({
         }
 
         it("does nothing if no templates or schemes are loaded") {
-            GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(mutableListOf()))) }
+            GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(emptyList()))) }
 
             frame.tree().requireNoSelection()
         }
@@ -480,9 +491,9 @@ object TemplateListEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("loads the list's templates") {
-            val templates = SettingsState(TemplateList(mutableListOf(Template(name = "Limb"), Template(name = "Pot"))))
+            val templates = SettingsState(TemplateList(listOf(Template(name = "Limb"), Template(name = "Pot"))))
 
             GuiActionRunner.execute { editor.loadState(templates) }
 
@@ -491,13 +502,13 @@ object TemplateListEditorTest : Spek({
         }
 
         it("loads the list's templates' schemes") {
-            val schemes: List<MutableList<Scheme>> = listOf(
-                mutableListOf(IntegerScheme()),
-                mutableListOf(),
-                mutableListOf(LiteralScheme(), DecimalScheme())
+            val schemes = listOf(
+                listOf(IntegerScheme()),
+                emptyList(),
+                listOf(LiteralScheme(), DecimalScheme())
             )
             val templates = TemplateList(
-                mutableListOf(
+                listOf(
                     Template("Prevent", schemes[0]),
                     Template("Being", schemes[1]),
                     Template("Coward", schemes[2])
@@ -510,13 +521,13 @@ object TemplateListEditorTest : Spek({
         }
 
         it("loads an empty tree if no templates are loaded") {
-            GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(mutableListOf()))) }
+            GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(emptyList()))) }
 
             assertThat(editor.readState().templateList.templates).isEmpty()
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         describe("no changes made") {
             it("returns the original state if no editor changes are made") {
                 assertThat(editor.readState()).isEqualTo(editor.originalState)
@@ -537,7 +548,7 @@ object TemplateListEditorTest : Spek({
             }
 
             it("returns the list with a template and all its children added") {
-                val template = Template("Danger", mutableListOf(LiteralScheme("Ill"), IntegerScheme(), StringScheme()))
+                val template = Template("Danger", listOf(LiteralScheme("Ill"), IntegerScheme(), StringScheme()))
 
                 GuiActionRunner.execute { editor.addScheme(template) }
 
@@ -595,7 +606,7 @@ object TemplateListEditorTest : Spek({
             }
 
             it("returns a list of the single template if a first template is added") {
-                GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(mutableListOf()))) }
+                GuiActionRunner.execute { editor.loadState(SettingsState(TemplateList(emptyList()))) }
 
                 GuiActionRunner.execute { editor.addScheme(Template(name = "Seem")) }
 
@@ -665,7 +676,7 @@ object TemplateListEditorTest : Spek({
 
             it("returns a list of the single scheme if a first scheme is added to a template") {
                 GuiActionRunner.execute {
-                    editor.loadState(SettingsState(TemplateList(mutableListOf(Template(schemes = mutableListOf())))))
+                    editor.loadState(SettingsState(TemplateList(listOf(Template(schemes = emptyList())))))
                 }
 
                 GuiActionRunner.execute {
@@ -745,21 +756,19 @@ object TemplateListEditorTest : Spek({
         }
 
         describe("settingsState") {
-            @Suppress("UNCHECKED_CAST") // I checked it myself!
             it("retains changes to symbol sets between different string schemes") {
                 GuiActionRunner.execute {
                     editor.loadState(
                         SettingsState(
                             templateList = TemplateList.from(StringScheme(), StringScheme()),
-                            symbolSetSettings = SymbolSetSettings(mutableMapOf("pocket" to "0MLnYk5"))
+                            symbolSetSettings = SymbolSetSettings(mapOf("pocket" to "0MLnYk5"))
                         )
                     )
                 }
 
                 GuiActionRunner.execute {
                     frame.tree().target().setSelectionRow(1)
-                    (frame.table().target() as TableView<EditableDatum<SymbolSet>>).listTableModel
-                        .addRow(EditableDatum(active = true, SymbolSet("finger", "Xg24tQ")))
+                    symbolSetTable().addRow(EditableDatum(active = true, SymbolSet("finger", "Xg24tQ")))
 
                     frame.tree().target().setSelectionRow(2)
                 }
@@ -767,7 +776,6 @@ object TemplateListEditorTest : Spek({
                 frame.table().requireCellValue(row(1).column(1), "finger")
             }
 
-            @Suppress("UNCHECKED_CAST") // I checked it myself!
             it("retains changes to dictionaries between different word schemes") {
                 GuiActionRunner.execute {
                     editor.loadState(
@@ -780,8 +788,7 @@ object TemplateListEditorTest : Spek({
 
                 GuiActionRunner.execute {
                     frame.tree().target().setSelectionRow(1)
-                    (frame.table().target() as TableView<EditableDatum<DictionaryReference>>).listTableModel
-                        .addRow(EditableDatum(active = true, DictionaryReference(isBundled = false, "rank")))
+                    dictionaryTable().addRow(EditableDatum(active = true, UserDictionary("rank")))
 
                     frame.tree().target().setSelectionRow(2)
                 }
@@ -791,13 +798,11 @@ object TemplateListEditorTest : Spek({
         }
     }
 
-    describe("applyScheme") {
-        @Suppress("UNCHECKED_CAST") // I checked it myself!
+    describe("applyState") {
         it("applies changes to symbol sets") {
             GuiActionRunner.execute {
                 frame.tree().target().setSelectionRow(7)
-                (frame.table().target() as TableView<EditableDatum<SymbolSet>>).listTableModel
-                    .addRow(EditableDatum(active = true, SymbolSet("thumb", "4Tch7x7")))
+                symbolSetTable().addRow(EditableDatum(active = true, SymbolSet("thumb", "4Tch7x7")))
             }
 
             GuiActionRunner.execute { editor.applyState() }
@@ -805,12 +810,10 @@ object TemplateListEditorTest : Spek({
             assertThat(editor.originalState.symbolSetSettings.symbolSets).containsKey("thumb")
         }
 
-        @Suppress("UNCHECKED_CAST") // I checked it myself!
         it("does not apply changes to symbol sets after a reset") {
             GuiActionRunner.execute {
                 frame.tree().target().setSelectionRow(7)
-                (frame.table().target() as TableView<EditableDatum<SymbolSet>>).listTableModel
-                    .addRow(EditableDatum(active = true, SymbolSet("tell", "9Zchc3qs")))
+                symbolSetTable().addRow(EditableDatum(active = true, SymbolSet("tell", "9Zchc3qs")))
             }
 
             GuiActionRunner.execute { editor.reset() }
@@ -818,30 +821,30 @@ object TemplateListEditorTest : Spek({
             assertThat(editor.originalState.symbolSetSettings.symbolSets).doesNotContainKey("tell")
         }
 
-        @Suppress("UNCHECKED_CAST") // I checked it myself!
         it("applies changes to dictionaries") {
+            val dictionary = UserDictionary("basis")
+
             GuiActionRunner.execute {
                 frame.tree().target().setSelectionRow(5)
-                (frame.table().target() as TableView<EditableDatum<DictionaryReference>>).listTableModel
-                    .addRow(EditableDatum(active = true, DictionaryReference(isBundled = false, "basis")))
+                dictionaryTable().addRow(EditableDatum(active = true, dictionary))
             }
 
             GuiActionRunner.execute { editor.applyState() }
 
-            assertThat(editor.originalState.dictionarySettings.userDictionaryFiles).contains("basis")
+            assertThat(editor.originalState.dictionarySettings.dictionaries).contains(dictionary)
         }
 
-        @Suppress("UNCHECKED_CAST") // I checked it myself!
         it("does not apply changes to dictionaries after a reset") {
+            val dictionary = UserDictionary("guide")
+
             GuiActionRunner.execute {
                 frame.tree().target().setSelectionRow(5)
-                (frame.table().target() as TableView<EditableDatum<DictionaryReference>>).listTableModel
-                    .addRow(EditableDatum(active = true, DictionaryReference(isBundled = false, "guide")))
+                dictionaryTable().addRow(EditableDatum(active = true, dictionary))
             }
 
             GuiActionRunner.execute { editor.reset() }
 
-            assertThat(editor.originalState.dictionarySettings.userDictionaryFiles).doesNotContain("guide")
+            assertThat(editor.originalState.dictionarySettings.dictionaries).doesNotContain(dictionary)
         }
     }
 

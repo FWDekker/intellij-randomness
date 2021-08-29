@@ -41,7 +41,7 @@ object WordSchemeEditorTest : Spek({
         ideaFixture.setUp()
 
         dictionarySettings = DictionarySettings()
-        scheme = WordScheme(dictionarySettings)
+        scheme = WordScheme().also { it.dictionarySettings += dictionarySettings }
         editor = GuiActionRunner.execute<WordSchemeEditor> { WordSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
 
@@ -72,7 +72,7 @@ object WordSchemeEditorTest : Spek({
     }
 
 
-    describe("loadScheme") {
+    describe("loadState") {
         it("loads the scheme's minimum length") {
             GuiActionRunner.execute { editor.loadState(WordScheme(minLength = 4, maxLength = 12)) }
 
@@ -106,26 +106,24 @@ object WordSchemeEditorTest : Spek({
         }
 
         it("loads the scheme's bundled dictionaries") {
-            val allUserDictionaries = mutableSetOf("dictionary1.dic", "dictionary2.dic")
-            val activeUserDictionaries = mutableSetOf("dictionary1.dic")
+            val allDictionaries = setOf(UserDictionary("dictionary1.dic"), UserDictionary("dictionary2.dic"))
+            val activeDictionaries = setOf(UserDictionary("dictionary1.dic"))
 
             GuiActionRunner.execute {
                 editor.loadState(
-                    WordScheme(
-                        dictionarySettings = DictionarySettings(mutableSetOf(), allUserDictionaries),
-                        activeUserDictionaryFiles = activeUserDictionaries
-                    )
+                    WordScheme(activeDictionaries = activeDictionaries.toSet())
+                        .also { it.dictionarySettings += DictionarySettings(allDictionaries.toSet()) }
                 )
             }
 
             assertThat(dictionaryTable.items.map { it.datum })
-                .containsExactlyElementsOf(allUserDictionaries.map { DictionaryReference(isBundled = false, it) })
+                .containsExactlyElementsOf(allDictionaries)
             assertThat(dictionaryTable.items.filter { it.active }.map { it.datum })
-                .containsExactlyElementsOf(activeUserDictionaries.map { DictionaryReference(isBundled = false, it) })
+                .containsExactlyElementsOf(activeDictionaries)
         }
     }
 
-    describe("readScheme") {
+    describe("readState") {
         describe("defaults") {
             it("returns default enclosure if no enclosure is selected") {
                 GuiActionRunner.execute { editor.loadState(WordScheme(enclosure = "unsupported")) }
@@ -175,15 +173,60 @@ object WordSchemeEditorTest : Spek({
             assertThat(readState)
                 .isEqualTo(editor.originalState)
                 .isNotSameAs(editor.originalState)
-            assertThat(readState.dictionarySettings)
-                .isSameAs(editor.originalState.dictionarySettings)
+            assertThat(+readState.dictionarySettings)
+                .isEqualTo(+editor.originalState.dictionarySettings)
+                .isNotSameAs(+editor.originalState.dictionarySettings)
             assertThat(readState.decorator)
                 .isEqualTo(editor.originalState.decorator)
                 .isNotSameAs(editor.originalState.decorator)
         }
 
+        it("returns a scheme with a deep copy of the dictionary settings") {
+            GuiActionRunner.execute {
+                repeat(dictionaryTable.items.size) { dictionaryTable.listTableModel.removeRow(0) }
+                dictionaryTable.listTableModel.addRow(EditableDatum(active = true, UserDictionary("fasten.dic")))
+            }
+
+            assertThat((+editor.readState().dictionarySettings).dictionaries)
+                .containsExactly(UserDictionary("fasten.dic"))
+            assertThat(dictionarySettings.dictionaries)
+                .doesNotContain(UserDictionary("fasten.dic"))
+        }
+
         it("retains the scheme's UUID") {
             assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
+        }
+    }
+
+    describe("applyState") {
+        it("does not change the target's reference to the dictionary settings") {
+            GuiActionRunner.execute { editor.applyState() }
+
+            assertThat(+scheme.dictionarySettings).isSameAs(dictionarySettings)
+        }
+
+        it("copies the changes from the table into the original state's dictionary settings") {
+            GuiActionRunner.execute {
+                repeat(dictionaryTable.items.size) { dictionaryTable.listTableModel.removeRow(0) }
+                dictionaryTable.listTableModel.addRow(EditableDatum(active = true, UserDictionary("fat.dic")))
+            }
+
+            GuiActionRunner.execute { editor.applyState() }
+
+            assertThat(dictionarySettings.dictionaries).containsExactly(UserDictionary("fat.dic"))
+        }
+    }
+
+
+    describe("doValidate") {
+        it("is invalid if a duplicate dictionary has been defined") {
+            val file = tempFileHelper.createFile("lay\ngray", ".dic")
+            GuiActionRunner.execute {
+                dictionaryTable.listTableModel.addRow(EditableDatum(active = true, UserDictionary(file.absolutePath)))
+                dictionaryTable.listTableModel.addRow(EditableDatum(active = true, UserDictionary(file.absolutePath)))
+            }
+
+            assertThat(editor.doValidate()).matches("Duplicate dictionary '.*\\.dic'\\.")
         }
     }
 

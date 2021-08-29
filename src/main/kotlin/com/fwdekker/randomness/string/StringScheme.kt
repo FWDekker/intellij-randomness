@@ -1,8 +1,10 @@
 package com.fwdekker.randomness.string
 
+import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.State
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
@@ -11,7 +13,6 @@ import icons.RandomnessIcons
 /**
  * Contains settings for generating random strings.
  *
- * @property symbolSetSettings Persistent storage of available symbol sets.
  * @property minLength The minimum length of the generated string, inclusive.
  * @property maxLength The maximum length of the generated string, inclusive.
  * @property enclosure The string that encloses the generated string on both sides.
@@ -21,16 +22,20 @@ import icons.RandomnessIcons
  * @property decorator Settings that determine whether the output should be an array of values.
  */
 data class StringScheme(
-    @Transient
-    var symbolSetSettings: SymbolSetSettings = SymbolSetSettings.default,
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var activeSymbolSets: MutableSet<String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMutableSet(),
+    var activeSymbolSets: Set<String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMutableSet(),
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS,
     override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
+    /**
+     * Persistent storage of available symbol sets.
+     */
+    @get:Transient
+    var symbolSetSettings: Box<SymbolSetSettings> = Box({ SymbolSetSettings.default })
+
     @Transient
     override val name = "String"
 
@@ -38,7 +43,7 @@ data class StringScheme(
 
     private val activeSymbols: List<String>
         get() =
-            symbolSetSettings.symbolSetList
+            (+symbolSetSettings).symbolSetList
                 .filter { it.name in activeSymbolSets }
                 .sum(excludeLookAlikeSymbols)
 
@@ -62,14 +67,14 @@ data class StringScheme(
 
     override fun setSettingsState(settingsState: SettingsState) {
         super.setSettingsState(settingsState)
-        symbolSetSettings = settingsState.symbolSetSettings
+        symbolSetSettings += settingsState.symbolSetSettings
     }
 
 
     override fun doValidate(): String? {
-        symbolSetSettings.doValidate()?.also { return it }
+        (+symbolSetSettings).doValidate()?.also { return it }
 
-        val unknown = activeSymbolSets.firstOrNull { it !in symbolSetSettings.symbolSetList.map(SymbolSet::name) }
+        val unknown = activeSymbolSets.firstOrNull { it !in (+symbolSetSettings).symbolSetList.map(SymbolSet::name) }
         return when {
             minLength < MIN_LENGTH ->
                 "Minimum length should not be smaller than $MIN_LENGTH."
@@ -86,13 +91,26 @@ data class StringScheme(
         }
     }
 
-    override fun deepCopy(retainUuid: Boolean) =
-        copy(symbolSetSettings = symbolSetSettings, decorator = decorator.deepCopy(retainUuid))
-            .also {
-                if (retainUuid) it.uuid = this.uuid
+    override fun copyFrom(other: State) {
+        require(other is StringScheme) { "Cannot copy from different type." }
 
-                it.activeSymbolSets = activeSymbolSets.toMutableSet()
-            }
+        (+symbolSetSettings).also {
+            it.copyFrom(+other.symbolSetSettings)
+
+            super.copyFrom(other)
+            symbolSetSettings += it
+        }
+    }
+
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(
+            activeSymbolSets = activeSymbolSets.toSet(),
+            decorator = decorator.deepCopy(retainUuid)
+        ).also {
+            if (retainUuid) it.uuid = this.uuid
+
+            it.symbolSetSettings += (+symbolSetSettings).deepCopy(retainUuid = retainUuid)
+        }
 
 
     /**

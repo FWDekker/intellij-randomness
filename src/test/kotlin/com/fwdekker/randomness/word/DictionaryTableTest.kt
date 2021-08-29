@@ -37,51 +37,50 @@ object DictionaryTableTest : Spek({
 
     describe("type column") {
         it("displays 'bundled' for bundled dictionaries") {
-            val dictionary = DictionaryReference(true, "dictionary.dic")
+            val dictionary = BundledDictionary("dictionary.dic")
             GuiActionRunner.execute { dictionaryTable.data = listOf(dictionary) }
 
             assertThat(dictionaryTable.model.getValueAt(0, 1)).isEqualTo("bundled")
         }
 
         it("displays 'user' for user dictionaries") {
-            val dictionary = DictionaryReference(false, "dictionary.dic")
+            val dictionary = UserDictionary("dictionary.dic")
             GuiActionRunner.execute { dictionaryTable.data = listOf(dictionary) }
 
-            assertThat(dictionaryTable.model.getValueAt(0, 1)).isEqualTo("user")
+            assertThat(dictionaryTable.model.getValueAt(0, 1)).isEqualTo("custom")
         }
     }
 
     describe("location column") {
         it("displays the location of a bundled dictionary") {
-            val dictionary = DictionaryReference(true, "dictionary.dic")
+            val dictionary = BundledDictionary("dictionary.dic")
             GuiActionRunner.execute { dictionaryTable.data = listOf(dictionary) }
 
             assertThat(dictionaryTable.model.getValueAt(0, 2)).isEqualTo("dictionary.dic")
         }
 
         it("displays the location of a user dictionary") {
-            val dictionary = DictionaryReference(false, "dictionary.dic")
+            val dictionary = UserDictionary("dictionary.dic")
             GuiActionRunner.execute { dictionaryTable.data = listOf(dictionary) }
 
             assertThat(dictionaryTable.model.getValueAt(0, 2)).isEqualTo("dictionary.dic")
         }
 
         it("cannot edit the location of a bundled dictionary") {
-            val oldDictionary = DictionaryReference(true, "dictionary.dic")
+            val oldDictionary = BundledDictionary("dictionary.dic")
             GuiActionRunner.execute { dictionaryTable.data = listOf(oldDictionary) }
 
             assertThat(dictionaryTable.model.isCellEditable(0, 2)).isFalse()
         }
 
         it("changes the location of a user dictionary") {
-            val oldDictionary = DictionaryReference(false, "dictionary.dic")
+            val oldDictionary = UserDictionary("dictionary.dic")
             GuiActionRunner.execute { dictionaryTable.data = listOf(oldDictionary) }
 
             GuiActionRunner.execute { dictionaryTable.model.setValueAt("new_dictionary.dic", 0, 2) }
 
             val newDictionary = dictionaryTable.data.first()
-            assertThat(newDictionary.isBundled).isFalse()
-            assertThat(newDictionary.filename).isEqualTo("new_dictionary.dic")
+            assertThat((newDictionary as UserDictionary).filename).isEqualTo("new_dictionary.dic")
         }
     }
 
@@ -89,7 +88,7 @@ object DictionaryTableTest : Spek({
     describe("itemEditor") {
         describe("remove") {
             it("does not remove a bundled dictionary") {
-                val bundledDictionary = DictionaryReference(true, "dictionary.dic")
+                val bundledDictionary = BundledDictionary("dictionary.dic")
                 GuiActionRunner.execute { dictionaryTable.data = listOf(bundledDictionary) }
 
                 GuiActionRunner.execute {
@@ -101,7 +100,7 @@ object DictionaryTableTest : Spek({
             }
 
             it("removes a user dictionary") {
-                val userDictionary = DictionaryReference(false, "dictionary.dic")
+                val userDictionary = UserDictionary("dictionary.dic")
                 GuiActionRunner.execute { dictionaryTable.data = listOf(userDictionary) }
 
                 GuiActionRunner.execute {
