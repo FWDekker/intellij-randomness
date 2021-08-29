@@ -1,8 +1,6 @@
 package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.StateEditor
-import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
 import java.beans.PropertyChangeEvent
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
@@ -72,49 +70,6 @@ fun JTextField.addChangeListener(changeListener: (JTextField) -> Unit) {
     this.document.addDocumentListener(dl)
 }
 
-
-/**
- * A [MouseListener] that listens only to mouse clicks.
- *
- * @property listener The listener to invoke whenever the mouse is clicked on the element that this listener is attached
- * to.
- */
-class MouseClickListener(private val listener: (MouseEvent?) -> Unit) : MouseListener {
-    /**
-     * Invokes the [listener].
-     *
-     * @param event the event that triggered the listener
-     */
-    override fun mouseClicked(event: MouseEvent?) = listener(event)
-
-    /**
-     * Does nothing.
-     *
-     * @param event ignored
-     */
-    override fun mousePressed(event: MouseEvent?) = Unit
-
-    /**
-     * Does nothing.
-     *
-     * @param event ignored
-     */
-    override fun mouseReleased(event: MouseEvent?) = Unit
-
-    /**
-     * Does nothing.
-     *
-     * @param event ignored
-     */
-    override fun mouseEntered(event: MouseEvent?) = Unit
-
-    /**
-     * Does nothing.
-     *
-     * @param event ignored
-     */
-    override fun mouseExited(event: MouseEvent?) = Unit
-}
 
 /**
  * A [TreeModelListener] that invokes the same listener on each event.

@@ -4,6 +4,7 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.State
 import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.SimpleTextAttributes
+import com.intellij.ui.TreeSpeedSearch
 import com.intellij.ui.treeStructure.Tree
 import java.util.Collections
 import java.util.Enumeration
@@ -24,7 +25,7 @@ import kotlin.math.min
  *
  * @property isModified Returns true if and only if the given scheme has been modified.
  */
-class TemplateTree(
+class TemplateJTree(
     private val isModified: (Scheme) -> Boolean
 ) : Tree(DefaultTreeModel(TemplateListTreeNode(TemplateList(emptyList())))) {
     /**
@@ -54,6 +55,10 @@ class TemplateTree(
 
 
     init {
+        TreeSpeedSearch(this) { path ->
+            path.path.map { (it as StateTreeNode<*>).state }.filterIsInstance<Scheme>().joinToString { it.name }
+        }
+
         emptyText.text = TemplateListEditor.EMPTY_TEXT
         isRootVisible = false
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
@@ -84,8 +89,8 @@ class TemplateTree(
      * @param newScheme the scheme to add. Must be an instance of [Template] if [selectedNode] is null.
      */
     fun addScheme(newScheme: Scheme) {
-        val root = myModel.root as TemplateListTreeNode
         val selectedNode = selectedNode
+        if (newScheme is Template) newScheme.name = findUniqueNameFor(newScheme)
 
         val (childNode, parent, index) =
             if (selectedNode == null) {
@@ -153,13 +158,13 @@ class TemplateTree(
     }
 
     /**
-     * Selects the template with the given UUID, if it exists; otherwise, nothing happens.
+     * Selects the scheme with the given UUID, if it exists; otherwise, nothing happens.
      *
-     * @param targetUuid the UUID of the template to select
-     * @return true if and only if the template was found and selected
+     * @param targetUuid the UUID of the scheme to select, or `null` if nothing should be done
+     * @return true if and only if the scheme was found and selected
      */
-    fun selectTemplate(targetUuid: String) =
-        root.children().toList().firstOrNull { it.state.uuid == targetUuid }
+    fun selectScheme(targetUuid: String?) =
+        root.recursiveChildren().toList().firstOrNull { it.state.uuid == targetUuid }
             ?.also { selectionPath = getPathToRoot(it) } != null
 
 
@@ -170,6 +175,32 @@ class TemplateTree(
      * @return the path from the given node to the root path, including both ends
      */
     private fun getPathToRoot(treeNode: TreeNode) = TreePath(myModel.getPathToRoot(treeNode))
+
+    /**
+     * Finds a good, unique name for the given template so that it can be inserted into this list without conflict.
+     *
+     * If the name is already unique, that name is returned. Otherwise, the name is appended with the first number `i`
+     * such that `$name ($i)` is unique. If the template's current name already ends with a number in parentheses, that
+     * number is taken as the starting number.
+     *
+     * @param template the template to find a good name for
+     * @return a unique name for the given template
+     */
+    private fun findUniqueNameFor(template: Template): String {
+        val templateNames = root.children().toList().map { it.state.name }
+        if (template.name !in templateNames) return template.name
+
+        var i = 1
+        var name = template.name
+
+        if (name.matches(Regex(".* \\([1-9][0-9]*\\)"))) {
+            i = name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')).toInt()
+            name = name.substring(0, name.lastIndexOf('(') - 1)
+        }
+
+        while ("$name ($i)" in templateNames) i++
+        return "$name ($i)"
+    }
 
 
     /**
@@ -263,6 +294,16 @@ class TemplateTree(
          * @return the children of this node
          */
         abstract override fun children(): Enumeration<out StateTreeNode<*>>
+
+        /**
+         * Returns all nodes recursively contained in this node in depth-first order.
+         *
+         * @return all nodes recursively contained in this node in depth-first order
+         */
+        fun recursiveChildren(): Enumeration<out StateTreeNode<*>> {
+            val children = children().toList()
+            return Collections.enumeration(children.flatMap { listOf(it) + it.recursiveChildren().toList() })
+        }
 
         /**
          * Returns the child at the given index.

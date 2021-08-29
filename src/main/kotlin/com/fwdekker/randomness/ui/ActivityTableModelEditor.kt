@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.ui
 
-import com.intellij.ide.IdeBundle
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonShortcuts
 import com.intellij.openapi.keymap.KeymapUtil
@@ -108,12 +107,6 @@ abstract class ActivityTableModelEditor<T>(
             )
         }
 
-        val copyAction =
-            object : ToolbarDecorator.ElementActionButton(IdeBundle.message("button.copy"), PlatformIcons.COPY_ICON) {
-                override fun actionPerformed(e: AnActionEvent) = copySelectedItems(table)
-
-                override fun isEnabled() = table.selection.all { isCopyable(it.datum) }
-            }
         // Implementation based on `TableModelEditor#createComponent`
         return TableModelEditor::class.java.getDeclaredField("toolbarDecorator")
             .apply { isAccessible = true }
@@ -123,7 +116,12 @@ abstract class ActivityTableModelEditor<T>(
                 if (table.selectedObject != null)
                     table.editCellAt(table.selectedRow, table.selectedColumn)
             }
-            .addExtraAction(copyAction)
+            .setEditActionUpdater { table.selectedObject?.let { isEditable(it) } == true }
+            .addExtraAction(object : ToolbarDecorator.ElementActionButton("Copy", PlatformIcons.COPY_ICON) {
+                override fun actionPerformed(e: AnActionEvent) = copySelectedItems(table)
+
+                override fun isEnabled() = table.selection.all { isCopyable(it.datum) }
+            })
             .createPanel()
     }
 

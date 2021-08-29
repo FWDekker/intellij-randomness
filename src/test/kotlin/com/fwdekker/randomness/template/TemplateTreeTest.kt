@@ -16,7 +16,7 @@ import javax.swing.tree.TreePath
 
 
 /**
- * Unit tests for [TemplateTree].
+ * Unit tests for [TemplateJTree].
  *
  * @see TemplateListEditorTest
  */
@@ -25,7 +25,7 @@ object TemplateTreeTest : Spek({
     lateinit var frame: FrameFixture
 
     lateinit var basicTemplates: TemplateList // Not loaded by default, but easy to reuse
-    lateinit var tree: TemplateTree
+    lateinit var tree: TemplateJTree
 
 
     beforeEachTest {
@@ -39,7 +39,7 @@ object TemplateTreeTest : Spek({
                 Template("Bite", listOf(DummyScheme.from("f"), DummyScheme.from("g")))
             )
         )
-        tree = GuiActionRunner.execute<TemplateTree> { TemplateTree { false } }
+        tree = GuiActionRunner.execute<TemplateJTree> { TemplateJTree { false } }
         frame = Containers.showInFrame(tree)
     }
 
@@ -162,6 +162,49 @@ object TemplateTreeTest : Spek({
                     .containsExactly("Small", "Agency", "Clock", "Bite")
                 assertThat(basicTemplates.templates.map { it.name })
                     .containsExactly("Small", "Agency", "Clock", "Bite")
+            }
+
+            it("adds a `(1)` suffix if the template name is already taken") {
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    tree.addScheme(Template(name = "Small"))
+                }
+
+                assertThat(basicTemplates.templates.map { it.name })
+                    .containsExactly("Small", "Clock", "Bite", "Small (1)")
+            }
+
+            it("adds a `(2)` suffix if the `(1)` suffix is already taken") {
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    tree.addScheme(Template(name = "Small"))
+                    tree.addScheme(Template(name = "Small"))
+                }
+
+                assertThat(basicTemplates.templates.map { it.name })
+                    .containsExactly("Small", "Clock", "Bite", "Small (1)", "Small (2)")
+            }
+
+            it("replaces and increments the suffix if the name is already taken") {
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    tree.addScheme(Template(name = "Small"))
+                    tree.addScheme(Template(name = "Small (1)"))
+                }
+
+                assertThat(basicTemplates.templates.map { it.name })
+                    .containsExactly("Small", "Clock", "Bite", "Small (1)", "Small (2)")
+            }
+
+            it("replaces and increments the suffix if the name is already taken, even if a lower value is available") {
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    tree.addScheme(Template(name = "Small (9)"))
+                    tree.addScheme(Template(name = "Small (9)"))
+                }
+
+                assertThat(basicTemplates.templates.map { it.name })
+                    .containsExactly("Small", "Clock", "Bite", "Small (9)", "Small (10)")
             }
         }
 
@@ -449,29 +492,28 @@ object TemplateTreeTest : Spek({
         }
     }
 
-    describe("selectTemplate") {
+    describe("selectScheme") {
         it("does nothing if no template with the specified UUID can be found") {
             GuiActionRunner.execute { tree.loadList(basicTemplates) }
             val initialSelection = tree.selectedNode?.state
 
-            GuiActionRunner.execute { tree.selectTemplate("dae4e446-56de-40ca-8415-5bff1f47f2f4") }
+            GuiActionRunner.execute { tree.selectScheme("dae4e446-56de-40ca-8415-5bff1f47f2f4") }
 
             assertThat(tree.selectedNode?.state).isEqualTo(initialSelection)
         }
 
-        it("does nothing if the UUID belongs to a scheme in the tree") {
+        it("selects the scheme with the given UUID") {
             GuiActionRunner.execute { tree.loadList(basicTemplates) }
-            val initialSelection = tree.selectedNode?.state
 
-            GuiActionRunner.execute { tree.selectTemplate(basicTemplates.templates[1].schemes[0].uuid) }
+            GuiActionRunner.execute { tree.selectScheme(basicTemplates.templates[1].schemes[0].uuid) }
 
-            assertThat(tree.selectedNode?.state).isEqualTo(initialSelection)
+            assertThat(tree.selectedNode?.state).isEqualTo(basicTemplates.templates[1].schemes[0])
         }
 
         it("selects the template with the given UUID") {
             GuiActionRunner.execute { tree.loadList(basicTemplates) }
 
-            GuiActionRunner.execute { tree.selectTemplate(basicTemplates.templates[1].uuid) }
+            GuiActionRunner.execute { tree.selectScheme(basicTemplates.templates[1].uuid) }
 
             assertThat(tree.selectedNode?.state).isEqualTo(basicTemplates.templates[1])
         }

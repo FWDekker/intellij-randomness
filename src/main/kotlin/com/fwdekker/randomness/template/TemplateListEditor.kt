@@ -20,12 +20,14 @@ import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionToolbarPosition
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.ui.popup.ListSeparator
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.ui.AnActionButton
-import com.intellij.ui.AnActionButtonRunnable
+import com.intellij.ui.CommonActionsPanel
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.LayeredIcon
 import com.intellij.ui.ToolbarDecorator
@@ -53,7 +55,7 @@ import javax.swing.SwingUtilities
 class TemplateListEditor(settings: SettingsState = SettingsState.default) : StateEditor<SettingsState>(settings) {
     override val rootComponent = JPanel(BorderLayout())
     private var currentSettingsState: SettingsState = SettingsState()
-    private val templateTree = TemplateTree { scheme ->
+    private val templateTree = TemplateJTree { scheme ->
         val templates = originalState.templateList.templates
         val schemesAndTemplates = templates.flatMap { it.schemes } + templates
 
@@ -63,16 +65,21 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     private var schemeEditor: StateEditor<*>? = null
 
     /**
-     * The UUID of the template to select after the next invocation of [reset].
+     * The UUID of the scheme to select after the next invocation of [reset].
      *
      * @see TemplateSettingsConfigurable
      * @see TemplateSettingsAction
      */
     var queueSelection: String? = null
 
+    /**
+     * Whether to focus on the scheme editor after the next invocation of [reset].
+     */
+    var queueFocus: Boolean = false
+
 
     init {
-        val splitter = JBSplitter(false, DEFAULT_SPLITTER_PROPORTION)
+        val splitter = JBSplitter(false, SPLITTER_PROPORTION_KEY, DEFAULT_SPLITTER_PROPORTION)
         rootComponent.add(splitter, BorderLayout.CENTER)
 
         // Left half
@@ -88,7 +95,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
                     else selectedNode.parent!!.state as Scheme
                 }
 
-            readState().templateList.templates.first { it.uuid == selectedTemplate.uuid }
+            currentSettingsState.templateList.templates.first { it.uuid == selectedTemplate.uuid }
         }
         addChangeListener { previewPanel.updatePreview() }
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
@@ -110,21 +117,23 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             .setToolbarPosition(ActionToolbarPosition.TOP)
             .setPanelBorder(JBUI.Borders.empty())
             .setScrollPaneBorder(JBUI.Borders.empty())
-            .setAddAction {
-                it.preferredPopupPoint?.let { point ->
-                    JBPopupFactory.getInstance().createListPopup(AddPopupStep()).show(point)
-                }
-            }
-            .setAddActionName("Add")
-            .setAddIcon(LayeredIcon.ADD_WITH_DROPDOWN)
-            .setRemoveAction(RemoveAction())
-            .setRemoveActionName("Remove")
-            .setRemoveActionUpdater { templateTree.selectedNode != null }
+            .disableAddAction()
+            .disableRemoveAction()
+            .addExtraAction(AddSchemeActionButton())
+            .addExtraAction(RemoveActionButton())
             .addExtraAction(CopyActionButton())
             .addExtraAction(UpActionButton())
             .addExtraAction(DownActionButton())
-            .setButtonComparator("Add", "Remove", "Copy", "Up", "Down")
+            .setButtonComparator("Add", "Edit", "Remove", "Copy", "Up", "Down")
             .createPanel()
+            .also {
+                // Focus on editor when `Enter` is pressed
+                object : AnAction() {
+                    override fun actionPerformed(event: AnActionEvent) {
+                        schemeEditor?.preferredFocusedComponent?.requestFocus()
+                    }
+                }.registerCustomShortcutSet(CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.EDIT), it)
+            }
 
     /**
      * Invoked when an entry is (de)selected in the tree.
@@ -179,7 +188,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
      * Adds the given scheme to the tree.
      *
      * @param newScheme the scheme to add
-     * @see TemplateTree.addScheme
+     * @see TemplateJTree.addScheme
      */
     @ActuallyPrivate("Exposed for testing because popup cannot easily be tested.")
     internal fun addScheme(newScheme: Scheme) = templateTree.addScheme(newScheme)
@@ -195,13 +204,20 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     override fun readState() = currentSettingsState.deepCopy(retainUuid = true)
 
     override fun reset() {
+        if (queueSelection == null) {
+            queueFocus = false
+            queueSelection = templateTree.selectedNode?.state?.uuid
+        }
+
         super.reset()
 
-        queueSelection?.also { selection ->
-            templateTree.selectTemplate(selection)
-            SwingUtilities.invokeLater { schemeEditor?.preferredFocusedComponent?.requestFocus() }
-
+        if (queueSelection != null) {
+            templateTree.selectScheme(queueSelection)
             queueSelection = null
+        }
+        if (queueFocus) {
+            SwingUtilities.invokeLater { schemeEditor?.preferredFocusedComponent?.requestFocus() }
+            queueFocus = false
         }
     }
 
@@ -213,39 +229,33 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
 
     /**
-     * The entries to display in a popup when the add button is pressed.
+     * Displays a popup to add a scheme, or immediately adds a template if nothing is currently selected.
      */
-    private inner class AddPopupStep : BaseListPopupStep<String>(null, listOf("Template", "Scheme")) {
-        override fun hasSubstep(selectedValue: String?) = true
-
-        override fun onChosen(selectedValue: String?, finalChoice: Boolean) =
-            when (selectedValue) {
-                "Template" -> AddTemplatePopupStep()
-                "Scheme" -> AddSchemePopupStep()
-                else -> null
+    private inner class AddSchemeActionButton : AnActionButton("Add", AllIcons.General.Add) {
+        override fun actionPerformed(event: AnActionEvent) {
+            if (templateTree.selectedNode == null) {
+                addScheme(AVAILABLE_ADD_SCHEMES[0])
+                return
             }
 
-
-        /**
-         * The [Template]-related entries in [AddPopupStep].
-         */
-        private inner class AddTemplatePopupStep : BaseListPopupStep<Template>(null, AVAILABLE_ADD_TEMPLATES) {
-            override fun getIconFor(value: Template?) = value?.icon
-
-            override fun getTextFor(value: Template?) = value?.name ?: Template.DEFAULT_NAME
-
-            override fun onChosen(value: Template?, finalChoice: Boolean): PopupStep<*>? {
-                if (value != null)
-                    templateTree.addScheme(value.deepCopy().also { it.setSettingsState(currentSettingsState) })
-
-                return null
-            }
-
-            override fun isSpeedSearchEnabled() = true
+            JBPopupFactory.getInstance()
+                .createListPopup(AddSchemePopupStep())
+                .show(preferredPopupPoint ?: return)
         }
 
+        override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.ADD)
+
+        override fun updateButton(event: AnActionEvent) {
+            super.updateButton(event)
+
+            event.presentation.icon =
+                if (templateTree.selectedNode == null) AllIcons.General.Add
+                else LayeredIcon.ADD_WITH_DROPDOWN
+        }
+
+
         /**
-         * The [Scheme]-related entries in [AddPopupStep].
+         * The [Scheme]-related entries in [AddSchemeActionButton].
          */
         private inner class AddSchemePopupStep : BaseListPopupStep<Scheme>(null, AVAILABLE_ADD_SCHEMES) {
             override fun getIconFor(value: Scheme?) = value?.icon
@@ -260,16 +270,26 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             }
 
             override fun isSpeedSearchEnabled() = true
+
+            override fun getSeparatorAbove(value: Scheme?) =
+                if (value == AVAILABLE_ADD_SCHEMES[1]) ListSeparator()
+                else null
+
+            override fun getDefaultOptionIndex() = 0
         }
     }
 
     /**
      * The action to invoke when the remove button is pressed.
      */
-    private inner class RemoveAction : AnActionButtonRunnable {
-        override fun run(t: AnActionButton?) {
-            templateTree.removeNode(templateTree.selectedNode ?: return)
+    private inner class RemoveActionButton : AnActionButton("Remove", AllIcons.General.Remove) {
+        override fun actionPerformed(event: AnActionEvent) {
+            templateTree.selectedNode?.also { templateTree.removeNode(it) }
         }
+
+        override fun isEnabled() = templateTree.selectedNode != null
+
+        override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.REMOVE)
     }
 
     /**
@@ -299,6 +319,8 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             val node = templateTree.selectedNode ?: return false
             return node.parent!!.getIndex(node) > 0
         }
+
+        override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.UP)
     }
 
     /**
@@ -313,6 +335,8 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             val node = templateTree.selectedNode ?: return false
             return node.parent!!.getIndex(node) < node.parent!!.childCount - 1
         }
+
+        override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.DOWN)
     }
 
 
@@ -320,6 +344,11 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
      * Holds constants.
      */
     companion object {
+        /**
+         * The key to store the user's last-used splitter proportion under.
+         */
+        const val SPLITTER_PROPORTION_KEY = "com.fwdekker.randomness.template.TemplateListEditor"
+
         /**
          * The default proportion of the splitter component.
          */
@@ -331,22 +360,17 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         const val EMPTY_TEXT = "No templates configured."
 
         /**
-         * Returns the list of templates that the user can add from the add action.
-         */
-        val AVAILABLE_ADD_TEMPLATES: List<Template>
-            get() = TemplateList.DEFAULT_TEMPLATES
-
-        /**
          * Returns the list of schemes that the user can add from the add action.
          */
         val AVAILABLE_ADD_SCHEMES: List<Scheme>
             get() = listOf(
-                LiteralScheme(),
+                Template("Template", emptyList()),
                 IntegerScheme(),
                 DecimalScheme(),
                 StringScheme(),
                 WordScheme(),
                 UuidScheme(),
+                LiteralScheme(),
                 TemplateReference()
             )
     }

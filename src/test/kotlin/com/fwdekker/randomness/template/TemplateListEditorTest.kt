@@ -202,35 +202,6 @@ object TemplateListEditorTest : Spek({
         }
     }
 
-    describe("selection after reload") {
-        it("selects the desired queued selection if it exists") {
-            GuiActionRunner.execute {
-                editor.queueSelection = editor.originalState.templateList.templates[2].uuid
-                editor.reset()
-            }
-
-            frame.tree().requireSelection(6)
-        }
-
-        it("selects the first scheme if the queued selection is invalid") {
-            GuiActionRunner.execute {
-                editor.queueSelection = IntegerScheme().uuid
-                editor.reset()
-            }
-
-            frame.tree().requireSelection(1)
-        }
-
-        it("does not override the default selection if the desired queue selection is null") {
-            GuiActionRunner.execute {
-                editor.queueSelection = null
-                editor.reset()
-            }
-
-            frame.tree().requireSelection(1)
-        }
-    }
-
 
     describe("loadState") {
         it("loads the list's templates") {
@@ -465,6 +436,77 @@ object TemplateListEditorTest : Spek({
             GuiActionRunner.execute { editor.reset() }
 
             assertThat(editor.originalState.dictionarySettings.dictionaries).doesNotContain(dictionary)
+        }
+    }
+
+    describe("reset") {
+        describe("manual override of selected scheme") {
+            it("selects the desired template") {
+                GuiActionRunner.execute {
+                    editor.queueSelection = editor.originalState.templateList.templates[2].uuid
+                    editor.reset()
+                }
+
+                frame.tree().requireSelection(6)
+            }
+
+            it("selects the desired scheme") {
+                GuiActionRunner.execute {
+                    editor.queueSelection = editor.originalState.templateList.templates[2].uuid
+                    editor.reset()
+                }
+
+                frame.tree().requireSelection(6)
+            }
+
+            it("selects the first leaf if the queued selection is null") {
+                GuiActionRunner.execute { editor.reset() }
+
+                frame.tree().requireSelection(1)
+            }
+
+            it("selects the first leaf if the queued selection could not be found") {
+                GuiActionRunner.execute {
+                    editor.queueSelection = "4c0d9b93-e842-48b8-84a1-7b50140c614b"
+                    editor.reset()
+                }
+
+                frame.tree().requireSelection(1)
+            }
+        }
+
+        describe("keep selected scheme") {
+            it("keeps focus on the current scheme after a reset") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(2)
+                    editor.reset()
+                }
+
+                frame.tree().requireSelection(2)
+            }
+
+            it("selects the first leaf if the current scheme is removed during a reset") {
+                GuiActionRunner.execute {
+                    frame.tree().target().clearSelection()
+                    editor.addScheme(Template("Explore"))
+
+                    frame.tree().target().setSelectionRow(10)
+                    editor.reset()
+                }
+
+                frame.tree().requireSelection(1)
+            }
+        }
+
+        describe("editor focus") {
+            it("resets the request after a reset") {
+                GuiActionRunner.execute {
+                    editor.queueFocus = true
+                    editor.reset()
+                }
+
+                assertThat(editor.queueFocus).isFalse()
+            }
         }
     }
 
