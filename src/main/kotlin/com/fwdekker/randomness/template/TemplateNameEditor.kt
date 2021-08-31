@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.intellij.ui.components.JBTextField
 import java.awt.BorderLayout
@@ -9,7 +10,7 @@ import javax.swing.JPanel
 
 
 /**
- * Component for editing only the name of [Template]s.
+ * Component for editing only the name and decorator of [Template]s.
  *
  * @param template the template to edit
  */
@@ -18,6 +19,7 @@ class TemplateNameEditor(template: Template) : StateEditor<Template>(template) {
     override val preferredFocusedComponent by lazy { nameInput }
 
     private val nameInput = JBTextField().also { it.name = "templateName" }
+    private val arraySchemeDecoratorEditor: ArraySchemeDecoratorEditor
 
 
     init {
@@ -26,19 +28,28 @@ class TemplateNameEditor(template: Template) : StateEditor<Template>(template) {
         namePanel.add(nameInput)
         rootComponent.add(namePanel, BorderLayout.NORTH)
 
+        arraySchemeDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator, disablable = false)
+        rootComponent.add(arraySchemeDecoratorEditor.rootComponent, BorderLayout.CENTER)
+
         loadState()
     }
 
 
-    override fun loadState(state: Template) = super.loadState(state).also { nameInput.text = state.name.trim() }
+    override fun loadState(state: Template) {
+        super.loadState(state)
+
+        nameInput.text = state.name.trim()
+        arraySchemeDecoratorEditor.loadState(state.decorator)
+    }
 
     override fun readState() =
         Template(
             name = nameInput.text.trim(),
             schemes = originalState.schemes.map { it.deepCopy(retainUuid = true) },
-            decorator = originalState.decorator
+            decorator = arraySchemeDecoratorEditor.readState().also { it.enabled = false }
         ).also { it.uuid = originalState.uuid }
 
 
-    override fun addChangeListener(listener: () -> Unit) = addChangeListenerTo(nameInput, listener = listener)
+    override fun addChangeListener(listener: () -> Unit) =
+        addChangeListenerTo(nameInput, arraySchemeDecoratorEditor, listener = listener)
 }

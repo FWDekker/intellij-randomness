@@ -28,7 +28,7 @@ abstract class Scheme : State() {
      * The icon for this scheme; depends on whether its array decorator is enabled.
      */
     @get:Transient
-    val icon: Icon?
+    open val icon: Icon?
         get() =
             if (decorator?.enabled == true) icons?.Array
             else icons?.Base

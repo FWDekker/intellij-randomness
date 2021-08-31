@@ -23,9 +23,12 @@ import javax.swing.event.ChangeEvent
  * Component for settings of random array generation.
  *
  * @param settings the settings to edit in the component
+ * @param disablable true if and only if the user has the option of disabling the array scheme. If this is set to false,
+ * [readState] will return a decorator which is always enabled
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<ArraySchemeDecorator>(settings) {
+class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator, disablable: Boolean = true) :
+    StateEditor<ArraySchemeDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent = minCountSpinner.editorComponent
 
@@ -41,8 +44,12 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<A
 
 
     init {
-        enabledCheckBox.addChangeListener { arrayDetailsPanel.isVisible = enabledCheckBox.isSelected }
-        enabledCheckBox.changeListeners.forEach { it.stateChanged(ChangeEvent(enabledCheckBox)) }
+        if (disablable) {
+            enabledCheckBox.addChangeListener { arrayDetailsPanel.isVisible = enabledCheckBox.isSelected }
+            enabledCheckBox.changeListeners.forEach { it.stateChanged(ChangeEvent(enabledCheckBox)) }
+        } else {
+            enabledCheckBox.isVisible = false
+        }
 
         newlineSeparatorButton.addChangeListener {
             spaceAfterSeparatorCheckBox.isEnabled = !newlineSeparatorButton.isSelected

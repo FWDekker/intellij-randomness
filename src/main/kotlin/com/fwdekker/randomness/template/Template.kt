@@ -11,6 +11,7 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.util.xmlb.annotations.XCollection
 import icons.RandomnessIcons
+import javax.swing.Icon
 
 
 /**
@@ -34,10 +35,13 @@ data class Template(
         ]
     )
     var schemes: List<Scheme> = DEFAULT_SCHEMES.toMutableList(),
-    override var decorator: ArraySchemeDecorator? = null
+    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
     override val icons: RandomnessIcons
         get() = schemes.singleOrNull()?.icons ?: RandomnessIcons.Data
+
+    override val icon: Icon
+        get() = icons.Base
 
 
     /**
@@ -62,9 +66,10 @@ data class Template(
     override fun doValidate() =
         if (name.isBlank()) "Templates must have a name."
         else schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
+            ?: decorator.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(schemes = schemes.map { it.deepCopy(retainUuid) }, decorator = decorator)
+        copy(schemes = schemes.map { it.deepCopy(retainUuid) }, decorator = decorator.deepCopy(retainUuid))
             .also { if (retainUuid) it.uuid = this.uuid }
 
 

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.literal.LiteralScheme
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -56,9 +57,19 @@ object TemplateNameEditorTest : Spek({
 
             frame.textBox("templateName").requireText("Tin")
         }
+
+        it("shows the ") {
+            frame.spinner("arrayMinCount").requireVisible()
+        }
     }
 
     describe("readState") {
+        it("returns a template with a disabled decorator") {
+            GuiActionRunner.execute { editor.loadState(Template(decorator = ArraySchemeDecorator(enabled = true))) }
+
+            assertThat(editor.readState().decorator.enabled).isFalse()
+        }
+
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
@@ -103,6 +114,17 @@ object TemplateNameEditorTest : Spek({
             editor.addChangeListener { listenerInvoked = true }
 
             GuiActionRunner.execute { frame.textBox("templateName").target().text = "Human" }
+
+            assertThat(listenerInvoked).isTrue()
+        }
+
+        it("invokes the listener if the array decorator changes") {
+            GuiActionRunner.execute { editor.loadState(Template(decorator = ArraySchemeDecorator())) }
+
+            var listenerInvoked = false
+            editor.addChangeListener { listenerInvoked = true }
+
+            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 78 }
 
             assertThat(listenerInvoked).isTrue()
         }

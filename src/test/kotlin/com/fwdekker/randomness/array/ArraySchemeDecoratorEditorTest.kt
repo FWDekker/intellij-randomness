@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.array
 
+import com.fwdekker.randomness.nameMatcher
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -7,6 +8,8 @@ import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
+import javax.swing.JCheckBox
+import javax.swing.JPanel
 
 
 /**
@@ -44,6 +47,37 @@ object ArraySchemeDecoratorEditorTest : Spek({
             GuiActionRunner.execute { frame.spinner("arrayMaxCount").target().value = 881.78f }
 
             frame.spinner("arrayMaxCount").requireValue(881)
+        }
+
+        describe("enabled state") {
+            it("hides components if enabled is deselected") {
+                GuiActionRunner.execute { frame.checkBox("arrayEnabled").target().isSelected = false }
+
+                frame.panel(nameMatcher(JPanel::class.java, "arrayDetailsPanel")).requireNotVisible()
+            }
+
+            it("shows components if enabled is reselected") {
+                GuiActionRunner.execute {
+                    frame.checkBox("arrayEnabled").target().isSelected = false
+                    frame.checkBox("arrayEnabled").target().isSelected = true
+                }
+
+                frame.panel(nameMatcher(JPanel::class.java, "arrayDetailsPanel")).requireVisible()
+            }
+
+            it("keeps components visible if the editor is not disablable") {
+                frame.cleanUp()
+                editor = GuiActionRunner.execute<ArraySchemeDecoratorEditor> {
+                    ArraySchemeDecoratorEditor(scheme, disablable = false)
+                }
+                frame = showInFrame(editor.rootComponent)
+
+                GuiActionRunner.execute {
+                    frame.checkBox(nameMatcher(JCheckBox::class.java, "arrayEnabled")).target().isSelected = false
+                }
+
+                frame.panel(nameMatcher(JPanel::class.java, "arrayDetailsPanel")).requireVisible()
+            }
         }
 
         describe("toggles space after separator depending on newline separator") {

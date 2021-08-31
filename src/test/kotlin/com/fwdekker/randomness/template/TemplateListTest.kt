@@ -98,6 +98,26 @@ object TemplateListTest : Spek({
         }
     }
 
+    describe("getTemplateByUuid") {
+        it("returns null if no such scheme can be found") {
+            assertThat(templateList.getTemplateByUuid("46840969-0b31-4fef-92b0-42f34dbc9f8b")).isNull()
+        }
+
+        it("returns the template with the given UUID") {
+            val template = Template("Rank", listOf(DummyScheme()))
+            templateList.templates = listOf(template)
+
+            assertThat(templateList.getTemplateByUuid(template.uuid)).isEqualTo(template)
+        }
+
+        it("returns null if there is a scheme with the given UUID") {
+            val scheme = DummyScheme()
+            templateList.templates = listOf(Template("Skirt", listOf(scheme)))
+
+            assertThat(templateList.getTemplateByUuid(scheme.uuid)).isNull()
+        }
+    }
+
     describe("getSchemeByUuid") {
         it("returns null if no such scheme can be found") {
             assertThat(templateList.getSchemeByUuid("cdfbed17-8df7-47eb-b96c-41e94cfc838b")).isNull()
