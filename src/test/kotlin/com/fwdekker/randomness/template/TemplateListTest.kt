@@ -40,6 +40,7 @@ object TemplateListTest : Spek({
         }
     }
 
+
     describe("findRecursionFrom") {
         it("returns null if the reference refers to `null`") {
             val reference = TemplateReference().also { it.templateList = Box({ TemplateList(emptyList()) }) }
@@ -94,6 +95,26 @@ object TemplateListTest : Spek({
 
             assertThat(templateList.findRecursionFrom(reference2))
                 .containsExactly(template2, template1, template3, template2)
+        }
+    }
+
+    describe("getSchemeByUuid") {
+        it("returns null if no such scheme can be found") {
+            assertThat(templateList.getSchemeByUuid("cdfbed17-8df7-47eb-b96c-41e94cfc838b")).isNull()
+        }
+
+        it("returns the template with the given UUID") {
+            val template = Template("Narrow", listOf(DummyScheme()))
+            templateList.templates = listOf(template)
+
+            assertThat(templateList.getSchemeByUuid(template.uuid)).isEqualTo(template)
+        }
+
+        it("returns the scheme with the given UUID") {
+            val scheme = DummyScheme()
+            templateList.templates = listOf(Template("Sometime", listOf(scheme)))
+
+            assertThat(templateList.getSchemeByUuid(scheme.uuid)).isEqualTo(scheme)
         }
     }
 

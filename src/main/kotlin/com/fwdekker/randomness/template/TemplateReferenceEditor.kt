@@ -67,11 +67,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
 
         templateListModel.removeAllElements()
         templateListModel.addAll(validTemplates)
-        templateList.setSelectedValue(
-            if (state.templateUuid == null) validTemplates.firstOrNull()
-            else state.template,
-            true
-        )
+        templateList.setSelectedValue(state.template, true)
         arrayDecoratorEditor.loadState(state.decorator)
     }
 
