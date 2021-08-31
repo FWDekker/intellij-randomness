@@ -118,13 +118,6 @@ object StringSchemeTest : Spek({
                 assertThat(stringScheme.doValidate()).isEqualTo("Add at least one symbol set.")
             }
 
-            it("fails if an undefined symbol set is selected") {
-                symbolSetSettings.symbolSets = mapOf("name" to "symbols")
-                stringScheme.activeSymbolSets = setOf("unknown")
-
-                assertThat(stringScheme.doValidate()).isEqualTo("Unknown symbol set `unknown`.")
-            }
-
             it("fails if no symbol sets are active") {
                 stringScheme.activeSymbolSets = emptySet()
 

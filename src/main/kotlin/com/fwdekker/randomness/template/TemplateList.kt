@@ -59,6 +59,15 @@ data class TemplateList(
     }
 
 
+    /**
+     * Returns the template or scheme in this list with the given UUID.
+     *
+     * @param uuid the UUID to search for
+     * @return the template or scheme in this list with the given UUID
+     */
+    fun getSchemeByUuid(uuid: String) = templates.flatMap { listOf(it) + it.schemes }.singleOrNull { it.uuid == uuid }
+
+
     override fun doValidate(): String? {
         val duplicate =
             templates.firstOrNull { templates.indexOf(it) != templates.lastIndexOf(it) }?.name

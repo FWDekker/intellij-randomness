@@ -200,6 +200,192 @@ object TemplateListEditorTest : Spek({
                 assertThat(editor.isModified()).isTrue()
             }
         }
+
+        describe("reset") {
+            it("removes the template if it was newly added") {
+                val template = Template(name = "Envelope")
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(0)
+                    editor.addScheme(template)
+                }
+
+                assertThat(editor.readState().templateList.getSchemeByUuid(template.uuid)).isNotNull()
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(3)
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat(editor.readState().templateList.getSchemeByUuid(template.uuid)).isNull()
+            }
+
+            it("removes the scheme if it was newly added") {
+                val scheme = DecimalScheme()
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(0)
+                    editor.addScheme(scheme)
+                }
+
+                assertThat(editor.readState().templateList.getSchemeByUuid(scheme.uuid)).isNotNull()
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(3)
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat(editor.readState().templateList.getSchemeByUuid(scheme.uuid)).isNull()
+            }
+
+            it("resets the template's scheme order") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(4)
+                    frame.clickActionButton("Down")
+                }
+
+                assertThat(editor.readState().templateList.templates[1].schemes.map { it.name })
+                    .containsExactly("Word", "Literal")
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(3)
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat(editor.readState().templateList.templates[1].schemes.map { it.name })
+                    .containsExactly("Literal", "Word")
+            }
+
+            it("resets all changes to the template's schemes") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(1)
+                    frame.spinner("minValue").target().value = 21
+                    frame.tree().target().setSelectionRow(2)
+                    frame.spinner("maxValue").target().value = 454
+                }
+
+                assertThat((editor.readState().templateList.templates[0].schemes[0] as IntegerScheme).minValue)
+                    .isEqualTo(21)
+                assertThat((editor.readState().templateList.templates[0].schemes[1] as IntegerScheme).maxValue)
+                    .isEqualTo(454)
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(0)
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat((editor.readState().templateList.templates[0].schemes[0] as IntegerScheme).minValue)
+                    .isEqualTo(0)
+                assertThat((editor.readState().templateList.templates[0].schemes[1] as IntegerScheme).maxValue)
+                    .isEqualTo(1000)
+            }
+
+            it("resets changes to the scheme") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(1)
+                    frame.spinner("minValue").target().value = 352
+                }
+
+                assertThat((editor.readState().templateList.templates[0].schemes[0] as IntegerScheme).minValue)
+                    .isEqualTo(352)
+                GuiActionRunner.execute { frame.clickActionButton("Reset") }
+
+                assertThat((editor.readState().templateList.templates[0].schemes[0] as IntegerScheme).minValue)
+                    .isEqualTo(0)
+            }
+
+            it("resets changes to the symbol set settings") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(7)
+                    symbolSetTable().addRow(EditableDatum(active = true, SymbolSet("bottom", "nJmXN1N")))
+                }
+
+                assertThat(editor.readState().symbolSetSettings.symbolSets).containsKey("bottom")
+                GuiActionRunner.execute { frame.clickActionButton("Reset") }
+
+                assertThat(editor.readState().symbolSetSettings.symbolSets).doesNotContainKey("bottom")
+            }
+
+            it("resets changes to the dictionary settings") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(5)
+                    dictionaryTable().addRow(EditableDatum(active = true, UserDictionary("people.dic")))
+                }
+
+                assertThat(editor.readState().dictionarySettings.dictionaries)
+                    .contains(UserDictionary("people.dic"))
+                GuiActionRunner.execute { frame.clickActionButton("Reset") }
+
+                assertThat(editor.readState().dictionarySettings.dictionaries)
+                    .doesNotContain(UserDictionary("people.dic"))
+            }
+
+            it("marks the editor as unmodified if all changes have been reset") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(7)
+                    frame.spinner("maxLength").target().value = 394
+                    frame.tree().target().setSelectionRow(8)
+                    frame.textBox("literal").target().text = "carry"
+                }
+
+                assertThat(editor.isModified()).isTrue()
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(7)
+                    frame.clickActionButton("Reset")
+                    frame.tree().target().setSelectionRow(8)
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat(editor.isModified()).isFalse()
+            }
+
+            it("does not revert changes in other schemes") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(4)
+                    frame.textBox("literal").target().text = "common"
+                    frame.tree().target().setSelectionRow(5)
+                    frame.spinner("minLength").target().value = 5
+                }
+
+                assertThat((editor.readState().templateList.templates[1].schemes[1] as WordScheme).minLength)
+                    .isEqualTo(5)
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(4)
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat((editor.readState().templateList.templates[1].schemes[1] as WordScheme).minLength)
+                    .isEqualTo(5)
+            }
+
+            it("does nothing if no node is selected") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(4)
+                    frame.textBox("literal").target().text = "they"
+                }
+
+                assertThat((editor.readState().templateList.templates[1].schemes[0] as LiteralScheme).literal)
+                    .isEqualTo("they")
+                GuiActionRunner.execute {
+                    frame.tree().target().clearSelection()
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat((editor.readState().templateList.templates[1].schemes[0] as LiteralScheme).literal)
+                    .isEqualTo("they")
+            }
+
+            it("does nothing if the selection has not been modified") {
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(4)
+                    frame.textBox("literal").target().text = "mail"
+                }
+
+                assertThat((editor.readState().templateList.templates[1].schemes[0] as LiteralScheme).literal)
+                    .isEqualTo("mail")
+                GuiActionRunner.execute {
+                    frame.tree().target().setSelectionRow(5)
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat((editor.readState().templateList.templates[1].schemes[0] as LiteralScheme).literal)
+                    .isEqualTo("mail")
+            }
+        }
     }
 
 
@@ -491,6 +677,15 @@ object TemplateListEditorTest : Spek({
                     editor.addScheme(Template("Explore"))
 
                     frame.tree().target().setSelectionRow(10)
+                    editor.reset()
+                }
+
+                frame.tree().requireSelection(1)
+            }
+
+            it("selects the first leaf if no scheme was selected before the reset") {
+                GuiActionRunner.execute {
+                    frame.tree().target().clearSelection()
                     editor.reset()
                 }
 

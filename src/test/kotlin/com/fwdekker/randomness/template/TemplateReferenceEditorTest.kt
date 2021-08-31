@@ -62,12 +62,12 @@ object TemplateReferenceEditorTest : Spek({
             assertThat(frame.list().target().selectedValue).isEqualTo(templateList.templates[2])
         }
 
-        it("selects the first template if the reference refers to null") {
+        it("selects nothing if the reference refers to null") {
             GuiActionRunner.execute {
                 editor.loadState(TemplateReference().also { it.templateList = Box({ templateList }) })
             }
 
-            assertThat(frame.list().target().selectedValue).isEqualTo(templateList.templates[0])
+            assertThat(frame.list().target().selectedValue).isNull()
         }
 
         @Suppress("UNCHECKED_CAST") // I checked it myself!
