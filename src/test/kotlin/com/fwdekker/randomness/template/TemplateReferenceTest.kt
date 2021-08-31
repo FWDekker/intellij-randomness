@@ -138,8 +138,16 @@ object TemplateReferenceTest : Spek({
         }
 
         it("returns an array of strings if the referenced scheme returns an array of schemes") {
-            templateList.templates =
-                listOf(Template(schemes = listOf(DummyScheme.from("bus").also { it.decorator.enabled = true })))
+            val template = Template(
+                schemes = listOf(
+                    DummyScheme.from("bus").also {
+                        it.decorator.enabled = true
+                        it.decorator.minCount = 6
+                        it.decorator.maxCount = 6
+                    }
+                )
+            )
+            templateList.templates = listOf(template)
 
             reference.templateUuid = templateList.templates.single().uuid
 
@@ -198,7 +206,7 @@ object TemplateReferenceTest : Spek({
         }
 
         it("fails if the decorator is invalid") {
-            reference.decorator.count = -36
+            reference.decorator.minCount = -36
 
             assertThat(reference.doValidate()).isNotNull()
         }
@@ -207,14 +215,14 @@ object TemplateReferenceTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             reference.templateUuid = "5d5e755f-73b9-4929-9878-17708d436f79"
-            reference.decorator.count = 803
+            reference.decorator.minCount = 803
 
             val copy = reference.deepCopy()
             copy.templateUuid = "e5ffae74-0142-433f-a3f3-1b1bfa1aa0fa"
-            copy.decorator.count = 431
+            copy.decorator.minCount = 431
 
             assertThat(reference.templateUuid).isEqualTo("5d5e755f-73b9-4929-9878-17708d436f79")
-            assertThat(reference.decorator.count).isEqualTo(803)
+            assertThat(reference.decorator.minCount).isEqualTo(803)
         }
 
         it("creates an independent copy of the template list box") {
@@ -241,7 +249,7 @@ object TemplateReferenceTest : Spek({
 
         it("copies state from another instance") {
             reference.templateUuid = "1e97e778-8698-4c29-ad1a-2bd892be6292"
-            reference.decorator.count = 249
+            reference.decorator.maxCount = 249
 
             val newScheme = TemplateReference()
             newScheme.copyFrom(reference)

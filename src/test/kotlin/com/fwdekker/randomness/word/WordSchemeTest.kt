@@ -132,7 +132,7 @@ object WordSchemeTest : Spek({
 
         describe("decorator") {
             it("fails if the decorator is invalid") {
-                wordScheme.decorator.count = -88
+                wordScheme.decorator.minCount = -88
 
                 assertThat(wordScheme.doValidate()).isNotNull()
             }
@@ -142,14 +142,14 @@ object WordSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             wordScheme.minLength = 156
-            wordScheme.decorator.count = 333
+            wordScheme.decorator.maxCount = 333
 
             val copy = wordScheme.deepCopy()
             copy.minLength = 37
-            copy.decorator.count = 531
+            copy.decorator.maxCount = 531
 
             assertThat(wordScheme.minLength).isEqualTo(156)
-            assertThat(wordScheme.decorator.count).isEqualTo(333)
+            assertThat(wordScheme.decorator.maxCount).isEqualTo(333)
         }
 
         it("creates an independent copy of the dictionary settings box") {
@@ -178,7 +178,7 @@ object WordSchemeTest : Spek({
             wordScheme.minLength = 502
             wordScheme.maxLength = 812
             wordScheme.enclosure = "QJ8S4UrFaa"
-            wordScheme.decorator.count = 513
+            wordScheme.decorator.minCount = 513
 
             val newScheme = WordScheme()
             newScheme.dictionarySettings += DictionarySettings()

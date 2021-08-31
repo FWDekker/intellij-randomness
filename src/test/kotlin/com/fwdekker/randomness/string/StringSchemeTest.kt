@@ -138,7 +138,7 @@ object StringSchemeTest : Spek({
 
         describe("decorator") {
             it("fails if the decorator is invalid") {
-                stringScheme.decorator.count = -985
+                stringScheme.decorator.maxCount = -985
 
                 assertThat(stringScheme.doValidate()).isNotNull()
             }
@@ -148,14 +148,14 @@ object StringSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             stringScheme.minLength = 49
-            stringScheme.decorator.count = 943
+            stringScheme.decorator.maxCount = 943
 
             val copy = stringScheme.deepCopy()
             copy.minLength = 244
-            copy.decorator.count = 173
+            copy.decorator.maxCount = 173
 
             assertThat(stringScheme.minLength).isEqualTo(49)
-            assertThat(stringScheme.decorator.count).isEqualTo(943)
+            assertThat(stringScheme.decorator.maxCount).isEqualTo(943)
         }
 
         it("creates an independent copy of the symbol set settings box") {
@@ -186,7 +186,7 @@ object StringSchemeTest : Spek({
             stringScheme.enclosure = "Qh7"
             stringScheme.activeSymbolSets = setOf(SymbolSet.BRACKETS.name)
             stringScheme.excludeLookAlikeSymbols = true
-            stringScheme.decorator.count = 249
+            stringScheme.decorator.minCount = 249
 
             val newScheme = StringScheme()
             newScheme.symbolSetSettings += SymbolSetSettings()

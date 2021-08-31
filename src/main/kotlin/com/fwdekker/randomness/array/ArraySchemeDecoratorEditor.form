@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="490" height="201"/>
+      <xy x="20" y="20" width="490" height="261"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -22,7 +22,7 @@
           <text resource-bundle="randomness" key="settings.enabled"/>
         </properties>
       </component>
-      <grid id="c14ec" binding="arrayDetailsPanel" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="c14ec" binding="arrayDetailsPanel" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -36,22 +36,40 @@
             </constraints>
             <properties>
               <labelFor value="38ced"/>
-              <text resource-bundle="randomness" key="settings.count"/>
+              <text resource-bundle="randomness" key="settings.minimum_count"/>
             </properties>
           </component>
-          <component id="38ced" class="com.fwdekker.randomness.ui.JIntSpinner" binding="countSpinner" custom-create="true">
+          <component id="38ced" class="com.fwdekker.randomness.ui.JIntSpinner" binding="minCountSpinner" custom-create="true">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <maximum-size width="65" height="-1"/>
               </grid>
             </constraints>
             <properties>
-              <name value="arrayCount" noi18n="true"/>
+              <name value="arrayMinCount" noi18n="true"/>
+            </properties>
+          </component>
+          <component id="45a8f" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text resource-bundle="randomness" key="settings.maximum_count"/>
+            </properties>
+          </component>
+          <component id="83d86" class="com.fwdekker.randomness.ui.JIntSpinner" binding="maxCountSpinner" custom-create="true">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <maximum-size width="65" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <name value="arrayMaxCount"/>
             </properties>
           </component>
           <component id="37af5" class="javax.swing.JLabel">
             <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text resource-bundle="randomness" key="settings.brackets"/>
@@ -60,7 +78,7 @@
           <grid id="fb183" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -111,7 +129,7 @@
           </grid>
           <component id="99096" class="javax.swing.JLabel">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text resource-bundle="randomness" key="settings.separator"/>
@@ -120,7 +138,7 @@
           <grid id="4109" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -163,7 +181,7 @@
           </grid>
           <component id="e048d" class="javax.swing.JCheckBox" binding="spaceAfterSeparatorCheckBox" default-binding="true">
             <constraints>
-              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <name value="arraySpaceAfterSeparator" noi18n="true"/>

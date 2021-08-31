@@ -18,8 +18,7 @@ data class SettingsState(
     var symbolSetSettings: SymbolSetSettings = SymbolSetSettings(emptyMap()),
     var dictionarySettings: DictionarySettings = DictionarySettings(emptySet())
 ) : State() {
-    override fun doValidate() =
-        templateList.doValidate() ?: symbolSetSettings.doValidate() ?: dictionarySettings.doValidate()
+    override fun doValidate() = templateList.doValidate()
 
     override fun copyFrom(other: State) {
         require(other is SettingsState) { "Cannot copy from different type." }

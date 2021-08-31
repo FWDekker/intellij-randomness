@@ -7,14 +7,16 @@ import com.fwdekker.randomness.SchemeDecorator
  * The user-configurable collection of schemes applicable to generating arrays.
  *
  * @property enabled True if and only if arrays should be generated instead of singular values.
- * @property count The number of elements to generate.
+ * @property minCount The minimum number of elements to generate.
+ * @property maxCount The maximum number of elements to generate.
  * @property brackets The brackets to surround arrays with.
  * @property separator The string to place between generated elements.
  * @property isSpaceAfterSeparator True if and only if a space should be placed after each separator.
  */
 data class ArraySchemeDecorator(
     var enabled: Boolean = DEFAULT_ENABLED,
-    var count: Int = DEFAULT_COUNT,
+    var minCount: Int = DEFAULT_MIN_COUNT,
+    var maxCount: Int = DEFAULT_MAX_COUNT,
     var brackets: String = DEFAULT_BRACKETS,
     var separator: String = DEFAULT_SEPARATOR,
     var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR
@@ -24,22 +26,26 @@ data class ArraySchemeDecorator(
     override val name = "Array"
 
 
-    override fun generateUndecoratedStrings(count: Int): List<String> =
-        if (!enabled)
-            generator(count)
-        else
-            generator(count * this.count)
-                .chunked(this.count) { strings ->
-                    strings.joinToString(
-                        separator = this.separator + if (isSpaceAfterSeparator && this.separator !== "\n") " " else "",
-                        prefix = brackets.getOrNull(0)?.toString() ?: "",
-                        postfix = brackets.getOrNull(1)?.toString() ?: ""
-                    )
-                }
+    override fun generateUndecoratedStrings(count: Int): List<String> {
+        if (!enabled) return generator(count)
+
+        val countPerString = random.nextInt(minCount, maxCount + 1)
+        val generatedParts = generator(count * countPerString)
+        val separator = this.separator + if (isSpaceAfterSeparator && this.separator !== "\n") " " else ""
+
+        return generatedParts.chunked(countPerString) {
+            it.joinToString(
+                separator = separator,
+                prefix = brackets.getOrNull(0)?.toString() ?: "",
+                postfix = brackets.getOrNull(1)?.toString() ?: ""
+            )
+        }
+    }
 
 
     override fun doValidate() =
-        if (count < MIN_COUNT) "Minimum count should be at least $MIN_COUNT, but is $count."
+        if (minCount > maxCount) "Minimum count should be greater than maximum count."
+        else if (minCount < MIN_COUNT) "Minimum count should be at least $MIN_COUNT, but is $minCount."
         else null
 
     override fun deepCopy(retainUuid: Boolean) = copy().also { if (retainUuid) it.uuid = this.uuid }
@@ -60,9 +66,14 @@ data class ArraySchemeDecorator(
         const val MIN_COUNT = 1
 
         /**
-         * The default value of the [count] field.
+         * The default value of the [minCount] field.
          */
-        const val DEFAULT_COUNT = 5
+        const val DEFAULT_MIN_COUNT = 3
+
+        /**
+         * The default value of the [maxCount] field.
+         */
+        const val DEFAULT_MAX_COUNT = 5
 
         /**
          * The default value of the [brackets] field.

@@ -896,7 +896,7 @@ object TemplateListEditorTest : Spek({
                 GuiActionRunner.execute { frame.checkBox("arrayEnabled").target().isSelected = true }
                 listenerInvoked = false
 
-                GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 14 }
+                GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 14 }
 
                 assertThat(listenerInvoked).isTrue()
             }

@@ -24,7 +24,7 @@ object ArraySchemeDecoratorTest : Spek({
 
     describe("generateStrings") {
         it("throws an exception if the scheme is invalid") {
-            arraySchemeDecorator.count = -321
+            arraySchemeDecorator.maxCount = -321
 
             assertThatThrownBy { dummyScheme.generateStrings() }.isInstanceOf(DataGenerationException::class.java)
         }
@@ -37,7 +37,8 @@ object ArraySchemeDecoratorTest : Spek({
         }
 
         it("returns an array-like string given a non-singular separator") {
-            arraySchemeDecorator.count = 3
+            arraySchemeDecorator.minCount = 3
+            arraySchemeDecorator.maxCount = 3
             arraySchemeDecorator.brackets = "@#"
             arraySchemeDecorator.separator = ";;"
             arraySchemeDecorator.isSpaceAfterSeparator = true
@@ -47,7 +48,8 @@ object ArraySchemeDecoratorTest : Spek({
         }
 
         it("returns an array-like string given no brackets") {
-            arraySchemeDecorator.count = 4
+            arraySchemeDecorator.minCount = 4
+            arraySchemeDecorator.maxCount = 4
             arraySchemeDecorator.brackets = ""
             arraySchemeDecorator.separator = "h"
             arraySchemeDecorator.isSpaceAfterSeparator = false
@@ -57,7 +59,8 @@ object ArraySchemeDecoratorTest : Spek({
         }
 
         it("returns an array-like string given a disabled separator") {
-            arraySchemeDecorator.count = 3
+            arraySchemeDecorator.minCount = 3
+            arraySchemeDecorator.maxCount = 3
             arraySchemeDecorator.brackets = "<>"
             arraySchemeDecorator.separator = "-"
             arraySchemeDecorator.isSpaceAfterSeparator = false
@@ -67,7 +70,8 @@ object ArraySchemeDecoratorTest : Spek({
         }
 
         it("returns an array-like string without space after separator given the newline separator") {
-            arraySchemeDecorator.count = 2
+            arraySchemeDecorator.minCount = 2
+            arraySchemeDecorator.maxCount = 2
             arraySchemeDecorator.brackets = "[]"
             arraySchemeDecorator.separator = "\n"
             arraySchemeDecorator.isSpaceAfterSeparator = true
@@ -77,7 +81,8 @@ object ArraySchemeDecoratorTest : Spek({
         }
 
         it("returns multiple array-like strings that appropriately chunk the underlying generator's outputs") {
-            arraySchemeDecorator.count = 2
+            arraySchemeDecorator.minCount = 2
+            arraySchemeDecorator.maxCount = 2
             dummyScheme.literals = listOf("Flesh", "Strap", "Stem")
 
             assertThat(dummyScheme.generateStrings(3)).containsExactly(
@@ -95,35 +100,54 @@ object ArraySchemeDecoratorTest : Spek({
         }
 
         describe("count") {
+            it("passes if the minimum count equals the maximum count") {
+                arraySchemeDecorator.minCount = 368
+                arraySchemeDecorator.maxCount = 368
+
+                assertThat(arraySchemeDecorator.doValidate()).isNull()
+            }
+
             it("fails for count equals 0") {
-                arraySchemeDecorator.count = 0
+                arraySchemeDecorator.minCount = 0
+                arraySchemeDecorator.maxCount = 0
 
                 assertThat(arraySchemeDecorator.doValidate()).isEqualTo("Minimum count should be at least 1, but is 0.")
             }
 
             it("fails for negative count") {
-                arraySchemeDecorator.count = -23
+                arraySchemeDecorator.minCount = -23
+                arraySchemeDecorator.maxCount = -23
 
-                assertThat(arraySchemeDecorator.doValidate()).isNotNull()
+                assertThat(arraySchemeDecorator.doValidate())
+                    .isEqualTo("Minimum count should be at least 0, but is -23.")
+            }
+
+            it("fails if the minimum count is greater than the maximum count") {
+                arraySchemeDecorator.minCount = 522
+                arraySchemeDecorator.maxCount = 162
+
+                assertThat(arraySchemeDecorator.doValidate())
+                    .isEqualTo("Minimum count should be greater than maximum count.")
             }
         }
     }
 
     describe("deepCopy") {
         it("creates an independent copy") {
-            arraySchemeDecorator.count = 44
+            arraySchemeDecorator.minCount = 44
 
             val copy = arraySchemeDecorator.deepCopy()
-            copy.count = 15
+            copy.minCount = 15
 
-            assertThat(arraySchemeDecorator.count).isEqualTo(44)
+            assertThat(arraySchemeDecorator.minCount).isEqualTo(44)
         }
     }
 
     describe("copyFrom") {
         it("copies state from another instance") {
             arraySchemeDecorator.enabled = false
-            arraySchemeDecorator.count = 997
+            arraySchemeDecorator.minCount = 808
+            arraySchemeDecorator.maxCount = 997
             arraySchemeDecorator.brackets = "0fWx<i6jTJ"
             arraySchemeDecorator.separator = "f3hu)Rxiz1"
             arraySchemeDecorator.isSpaceAfterSeparator = false
