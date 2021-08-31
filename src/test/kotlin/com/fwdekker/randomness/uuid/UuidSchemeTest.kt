@@ -85,7 +85,7 @@ object UuidSchemeTest : Spek({
 
         describe("decorator") {
             it("fails if the decorator is invalid") {
-                uuidScheme.decorator.count = -671
+                uuidScheme.decorator.maxCount = -671
 
                 assertThat(uuidScheme.doValidate()).isNotNull()
             }
@@ -95,14 +95,14 @@ object UuidSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             uuidScheme.version = 4
-            uuidScheme.decorator.count = 754
+            uuidScheme.decorator.maxCount = 754
 
             val copy = uuidScheme.deepCopy()
             copy.version = 1
-            copy.decorator.count = 640
+            copy.decorator.maxCount = 640
 
             assertThat(uuidScheme.version).isEqualTo(4)
-            assertThat(uuidScheme.decorator.count).isEqualTo(754)
+            assertThat(uuidScheme.decorator.maxCount).isEqualTo(754)
         }
     }
 
@@ -112,7 +112,7 @@ object UuidSchemeTest : Spek({
             uuidScheme.enclosure = "nvpB"
             uuidScheme.capitalization = CapitalizationMode.FIRST_LETTER
             uuidScheme.addDashes = true
-            uuidScheme.decorator.count = 264
+            uuidScheme.decorator.minCount = 264
 
             val newScheme = UuidScheme()
             newScheme.copyFrom(uuidScheme)

@@ -88,7 +88,8 @@ object SchemeTest : Spek({
 
         it("returns decorated strings if there is a decorator") {
             scheme.decorator.enabled = true
-            scheme.decorator.count = 1
+            scheme.decorator.minCount = 1
+            scheme.decorator.maxCount = 1
 
             assertThat(scheme.generateStrings(2))
                 .containsExactly("[${DummyScheme.DEFAULT_OUTPUT}]", "[${DummyScheme.DEFAULT_OUTPUT}]")

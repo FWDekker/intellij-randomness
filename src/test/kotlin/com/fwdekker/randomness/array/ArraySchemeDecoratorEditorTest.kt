@@ -34,10 +34,16 @@ object ArraySchemeDecoratorEditorTest : Spek({
 
 
     describe("event handling") {
-        it("truncates decimals in the count") {
-            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 983.24f }
+        it("truncates decimals in the minimum count") {
+            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 983.24f }
 
-            frame.spinner("arrayCount").requireValue(983)
+            frame.spinner("arrayMinCount").requireValue(983)
+        }
+
+        it("truncates decimals in the maximum count") {
+            GuiActionRunner.execute { frame.spinner("arrayMaxCount").target().value = 881.78f }
+
+            frame.spinner("arrayMaxCount").requireValue(881)
         }
 
         describe("toggles space after separator depending on newline separator") {
@@ -63,10 +69,16 @@ object ArraySchemeDecoratorEditorTest : Spek({
             frame.checkBox("arrayEnabled").requireEnabled()
         }
 
-        it("loads the scheme's count") {
-            GuiActionRunner.execute { editor.loadState(ArraySchemeDecorator(enabled = true, count = 14)) }
+        it("loads the scheme's minimum count") {
+            GuiActionRunner.execute { editor.loadState(ArraySchemeDecorator(enabled = true, minCount = 2)) }
 
-            frame.spinner("arrayCount").requireValue(14)
+            frame.spinner("arrayMinCount").requireValue(2)
+        }
+
+        it("loads the scheme's maximum count") {
+            GuiActionRunner.execute { editor.loadState(ArraySchemeDecorator(enabled = true, maxCount = 14)) }
+
+            frame.spinner("arrayMaxCount").requireValue(14)
         }
 
         it("loads the scheme's brackets") {
@@ -121,7 +133,8 @@ object ArraySchemeDecoratorEditorTest : Spek({
         it("returns the editor's state") {
             GuiActionRunner.execute {
                 frame.checkBox("arrayEnabled").target().isSelected = true
-                frame.spinner("arrayCount").target().value = 642
+                frame.spinner("arrayMinCount").target().value = 642
+                frame.spinner("arrayMaxCount").target().value = 876
                 frame.radioButton("arrayBracketsCurly").target().isSelected = true
                 frame.radioButton("arraySeparatorSemicolon").target().isSelected = true
                 frame.checkBox("arraySpaceAfterSeparator").target().isSelected = false
@@ -129,7 +142,8 @@ object ArraySchemeDecoratorEditorTest : Spek({
 
             val readScheme = editor.readState()
             assertThat(readScheme.enabled).isTrue()
-            assertThat(readScheme.count).isEqualTo(642)
+            assertThat(readScheme.minCount).isEqualTo(642)
+            assertThat(readScheme.maxCount).isEqualTo(876)
             assertThat(readScheme.brackets).isEqualTo("{}")
             assertThat(readScheme.separator).isEqualTo(";")
             assertThat(readScheme.isSpaceAfterSeparator).isFalse()
@@ -162,7 +176,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 433 }
+            GuiActionRunner.execute { frame.spinner("arrayMaxCount").target().value = 433 }
 
             assertThat(listenerInvoked).isTrue()
         }

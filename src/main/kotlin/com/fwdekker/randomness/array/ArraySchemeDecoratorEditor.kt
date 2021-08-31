@@ -6,6 +6,7 @@ import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.DEFAULT_SEPA
 import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.MIN_COUNT
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.jgoodies.forms.factories.DefaultComponentFactory
@@ -26,12 +27,13 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<ArraySchemeDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
-    override val preferredFocusedComponent = countSpinner.editorComponent
+    override val preferredFocusedComponent = minCountSpinner.editorComponent
 
     private lateinit var separator: JComponent
     private lateinit var enabledCheckBox: JCheckBox
     private lateinit var arrayDetailsPanel: JPanel
-    private lateinit var countSpinner: JIntSpinner
+    private lateinit var minCountSpinner: JIntSpinner
+    private lateinit var maxCountSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
     private lateinit var separatorGroup: ButtonGroup
     private lateinit var newlineSeparatorButton: JRadioButton
@@ -60,7 +62,9 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<A
         val bundle = ResourceBundle.getBundle("randomness")
         val factory = DefaultComponentFactory.getInstance()
 
-        countSpinner = JIntSpinner(value = MIN_COUNT, minValue = MIN_COUNT)
+        minCountSpinner = JIntSpinner(value = MIN_COUNT, minValue = MIN_COUNT)
+        maxCountSpinner = JIntSpinner(value = MIN_COUNT, minValue = MIN_COUNT)
+        bindSpinners(minCountSpinner, maxCountSpinner)
         separator = factory.createSeparator(bundle.getString("settings.array"))
     }
 
@@ -69,7 +73,8 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<A
         super.loadState(state)
 
         enabledCheckBox.isSelected = state.enabled
-        countSpinner.value = state.count
+        minCountSpinner.value = state.minCount
+        maxCountSpinner.value = state.maxCount
         bracketsGroup.setValue(state.brackets)
         separatorGroup.setValue(state.separator)
         spaceAfterSeparatorCheckBox.isSelected = state.isSpaceAfterSeparator
@@ -78,7 +83,8 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<A
     override fun readState(): ArraySchemeDecorator =
         ArraySchemeDecorator(
             enabled = enabledCheckBox.isSelected,
-            count = countSpinner.value,
+            minCount = minCountSpinner.value,
+            maxCount = maxCountSpinner.value,
             brackets = bracketsGroup.getValue() ?: DEFAULT_BRACKETS,
             separator = separatorGroup.getValue() ?: DEFAULT_SEPARATOR,
             isSpaceAfterSeparator = spaceAfterSeparatorCheckBox.isSelected
@@ -87,7 +93,8 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator) : StateEditor<A
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            enabledCheckBox, countSpinner, bracketsGroup, separatorGroup, spaceAfterSeparatorCheckBox,
+            enabledCheckBox, minCountSpinner, maxCountSpinner, bracketsGroup, separatorGroup,
+            spaceAfterSeparatorCheckBox,
             listener = listener
         )
 }

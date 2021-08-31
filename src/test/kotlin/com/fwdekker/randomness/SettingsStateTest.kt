@@ -1,10 +1,12 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.SymbolSetSettings
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
 import com.fwdekker.randomness.template.TemplateReference
 import com.fwdekker.randomness.word.UserDictionary
+import com.fwdekker.randomness.word.WordScheme
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -36,14 +38,30 @@ object SettingsStateTest : Spek({
 
         it("fails if the symbol set settings are invalid") {
             state.symbolSetSettings.symbolSets = mapOf("" to "9KNKtWw")
+            state.templateList.templates = listOf(Template(schemes = listOf(StringScheme())))
+            state.templateList.applySettingsState(state)
 
             assertThat(state.doValidate()).isNotNull()
         }
 
+        it("passes if the symbol set settings are invalid but unused") {
+            state.symbolSetSettings.symbolSets = mapOf("" to "wF7Tl6wX")
+
+            assertThat(state.doValidate()).isNull()
+        }
+
         it("fails if the dictionary settings are invalid") {
             state.dictionarySettings.dictionaries = setOf(UserDictionary("does_not_exist.dic"))
+            state.templateList.templates = listOf(Template(schemes = listOf(WordScheme())))
+            state.templateList.applySettingsState(state)
 
             assertThat(state.doValidate()).isNotNull()
+        }
+
+        it("passes if the dictionary settings are invalid but unused") {
+            state.dictionarySettings.dictionaries = setOf(UserDictionary("does_not_exist.dic"))
+
+            assertThat(state.doValidate()).isNull()
         }
     }
 

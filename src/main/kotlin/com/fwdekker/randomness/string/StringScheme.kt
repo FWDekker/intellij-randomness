@@ -59,7 +59,7 @@ data class StringScheme(
         return List(count) {
             val length = random.nextInt(minLength, maxLength + 1)
             val text = List(length) { symbols.random(random) }.joinToString("")
-            val capitalizedText = capitalization.transform(text)
+            val capitalizedText = capitalization.transform(text, random)
 
             enclosure + capitalizedText + enclosure
         }

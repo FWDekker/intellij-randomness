@@ -162,7 +162,7 @@ object IntegerSchemeTest : Spek({
 
         describe("decorator") {
             it("fails if the decorator is invalid") {
-                integerScheme.decorator.count = -584
+                integerScheme.decorator.minCount = -584
 
                 assertThat(integerScheme.doValidate()).isNotNull()
             }
@@ -172,14 +172,14 @@ object IntegerSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             integerScheme.minValue = 159
-            integerScheme.decorator.count = 757
+            integerScheme.decorator.maxCount = 757
 
             val copy = integerScheme.deepCopy()
             copy.minValue = 48
-            copy.decorator.count = 554
+            copy.decorator.maxCount = 554
 
             assertThat(integerScheme.minValue).isEqualTo(159)
-            assertThat(integerScheme.decorator.count).isEqualTo(757)
+            assertThat(integerScheme.decorator.maxCount).isEqualTo(757)
         }
     }
 
@@ -188,7 +188,7 @@ object IntegerSchemeTest : Spek({
             integerScheme.minValue = 742
             integerScheme.maxValue = 908
             integerScheme.base = 12
-            integerScheme.decorator.count = 963
+            integerScheme.decorator.maxCount = 963
 
             val newScheme = IntegerScheme()
             newScheme.copyFrom(integerScheme)
