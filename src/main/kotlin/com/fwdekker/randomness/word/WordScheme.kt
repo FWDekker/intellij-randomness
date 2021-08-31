@@ -57,7 +57,7 @@ data class WordScheme(
                 .toSet()
 
         return List(count) { words.random(random) }
-            .map { capitalization.transform(it) }
+            .map { capitalization.transform(it, random) }
             .map { enclosure + it + enclosure }
     }
 

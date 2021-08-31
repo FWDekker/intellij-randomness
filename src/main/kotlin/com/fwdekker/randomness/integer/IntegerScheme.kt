@@ -64,7 +64,7 @@ data class IntegerScheme(
      */
     private fun longToString(value: Long): String {
         if (base != DECIMAL_BASE)
-            return capitalization.transform(value.toString(base))
+            return capitalization.transform(value.toString(base), random)
 
         val format = DecimalFormat()
         format.isGroupingUsed = groupingSeparator.isNotEmpty()

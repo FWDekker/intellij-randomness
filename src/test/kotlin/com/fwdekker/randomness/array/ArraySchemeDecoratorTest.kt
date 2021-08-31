@@ -119,7 +119,7 @@ object ArraySchemeDecoratorTest : Spek({
                 arraySchemeDecorator.maxCount = -23
 
                 assertThat(arraySchemeDecorator.doValidate())
-                    .isEqualTo("Minimum count should be at least 0, but is -23.")
+                    .isEqualTo("Minimum count should be at least 1, but is -23.")
             }
 
             it("fails if the minimum count is greater than the maximum count") {

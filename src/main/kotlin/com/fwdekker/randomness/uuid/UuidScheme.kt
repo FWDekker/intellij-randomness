@@ -57,7 +57,7 @@ data class UuidScheme(
         }
 
         return List(count) { generator.generate().toString() }
-            .map { capitalization.transform(it) }
+            .map { capitalization.transform(it, random) }
             .map {
                 if (addDashes) it
                 else it.replace("-", "")
