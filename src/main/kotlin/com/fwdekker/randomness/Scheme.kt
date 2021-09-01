@@ -1,7 +1,9 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
 import com.intellij.util.xmlb.annotations.Transient
+import com.intellij.util.xmlb.annotations.XCollection
 import icons.RandomnessIcons
 import javax.swing.Icon
 import kotlin.random.Random
@@ -40,6 +42,7 @@ abstract class Scheme : State() {
      * decorators, use [generateUndecoratedStrings]. Decorators are applied in ascending order. That is, the output of
      * the scheme is fed into the decorator at index 0, and that output is fed into the decorator at index 1, and so on.
      */
+    @get:XCollection(elementTypes = [ArraySchemeDecorator::class, FixedLengthDecorator::class])
     abstract val decorators: List<SchemeDecorator>
 
 

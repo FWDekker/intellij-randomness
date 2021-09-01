@@ -22,7 +22,6 @@ data class ArraySchemeDecorator(
     var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR
 ) : SchemeDecorator() {
     override val decorators: List<SchemeDecorator> = emptyList()
-
     override val name = "Array"
 
 
