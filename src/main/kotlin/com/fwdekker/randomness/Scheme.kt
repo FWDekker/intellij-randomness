@@ -1,7 +1,9 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
 import com.intellij.util.xmlb.annotations.Transient
+import com.intellij.util.xmlb.annotations.XCollection
 import icons.RandomnessIcons
 import javax.swing.Icon
 import kotlin.random.Random
@@ -28,15 +30,20 @@ abstract class Scheme : State() {
      * The icon for this scheme; depends on whether its array decorator is enabled.
      */
     @get:Transient
-    val icon: Icon?
+    open val icon: Icon?
         get() =
-            if (decorator?.enabled == true) icons?.Array
+            if (decorators.filterIsInstance<ArrayDecorator>().any { it.enabled }) icons?.Array
             else icons?.Base
 
     /**
-     * Settings that determine whether the output should be an array of values.
+     * Additional logic that determines how strings are generated.
+     *
+     * Decorators are automatically applied when [generateStrings] is invoked. To generate strings without using
+     * decorators, use [generateUndecoratedStrings]. Decorators are applied in ascending order. That is, the output of
+     * the scheme is fed into the decorator at index 0, and that output is fed into the decorator at index 1, and so on.
      */
-    abstract val decorator: ArraySchemeDecorator?
+    @get:XCollection(elementTypes = [ArrayDecorator::class, FixedLengthDecorator::class])
+    abstract val decorators: List<SchemeDecorator>
 
 
     /**
@@ -57,14 +64,10 @@ abstract class Scheme : State() {
     fun generateStrings(count: Int = 1): List<String> {
         doValidate()?.also { throw DataGenerationException(it) }
 
-        return decorator.let { decorator ->
-            if (decorator == null) {
-                generateUndecoratedStrings(count)
-            } else {
-                decorator.generator = ::generateUndecoratedStrings
-                decorator.generateStrings(count)
-            }
-        }
+        val generators = listOf(this) + decorators
+        decorators.forEachIndexed { i, decorator -> decorator.generator = generators[i]::generateUndecoratedStrings }
+
+        return generators.last().generateUndecoratedStrings(count)
     }
 
     /**
@@ -84,7 +87,7 @@ abstract class Scheme : State() {
      * Useful in case the scheme's behavior depends not only on its own internal state, but also that of other settings.
      */
     open fun setSettingsState(settingsState: SettingsState) {
-        decorator?.setSettingsState(settingsState)
+        decorators.forEach { it.setSettingsState(settingsState) }
     }
 
 
@@ -111,6 +114,9 @@ abstract class SchemeDecorator : Scheme() {
      */
     @get:Transient
     var generator: (Int) -> List<String> = { emptyList() }
+
+
+    abstract override fun deepCopy(retainUuid: Boolean): SchemeDecorator
 }
 
 /**

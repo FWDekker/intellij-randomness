@@ -60,6 +60,14 @@ data class TemplateList(
 
 
     /**
+     * Returns the template in this list with the given UUID.
+     *
+     * @param uuid the UUID to search for
+     * @return the template in this list with the given UUID
+     */
+    fun getTemplateByUuid(uuid: String) = templates.singleOrNull { it.uuid == uuid }
+
+    /**
      * Returns the template or scheme in this list with the given UUID.
      *
      * @param uuid the UUID to search for

@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
+import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_DECIMAL_SEPARATOR
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.MAX_VALUE_DIFFERENCE
@@ -38,7 +38,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
     private lateinit var prefixInput: JTextField
     private lateinit var suffixInput: JTextField
     private lateinit var arrayDecoratorPanel: JPanel
-    private lateinit var arrayDecoratorEditor: ArraySchemeDecoratorEditor
+    private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
 
     init {
@@ -60,7 +60,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
         bindSpinners(minValue, maxValue, MAX_VALUE_DIFFERENCE)
         decimalCount = JIntSpinner(value = MIN_DECIMAL_COUNT, minValue = MIN_DECIMAL_COUNT)
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+        arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
@@ -76,7 +76,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
         decimalSeparatorGroup.setValue(state.decimalSeparator)
         prefixInput.text = state.prefix
         suffixInput.text = state.suffix
-        arrayDecoratorEditor.loadState(state.decorator)
+        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
@@ -89,7 +89,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
             decimalSeparator = decimalSeparatorGroup.getValue() ?: DEFAULT_DECIMAL_SEPARATOR,
             prefix = prefixInput.text,
             suffix = suffixInput.text,
-            decorator = arrayDecoratorEditor.readState()
+            arrayDecorator = arrayDecoratorEditor.readState()
         ).also { it.uuid = originalState.uuid }
 
 

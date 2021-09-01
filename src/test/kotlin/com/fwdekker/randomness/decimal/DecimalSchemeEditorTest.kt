@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.decimal
 
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -156,9 +156,9 @@ object DecimalSchemeEditorTest : Spek({
             assertThat(readState)
                 .isEqualTo(editor.originalState)
                 .isNotSameAs(editor.originalState)
-            assertThat(readState.decorator)
-                .isEqualTo(editor.originalState.decorator)
-                .isNotSameAs(editor.originalState.decorator)
+            assertThat(readState.arrayDecorator)
+                .isEqualTo(editor.originalState.arrayDecorator)
+                .isNotSameAs(editor.originalState.arrayDecorator)
         }
 
         it("retains the scheme's UUID") {
@@ -179,7 +179,7 @@ object DecimalSchemeEditorTest : Spek({
 
         it("invokes the listener if the array decorator changes") {
             GuiActionRunner.execute {
-                editor.loadState(DecimalScheme(decorator = ArraySchemeDecorator(enabled = true)))
+                editor.loadState(DecimalScheme(arrayDecorator = ArrayDecorator(enabled = true)))
             }
 
             var listenerInvoked = false

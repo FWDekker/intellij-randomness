@@ -15,12 +15,20 @@ import java.awt.event.ActionEvent
  *
  * @property template The template to create actions for.
  */
-class TemplateGroupAction(
-    private val template: Template = TemplateSettings.default.state.templates.first()
-) : ActionGroup() {
-    private val insertAction = TemplateInsertAction(template)
-    private val repeatInsertAction = TemplateInsertAction(template, repeat = true)
-    private val settingsAction = TemplateSettingsAction(template)
+class TemplateGroupAction(private val template: Template) : ActionGroup() {
+    /**
+     * Returns the action that is appropriate for the given keyboard modifiers.
+     *
+     * @param array true if and only if the output should be in array form
+     * @param repeat true if and only if the output should be repeated
+     * @param settings true if and only if settings should be shown
+     */
+    private fun getActionByModifier(array: Boolean = false, repeat: Boolean = false, settings: Boolean = false) =
+        if (settings) TemplateSettingsAction(template)
+        else TemplateInsertAction(
+            template.deepCopy(retainUuid = true).also { it.arrayDecorator.enabled = array },
+            repeat = repeat
+        )
 
 
     /**
@@ -31,7 +39,7 @@ class TemplateGroupAction(
     override fun update(event: AnActionEvent) {
         super.update(event)
 
-        event.presentation.icon = template.icon ?: RandomnessIcons.Data.Base
+        event.presentation.icon = template.icon
         event.presentation.text = template.name
     }
 
@@ -49,9 +57,11 @@ class TemplateGroupAction(
      * @param event carries information on the invocation place
      */
     override fun actionPerformed(event: AnActionEvent) =
-        if (event.modifiers and ActionEvent.CTRL_MASK != 0) settingsAction.actionPerformed(event)
-        else if (event.modifiers and ActionEvent.ALT_MASK != 0) repeatInsertAction.actionPerformed(event)
-        else insertAction.actionPerformed(event)
+        getActionByModifier(
+            array = event.modifiers and event.modifiers and ActionEvent.SHIFT_MASK != 0,
+            repeat = event.modifiers and event.modifiers and ActionEvent.ALT_MASK != 0,
+            settings = event.modifiers and event.modifiers and ActionEvent.CTRL_MASK != 0
+        ).actionPerformed(event)
 
     /**
      * Returns `true`.
@@ -66,7 +76,8 @@ class TemplateGroupAction(
      * @param event carries information on the invocation place
      * @return variant actions for the main insertion action
      */
-    override fun getChildren(event: AnActionEvent?) = arrayOf(repeatInsertAction, settingsAction)
+    override fun getChildren(event: AnActionEvent?) =
+        arrayOf(getActionByModifier(repeat = true), getActionByModifier(settings = true))
 }
 
 

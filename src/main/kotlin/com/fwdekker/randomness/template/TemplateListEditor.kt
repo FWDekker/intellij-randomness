@@ -84,13 +84,11 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         // Right half
         val previewPanel = PreviewPanel {
             val selectedNode = templateTree.selectedNode ?: return@PreviewPanel LiteralScheme("")
-            val selectedTemplate =
-                selectedNode.state.let {
-                    if (it is Template) it
-                    else selectedNode.parent!!.state as Scheme
-                }
 
-            currentSettingsState.templateList.templates.first { it.uuid == selectedTemplate.uuid }
+            selectedNode.state.let {
+                if (it is Template) it
+                else selectedNode.parent!!.state as Template
+            }
         }
         addChangeListener { previewPanel.updatePreview() }
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
@@ -374,7 +372,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         /**
          * The default proportion of the splitter component.
          */
-        const val DEFAULT_SPLITTER_PROPORTION = .2f
+        const val DEFAULT_SPLITTER_PROPORTION = .25f
 
         /**
          * The text that is displayed when the table is empty.

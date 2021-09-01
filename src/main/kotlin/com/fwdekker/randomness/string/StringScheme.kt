@@ -3,9 +3,10 @@ package com.fwdekker.randomness.string
 import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
 
@@ -19,7 +20,7 @@ import icons.RandomnessIcons
  * @property capitalization The capitalization mode of the generated string.
  * @property activeSymbolSets The names of the symbol sets that are available for generating strings.
  * @property excludeLookAlikeSymbols Whether the symbols in [SymbolSet.lookAlikeCharacters] should be excluded.
- * @property decorator Settings that determine whether the output should be an array of values.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class StringScheme(
     var minLength: Int = DEFAULT_MIN_LENGTH,
@@ -28,7 +29,7 @@ data class StringScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var activeSymbolSets: Set<String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMutableSet(),
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS,
-    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     /**
      * Persistent storage of available symbol sets.
@@ -38,8 +39,10 @@ data class StringScheme(
 
     @Transient
     override val name = "String"
-
     override val icons = RandomnessIcons.String
+
+    override val decorators: List<SchemeDecorator>
+        get() = listOf(arrayDecorator)
 
     private val activeSymbols: List<String>
         get() =
@@ -84,7 +87,7 @@ data class StringScheme(
             activeSymbols.isEmpty() ->
                 "Active symbol sets should contain at least one non-look-alike character if look-alike characters " +
                     "are excluded."
-            else -> decorator.doValidate()
+            else -> arrayDecorator.doValidate()
         }
     }
 
@@ -102,7 +105,7 @@ data class StringScheme(
     override fun deepCopy(retainUuid: Boolean) =
         copy(
             activeSymbolSets = activeSymbolSets.toSet(),
-            decorator = decorator.deepCopy(retainUuid)
+            arrayDecorator = arrayDecorator.deepCopy(retainUuid)
         ).also {
             if (retainUuid) it.uuid = this.uuid
 

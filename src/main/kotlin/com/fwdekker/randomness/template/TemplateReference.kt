@@ -3,9 +3,10 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
 
@@ -14,11 +15,11 @@ import icons.RandomnessIcons
  * A reference to an existing template.
  *
  * @property templateUuid The UUID of the referenced template; defaults to the first template in [TemplateList].
- * @property decorator Settings that determine whether the output should be an array of values.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class TemplateReference(
     var templateUuid: String? = null,
-    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     /**
      *The list in which this reference _must_ reside, and in which the referenced template _might_ reside. Using a [Box]
@@ -49,6 +50,9 @@ data class TemplateReference(
     override val icons: RandomnessIcons
         get() = template?.icons ?: RandomnessIcons.Data
 
+    override val decorators: List<SchemeDecorator>
+        get() = listOf(arrayDecorator)
+
 
     override fun generateUndecoratedStrings(count: Int) =
         template?.also { it.random = random }?.generateStrings(count)
@@ -66,7 +70,7 @@ data class TemplateReference(
         return if (templateUuid == null) "No template to reference selected."
         else if (template == null) "Cannot find referenced template."
         else if (recursion != null) "Found recursion: (${recursion.joinToString(separator = " → ") { it.name }})"
-        else null
+        else arrayDecorator.doValidate()
     }
 
     override fun copyFrom(other: State) {
@@ -79,7 +83,7 @@ data class TemplateReference(
     override fun deepCopy(retainUuid: Boolean) =
         TemplateReference(
             templateUuid = templateUuid,
-            decorator = decorator.deepCopy(retainUuid)
+            arrayDecorator = arrayDecorator.deepCopy(retainUuid)
         ).also {
             if (retainUuid) it.uuid = uuid
 

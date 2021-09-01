@@ -1,7 +1,8 @@
 package com.fwdekker.randomness.literal
 
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.SchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
 
@@ -10,16 +11,18 @@ import icons.RandomnessIcons
  * Contains settings for generating non-random literals.
  *
  * @property literal The literal string.
- * @property decorator Settings that determine whether the output should be an array of values.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class LiteralScheme(
     var literal: String = DEFAULT_LITERAL,
-    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @Transient
     override val name = "Literal"
-
     override val icons = RandomnessIcons.String
+
+    override val decorators: List<SchemeDecorator>
+        get() = listOf(arrayDecorator)
 
 
     /**
@@ -31,10 +34,10 @@ data class LiteralScheme(
     override fun generateUndecoratedStrings(count: Int) = List(count) { literal }
 
 
-    override fun doValidate() = decorator.doValidate()
+    override fun doValidate() = arrayDecorator.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(decorator = decorator.deepCopy(retainUuid))
+        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid))
             .also { if (retainUuid) it.uuid = this.uuid }
 
 

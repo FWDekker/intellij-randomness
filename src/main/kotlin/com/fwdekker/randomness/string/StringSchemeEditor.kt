@@ -2,7 +2,7 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
+import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.string.StringScheme.Companion.MAX_LENGTH_DIFFERENCE
@@ -41,7 +41,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
     private lateinit var symbolSetTable: SymbolSetTable
     private lateinit var excludeLookAlikeSymbolsCheckBox: JCheckBox
     private lateinit var arrayDecoratorPanel: JPanel
-    private lateinit var arrayDecoratorEditor: ArraySchemeDecoratorEditor
+    private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
 
     init {
@@ -72,7 +72,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.panel
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+        arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
@@ -91,7 +91,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         symbolSetTable.activeData =
             (+state.symbolSetSettings).symbolSetList.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
 
-        arrayDecoratorEditor.loadState(state.decorator)
+        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
@@ -102,7 +102,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
             activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet(),
-            decorator = arrayDecoratorEditor.readState()
+            arrayDecorator = arrayDecoratorEditor.readState()
         ).also {
             it.uuid = originalState.uuid
 

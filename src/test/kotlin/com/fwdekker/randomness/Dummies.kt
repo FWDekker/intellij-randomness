@@ -1,7 +1,7 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySchemeDecorator
-import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
+import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import icons.RandomnessIcons
 import java.awt.BorderLayout
@@ -15,14 +15,25 @@ import kotlin.random.Random
  * Dummy implementation of [Scheme].
  *
  * @property literals The outputs to cyclically produce.
- * @property decorator Settings that determine whether the output should be an array of values.
+ * @property decorators Settings that determine whether the output should be decorated.
  */
 data class DummyScheme(
     var literals: List<String> = listOf(DEFAULT_OUTPUT),
-    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    override var decorators: List<SchemeDecorator> = listOf(ArrayDecorator())
 ) : Scheme() {
     override var icons: RandomnessIcons? = RandomnessIcons.Data
     override var name = literals.joinToString()
+
+    /**
+     * Returns the single [ArrayDecorator] in [decorators].
+     *
+     * Use this field only if the test assumes that this scheme has a single decorator the entire time.
+     */
+    var arrayDecorator: ArrayDecorator
+        get() = decorators.single() as ArrayDecorator
+        set(value) {
+            decorators = listOf(value)
+        }
 
 
     override fun generateUndecoratedStrings(count: Int) = List(count) { literals[it % literals.size] }
@@ -30,10 +41,10 @@ data class DummyScheme(
 
     override fun doValidate() =
         if (literals[0] == INVALID_OUTPUT) "Invalid input!"
-        else null
+        else decorators.firstNotNullOfOrNull { it.doValidate() }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(decorator = decorator.deepCopy(retainUuid))
+        copy(decorators = decorators.map { it.deepCopy(retainUuid) })
             .also { if (retainUuid) it.uuid = this.uuid }
 
 
@@ -75,7 +86,7 @@ class DummySchemeEditor(scheme: DummyScheme = DummyScheme()) : StateEditor<Dummy
     private val literalsInput = JTextField()
         .also { it.name = "literals" }
         .also { rootComponent.add(it, BorderLayout.NORTH) }
-    private val arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+    private val arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         .also { rootComponent.add(it.rootComponent, BorderLayout.SOUTH) }
 
 
@@ -88,13 +99,13 @@ class DummySchemeEditor(scheme: DummyScheme = DummyScheme()) : StateEditor<Dummy
         super.loadState(state)
 
         literalsInput.text = state.literals.joinToString(separator = ",")
-        arrayDecoratorEditor.loadState(state.decorator)
+        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
         DummyScheme(
             literals = literalsInput.text.split(','),
-            decorator = arrayDecoratorEditor.readState()
+            decorators = listOf(arrayDecoratorEditor.readState())
         )
 
 

@@ -13,7 +13,7 @@ import com.fwdekker.randomness.SchemeDecorator
  * @property separator The string to place between generated elements.
  * @property isSpaceAfterSeparator True if and only if a space should be placed after each separator.
  */
-data class ArraySchemeDecorator(
+data class ArrayDecorator(
     var enabled: Boolean = DEFAULT_ENABLED,
     var minCount: Int = DEFAULT_MIN_COUNT,
     var maxCount: Int = DEFAULT_MAX_COUNT,
@@ -21,8 +21,7 @@ data class ArraySchemeDecorator(
     var separator: String = DEFAULT_SEPARATOR,
     var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR
 ) : SchemeDecorator() {
-    override val decorator: Nothing? = null
-
+    override val decorators: List<SchemeDecorator> = emptyList()
     override val name = "Array"
 
 

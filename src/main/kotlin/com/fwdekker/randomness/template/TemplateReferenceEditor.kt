@@ -2,7 +2,7 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
+import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.components.JBList
@@ -24,7 +24,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
 
     private val templateListModel = DefaultListModel<Template>()
     private val templateList = JBList(templateListModel)
-    private val arrayDecoratorEditor: ArraySchemeDecoratorEditor
+    private val arrayDecoratorEditor: ArrayDecoratorEditor
 
 
     init {
@@ -43,7 +43,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
         templateList.setEmptyText("Cannot reference any other template without causing recursion.")
         rootComponent.add(templateList, BorderLayout.CENTER)
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+        arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         rootComponent.add(arrayDecoratorEditor.rootComponent, BorderLayout.SOUTH)
 
         loadState()
@@ -68,13 +68,13 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
         templateListModel.removeAllElements()
         templateListModel.addAll(validTemplates)
         templateList.setSelectedValue(state.template, true)
-        arrayDecoratorEditor.loadState(state.decorator)
+        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
         TemplateReference(
             templateUuid = templateList.selectedValue?.uuid,
-            decorator = arrayDecoratorEditor.readState()
+            arrayDecorator = arrayDecoratorEditor.readState()
         ).also {
             it.uuid = originalState.uuid
             it.templateList = originalState.templateList.copy()

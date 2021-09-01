@@ -3,9 +3,10 @@ package com.fwdekker.randomness.word
 import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
 import icons.RandomnessIcons
@@ -19,7 +20,7 @@ import icons.RandomnessIcons
  * @property enclosure The string that encloses the generated word on both sides.
  * @property capitalization The way in which the generated word should be capitalized.
  * @property activeDictionaries The list of dictionaries that are currently active.
- * @property decorator Settings that determine whether the output should be an array of values.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class WordScheme(
     var minLength: Int = DEFAULT_MIN_LENGTH,
@@ -28,7 +29,7 @@ data class WordScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     @get:XCollection(elementTypes = [BundledDictionary::class, UserDictionary::class])
     var activeDictionaries: Set<Dictionary> = DEFAULT_ACTIVE_DICTIONARIES.toMutableSet(),
-    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     /**
      * Persistent storage of available dictionaries.
@@ -38,8 +39,10 @@ data class WordScheme(
 
     @Transient
     override val name = "Word"
-
     override val icons = RandomnessIcons.Word
+
+    override val decorators: List<SchemeDecorator>
+        get() = listOf(arrayDecorator)
 
 
     /**
@@ -87,7 +90,7 @@ data class WordScheme(
             maxLength < minWordLength ->
                 "The shortest word in the selected dictionaries is $minWordLength characters. " +
                     "Set the maximum length to a value less than or equal to $minWordLength."
-            else -> decorator.doValidate()
+            else -> arrayDecorator.doValidate()
         }
     }
 
@@ -105,7 +108,7 @@ data class WordScheme(
     override fun deepCopy(retainUuid: Boolean) =
         copy(
             activeDictionaries = activeDictionaries.map { it.deepCopy() }.toSet(),
-            decorator = decorator.deepCopy(retainUuid)
+            arrayDecorator = arrayDecorator.deepCopy(retainUuid)
         ).also {
             if (retainUuid) it.uuid = this.uuid
 

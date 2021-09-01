@@ -2,7 +2,8 @@ package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
+import com.fwdekker.randomness.array.ArrayDecoratorEditor
+import com.fwdekker.randomness.fixedlength.FixedLengthDecoratorEditor
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -35,8 +36,10 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var prefixInput: JTextField
     private lateinit var suffixInput: JTextField
+    private lateinit var fixedLengthDecoratorPanel: JPanel
+    private lateinit var fixedLengthDecoratorEditor: FixedLengthDecoratorEditor
     private lateinit var arrayDecoratorPanel: JPanel
-    private lateinit var arrayDecoratorEditor: ArraySchemeDecoratorEditor
+    private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
 
     init {
@@ -61,7 +64,10 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
         bindSpinners(minValue, maxValue, maxRange = null)
         base = JIntSpinner(IntegerScheme.DECIMAL_BASE, IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE)
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+        fixedLengthDecoratorEditor = FixedLengthDecoratorEditor(originalState.fixedLengthDecorator)
+        fixedLengthDecoratorPanel = fixedLengthDecoratorEditor.rootComponent
+
+        arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
@@ -76,7 +82,8 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
         capitalizationGroup.setValue(state.capitalization)
         prefixInput.text = state.prefix
         suffixInput.text = state.suffix
-        arrayDecoratorEditor.loadState(state.decorator)
+        fixedLengthDecoratorEditor.loadState(state.fixedLengthDecorator)
+        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
@@ -88,13 +95,14 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             prefix = prefixInput.text,
             suffix = suffixInput.text,
-            decorator = arrayDecoratorEditor.readState()
+            fixedLengthDecorator = fixedLengthDecoratorEditor.readState(),
+            arrayDecorator = arrayDecoratorEditor.readState()
         ).also { it.uuid = originalState.uuid }
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
             minValue, maxValue, base, groupingSeparatorGroup, capitalizationGroup, prefixInput, suffixInput,
-            arrayDecoratorEditor,
+            fixedLengthDecoratorEditor, arrayDecoratorEditor,
             listener = listener
         )
 }
