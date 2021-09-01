@@ -30,13 +30,17 @@ abstract class Scheme : State() {
     @get:Transient
     open val icon: Icon?
         get() =
-            if (decorator?.enabled == true) icons?.Array
+            if (decorators.filterIsInstance<ArraySchemeDecorator>().any { it.enabled }) icons?.Array
             else icons?.Base
 
     /**
-     * Settings that determine whether the output should be an array of values.
+     * Additional logic that determines how strings are generated.
+     *
+     * Decorators are automatically applied when [generateStrings] is invoked. To generate strings without using
+     * decorators, use [generateUndecoratedStrings]. Decorators are applied in ascending order. That is, the output of
+     * the scheme is fed into the decorator at index 0, and that output is fed into the decorator at index 1, and so on.
      */
-    abstract val decorator: ArraySchemeDecorator?
+    abstract val decorators: List<SchemeDecorator>
 
 
     /**
@@ -57,14 +61,10 @@ abstract class Scheme : State() {
     fun generateStrings(count: Int = 1): List<String> {
         doValidate()?.also { throw DataGenerationException(it) }
 
-        return decorator.let { decorator ->
-            if (decorator == null) {
-                generateUndecoratedStrings(count)
-            } else {
-                decorator.generator = ::generateUndecoratedStrings
-                decorator.generateStrings(count)
-            }
-        }
+        val generators = listOf(this) + decorators
+        decorators.forEachIndexed { i, decorator -> decorator.generator = generators[i]::generateUndecoratedStrings }
+
+        return generators.last().generateUndecoratedStrings(count)
     }
 
     /**
@@ -84,7 +84,7 @@ abstract class Scheme : State() {
      * Useful in case the scheme's behavior depends not only on its own internal state, but also that of other settings.
      */
     open fun setSettingsState(settingsState: SettingsState) {
-        decorator?.setSettingsState(settingsState)
+        decorators.forEach { it.setSettingsState(settingsState) }
     }
 
 
@@ -111,6 +111,9 @@ abstract class SchemeDecorator : Scheme() {
      */
     @get:Transient
     var generator: (Int) -> List<String> = { emptyList() }
+
+
+    abstract override fun deepCopy(retainUuid: Boolean): SchemeDecorator
 }
 
 /**

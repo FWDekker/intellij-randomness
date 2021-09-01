@@ -65,9 +65,11 @@ object TemplateNameEditorTest : Spek({
 
     describe("readState") {
         it("returns a template with a disabled decorator") {
-            GuiActionRunner.execute { editor.loadState(Template(decorator = ArraySchemeDecorator(enabled = true))) }
+            GuiActionRunner.execute {
+                editor.loadState(Template(arrayDecorator = ArraySchemeDecorator(enabled = true)))
+            }
 
-            assertThat(editor.readState().decorator.enabled).isFalse()
+            assertThat(editor.readState().arrayDecorator.enabled).isFalse()
         }
 
         it("returns the original state if no editor changes are made") {
@@ -119,7 +121,7 @@ object TemplateNameEditorTest : Spek({
         }
 
         it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute { editor.loadState(Template(decorator = ArraySchemeDecorator())) }
+            GuiActionRunner.execute { editor.loadState(Template(arrayDecorator = ArraySchemeDecorator())) }
 
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }

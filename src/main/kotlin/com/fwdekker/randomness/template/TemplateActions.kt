@@ -26,7 +26,7 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
     private fun getActionByModifier(array: Boolean = false, repeat: Boolean = false, settings: Boolean = false) =
         if (settings) TemplateSettingsAction(template)
         else TemplateInsertAction(
-            template.deepCopy(retainUuid = true).also { it.decorator.enabled = array },
+            template.deepCopy(retainUuid = true).also { it.arrayDecorator.enabled = array },
             repeat = repeat
         )
 

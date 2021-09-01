@@ -138,7 +138,7 @@ object StringSchemeTest : Spek({
 
         describe("decorator") {
             it("fails if the decorator is invalid") {
-                stringScheme.decorator.maxCount = -985
+                stringScheme.arrayDecorator.maxCount = -985
 
                 assertThat(stringScheme.doValidate()).isNotNull()
             }
@@ -148,14 +148,14 @@ object StringSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             stringScheme.minLength = 49
-            stringScheme.decorator.maxCount = 943
+            stringScheme.arrayDecorator.maxCount = 943
 
             val copy = stringScheme.deepCopy()
             copy.minLength = 244
-            copy.decorator.maxCount = 173
+            copy.arrayDecorator.maxCount = 173
 
             assertThat(stringScheme.minLength).isEqualTo(49)
-            assertThat(stringScheme.decorator.maxCount).isEqualTo(943)
+            assertThat(stringScheme.arrayDecorator.maxCount).isEqualTo(943)
         }
 
         it("creates an independent copy of the symbol set settings box") {
@@ -186,7 +186,7 @@ object StringSchemeTest : Spek({
             stringScheme.enclosure = "Qh7"
             stringScheme.activeSymbolSets = setOf(SymbolSet.BRACKETS.name)
             stringScheme.excludeLookAlikeSymbols = true
-            stringScheme.decorator.minCount = 249
+            stringScheme.arrayDecorator.minCount = 249
 
             val newScheme = StringScheme()
             newScheme.symbolSetSettings += SymbolSetSettings()
@@ -198,9 +198,9 @@ object StringSchemeTest : Spek({
             assertThat(+newScheme.symbolSetSettings)
                 .isEqualTo(+stringScheme.symbolSetSettings)
                 .isNotSameAs(+stringScheme.symbolSetSettings)
-            assertThat(newScheme.decorator)
-                .isEqualTo(stringScheme.decorator)
-                .isNotSameAs(stringScheme.decorator)
+            assertThat(newScheme.arrayDecorator)
+                .isEqualTo(stringScheme.arrayDecorator)
+                .isNotSameAs(stringScheme.arrayDecorator)
         }
 
         it("does not change the target's reference to the symbol set settings") {

@@ -2,6 +2,7 @@ package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
@@ -18,7 +19,7 @@ import java.text.DecimalFormat
  * @property capitalization The capitalization mode of the generated integer, applicable for bases higher than 10.
  * @property prefix The string to prepend to the generated value.
  * @property suffix The string to append to the generated value.
- * @property decorator Settings that determine whether the output should be an array of values.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class IntegerScheme(
     var minValue: Long = DEFAULT_MIN_VALUE,
@@ -28,11 +29,14 @@ data class IntegerScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX,
-    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
     @Transient
     override val name = "Integer"
     override val icons = RandomnessIcons.Integer
+
+    override val decorators: List<SchemeDecorator>
+        get() = listOf(arrayDecorator)
 
 
     /**
@@ -81,11 +85,11 @@ data class IntegerScheme(
         when {
             minValue > maxValue -> "Minimum value should not be larger than maximum value."
             base !in MIN_BASE..MAX_BASE -> "Base should be in range $MIN_BASE..$MAX_BASE but is $base."
-            else -> decorator.doValidate()
+            else -> arrayDecorator.doValidate()
         }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(decorator = decorator.deepCopy(retainUuid))
+        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid))
             .also { if (retainUuid) it.uuid = this.uuid }
 
 

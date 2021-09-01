@@ -72,7 +72,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.panel
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
@@ -91,7 +91,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         symbolSetTable.activeData =
             (+state.symbolSetSettings).symbolSetList.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
 
-        arrayDecoratorEditor.loadState(state.decorator)
+        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
@@ -102,7 +102,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
             activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet(),
-            decorator = arrayDecoratorEditor.readState()
+            arrayDecorator = arrayDecoratorEditor.readState()
         ).also {
             it.uuid = originalState.uuid
 

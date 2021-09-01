@@ -43,7 +43,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
         templateList.setEmptyText("Cannot reference any other template without causing recursion.")
         rootComponent.add(templateList, BorderLayout.CENTER)
 
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator)
+        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator)
         rootComponent.add(arrayDecoratorEditor.rootComponent, BorderLayout.SOUTH)
 
         loadState()
@@ -68,13 +68,13 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
         templateListModel.removeAllElements()
         templateListModel.addAll(validTemplates)
         templateList.setSelectedValue(state.template, true)
-        arrayDecoratorEditor.loadState(state.decorator)
+        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
         TemplateReference(
             templateUuid = templateList.selectedValue?.uuid,
-            decorator = arrayDecoratorEditor.readState()
+            arrayDecorator = arrayDecoratorEditor.readState()
         ).also {
             it.uuid = originalState.uuid
             it.templateList = originalState.templateList.copy()

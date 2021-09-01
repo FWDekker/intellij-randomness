@@ -120,9 +120,9 @@ object UuidSchemeEditorTest : Spek({
             assertThat(readState)
                 .isEqualTo(editor.originalState)
                 .isNotSameAs(editor.originalState)
-            assertThat(readState.decorator)
-                .isEqualTo(editor.originalState.decorator)
-                .isNotSameAs(editor.originalState.decorator)
+            assertThat(readState.arrayDecorator)
+                .isEqualTo(editor.originalState.arrayDecorator)
+                .isNotSameAs(editor.originalState.arrayDecorator)
         }
 
         it("retains the scheme's UUID") {
@@ -142,7 +142,9 @@ object UuidSchemeEditorTest : Spek({
         }
 
         it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute { editor.loadState(UuidScheme(decorator = ArraySchemeDecorator(enabled = true))) }
+            GuiActionRunner.execute {
+                editor.loadState(UuidScheme(arrayDecorator = ArraySchemeDecorator(enabled = true)))
+            }
 
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }

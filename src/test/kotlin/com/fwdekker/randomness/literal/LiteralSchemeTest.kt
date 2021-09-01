@@ -45,7 +45,7 @@ object LiteralSchemeTest : Spek({
 
         describe("decorator") {
             it("fails if the decorator is invalid") {
-                literalScheme.decorator.minCount = -422
+                literalScheme.arrayDecorator.minCount = -422
 
                 assertThat(literalScheme.doValidate()).isNotNull()
             }
@@ -55,21 +55,21 @@ object LiteralSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             literalScheme.literal = "boast"
-            literalScheme.decorator.minCount = 815
+            literalScheme.arrayDecorator.minCount = 815
 
             val copy = literalScheme.deepCopy()
             copy.literal = "strict"
-            copy.decorator.minCount = 844
+            copy.arrayDecorator.minCount = 844
 
             assertThat(literalScheme.literal).isEqualTo("boast")
-            assertThat(literalScheme.decorator.minCount).isEqualTo(815)
+            assertThat(literalScheme.arrayDecorator.minCount).isEqualTo(815)
         }
     }
 
     describe("copyFrom") {
         it("copies state from another instance") {
             literalScheme.literal = "tame"
-            literalScheme.decorator.maxCount = 555
+            literalScheme.arrayDecorator.maxCount = 555
 
             val newScheme = LiteralScheme()
             newScheme.copyFrom(literalScheme)
@@ -77,9 +77,9 @@ object LiteralSchemeTest : Spek({
             assertThat(newScheme)
                 .isEqualTo(literalScheme)
                 .isNotSameAs(literalScheme)
-            assertThat(newScheme.decorator)
-                .isEqualTo(literalScheme.decorator)
-                .isNotSameAs(literalScheme.decorator)
+            assertThat(newScheme.arrayDecorator)
+                .isEqualTo(literalScheme.arrayDecorator)
+                .isNotSameAs(literalScheme.arrayDecorator)
         }
     }
 })

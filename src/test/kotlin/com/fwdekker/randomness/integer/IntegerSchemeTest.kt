@@ -162,7 +162,7 @@ object IntegerSchemeTest : Spek({
 
         describe("decorator") {
             it("fails if the decorator is invalid") {
-                integerScheme.decorator.minCount = -584
+                integerScheme.arrayDecorator.minCount = -584
 
                 assertThat(integerScheme.doValidate()).isNotNull()
             }
@@ -172,14 +172,14 @@ object IntegerSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             integerScheme.minValue = 159
-            integerScheme.decorator.maxCount = 757
+            integerScheme.arrayDecorator.maxCount = 757
 
             val copy = integerScheme.deepCopy()
             copy.minValue = 48
-            copy.decorator.maxCount = 554
+            copy.arrayDecorator.maxCount = 554
 
             assertThat(integerScheme.minValue).isEqualTo(159)
-            assertThat(integerScheme.decorator.maxCount).isEqualTo(757)
+            assertThat(integerScheme.arrayDecorator.maxCount).isEqualTo(757)
         }
     }
 
@@ -188,7 +188,7 @@ object IntegerSchemeTest : Spek({
             integerScheme.minValue = 742
             integerScheme.maxValue = 908
             integerScheme.base = 12
-            integerScheme.decorator.maxCount = 963
+            integerScheme.arrayDecorator.maxCount = 963
 
             val newScheme = IntegerScheme()
             newScheme.copyFrom(integerScheme)
@@ -196,9 +196,9 @@ object IntegerSchemeTest : Spek({
             assertThat(newScheme)
                 .isEqualTo(integerScheme)
                 .isNotSameAs(integerScheme)
-            assertThat(newScheme.decorator)
-                .isEqualTo(integerScheme.decorator)
-                .isNotSameAs(integerScheme.decorator)
+            assertThat(newScheme.arrayDecorator)
+                .isEqualTo(integerScheme.arrayDecorator)
+                .isNotSameAs(integerScheme.arrayDecorator)
         }
     }
 })

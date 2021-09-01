@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
@@ -19,7 +20,7 @@ import kotlin.math.nextUp
  * @property decimalSeparator The character that should separate decimals.
  * @property prefix The string to prepend to the generated value.
  * @property suffix The string to append to the generated value.
- * @property decorator Settings that determine whether the output should be an array of values.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class DecimalScheme(
     var minValue: Double = DEFAULT_MIN_VALUE,
@@ -30,11 +31,14 @@ data class DecimalScheme(
     var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR,
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX,
-    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
     @Transient
     override val name = "Decimal"
     override val icons = RandomnessIcons.Decimal
+
+    override val decorators: List<SchemeDecorator>
+        get() = listOf(arrayDecorator)
 
 
     /**
@@ -75,11 +79,11 @@ data class DecimalScheme(
             maxValue - minValue > MAX_VALUE_DIFFERENCE -> "Value range should not exceed $MAX_VALUE_DIFFERENCE."
             decimalCount < MIN_DECIMAL_COUNT -> "Decimal count should be at least $MIN_DECIMAL_COUNT."
             decimalSeparator.isEmpty() -> "Select a decimal separator."
-            else -> decorator.doValidate()
+            else -> arrayDecorator.doValidate()
         }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(decorator = decorator.deepCopy(retainUuid))
+        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid))
             .also { if (retainUuid) it.uuid = this.uuid }
 
 

@@ -18,7 +18,7 @@ object ArraySchemeDecoratorTest : Spek({
 
     beforeEachTest {
         arraySchemeDecorator = ArraySchemeDecorator(enabled = true)
-        dummyScheme = DummyScheme(decorator = arraySchemeDecorator)
+        dummyScheme = DummyScheme(decorators = listOf(arraySchemeDecorator))
     }
 
 

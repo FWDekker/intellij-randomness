@@ -28,7 +28,7 @@ class TemplateNameEditor(template: Template) : StateEditor<Template>(template) {
         namePanel.add(nameInput)
         rootComponent.add(namePanel, BorderLayout.NORTH)
 
-        arraySchemeDecoratorEditor = ArraySchemeDecoratorEditor(originalState.decorator, disablable = false)
+        arraySchemeDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator, disablable = false)
         rootComponent.add(arraySchemeDecoratorEditor.rootComponent, BorderLayout.CENTER)
 
         loadState()
@@ -39,14 +39,14 @@ class TemplateNameEditor(template: Template) : StateEditor<Template>(template) {
         super.loadState(state)
 
         nameInput.text = state.name.trim()
-        arraySchemeDecoratorEditor.loadState(state.decorator)
+        arraySchemeDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
         Template(
             name = nameInput.text.trim(),
             schemes = originalState.schemes.map { it.deepCopy(retainUuid = true) },
-            decorator = arraySchemeDecoratorEditor.readState().also { it.enabled = false }
+            arrayDecorator = arraySchemeDecoratorEditor.readState().also { it.enabled = false }
         ).also { it.uuid = originalState.uuid }
 
 

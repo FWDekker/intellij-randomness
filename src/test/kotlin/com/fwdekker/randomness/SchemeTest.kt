@@ -51,19 +51,19 @@ object SchemeTest : Spek({
 
         it("returns null if there are no icons, even if the decorator is enabled") {
             scheme.icons = null
-            scheme.decorator = ArraySchemeDecorator(enabled = true)
+            scheme.arrayDecorator = ArraySchemeDecorator(enabled = true)
 
             assertThat(scheme.icon).isNull()
         }
 
         it("returns the base icon if the decorator is disabled") {
-            scheme.decorator = ArraySchemeDecorator(enabled = false)
+            scheme.arrayDecorator = ArraySchemeDecorator(enabled = false)
 
             assertThat(scheme.icon).isEqualTo(RandomnessIcons.Data.Base)
         }
 
         it("returns the array icon if the decorator is enabled") {
-            scheme.decorator = ArraySchemeDecorator(enabled = true)
+            scheme.arrayDecorator = ArraySchemeDecorator(enabled = true)
 
             assertThat(scheme.icon).isEqualTo(RandomnessIcons.Data.Array)
         }
@@ -80,19 +80,29 @@ object SchemeTest : Spek({
         }
 
         it("returns undecorated strings if there is no decorator") {
-            scheme.decorator.enabled = false
+            scheme.arrayDecorator.enabled = false
 
             assertThat(scheme.generateStrings(2))
                 .containsExactly(DummyScheme.DEFAULT_OUTPUT, DummyScheme.DEFAULT_OUTPUT)
         }
 
         it("returns decorated strings if there is a decorator") {
-            scheme.decorator.enabled = true
-            scheme.decorator.minCount = 1
-            scheme.decorator.maxCount = 1
+            scheme.arrayDecorator.enabled = true
+            scheme.arrayDecorator.minCount = 1
+            scheme.arrayDecorator.maxCount = 1
 
             assertThat(scheme.generateStrings(2))
                 .containsExactly("[${DummyScheme.DEFAULT_OUTPUT}]", "[${DummyScheme.DEFAULT_OUTPUT}]")
+        }
+
+        it("applies decorators on each other in ascending order") {
+            scheme.decorators = listOf(
+                ArraySchemeDecorator(enabled = true, minCount = 2, maxCount = 2),
+                ArraySchemeDecorator(enabled = true, minCount = 3, maxCount = 3),
+            )
+            scheme.literals = listOf("save")
+
+            assertThat(scheme.generateStrings(1)).containsExactly("[[save, save], [save, save], [save, save]]")
         }
     }
 })

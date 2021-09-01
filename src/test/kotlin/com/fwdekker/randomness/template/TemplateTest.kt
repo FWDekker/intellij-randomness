@@ -152,7 +152,7 @@ object TemplateTest : Spek({
 
         describe("decorator") {
             it("fails if the decorator is invalid") {
-                template.decorator.minCount = -160
+                template.arrayDecorator.minCount = -160
 
                 assertThat(template.doValidate()).isNotNull()
             }
@@ -162,14 +162,14 @@ object TemplateTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             template.schemes = listOf(LiteralScheme("rubber"))
-            template.decorator.maxCount = 857
+            template.arrayDecorator.maxCount = 857
 
             val copy = template.deepCopy()
             (copy.schemes.first() as LiteralScheme).literal = "ribbon"
-            copy.decorator.maxCount = 410
+            copy.arrayDecorator.maxCount = 410
 
             assertThat((template.schemes.first() as LiteralScheme).literal).isEqualTo("rubber")
-            assertThat(template.decorator.maxCount).isEqualTo(857)
+            assertThat(template.arrayDecorator.maxCount).isEqualTo(857)
         }
     }
 
@@ -177,7 +177,7 @@ object TemplateTest : Spek({
         it("copies state from another instance") {
             template.name = "become"
             template.schemes = listOf(LiteralScheme("quarrel"))
-            template.decorator.minCount = 820
+            template.arrayDecorator.minCount = 820
 
             val newTemplate = Template()
             newTemplate.copyFrom(template)

@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.fwdekker.randomness.decimal.DecimalScheme
@@ -19,7 +20,7 @@ import javax.swing.Icon
  *
  * @property name The unique name of the template.
  * @property schemes The ordered list of underlying schemes.
- * @property decorator Settings that determine whether the output should be an array of values.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class Template(
     override var name: String = DEFAULT_NAME,
@@ -35,13 +36,16 @@ data class Template(
         ]
     )
     var schemes: List<Scheme> = DEFAULT_SCHEMES.toMutableList(),
-    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
     override val icons: RandomnessIcons
         get() = schemes.singleOrNull()?.icons ?: RandomnessIcons.Data
 
     override val icon: Icon
         get() = icons.Base
+
+    override val decorators: List<SchemeDecorator>
+        get() = listOf(arrayDecorator)
 
 
     /**
@@ -66,11 +70,13 @@ data class Template(
     override fun doValidate() =
         if (name.isBlank()) "Templates must have a name."
         else schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
-            ?: decorator.doValidate()
+            ?: arrayDecorator.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(schemes = schemes.map { it.deepCopy(retainUuid) }, decorator = decorator.deepCopy(retainUuid))
-            .also { if (retainUuid) it.uuid = this.uuid }
+        copy(
+            schemes = schemes.map { it.deepCopy(retainUuid) },
+            arrayDecorator = arrayDecorator.deepCopy(retainUuid)
+        ).also { if (retainUuid) it.uuid = this.uuid }
 
 
     /**

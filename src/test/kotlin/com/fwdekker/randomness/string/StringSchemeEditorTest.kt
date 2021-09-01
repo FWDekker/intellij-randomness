@@ -184,9 +184,9 @@ object StringSchemeEditorTest : Spek({
             assertThat(+readState.symbolSetSettings)
                 .isEqualTo(+editor.originalState.symbolSetSettings)
                 .isNotSameAs(+editor.originalState.symbolSetSettings)
-            assertThat(readState.decorator)
-                .isEqualTo(editor.originalState.decorator)
-                .isNotSameAs(editor.originalState.decorator)
+            assertThat(readState.arrayDecorator)
+                .isEqualTo(editor.originalState.arrayDecorator)
+                .isNotSameAs(editor.originalState.arrayDecorator)
         }
 
         it("returns a scheme with a deep copy of the symbol set settings") {
@@ -250,7 +250,7 @@ object StringSchemeEditorTest : Spek({
 
         it("invokes the listener if the array decorator changes") {
             GuiActionRunner.execute {
-                editor.loadState(StringScheme(decorator = ArraySchemeDecorator(enabled = true)))
+                editor.loadState(StringScheme(arrayDecorator = ArraySchemeDecorator(enabled = true)))
             }
 
             var listenerInvoked = false

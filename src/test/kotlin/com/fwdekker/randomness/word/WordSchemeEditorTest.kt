@@ -176,9 +176,9 @@ object WordSchemeEditorTest : Spek({
             assertThat(+readState.dictionarySettings)
                 .isEqualTo(+editor.originalState.dictionarySettings)
                 .isNotSameAs(+editor.originalState.dictionarySettings)
-            assertThat(readState.decorator)
-                .isEqualTo(editor.originalState.decorator)
-                .isNotSameAs(editor.originalState.decorator)
+            assertThat(readState.arrayDecorator)
+                .isEqualTo(editor.originalState.arrayDecorator)
+                .isNotSameAs(editor.originalState.arrayDecorator)
         }
 
         it("returns a scheme with a deep copy of the dictionary settings") {
@@ -242,7 +242,9 @@ object WordSchemeEditorTest : Spek({
         }
 
         it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(decorator = ArraySchemeDecorator(enabled = true))) }
+            GuiActionRunner.execute {
+                editor.loadState(WordScheme(arrayDecorator = ArraySchemeDecorator(enabled = true)))
+            }
 
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }

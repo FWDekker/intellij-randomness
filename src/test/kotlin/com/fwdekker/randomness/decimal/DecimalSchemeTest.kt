@@ -177,7 +177,7 @@ object DecimalSchemeTest : Spek({
 
         describe("decorator") {
             it("fails if the decorator is invalid") {
-                decimalScheme.decorator.maxCount = -284
+                decimalScheme.arrayDecorator.maxCount = -284
 
                 assertThat(decimalScheme.doValidate()).isNotNull()
             }
@@ -187,14 +187,14 @@ object DecimalSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             decimalScheme.minValue = 613.24
-            decimalScheme.decorator.minCount = 926
+            decimalScheme.arrayDecorator.minCount = 926
 
             val copy = decimalScheme.deepCopy()
             copy.minValue = 10.21
-            copy.decorator.minCount = 983
+            copy.arrayDecorator.minCount = 983
 
             assertThat(decimalScheme.minValue).isEqualTo(613.24)
-            assertThat(decimalScheme.decorator.minCount).isEqualTo(926)
+            assertThat(decimalScheme.arrayDecorator.minCount).isEqualTo(926)
         }
     }
 
@@ -208,7 +208,7 @@ object DecimalSchemeTest : Spek({
             decimalScheme.decimalSeparator = "D"
             decimalScheme.prefix = "baby"
             decimalScheme.suffix = "many"
-            decimalScheme.decorator.minCount = 19
+            decimalScheme.arrayDecorator.minCount = 19
 
             val newScheme = DecimalScheme()
             newScheme.copyFrom(decimalScheme)
@@ -216,9 +216,9 @@ object DecimalSchemeTest : Spek({
             assertThat(newScheme)
                 .isEqualTo(decimalScheme)
                 .isNotSameAs(decimalScheme)
-            assertThat(newScheme.decorator)
-                .isEqualTo(decimalScheme.decorator)
-                .isNotSameAs(decimalScheme.decorator)
+            assertThat(newScheme.arrayDecorator)
+                .isEqualTo(decimalScheme.arrayDecorator)
+                .isNotSameAs(decimalScheme.arrayDecorator)
         }
     }
 })

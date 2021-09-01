@@ -6,6 +6,7 @@ import com.fasterxml.uuid.UUIDClock
 import com.fasterxml.uuid.UUIDTimer
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.array.ArraySchemeDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
@@ -19,18 +20,21 @@ import kotlin.random.asJavaRandom
  * @property enclosure The string that encloses the generated UUID on both sides.
  * @property capitalization The capitalization mode of the generated UUID.
  * @property addDashes True if and only if the UUID should have dashes in it.
- * @property decorator Settings that determine whether the output should be an array of values.
+ * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class UuidScheme(
     var version: Int = DEFAULT_VERSION,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
-    override var decorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
 ) : Scheme() {
     @Transient
     override val name = "UUID"
     override val icons = RandomnessIcons.Uuid
+
+    override val decorators: List<SchemeDecorator>
+        get() = listOf(arrayDecorator)
 
 
     /**
@@ -68,10 +72,10 @@ data class UuidScheme(
 
     override fun doValidate() =
         if (version !in listOf(TYPE_1, TYPE_4)) "Unknown UUID version '$version'."
-        else decorator.doValidate()
+        else arrayDecorator.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(decorator = decorator.deepCopy(retainUuid))
+        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid))
             .also { if (retainUuid) it.uuid = this.uuid }
 
 
