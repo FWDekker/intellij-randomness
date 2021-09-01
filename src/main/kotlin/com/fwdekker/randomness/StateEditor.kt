@@ -68,7 +68,7 @@ abstract class StateEditor<S : State>(val originalState: S) {
      *
      * @return `null` if the state is valid, or a string explaining why the state is invalid
      */
-    open fun doValidate(): String? = readState().doValidate()
+    fun doValidate(): String? = readState().doValidate()
 
 
     /**

@@ -294,10 +294,10 @@ object TemplateListEditorTest : Spek({
                     symbolSetTable().addRow(EditableDatum(active = true, SymbolSet("bottom", "nJmXN1N")))
                 }
 
-                assertThat(editor.readState().symbolSetSettings.symbolSets).containsKey("bottom")
+                assertThat(editor.readState().symbolSetSettings.symbolSets.map { it.name }).contains("bottom")
                 GuiActionRunner.execute { frame.clickActionButton("Reset") }
 
-                assertThat(editor.readState().symbolSetSettings.symbolSets).doesNotContainKey("bottom")
+                assertThat(editor.readState().symbolSetSettings.symbolSets.map { it.name }).doesNotContain("bottom")
             }
 
             it("resets changes to the dictionary settings") {
@@ -453,7 +453,7 @@ object TemplateListEditorTest : Spek({
                     symbolSetTable().addRow(EditableDatum(active = true, SymbolSet("ancient", "Fq9ohzV8")))
                 }
 
-                assertThat(editor.originalState.symbolSetSettings.symbolSets).doesNotContainKey("ancient")
+                assertThat(editor.originalState.symbolSetSettings.symbolSets.map { it.name }).doesNotContain("ancient")
             }
 
             it("does not change the original dictionaries when a word scheme is changed") {
@@ -538,7 +538,7 @@ object TemplateListEditorTest : Spek({
                     editor.loadState(
                         SettingsState(
                             templateList = TemplateList.from(StringScheme(), StringScheme()),
-                            symbolSetSettings = SymbolSetSettings(mapOf("pocket" to "0MLnYk5"))
+                            symbolSetSettings = SymbolSetSettings(listOf("pocket" to "0MLnYk5"))
                         )
                     )
                 }
@@ -584,7 +584,7 @@ object TemplateListEditorTest : Spek({
 
             GuiActionRunner.execute { editor.applyState() }
 
-            assertThat(editor.originalState.symbolSetSettings.symbolSets).containsKey("thumb")
+            assertThat(editor.originalState.symbolSetSettings.symbolSets.map { it.name }).contains("thumb")
         }
 
         it("does not apply changes to symbol sets after a reset") {
@@ -595,7 +595,7 @@ object TemplateListEditorTest : Spek({
 
             GuiActionRunner.execute { editor.reset() }
 
-            assertThat(editor.originalState.symbolSetSettings.symbolSets).doesNotContainKey("tell")
+            assertThat(editor.originalState.symbolSetSettings.symbolSets.map { it.name }).doesNotContain("tell")
         }
 
         it("applies changes to dictionaries") {
@@ -747,7 +747,7 @@ object TemplateListEditorTest : Spek({
                 editor.loadState(
                     SettingsState(
                         templateList = TemplateList.from(StringScheme(), name = "Yes"),
-                        symbolSetSettings = SymbolSetSettings(mapOf("fish" to "Z5a0"))
+                        symbolSetSettings = SymbolSetSettings(listOf("fish" to "Z5a0"))
                     )
                 )
             }

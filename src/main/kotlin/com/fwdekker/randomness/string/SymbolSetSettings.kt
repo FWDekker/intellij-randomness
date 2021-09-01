@@ -24,28 +24,18 @@ import com.vdurmont.emoji.EmojiParser
 )
 data class SymbolSetSettings(
     @MapAnnotation(sortBeforeSave = false)
-    var serializedSymbolSets: Map<String, String> = DEFAULT_SYMBOL_SETS.toMutableMap(),
+    var serializedSymbolSets: List<Pair<String, String>> = DEFAULT_SYMBOL_SETS.toMutableList(),
     @Suppress("unused") // At least two fields are required for serialization to work
     private val placeholder: String = ""
 ) : PersistentStateComponent<SymbolSetSettings>, Settings() {
     /**
-     * Same as [symbolSets], except that serialized emoji have been deserialized.
+     * A list view of the deserialized `SymbolSet` objects described by [serializedSymbolSets].
      */
     @get:Transient
-    var symbolSets: Map<String, String>
-        get() = serializedSymbolSets.map { SymbolSet(it.key, EmojiParser.parseToUnicode(it.value)) }.toMap()
+    var symbolSets: Collection<SymbolSet>
+        get() = serializedSymbolSets.map { SymbolSet(it.first, EmojiParser.parseToUnicode(it.second)) }
         set(value) {
-            serializedSymbolSets = value.map { SymbolSet(it.key, EmojiParser.parseToAliases(it.value)) }.toMap()
-        }
-
-    /**
-     * A list view of the `SymbolSet` objects described by [symbolSets].
-     */
-    @get:Transient
-    var symbolSetList: Collection<SymbolSet>
-        get() = symbolSets.toSymbolSets()
-        set(value) {
-            symbolSets = value.toMap()
+            serializedSymbolSets = value.map { it.name to EmojiParser.parseToAliases(it.symbols) }
         }
 
 
@@ -65,18 +55,21 @@ data class SymbolSetSettings(
 
 
     override fun doValidate(): String? {
-        val empty = symbolSetList.firstOrNull { it.symbols.isEmpty() }?.name
+        val symbolSetNames = symbolSets.map { it.name }
+        val duplicate = symbolSetNames.firstOrNull { symbolSet -> symbolSetNames.count { it == symbolSet } > 1 }
+        val empty = symbolSets.firstOrNull { it.symbols.isEmpty() }?.name
 
         return when {
-            symbolSetList.isEmpty() -> "Add at least one symbol set."
-            symbolSetList.any { it.name.isEmpty() } -> "All symbol sets should have a name."
+            symbolSets.isEmpty() -> "Add at least one symbol set."
+            symbolSets.any { it.name.isEmpty() } -> "All symbol sets should have a name."
+            duplicate != null -> "Multiple symbol sets with name '$duplicate'."
             empty != null -> "Symbol set `$empty` should contain at least one symbol."
             else -> null
         }
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(serializedSymbolSets = serializedSymbolSets.toMap())
+        copy(serializedSymbolSets = serializedSymbolSets.map { it.first to it.second })
             .also { if (retainUuid) it.uuid = uuid }
 
 
@@ -87,8 +80,8 @@ data class SymbolSetSettings(
         /**
          * The default value of the [symbolSets] field.
          */
-        val DEFAULT_SYMBOL_SETS: Map<String, String>
-            get() = SymbolSet.defaultSymbolSets.toMap()
+        val DEFAULT_SYMBOL_SETS: List<Pair<String, String>>
+            get() = SymbolSet.defaultSymbolSets.map { it.name to it.symbols }
 
         /**
          * The persistent `SymbolSetSettings` instance.

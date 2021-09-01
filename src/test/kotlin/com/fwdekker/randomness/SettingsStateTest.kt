@@ -1,6 +1,7 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.string.SymbolSet
 import com.fwdekker.randomness.string.SymbolSetSettings
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
@@ -21,7 +22,7 @@ object SettingsStateTest : Spek({
 
 
     beforeEachTest {
-        state = SettingsState(symbolSetSettings = SymbolSetSettings(mapOf("film" to "C0ouF")))
+        state = SettingsState(symbolSetSettings = SymbolSetSettings(listOf("film" to "C0ouF")))
     }
 
 
@@ -37,7 +38,7 @@ object SettingsStateTest : Spek({
         }
 
         it("fails if the symbol set settings are invalid") {
-            state.symbolSetSettings.symbolSets = mapOf("" to "9KNKtWw")
+            state.symbolSetSettings.symbolSets = listOf(SymbolSet("", "9KNKtWw"))
             state.templateList.templates = listOf(Template(schemes = listOf(StringScheme())))
             state.templateList.applySettingsState(state)
 
@@ -45,13 +46,13 @@ object SettingsStateTest : Spek({
         }
 
         it("passes if the symbol set settings are invalid but unused") {
-            state.symbolSetSettings.symbolSets = mapOf("" to "wF7Tl6wX")
+            state.symbolSetSettings.symbolSets = listOf(SymbolSet("", "wF7Tl6wX"))
 
             assertThat(state.doValidate()).isNull()
         }
 
         it("fails if the dictionary settings are invalid") {
-            state.dictionarySettings.dictionaries = setOf(UserDictionary("does_not_exist.dic"))
+            state.dictionarySettings.dictionaries = listOf(UserDictionary("does_not_exist.dic"))
             state.templateList.templates = listOf(Template(schemes = listOf(WordScheme())))
             state.templateList.applySettingsState(state)
 
@@ -59,7 +60,7 @@ object SettingsStateTest : Spek({
         }
 
         it("passes if the dictionary settings are invalid but unused") {
-            state.dictionarySettings.dictionaries = setOf(UserDictionary("does_not_exist.dic"))
+            state.dictionarySettings.dictionaries = listOf(UserDictionary("does_not_exist.dic"))
 
             assertThat(state.doValidate()).isNull()
         }

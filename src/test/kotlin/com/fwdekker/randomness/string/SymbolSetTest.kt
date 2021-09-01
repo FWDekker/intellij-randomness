@@ -28,49 +28,6 @@ object SymbolSetTest : Spek({
     }
 
     describe("utility methods") {
-        describe("toMap") {
-            it("converts an empty list to an empty map") {
-                val symbolSets = emptyList<SymbolSet>()
-
-                assertThat(symbolSets.toMap()).isEmpty()
-            }
-
-            it("converts a single symbol set to a single map entry") {
-                val symbolSets = listOf(SymbolSet("name", "abc"))
-
-                assertThat(symbolSets.toMap())
-                    .hasSize(1)
-                    .containsAllEntriesOf(mapOf("name" to "abc"))
-            }
-
-            it("collapses symbol sets with the same name") {
-                val symbolSets = listOf(SymbolSet("name", "abc"), SymbolSet("name", "def"))
-
-                assertThat(symbolSets.toMap()).hasSize(1)
-            }
-
-            it("retains the order of the symbol sets") {
-                val symbolSets = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS)
-
-                assertThat(symbolSets.toMap().toSymbolSets())
-                    .containsExactlyElementsOf(symbolSets.reversed().toMap().toSymbolSets().reversed())
-            }
-        }
-
-        describe("toSymbolSets") {
-            it("converts an empty map to an empty list") {
-                val map = emptyMap<String, String>()
-
-                assertThat(map.toSymbolSets()).isEmpty()
-            }
-
-            it("converts a single map entry to a single symbol set") {
-                val map = mapOf("name" to "abc")
-
-                assertThat(map.toSymbolSets()).containsExactly(SymbolSet("name", "abc"))
-            }
-        }
-
         describe("sum") {
             it("does nothing when a symbol set is added to itself") {
                 assertThat(listOf(SymbolSet.SPECIAL, SymbolSet.SPECIAL).sum())

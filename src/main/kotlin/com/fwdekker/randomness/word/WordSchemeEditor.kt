@@ -101,7 +101,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             it.uuid = originalState.uuid
 
             it.dictionarySettings += (+originalState.dictionarySettings).deepCopy(retainUuid = true)
-            (+it.dictionarySettings).dictionaries = dictionaryTable.data.toSet()
+            (+it.dictionarySettings).dictionaries = dictionaryTable.data.toList()
 
             UserDictionary.clearCache()
         }
@@ -109,15 +109,6 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
     override fun applyState() {
         super.applyState()
         (+originalState.dictionarySettings).copyFrom(+readState().dictionarySettings)
-    }
-
-
-    override fun doValidate(): String? {
-        val dictionaries = dictionaryTable.data
-        val duplicate = dictionaries.firstOrNull { dictionary -> dictionaries.count { it == dictionary } > 1 }
-
-        return if (duplicate != null) "Duplicate dictionary '$duplicate'."
-        else super.doValidate()
     }
 
 

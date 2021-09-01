@@ -104,7 +104,7 @@ object StringSchemeEditorTest : Spek({
 
             GuiActionRunner.execute {
                 val settings = SymbolSetSettings()
-                settings.symbolSetList = allSymbolSets
+                settings.symbolSets = allSymbolSets
                 val newScheme = StringScheme(activeSymbolSets = activeSymbolSets.map { it.name }.toSet())
                 newScheme.symbolSetSettings += settings
 
@@ -195,9 +195,9 @@ object StringSchemeEditorTest : Spek({
                 symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("feel", "5vG6eeU")))
             }
 
-            assertThat((+editor.readState().symbolSetSettings).symbolSetList)
+            assertThat((+editor.readState().symbolSetSettings).symbolSets)
                 .containsExactly(SymbolSet("feel", "5vG6eeU"))
-            assertThat(symbolSetSettings.symbolSetList)
+            assertThat(symbolSetSettings.symbolSets)
                 .doesNotContain(SymbolSet("feel", "5vG6eeU"))
         }
 
@@ -221,7 +221,7 @@ object StringSchemeEditorTest : Spek({
 
             GuiActionRunner.execute { editor.applyState() }
 
-            assertThat(symbolSetSettings.symbolSetList).containsExactly(SymbolSet("excess", "uWX4POU"))
+            assertThat(symbolSetSettings.symbolSets).containsExactly(SymbolSet("excess", "uWX4POU"))
         }
     }
 
