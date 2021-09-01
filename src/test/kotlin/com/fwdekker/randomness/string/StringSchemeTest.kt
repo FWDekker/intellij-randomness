@@ -19,7 +19,7 @@ object StringSchemeTest : Spek({
 
 
     beforeEachTest {
-        symbolSetSettings = SymbolSetSettings(listOf("steam" to "bH2"))
+        symbolSetSettings = SymbolSetSettings(listOf(SymbolSet("steam", "bH2")))
         stringScheme = StringScheme(activeSymbolSets = setOf("steam"))
         stringScheme.symbolSetSettings += symbolSetSettings
     }
@@ -210,7 +210,7 @@ object StringSchemeTest : Spek({
         }
 
         it("writes a deep copy of the given scheme's symbol set settings into the target") {
-            val otherSettings = SymbolSetSettings(listOf("sew" to "2eNco"))
+            val otherSettings = SymbolSetSettings(listOf(SymbolSet("sew", "2eNco")))
             val otherScheme = StringScheme()
             otherScheme.symbolSetSettings += otherSettings
 

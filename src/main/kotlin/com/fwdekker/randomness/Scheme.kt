@@ -23,7 +23,7 @@ abstract class Scheme : State() {
     /**
      * The icons that represent schemes of this type.
      */
-    @Transient
+    @get:Transient
     open val icons: RandomnessIcons? = null
 
     /**
@@ -42,6 +42,7 @@ abstract class Scheme : State() {
      * decorators, use [generateUndecoratedStrings]. Decorators are applied in ascending order. That is, the output of
      * the scheme is fed into the decorator at index 0, and that output is fed into the decorator at index 1, and so on.
      */
+    @get:Transient
     @get:XCollection(elementTypes = [ArrayDecorator::class, FixedLengthDecorator::class])
     abstract val decorators: List<SchemeDecorator>
 

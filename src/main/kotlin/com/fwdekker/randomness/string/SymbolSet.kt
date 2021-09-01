@@ -9,7 +9,7 @@ import com.vdurmont.emoji.EmojiParser
  * @param name the name of the symbol set
  * @param symbols the symbols in the symbol set
  */
-data class SymbolSet(var name: String, var symbols: String) {
+data class SymbolSet(var name: String = "", var symbols: String = "") {
     /**
      * Returns the `name` field.
      *

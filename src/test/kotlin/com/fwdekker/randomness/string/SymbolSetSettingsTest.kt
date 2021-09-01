@@ -13,11 +13,11 @@ object SymbolSetSettingsTest : Spek({
         it("serializes emoji") {
             val settings = SymbolSetSettings().also { it.symbolSets = listOf(SymbolSet("emoji", "💆")) }
 
-            assertThat(settings.serializedSymbolSets.single { it.first == "emoji" }.second).isEqualTo(":massage:")
+            assertThat(settings.serializedSymbolSets.single { it.name == "emoji" }.symbols).isEqualTo(":massage:")
         }
 
         it("deserializes emoji") {
-            val settings = SymbolSetSettings(listOf("emoji" to ":couple_with_heart_man_man:"))
+            val settings = SymbolSetSettings(listOf(SymbolSet("emoji", ":couple_with_heart_man_man:")))
 
             assertThat(settings.symbolSets.single { it.name == "emoji" }.symbols).isEqualTo("👨‍❤️‍👨")
         }
@@ -34,17 +34,23 @@ object SymbolSetSettingsTest : Spek({
         }
 
         it("fails if a symbol set does not have a name") {
-            assertThat(SymbolSetSettings(listOf("" to "hAA76o")).doValidate())
+            val symbolSets = listOf(SymbolSet("", "hAA76o"))
+
+            assertThat(SymbolSetSettings(symbolSets).doValidate())
                 .isEqualTo("All symbol sets should have a name.")
         }
 
         it("fails if two symbol sets have the same name") {
-            assertThat(SymbolSetSettings(listOf("seldom" to "K0A6pdHk", "seldom" to "sllfXObM")).doValidate())
+            val symbolSets = listOf(SymbolSet("seldom", "K0A6pdHk"), SymbolSet("seldom", "sllfXObM"))
+
+            assertThat(SymbolSetSettings(symbolSets).doValidate())
                 .isEqualTo("Multiple symbol sets with name 'seldom'.")
         }
 
         it("fails if a symbol set has no symbols") {
-            assertThat(SymbolSetSettings(listOf("value" to "")).doValidate())
+            val symbolSets = listOf(SymbolSet("value", ""))
+
+            assertThat(SymbolSetSettings(symbolSets).doValidate())
                 .isEqualTo("Symbol set `value` should contain at least one symbol.")
         }
     }

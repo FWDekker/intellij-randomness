@@ -538,7 +538,7 @@ object TemplateListEditorTest : Spek({
                     editor.loadState(
                         SettingsState(
                             templateList = TemplateList.from(StringScheme(), StringScheme()),
-                            symbolSetSettings = SymbolSetSettings(listOf("pocket" to "0MLnYk5"))
+                            symbolSetSettings = SymbolSetSettings(listOf(SymbolSet("pocket", "0MLnYk5")))
                         )
                     )
                 }
@@ -747,7 +747,7 @@ object TemplateListEditorTest : Spek({
                 editor.loadState(
                     SettingsState(
                         templateList = TemplateList.from(StringScheme(), name = "Yes"),
-                        symbolSetSettings = SymbolSetSettings(listOf("fish" to "Z5a0"))
+                        symbolSetSettings = SymbolSetSettings(listOf(SymbolSet("fish", "Z5a0")))
                     )
                 )
             }

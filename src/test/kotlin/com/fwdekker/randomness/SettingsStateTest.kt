@@ -22,7 +22,7 @@ object SettingsStateTest : Spek({
 
 
     beforeEachTest {
-        state = SettingsState(symbolSetSettings = SymbolSetSettings(listOf("film" to "C0ouF")))
+        state = SettingsState(symbolSetSettings = SymbolSetSettings(listOf(SymbolSet("film", "C0ouF"))))
     }
 
 

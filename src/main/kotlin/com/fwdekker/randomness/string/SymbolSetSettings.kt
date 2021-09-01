@@ -24,7 +24,7 @@ import com.vdurmont.emoji.EmojiParser
 )
 data class SymbolSetSettings(
     @MapAnnotation(sortBeforeSave = false)
-    var serializedSymbolSets: List<Pair<String, String>> = DEFAULT_SYMBOL_SETS.toMutableList(),
+    var serializedSymbolSets: List<SymbolSet> = DEFAULT_SYMBOL_SETS.toMutableList(),
     @Suppress("unused") // At least two fields are required for serialization to work
     private val placeholder: String = ""
 ) : PersistentStateComponent<SymbolSetSettings>, Settings() {
@@ -33,9 +33,9 @@ data class SymbolSetSettings(
      */
     @get:Transient
     var symbolSets: Collection<SymbolSet>
-        get() = serializedSymbolSets.map { SymbolSet(it.first, EmojiParser.parseToUnicode(it.second)) }
+        get() = serializedSymbolSets.map { SymbolSet(it.name, EmojiParser.parseToUnicode(it.symbols)) }
         set(value) {
-            serializedSymbolSets = value.map { it.name to EmojiParser.parseToAliases(it.symbols) }
+            serializedSymbolSets = value.map { SymbolSet(it.name, EmojiParser.parseToAliases(it.symbols)) }
         }
 
 
@@ -69,7 +69,7 @@ data class SymbolSetSettings(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(serializedSymbolSets = serializedSymbolSets.map { it.first to it.second })
+        copy(serializedSymbolSets = serializedSymbolSets.map { it.copy() })
             .also { if (retainUuid) it.uuid = uuid }
 
 
@@ -80,8 +80,8 @@ data class SymbolSetSettings(
         /**
          * The default value of the [symbolSets] field.
          */
-        val DEFAULT_SYMBOL_SETS: List<Pair<String, String>>
-            get() = SymbolSet.defaultSymbolSets.map { it.name to it.symbols }
+        val DEFAULT_SYMBOL_SETS: List<SymbolSet>
+            get() = SymbolSet.defaultSymbolSets
 
         /**
          * The persistent `SymbolSetSettings` instance.
