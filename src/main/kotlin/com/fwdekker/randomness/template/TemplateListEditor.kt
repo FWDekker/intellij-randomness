@@ -54,7 +54,7 @@ import javax.swing.SwingUtilities
  */
 class TemplateListEditor(settings: SettingsState = SettingsState.default) : StateEditor<SettingsState>(settings) {
     override val rootComponent = JPanel(BorderLayout())
-    private var currentSettingsState: SettingsState = SettingsState()
+    private var currentState: SettingsState = SettingsState()
     private val templateTree = TemplateJTree { isModified(it) }
     private var schemeEditorPanel = JPanel(BorderLayout())
     private var schemeEditor: StateEditor<*>? = null
@@ -192,17 +192,20 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
      * @param scheme the scheme to check for modification
      * @return true if and only if the given scheme has been modified with respect to [originalState]
      */
-    private fun isModified(scheme: Scheme) = originalState.templateList.getSchemeByUuid(scheme.uuid) != scheme
+    private fun isModified(scheme: Scheme) =
+        originalState.templateList.getSchemeByUuid(scheme.uuid) != scheme ||
+            scheme is StringScheme && originalState.symbolSetSettings != currentState.symbolSetSettings ||
+            scheme is WordScheme && originalState.dictionarySettings != currentState.dictionarySettings
 
 
     override fun loadState(state: SettingsState) {
         super.loadState(state)
 
-        currentSettingsState.copyFrom(state)
-        templateTree.loadList(currentSettingsState.templateList)
+        currentState.copyFrom(state)
+        templateTree.loadList(currentState.templateList)
     }
 
-    override fun readState() = currentSettingsState.deepCopy(retainUuid = true)
+    override fun readState() = currentState.deepCopy(retainUuid = true)
 
     override fun reset() {
         if (queueSelection == null) {
@@ -265,7 +268,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
             override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? {
                 if (value != null)
-                    templateTree.addScheme(value.deepCopy().also { it.setSettingsState(currentSettingsState) })
+                    templateTree.addScheme(value.deepCopy().also { it.setSettingsState(currentState) })
 
                 return null
             }
@@ -298,7 +301,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         override fun actionPerformed(event: AnActionEvent) {
             val node = templateTree.selectedNode!!
             val copy = (node.state as Scheme).deepCopy()
-            copy.setSettingsState(currentSettingsState)
+            copy.setSettingsState(currentState)
 
             templateTree.addScheme(copy)
         }
@@ -342,17 +345,16 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     private inner class ResetActionButton : AnActionButton("Reset", AllIcons.General.Reset) {
         override fun actionPerformed(event: AnActionEvent) {
             val targetNode = templateTree.selectedNode!!
-            val targetUuid = (targetNode.state as Scheme).uuid
 
-            val toReset = currentSettingsState.templateList.getSchemeByUuid(targetUuid) ?: return
-            val toResetFrom = originalState.templateList.getSchemeByUuid(targetUuid)
+            val toReset = targetNode.state as Scheme
+            val toResetFrom = originalState.templateList.getSchemeByUuid(toReset.uuid)
             if (toResetFrom == null) {
                 templateTree.removeNode(targetNode)
                 return
             }
 
             toReset.copyFrom(toResetFrom)
-            toReset.setSettingsState(currentSettingsState)
+            toReset.setSettingsState(currentState)
             templateTree.selectScheme(toReset.uuid)
         }
 

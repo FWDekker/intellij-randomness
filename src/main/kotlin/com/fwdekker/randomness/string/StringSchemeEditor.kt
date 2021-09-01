@@ -87,9 +87,9 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         excludeLookAlikeSymbolsCheckBox.isSelected = state.excludeLookAlikeSymbols
 
         symbolSetTable.data =
-            (+state.symbolSetSettings).symbolSetList
+            (+state.symbolSetSettings).symbolSets
         symbolSetTable.activeData =
-            (+state.symbolSetSettings).symbolSetList.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
+            (+state.symbolSetSettings).symbolSets.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
 
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
@@ -107,21 +107,12 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             it.uuid = originalState.uuid
 
             it.symbolSetSettings += (+originalState.symbolSetSettings).deepCopy(retainUuid = true)
-            (+it.symbolSetSettings).symbolSetList = symbolSetTable.data.toSet()
+            (+it.symbolSetSettings).symbolSets = symbolSetTable.data
         }
 
     override fun applyState() {
         super.applyState()
         (+originalState.symbolSetSettings).copyFrom(+readState().symbolSetSettings)
-    }
-
-
-    override fun doValidate(): String? {
-        val symbolSets = symbolSetTable.data.map { it.name }
-        val duplicate = symbolSets.firstOrNull { symbolSet -> symbolSets.count { it == symbolSet } > 1 }
-
-        return if (duplicate != null) "Multiple symbol sets with name '$duplicate'."
-        else super.doValidate()
     }
 
 

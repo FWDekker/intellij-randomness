@@ -23,16 +23,26 @@ object DictionarySettingsTest : Spek({
             assertThat(DictionarySettings().doValidate()).isNull()
         }
 
+        it("fails if multiple dictionaries have the same name") {
+            val file = tempFileHelper.createFile("express\ntube", ".dic")
+
+            val settings = DictionarySettings(
+                listOf(UserDictionary(file.absolutePath), UserDictionary(file.absolutePath))
+            )
+
+            assertThat(settings.doValidate()).matches("Duplicate dictionary '.*\\.dic'\\.")
+        }
+
         it("fails if a dictionary of a now-deleted file is given") {
             val file = tempFileHelper.createFile("noon\nreason\n", ".dic").also { it.delete() }
 
-            val settings = DictionarySettings(setOf(UserDictionary(file.absolutePath)))
+            val settings = DictionarySettings(listOf(UserDictionary(file.absolutePath)))
 
             assertThat(settings.doValidate()).matches("Dictionary '.*\\.dic' is invalid: File not found\\.")
         }
 
         it("fails if one of the dictionaries is invalid") {
-            val settings = DictionarySettings(setOf(UserDictionary("does_not_exist.dic")))
+            val settings = DictionarySettings(listOf(UserDictionary("does_not_exist.dic")))
 
             assertThat(settings.doValidate()).isEqualTo("Dictionary 'does_not_exist.dic' is invalid: File not found.")
         }
@@ -40,7 +50,7 @@ object DictionarySettingsTest : Spek({
         it("fails if one the dictionaries is empty") {
             val file = tempFileHelper.createFile("", ".dic")
 
-            val settings = DictionarySettings(setOf(UserDictionary(file.absolutePath)))
+            val settings = DictionarySettings(listOf(UserDictionary(file.absolutePath)))
 
             assertThat(settings.doValidate()).matches("Dictionary '.*\\.dic' is empty\\.")
         }
@@ -49,7 +59,7 @@ object DictionarySettingsTest : Spek({
             val file = tempFileHelper.createFile("rapid\ncloth", ".dic")
             val dictionary = UserDictionary(file.absolutePath)
 
-            val settings = DictionarySettings(setOf(dictionary))
+            val settings = DictionarySettings(listOf(dictionary))
             dictionary.words // Force cache load
             file.writeText("")
 
@@ -71,16 +81,16 @@ object DictionarySettingsTest : Spek({
         }
 
         it("contains an independent list of dictionaries") {
-            val settings = DictionarySettings(setOf(BundledDictionary("wait.dic")))
+            val settings = DictionarySettings(listOf(BundledDictionary("wait.dic")))
 
             val copy = settings.deepCopy()
-            copy.dictionaries = setOf(BundledDictionary("upright.dic"))
+            copy.dictionaries = listOf(BundledDictionary("upright.dic"))
 
             assertThat(settings.dictionaries).containsExactly(BundledDictionary("wait.dic"))
         }
 
         it("contains a list of independent dictionaries") {
-            val settings = DictionarySettings(setOf(BundledDictionary("wait.dic")))
+            val settings = DictionarySettings(listOf(BundledDictionary("wait.dic")))
 
             val copy = settings.deepCopy()
             (copy.dictionaries.first() as BundledDictionary).filename = "defense.dic"

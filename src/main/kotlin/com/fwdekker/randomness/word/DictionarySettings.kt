@@ -19,7 +19,7 @@ import com.intellij.util.xmlb.annotations.XCollection
 )
 data class DictionarySettings(
     @get:XCollection(elementTypes = [BundledDictionary::class, UserDictionary::class])
-    var dictionaries: Set<Dictionary> = DEFAULT_DICTIONARIES.toMutableSet(),
+    var dictionaries: List<Dictionary> = DEFAULT_DICTIONARIES.toMutableList(),
 ) : PersistentStateComponent<DictionarySettings>, Settings() {
     /**
      * Returns this instance.
@@ -39,18 +39,21 @@ data class DictionarySettings(
     override fun doValidate(): String? {
         UserDictionary.clearCache()
 
+        val duplicate = dictionaries.firstOrNull { dictionary -> dictionaries.count { it == dictionary } > 1 }
+        if (duplicate != null) return "Duplicate dictionary '$duplicate'."
+
         return dictionaries.firstNotNullOfOrNull {
             try {
-                if (it.words.isEmpty()) return@firstNotNullOfOrNull "Dictionary '$it' is empty."
+                if (it.words.isEmpty()) "Dictionary '$it' is empty."
                 else null
             } catch (e: InvalidDictionaryException) {
-                return@firstNotNullOfOrNull "Dictionary '$it' is invalid: ${e.message}"
+                "Dictionary '$it' is invalid: ${e.message}"
             }
         }
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(dictionaries = dictionaries.map { it.deepCopy() }.toSet())
+        copy(dictionaries = dictionaries.map { it.deepCopy() })
             .also { if (retainUuid) it.uuid = uuid }
 
 
@@ -61,8 +64,8 @@ data class DictionarySettings(
         /**
          * The default value of the [dictionaries] field.
          */
-        val DEFAULT_DICTIONARIES: Set<Dictionary>
-            get() = setOf(BundledDictionary(BundledDictionary.SIMPLE_DICTIONARY))
+        val DEFAULT_DICTIONARIES: List<Dictionary>
+            get() = listOf(BundledDictionary(BundledDictionary.SIMPLE_DICTIONARY))
 
         /**
          * The persistent `DictionarySettings` instance.

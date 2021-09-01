@@ -9,7 +9,7 @@ import com.vdurmont.emoji.EmojiParser
  * @param name the name of the symbol set
  * @param symbols the symbols in the symbol set
  */
-data class SymbolSet(var name: String, var symbols: String) {
+data class SymbolSet(var name: String = "", var symbols: String = "") {
     /**
      * Returns the `name` field.
      *
@@ -76,20 +76,6 @@ data class SymbolSet(var name: String, var symbols: String) {
     }
 }
 
-
-/**
- * Converts a collection of symbol sets to a map from the symbol sets' names to the respective symbols.
- *
- * @return a map from the symbol sets' names to the respective symbols
- */
-fun Collection<SymbolSet>.toMap() = this.map { (name, symbols) -> name to symbols }.toMap()
-
-/**
- * Converts a map to a list of symbol sets, using the key as the name and the value as the symbols.
- *
- * @return a list of symbol sets
- */
-fun Map<String, String>.toSymbolSets() = this.map { (name, symbols) -> SymbolSet(name, symbols) }.toList()
 
 /**
  * Combines the symbols of all the symbol sets, optionally removing duplicate characters.

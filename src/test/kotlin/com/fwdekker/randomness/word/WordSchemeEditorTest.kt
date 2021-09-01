@@ -106,13 +106,13 @@ object WordSchemeEditorTest : Spek({
         }
 
         it("loads the scheme's bundled dictionaries") {
-            val allDictionaries = setOf(UserDictionary("dictionary1.dic"), UserDictionary("dictionary2.dic"))
+            val allDictionaries = listOf(UserDictionary("dictionary1.dic"), UserDictionary("dictionary2.dic"))
             val activeDictionaries = setOf(UserDictionary("dictionary1.dic"))
 
             GuiActionRunner.execute {
                 editor.loadState(
-                    WordScheme(activeDictionaries = activeDictionaries.toSet())
-                        .also { it.dictionarySettings += DictionarySettings(allDictionaries.toSet()) }
+                    WordScheme(activeDictionaries = activeDictionaries)
+                        .also { it.dictionarySettings += DictionarySettings(allDictionaries) }
                 )
             }
 

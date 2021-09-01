@@ -46,7 +46,7 @@ data class StringScheme(
 
     private val activeSymbols: List<String>
         get() =
-            (+symbolSetSettings).symbolSetList
+            (+symbolSetSettings).symbolSets
                 .filter { it.name in activeSymbolSets }
                 .sum(excludeLookAlikeSymbols)
 

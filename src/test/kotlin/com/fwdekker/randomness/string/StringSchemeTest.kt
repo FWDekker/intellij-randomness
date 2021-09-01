@@ -19,7 +19,7 @@ object StringSchemeTest : Spek({
 
 
     beforeEachTest {
-        symbolSetSettings = SymbolSetSettings(mapOf("steam" to "bH2"))
+        symbolSetSettings = SymbolSetSettings(listOf(SymbolSet("steam", "bH2")))
         stringScheme = StringScheme(activeSymbolSets = setOf("steam"))
         stringScheme.symbolSetSettings += symbolSetSettings
     }
@@ -39,16 +39,16 @@ object StringSchemeTest : Spek({
                 val maxLength: Int,
                 val enclosure: String,
                 val capitalization: CapitalizationMode,
-                val symbolSets: Map<String, String>
+                val symbolSets: List<SymbolSet>
             )
 
             mapOf(
-                Param(1, 1, "", CapitalizationMode.RETAIN, mapOf("x" to "x")) to "x",
-                Param(1, 1, "'", CapitalizationMode.UPPER, mapOf("x" to "x")) to "'X'",
-                Param(1, 1, "a", CapitalizationMode.LOWER, mapOf("x" to "x")) to "axa",
-                Param(1, 1, "2Rv", CapitalizationMode.FIRST_LETTER, mapOf("x" to "x")) to "2RvX2Rv",
-                Param(723, 723, "", CapitalizationMode.UPPER, mapOf("x" to "x")) to "X".repeat(723),
-                Param(466, 466, "z", CapitalizationMode.LOWER, mapOf("x" to "x")) to "z${"x".repeat(466)}z"
+                Param(1, 1, "", CapitalizationMode.RETAIN, listOf(SymbolSet("x", "x"))) to "x",
+                Param(1, 1, "'", CapitalizationMode.UPPER, listOf(SymbolSet("x", "x"))) to "'X'",
+                Param(1, 1, "a", CapitalizationMode.LOWER, listOf(SymbolSet("x", "x"))) to "axa",
+                Param(1, 1, "2Rv", CapitalizationMode.FIRST_LETTER, listOf(SymbolSet("x", "x"))) to "2RvX2Rv",
+                Param(723, 723, "", CapitalizationMode.UPPER, listOf(SymbolSet("x", "x"))) to "X".repeat(723),
+                Param(466, 466, "z", CapitalizationMode.LOWER, listOf(SymbolSet("x", "x"))) to "z${"x".repeat(466)}z"
             ).forEach { (minLength, maxLength, enclosure, capitalization, symbolSets), expectedString ->
                 it("generates a formatted string") {
                     stringScheme.symbolSetSettings += SymbolSetSettings().also { it.symbolSets = symbolSets }
@@ -56,7 +56,7 @@ object StringSchemeTest : Spek({
                     stringScheme.maxLength = maxLength
                     stringScheme.enclosure = enclosure
                     stringScheme.capitalization = capitalization
-                    stringScheme.activeSymbolSets = symbolSets.values.toSet()
+                    stringScheme.activeSymbolSets = symbolSets.map { it.name }.toSet()
 
                     assertThat(stringScheme.generateStrings()).containsExactly(expectedString)
                 }
@@ -64,14 +64,14 @@ object StringSchemeTest : Spek({
 
             it("retains emoji modifiers in the right order") {
                 val emoji = "👩‍👩‍👧‍👧"
-                val symbolSets = mapOf("emoji" to emoji)
+                val symbolSets = listOf(SymbolSet("emoji", emoji))
 
                 stringScheme.symbolSetSettings += SymbolSetSettings().also { it.symbolSets = symbolSets }
                 stringScheme.minLength = 1
                 stringScheme.maxLength = 1
                 stringScheme.enclosure = ""
                 stringScheme.capitalization = CapitalizationMode.RETAIN
-                stringScheme.activeSymbolSets = symbolSets.keys.toSet()
+                stringScheme.activeSymbolSets = symbolSets.map { it.name }.toSet()
 
                 assertThat(stringScheme.generateStrings()).containsExactly(emoji)
             }
@@ -112,7 +112,7 @@ object StringSchemeTest : Spek({
 
         describe("symbol sets") {
             it("fails if the symbol set settings are invalid") {
-                symbolSetSettings.symbolSets = emptyMap()
+                symbolSetSettings.symbolSets = emptyList()
                 stringScheme.activeSymbolSets = emptySet()
 
                 assertThat(stringScheme.doValidate()).isEqualTo("Add at least one symbol set.")
@@ -125,7 +125,7 @@ object StringSchemeTest : Spek({
             }
 
             it("fails if only look-alike symbols are selected and look-alike symbols are excluded") {
-                symbolSetSettings.symbolSets = mapOf("Look-alike" to "l01")
+                symbolSetSettings.symbolSets = listOf(SymbolSet("Look-alike", "l01"))
                 stringScheme.activeSymbolSets = setOf("Look-alike")
                 stringScheme.excludeLookAlikeSymbols = true
 
@@ -166,12 +166,12 @@ object StringSchemeTest : Spek({
         }
 
         it("creates an independent copy of the symbol set settings") {
-            (+stringScheme.symbolSetSettings).symbolSets = mapOf("formal" to "feXw8M")
+            (+stringScheme.symbolSetSettings).symbolSets = listOf(SymbolSet("formal", "feXw8M"))
 
             val copy = stringScheme.deepCopy()
-            (+copy.symbolSetSettings).symbolSets = mapOf("absent" to "9hDt")
+            (+copy.symbolSetSettings).symbolSets = listOf(SymbolSet("absent", "9hDt"))
 
-            assertThat((+stringScheme.symbolSetSettings).symbolSets).containsOnlyKeys("formal")
+            assertThat((+stringScheme.symbolSetSettings).symbolSets.map { it.name }).containsExactly("formal")
         }
     }
 
@@ -210,14 +210,14 @@ object StringSchemeTest : Spek({
         }
 
         it("writes a deep copy of the given scheme's symbol set settings into the target") {
-            val otherSettings = SymbolSetSettings(mapOf("sew" to "2eNco"))
+            val otherSettings = SymbolSetSettings(listOf(SymbolSet("sew", "2eNco")))
             val otherScheme = StringScheme()
             otherScheme.symbolSetSettings += otherSettings
 
             stringScheme.copyFrom(otherScheme)
-            (+otherScheme.symbolSetSettings).symbolSets = mapOf("wife" to "4g5X0")
+            (+otherScheme.symbolSetSettings).symbolSets = listOf(SymbolSet("wife", "4g5X0"))
 
-            assertThat((+stringScheme.symbolSetSettings).symbolSets).containsOnlyKeys("sew")
+            assertThat((+stringScheme.symbolSetSettings).symbolSets.map { it.name }).containsExactly("sew")
         }
     }
 })

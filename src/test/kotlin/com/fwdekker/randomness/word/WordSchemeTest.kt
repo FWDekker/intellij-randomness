@@ -118,7 +118,7 @@ object WordSchemeTest : Spek({
             it("fails if the dictionary settings are invalid") {
                 val file = tempFileHelper.createFile("heavenly\npet\n", ".dic").also { it.delete() }
 
-                dictionarySettings.dictionaries = setOf(UserDictionary(file.absolutePath))
+                dictionarySettings.dictionaries = listOf(UserDictionary(file.absolutePath))
 
                 assertThat(wordScheme.doValidate()).isNotNull()
             }
@@ -160,10 +160,10 @@ object WordSchemeTest : Spek({
         }
 
         it("creates an independent copy of the dictionary settings") {
-            (+wordScheme.dictionarySettings).dictionaries = setOf(UserDictionary("classify.dic"))
+            (+wordScheme.dictionarySettings).dictionaries = listOf(UserDictionary("classify.dic"))
 
             val copy = wordScheme.deepCopy()
-            (+copy.dictionarySettings).dictionaries = setOf(UserDictionary("decay.dic"))
+            (+copy.dictionarySettings).dictionaries = listOf(UserDictionary("decay.dic"))
 
             assertThat((+wordScheme.dictionarySettings).dictionaries).containsExactly(UserDictionary("classify.dic"))
         }
@@ -202,12 +202,12 @@ object WordSchemeTest : Spek({
         }
 
         it("writes a deep copy of the given scheme's dictionary settings into the target") {
-            val otherSettings = DictionarySettings(setOf(UserDictionary("complain.dic")))
+            val otherSettings = DictionarySettings(listOf(UserDictionary("complain.dic")))
             val otherScheme = WordScheme()
             otherScheme.dictionarySettings += otherSettings
 
             wordScheme.copyFrom(otherScheme)
-            (+otherScheme.dictionarySettings).dictionaries = setOf(UserDictionary("spit.dic"))
+            (+otherScheme.dictionarySettings).dictionaries = listOf(UserDictionary("spit.dic"))
 
             assertThat((+wordScheme.dictionarySettings).dictionaries).containsExactly(UserDictionary("complain.dic"))
         }

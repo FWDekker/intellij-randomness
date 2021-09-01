@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.literal
 
+import com.fwdekker.randomness.CapitalizationMode
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
@@ -18,22 +19,29 @@ object LiteralSchemeTest : Spek({
 
 
     describe("generateStrings") {
-        it("can generate an empty string") {
+        it("generates an empty string") {
             literalScheme.literal = ""
 
             assertThat(literalScheme.generateStrings()).containsExactly("")
         }
 
-        it("can generate a blank string") {
+        it("generates a blank string") {
             literalScheme.literal = "  "
 
             assertThat(literalScheme.generateStrings()).containsExactly("  ")
         }
 
-        it("can generate the given non-empty string") {
+        it("generates the given non-empty string") {
             literalScheme.literal = "shine"
 
             assertThat(literalScheme.generateStrings()).containsExactly("shine")
+        }
+
+        it("applies the desired capitalization mode") {
+            literalScheme.capitalization = CapitalizationMode.UPPER
+            literalScheme.literal = "elephant"
+
+            assertThat(literalScheme.generateStrings()).containsExactly("ELEPHANT")
         }
     }
 
@@ -69,6 +77,7 @@ object LiteralSchemeTest : Spek({
     describe("copyFrom") {
         it("copies state from another instance") {
             literalScheme.literal = "tame"
+            literalScheme.capitalization = CapitalizationMode.RANDOM
             literalScheme.arrayDecorator.maxCount = 555
 
             val newScheme = LiteralScheme()
