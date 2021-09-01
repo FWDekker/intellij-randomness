@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.DEFAULT_BRACKETS
-import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.DEFAULT_SEPARATOR
-import com.fwdekker.randomness.array.ArraySchemeDecorator.Companion.MIN_COUNT
+import com.fwdekker.randomness.array.ArrayDecorator.Companion.DEFAULT_BRACKETS
+import com.fwdekker.randomness.array.ArrayDecorator.Companion.DEFAULT_SEPARATOR
+import com.fwdekker.randomness.array.ArrayDecorator.Companion.MIN_COUNT
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
@@ -27,8 +27,8 @@ import javax.swing.event.ChangeEvent
  * [readState] will return a decorator which is always enabled
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator, disablable: Boolean = true) :
-    StateEditor<ArraySchemeDecorator>(settings) {
+class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true) :
+    StateEditor<ArrayDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent = minCountSpinner.editorComponent
 
@@ -76,7 +76,7 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator, disablable: Boo
     }
 
 
-    override fun loadState(state: ArraySchemeDecorator) {
+    override fun loadState(state: ArrayDecorator) {
         super.loadState(state)
 
         enabledCheckBox.isSelected = state.enabled
@@ -87,8 +87,8 @@ class ArraySchemeDecoratorEditor(settings: ArraySchemeDecorator, disablable: Boo
         spaceAfterSeparatorCheckBox.isSelected = state.isSpaceAfterSeparator
     }
 
-    override fun readState(): ArraySchemeDecorator =
-        ArraySchemeDecorator(
+    override fun readState(): ArrayDecorator =
+        ArrayDecorator(
             enabled = enabledCheckBox.isSelected,
             minCount = minCountSpinner.value,
             maxCount = maxCountSpinner.value,

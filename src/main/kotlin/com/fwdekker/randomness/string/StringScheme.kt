@@ -6,7 +6,7 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
 
@@ -29,7 +29,7 @@ data class StringScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var activeSymbolSets: Set<String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMutableSet(),
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS,
-    var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     /**
      * Persistent storage of available symbol sets.

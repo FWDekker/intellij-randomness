@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -190,7 +190,7 @@ object IntegerSchemeEditorTest : Spek({
 
         it("invokes the listener if the array decorator changes") {
             GuiActionRunner.execute {
-                editor.loadState(IntegerScheme(arrayDecorator = ArraySchemeDecorator(enabled = true)))
+                editor.loadState(IntegerScheme(arrayDecorator = ArrayDecorator(enabled = true)))
             }
 
             var listenerInvoked = false

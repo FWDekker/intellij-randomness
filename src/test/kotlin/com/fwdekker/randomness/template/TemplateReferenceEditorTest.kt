@@ -2,7 +2,7 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.DummyScheme
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -130,7 +130,7 @@ object TemplateReferenceEditorTest : Spek({
         it("invokes the listener if the array decorator changes") {
             GuiActionRunner.execute {
                 editor.loadState(
-                    TemplateReference(arrayDecorator = ArraySchemeDecorator(enabled = true))
+                    TemplateReference(arrayDecorator = ArrayDecorator(enabled = true))
                         .also { it.templateList = Box({ templateList }) }
                 )
             }

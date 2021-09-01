@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.literal.LiteralScheme
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -66,7 +66,7 @@ object TemplateNameEditorTest : Spek({
     describe("readState") {
         it("returns a template with a disabled decorator") {
             GuiActionRunner.execute {
-                editor.loadState(Template(arrayDecorator = ArraySchemeDecorator(enabled = true)))
+                editor.loadState(Template(arrayDecorator = ArrayDecorator(enabled = true)))
             }
 
             assertThat(editor.readState().arrayDecorator.enabled).isFalse()
@@ -121,7 +121,7 @@ object TemplateNameEditorTest : Spek({
         }
 
         it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute { editor.loadState(Template(arrayDecorator = ArraySchemeDecorator())) }
+            GuiActionRunner.execute { editor.loadState(Template(arrayDecorator = ArrayDecorator())) }
 
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }

@@ -1,7 +1,7 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySchemeDecorator
-import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
+import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import icons.RandomnessIcons
 import java.awt.BorderLayout
@@ -19,18 +19,18 @@ import kotlin.random.Random
  */
 data class DummyScheme(
     var literals: List<String> = listOf(DEFAULT_OUTPUT),
-    override var decorators: List<SchemeDecorator> = listOf(ArraySchemeDecorator())
+    override var decorators: List<SchemeDecorator> = listOf(ArrayDecorator())
 ) : Scheme() {
     override var icons: RandomnessIcons? = RandomnessIcons.Data
     override var name = literals.joinToString()
 
     /**
-     * Returns the single [ArraySchemeDecorator] in [decorators].
+     * Returns the single [ArrayDecorator] in [decorators].
      *
      * Use this field only if the test assumes that this scheme has a single decorator the entire time.
      */
-    var arrayDecorator: ArraySchemeDecorator
-        get() = decorators.single() as ArraySchemeDecorator
+    var arrayDecorator: ArrayDecorator
+        get() = decorators.single() as ArrayDecorator
         set(value) {
             decorators = listOf(value)
         }
@@ -86,7 +86,7 @@ class DummySchemeEditor(scheme: DummyScheme = DummyScheme()) : StateEditor<Dummy
     private val literalsInput = JTextField()
         .also { it.name = "literals" }
         .also { rootComponent.add(it, BorderLayout.NORTH) }
-    private val arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator)
+    private val arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         .also { rootComponent.add(it.rootComponent, BorderLayout.SOUTH) }
 
 

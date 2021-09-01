@@ -3,7 +3,7 @@ package com.fwdekker.randomness.integer
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
@@ -32,7 +32,7 @@ data class IntegerScheme(
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX,
     var fixedLengthDecorator: FixedLengthDecorator = FixedLengthDecorator(),
-    var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @Transient
     override val name = "Integer"

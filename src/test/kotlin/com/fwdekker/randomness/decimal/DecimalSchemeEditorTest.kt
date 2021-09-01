@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.decimal
 
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -179,7 +179,7 @@ object DecimalSchemeEditorTest : Spek({
 
         it("invokes the listener if the array decorator changes") {
             GuiActionRunner.execute {
-                editor.loadState(DecimalScheme(arrayDecorator = ArraySchemeDecorator(enabled = true)))
+                editor.loadState(DecimalScheme(arrayDecorator = ArrayDecorator(enabled = true)))
             }
 
             var listenerInvoked = false

@@ -1,6 +1,6 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import icons.RandomnessIcons
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -51,19 +51,19 @@ object SchemeTest : Spek({
 
         it("returns null if there are no icons, even if the decorator is enabled") {
             scheme.icons = null
-            scheme.arrayDecorator = ArraySchemeDecorator(enabled = true)
+            scheme.arrayDecorator = ArrayDecorator(enabled = true)
 
             assertThat(scheme.icon).isNull()
         }
 
         it("returns the base icon if the decorator is disabled") {
-            scheme.arrayDecorator = ArraySchemeDecorator(enabled = false)
+            scheme.arrayDecorator = ArrayDecorator(enabled = false)
 
             assertThat(scheme.icon).isEqualTo(RandomnessIcons.Data.Base)
         }
 
         it("returns the array icon if the decorator is enabled") {
-            scheme.arrayDecorator = ArraySchemeDecorator(enabled = true)
+            scheme.arrayDecorator = ArrayDecorator(enabled = true)
 
             assertThat(scheme.icon).isEqualTo(RandomnessIcons.Data.Array)
         }
@@ -97,8 +97,8 @@ object SchemeTest : Spek({
 
         it("applies decorators on each other in ascending order") {
             scheme.decorators = listOf(
-                ArraySchemeDecorator(enabled = true, minCount = 2, maxCount = 2),
-                ArraySchemeDecorator(enabled = true, minCount = 3, maxCount = 3),
+                ArrayDecorator(enabled = true, minCount = 2, maxCount = 2),
+                ArrayDecorator(enabled = true, minCount = 3, maxCount = 3),
             )
             scheme.literals = listOf("save")
 

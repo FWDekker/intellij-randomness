@@ -2,7 +2,7 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.TempFileHelper
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -243,7 +243,7 @@ object WordSchemeEditorTest : Spek({
 
         it("invokes the listener if the array decorator changes") {
             GuiActionRunner.execute {
-                editor.loadState(WordScheme(arrayDecorator = ArraySchemeDecorator(enabled = true)))
+                editor.loadState(WordScheme(arrayDecorator = ArrayDecorator(enabled = true)))
             }
 
             var listenerInvoked = false

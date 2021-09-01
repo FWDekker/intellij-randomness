@@ -6,7 +6,7 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
 
@@ -19,7 +19,7 @@ import icons.RandomnessIcons
  */
 data class TemplateReference(
     var templateUuid: String? = null,
-    var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     /**
      *The list in which this reference _must_ reside, and in which the referenced template _might_ reside. Using a [Box]

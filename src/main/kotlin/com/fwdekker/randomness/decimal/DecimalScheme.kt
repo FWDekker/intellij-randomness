@@ -2,7 +2,7 @@ package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
 import java.text.DecimalFormat
@@ -31,7 +31,7 @@ data class DecimalScheme(
     var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR,
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX,
-    var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @Transient
     override val name = "Decimal"

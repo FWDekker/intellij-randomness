@@ -2,7 +2,7 @@ package com.fwdekker.randomness.literal
 
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
-import com.fwdekker.randomness.array.ArraySchemeDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
 
@@ -15,7 +15,7 @@ import icons.RandomnessIcons
  */
 data class LiteralScheme(
     var literal: String = DEFAULT_LITERAL,
-    var arrayDecorator: ArraySchemeDecorator = ArraySchemeDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @Transient
     override val name = "Literal"

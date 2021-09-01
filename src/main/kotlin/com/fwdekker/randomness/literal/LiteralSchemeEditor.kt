@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.literal
 
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
+import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -19,7 +19,7 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor
 
     private lateinit var literalInput: JTextField
     private lateinit var arrayDecoratorPanel: JPanel
-    private lateinit var arrayDecoratorEditor: ArraySchemeDecoratorEditor
+    private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
 
     init {
@@ -33,7 +33,7 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        arrayDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator)
+        arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 

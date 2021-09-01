@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.array.ArraySchemeDecoratorEditor
+import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.intellij.ui.components.JBTextField
 import java.awt.BorderLayout
@@ -19,7 +19,7 @@ class TemplateNameEditor(template: Template) : StateEditor<Template>(template) {
     override val preferredFocusedComponent by lazy { nameInput }
 
     private val nameInput = JBTextField().also { it.name = "templateName" }
-    private val arraySchemeDecoratorEditor: ArraySchemeDecoratorEditor
+    private val arrayDecoratorEditor: ArrayDecoratorEditor
 
 
     init {
@@ -28,8 +28,8 @@ class TemplateNameEditor(template: Template) : StateEditor<Template>(template) {
         namePanel.add(nameInput)
         rootComponent.add(namePanel, BorderLayout.NORTH)
 
-        arraySchemeDecoratorEditor = ArraySchemeDecoratorEditor(originalState.arrayDecorator, disablable = false)
-        rootComponent.add(arraySchemeDecoratorEditor.rootComponent, BorderLayout.CENTER)
+        arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator, disablable = false)
+        rootComponent.add(arrayDecoratorEditor.rootComponent, BorderLayout.CENTER)
 
         loadState()
     }
@@ -39,17 +39,17 @@ class TemplateNameEditor(template: Template) : StateEditor<Template>(template) {
         super.loadState(state)
 
         nameInput.text = state.name.trim()
-        arraySchemeDecoratorEditor.loadState(state.arrayDecorator)
+        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
         Template(
             name = nameInput.text.trim(),
             schemes = originalState.schemes.map { it.deepCopy(retainUuid = true) },
-            arrayDecorator = arraySchemeDecoratorEditor.readState().also { it.enabled = false }
+            arrayDecorator = arrayDecoratorEditor.readState().also { it.enabled = false }
         ).also { it.uuid = originalState.uuid }
 
 
     override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(nameInput, arraySchemeDecoratorEditor, listener = listener)
+        addChangeListenerTo(nameInput, arrayDecoratorEditor, listener = listener)
 }

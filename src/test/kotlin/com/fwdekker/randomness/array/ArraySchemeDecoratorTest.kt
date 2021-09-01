@@ -9,80 +9,80 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * Unit tests for [ArraySchemeDecorator].
+ * Unit tests for [ArrayDecorator].
  */
 object ArraySchemeDecoratorTest : Spek({
-    lateinit var arraySchemeDecorator: ArraySchemeDecorator
+    lateinit var arrayDecorator: ArrayDecorator
     lateinit var dummyScheme: DummyScheme
 
 
     beforeEachTest {
-        arraySchemeDecorator = ArraySchemeDecorator(enabled = true)
-        dummyScheme = DummyScheme(decorators = listOf(arraySchemeDecorator))
+        arrayDecorator = ArrayDecorator(enabled = true)
+        dummyScheme = DummyScheme(decorators = listOf(arrayDecorator))
     }
 
 
     describe("generateStrings") {
         it("throws an exception if the scheme is invalid") {
-            arraySchemeDecorator.maxCount = -321
+            arrayDecorator.maxCount = -321
 
             assertThatThrownBy { dummyScheme.generateStrings() }.isInstanceOf(DataGenerationException::class.java)
         }
 
         it("returns non-array values if disabled") {
-            arraySchemeDecorator.enabled = false
+            arrayDecorator.enabled = false
             dummyScheme.literals = listOf("Heal")
 
             assertThat(dummyScheme.generateStrings()).containsExactly("Heal")
         }
 
         it("returns an array-like string given a non-singular separator") {
-            arraySchemeDecorator.minCount = 3
-            arraySchemeDecorator.maxCount = 3
-            arraySchemeDecorator.brackets = "@#"
-            arraySchemeDecorator.separator = ";;"
-            arraySchemeDecorator.isSpaceAfterSeparator = true
+            arrayDecorator.minCount = 3
+            arrayDecorator.maxCount = 3
+            arrayDecorator.brackets = "@#"
+            arrayDecorator.separator = ";;"
+            arrayDecorator.isSpaceAfterSeparator = true
             dummyScheme.literals = listOf("Garhwali", "Pattypan", "Troll")
 
             assertThat(dummyScheme.generateStrings()).containsExactly("@Garhwali;; Pattypan;; Troll#")
         }
 
         it("returns an array-like string given no brackets") {
-            arraySchemeDecorator.minCount = 4
-            arraySchemeDecorator.maxCount = 4
-            arraySchemeDecorator.brackets = ""
-            arraySchemeDecorator.separator = "h"
-            arraySchemeDecorator.isSpaceAfterSeparator = false
+            arrayDecorator.minCount = 4
+            arrayDecorator.maxCount = 4
+            arrayDecorator.brackets = ""
+            arrayDecorator.separator = "h"
+            arrayDecorator.isSpaceAfterSeparator = false
             dummyScheme.literals = listOf("Elvish", "Stride")
 
             assertThat(dummyScheme.generateStrings()).containsExactly("ElvishhStridehElvishhStride")
         }
 
         it("returns an array-like string given a disabled separator") {
-            arraySchemeDecorator.minCount = 3
-            arraySchemeDecorator.maxCount = 3
-            arraySchemeDecorator.brackets = "<>"
-            arraySchemeDecorator.separator = "-"
-            arraySchemeDecorator.isSpaceAfterSeparator = false
+            arrayDecorator.minCount = 3
+            arrayDecorator.maxCount = 3
+            arrayDecorator.brackets = "<>"
+            arrayDecorator.separator = "-"
+            arrayDecorator.isSpaceAfterSeparator = false
             dummyScheme.literals = listOf("Remain", "Pound")
 
             assertThat(dummyScheme.generateStrings()).containsExactly("<Remain-Pound-Remain>")
         }
 
         it("returns an array-like string without space after separator given the newline separator") {
-            arraySchemeDecorator.minCount = 2
-            arraySchemeDecorator.maxCount = 2
-            arraySchemeDecorator.brackets = "[]"
-            arraySchemeDecorator.separator = "\n"
-            arraySchemeDecorator.isSpaceAfterSeparator = true
+            arrayDecorator.minCount = 2
+            arrayDecorator.maxCount = 2
+            arrayDecorator.brackets = "[]"
+            arrayDecorator.separator = "\n"
+            arrayDecorator.isSpaceAfterSeparator = true
             dummyScheme.literals = listOf("Union", "Bell")
 
             assertThat(dummyScheme.generateStrings()).containsExactly("[Union\nBell]")
         }
 
         it("returns multiple array-like strings that appropriately chunk the underlying generator's outputs") {
-            arraySchemeDecorator.minCount = 2
-            arraySchemeDecorator.maxCount = 2
+            arrayDecorator.minCount = 2
+            arrayDecorator.maxCount = 2
             dummyScheme.literals = listOf("Flesh", "Strap", "Stem")
 
             assertThat(dummyScheme.generateStrings(3)).containsExactly(
@@ -96,37 +96,37 @@ object ArraySchemeDecoratorTest : Spek({
 
     describe("doValidate") {
         it("passes for the default settings") {
-            assertThat(ArraySchemeDecorator().doValidate()).isNull()
+            assertThat(ArrayDecorator().doValidate()).isNull()
         }
 
         describe("count") {
             it("passes if the minimum count equals the maximum count") {
-                arraySchemeDecorator.minCount = 368
-                arraySchemeDecorator.maxCount = 368
+                arrayDecorator.minCount = 368
+                arrayDecorator.maxCount = 368
 
-                assertThat(arraySchemeDecorator.doValidate()).isNull()
+                assertThat(arrayDecorator.doValidate()).isNull()
             }
 
             it("fails for count equals 0") {
-                arraySchemeDecorator.minCount = 0
-                arraySchemeDecorator.maxCount = 0
+                arrayDecorator.minCount = 0
+                arrayDecorator.maxCount = 0
 
-                assertThat(arraySchemeDecorator.doValidate()).isEqualTo("Minimum count should be at least 1, but is 0.")
+                assertThat(arrayDecorator.doValidate()).isEqualTo("Minimum count should be at least 1, but is 0.")
             }
 
             it("fails for negative count") {
-                arraySchemeDecorator.minCount = -23
-                arraySchemeDecorator.maxCount = -23
+                arrayDecorator.minCount = -23
+                arrayDecorator.maxCount = -23
 
-                assertThat(arraySchemeDecorator.doValidate())
+                assertThat(arrayDecorator.doValidate())
                     .isEqualTo("Minimum count should be at least 1, but is -23.")
             }
 
             it("fails if the minimum count is greater than the maximum count") {
-                arraySchemeDecorator.minCount = 522
-                arraySchemeDecorator.maxCount = 162
+                arrayDecorator.minCount = 522
+                arrayDecorator.maxCount = 162
 
-                assertThat(arraySchemeDecorator.doValidate())
+                assertThat(arrayDecorator.doValidate())
                     .isEqualTo("Minimum count should be greater than maximum count.")
             }
         }
@@ -134,29 +134,29 @@ object ArraySchemeDecoratorTest : Spek({
 
     describe("deepCopy") {
         it("creates an independent copy") {
-            arraySchemeDecorator.minCount = 44
+            arrayDecorator.minCount = 44
 
-            val copy = arraySchemeDecorator.deepCopy()
+            val copy = arrayDecorator.deepCopy()
             copy.minCount = 15
 
-            assertThat(arraySchemeDecorator.minCount).isEqualTo(44)
+            assertThat(arrayDecorator.minCount).isEqualTo(44)
         }
     }
 
     describe("copyFrom") {
         it("copies state from another instance") {
-            arraySchemeDecorator.enabled = false
-            arraySchemeDecorator.minCount = 808
-            arraySchemeDecorator.maxCount = 997
-            arraySchemeDecorator.brackets = "0fWx<i6jTJ"
-            arraySchemeDecorator.separator = "f3hu)Rxiz1"
-            arraySchemeDecorator.isSpaceAfterSeparator = false
+            arrayDecorator.enabled = false
+            arrayDecorator.minCount = 808
+            arrayDecorator.maxCount = 997
+            arrayDecorator.brackets = "0fWx<i6jTJ"
+            arrayDecorator.separator = "f3hu)Rxiz1"
+            arrayDecorator.isSpaceAfterSeparator = false
 
-            val newScheme = ArraySchemeDecorator()
-            newScheme.copyFrom(arraySchemeDecorator)
+            val newScheme = ArrayDecorator()
+            newScheme.copyFrom(arrayDecorator)
 
-            assertThat(newScheme).isEqualTo(arraySchemeDecorator)
-            assertThat(newScheme).isNotSameAs(arraySchemeDecorator)
+            assertThat(newScheme).isEqualTo(arrayDecorator)
+            assertThat(newScheme).isNotSameAs(arrayDecorator)
         }
     }
 })
