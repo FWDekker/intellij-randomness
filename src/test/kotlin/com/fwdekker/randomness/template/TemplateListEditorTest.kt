@@ -84,8 +84,16 @@ object TemplateListEditorTest : Spek({
 
 
     describe("buttons") {
-        xdescribe("add") {
-            // TODO: Find a way to test the addition popup
+        describe("add") {
+            it("adds a template if nothing is currently selected") {
+                GuiActionRunner.execute {
+                    frame.tree().target().clearSelection()
+                    frame.clickActionButton("Add")
+                }
+
+                assertThat(editor.readState().templateList.templates.map { it.name })
+                    .containsExactly("Further", "Enclose", "Student", "Template")
+            }
         }
 
         describe("remove") {
@@ -288,10 +296,10 @@ object TemplateListEditorTest : Spek({
                     .isEqualTo(0)
             }
 
-            it("resets changes to the symbol set settings") {
+            it("resets changes to the symbol set settings if a string scheme is selected") {
                 GuiActionRunner.execute {
                     frame.tree().target().setSelectionRow(7)
-                    symbolSetTable().addRow(EditableDatum(active = true, SymbolSet("bottom", "nJmXN1N")))
+                    symbolSetTable().addRow(EditableDatum(active = false, SymbolSet("bottom", "nJmXN1N")))
                 }
 
                 assertThat(editor.readState().symbolSetSettings.symbolSets.map { it.name }).contains("bottom")
@@ -303,7 +311,7 @@ object TemplateListEditorTest : Spek({
             it("resets changes to the dictionary settings") {
                 GuiActionRunner.execute {
                     frame.tree().target().setSelectionRow(5)
-                    dictionaryTable().addRow(EditableDatum(active = true, UserDictionary("people.dic")))
+                    dictionaryTable().addRow(EditableDatum(active = false, UserDictionary("people.dic")))
                 }
 
                 assertThat(editor.readState().dictionarySettings.dictionaries)

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.literal
 
+import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
@@ -11,10 +12,12 @@ import icons.RandomnessIcons
  * Contains settings for generating non-random literals.
  *
  * @property literal The literal string.
+ * @property capitalization The capitalization mode of the literal.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class LiteralScheme(
     var literal: String = DEFAULT_LITERAL,
+    var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @Transient
@@ -31,7 +34,7 @@ data class LiteralScheme(
      * @param count the number of copies of the literal to generate
      * @return a list containing the given number of copies of the literal
      */
-    override fun generateUndecoratedStrings(count: Int) = List(count) { literal }
+    override fun generateUndecoratedStrings(count: Int) = List(count) { capitalization.transform(literal, random) }
 
 
     override fun doValidate() = arrayDecorator.doValidate()
@@ -46,8 +49,13 @@ data class LiteralScheme(
      */
     companion object {
         /**
-         * The default value of the [literal][literal] field.
+         * The default value of the [literal] field.
          */
         const val DEFAULT_LITERAL = ""
+
+        /**
+         * The default value of the [capitalization] field.
+         */
+        val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
     }
 }

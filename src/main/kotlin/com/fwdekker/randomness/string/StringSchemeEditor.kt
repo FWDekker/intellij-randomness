@@ -107,7 +107,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             it.uuid = originalState.uuid
 
             it.symbolSetSettings += (+originalState.symbolSetSettings).deepCopy(retainUuid = true)
-            (+it.symbolSetSettings).symbolSets = symbolSetTable.data.toSet()
+            (+it.symbolSetSettings).symbolSets = symbolSetTable.data
         }
 
     override fun applyState() {

@@ -101,7 +101,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             it.uuid = originalState.uuid
 
             it.dictionarySettings += (+originalState.dictionarySettings).deepCopy(retainUuid = true)
-            (+it.dictionarySettings).dictionaries = dictionaryTable.data.toList()
+            (+it.dictionarySettings).dictionaries = dictionaryTable.data
 
             UserDictionary.clearCache()
         }

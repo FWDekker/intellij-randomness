@@ -62,7 +62,7 @@ abstract class ActivityTableModelEditor<T>(
     /**
      * All data currently in the table.
      */
-    var data: Collection<T>
+    var data: List<T>
         get() = model.items.map { it.datum }
         set(value) {
             model.items = value.map { EditableDatum(DEFAULT_STATE, it) }
@@ -71,7 +71,7 @@ abstract class ActivityTableModelEditor<T>(
     /**
      * All data of which the checkbox is currently checked.
      */
-    var activeData: Collection<T>
+    var activeData: List<T>
         get() = model.items.filter { it.active }.map { it.datum }
         set(value) {
             model.items.forEachIndexed { i, item -> model.setValueAt(item.datum in value, i, 0) }

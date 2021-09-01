@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.literal
 
+import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.array.ArrayDecorator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -40,6 +41,13 @@ object LiteralSchemeEditorTest : Spek({
 
             frame.textBox("literal").requireText("scrape")
         }
+
+        it("loads the scheme's capitalization") {
+            GuiActionRunner.execute { editor.loadState(LiteralScheme(capitalization = CapitalizationMode.RANDOM)) }
+
+            frame.radioButton("capitalizationRetain").requireSelected(false)
+            frame.radioButton("capitalizationRandom").requireSelected(true)
+        }
     }
 
     describe("readState") {
@@ -50,10 +58,12 @@ object LiteralSchemeEditorTest : Spek({
         it("returns the editor's state") {
             GuiActionRunner.execute {
                 frame.textBox("literal").target().text = "waste"
+                frame.radioButton("capitalizationRandom").target().isSelected = true
             }
 
             val readScheme = editor.readState()
             assertThat(readScheme.literal).isEqualTo("waste")
+            assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.RANDOM)
         }
 
         it("returns the loaded state if no editor changes are made") {

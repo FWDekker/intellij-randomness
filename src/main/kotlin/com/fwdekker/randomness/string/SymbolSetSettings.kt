@@ -32,7 +32,7 @@ data class SymbolSetSettings(
      * A list view of the deserialized `SymbolSet` objects described by [serializedSymbolSets].
      */
     @get:Transient
-    var symbolSets: Collection<SymbolSet>
+    var symbolSets: List<SymbolSet>
         get() = serializedSymbolSets.map { SymbolSet(it.name, EmojiParser.parseToUnicode(it.symbols)) }
         set(value) {
             serializedSymbolSets = value.map { SymbolSet(it.name, EmojiParser.parseToAliases(it.symbols)) }
