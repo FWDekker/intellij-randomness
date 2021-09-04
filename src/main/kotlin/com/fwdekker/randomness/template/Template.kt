@@ -12,7 +12,7 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.util.xmlb.annotations.XCollection
 import icons.RandomnessIcons
-import javax.swing.Icon
+import icons.TypeIcon
 
 
 /**
@@ -38,11 +38,8 @@ data class Template(
     var schemes: List<Scheme> = DEFAULT_SCHEMES.toMutableList(),
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
-    override val icons: RandomnessIcons
-        get() = schemes.singleOrNull()?.icons ?: RandomnessIcons.Data
-
-    override val icon: Icon
-        get() = icons.Base
+    override val typeIcon: TypeIcon
+        get() = (schemes.map { it.typeIcon?.scheme }.distinct().singleOrNull() ?: RandomnessIcons.mixed).template
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)

@@ -31,7 +31,7 @@ class PopupAction : AnAction() {
      * @param event carries information on the invocation place
      */
     override fun update(event: AnActionEvent) {
-        event.presentation.icon = RandomnessIcons.Data.Base
+        event.presentation.icon = RandomnessIcons.randomness
         hasEditor = event.getData(CommonDataKeys.EDITOR) != null
     }
 

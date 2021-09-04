@@ -20,9 +20,9 @@ data class LiteralScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
-    @Transient
+    @get:Transient
     override val name = "Literal"
-    override val icons = RandomnessIcons.String
+    override val typeIcon = RandomnessIcons.literal.scheme
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)

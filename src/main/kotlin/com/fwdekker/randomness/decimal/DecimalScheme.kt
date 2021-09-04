@@ -33,9 +33,9 @@ data class DecimalScheme(
     var suffix: String = DEFAULT_SUFFIX,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
-    @Transient
+    @get:Transient
     override val name = "Decimal"
-    override val icons = RandomnessIcons.Decimal
+    override val typeIcon = RandomnessIcons.decimal.scheme
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)

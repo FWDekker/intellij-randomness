@@ -37,9 +37,9 @@ data class StringScheme(
     @get:Transient
     var symbolSetSettings: Box<SymbolSetSettings> = Box({ SymbolSetSettings.default })
 
-    @Transient
+    @get:Transient
     override val name = "String"
-    override val icons = RandomnessIcons.String
+    override val typeIcon = RandomnessIcons.string.scheme
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)

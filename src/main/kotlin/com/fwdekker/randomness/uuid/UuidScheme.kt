@@ -29,9 +29,9 @@ data class UuidScheme(
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
-    @Transient
+    @get:Transient
     override val name = "UUID"
-    override val icons = RandomnessIcons.Uuid
+    override val typeIcon = RandomnessIcons.uuid.scheme
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)

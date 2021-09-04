@@ -1,127 +1,157 @@
 package icons
 
 import com.intellij.openapi.util.IconLoader
+import java.awt.Component
+import java.awt.Graphics
+import javax.swing.Icon
 
 
 /**
  * All Randomness icons.
- *
- * @param base the path to the basic icon for the data type
- * @param array the path to the array variant of the basic icon
- * @param repeat the path to the repeat variant of the basic icon
- * @param repeatArray the path to the repeat array variant of the basic icon
- * @param settings the path to the settings variant of the basic icon
- * @param quickSwitchScheme the path to the quick switch scheme variant of the basic icon
  */
-@Suppress("PropertyName", "VariableNaming") // Should look like an enum
-enum class RandomnessIcons(
-    base: kotlin.String,
-    array: kotlin.String,
-    repeat: kotlin.String,
-    repeatArray: kotlin.String,
-    settings: kotlin.String,
-    quickSwitchScheme: kotlin.String
-) {
+object RandomnessIcons {
     /**
-     * Icons for decimals.
+     * The main icon of Randomness.
      */
-    Decimal(
-        "/icons/decimal.svg",
-        "/icons/decimal-array.svg",
-        "/icons/decimal-repeat.svg",
-        "/icons/decimal-repeat-array.svg",
-        "/icons/decimal-settings.svg",
-        "/icons/decimal-quick-switch-scheme.svg"
-    ),
+    val randomness = IconLoader.findIcon("/icons/randomness.svg")!!
 
     /**
-     * Icons for integers.
+     * The [TypeIcon] for mixed data types.
      */
-    Integer(
-        "/icons/integer.svg",
-        "/icons/integer-array.svg",
-        "/icons/integer-repeat.svg",
-        "/icons/integer-repeat-array.svg",
-        "/icons/integer-settings.svg",
-        "/icons/integer-quick-switch-scheme.svg"
-    ),
+    val mixed = TypeIcon(
+        IconLoader.findIcon("/icons/mixed-template.svg")!!,
+        IconLoader.findIcon("/icons/mixed-scheme.svg")!!
+    )
 
     /**
-     * Icons for strings.
+     * The [TypeIcon] for unknown data types.
      */
-    String(
-        "/icons/string.svg",
-        "/icons/string-array.svg",
-        "/icons/string-repeat.svg",
-        "/icons/string-repeat-array.svg",
-        "/icons/string-settings.svg",
-        "/icons/string-quick-switch-scheme.svg"
-    ),
+    val unknown = TypeIcon(
+        IconLoader.findIcon("/icons/unknown-template.svg")!!,
+        IconLoader.findIcon("/icons/unknown-scheme.svg")!!
+    )
 
     /**
-     * Icons for words.
+     * The [TypeIcon] for integers.
      */
-    Word(
-        "/icons/word.svg",
-        "/icons/word-array.svg",
-        "/icons/word-repeat.svg",
-        "/icons/word-repeat-array.svg",
-        "/icons/word-settings.svg",
-        "/icons/word-quick-switch-scheme.svg"
-    ),
+    val integer = TypeIcon(
+        IconLoader.findIcon("/icons/integer-template.svg")!!,
+        IconLoader.findIcon("/icons/integer-scheme.svg")!!
+    )
 
     /**
-     * Icons for UUIDs.
+     * The [TypeIcon] for decimals.
      */
-    Uuid(
-        "/icons/uuid.svg",
-        "/icons/uuid-array.svg",
-        "/icons/uuid-repeat.svg",
-        "/icons/uuid-repeat-array.svg",
-        "/icons/uuid-settings.svg",
-        "/icons/uuid-quick-switch-scheme.svg"
-    ),
+    val decimal = TypeIcon(
+        IconLoader.findIcon("/icons/decimal-template.svg")!!,
+        IconLoader.findIcon("/icons/decimal-scheme.svg")!!
+    )
 
     /**
-     * Basic icons.
+     * The [TypeIcon] for strings.
      */
-    Data(
-        "/icons/data.svg",
-        "/icons/data-array.svg",
-        "/icons/data-repeat.svg",
-        "/icons/data-repeat-array.svg",
-        "/icons/data-settings.svg",
-        "/icons/data-quick-switch-scheme.svg"
-    );
+    val string = TypeIcon(
+        IconLoader.findIcon("/icons/string-template.svg")!!,
+        IconLoader.findIcon("/icons/string-scheme.svg")!!
+    )
+
+    /**
+     * The [TypeIcon] for words.
+     */
+    val word = TypeIcon(
+        IconLoader.findIcon("/icons/word-template.svg")!!,
+        IconLoader.findIcon("/icons/word-scheme.svg")!!
+    )
+
+    /**
+     * The [TypeIcon] for UUIDs.
+     */
+    val uuid = TypeIcon(
+        IconLoader.findIcon("/icons/uuid-template.svg")!!,
+        IconLoader.findIcon("/icons/uuid-scheme.svg")!!
+    )
+
+    /**
+     * The [TypeIcon] for literals.
+     */
+    val literal = TypeIcon(
+        IconLoader.findIcon("/icons/literal-template.svg")!!,
+        IconLoader.findIcon("/icons/literal-scheme.svg")!!
+    )
+
+    /**
+     * An icon to indicate Randomness settings in general.
+     */
+    val settings = IconLoader.findIcon("/icons/settings.svg")!!
+
+    /**
+     * An icon overlay for arrays.
+     */
+    val arrayOverlay = IconLoader.findIcon("/icons/array-overlay.svg")!!
+
+    /**
+     * An icon overlay for references.
+     */
+    val referenceOverlay = IconLoader.findIcon("/icons/reference-overlay.svg")!!
+
+    /**
+     * An icon overlay for repeated insertions.
+     */
+    val repeatOverlay = IconLoader.findIcon("/icons/repeat-overlay.svg")!!
+
+    /**
+     * An icon overlay for settings.
+     */
+    val settingsOverlay = IconLoader.findIcon("/icons/settings-overlay.svg")!!
+}
+
+/**
+ * An icon to signify a type.
+ *
+ * Types can be displayed either as a template or as a (non-template) scheme. A type icon allows easily changing between
+ * the two even if the currently active state is not known.
+ *
+ * @property templateIcon The icon to use when the type is expressed by a template.
+ * @property schemeIcon The icon to use when the type is expressed as a non-template scheme.
+ * @property active The icon currently used and painted; equals either [templateIcon] or [schemeIcon].
+ */
+data class TypeIcon(
+    private val templateIcon: Icon,
+    private val schemeIcon: Icon,
+    private val active: Icon = templateIcon
+) : Icon {
+    /**
+     * Returns the template variant of this [TypeIcon].
+     */
+    val template: TypeIcon by lazy { copy(active = templateIcon) }
+
+    /**
+     * Returns the non-template scheme variant of this [TypeIcon].
+     */
+    val scheme: TypeIcon by lazy { copy(active = schemeIcon) }
 
 
     /**
-     * The basic icon for the data type.
+     * Paints the [active] icon.
+     *
+     * @param c the [Component] to get useful painting properties from
+     * @param g the graphics context
+     * @param x the X coordinate of the icon's top-left corner
+     * @param y the Y coordinate of the icon's top-left corner
      */
-    val Base = IconLoader.findIcon(base)!!
+    override fun paintIcon(c: Component?, g: Graphics?, x: Int, y: Int) = active.paintIcon(c, g, x, y)
 
     /**
-     * The array variant of the basic icon.
+     * Returns the width of [active].
+     *
+     * @return the width of [active]
      */
-    val Array = IconLoader.findIcon(array)!!
+    override fun getIconWidth() = active.iconWidth
 
     /**
-     * The repeat variant of the basic icon.
+     * Returns the height of [active].
+     *
+     * @return the height of [active]
      */
-    val Repeat = IconLoader.findIcon(repeat)!!
-
-    /**
-     * The repeat array variant of the basic icon.
-     */
-    val RepeatArray = IconLoader.findIcon(repeatArray)!!
-
-    /**
-     * The settings variant of the basic icon.
-     */
-    val Settings = IconLoader.findIcon(settings)!!
-
-    /**
-     * The quick switch scheme variant of the basic icon.
-     */
-    val QuickSwitchScheme = IconLoader.findIcon(quickSwitchScheme)!!
+    override fun getIconHeight() = active.iconHeight
 }

@@ -34,9 +34,9 @@ data class IntegerScheme(
     var fixedLengthDecorator: FixedLengthDecorator = FixedLengthDecorator(),
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
-    @Transient
+    @get:Transient
     override val name = "Integer"
-    override val icons = RandomnessIcons.Integer
+    override val typeIcon = RandomnessIcons.integer.scheme
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(fixedLengthDecorator, arrayDecorator)

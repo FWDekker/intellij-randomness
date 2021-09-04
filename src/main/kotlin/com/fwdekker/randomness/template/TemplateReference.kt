@@ -7,8 +7,11 @@ import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.intellij.ui.LayeredIcon
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
+import icons.TypeIcon
+import javax.swing.Icon
 
 
 /**
@@ -21,6 +24,20 @@ data class TemplateReference(
     var templateUuid: String? = null,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
+    override val name: String
+        get() = template?.name?.let { "[$it]" } ?: "Reference"
+
+    override val typeIcon: TypeIcon
+        get() = template?.typeIcon ?: RandomnessIcons.unknown
+
+    override val icon: Icon
+        get() =
+            if (arrayDecorator.enabled) LayeredIcon(typeIcon, RandomnessIcons.referenceOverlay, arrayDecorator.icon!!)
+            else LayeredIcon(typeIcon, RandomnessIcons.referenceOverlay)
+
+    override val decorators: List<SchemeDecorator>
+        get() = listOf(arrayDecorator)
+
     /**
      *The list in which this reference _must_ reside, and in which the referenced template _might_ reside. Using a [Box]
      * to prevent recursive initialization.
@@ -43,15 +60,6 @@ data class TemplateReference(
         set(value) {
             templateUuid = value?.uuid
         }
-
-    override val name: String
-        get() = template?.name?.let { "[$it]" } ?: "Reference"
-
-    override val icons: RandomnessIcons
-        get() = template?.icons ?: RandomnessIcons.Data
-
-    override val decorators: List<SchemeDecorator>
-        get() = listOf(arrayDecorator)
 
 
     override fun generateUndecoratedStrings(count: Int) =

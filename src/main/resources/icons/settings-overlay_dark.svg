@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <g id="settings-overlay_dark">
+    <g id="ActionSettings-instance">
+      <g id="Settings-instance" transform="translate(9 9)">
+        <g id="Settings-instance">
+          <path d="M3.03149 2.73907C2.7548 1.97446 2.95783 1.11862 3.54851 0.559632C4.13919 0.000641137 5.00516 -0.155162 5.75374 0.16287L4.2679 1.64769L5.352 2.73141L6.83733 1.24659C7.15511 1.99484 6.99923 2.8602 6.4403 3.45063C5.88138 4.04106 5.02563 4.24436 4.26074 3.96842L1.22875 6.99834L0 5.77053L3.03149 2.73959L3.03149 2.73907Z" id="Shape" fill="#AFB1B3" fill-rule="evenodd" stroke="#6E6E6E" stroke-width="0.4" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

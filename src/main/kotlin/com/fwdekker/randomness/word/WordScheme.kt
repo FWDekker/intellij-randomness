@@ -37,9 +37,9 @@ data class WordScheme(
     @get:Transient
     var dictionarySettings: Box<DictionarySettings> = Box({ DictionarySettings.default })
 
-    @Transient
+    @get:Transient
     override val name = "Word"
-    override val icons = RandomnessIcons.Word
+    override val typeIcon = RandomnessIcons.word.scheme
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)

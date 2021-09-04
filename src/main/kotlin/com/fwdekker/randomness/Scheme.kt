@@ -2,9 +2,10 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
+import com.intellij.ui.LayeredIcon
 import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
-import icons.RandomnessIcons
+import icons.TypeIcon
 import javax.swing.Icon
 import kotlin.random.Random
 
@@ -21,19 +22,19 @@ abstract class Scheme : State() {
     abstract val name: String
 
     /**
-     * The icons that represent schemes of this type.
+     * The icon signifying the type of data represented by this scheme, ignoring its [decorators], or `null` if this
+     * scheme does not represent any kind of data, as is the case for [SchemeDecorator]s.
      */
     @get:Transient
-    open val icons: RandomnessIcons? = null
+    internal open val typeIcon: TypeIcon? = null
 
     /**
-     * The icon for this scheme; depends on whether its array decorator is enabled.
+     * The icon signifying this scheme in its entirety, or `null` if it does not have an icon.
      */
     @get:Transient
+    @Suppress("SpreadOperator") // Adds significant complexity to avoid
     open val icon: Icon?
-        get() =
-            if (decorators.filterIsInstance<ArrayDecorator>().any { it.enabled }) icons?.Array
-            else icons?.Base
+        get() = typeIcon?.let { LayeredIcon(it, *decorators.mapNotNull(Scheme::icon).toTypedArray()) }
 
     /**
      * Additional logic that determines how strings are generated.
