@@ -24,6 +24,7 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.TreeSpeedSearch
 import com.intellij.ui.treeStructure.Tree
+import com.intellij.util.ui.EditableModel
 import com.intellij.util.ui.JBUI
 import javax.swing.JPanel
 import javax.swing.JTree
@@ -98,6 +99,9 @@ class TemplateJTree(
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         setCellRenderer(CellRenderer())
 
+        myModel.rowToNode = { getPathForRow(it).lastPathComponent as StateNode }
+        myModel.nodeToRow = { getRowForPath(myModel.getPathToRoot(it)) }
+
         addTreeWillExpandListener(object : TreeWillExpandListener {
             override fun treeWillExpand(event: TreeExpansionEvent) {
                 explicitlyCollapsed.remove((event.path.lastPathComponent as StateNode).state.uuid)
@@ -128,6 +132,7 @@ class TemplateJTree(
             .addExtraAction(DownActionButton())
             .addExtraAction(ResetActionButton())
             .setButtonComparator("Add", "Edit", "Remove", "Copy", "Up", "Down", "Reset")
+            .setForcedDnD()
             .createPanel()
 
 
@@ -214,11 +219,10 @@ class TemplateJTree(
         if (positions == 0) return
 
         val node = StateNode(scheme)
-        val parent = myModel.getParentOf(node)!!
-        val oldIndex = myModel.getIndexOfChild(parent, node)
+        val currentIndex = myModel.nodeToRow(node)
 
-        myModel.removeNode(node)
-        myModel.insertNode(parent, node, oldIndex + positions)
+        myModel.exchangeRows(currentIndex, currentIndex + positions)
+
         selectionPath = myModel.getPathToRoot(node)
         expandPath(selectionPath)
     }
@@ -236,10 +240,9 @@ class TemplateJTree(
      */
     fun canMoveSchemeDownBy(scheme: Scheme, positions: Int): Boolean {
         val node = StateNode(scheme)
-        val parent = myModel.getParentOf(node)
-        val newIndex = myModel.getIndexOfChild(parent, node) + positions
+        val currentIndex = myModel.nodeToRow(node)
 
-        return newIndex in 0 until myModel.getChildCount(parent)
+        return myModel.canExchangeRows(currentIndex, currentIndex + positions)
     }
 
 
@@ -480,11 +483,28 @@ class TemplateJTree(
  *
  * @property list The list to be modeled.
  */
-class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : TreeModel {
+@Suppress("TooManyFunctions") // Normal for Swing implementations
+class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : TreeModel, EditableModel {
     /**
      * The listeners that are informed when the state of the tree changes.
      */
     private val treeModelListeners = mutableListOf<TreeModelListener>()
+
+    /**
+     * Returns the node at the given row index, considering which nodes are currently collapsed.
+     *
+     * Used to implement [EditableModel].
+     */
+    @Suppress("LateinitUsage") // Cannot be avoided because of recursive dependencies
+    lateinit var rowToNode: (Int) -> StateNode
+
+    /**
+     * Returns the row index of the given node, considering which nodes are currently collapsed.
+     *
+     * Used to implement [EditableModel].
+     */
+    @Suppress("LateinitUsage") // Cannot be avoided because of recursive dependencies
+    lateinit var nodeToRow: (StateNode) -> Int
 
 
     /**
@@ -504,6 +524,53 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
         list = newList ?: list
 
         fireNodeStructureChanged(root)
+    }
+
+
+    /**
+     * Not implemented because this method is used only if this is a model for a table.
+     */
+    override fun addRow() = error("Cannot add empty row.")
+
+    /**
+     * Not implemented because this method is used only if this is a model for a table.
+     *
+     * @param index ignored
+     */
+    override fun removeRow(index: Int) = error("Cannot remove row by index.")
+
+    /**
+     * Moves the node at row [oldIndex] to row [newIndex].
+     *
+     * Indices are looked up using [rowToNode], and are typically relative to the current expansion state of the view.
+     *
+     * @param oldIndex the index of the row of the node to move
+     * @param newIndex the index of the row to move the node to
+     */
+    override fun exchangeRows(oldIndex: Int, newIndex: Int) {
+        val node = rowToNode(oldIndex)
+        val parent = getParentOf(node)!!
+        val targetIndexInParent = getIndexOfChild(parent, node) + (newIndex - oldIndex)
+
+        removeNode(node)
+        insertNode(parent, node, targetIndexInParent)
+    }
+
+    /**
+     * Returns true if and only if the node at row [oldIndex] can be moved to row [newIndex].
+     *
+     * Indices are looked up using [rowToNode], and are typically relative to the current expansion state of the view.
+     *
+     * @param oldIndex the index of the row of the node to move
+     * @param newIndex the index of the row to move the node to
+     * @return true if and only if the row at [oldIndex] can be moved to [newIndex]
+     */
+    override fun canExchangeRows(oldIndex: Int, newIndex: Int): Boolean {
+        val node = rowToNode(oldIndex)
+        val parent = getParentOf(node)!!
+        val targetIndexInParent = getIndexOfChild(parent, node) + (newIndex - oldIndex)
+
+        return targetIndexInParent in 0 until getChildCount(parent)
     }
 
 
@@ -736,21 +803,12 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
 
 
     /**
-     * Updates the value at the given path.
+     * Not implemented because this model does not contain an editor component.
      *
-     * Use this when a state has been modified. Do not use this when a state has been replaced by another state.
-     *
-     * @param path the path to update the value at
-     * @param newValue the new value containing the desired changes
+     * @param path ignored
+     * @param newValue ignored
      */
-    override fun valueForPathChanged(path: TreePath, newValue: Any) {
-        require(newValue is StateNode) { "Cannot update value of type '${newValue.javaClass}'." }
-        println("VALUE FOR PATH CHANGED")
-
-        // TODO: Do we need to implement this method?
-        (path.lastPathComponent as StateNode).state.copyFrom(newValue.state)
-        fireNodeChanged(newValue)
-    }
+    override fun valueForPathChanged(path: TreePath, newValue: Any) = error("")
 
     /**
      * Adds the given listener.
