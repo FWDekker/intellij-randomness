@@ -67,11 +67,6 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
      */
     var queueSelection: String? = null
 
-    /**
-     * Whether to focus on the scheme editor after the next invocation of [reset].
-     */
-    var queueFocus: Boolean = false
-
 
     init {
         val splitter = JBSplitter(false, SPLITTER_PROPORTION_KEY, DEFAULT_SPLITTER_PROPORTION)
@@ -83,12 +78,11 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
         // Right half
         val previewPanel = PreviewPanel {
-            val selectedNode = templateTree.selectedNode ?: return@PreviewPanel LiteralScheme("")
+            val selectedNode = templateTree.selectedNodeNotRoot ?: return@PreviewPanel LiteralScheme("")
+            val parentNode = templateTree.myModel.getParentOf(selectedNode)!!
 
-            selectedNode.state.let {
-                if (it is Template) it
-                else selectedNode.parent!!.state as Template
-            }
+            if (selectedNode.state is Template) selectedNode.state
+            else parentNode.state as Template
         }
         addChangeListener { previewPanel.updatePreview() }
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
@@ -106,6 +100,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
      * @return a panel containing both the decorator and the given list
      */
     private fun decorateTemplateList(templateList: Tree) =
+        // TODO: Move this method and button definitions to [TemplateJTree]
         ToolbarDecorator.createDecorator(templateList)
             .setToolbarPosition(ActionToolbarPosition.TOP)
             .setPanelBorder(JBUI.Borders.empty())
@@ -138,19 +133,19 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             schemeEditor = null
         }
 
-        val selectedNode = templateTree.selectedNode
-        val selectedObject = selectedNode?.state
-        if (selectedObject !is Scheme) {
-            templateTree.myModel.nodeChanged(selectedNode)
+        val selectedNode = templateTree.selectedNodeNotRoot
+        val selectedState = selectedNode?.state
+        if (selectedState !is Scheme) {
+            templateTree.myModel.fireNodeChanged(selectedNode)
             return
         }
 
-        schemeEditor = createEditor(selectedObject)
+        schemeEditor = createEditor(selectedState)
             .also { editor ->
                 editor.addChangeListener {
                     editor.applyState()
-                    templateTree.myModel.nodeChanged(selectedNode)
-                    templateTree.myModel.nodeStructureChanged(selectedNode)
+                    templateTree.myModel.fireNodeChanged(selectedNode)
+                    templateTree.myModel.fireNodeStructureChanged(selectedNode)
                 }
 
                 schemeEditorPanel.add(editor.rootComponent)
@@ -202,26 +197,19 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         super.loadState(state)
 
         currentState.copyFrom(state)
-        templateTree.loadList(currentState.templateList)
+        templateTree.reload(currentState.templateList)
     }
 
     override fun readState() = currentState.deepCopy(retainUuid = true)
 
     override fun reset() {
-        if (queueSelection == null) {
-            queueFocus = false
-            queueSelection = templateTree.selectedNode?.state?.uuid
-        }
-
         super.reset()
 
         if (queueSelection != null) {
             templateTree.selectScheme(queueSelection)
-            queueSelection = null
-        }
-        if (queueFocus) {
             SwingUtilities.invokeLater { schemeEditor?.preferredFocusedComponent?.requestFocus() }
-            queueFocus = false
+
+            queueSelection = null
         }
     }
 
@@ -237,7 +225,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
      */
     private inner class AddSchemeActionButton : AnActionButton("Add", AllIcons.General.Add) {
         override fun actionPerformed(event: AnActionEvent) {
-            if (templateTree.selectedNode == null) {
+            if (templateTree.selectedNodeNotRoot == null) {
                 addScheme(AVAILABLE_ADD_SCHEMES[0])
                 return
             }
@@ -253,7 +241,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             super.updateButton(event)
 
             event.presentation.icon =
-                if (templateTree.selectedNode == null) AllIcons.General.Add
+                if (templateTree.selectedNodeNotRoot == null) AllIcons.General.Add
                 else LayeredIcon.ADD_WITH_DROPDOWN
         }
 
@@ -284,72 +272,65 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     }
 
     /**
-     * The action to invoke when the remove button is pressed.
+     * Removes the selected scheme.
      */
     private inner class RemoveActionButton : AnActionButton("Remove", AllIcons.General.Remove) {
-        override fun actionPerformed(event: AnActionEvent) = templateTree.removeNode(templateTree.selectedNode!!)
+        override fun actionPerformed(event: AnActionEvent) = templateTree.removeScheme(templateTree.selectedScheme!!)
 
-        override fun isEnabled() = templateTree.selectedNode != null
+        override fun isEnabled() = templateTree.selectedNodeNotRoot != null
 
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.REMOVE)
     }
 
     /**
-     * The button to display for copying an entry in the tree.
+     * Duplicates the selected scheme.
      */
     private inner class CopyActionButton : AnActionButton("Copy", AllIcons.Actions.Copy) {
         override fun actionPerformed(event: AnActionEvent) {
-            val node = templateTree.selectedNode!!
-            val copy = (node.state as Scheme).deepCopy()
+            val copy = templateTree.selectedScheme!!.deepCopy()
             copy.setSettingsState(currentState)
 
             templateTree.addScheme(copy)
         }
 
-        override fun isEnabled() = templateTree.selectedNode != null
+        override fun isEnabled() = templateTree.selectedNodeNotRoot != null
     }
 
     /**
-     * The button to display for moving an entry up the tree.
+     * Moves a scheme up by one position.
      */
     private inner class UpActionButton : AnActionButton("Up", AllIcons.Actions.MoveUp) {
         override fun actionPerformed(event: AnActionEvent) =
-            templateTree.moveNodeDownBy(templateTree.selectedNode!!, -1)
+            templateTree.moveSchemeDownBy(templateTree.selectedScheme!!, -1)
 
-        override fun isEnabled(): Boolean {
-            val node = templateTree.selectedNode ?: return false
-            return node.parent!!.getIndex(node) > 0
-        }
+        override fun isEnabled() =
+            templateTree.selectedScheme?.let { templateTree.canMoveSchemeDownBy(it, -1) } ?: false
 
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.UP)
     }
 
     /**
-     * The button to display for moving an entry down the tree.
+     * Moves a scheme down by one position.
      */
     private inner class DownActionButton : AnActionButton("Down", AllIcons.Actions.MoveDown) {
         override fun actionPerformed(event: AnActionEvent) =
-            templateTree.moveNodeDownBy(templateTree.selectedNode!!, 1)
+            templateTree.moveSchemeDownBy(templateTree.selectedScheme!!, 1)
 
-        override fun isEnabled(): Boolean {
-            val node = templateTree.selectedNode ?: return false
-            return node.parent!!.getIndex(node) < node.parent!!.childCount - 1
-        }
+        override fun isEnabled() =
+            templateTree.selectedScheme?.let { templateTree.canMoveSchemeDownBy(it, 1) } ?: false
 
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.DOWN)
     }
 
     /**
-     * The button to display for resetting an entry to its original state.
+     * Resets the selected scheme to its original state, or removes it if it has no original state.
      */
     private inner class ResetActionButton : AnActionButton("Reset", AllIcons.General.Reset) {
         override fun actionPerformed(event: AnActionEvent) {
-            val targetNode = templateTree.selectedNode!!
-
-            val toReset = targetNode.state as Scheme
+            val toReset = templateTree.selectedScheme!!
             val toResetFrom = originalState.templateList.getSchemeByUuid(toReset.uuid)
             if (toResetFrom == null) {
-                templateTree.removeNode(targetNode)
+                templateTree.removeScheme(toReset)
                 return
             }
 
@@ -358,7 +339,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             templateTree.selectScheme(toReset.uuid)
         }
 
-        override fun isEnabled() = templateTree.selectedNode?.let { isModified(it.state as Scheme) } ?: false
+        override fun isEnabled() = templateTree.selectedScheme?.let { isModified(it) } ?: false
     }
 
 
