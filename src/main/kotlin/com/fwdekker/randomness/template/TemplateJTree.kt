@@ -1,14 +1,36 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
+import com.fwdekker.randomness.decimal.DecimalScheme
+import com.fwdekker.randomness.integer.IntegerScheme
+import com.fwdekker.randomness.literal.LiteralScheme
+import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.uuid.UuidScheme
+import com.fwdekker.randomness.word.WordScheme
+import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.ActionToolbarPosition
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.ui.popup.ListSeparator
+import com.intellij.openapi.ui.popup.PopupStep
+import com.intellij.openapi.ui.popup.util.BaseListPopupStep
+import com.intellij.ui.AnActionButton
 import com.intellij.ui.ColoredTreeCellRenderer
+import com.intellij.ui.CommonActionsPanel
+import com.intellij.ui.LayeredIcon
 import com.intellij.ui.SimpleTextAttributes
+import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.TreeSpeedSearch
 import com.intellij.ui.treeStructure.Tree
+import com.intellij.util.ui.JBUI
+import javax.swing.JPanel
 import javax.swing.JTree
+import javax.swing.event.TreeExpansionEvent
 import javax.swing.event.TreeModelEvent
 import javax.swing.event.TreeModelListener
+import javax.swing.event.TreeWillExpandListener
 import javax.swing.tree.TreeModel
 import javax.swing.tree.TreePath
 import javax.swing.tree.TreeSelectionModel
@@ -16,14 +38,21 @@ import kotlin.math.min
 
 
 /**
- * A tree containing templates and schemes.
+ * A tree containing [Template]s and [Scheme]s.
  *
- * The tree is initially empty. Templates can be loaded into the tree using [reload]. See its documentation for more
- * information.
+ * The tree contains the templates and schemes defined in the [TemplateList] of [currentState] by loading that list into
+ * this tree's [TemplateTreeModel]. Furthermore, when a new [Scheme] is added or copied, it will use the [currentState].
  *
- * @property isModified Returns true if and only if the given scheme has been modified.
+ * This tree reads from [originalState] to determine whether particular [Scheme]s have been modified. Modified [Scheme]s
+ * can be reset, in which case the original state is copied into that scheme in the [currentState].
+ *
+ * @property originalState The original settings before any modifications were made.
+ * @property currentState The current settings which include modifications.
  */
-class TemplateJTree(private val isModified: (Scheme) -> Boolean) : Tree(TemplateTreeModel()) {
+class TemplateJTree(
+    private val originalState: SettingsState,
+    private var currentState: SettingsState
+) : Tree(TemplateTreeModel(currentState.templateList)) {
     /**
      * The tree's model.
      *
@@ -36,8 +65,8 @@ class TemplateJTree(private val isModified: (Scheme) -> Boolean) : Tree(Template
     /**
      * The currently selected node, or `null` if no node is selected, or `null` if the root is selected.
      */
-    val selectedNodeNotRoot: TemplateTreeModel.StateNode?
-        get() = (lastSelectedPathComponent as? TemplateTreeModel.StateNode)
+    val selectedNodeNotRoot: StateNode?
+        get() = (lastSelectedPathComponent as? StateNode)
             ?.let {
                 if (it.state == model.root) null
                 else it
@@ -45,40 +74,78 @@ class TemplateJTree(private val isModified: (Scheme) -> Boolean) : Tree(Template
 
     /**
      * The currently selected scheme, or `null` if no scheme is currently selected.
+     *
+     * Setting `null` will select the first leaf in the tree.
      */
-    val selectedScheme: Scheme?
+    var selectedScheme: Scheme?
         get() = selectedNodeNotRoot?.state as? Scheme
+        set(value) {
+            val node = StateNode(value ?: myModel.getFirstLeaf().state)
+            selectionPath = myModel.getPathToRoot(node)
+        }
+
+    /**
+     * UUIDs of templates that have explicitly been collapsed by the user.
+     */
+    private val explicitlyCollapsed = mutableSetOf<String>()
 
 
     init {
         TreeSpeedSearch(this) { path -> path.path.filterIsInstance<Scheme>().joinToString { it.name } }
 
-        emptyText.text = TemplateListEditor.EMPTY_TEXT
+        emptyText.text = EMPTY_TEXT
         isRootVisible = false
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         setCellRenderer(CellRenderer())
+
+        addTreeWillExpandListener(object : TreeWillExpandListener {
+            override fun treeWillExpand(event: TreeExpansionEvent) {
+                explicitlyCollapsed.remove((event.path.lastPathComponent as StateNode).state.uuid)
+            }
+
+            override fun treeWillCollapse(event: TreeExpansionEvent) {
+                explicitlyCollapsed.add((event.path.lastPathComponent as StateNode).state.uuid)
+            }
+        })
     }
+
+    /**
+     * Returns a panel containing this tree decorated with accessible action buttons.
+     *
+     * @return a panel containing this tree decorated with accessible action buttons
+     */
+    fun asDecoratedPanel(): JPanel =
+        ToolbarDecorator.createDecorator(this)
+            .setToolbarPosition(ActionToolbarPosition.TOP)
+            .setPanelBorder(JBUI.Borders.empty())
+            .setScrollPaneBorder(JBUI.Borders.empty())
+            .disableAddAction()
+            .disableRemoveAction()
+            .addExtraAction(AddSchemeActionButton())
+            .addExtraAction(RemoveActionButton())
+            .addExtraAction(CopyActionButton())
+            .addExtraAction(UpActionButton())
+            .addExtraAction(DownActionButton())
+            .addExtraAction(ResetActionButton())
+            .setButtonComparator("Add", "Edit", "Remove", "Copy", "Up", "Down", "Reset")
+            .createPanel()
 
 
     /**
      * Loads the given list of templates.
      *
-     * The list loaded there will be contained directly in this tree. Addition, removal, and reordering of templates or
-     * schemes from this tree will be synchronised with [list], and vice versa.
-     *
-     * Attempts to retain the current selection.
-     *
-     * @param list the state to load into the tree. Do not pass this argument to simply reload the current list
+     * This is a wrapper around [TemplateTreeModel.reload] that additionally tries to retain the current selection
+     * and expansion state.
      */
-    fun reload(list: TemplateList? = null) {
-        val oldSelectedUuid = selectedNodeNotRoot?.state?.uuid
+    fun reload() {
+        val oldSelectedScheme = selectedScheme
 
-        myModel.reload(list)
-        // TODO: Retain expansion instead of expanding all
-        myModel.list.templates.map { TemplateTreeModel.StateNode(it) }.forEach { expandPath(myModel.getPathToRoot(it)) }
+        myModel.reload()
+        myModel.list.templates
+            .filterNot { it.uuid in explicitlyCollapsed }
+            .forEach { expandPath(myModel.getPathToRoot(StateNode(it))) }
 
-        if (oldSelectedUuid != null) selectScheme(oldSelectedUuid)
-        else selectionPath = myModel.getPathToRoot(myModel.getFirstLeaf())
+        selectedScheme = oldSelectedScheme
     }
 
 
@@ -88,7 +155,7 @@ class TemplateJTree(private val isModified: (Scheme) -> Boolean) : Tree(Template
      * @param newScheme the scheme to add. Must be an instance of [Template] if [selectedNodeNotRoot] is null
      */
     fun addScheme(newScheme: Scheme) {
-        val newNode = TemplateTreeModel.StateNode(newScheme)
+        val newNode = StateNode(newScheme)
         val selectedNode = selectedNodeNotRoot
         if (newScheme is Template) newScheme.name = findUniqueNameFor(newScheme)
 
@@ -113,12 +180,14 @@ class TemplateJTree(private val isModified: (Scheme) -> Boolean) : Tree(Template
     /**
      * Removes the given scheme from the tree, and selects an appropriate other scheme.
      *
+     * Throws an exception if the scheme is not in this tree.
+     *
      * @param scheme the scheme to remove
      */
     fun removeScheme(scheme: Scheme) {
-        val node = TemplateTreeModel.StateNode(scheme)
+        val node = StateNode(scheme)
         val parent = myModel.getParentOf(node)!!
-        val oldIndex = myModel.getIndexOfChild(parent, scheme)
+        val oldIndex = myModel.getIndexOfChild(parent, node)
 
         myModel.removeNode(node)
         if (myModel.isLeaf(parent) && parent == myModel.root)
@@ -136,13 +205,15 @@ class TemplateJTree(private val isModified: (Scheme) -> Boolean) : Tree(Template
      *
      * The scheme will be moved down relative to its siblings. The parent does not change.
      *
+     * Throws an exception if the scheme is not in this tree.
+     *
      * @param scheme the scheme to move down
      * @param positions the number of positions to move the scheme down by within its parent; can be negative
      */
     fun moveSchemeDownBy(scheme: Scheme, positions: Int) {
         if (positions == 0) return
 
-        val node = TemplateTreeModel.StateNode(scheme)
+        val node = StateNode(scheme)
         val parent = myModel.getParentOf(node)!!
         val oldIndex = myModel.getIndexOfChild(parent, node)
 
@@ -156,32 +227,32 @@ class TemplateJTree(private val isModified: (Scheme) -> Boolean) : Tree(Template
      * Returns true if and only if the given scheme can be moved down by the given number of positions using
      * [moveSchemeDownBy].
      *
-     * @param scheme the scheme to check for movability
+     * Throws an exception if the scheme is not in this tree.
+     *
+     * @param scheme the scheme to check whether it can be moved
      * @param positions the number of positions to move the scheme down by within its parent; can be negative
      * @return true if and only if the given scheme can be moved down by the given number of positions using
      * [moveSchemeDownBy]
      */
     fun canMoveSchemeDownBy(scheme: Scheme, positions: Int): Boolean {
-        val node = TemplateTreeModel.StateNode(scheme)
-        val parent = myModel.getParentOf(node)!!
+        val node = StateNode(scheme)
+        val parent = myModel.getParentOf(node)
         val newIndex = myModel.getIndexOfChild(parent, node) + positions
 
         return newIndex in 0 until myModel.getChildCount(parent)
     }
 
+
     /**
-     * Selects the scheme with the given UUID, if it exists; otherwise, nothing happens.
+     * Returns true if and only if the given scheme has been modified with respect to the [originalState].
      *
-     * @param targetUuid the UUID of the scheme to select, or `null` if nothing should be done
-     * @return true if and only if the scheme was found and selected
+     * @param scheme the scheme to check for modification
+     * @return true if and only if the given scheme has been modified with respect to the [originalState]
      */
-    fun selectScheme(targetUuid: String?) {
-        if (targetUuid == null) return
-
-        val scheme = myModel.list.getSchemeByUuid(targetUuid) ?: return
-        selectionPath = myModel.getPathToRoot(TemplateTreeModel.StateNode(scheme))
-    }
-
+    private fun isModified(scheme: Scheme) =
+        originalState.templateList.getSchemeByUuid(scheme.uuid) != scheme ||
+            scheme is StringScheme && originalState.symbolSetSettings != currentState.symbolSetSettings ||
+            scheme is WordScheme && originalState.dictionarySettings != currentState.dictionarySettings
 
     /**
      * Finds a good, unique name for the given template so that it can be inserted into this list without conflict.
@@ -223,7 +294,7 @@ class TemplateJTree(private val isModified: (Scheme) -> Boolean) : Tree(Template
             row: Int,
             hasFocus: Boolean
         ) {
-            val scheme = (value as? TemplateTreeModel.StateNode)?.state as? Scheme
+            val scheme = (value as? StateNode)?.state as? Scheme
             if (scheme == null) {
                 append("<unknown>")
                 return
@@ -241,6 +312,155 @@ class TemplateJTree(private val isModified: (Scheme) -> Boolean) : Tree(Template
             )
         }
     }
+
+
+    /**
+     * Displays a popup to add a scheme, or immediately adds a template if nothing is currently selected.
+     */
+    private inner class AddSchemeActionButton : AnActionButton("Add", AllIcons.General.Add) {
+        override fun actionPerformed(event: AnActionEvent) {
+            if (selectedNodeNotRoot == null) {
+                addScheme(AVAILABLE_ADD_SCHEMES[0])
+                return
+            }
+
+            JBPopupFactory.getInstance()
+                .createListPopup(AddSchemePopupStep())
+                .show(preferredPopupPoint ?: return)
+        }
+
+        override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.ADD)
+
+        override fun updateButton(event: AnActionEvent) {
+            super.updateButton(event)
+
+            event.presentation.icon =
+                if (selectedNodeNotRoot == null) AllIcons.General.Add
+                else LayeredIcon.ADD_WITH_DROPDOWN
+        }
+
+
+        /**
+         * The [Scheme]-related entries in [AddSchemeActionButton].
+         */
+        private inner class AddSchemePopupStep : BaseListPopupStep<Scheme>(
+            null,
+            AVAILABLE_ADD_SCHEMES
+        ) {
+            override fun getIconFor(value: Scheme?) = value?.icon
+
+            override fun getTextFor(value: Scheme?) = value?.name ?: Scheme.DEFAULT_NAME
+
+            override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? {
+                if (value != null) addScheme(value.deepCopy().also { it.setSettingsState(currentState) })
+
+                return null
+            }
+
+            override fun isSpeedSearchEnabled() = true
+
+            override fun getSeparatorAbove(value: Scheme?) =
+                if (value == AVAILABLE_ADD_SCHEMES[1]) ListSeparator()
+                else null
+
+            override fun getDefaultOptionIndex() = 0
+        }
+    }
+
+    /**
+     * Removes the selected scheme.
+     */
+    private inner class RemoveActionButton : AnActionButton("Remove", AllIcons.General.Remove) {
+        override fun actionPerformed(event: AnActionEvent) = removeScheme(selectedScheme!!)
+
+        override fun isEnabled() = selectedNodeNotRoot != null
+
+        override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.REMOVE)
+    }
+
+    /**
+     * Duplicates the selected scheme.
+     */
+    private inner class CopyActionButton : AnActionButton("Copy", AllIcons.Actions.Copy) {
+        override fun actionPerformed(event: AnActionEvent) {
+            val copy = selectedScheme!!.deepCopy()
+            copy.setSettingsState(currentState)
+
+            addScheme(copy)
+        }
+
+        override fun isEnabled() = selectedNodeNotRoot != null
+    }
+
+    /**
+     * Moves a scheme up by one position.
+     */
+    private inner class UpActionButton : AnActionButton("Up", AllIcons.Actions.MoveUp) {
+        override fun actionPerformed(event: AnActionEvent) = moveSchemeDownBy(selectedScheme!!, -1)
+
+        override fun isEnabled() = selectedScheme?.let { canMoveSchemeDownBy(it, -1) } ?: false
+
+        override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.UP)
+    }
+
+    /**
+     * Moves a scheme down by one position.
+     */
+    private inner class DownActionButton : AnActionButton("Down", AllIcons.Actions.MoveDown) {
+        override fun actionPerformed(event: AnActionEvent) = moveSchemeDownBy(selectedScheme!!, 1)
+
+        override fun isEnabled() = selectedScheme?.let { canMoveSchemeDownBy(it, 1) } ?: false
+
+        override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.DOWN)
+    }
+
+    /**
+     * Resets the selected scheme to its original state, or removes it if it has no original state.
+     */
+    private inner class ResetActionButton : AnActionButton("Reset", AllIcons.General.Reset) {
+        override fun actionPerformed(event: AnActionEvent) {
+            val toReset = selectedScheme!!
+            val toResetFrom = originalState.templateList.getSchemeByUuid(toReset.uuid)
+            if (toResetFrom == null) {
+                removeScheme(toReset)
+                return
+            }
+
+            toReset.copyFrom(toResetFrom)
+            toReset.setSettingsState(currentState)
+
+            myModel.fireNodeStructureChanged(StateNode(toReset))
+            selectedScheme = toReset
+        }
+
+        override fun isEnabled() = selectedScheme?.let { isModified(it) } ?: false
+    }
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The text that is displayed when the table is empty.
+         */
+        const val EMPTY_TEXT = "No templates configured."
+
+        /**
+         * Returns the list of schemes that the user can add from the add action.
+         */
+        val AVAILABLE_ADD_SCHEMES: List<Scheme>
+            get() = listOf(
+                Template("Template", emptyList()),
+                IntegerScheme(),
+                DecimalScheme(),
+                StringScheme(),
+                WordScheme(),
+                UuidScheme(),
+                LiteralScheme(),
+                TemplateReference()
+            )
+    }
 }
 
 
@@ -249,8 +469,14 @@ class TemplateJTree(private val isModified: (Scheme) -> Boolean) : Tree(Template
  * to the model appear in the list and vice versa.
  *
  * If the list is modified externally, this model should be notified. The entire model can be refreshed or a different
- * list can be loaded using [reload]. Otherwise, use the fire methods such as [fireNodeChanged] to inform of partial
+ * list can be loaded using [reload]. Otherwise, use the `fire` methods such as [fireNodeChanged] to inform of partial
  * changes.
+ *
+ * The various [State]s that are contained in the [TemplateList] are hierarchically structured as [StateNode]s. As long
+ * as the appropriate events are fired when external modifications are made to the [TemplateList], this model provides a
+ * number of consistency guarantees. Firstly, the root node is always a [TemplateList], second-level nodes are always
+ * [Template]s, and third-level nodes are always [Scheme]s. Secondly, except for the root node, all nodes that are
+ * contained in this model have a parent.
  *
  * @property list The list to be modeled.
  */
@@ -267,7 +493,10 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
     override fun getRoot() = StateNode(list)
 
     /**
-     * Reloads the entire model's structure to synchronize it with the given list.
+     * Reloads the entire model's structure to synchronize it with the changes in the given list.
+     *
+     * Use this method if the entire model should be reloaded from the list because major changes have been made. If
+     * small changes have been made, consider using one of the `fire` methods such as [fireNodeChanged].
      *
      * @param newList the new list, or `null` to use the current root list
      */
@@ -430,9 +659,13 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
 
 
     /**
-     * Informs listeners that the given node has been changed; it has not been replaced nor have its children changed.
+     * Informs listeners that the given node has been changed.
      *
-     * Does nothing if the node is null.
+     * This method is applicable if the given node's internal state has changed and the way it is displayed should be
+     * updated. However, this method is not applicable if the entire node has been replaced with a different instance
+     * or if the children of the node have been changed. In those two latter scenarios, use [fireNodeStructureChanged].
+     *
+     * Does nothing if the node is `null`.
      *
      * @param node the node that has been changed
      */
@@ -470,6 +703,8 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
 
     /**
      * Informs listeners that the given child has been removed from the model.
+     *
+     * If `child` has children nodes itself, then you must **not** invoke this method on those children.
      *
      * Does nothing if the child is null.
      *
@@ -539,72 +774,6 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
 
 
     /**
-     * Wraps around a state and equals another node if the contained states' UUIDs are the same.
-     *
-     * A [JTree] cannot contain two objects that equal each other. However, two [State]s can equal each other even if
-     * their UUIDs are different, because of how equals is generated for data classes. Therefore, this node class
-     * "replaces" the equals of the contained state for the tree, allowing it to contain two nodes that equal each other
-     * as long as their UUIDs are different.
-     *
-     * @property state The state contained in this node.
-     */
-    class StateNode(val state: State) {
-        /**
-         * True if and only if this node can have children.
-         */
-        val canHaveChildren: Boolean
-            get() = state is TemplateList || state is Template
-
-        /**
-         * The child nodes contained in this node.
-         *
-         * The getter and setter throw an exception if this node cannot contain children. An exception is thrown if and
-         * only if [canHaveChildren] is false.
-         */
-        var children: List<StateNode>
-            get() =
-                when (state) {
-                    is TemplateList -> state.templates.map { StateNode(it) }
-                    is Template -> state.schemes.map { StateNode(it) }
-                    else -> error("Unknown parent type '${state.javaClass}'.")
-                }
-            set(value) {
-                when (state) {
-                    is TemplateList -> state.templates = value.map { it.state as Template }
-                    is Template -> state.schemes = value.map { it.state as Scheme }
-                    else -> error("Unknown parent type '${state.javaClass}'.")
-                }
-            }
-
-
-        /**
-         * Returns true if and only if the given node is contained in the tree rooted at this node.
-         *
-         * @param node the node to find
-         * @return true if and only if the given node is contained in the tree rooted at this node
-         */
-        fun contains(node: StateNode): Boolean =
-            this == node || canHaveChildren && children.any { it.contains(node) }
-
-
-        /**
-         * Returns true if and only if [other]'s UUID is the same as [state]'s UUID.
-         *
-         * @param other the object to compare against
-         * @return true if and only if [other]'s UUID is the same as [state]'s UUID
-         */
-        override fun equals(other: Any?) = other is StateNode && this.state.uuid == other.state.uuid
-
-        /**
-         * Returns the hash code of the [state]'s UUID.
-         *
-         * @return the hash code of the [state]'s UUID
-         */
-        override fun hashCode() = state.uuid.hashCode()
-    }
-
-
-    /**
      * Holds constants.
      */
     companion object {
@@ -613,4 +782,70 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
          */
         const val mustBeAStateNode = "`parent` must be a StateNode."
     }
+}
+
+/**
+ * Wraps around a state and equals another node if the contained states' UUIDs are the same.
+ *
+ * A [JTree] cannot contain two objects that equal each other. However, two [State]s can equal each other even if
+ * their UUIDs are different because of how equals is generated for data classes. This makes it impossible to use
+ * [State]s in a [JTree]. Therefore, this node class "replaces" the equals of the contained [State] for the tree,
+ * allowing it to contain two nodes that equal each other as long as their UUIDs are different.
+ *
+ * @property state The state contained in this node.
+ * @see TemplateTreeModel
+ */
+class StateNode(val state: State) {
+    /**
+     * True if and only if this node can have children.
+     */
+    val canHaveChildren: Boolean
+        get() = state is TemplateList || state is Template
+
+    /**
+     * The child nodes contained in this node.
+     *
+     * The getter and setter throw an exception if this node cannot contain children. An exception is thrown if and
+     * only if [canHaveChildren] is false.
+     */
+    var children: List<StateNode>
+        get() =
+            when (state) {
+                is TemplateList -> state.templates.map { StateNode(it) }
+                is Template -> state.schemes.map { StateNode(it) }
+                else -> error("Unknown parent type '${state.javaClass}'.")
+            }
+        set(value) {
+            when (state) {
+                is TemplateList -> state.templates = value.map { it.state as Template }
+                is Template -> state.schemes = value.map { it.state as Scheme }
+                else -> error("Unknown parent type '${state.javaClass}'.")
+            }
+        }
+
+
+    /**
+     * Returns true if and only if the given node is contained in the tree rooted at this node.
+     *
+     * @param node the node to find
+     * @return true if and only if the given node is contained in the tree rooted at this node
+     */
+    fun contains(node: StateNode): Boolean =
+        this == node || canHaveChildren && children.any { it.contains(node) }
+
+
+    /**
+     * Returns true if and only if [other]'s UUID is the same as [state]'s UUID.
+     *
+     * @param other the object to compare against
+     * @return true if and only if [other]'s UUID is the same as [state]'s UUID
+     */
+    override fun equals(other: Any?) = other is StateNode && this.state.uuid == other.state.uuid
+
+    /**
+     * Returns the hash code of the [state]'s UUID.
+     *
+     * @return the hash code of the [state]'s UUID
+     */
+    override fun hashCode() = state.uuid.hashCode()
 }

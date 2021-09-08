@@ -9,15 +9,21 @@ import org.spekframework.spek2.Spek
  * TODO: Docs: Unit or GUI tests?
  */
 object TemplateTreeTest : Spek({
-    TODO()
+    //
 })
 
 
 /**
  * Unit tests for [TemplateTreeModel].
- *
- * TODO: Docs: Unit or GUI tests?
  */
 object TemplateTreeModelTest : Spek({
-    TODO()
+    //
+})
+
+
+/**
+ * Unit tests for [StateNode].
+ */
+object StateNodeTest : Spek({
+    //
 })
