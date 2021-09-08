@@ -99,8 +99,12 @@ class TemplateJTree(
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         setCellRenderer(CellRenderer())
 
-        myModel.rowToNode = { getPathForRow(it).lastPathComponent as StateNode }
+        myModel.rowToNode = { getPathForRow(it)?.lastPathComponent as? StateNode }
         myModel.nodeToRow = { getRowForPath(myModel.getPathToRoot(it)) }
+        myModel.expandAndSelect = {
+            expandPath(myModel.getPathToRoot(it))
+            selectedScheme = it.state as Scheme
+        }
 
         addTreeWillExpandListener(object : TreeWillExpandListener {
             override fun treeWillExpand(event: TreeExpansionEvent) {
@@ -195,6 +199,7 @@ class TemplateJTree(
         val oldIndex = myModel.getIndexOfChild(parent, node)
 
         myModel.removeNode(node)
+
         if (myModel.isLeaf(parent) && parent == myModel.root)
             clearSelection()
         else
@@ -206,43 +211,56 @@ class TemplateJTree(
     }
 
     /**
-     * Moves the given scheme down the given number of positions.
+     * Moves [scheme] up or down by one position.
      *
-     * The scheme will be moved down relative to its siblings. The parent does not change.
+     * If a non-[Template] is moved up or down outside its parent's boundaries, it is moved to a different parent.
      *
-     * Throws an exception if the scheme is not in this tree.
-     *
-     * @param scheme the scheme to move down
-     * @param positions the number of positions to move the scheme down by within its parent; can be negative
+     * @param scheme the scheme to move up or down
+     * @param moveDown `true` if the scheme should be moved down, `false` if the scheme should be moved up
      */
-    fun moveSchemeDownBy(scheme: Scheme, positions: Int) {
-        if (positions == 0) return
-
+    fun moveSchemeByOnePosition(scheme: Scheme, moveDown: Boolean) {
         val node = StateNode(scheme)
-        val currentIndex = myModel.nodeToRow(node)
+        val index = myModel.nodeToRow(node)
 
-        myModel.exchangeRows(currentIndex, currentIndex + positions)
+        myModel.exchangeRows(index, getMoveTargetIndex(scheme, moveDown))
 
         selectionPath = myModel.getPathToRoot(node)
         expandPath(selectionPath)
     }
 
     /**
-     * Returns true if and only if the given scheme can be moved down by the given number of positions using
-     * [moveSchemeDownBy].
+     * Returns true if and only if [moveSchemeByOnePosition] can be invoked with these parameters.
      *
      * Throws an exception if the scheme is not in this tree.
      *
-     * @param scheme the scheme to check whether it can be moved
-     * @param positions the number of positions to move the scheme down by within its parent; can be negative
-     * @return true if and only if the given scheme can be moved down by the given number of positions using
-     * [moveSchemeDownBy]
+     * @param scheme the scheme to move up or down
+     * @param moveDown `true` if the scheme should be moved down, `false` if the scheme should be moved up
+     * @return true if and only if [moveSchemeByOnePosition] can be invoked with these parameters
      */
-    fun canMoveSchemeDownBy(scheme: Scheme, positions: Int): Boolean {
-        val node = StateNode(scheme)
-        val currentIndex = myModel.nodeToRow(node)
+    fun canMoveSchemeByOnePosition(scheme: Scheme, moveDown: Boolean) =
+        myModel.canExchangeRows(myModel.nodeToRow(StateNode(scheme)), getMoveTargetIndex(scheme, moveDown))
 
-        return myModel.canExchangeRows(currentIndex, currentIndex + positions)
+    /**
+     * Returns the index to which [scheme] is moved when [moveSchemeByOnePosition] is invoked, or an out-of-range index
+     * if the scheme cannot be moved.
+     *
+     * @param scheme the scheme to move up or down
+     * @param moveDown `true` if the scheme should be moved down, `false` if the scheme should be moved up
+     * @return the index to which [scheme] is moved when [moveSchemeByOnePosition] is invoked, or an out-of-range index
+     * if the scheme cannot be moved
+     */
+    private fun getMoveTargetIndex(scheme: Scheme, moveDown: Boolean): Int {
+        val node = StateNode(scheme)
+
+        if (scheme !is Template)
+            return myModel.nodeToRow(node) + if (moveDown) 1 else -1
+
+        val parent = myModel.getParentOf(node)!!
+        val indexInParent = myModel.getIndexOfChild(parent, node)
+        val uncleIndexInParent = indexInParent + if (moveDown) 1 else -1
+
+        return if (uncleIndexInParent !in 0 until myModel.getChildCount(parent)) -1
+        else myModel.nodeToRow(myModel.getChild(parent, uncleIndexInParent))
     }
 
 
@@ -399,9 +417,9 @@ class TemplateJTree(
      * Moves a scheme up by one position.
      */
     private inner class UpActionButton : AnActionButton("Up", AllIcons.Actions.MoveUp) {
-        override fun actionPerformed(event: AnActionEvent) = moveSchemeDownBy(selectedScheme!!, -1)
+        override fun actionPerformed(event: AnActionEvent) = moveSchemeByOnePosition(selectedScheme!!, moveDown = false)
 
-        override fun isEnabled() = selectedScheme?.let { canMoveSchemeDownBy(it, -1) } ?: false
+        override fun isEnabled() = selectedScheme?.let { canMoveSchemeByOnePosition(it, moveDown = false) } ?: false
 
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.UP)
     }
@@ -410,9 +428,9 @@ class TemplateJTree(
      * Moves a scheme down by one position.
      */
     private inner class DownActionButton : AnActionButton("Down", AllIcons.Actions.MoveDown) {
-        override fun actionPerformed(event: AnActionEvent) = moveSchemeDownBy(selectedScheme!!, 1)
+        override fun actionPerformed(event: AnActionEvent) = moveSchemeByOnePosition(selectedScheme!!, moveDown = true)
 
-        override fun isEnabled() = selectedScheme?.let { canMoveSchemeDownBy(it, 1) } ?: false
+        override fun isEnabled() = selectedScheme?.let { canMoveSchemeByOnePosition(it, moveDown = true) } ?: false
 
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.DOWN)
     }
@@ -483,7 +501,8 @@ class TemplateJTree(
  *
  * @property list The list to be modeled.
  */
-@Suppress("TooManyFunctions") // Normal for Swing implementations
+@Suppress("LateinitUsage", "TooManyFunctions") // Cannot be avoided because of recursive dependencies.
+// Normal for Swing implementations
 class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : TreeModel, EditableModel {
     /**
      * The listeners that are informed when the state of the tree changes.
@@ -495,16 +514,21 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
      *
      * Used to implement [EditableModel].
      */
-    @Suppress("LateinitUsage") // Cannot be avoided because of recursive dependencies
-    lateinit var rowToNode: (Int) -> StateNode
+    lateinit var rowToNode: (Int) -> StateNode?
 
     /**
      * Returns the row index of the given node, considering which nodes are currently collapsed.
      *
      * Used to implement [EditableModel].
      */
-    @Suppress("LateinitUsage") // Cannot be avoided because of recursive dependencies
     lateinit var nodeToRow: (StateNode) -> Int
+
+    /**
+     * Expands and selects the given node.
+     *
+     * Used to implement [EditableModel].
+     */
+    lateinit var expandAndSelect: (StateNode) -> Unit
 
 
     /**
@@ -548,12 +572,27 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
      * @param newIndex the index of the row to move the node to
      */
     override fun exchangeRows(oldIndex: Int, newIndex: Int) {
-        val node = rowToNode(oldIndex)
-        val parent = getParentOf(node)!!
-        val targetIndexInParent = getIndexOfChild(parent, node) + (newIndex - oldIndex)
+        val nodeToMove = rowToNode(oldIndex)!!
+        val targetNode = rowToNode(newIndex)!!
 
-        removeNode(node)
-        insertNode(parent, node, targetIndexInParent)
+        val targetNodeParent: StateNode
+        val targetIndexInParent: Int
+        if (nodeToMove.state !is Template && targetNode.state is Template) {
+            if (newIndex < oldIndex) {
+                targetNodeParent = getChild(root, getIndexOfChild(root, targetNode) - 1)
+                targetIndexInParent = getChildCount(targetNodeParent)
+            } else {
+                targetNodeParent = targetNode
+                targetIndexInParent = 0
+            }
+        } else {
+            targetNodeParent = getParentOf(targetNode)!!
+            targetIndexInParent = getIndexOfChild(targetNodeParent, targetNode)
+        }
+
+        removeNode(nodeToMove)
+        insertNode(targetNodeParent, nodeToMove, targetIndexInParent)
+        expandAndSelect(nodeToMove)
     }
 
     /**
@@ -566,11 +605,13 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
      * @return true if and only if the row at [oldIndex] can be moved to [newIndex]
      */
     override fun canExchangeRows(oldIndex: Int, newIndex: Int): Boolean {
-        val node = rowToNode(oldIndex)
-        val parent = getParentOf(node)!!
-        val targetIndexInParent = getIndexOfChild(parent, node) + (newIndex - oldIndex)
+        val oldNode = rowToNode(oldIndex)
+        val newNode = rowToNode(newIndex)
 
-        return targetIndexInParent in 0 until getChildCount(parent)
+        return oldNode != null && newNode != null && (
+            oldNode.state is Template && newNode.state is Template ||
+                oldNode.state !is Template && newNode != root.children.first()
+            )
     }
 
 
@@ -647,7 +688,7 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
             when (node.state) {
                 is TemplateList -> null
                 is Template -> root
-                else -> StateNode(list.templates.first { node.state in it.schemes })
+                else -> root.children.first { node in it.children }
             }
 
     /**
