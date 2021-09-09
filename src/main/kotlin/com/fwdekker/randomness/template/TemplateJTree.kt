@@ -100,7 +100,7 @@ class TemplateJTree(
         setCellRenderer(CellRenderer())
 
         myModel.rowToNode = { getPathForRow(it)?.lastPathComponent as? StateNode }
-        myModel.nodeToRow = { getRowForPath(myModel.getPathToRoot(it)) }
+        myModel.nodeToRow = { node -> node?.let { getRowForPath(myModel.getPathToRoot(it)) } ?: -1 }
         myModel.expandAndSelect = {
             expandPath(myModel.getPathToRoot(it))
             selectedScheme = it.state as Scheme
@@ -499,36 +499,48 @@ class TemplateJTree(
  * [Template]s, and third-level nodes are always [Scheme]s. Secondly, except for the root node, all nodes that are
  * contained in this model have a parent.
  *
- * @property list The list to be modeled.
+ * @param list the list to be modeled
  */
-@Suppress("LateinitUsage", "TooManyFunctions") // Cannot be avoided because of recursive dependencies.
-// Normal for Swing implementations
-class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : TreeModel, EditableModel {
+@Suppress("TooManyFunctions") // Normal for Swing implementations
+class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeModel, EditableModel {
     /**
      * The listeners that are informed when the state of the tree changes.
      */
     private val treeModelListeners = mutableListOf<TreeModelListener>()
 
     /**
+     * The list that is modeled by this model.
+     *
+     * Replace or re-synchronize the list by invoking [reload].
+     */
+    var list: TemplateList = list
+        private set
+
+    /**
      * Returns the node at the given row index, considering which nodes are currently collapsed.
      *
      * Used to implement [EditableModel].
      */
-    lateinit var rowToNode: (Int) -> StateNode?
+    var rowToNode: (Int) -> StateNode? = { index ->
+        (listOf(root) + root.children.flatMap { listOf(it) + it.children }).getOrNull(index)
+    }
 
     /**
-     * Returns the row index of the given node, considering which nodes are currently collapsed.
+     * Returns the row index of the given node, considering which nodes are currently collapsed, or -1 if the node could
+     * not be found.
      *
      * Used to implement [EditableModel].
      */
-    lateinit var nodeToRow: (StateNode) -> Int
+    var nodeToRow: (StateNode?) -> Int = { node ->
+        (listOf(root) + root.children.flatMap { listOf(it) + it.children }).indexOf(node)
+    }
 
     /**
      * Expands and selects the given node.
      *
      * Used to implement [EditableModel].
      */
-    lateinit var expandAndSelect: (StateNode) -> Unit
+    var expandAndSelect: (StateNode) -> Unit = {}
 
 
     /**
@@ -608,10 +620,10 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
         val oldNode = rowToNode(oldIndex)
         val newNode = rowToNode(newIndex)
 
-        return oldNode != null && newNode != null && (
-            oldNode.state is Template && newNode.state is Template ||
-                oldNode.state !is Template && newNode != root.children.first()
-            )
+        return oldIndex != 0 && newIndex != 0 &&
+            oldNode != null && newNode != null &&
+            if (oldNode.state is Template) newNode.state is Template
+            else newNode != root.children.first()
     }
 
 
@@ -637,7 +649,8 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
      * @return the child at the given index in the parent
      */
     override fun getChild(parent: Any?, index: Int): StateNode {
-        require(parent is StateNode) { mustBeAStateNode }
+        require(parent is StateNode) { parentMustBeAStateNode }
+        require(parent.canHaveChildren) { "Cannot get child of parent that cannot have children." }
 
         return parent.children[index]
     }
@@ -649,25 +662,25 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
      * @return the number of children in the parent
      */
     override fun getChildCount(parent: Any?): Int {
-        require(parent is StateNode) { mustBeAStateNode }
+        require(parent is StateNode) { parentMustBeAStateNode }
 
         return if (!parent.canHaveChildren) 0
         else parent.children.size
     }
 
     /**
-     * Returns the index of the child in the parent, or -1 if either the parent or the child is null.
-     *
-     * Throws an exception if the child is not contained in the parent.
+     * Returns the index of the child in the parent, or -1 if either the parent or the child is null, or -1 if the child
+     * is not in the parent.
      *
      * @param parent the parent to find the index in
      * @param child the child to return the index of
-     * @return the index of the child in the parent, or -1 if either the parent or the child is null
+     * @return the index of the child in the parent, or -1 if either the parent or the child is null, or -1 if the child
+     * is not in the parent
      */
     override fun getIndexOfChild(parent: Any?, child: Any?): Int {
         if (parent == null || child == null) return -1
 
-        require(parent is StateNode) { mustBeAStateNode }
+        require(parent is StateNode) { parentMustBeAStateNode }
         require(child is StateNode) { "`child` must be a StateNode." }
 
         return parent.children.indexOf(child)
@@ -681,15 +694,15 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
      * @param node the node to return the parent of
      * @return the parent of the given node, or `null` if the node has no parent
      */
-    fun getParentOf(node: StateNode): StateNode? =
-        if (!root.contains(node))
-            error("Cannot get parent of node not in this model.")
-        else
-            when (node.state) {
-                is TemplateList -> null
-                is Template -> root
-                else -> root.children.first { node in it.children }
-            }
+    fun getParentOf(node: StateNode): StateNode? {
+        require(root.contains(node)) { "Cannot get parent of node not in this model." }
+
+        return when (node.state) {
+            is TemplateList -> null
+            is Template -> root
+            else -> root.children.first { node in it.children }
+        }
+    }
 
     /**
      * Returns the path from the [root] to the given node.
@@ -699,16 +712,15 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
      * @param node the node to return the path to
      * @return the path from the [root] to the given node
      */
-    fun getPathToRoot(node: StateNode): TreePath =
-        if (!root.contains(node))
-            error("Cannot get path to node not in this model.")
-        else
-            when (node.state) {
-                is TemplateList -> TreePath(arrayOf(node))
-                is Template -> TreePath(arrayOf(root, node))
-                is Scheme -> TreePath(arrayOf(root, getParentOf(node)!!, node))
-                else -> error("Unknown parent type '${node.javaClass}'.")
-            }
+    fun getPathToRoot(node: StateNode): TreePath {
+        require(root.contains(node)) { "Cannot get path of node not in this model." }
+
+        return when (node.state) {
+            is TemplateList -> TreePath(arrayOf(node))
+            is Template -> TreePath(arrayOf(root, node))
+            else -> TreePath(arrayOf(root, getParentOf(node)!!, node))
+        }
+    }
 
     /**
      * Returns the first node that is a leaf.
@@ -744,8 +756,12 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
      * @param child the state to insert into the parent
      * @param after the state to insert the child after
      */
-    fun insertNodeAfter(parent: StateNode, child: StateNode, after: StateNode) =
-        insertNode(parent, child, getIndexOfChild(parent, after) + 1)
+    fun insertNodeAfter(parent: StateNode, child: StateNode, after: StateNode) {
+        val afterIndex = getIndexOfChild(parent, after)
+        require(afterIndex >= 0) { "Cannot find node to insert after in parent." }
+
+        insertNode(parent, child, afterIndex + 1)
+    }
 
     /**
      * Removes the given node from the model.
@@ -755,7 +771,7 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
      * @param node the node to remove from the model
      */
     fun removeNode(node: StateNode) {
-        require(root.contains(node)) { "Cannot remove state not contained in this model." }
+        require(root.contains(node)) { "Cannot remove node not contained in this model." }
         require(node != root) { "Cannot remove root from model." }
 
         val parent = getParentOf(node)!!
@@ -849,16 +865,15 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
      * @param path ignored
      * @param newValue ignored
      */
-    override fun valueForPathChanged(path: TreePath, newValue: Any) = error("")
+    override fun valueForPathChanged(path: TreePath, newValue: Any) = error("Cannot change value by path.")
 
     /**
      * Adds the given listener.
      *
      * @param listener the listener to add
      */
-    override fun addTreeModelListener(listener: TreeModelListener?) {
-        if (listener != null)
-            treeModelListeners.add(listener)
+    override fun addTreeModelListener(listener: TreeModelListener) {
+        treeModelListeners.add(listener)
     }
 
     /**
@@ -866,9 +881,8 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
      *
      * @param listener the listener to remove
      */
-    override fun removeTreeModelListener(listener: TreeModelListener?) {
-        if (listener != null)
-            treeModelListeners.remove(listener)
+    override fun removeTreeModelListener(listener: TreeModelListener) {
+        treeModelListeners.remove(listener)
     }
 
 
@@ -879,7 +893,7 @@ class TemplateTreeModel(var list: TemplateList = TemplateList(emptyList())) : Tr
         /**
          * Error message for type-checking errors when parameter `parent`.
          */
-        const val mustBeAStateNode = "`parent` must be a StateNode."
+        const val parentMustBeAStateNode = "`parent` must be a StateNode."
     }
 }
 
@@ -912,13 +926,13 @@ class StateNode(val state: State) {
             when (state) {
                 is TemplateList -> state.templates.map { StateNode(it) }
                 is Template -> state.schemes.map { StateNode(it) }
-                else -> error("Unknown parent type '${state.javaClass}'.")
+                else -> error("Unknown parent type '${state.javaClass.simpleName}'.")
             }
         set(value) {
             when (state) {
                 is TemplateList -> state.templates = value.map { it.state as Template }
                 is Template -> state.schemes = value.map { it.state as Scheme }
-                else -> error("Unknown parent type '${state.javaClass}'.")
+                else -> error("Unknown parent type '${state.javaClass.simpleName}'.")
             }
         }
 

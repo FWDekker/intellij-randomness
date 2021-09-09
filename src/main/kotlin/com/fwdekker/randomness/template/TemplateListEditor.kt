@@ -147,7 +147,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
 
     override fun addChangeListener(listener: () -> Unit) {
-        templateTree.model.addTreeModelListener(SimpleTreeModelListener(listener))
+        templateTree.model.addTreeModelListener(SimpleTreeModelListener { listener() })
         templateTree.addTreeSelectionListener { listener() }
     }
 

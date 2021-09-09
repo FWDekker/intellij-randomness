@@ -76,32 +76,32 @@ fun JTextField.addChangeListener(changeListener: (JTextField) -> Unit) {
  *
  * @property listener The listener to invoke on any event.
  */
-class SimpleTreeModelListener(private val listener: () -> Unit) : TreeModelListener {
+class SimpleTreeModelListener(private val listener: (TreeModelEvent) -> Unit) : TreeModelListener {
     /**
      * Invoked after a node has changed.
      *
      * @param event ignored
      */
-    override fun treeNodesChanged(event: TreeModelEvent) = listener()
+    override fun treeNodesChanged(event: TreeModelEvent) = listener(event)
 
     /**
      * Invoked after a node has been inserted.
      *
      * @param event ignored
      */
-    override fun treeNodesInserted(event: TreeModelEvent) = listener()
+    override fun treeNodesInserted(event: TreeModelEvent) = listener(event)
 
     /**
      * Invoked after a node has been removed.
      *
      * @param event ignored
      */
-    override fun treeNodesRemoved(event: TreeModelEvent) = listener()
+    override fun treeNodesRemoved(event: TreeModelEvent) = listener(event)
 
     /**
      * Invoked after the structure of the tree has changed.
      *
      * @param event ignored
      */
-    override fun treeStructureChanged(event: TreeModelEvent) = listener()
+    override fun treeStructureChanged(event: TreeModelEvent) = listener(event)
 }
