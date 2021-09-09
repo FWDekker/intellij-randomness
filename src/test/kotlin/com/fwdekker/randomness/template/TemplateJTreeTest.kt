@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
+import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.ui.SimpleTreeModelListener
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -11,12 +12,10 @@ import javax.swing.event.TreeModelListener
 
 
 /**
- * Unit tests for [TemplateJTree].
- *
- * TODO: Docs: Unit or GUI tests?
+ * GUI tests for [TemplateJTree].
  */
 object TemplateJTreeTest : Spek({
-    //
+    // TODO
 })
 
 
@@ -40,7 +39,7 @@ object TemplateTreeModelTest : Spek({
     }
 
 
-    describe("rowToNode") {
+    describe("rowToNode (default implementation)") {
         it("returns null for a negative index") {
             assertThat(model.rowToNode(-2)).isNull()
         }
@@ -49,28 +48,24 @@ object TemplateTreeModelTest : Spek({
             assertThat(model.rowToNode(241)).isNull()
         }
 
-        it("returns the root given index 0") {
-            assertThat(model.rowToNode(0)).isEqualTo(model.root)
+        it("returns the first template given index 0") {
+            assertThat(model.rowToNode(0)).isEqualTo(model.root.children[0])
         }
 
-        it("returns the first template given index 1") {
-            assertThat(model.rowToNode(1)).isEqualTo(model.root.children[0])
-        }
-
-        it("returns the first leaf given index 2") {
-            assertThat(model.rowToNode(2)).isEqualTo(model.root.children[0].children[0])
+        it("returns the first leaf given index 1") {
+            assertThat(model.rowToNode(1)).isEqualTo(model.root.children[0].children[0])
         }
 
         it("returns the second template given an index considering the number of previous templates") {
-            assertThat(model.rowToNode(6)).isEqualTo(model.root.children[2])
+            assertThat(model.rowToNode(5)).isEqualTo(model.root.children[2])
         }
 
         it("returns a scheme of the second template given an index considering the number of previous schemes") {
-            assertThat(model.rowToNode(5)).isEqualTo(model.root.children[1].children[0])
+            assertThat(model.rowToNode(4)).isEqualTo(model.root.children[1].children[0])
         }
     }
 
-    describe("nodeToRow") {
+    describe("nodeToRow (default implementation)") {
         it("returns -1 for null") {
             assertThat(model.nodeToRow(null)).isEqualTo(-1)
         }
@@ -79,24 +74,20 @@ object TemplateTreeModelTest : Spek({
             assertThat(model.nodeToRow(StateNode(DummyScheme()))).isEqualTo(-1)
         }
 
-        it("returns 0 for the root") {
-            assertThat(model.nodeToRow(model.root)).isEqualTo(0)
+        it("returns 0 for the first template") {
+            assertThat(model.nodeToRow(model.root.children[0])).isEqualTo(0)
         }
 
-        it("returns 1 for the first template") {
-            assertThat(model.nodeToRow(model.root.children[0])).isEqualTo(1)
-        }
-
-        it("returns 2 for the first scheme") {
-            assertThat(model.nodeToRow(model.root.children[0].children[0])).isEqualTo(2)
+        it("returns 1 for the first scheme") {
+            assertThat(model.nodeToRow(model.root.children[0].children[0])).isEqualTo(1)
         }
 
         it("returns the index considering the number of previous templates given the second template") {
-            assertThat(model.nodeToRow(model.root.children[2])).isEqualTo(6)
+            assertThat(model.nodeToRow(model.root.children[2])).isEqualTo(5)
         }
 
         it("returns an index considering the number of previous schemes given a scheme of the second template") {
-            assertThat(model.nodeToRow(model.root.children[1].children[0])).isEqualTo(5)
+            assertThat(model.nodeToRow(model.root.children[1].children[0])).isEqualTo(4)
         }
     }
 
@@ -149,19 +140,19 @@ object TemplateTreeModelTest : Spek({
     describe("exchangeRows") {
         describe("templates") {
             it("moves a template to the previous template") {
-                model.exchangeRows(6, 4)
+                model.exchangeRows(5, 3)
 
                 assertThat(model.list.templates.map { it.name }).containsExactly("Strong", "Steady", "Roll")
             }
 
             it("moves a template to the next template") {
-                model.exchangeRows(1, 4)
+                model.exchangeRows(0, 3)
 
                 assertThat(model.list.templates.map { it.name }).containsExactly("Roll", "Strong", "Steady")
             }
 
             it("moves a template to the next-template-but-one") {
-                model.exchangeRows(1, 6)
+                model.exchangeRows(0, 5)
 
                 assertThat(model.list.templates.map { it.name }).containsExactly("Roll", "Steady", "Strong")
             }
@@ -169,33 +160,33 @@ object TemplateTreeModelTest : Spek({
 
         describe("schemes") {
             it("moves a scheme to the previous scheme under the same parent") {
-                model.exchangeRows(2, 3)
+                model.exchangeRows(1, 2)
 
                 assertThat(model.list.templates[0].schemes.map { it.name }).containsExactly("people", "bell")
             }
 
             it("moves a scheme to the next scheme under the same parent") {
-                model.exchangeRows(3, 2)
+                model.exchangeRows(2, 1)
 
                 assertThat(model.list.templates[0].schemes.map { it.name }).containsExactly("people", "bell")
             }
 
             it("moves a scheme to its parent, making it the last child of the parent's previous sibling") {
-                model.exchangeRows(5, 4)
+                model.exchangeRows(4, 3)
 
                 assertThat(model.list.templates[0].schemes.map { it.name }).containsExactly("bell", "people", "hot")
                 assertThat(model.list.templates[1].schemes).isEmpty()
             }
 
             it("moves a scheme to its parent's next sibling, making it that sibling's first child") {
-                model.exchangeRows(5, 6)
+                model.exchangeRows(4, 5)
 
                 assertThat(model.list.templates[1].schemes).isEmpty()
                 assertThat(model.list.templates[2].schemes.map { it.name }).containsExactly("hot")
             }
 
             it("moves a scheme to a scheme in another template") {
-                model.exchangeRows(2, 5)
+                model.exchangeRows(1, 4)
 
                 assertThat(model.list.templates[0].schemes.map { it.name }).containsExactly("people")
                 assertThat(model.list.templates[1].schemes.map { it.name }).containsExactly("bell", "hot")
@@ -212,32 +203,24 @@ object TemplateTreeModelTest : Spek({
             assertThat(model.canExchangeRows(1, -4)).isFalse()
         }
 
-        it("returns false if the old node is the root node") {
-            assertThat(model.canExchangeRows(0, 5)).isFalse()
+        it("returns false if the old node is a template but the new node is a non-template scheme") {
+            assertThat(model.canExchangeRows(0, 2)).isFalse()
         }
 
-        it("returns false if the new node is the root node") {
-            assertThat(model.canExchangeRows(3, 0)).isFalse()
-        }
-
-        it("returns false if the old node is a template but the new node is not") {
-            assertThat(model.canExchangeRows(1, 3)).isFalse()
-        }
-
-        it("returns false if the old node is not a template and the new node is the first template") {
-            assertThat(model.canExchangeRows(2, 1)).isFalse()
+        it("returns false if the old node is a non-template scheme and the new node is the first template") {
+            assertThat(model.canExchangeRows(1, 0)).isFalse()
         }
 
         it("returns true if the nodes at both indices are templates") {
-            assertThat(model.canExchangeRows(1, 6)).isTrue()
+            assertThat(model.canExchangeRows(0, 5)).isTrue()
         }
 
         it("returns true if the nodes at both indices are schemes") {
-            assertThat(model.canExchangeRows(2, 5)).isTrue()
+            assertThat(model.canExchangeRows(1, 4)).isTrue()
         }
 
-        it("returns true if the old node is a scheme and the new node is the non-first template") {
-            assertThat(model.canExchangeRows(5, 4)).isTrue()
+        it("returns true if the old node is a scheme and the new node is a non-first template") {
+            assertThat(model.canExchangeRows(4, 3)).isTrue()
         }
     }
 
@@ -788,6 +771,29 @@ object StateNodeTest : Spek({
                     .isInstanceOf(IllegalStateException::class.java)
                     .hasMessage("Unknown parent type 'DummyScheme'.")
             }
+        }
+    }
+
+    describe("recursiveChildren") {
+        it("returns the templates and schemes of a template list in depth-first order") {
+            val templates = listOf(
+                Template("Hammer", listOf(DummyScheme.from("absence"), DummyScheme.from("like"))),
+                Template("Shadow", listOf(DummyScheme.from("village")))
+            )
+
+            assertThat(StateNode(TemplateList(templates)).recursiveChildren.map { (it.state as Scheme).name })
+                .containsExactly("Hammer", "absence", "like", "Shadow", "village")
+        }
+
+        it("returns the schemes of a template") {
+            val schemes = listOf(DummyScheme.from("ache"), DummyScheme.from("future"))
+
+            assertThat(StateNode(Template(schemes = schemes)).recursiveChildren.map { it.state })
+                .containsExactlyElementsOf(schemes)
+        }
+
+        it("returns an empty list if the node cannot have children") {
+            assertThat(StateNode(DummyScheme()).recursiveChildren).isEmpty()
         }
     }
 

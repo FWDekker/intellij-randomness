@@ -129,12 +129,12 @@ class TemplateJTree(
             .setScrollPaneBorder(JBUI.Borders.empty())
             .disableAddAction()
             .disableRemoveAction()
-            .addExtraAction(AddSchemeActionButton())
-            .addExtraAction(RemoveActionButton())
-            .addExtraAction(CopyActionButton())
-            .addExtraAction(UpActionButton())
-            .addExtraAction(DownActionButton())
-            .addExtraAction(ResetActionButton())
+            .addExtraAction(AddButton())
+            .addExtraAction(RemoveButton())
+            .addExtraAction(CopyButton())
+            .addExtraAction(UpButton())
+            .addExtraAction(DownButton())
+            .addExtraAction(ResetButton())
             .setButtonComparator("Add", "Edit", "Remove", "Copy", "Up", "Down", "Reset")
             .setForcedDnD()
             .createPanel()
@@ -338,7 +338,7 @@ class TemplateJTree(
     /**
      * Displays a popup to add a scheme, or immediately adds a template if nothing is currently selected.
      */
-    private inner class AddSchemeActionButton : AnActionButton("Add", AllIcons.General.Add) {
+    private inner class AddButton : AnActionButton("Add", AllIcons.General.Add) {
         override fun actionPerformed(event: AnActionEvent) {
             if (selectedNodeNotRoot == null) {
                 addScheme(AVAILABLE_ADD_SCHEMES[0])
@@ -362,7 +362,7 @@ class TemplateJTree(
 
 
         /**
-         * The [Scheme]-related entries in [AddSchemeActionButton].
+         * The [Scheme]-related entries in [AddButton].
          */
         private inner class AddSchemePopupStep : BaseListPopupStep<Scheme>(
             null,
@@ -391,7 +391,7 @@ class TemplateJTree(
     /**
      * Removes the selected scheme.
      */
-    private inner class RemoveActionButton : AnActionButton("Remove", AllIcons.General.Remove) {
+    private inner class RemoveButton : AnActionButton("Remove", AllIcons.General.Remove) {
         override fun actionPerformed(event: AnActionEvent) = removeScheme(selectedScheme!!)
 
         override fun isEnabled() = selectedNodeNotRoot != null
@@ -402,7 +402,7 @@ class TemplateJTree(
     /**
      * Duplicates the selected scheme.
      */
-    private inner class CopyActionButton : AnActionButton("Copy", AllIcons.Actions.Copy) {
+    private inner class CopyButton : AnActionButton("Copy", AllIcons.Actions.Copy) {
         override fun actionPerformed(event: AnActionEvent) {
             val copy = selectedScheme!!.deepCopy()
             copy.setSettingsState(currentState)
@@ -416,7 +416,7 @@ class TemplateJTree(
     /**
      * Moves a scheme up by one position.
      */
-    private inner class UpActionButton : AnActionButton("Up", AllIcons.Actions.MoveUp) {
+    private inner class UpButton : AnActionButton("Up", AllIcons.Actions.MoveUp) {
         override fun actionPerformed(event: AnActionEvent) = moveSchemeByOnePosition(selectedScheme!!, moveDown = false)
 
         override fun isEnabled() = selectedScheme?.let { canMoveSchemeByOnePosition(it, moveDown = false) } ?: false
@@ -427,7 +427,7 @@ class TemplateJTree(
     /**
      * Moves a scheme down by one position.
      */
-    private inner class DownActionButton : AnActionButton("Down", AllIcons.Actions.MoveDown) {
+    private inner class DownButton : AnActionButton("Down", AllIcons.Actions.MoveDown) {
         override fun actionPerformed(event: AnActionEvent) = moveSchemeByOnePosition(selectedScheme!!, moveDown = true)
 
         override fun isEnabled() = selectedScheme?.let { canMoveSchemeByOnePosition(it, moveDown = true) } ?: false
@@ -438,7 +438,7 @@ class TemplateJTree(
     /**
      * Resets the selected scheme to its original state, or removes it if it has no original state.
      */
-    private inner class ResetActionButton : AnActionButton("Reset", AllIcons.General.Reset) {
+    private inner class ResetButton : AnActionButton("Reset", AllIcons.General.Reset) {
         override fun actionPerformed(event: AnActionEvent) {
             val toReset = selectedScheme!!
             val toResetFrom = originalState.templateList.getSchemeByUuid(toReset.uuid)
@@ -517,23 +517,19 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
         private set
 
     /**
-     * Returns the node at the given row index, considering which nodes are currently collapsed.
+     * Returns the node at the given row index, considering which nodes are currently collapsed, ignoring the root.
      *
      * Used to implement [EditableModel].
      */
-    var rowToNode: (Int) -> StateNode? = { index ->
-        (listOf(root) + root.children.flatMap { listOf(it) + it.children }).getOrNull(index)
-    }
+    var rowToNode: (Int) -> StateNode? = { root.recursiveChildren.getOrNull(it) }
 
     /**
-     * Returns the row index of the given node, considering which nodes are currently collapsed, or -1 if the node could
-     * not be found.
+     * Returns the row index of the given node, considering which nodes are currently collapsed, ignoring the root, or
+     * -1 if the node could not be found.
      *
      * Used to implement [EditableModel].
      */
-    var nodeToRow: (StateNode?) -> Int = { node ->
-        (listOf(root) + root.children.flatMap { listOf(it) + it.children }).indexOf(node)
-    }
+    var nodeToRow: (StateNode?) -> Int = { root.recursiveChildren.indexOf(it) }
 
     /**
      * Expands and selects the given node.
@@ -580,6 +576,12 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      *
      * Indices are looked up using [rowToNode], and are typically relative to the current expansion state of the view.
      *
+     * If [oldIndex] and [newIndex] both refer to a template or both refer to a scheme, then the node at [oldIndex] will
+     * be inserted so that it has the same index in its parent as the node at [newIndex] had before invoking this
+     * method. Otherwise, if [oldIndex] is a non-template scheme and [newIndex] is a template, then the non-template
+     * scheme is moved to the template at [newIndex]; if [oldIndex] is less than [newIndex] then the non-template scheme
+     * becomes the template's first child, otherwise it becomes the template's last child.
+     *
      * @param oldIndex the index of the row of the node to move
      * @param newIndex the index of the row to move the node to
      */
@@ -620,10 +622,9 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
         val oldNode = rowToNode(oldIndex)
         val newNode = rowToNode(newIndex)
 
-        return oldIndex != 0 && newIndex != 0 &&
-            oldNode != null && newNode != null &&
+        return oldNode != null && newNode != null &&
             if (oldNode.state is Template) newNode.state is Template
-            else newNode != root.children.first()
+            else newIndex != 0
     }
 
 
@@ -935,6 +936,16 @@ class StateNode(val state: State) {
                 else -> error("Unknown parent type '${state.javaClass.simpleName}'.")
             }
         }
+
+    /**
+     * The recursive children of this node in depth-first order, excluding itself.
+     *
+     * Returns an empty list if [canHaveChildren] is false.
+     */
+    val recursiveChildren: List<StateNode>
+        get() =
+            if (!canHaveChildren) emptyList()
+            else children.flatMap { listOf(it) + it.recursiveChildren }
 
 
     /**
