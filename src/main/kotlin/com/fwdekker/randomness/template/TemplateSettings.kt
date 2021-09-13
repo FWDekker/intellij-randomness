@@ -74,8 +74,5 @@ class TemplateSettingsConfigurable : SettingsConfigurable() {
      */
     override fun getDisplayName() = "Randomness"
 
-    override fun createEditor() = TemplateListEditor().also {
-        it.queueFocus = true
-        it.queueSelection = templateToSelect
-    }
+    override fun createEditor() = TemplateListEditor().also { it.queueSelection = templateToSelect }
 }

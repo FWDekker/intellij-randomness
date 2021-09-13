@@ -92,6 +92,6 @@ data class Template(
          * The default value of the [schemes] field.
          */
         val DEFAULT_SCHEMES: List<Scheme>
-            get() = listOf(IntegerScheme())
+            get() = emptyList()
     }
 }
