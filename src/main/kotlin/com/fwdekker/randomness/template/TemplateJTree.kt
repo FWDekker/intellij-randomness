@@ -81,14 +81,19 @@ class TemplateJTree(
     var selectedScheme: Scheme?
         get() = selectedNodeNotRoot?.state as? Scheme
         set(value) {
-            val node = StateNode(value ?: myModel.getFirstLeaf().state)
-            selectionPath = myModel.getPathToRoot(node)
+            val node = value?.let { StateNode(it) }
+
+            selectionPath =
+                if (node == null || !myModel.root.contains(node))
+                    myModel.getPathToRoot(myModel.getFirstLeaf())
+                else
+                    myModel.getPathToRoot(node)
         }
 
     /**
      * UUIDs of templates that have explicitly been collapsed by the user.
      */
-    val explicitlyCollapsed = mutableSetOf<String>()
+    private val explicitlyCollapsed = mutableSetOf<String>()
 
     /**
      * All currently visible nodes in depth-first order.
@@ -456,10 +461,6 @@ class TemplateJTree(
 
             toReset.copyFrom(toResetFrom)
             toReset.setSettingsState(currentState)
-            if (toReset is StringScheme) {
-                currentState.symbolSetSettings.copyFrom(originalState.symbolSetSettings)
-            } else if (toReset is WordScheme)
-                currentState.dictionarySettings.copyFrom(originalState.dictionarySettings)
 
             myModel.fireNodeChanged(StateNode(toReset))
             myModel.fireNodeStructureChanged(StateNode(toReset))

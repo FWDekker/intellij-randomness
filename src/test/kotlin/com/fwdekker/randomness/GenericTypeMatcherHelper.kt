@@ -17,7 +17,6 @@ fun <T : Component> matcher(klass: Class<T>, matcher: (T) -> Boolean) =
         override fun isMatching(component: T) = matcher(component)
     }
 
-
 /**
  * Returns a [GenericTypeMatcher] for returning the first component with the given name.
  *

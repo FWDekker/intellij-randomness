@@ -58,7 +58,7 @@ object TemplateNameEditorTest : Spek({
             frame.textBox("templateName").requireText("Tin")
         }
 
-        it("shows the ") {
+        it("loads the array's minimum count") {
             frame.spinner("arrayMinCount").requireVisible()
         }
     }

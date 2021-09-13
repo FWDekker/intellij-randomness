@@ -28,7 +28,7 @@ import javax.swing.event.TreeModelListener
 
 
 /**
- * Unit tests for [TemplateJTree].
+ * Unit and GUI tests for [TemplateJTree].
  */
 object TemplateJTreeTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
@@ -125,9 +125,10 @@ object TemplateJTreeTest : Spek({
                 assertThat(tree.selectedScheme).isEqualTo(list().templates[0].schemes[0])
             }
 
-            it("throws an error if the scheme is not in this tree") {
-                assertThatThrownBy { tree.selectedScheme = DummyScheme() }
-                    .isInstanceOf(IllegalArgumentException::class.java)
+            it("selects the first leaf if the scheme cannot be found") {
+                GuiActionRunner.execute { tree.selectedScheme = DummyScheme.from("inside") }
+
+                assertThat(tree.selectedScheme).isEqualTo(list().templates[0].schemes[0])
             }
 
             it("selects the given scheme if it exists") {
@@ -166,6 +167,17 @@ object TemplateJTreeTest : Spek({
             GuiActionRunner.execute { tree.reload() }
 
             assertThat(tree.selectedScheme).isEqualTo(list().templates[1].schemes[0])
+        }
+
+        it("selects the first leaf if the selected node was removed") {
+            GuiActionRunner.execute { tree.selectedScheme = list().templates[1].schemes[0] }
+
+            GuiActionRunner.execute {
+                list().templates[1].schemes = emptyList()
+                tree.reload()
+            }
+
+            assertThat(tree.selectedScheme).isEqualTo(list().templates[0].schemes[0])
         }
 
         it("selects the first leaf if no node was selected before") {
