@@ -69,7 +69,7 @@ class TemplateJTree(
     val selectedNodeNotRoot: StateNode?
         get() = (lastSelectedPathComponent as? StateNode)
             ?.let {
-                if (it.state == model.root) null
+                if (it == model.root) null
                 else it
             }
 
@@ -88,7 +88,19 @@ class TemplateJTree(
     /**
      * UUIDs of templates that have explicitly been collapsed by the user.
      */
-    private val explicitlyCollapsed = mutableSetOf<String>()
+    val explicitlyCollapsed = mutableSetOf<String>()
+
+    /**
+     * All currently visible nodes in depth-first order.
+     */
+    private val visibleNodes: List<StateNode>
+        get() {
+            val hidden = explicitlyCollapsed
+                .mapNotNull { myModel.list.getTemplateByUuid(it) }
+                .flatMap { it.schemes }
+                .map { StateNode(it) }
+            return myModel.root.recursiveChildren.minus(hidden)
+        }
 
 
     init {
@@ -99,8 +111,9 @@ class TemplateJTree(
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         setCellRenderer(CellRenderer())
 
-        myModel.rowToNode = { getPathForRow(it)?.lastPathComponent as? StateNode }
-        myModel.nodeToRow = { node -> node?.let { getRowForPath(myModel.getPathToRoot(it)) } ?: -1 }
+        myModel.list.templates.forEach { expandPath(myModel.getPathToRoot(StateNode(it))) }
+        myModel.rowToNode = { visibleNodes.getOrNull(it) }
+        myModel.nodeToRow = { visibleNodes.indexOf(it) }
         myModel.expandAndSelect = {
             expandPath(myModel.getPathToRoot(it))
             selectedScheme = it.state as Scheme
@@ -169,10 +182,8 @@ class TemplateJTree(
         if (newScheme is Template) newScheme.name = findUniqueNameFor(newScheme)
 
         if (selectedNode == null) {
-            if (newScheme is Template)
-                myModel.insertNode(myModel.root, newNode)
-            else
-                error("Cannot add non-template to root.")
+            require(newScheme is Template) { "Cannot add non-template to root." }
+            myModel.insertNode(myModel.root, newNode)
         } else if (selectedNode.state is Template) {
             if (newScheme is Template)
                 myModel.insertNodeAfter(myModel.root, newNode, selectedNode)
@@ -180,10 +191,12 @@ class TemplateJTree(
                 myModel.insertNode(selectedNode, newNode)
         } else {
             if (newScheme is Template)
-                myModel.insertNodeAfter(myModel.root, newNode, selectedNode)
+                myModel.insertNodeAfter(myModel.root, newNode, myModel.getParentOf(selectedNode)!!)
             else
                 myModel.insertNodeAfter(myModel.getParentOf(selectedNode)!!, newNode, selectedNode)
         }
+
+        selectedScheme = newScheme
     }
 
     /**
@@ -200,14 +213,11 @@ class TemplateJTree(
 
         myModel.removeNode(node)
 
-        if (myModel.isLeaf(parent) && parent == myModel.root)
-            clearSelection()
-        else
-            selectionPath =
-                myModel.getPathToRoot(
-                    if (myModel.isLeaf(parent)) parent
-                    else myModel.getChild(parent, min(oldIndex, myModel.getChildCount(parent) - 1))
-                )
+        selectionPath =
+            myModel.getPathToRoot(
+                if (myModel.isLeaf(parent)) parent
+                else myModel.getChild(parent, min(oldIndex, myModel.getChildCount(parent) - 1))
+            )
     }
 
     /**
@@ -223,9 +233,7 @@ class TemplateJTree(
         val index = myModel.nodeToRow(node)
 
         myModel.exchangeRows(index, getMoveTargetIndex(scheme, moveDown))
-
-        selectionPath = myModel.getPathToRoot(node)
-        expandPath(selectionPath)
+        // `exchangeRows` expands and selects the moved node
     }
 
     /**
@@ -308,19 +316,18 @@ class TemplateJTree(
     private inner class CellRenderer : ColoredTreeCellRenderer() {
         override fun customizeCellRenderer(
             tree: JTree,
-            value: Any?,
+            value: Any,
             selected: Boolean,
             expanded: Boolean,
             leaf: Boolean,
             row: Int,
             hasFocus: Boolean
         ) {
-            val scheme = (value as? StateNode)?.state as? Scheme
+            val scheme = (value as StateNode).state as? Scheme
             if (scheme == null) {
                 append("<unknown>")
                 return
             }
-
             icon = scheme.icon
 
             append(
@@ -449,8 +456,15 @@ class TemplateJTree(
 
             toReset.copyFrom(toResetFrom)
             toReset.setSettingsState(currentState)
+            if (toReset is StringScheme) {
+                currentState.symbolSetSettings.copyFrom(originalState.symbolSetSettings)
+            } else if (toReset is WordScheme)
+                currentState.dictionarySettings.copyFrom(originalState.dictionarySettings)
 
+            myModel.fireNodeChanged(StateNode(toReset))
             myModel.fireNodeStructureChanged(StateNode(toReset))
+
+            clearSelection()
             selectedScheme = toReset
         }
 
@@ -572,7 +586,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     override fun removeRow(index: Int) = error("Cannot remove row by index.")
 
     /**
-     * Moves the node at row [oldIndex] to row [newIndex].
+     * Moves the node at row [oldIndex] to row [newIndex], and expands and selects the moved node.
      *
      * Indices are looked up using [rowToNode], and are typically relative to the current expansion state of the view.
      *

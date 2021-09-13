@@ -22,7 +22,8 @@ data class DummyScheme(
     override var decorators: List<SchemeDecorator> = listOf(ArrayDecorator())
 ) : Scheme() {
     override var icons: RandomnessIcons? = RandomnessIcons.Data
-    override var name = literals.joinToString()
+    override val name: String
+        get() = literals.joinToString()
 
     /**
      * Returns the single [ArrayDecorator] in [decorators].

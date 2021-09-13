@@ -2,20 +2,653 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.clickActionButton
+import com.fwdekker.randomness.getActionButton
+import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.string.SymbolSet
+import com.fwdekker.randomness.string.SymbolSetSettings
 import com.fwdekker.randomness.ui.SimpleTreeModelListener
+import com.fwdekker.randomness.word.DictionarySettings
+import com.fwdekker.randomness.word.UserDictionary
+import com.fwdekker.randomness.word.WordScheme
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
+import org.assertj.swing.edt.GuiActionRunner
+import org.assertj.swing.fixture.Containers
+import org.assertj.swing.fixture.FrameFixture
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
+import javax.swing.JPanel
 import javax.swing.event.TreeModelEvent
 import javax.swing.event.TreeModelListener
 
 
 /**
- * GUI tests for [TemplateJTree].
+ * Unit tests for [TemplateJTree].
  */
 object TemplateJTreeTest : Spek({
-    // TODO
+    lateinit var ideaFixture: IdeaTestFixture
+
+    lateinit var originalState: SettingsState
+    lateinit var currentState: SettingsState
+    lateinit var tree: TemplateJTree
+
+    fun model() = tree.myModel
+    fun root() = tree.myModel.root
+    fun list() = tree.myModel.list
+
+
+    beforeGroup {
+        FailOnThreadViolationRepaintManager.install()
+    }
+
+    beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
+        originalState =
+            SettingsState(
+                TemplateList(
+                    listOf(
+                        Template("Captain", listOf(DummyScheme.from("window"), DummyScheme.from("uncle"))),
+                        Template("Particle", listOf(DummyScheme.from("republic"))),
+                        Template("Village", listOf(DummyScheme.from("consider"), DummyScheme.from("tent")))
+                    )
+                ),
+                SymbolSetSettings(),
+                DictionarySettings()
+            )
+        originalState.templateList.applySettingsState(originalState)
+        currentState = originalState.deepCopy(retainUuid = true)
+
+        tree = GuiActionRunner.execute<TemplateJTree> { TemplateJTree(originalState, currentState) }
+    }
+
+    afterEachTest {
+        ideaFixture.tearDown()
+    }
+
+
+    describe("selectedNodeNotRoot") {
+        it("returns null if nothing is selected") {
+            GuiActionRunner.execute { tree.clearSelection() }
+
+            assertThat(tree.selectedNodeNotRoot).isNull()
+        }
+
+        it("returns null if the root is selected") {
+            GuiActionRunner.execute { tree.selectionPath = model().getPathToRoot(root()) }
+
+            assertThat(tree.selectedNodeNotRoot).isNull()
+        }
+
+        it("returns the selected node otherwise") {
+            GuiActionRunner.execute {
+                tree.selectionPath = model().getPathToRoot(StateNode(list().templates[0]))
+            }
+
+            assertThat(tree.selectedNodeNotRoot).isEqualTo(StateNode(list().templates[0]))
+        }
+    }
+
+    describe("selectedScheme") {
+        describe("get") {
+            it("returns null if nothing is selected") {
+                GuiActionRunner.execute { tree.clearSelection() }
+
+                assertThat(tree.selectedScheme).isNull()
+            }
+
+            it("returns null if the root is selected") {
+                GuiActionRunner.execute { tree.selectionPath = model().getPathToRoot(root()) }
+
+                assertThat(tree.selectedScheme).isNull()
+            }
+
+            it("returns the selected scheme otherwise") {
+                GuiActionRunner.execute {
+                    tree.selectionPath = model().getPathToRoot(StateNode(list().templates[0]))
+                }
+
+                assertThat(tree.selectedScheme).isEqualTo(list().templates[0])
+            }
+        }
+
+        describe("set") {
+            it("selects the first leaf if null is set") {
+                GuiActionRunner.execute { tree.selectedScheme = null }
+
+                assertThat(tree.selectedScheme).isEqualTo(list().templates[0].schemes[0])
+            }
+
+            it("throws an error if the scheme is not in this tree") {
+                assertThatThrownBy { tree.selectedScheme = DummyScheme() }
+                    .isInstanceOf(IllegalArgumentException::class.java)
+            }
+
+            it("selects the given scheme if it exists") {
+                GuiActionRunner.execute { tree.selectedScheme = list().templates[1].schemes[0] }
+
+                assertThat(tree.selectedScheme).isEqualTo(list().templates[1].schemes[0])
+            }
+        }
+    }
+
+
+    describe("reload") {
+        it("synchronizes removed nodes") {
+            GuiActionRunner.execute { list().templates = list().templates.take(2) }
+
+            assertThat(GuiActionRunner.execute<Int> { tree.rowCount }).isEqualTo(8)
+            GuiActionRunner.execute { tree.reload() }
+
+            assertThat(GuiActionRunner.execute<Int> { tree.rowCount }).isEqualTo(5)
+        }
+
+        it("synchronizes added nodes") {
+            GuiActionRunner.execute {
+                list().templates = list().templates + Template("Battle", listOf(DummyScheme.from("white")))
+            }
+
+            assertThat(GuiActionRunner.execute<Int> { tree.rowCount }).isEqualTo(8)
+            GuiActionRunner.execute { tree.reload() }
+
+            assertThat(GuiActionRunner.execute<Int> { tree.rowCount }).isEqualTo(10)
+        }
+
+        it("retains the selected scheme") {
+            GuiActionRunner.execute { tree.selectedScheme = list().templates[1].schemes[0] }
+
+            GuiActionRunner.execute { tree.reload() }
+
+            assertThat(tree.selectedScheme).isEqualTo(list().templates[1].schemes[0])
+        }
+
+        it("selects the first leaf if no node was selected before") {
+            GuiActionRunner.execute { tree.clearSelection() }
+
+            GuiActionRunner.execute { tree.reload() }
+
+            assertThat(tree.selectedScheme).isEqualTo(list().templates[0].schemes[0])
+        }
+
+        it("keeps collapsed nodes collapsed") {
+            GuiActionRunner.execute { tree.collapseRow(3) }
+
+            GuiActionRunner.execute { tree.reload() }
+
+            assertThat(GuiActionRunner.execute<Boolean> { tree.isCollapsed(3) }).isTrue()
+        }
+
+        it("keeps expanded nodes expanded") {
+            GuiActionRunner.execute { tree.expandRow(0) }
+            assertThat(GuiActionRunner.execute<Boolean> { tree.isExpanded(0) }).isTrue()
+
+            GuiActionRunner.execute { tree.reload() }
+
+            assertThat(GuiActionRunner.execute<Boolean> { tree.isExpanded(0) }).isTrue()
+        }
+
+        it("expands new nodes") {
+            GuiActionRunner.execute {
+                list().templates = list().templates + Template("Battle", listOf(DummyScheme.from("white")))
+            }
+
+            GuiActionRunner.execute { tree.reload() }
+
+            assertThat(GuiActionRunner.execute<Boolean> { tree.isExpanded(5) }).isTrue()
+        }
+    }
+
+
+    describe("addScheme") {
+        describe("unique name") {
+            it("appends (1) if a scheme with the given name already exists") {
+                GuiActionRunner.execute { tree.addScheme(Template(name = "Captain")) }
+
+                assertThat(list().templates.last().name).isEqualTo("Captain (1)")
+            }
+
+            it("appends (2) if two schemes with the given name already exist") {
+                GuiActionRunner.execute {
+                    tree.addScheme(Template(name = "Captain"))
+                    tree.addScheme(Template(name = "Captain"))
+                }
+
+                assertThat(list().templates.last().name).isEqualTo("Captain (2)")
+            }
+
+            it("appends (2) if a scheme ending with (1) already exists") {
+                GuiActionRunner.execute {
+                    tree.addScheme(Template(name = "Captain (1)"))
+                    tree.addScheme(Template(name = "Captain"))
+                }
+
+                assertThat(list().templates.last().name).isEqualTo("Captain (2)")
+            }
+
+            it("replaces (1) with (2) if a scheme ending with (1) already exists") {
+                GuiActionRunner.execute {
+                    tree.addScheme(Template(name = "Captain (1)"))
+                    tree.addScheme(Template(name = "Captain (1)"))
+                }
+
+                assertThat(list().templates.last().name).isEqualTo("Captain (2)")
+            }
+
+            it("replaces (13) with (14) if a scheme ending with (13) already exists") {
+                GuiActionRunner.execute {
+                    tree.addScheme(Template(name = "Captain (13)"))
+                    tree.addScheme(Template(name = "Captain (13)"))
+                }
+
+                assertThat(list().templates.last().name).isEqualTo("Captain (14)")
+            }
+        }
+
+
+        it("inserts the template at the bottom if nothing is selected") {
+            GuiActionRunner.execute { tree.clearSelection() }
+
+            GuiActionRunner.execute { tree.addScheme(Template(name = "Yet")) }
+
+            assertThat(list().templates.last().name).isEqualTo("Yet")
+        }
+
+        it("fails if a scheme is inserted while nothing is selected") {
+            GuiActionRunner.execute { tree.clearSelection() }
+
+            assertThatThrownBy { tree.addScheme(DummyScheme.from("arrow")) }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessage("Cannot add non-template to root.")
+        }
+
+        it("inserts the template below the selected template") {
+            GuiActionRunner.execute { tree.selectedScheme = list().templates[1] }
+
+            GuiActionRunner.execute { tree.addScheme(Template(name = "Future")) }
+
+            assertThat(list().templates[2].name).isEqualTo("Future")
+        }
+
+        it("inserts the scheme at the bottom of the selected template") {
+            GuiActionRunner.execute { tree.selectedScheme = list().templates[1] }
+
+            GuiActionRunner.execute { tree.addScheme(DummyScheme.from("content")) }
+
+            assertThat(list().templates[1].schemes.last().name).isEqualTo("content")
+        }
+
+        it("inserts the template after the selected scheme") {
+            GuiActionRunner.execute { tree.selectedScheme = list().templates[0].schemes[1] }
+
+            GuiActionRunner.execute { tree.addScheme(Template(name = "Inch")) }
+
+            assertThat(list().templates[1].name).isEqualTo("Inch")
+        }
+
+        it("inserts the scheme below the selected scheme") {
+            GuiActionRunner.execute { tree.selectedScheme = list().templates[2].schemes[0] }
+
+            GuiActionRunner.execute { tree.addScheme(DummyScheme.from("have")) }
+
+            assertThat(list().templates[2].schemes[1].name).isEqualTo("have")
+        }
+
+        it("selects the inserted node") {
+            GuiActionRunner.execute { tree.selectedScheme = list().templates[1].schemes[0] }
+
+            GuiActionRunner.execute { tree.addScheme(DummyScheme.from("staff")) }
+
+            assertThat(tree.selectedScheme).isEqualTo(list().templates[1].schemes[1])
+        }
+    }
+
+    describe("removeScheme") {
+        it("removes the given node from the tree") {
+            GuiActionRunner.execute { tree.removeScheme(list().templates[1]) }
+
+            assertThat(list().templates.map { it.name }).containsExactly("Captain", "Village")
+        }
+
+        it("removes the selection if there is nothing to select") {
+            GuiActionRunner.execute {
+                repeat(3) {
+                    tree.removeScheme(list().templates[0])
+                }
+            }
+
+            assertThat(tree.selectedScheme).isNull()
+        }
+
+        it("selects the parent if the removed node had no siblings left") {
+            GuiActionRunner.execute { tree.removeScheme(list().templates[1].schemes[0]) }
+
+            assertThat(tree.selectedScheme?.name).isEqualTo("Particle")
+        }
+
+        it("selects the next sibling if the removed node has siblings") {
+            GuiActionRunner.execute { tree.removeScheme(list().templates[0].schemes[0]) }
+
+            assertThat(tree.selectedScheme?.name).isEqualTo("uncle")
+        }
+    }
+
+    describe("moveSchemeByOnePosition") {
+        it("moves a template") {
+            GuiActionRunner.execute { tree.moveSchemeByOnePosition(list().templates[1], moveDown = true) }
+
+            assertThat(list().templates.map { it.name }).containsExactly("Captain", "Village", "Particle")
+        }
+
+        it("moves a scheme") {
+            GuiActionRunner.execute { tree.moveSchemeByOnePosition(list().templates[0].schemes[1], moveDown = false) }
+
+            assertThat(list().templates[0].schemes.map { it.name }).containsExactly("uncle", "window")
+        }
+
+        it("expands and selects the moved template") {
+            GuiActionRunner.execute { tree.moveSchemeByOnePosition(list().templates[2], moveDown = false) }
+
+            assertThat(tree.selectedScheme?.name).isEqualTo("Village")
+            assertThat(tree.isExpanded(model().getPathToRoot(StateNode(list().templates[1]))))
+        }
+
+        it("selects the moved scheme") {
+            GuiActionRunner.execute { tree.moveSchemeByOnePosition(list().templates[2].schemes[0], moveDown = true) }
+
+            assertThat(tree.selectedScheme?.name).isEqualTo("consider")
+        }
+    }
+
+    describe("canMoveSchemeByOnePosition") {
+        describe("nodeToRow") {
+            it("returns 0 for the first template") {
+                assertThat(model().nodeToRow(StateNode(list().templates[0]))).isEqualTo(0)
+            }
+
+            it("returns 1 for the first scheme") {
+                assertThat(model().nodeToRow(StateNode(list().templates[0].schemes[0]))).isEqualTo(1)
+            }
+
+            it("returns the index considering non-collapsed nodes") {
+                assertThat(model().nodeToRow(StateNode(list().templates[1]))).isEqualTo(3)
+            }
+
+            it("returns the index considering collapsed nodes") {
+                GuiActionRunner.execute { tree.collapseRow(0) }
+
+                assertThat(model().nodeToRow(StateNode(list().templates[1]))).isEqualTo(1)
+            }
+        }
+
+        describe("rowToNode") {
+            it("returns the first template for 0") {
+                assertThat(model().rowToNode(0)).isEqualTo(StateNode(list().templates[0]))
+            }
+
+            it("returns the first scheme for 1") {
+                assertThat(model().rowToNode(1)).isEqualTo(StateNode(list().templates[0].schemes[0]))
+            }
+
+            it("returns the scheme considering non-collapsed nodes") {
+                assertThat(model().rowToNode(3)).isEqualTo(StateNode(list().templates[1]))
+            }
+
+            it("returns the scheme considering collapsed nodes") {
+                GuiActionRunner.execute { tree.collapseRow(0) }
+
+                assertThat(model().rowToNode(1)).isEqualTo(StateNode(list().templates[1]))
+            }
+        }
+    }
+
+
+    describe("buttons") {
+        lateinit var frame: FrameFixture
+
+
+        beforeEachTest {
+            frame = Containers.showInFrame(GuiActionRunner.execute<JPanel> { tree.asDecoratedPanel() })
+        }
+
+        afterEachTest {
+            frame.cleanUp()
+        }
+
+
+        describe("AddButton") {
+            it("immediately adds a template if the tree is empty") {
+                GuiActionRunner.execute {
+                    list().templates = emptyList()
+                    tree.reload()
+                }
+
+                GuiActionRunner.execute { frame.clickActionButton("Add") }
+
+                assertThat(list().templates).hasSize(1)
+            }
+        }
+
+        describe("RemoveButton") {
+            it("is disabled if nothing is selected") {
+                GuiActionRunner.execute { tree.clearSelection() }
+
+                assertThat(frame.getActionButton("Remove").isEnabled).isFalse()
+            }
+
+            it("removes the selected scheme") {
+                GuiActionRunner.execute { tree.selectedScheme = list().templates[0].schemes[1] }
+
+                GuiActionRunner.execute { frame.clickActionButton("Remove") }
+
+                assertThat(list().templates[0].schemes.map { it.name }).containsExactly("window")
+            }
+        }
+
+        describe("CopyButton") {
+            it("is disabled if nothing is selected") {
+                GuiActionRunner.execute { tree.clearSelection() }
+
+                assertThat(frame.getActionButton("Copy").isEnabled).isFalse()
+            }
+
+            it("copies the selected scheme") {
+                GuiActionRunner.execute { tree.selectedScheme = list().templates[1].schemes[0] }
+
+                GuiActionRunner.execute { frame.clickActionButton("Copy") }
+
+                assertThat(list().templates[1].schemes.map { it.name }).containsExactly("republic", "republic")
+            }
+
+            it("creates an independent copy of the selected scheme") {
+                GuiActionRunner.execute { tree.selectedScheme = list().templates[2].schemes[1] }
+
+                GuiActionRunner.execute { frame.clickActionButton("Copy") }
+                (list().templates[2].schemes[2] as DummyScheme).literals = listOf("desert")
+
+                assertThat(list().templates[2].schemes.map { it.name }).containsExactly("consider", "tent", "desert")
+            }
+
+            it("ensures the copy uses the same settings state") {
+                val scheme = StringScheme().also { it.setSettingsState(currentState) }
+                GuiActionRunner.execute {
+                    list().templates[0].schemes = listOf(scheme)
+                    tree.reload()
+                }
+
+                GuiActionRunner.execute {
+                    tree.selectedScheme = list().templates[0].schemes[0]
+                    frame.clickActionButton("Copy")
+                }
+                (+scheme.symbolSetSettings).symbolSets = listOf(SymbolSet("deliver", "lhO"))
+
+                assertThat((+(list().templates[0].schemes[1] as StringScheme).symbolSetSettings).symbolSets)
+                    .containsExactly(SymbolSet("deliver", "lhO"))
+            }
+        }
+
+        describe("UpButton") {
+            it("is disabled if nothing is selected") {
+                GuiActionRunner.execute { tree.clearSelection() }
+
+                assertThat(frame.getActionButton("Up").isEnabled).isFalse()
+            }
+
+            it("is disabled if the selected scheme cannot be moved up") {
+                GuiActionRunner.execute { tree.selectedScheme = list().templates[0] }
+
+                assertThat(frame.getActionButton("Up").isEnabled).isFalse()
+            }
+
+            it("moves the selected scheme up") {
+                GuiActionRunner.execute { tree.selectedScheme = list().templates[0].schemes[1] }
+
+                GuiActionRunner.execute { frame.clickActionButton("Up") }
+
+                assertThat(list().templates[0].schemes.map { it.name }).containsExactly("uncle", "window")
+            }
+        }
+
+        describe("DownButton") {
+            it("is disabled if nothing is selected") {
+                GuiActionRunner.execute { tree.clearSelection() }
+
+                assertThat(frame.getActionButton("Down").isEnabled).isFalse()
+            }
+
+            it("is disabled if the selected scheme cannot be moved down") {
+                GuiActionRunner.execute { tree.selectedScheme = list().templates[2] }
+
+                assertThat(frame.getActionButton("Down").isEnabled).isFalse()
+            }
+
+            it("moves the selected scheme down") {
+                GuiActionRunner.execute { tree.selectedScheme = list().templates[2].schemes[0] }
+
+                GuiActionRunner.execute { frame.clickActionButton("Down") }
+
+                assertThat(list().templates[2].schemes.map { it.name }).containsExactly("tent", "consider")
+            }
+        }
+
+        describe("ResetButton") {
+            it("is disabled if nothing is selected") {
+                GuiActionRunner.execute { tree.clearSelection() }
+
+                assertThat(frame.getActionButton("Reset").isEnabled).isFalse()
+            }
+
+            it("is disabled if the selection has not been modified") {
+                GuiActionRunner.execute { tree.selectedScheme = list().templates[0] }
+
+                assertThat(frame.getActionButton("Reset").isEnabled).isFalse()
+            }
+
+            it("removes the scheme if it was newly added") {
+                list().templates = listOf(Template("Headache"))
+                GuiActionRunner.execute { tree.reload() }
+
+                GuiActionRunner.execute {
+                    tree.selectedScheme = list().templates[0]
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat(list().templates).isEmpty()
+            }
+
+            it("resets changes to a template") {
+                list().templates[0].name = "Know"
+                GuiActionRunner.execute { tree.reload() }
+
+                GuiActionRunner.execute {
+                    tree.selectedScheme = list().templates[0]
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat(list().templates[0].name).isEqualTo("Captain")
+            }
+
+            it("resets changes to a scheme") {
+                (list().templates[0].schemes[0] as DummyScheme).literals = listOf("fly")
+                GuiActionRunner.execute { tree.reload() }
+
+                GuiActionRunner.execute {
+                    tree.selectedScheme = list().templates[0].schemes[0]
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat(list().templates[0].schemes[0].name).isEqualTo("window")
+            }
+
+            it("resets a template's scheme order") {
+                list().templates[0].schemes = list().templates[0].schemes.reversed()
+                GuiActionRunner.execute { tree.reload() }
+
+                GuiActionRunner.execute {
+                    tree.selectedScheme = list().templates[0]
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat(list().templates[0].schemes.map { it.name }).containsExactly("window", "uncle")
+            }
+
+            it("resets a template's schemes") {
+                (list().templates[2].schemes[0] as DummyScheme).literals = listOf("stir")
+                GuiActionRunner.execute { tree.reload() }
+
+                GuiActionRunner.execute {
+                    tree.selectedScheme = list().templates[2]
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat(list().templates[2].schemes[0].name).isEqualTo("consider")
+            }
+
+            it("resets the symbol set settings if a string scheme is selected") {
+                val scheme = StringScheme().also { it.setSettingsState(currentState) }
+                GuiActionRunner.execute {
+                    list().templates[0].schemes = listOf(scheme)
+                    originalState.copyFrom(currentState)
+                    tree.reload()
+                }
+
+                GuiActionRunner.execute {
+                    tree.selectedScheme = scheme
+                    (+scheme.symbolSetSettings).symbolSets = listOf(SymbolSet("hardly", "6i9HY9"))
+
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat(currentState.symbolSetSettings.symbolSets)
+                    .containsExactlyElementsOf(originalState.symbolSetSettings.symbolSets)
+            }
+
+            it("resets the dictionary settings if a word scheme is selected") {
+                val scheme = WordScheme().also { it.setSettingsState(currentState) }
+                GuiActionRunner.execute {
+                    list().templates[0].schemes = listOf(scheme)
+                    originalState.copyFrom(currentState)
+
+                    tree.reload()
+                }
+
+                GuiActionRunner.execute {
+                    tree.selectedScheme = list().templates[0].schemes[0]
+                    (+scheme.dictionarySettings).dictionaries = listOf(UserDictionary("somebody.dic"))
+
+                    frame.clickActionButton("Reset")
+                }
+
+                assertThat((+scheme.dictionarySettings).dictionaries)
+                    .containsExactlyElementsOf(originalState.dictionarySettings.dictionaries)
+            }
+        }
+    }
 })
 
 
