@@ -9,6 +9,8 @@ import com.fwdekker.randomness.State
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
+import icons.TypeIcon
+import java.awt.Color
 
 
 /**
@@ -39,7 +41,7 @@ data class StringScheme(
 
     @get:Transient
     override val name = "String"
-    override val typeIcon = RandomnessIcons.string.scheme
+    override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
@@ -117,6 +119,12 @@ data class StringScheme(
      * Holds constants.
      */
     companion object {
+        /**
+         * The base icon for strings.
+         */
+        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "abc", Color(244, 175, 61, 154))
+
+
         /**
          * The smallest valid value of the [minLength] field.
          */

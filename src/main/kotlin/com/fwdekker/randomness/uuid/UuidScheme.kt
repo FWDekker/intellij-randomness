@@ -10,6 +10,8 @@ import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
+import icons.TypeIcon
+import java.awt.Color
 import kotlin.random.asJavaRandom
 
 
@@ -31,7 +33,7 @@ data class UuidScheme(
 ) : Scheme() {
     @get:Transient
     override val name = "UUID"
-    override val typeIcon = RandomnessIcons.uuid.scheme
+    override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
@@ -83,6 +85,12 @@ data class UuidScheme(
      * Holds constants.
      */
     companion object {
+        /**
+         * The base icon for UUIDs.
+         */
+        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "id", Color(185, 155, 248, 154))
+
+
         /**
          * The default value of the [version][version] field.
          */

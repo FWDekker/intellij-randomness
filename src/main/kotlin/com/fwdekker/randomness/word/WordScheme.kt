@@ -10,6 +10,8 @@ import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
 import icons.RandomnessIcons
+import icons.TypeIcon
+import java.awt.Color
 
 
 /**
@@ -39,7 +41,7 @@ data class WordScheme(
 
     @get:Transient
     override val name = "Word"
-    override val typeIcon = RandomnessIcons.word.scheme
+    override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
@@ -120,6 +122,12 @@ data class WordScheme(
      * Holds constants.
      */
     companion object {
+        /**
+         * The base icon for words.
+         */
+        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "cat", Color(242, 101, 34, 154))
+
+
         /**
          * The smallest valid value of the [minLength] field.
          */

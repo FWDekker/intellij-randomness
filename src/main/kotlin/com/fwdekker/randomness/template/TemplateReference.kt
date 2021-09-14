@@ -7,11 +7,12 @@ import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
 import com.fwdekker.randomness.array.ArrayDecorator
-import com.intellij.ui.LayeredIcon
 import com.intellij.util.xmlb.annotations.Transient
+import icons.OverlayIcon
+import icons.OverlayedIcon
 import icons.RandomnessIcons
 import icons.TypeIcon
-import javax.swing.Icon
+import java.awt.Color
 
 
 /**
@@ -28,12 +29,10 @@ data class TemplateReference(
         get() = template?.name?.let { "[$it]" } ?: "Reference"
 
     override val typeIcon: TypeIcon
-        get() = template?.typeIcon ?: RandomnessIcons.unknown
+        get() = template?.typeIcon ?: DEFAULT_ICON
 
-    override val icon: Icon
-        get() =
-            if (arrayDecorator.enabled) LayeredIcon(typeIcon, RandomnessIcons.referenceOverlay, arrayDecorator.icon!!)
-            else LayeredIcon(typeIcon, RandomnessIcons.referenceOverlay)
+    override val icon: OverlayedIcon
+        get() = OverlayedIcon(typeIcon, decorators.mapNotNull { it.icon } + OverlayIcon(RandomnessIcons.reference))
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
@@ -97,4 +96,15 @@ data class TemplateReference(
 
             it.templateList = templateList.copy()
         }
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The base icon for references when the reference is invalid.
+         */
+        val DEFAULT_ICON = TypeIcon(RandomnessIcons.basicTemplate, "", Color(110, 110, 110))
+    }
 }

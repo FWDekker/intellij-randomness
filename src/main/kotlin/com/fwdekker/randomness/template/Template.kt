@@ -13,6 +13,7 @@ import com.fwdekker.randomness.word.WordScheme
 import com.intellij.util.xmlb.annotations.XCollection
 import icons.RandomnessIcons
 import icons.TypeIcon
+import java.awt.Color
 
 
 /**
@@ -39,7 +40,7 @@ data class Template(
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     override val typeIcon: TypeIcon
-        get() = (schemes.map { it.typeIcon?.scheme }.distinct().singleOrNull() ?: RandomnessIcons.mixed).template
+        get() = schemes.mapNotNull { it.typeIcon }.reduceOrNull { acc, icon -> acc.combineWith(icon) } ?: DEFAULT_ICON
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
@@ -80,6 +81,12 @@ data class Template(
      * Holds constants.
      */
     companion object {
+        /**
+         * The icon displayed when a template has no schemes.
+         */
+        val DEFAULT_ICON = TypeIcon(RandomnessIcons.basicTemplate, "", Color(110, 110, 110))
+
+
         /**
          * The default value of the [name] field.
          */

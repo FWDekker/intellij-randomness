@@ -7,6 +7,8 @@ import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
+import icons.TypeIcon
+import java.awt.Color
 import java.text.DecimalFormat
 
 
@@ -36,7 +38,7 @@ data class IntegerScheme(
 ) : Scheme() {
     @get:Transient
     override val name = "Integer"
-    override val typeIcon = RandomnessIcons.integer.scheme
+    override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(fixedLengthDecorator, arrayDecorator)
@@ -102,6 +104,12 @@ data class IntegerScheme(
      * Holds constants.
      */
     companion object {
+        /**
+         * The base icon for integers.
+         */
+        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "123", Color(64, 182, 224, 154))
+
+
         /**
          * The minimum value of the [base][base] field.
          */

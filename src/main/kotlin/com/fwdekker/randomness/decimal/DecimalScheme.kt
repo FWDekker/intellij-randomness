@@ -5,6 +5,8 @@ import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import icons.RandomnessIcons
+import icons.TypeIcon
+import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.nextUp
 
@@ -35,7 +37,7 @@ data class DecimalScheme(
 ) : Scheme() {
     @get:Transient
     override val name = "Decimal"
-    override val typeIcon = RandomnessIcons.decimal.scheme
+    override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
@@ -91,6 +93,12 @@ data class DecimalScheme(
      * Holds constants.
      */
     companion object {
+        /**
+         * The base icon for decimals.
+         */
+        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "4.2", Color(98, 181, 67, 154))
+
+
         /**
          * The maximum valid difference between the [minValue] and [maxValue] fields.
          */

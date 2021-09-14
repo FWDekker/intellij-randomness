@@ -2,9 +2,9 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
-import com.intellij.ui.LayeredIcon
 import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
+import icons.OverlayedIcon
 import icons.TypeIcon
 import javax.swing.Icon
 import kotlin.random.Random
@@ -26,15 +26,15 @@ abstract class Scheme : State() {
      * scheme does not represent any kind of data, as is the case for [SchemeDecorator]s.
      */
     @get:Transient
-    internal open val typeIcon: TypeIcon? = null
+    open val typeIcon: TypeIcon?
+        get() = null
 
     /**
      * The icon signifying this scheme in its entirety, or `null` if it does not have an icon.
      */
     @get:Transient
-    @Suppress("SpreadOperator") // Adds significant complexity to avoid
     open val icon: Icon?
-        get() = typeIcon?.let { LayeredIcon(it, *decorators.mapNotNull(Scheme::icon).toTypedArray()) }
+        get() = typeIcon?.let { OverlayedIcon(it, decorators.mapNotNull(Scheme::icon)) }
 
     /**
      * Additional logic that determines how strings are generated.
@@ -67,7 +67,10 @@ abstract class Scheme : State() {
         doValidate()?.also { throw DataGenerationException(it) }
 
         val generators = listOf(this) + decorators
-        decorators.forEachIndexed { i, decorator -> decorator.generator = generators[i]::generateUndecoratedStrings }
+        decorators.forEachIndexed { i, decorator ->
+            decorator.random = random
+            decorator.generator = generators[i]::generateUndecoratedStrings
+        }
 
         return generators.last().generateUndecoratedStrings(count)
     }

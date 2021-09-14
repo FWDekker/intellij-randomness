@@ -6,7 +6,6 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.options.ShowSettingsUtil
-import com.intellij.ui.LayeredIcon
 import icons.RandomnessIcons
 import java.awt.event.ActionEvent
 
@@ -116,7 +115,7 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
 
         event.presentation.icon =
             if (template == null) RandomnessIcons.settings
-            else LayeredIcon(template.icon, RandomnessIcons.settingsOverlay)
+            else template.icon
         event.presentation.text = "${if (template != null) template.name + " " else ""}Settings"
     }
 
