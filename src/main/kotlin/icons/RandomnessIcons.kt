@@ -8,6 +8,7 @@ import java.awt.Component
 import java.awt.Graphics
 import java.awt.image.RGBImageFilter
 import javax.swing.Icon
+import kotlin.math.atan2
 
 
 /**
@@ -23,7 +24,6 @@ object RandomnessIcons {
      * The template icon for template icons.
      */
     // TODO: Rename files
-    // TODO: Make base colour WHITE
     val basicTemplate = IconLoader.findIcon("/icons/unknown-template.svg")!!
 
     /**
@@ -68,10 +68,11 @@ object RandomnessIcons {
  *
  * @property base The underlying icon which should be given color; must be square.
  * @property text The text to display inside the [base].
- * @property color The color to give to the [base].
+ * @property colors The colors to give to the [base].
  */
-data class TypeIcon(val base: Icon, val text: String, val color: Color) : Icon {
+data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) : Icon {
     init {
+        require(colors.isNotEmpty()) { "At least one color must be defined." }
         require(iconWidth == iconHeight) { "Base image must be square." }
     }
 
@@ -83,12 +84,11 @@ data class TypeIcon(val base: Icon, val text: String, val color: Color) : Icon {
      * @return an icon that describes both this icon's type and [other]'s type
      */
     fun combineWith(other: TypeIcon) =
-        if (this == other)
-            copy(base = RandomnessIcons.basicTemplate)
-        else if (this.text == other.text && this.color == other.color)
-            TypeIcon(RandomnessIcons.basicTemplate, this.text, this.color)
-        else
-            MIXED_TEMPLATE
+        TypeIcon(
+            RandomnessIcons.basicTemplate,
+            if (this.text == other.text) this.text else "",
+            this.colors + other.colors
+        )
 
 
     /**
@@ -102,7 +102,8 @@ data class TypeIcon(val base: Icon, val text: String, val color: Color) : Icon {
     override fun paintIcon(c: Component?, g: Graphics?, x: Int, y: Int) {
         if (c == null || g == null) return
 
-        IconUtil.filterIcon(base, { ColorReplacementFilter(color) }, c).paintIcon(c, g, x, y)
+        val filter = RadialColorReplacementFilter(colors, Pair(iconWidth / 2, iconHeight / 2))
+        IconUtil.filterIcon(base, { filter }, c).paintIcon(c, g, x, y)
 
         val textIcon = IconUtil.textToIcon(text, c, FONT_SIZE * iconWidth)
         textIcon.paintIcon(c, g, x + (iconWidth - textIcon.iconWidth) / 2, y + (iconHeight - textIcon.iconHeight) / 2)
@@ -123,11 +124,6 @@ data class TypeIcon(val base: Icon, val text: String, val color: Color) : Icon {
      * Holds constants.
      */
     companion object {
-        /**
-         * The icon displayed for a template of mixed type.
-         */
-        val MIXED_TEMPLATE = TypeIcon(RandomnessIcons.basicTemplate, "", Color.BLACK)
-
         /**
          * The scale of the text inside the icon relative to the icon's size.
          */
@@ -161,7 +157,7 @@ data class OverlayIcon(val base: Icon) : Icon {
     override fun paintIcon(c: Component?, g: Graphics?, x: Int, y: Int) {
         if (c == null || g == null) return
 
-        IconUtil.filterIcon(base, { ColorReplacementFilter(c.background) }, null)
+        IconUtil.filterIcon(base, { RadialColorReplacementFilter(listOf(c.background)) }, null)
             .paintIcon(c, g, x, y)
         IconUtil.scale(base, null, (iconWidth - 2 * MARGIN) / iconWidth)
             .paintIcon(c, g, (x + MARGIN).toInt(), (y + MARGIN).toInt())
@@ -197,12 +193,21 @@ data class OverlayIcon(val base: Icon) : Icon {
  * @property base
  * @property overlays
  */
-data class OverlayedIcon(val base: Icon, val overlays: List<Icon>) : Icon {
+data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList()) : Icon {
     init {
         require(iconWidth == iconHeight) { "Base icon must be square." }
         require(overlays.all { it.iconWidth == it.iconHeight }) { "Overlays must be square." }
         require(overlays.map { it.iconWidth }.toSet().size <= 1) { "All overlays must have same size." }
     }
+
+
+    /**
+     * Returns a copy of this icon that additionally has the given overlay icon.
+     *
+     * @param icon the additional overlay icon
+     * @return a copy of this icon that additionally has the given overlay icon
+     */
+    fun plusOverlay(icon: Icon) = copy(overlays = overlays + icon)
 
 
     /**
@@ -250,24 +255,49 @@ data class OverlayedIcon(val base: Icon, val overlays: List<Icon>) : Icon {
 
 
 /**
- * Replaces all non-empty pixels with [color].
+ * Replaces all colors with one of [colors] depending on the angle relative to [center].
  *
- * @property color The color to replace all non-empty pixels with.
+ * @property colors The colors that should be used, in clockwise order starting north-west.
+ * @property center The center relative to which colors should be calculated; not required if only one color is given.
  */
-class ColorReplacementFilter(private val color: Color) : RGBImageFilter() {
-    /**
-     * Returns 0 if [rgb] is 0, or returns [color] with its alpha scaled relative to that of [rgb] otherwise.
-     *
-     * @param x ignored
-     * @param y ignored
-     * @param rgb 0 if and only if this pixel has a color
-     * @return 0 if [rgb] is 0, or returns [color] with its alpha scaled relative to that of [rgb] otherwise
-     */
-    override fun filterRGB(x: Int, y: Int, rgb: Int): Int {
-        return if (rgb == 0) 0
-        else ColorUtil.withAlpha(color, asFraction(Color(rgb, true).alpha) * asFraction(color.alpha)).rgb
+class RadialColorReplacementFilter(
+    private val colors: List<Color>,
+    private val center: Pair<Int, Int>? = null
+) : RGBImageFilter() {
+    init {
+        require(colors.isNotEmpty()) { "At least one color must be defined." }
+        require(colors.size == 1 || center != null) { "Center must be defined if more than one color is given." }
     }
 
+
+    /**
+     * Returns the color to be displayed at the given point, considering the coordinates relative to the [center] and
+     * the relative alpha of the encountered color.
+     *
+     * @param x the X coordinate of the pixel
+     * @param y the Y coordinate of the pixel
+     * @param rgb 0 if and only if the pixel's color should be replaced
+     * @return 0 if [rgb] is 0, or one of [colors] with its alpha shifted by [rgb]'s alpha otherwise
+     */
+    override fun filterRGB(x: Int, y: Int, rgb: Int) =
+        if (rgb == 0) {
+            0
+        } else if (center == null) {
+            shiftAlpha(colors[0], Color(rgb, true)).rgb
+        } else {
+            shiftAlpha(positionToColor(Pair(center.second - y, center.first - x)), Color(rgb, true)).rgb
+        }
+
+
+    /**
+     * Returns [toShift] which has its alpha multiplied by that of [shiftBy].
+     *
+     * @param toShift the color of which to shift the alpha
+     * @param shiftBy the color which has the alpha to shift by
+     * @return [toShift] which has its alpha multiplied by that of [shiftBy]
+     */
+    private fun shiftAlpha(toShift: Color, shiftBy: Color) =
+        ColorUtil.withAlpha(toShift, asFraction(toShift.alpha) * asFraction(shiftBy.alpha))
 
     /**
      * Represents an integer in the range [0, 256) to a fraction of that range.
@@ -275,6 +305,33 @@ class ColorReplacementFilter(private val color: Color) : RGBImageFilter() {
      * @param number the number to represent as a fraction
      * @return number as a fraction
      */
-    @Suppress("MagicNumber") // 255 is not magic
-    private fun asFraction(number: Int) = number / 255.0
+    private fun asFraction(number: Int) = number / COMPONENT_MAX.toDouble()
+
+    /**
+     * Converts an offset to the [center] to a color in [colors].
+     *
+     * @param offset the offset to get the color for
+     * @return the color to be displayed at [offset]
+     */
+    private fun positionToColor(offset: Pair<Int, Int>): Color {
+        val angle = atan2(offset.second.toDouble(), offset.first.toDouble()) + Math.PI
+        val index = (angle + STARTING_ANGLE) / (2 * Math.PI / colors.size)
+        return colors[Math.floorMod(index.toInt(), colors.size)]
+    }
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * Maximum value for an RGB component.
+         */
+        const val COMPONENT_MAX = 255
+
+        /**
+         * The angle in radians at which the first color should start being displayed.
+         */
+        const val STARTING_ANGLE = 3 * Math.PI / 4
+    }
 }

@@ -53,7 +53,7 @@ data class LiteralScheme(
         /**
          * The base icon for literals.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "0x", Color(248, 19, 19, 154))
+        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "0x", listOf(Color(248, 19, 19, 154)))
 
 
         /**

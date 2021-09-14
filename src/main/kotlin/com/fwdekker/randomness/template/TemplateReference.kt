@@ -105,6 +105,6 @@ data class TemplateReference(
         /**
          * The base icon for references when the reference is invalid.
          */
-        val DEFAULT_ICON = TypeIcon(RandomnessIcons.basicTemplate, "", Color(110, 110, 110))
+        val DEFAULT_ICON = TypeIcon(RandomnessIcons.basicTemplate, "", listOf(Color(110, 110, 110)))
     }
 }

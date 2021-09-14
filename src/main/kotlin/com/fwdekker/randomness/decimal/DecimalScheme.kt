@@ -96,7 +96,7 @@ data class DecimalScheme(
         /**
          * The base icon for decimals.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "4.2", Color(98, 181, 67, 154))
+        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "4.2", listOf(Color(98, 181, 67, 154)))
 
 
         /**

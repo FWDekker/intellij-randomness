@@ -122,7 +122,7 @@ data class StringScheme(
         /**
          * The base icon for strings.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "abc", Color(244, 175, 61, 154))
+        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "abc", listOf(Color(244, 175, 61, 154)))
 
 
         /**

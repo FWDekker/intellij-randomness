@@ -6,7 +6,6 @@ import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
 import icons.OverlayedIcon
 import icons.TypeIcon
-import javax.swing.Icon
 import kotlin.random.Random
 
 
@@ -33,7 +32,7 @@ abstract class Scheme : State() {
      * The icon signifying this scheme in its entirety, or `null` if it does not have an icon.
      */
     @get:Transient
-    open val icon: Icon?
+    open val icon: OverlayedIcon?
         get() = typeIcon?.let { OverlayedIcon(it, decorators.mapNotNull(Scheme::icon)) }
 
     /**

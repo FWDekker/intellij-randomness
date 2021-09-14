@@ -107,7 +107,7 @@ data class IntegerScheme(
         /**
          * The base icon for integers.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "123", Color(64, 182, 224, 154))
+        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "123", listOf(Color(64, 182, 224, 154)))
 
 
         /**

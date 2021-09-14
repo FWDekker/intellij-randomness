@@ -125,7 +125,7 @@ data class WordScheme(
         /**
          * The base icon for words.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "cat", Color(242, 101, 34, 154))
+        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "cat", listOf(Color(242, 101, 34, 154)))
 
 
         /**

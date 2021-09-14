@@ -88,7 +88,7 @@ data class UuidScheme(
         /**
          * The base icon for UUIDs.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "id", Color(185, 155, 248, 154))
+        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "id", listOf(Color(185, 155, 248, 154)))
 
 
         /**

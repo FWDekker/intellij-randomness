@@ -2,8 +2,8 @@ package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.SchemeDecorator
 import icons.OverlayIcon
+import icons.OverlayedIcon
 import icons.RandomnessIcons
-import javax.swing.Icon
 
 
 /**
@@ -26,8 +26,8 @@ data class ArrayDecorator(
 ) : SchemeDecorator() {
     override val decorators: List<SchemeDecorator> = emptyList()
     override val name = "Array"
-    override val icon: Icon?
-        get() = if (enabled) OverlayIcon(RandomnessIcons.array) else null
+    override val icon: OverlayedIcon?
+        get() = if (enabled) OverlayedIcon(OverlayIcon(RandomnessIcons.array)) else null
 
 
     override fun generateUndecoratedStrings(count: Int): List<String> {

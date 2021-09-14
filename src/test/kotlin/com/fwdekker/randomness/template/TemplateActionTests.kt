@@ -4,10 +4,13 @@ import com.fwdekker.randomness.DummyScheme
 import com.intellij.testFramework.TestActionEvent
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import icons.OverlayedIcon
 import icons.RandomnessIcons
+import icons.TypeIcon
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
+import java.awt.Color
 
 
 /**
@@ -35,22 +38,14 @@ class TemplateGroupActionTest : Spek({
 
     describe("update") {
         describe("icon") {
-            it("uses a default icon if the template's icons are null") {
-                template.schemes = listOf(DummyScheme().also { it.icons = null })
+            it("uses the template's icon as a base") {
+                val typeIcon = TypeIcon(RandomnessIcons.basicScheme, "t2Y", listOf(Color.BLUE))
+                template.schemes = listOf(DummyScheme().also { it.typeIcon = typeIcon })
 
                 val event = TestActionEvent(groupAction)
                 groupAction.update(event)
 
-                assertThat(event.presentation.icon).isEqualTo(RandomnessIcons.Data.Base)
-            }
-
-            it("uses the template's icon") {
-                template.schemes = listOf(DummyScheme().also { it.icons = RandomnessIcons.Word })
-
-                val event = TestActionEvent(groupAction)
-                groupAction.update(event)
-
-                assertThat(event.presentation.icon).isEqualTo(RandomnessIcons.Word.Base)
+                assertThat((event.presentation.icon as OverlayedIcon).base).isEqualTo(typeIcon)
             }
         }
 
@@ -126,25 +121,17 @@ object TemplateSettingsActionTest : Spek({
                 val event = TestActionEvent(settingsAction)
                 TemplateSettingsAction(template = null).update(event)
 
-                assertThat(event.presentation.icon).isEqualTo(RandomnessIcons.Data.Settings)
+                assertThat(event.presentation.icon).isEqualTo(RandomnessIcons.settings)
             }
 
-            it("uses a default icon if the template's icons are null") {
-                template.schemes = listOf(DummyScheme().also { it.icons = null })
+            it("uses the template's icon if the template is not null") {
+                val typeIcon = TypeIcon(RandomnessIcons.basicScheme, "war", listOf(Color.GREEN))
+                template.schemes = listOf(DummyScheme().also { it.typeIcon = typeIcon })
 
                 val event = TestActionEvent(settingsAction)
                 settingsAction.update(event)
 
-                assertThat(event.presentation.icon).isEqualTo(RandomnessIcons.Data.Settings)
-            }
-
-            it("uses the template's icons if the template is not null") {
-                template.schemes = listOf(DummyScheme().also { it.icons = RandomnessIcons.Word })
-
-                val event = TestActionEvent(settingsAction)
-                settingsAction.update(event)
-
-                assertThat(event.presentation.icon).isEqualTo(RandomnessIcons.Word.Settings)
+                assertThat((event.presentation.icon as OverlayedIcon).base).isEqualTo(typeIcon)
             }
         }
     }

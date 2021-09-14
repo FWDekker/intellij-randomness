@@ -39,7 +39,7 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
     override fun update(event: AnActionEvent) {
         super.update(event)
 
-        event.presentation.icon = template.icon
+        event.presentation.icon = template.icon!!.plusOverlay(RandomnessIcons.settings)
         event.presentation.text = template.name
     }
 
@@ -114,7 +114,7 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
         super.update(event)
 
         event.presentation.icon =
-            if (template == null) RandomnessIcons.settings
+            if (template?.icon == null) RandomnessIcons.settings
             else template.icon
         event.presentation.text = "${if (template != null) template.name + " " else ""}Settings"
     }

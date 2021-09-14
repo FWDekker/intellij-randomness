@@ -84,7 +84,7 @@ data class Template(
         /**
          * The icon displayed when a template has no schemes.
          */
-        val DEFAULT_ICON = TypeIcon(RandomnessIcons.basicTemplate, "", Color(110, 110, 110))
+        val DEFAULT_ICON = TypeIcon(RandomnessIcons.basicTemplate, "", listOf(Color(110, 110, 110)))
 
 
         /**
