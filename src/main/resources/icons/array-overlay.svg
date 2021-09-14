@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
-  <g id="array-overlay">
-    <g id="Array-instance" transform="translate(9.500004 9.499996)">
-      <path d="M0 6.5L0 5.525L1.625 5.525L1.625 0.975L0 0.975L0 0L2.6 0L2.6 6.5L0 6.5L0 6.5Z" transform="translate(3.8999994 0)" id="Right" fill="#6E6E6E" fill-rule="evenodd" stroke="#AFB1B3" stroke-width="0.4" />
-      <path d="M0 6.5L0 0L2.6 0L2.6 0.975L0.975 0.975L0.975 5.525L2.6 5.525L2.6 6.5L0 6.5L0 6.5Z" id="Left" fill="#6E6E6E" fill-rule="evenodd" stroke="#AFB1B3" stroke-width="0.4" />
-    </g>
-  </g>
-</svg>
