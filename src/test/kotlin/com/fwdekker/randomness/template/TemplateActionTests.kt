@@ -1,12 +1,12 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
+import com.fwdekker.randomness.OverlayedIcon
+import com.fwdekker.randomness.RandomnessIcons
+import com.fwdekker.randomness.TypeIcon
 import com.intellij.testFramework.TestActionEvent
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import icons.OverlayedIcon
-import icons.RandomnessIcons
-import icons.TypeIcon
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
@@ -39,7 +39,7 @@ class TemplateGroupActionTest : Spek({
     describe("update") {
         describe("icon") {
             it("uses the template's icon as a base") {
-                val typeIcon = TypeIcon(RandomnessIcons.basicScheme, "t2Y", listOf(Color.BLUE))
+                val typeIcon = TypeIcon(RandomnessIcons.SCHEME, "t2Y", listOf(Color.BLUE))
                 template.schemes = listOf(DummyScheme().also { it.typeIcon = typeIcon })
 
                 val event = TestActionEvent(groupAction)
@@ -121,11 +121,11 @@ object TemplateSettingsActionTest : Spek({
                 val event = TestActionEvent(settingsAction)
                 TemplateSettingsAction(template = null).update(event)
 
-                assertThat(event.presentation.icon).isEqualTo(RandomnessIcons.settings)
+                assertThat(event.presentation.icon).isEqualTo(RandomnessIcons.SETTINGS)
             }
 
             it("uses the template's icon if the template is not null") {
-                val typeIcon = TypeIcon(RandomnessIcons.basicScheme, "war", listOf(Color.GREEN))
+                val typeIcon = TypeIcon(RandomnessIcons.SCHEME, "war", listOf(Color.GREEN))
                 template.schemes = listOf(DummyScheme().also { it.typeIcon = typeIcon })
 
                 val event = TestActionEvent(settingsAction)

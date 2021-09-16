@@ -1,4 +1,4 @@
-package icons
+package com.fwdekker.randomness
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ColorUtil
@@ -18,48 +18,57 @@ object RandomnessIcons {
     /**
      * The main icon of Randomness.
      */
-    val randomness = IconLoader.findIcon("/icons/randomness.svg")!!
+    val RANDOMNESS = IconLoader.findIcon("/icons/randomness.svg")!!
 
     /**
      * The template icon for template icons.
      */
-    // TODO: Rename files
-    val basicTemplate = IconLoader.findIcon("/icons/unknown-template.svg")!!
+    val TEMPLATE = IconLoader.findIcon("/icons/template.svg")!!
 
     /**
      * The template icon for scheme icons.
      */
-    val basicScheme = IconLoader.findIcon("/icons/unknown-scheme.svg")!!
+    val SCHEME = IconLoader.findIcon("/icons/scheme.svg")!!
 
     /**
-     * The icon for templates of mixed types.
+     * An icon for settings.
      */
-    val mixedTemplate = IconLoader.findIcon("/icons/mixed-template.svg")!!
+    val SETTINGS = IconLoader.findIcon("/icons/settings.svg")!!
 
     /**
-     * The icon for schemes of mixed types.
+     * A filled-in version of [SETTINGS].
      */
-    val mixedScheme = IconLoader.findIcon("/icons/mixed-scheme.svg")!!
-
-    /**
-     * An icon for settings in general.
-     */
-    val settings = IconLoader.findIcon("/icons/settings.svg")!!
+    val SETTINGS_FILLED = IconLoader.findIcon("/icons/settings-filled.svg")!!
 
     /**
      * An icon for arrays.
      */
-    val array = IconLoader.findIcon("/icons/array.svg")!!
+    val ARRAY = IconLoader.findIcon("/icons/array.svg")!!
+
+    /**
+     * A filled-in version of [ARRAY].
+     */
+    val ARRAY_FILLED = IconLoader.findIcon("/icons/array-filled.svg")!!
 
     /**
      * An icon for references.
      */
-    val reference = IconLoader.findIcon("/icons/reference.svg")!!
+    val REFERENCE = IconLoader.findIcon("/icons/reference.svg")!!
+
+    /**
+     * A filled-in version of [REFERENCE].
+     */
+    val REFERENCE_FILLED = IconLoader.findIcon("/icons/reference-filled.svg")!!
 
     /**
      * An icon for repeated insertions.
      */
-    val repeat = IconLoader.findIcon("/icons/repeat.svg")!!
+    val REPEAT = IconLoader.findIcon("/icons/repeat.svg")!!
+
+    /**
+     * A filled-in version of [REPEAT].
+     */
+    val REPEAT_FILLED = IconLoader.findIcon("/icons/repeat-filled.svg")!!
 }
 
 
@@ -85,7 +94,7 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
      */
     fun combineWith(other: TypeIcon) =
         TypeIcon(
-            RandomnessIcons.basicTemplate,
+            RandomnessIcons.TEMPLATE,
             if (this.text == other.text) this.text else "",
             this.colors + other.colors
         )
@@ -139,8 +148,10 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
  * the icon is drawn.
  *
  * @property base The base of the icon; must be square.
+ * @property background The background shape to ensure that the small margin of background color is also applied inside
+ * the [base], or `null` if [base] is already a solid shape.
  */
-data class OverlayIcon(val base: Icon) : Icon {
+data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
     init {
         require(iconWidth == iconHeight) { "Base image must be square." }
     }
@@ -157,9 +168,9 @@ data class OverlayIcon(val base: Icon) : Icon {
     override fun paintIcon(c: Component?, g: Graphics?, x: Int, y: Int) {
         if (c == null || g == null) return
 
-        IconUtil.filterIcon(base, { RadialColorReplacementFilter(listOf(c.background)) }, null)
+        IconUtil.filterIcon(background ?: base, { RadialColorReplacementFilter(listOf(c.background)) }, c)
             .paintIcon(c, g, x, y)
-        IconUtil.scale(base, null, (iconWidth - 2 * MARGIN) / iconWidth)
+        IconUtil.scale(base, c, 1 - 2 * MARGIN)
             .paintIcon(c, g, (x + MARGIN).toInt(), (y + MARGIN).toInt())
     }
 
@@ -184,6 +195,27 @@ data class OverlayIcon(val base: Icon) : Icon {
          * This number is a fraction relative to the base image's size.
          */
         const val MARGIN = 2f / 32
+
+
+        /**
+         * Overlay icon for arrays.
+         */
+        val ARRAY by lazy { OverlayIcon(RandomnessIcons.ARRAY, RandomnessIcons.ARRAY_FILLED) }
+
+        /**
+         * Overlay icon for template references.
+         */
+        val REFERENCE by lazy { OverlayIcon(RandomnessIcons.REFERENCE, RandomnessIcons.REFERENCE_FILLED) }
+
+        /**
+         * Overlay icon for repeated insertion.
+         */
+        val REPEAT by lazy { OverlayIcon(RandomnessIcons.REPEAT, RandomnessIcons.REPEAT_FILLED) }
+
+        /**
+         * Overlay icon for settings.
+         */
+        val SETTINGS by lazy { OverlayIcon(RandomnessIcons.SETTINGS, RandomnessIcons.SETTINGS_FILLED) }
     }
 }
 
@@ -224,8 +256,8 @@ data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList())
         base.paintIcon(c, g, x, y)
         overlays.forEachIndexed { i, overlay ->
             val overlaySize = iconWidth.toFloat() / OVERLAYS_PER_ROW
-            val overlayX = (i % 2 * overlaySize).toInt()
-            val overlayY = (i / 2 * overlaySize).toInt()
+            val overlayX = (i % OVERLAYS_PER_ROW * overlaySize).toInt()
+            val overlayY = (i / OVERLAYS_PER_ROW * overlaySize).toInt()
 
             IconUtil.scale(overlay, null, overlaySize / overlay.iconWidth).paintIcon(c, g, overlayX, overlayY)
         }

@@ -4,8 +4,6 @@ import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
-import icons.OverlayedIcon
-import icons.TypeIcon
 import kotlin.random.Random
 
 

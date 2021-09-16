@@ -1,8 +1,10 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -11,8 +13,6 @@ import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.util.xmlb.annotations.XCollection
-import icons.RandomnessIcons
-import icons.TypeIcon
 import java.awt.Color
 
 
@@ -84,7 +84,7 @@ data class Template(
         /**
          * The icon displayed when a template has no schemes.
          */
-        val DEFAULT_ICON = TypeIcon(RandomnessIcons.basicTemplate, "", listOf(Color(110, 110, 110)))
+        val DEFAULT_ICON = TypeIcon(RandomnessIcons.TEMPLATE, "", listOf(Color(110, 110, 110)))
 
 
         /**

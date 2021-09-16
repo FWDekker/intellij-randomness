@@ -3,8 +3,6 @@ package com.fwdekker.randomness
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
-import icons.RandomnessIcons
-import icons.TypeIcon
 import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.Icon
@@ -23,7 +21,7 @@ data class DummyScheme(
     var literals: List<String> = listOf(DEFAULT_OUTPUT),
     override var decorators: List<SchemeDecorator> = listOf(ArrayDecorator())
 ) : Scheme() {
-    override var typeIcon: TypeIcon? = TypeIcon(RandomnessIcons.basicScheme, "dum", listOf(Color.GRAY))
+    override var typeIcon: TypeIcon? = TypeIcon(RandomnessIcons.SCHEME, "dum", listOf(Color.GRAY))
     override val name: String
         get() = literals.joinToString()
 

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
-  <g id="mixed-scheme">
-    <path d="M7 7L0 7L0 0C3.86599 0 7 3.13401 7 7Z" transform="translate(7 0)" id="top-right" fill="#F81313" fill-opacity="0.6" fill-rule="evenodd" stroke="none" />
-    <path d="M7 0L0 0L0 7C3.86599 7 7 3.86599 7 0Z" transform="translate(7 7)" id="bottom-right" fill="#F4AF3D" fill-opacity="0.6" fill-rule="evenodd" stroke="none" />
-    <path d="M7 7L7 0L0 0C0 3.86599 3.13401 7 7 7Z" transform="translate(0 7)" id="bottom-left" fill="#40B6E0" fill-opacity="0.6" fill-rule="evenodd" stroke="none" />
-    <path d="M7 0L7 7L0 7C0 3.13401 3.13401 0 7 0Z" id="top-left" fill="#62B543" fill-opacity="0.6" fill-rule="evenodd" stroke="none" />
-  </g>
-</svg>

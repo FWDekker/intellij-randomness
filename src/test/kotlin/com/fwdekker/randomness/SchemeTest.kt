@@ -1,7 +1,6 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArrayDecorator
-import icons.OverlayedIcon
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek

@@ -11,7 +11,6 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.popup.list.ListPopupImpl
-import icons.RandomnessIcons
 import java.awt.event.ActionEvent
 
 
@@ -31,7 +30,7 @@ class PopupAction : AnAction() {
      * @param event carries information on the invocation place
      */
     override fun update(event: AnActionEvent) {
-        event.presentation.icon = RandomnessIcons.randomness
+        event.presentation.icon = RandomnessIcons.RANDOMNESS
         hasEditor = event.getData(CommonDataKeys.EDITOR) != null
     }
 

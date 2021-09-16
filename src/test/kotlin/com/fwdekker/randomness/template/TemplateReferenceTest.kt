@@ -3,10 +3,9 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DummyScheme
+import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.integer.IntegerScheme
-import icons.OverlayIcon
-import icons.RandomnessIcons
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -124,7 +123,7 @@ object TemplateReferenceTest : Spek({
             reference.templateUuid = null
 
             assertThat(reference.icon.base).isEqualTo(TemplateReference.DEFAULT_ICON)
-            assertThat(reference.icon.overlays).containsExactly(OverlayIcon(RandomnessIcons.reference))
+            assertThat(reference.icon.overlays).containsExactly(OverlayIcon.REFERENCE)
         }
 
         it("uses the template's icon with a link overlay") {
@@ -134,7 +133,7 @@ object TemplateReferenceTest : Spek({
             reference.templateUuid = template.uuid
 
             assertThat(reference.icon.base).isEqualTo(template.typeIcon)
-            assertThat(reference.icon.overlays).containsExactly(OverlayIcon(RandomnessIcons.reference))
+            assertThat(reference.icon.overlays).containsExactly(OverlayIcon.REFERENCE)
         }
 
         it("appends the link overlay to its decorators' overlays") {
@@ -145,7 +144,7 @@ object TemplateReferenceTest : Spek({
             reference.arrayDecorator.enabled = true
 
             assertThat(reference.icon.overlays)
-                .containsExactly(reference.arrayDecorator.icon, OverlayIcon(RandomnessIcons.reference))
+                .containsExactly(reference.arrayDecorator.icon, OverlayIcon.REFERENCE)
         }
     }
 

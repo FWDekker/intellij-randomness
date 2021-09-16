@@ -1,12 +1,12 @@
 package com.fwdekker.randomness.literal
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
-import icons.RandomnessIcons
-import icons.TypeIcon
 import java.awt.Color
 
 
@@ -53,7 +53,7 @@ data class LiteralScheme(
         /**
          * The base icon for literals.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "0x", listOf(Color(248, 19, 19, 154)))
+        val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "0x", listOf(Color(248, 19, 19, 154)))
 
 
         /**

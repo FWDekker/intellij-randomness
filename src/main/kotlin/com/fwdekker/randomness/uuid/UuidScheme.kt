@@ -5,12 +5,12 @@ import com.fasterxml.uuid.Generators
 import com.fasterxml.uuid.UUIDClock
 import com.fasterxml.uuid.UUIDTimer
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
-import icons.RandomnessIcons
-import icons.TypeIcon
 import java.awt.Color
 import kotlin.random.asJavaRandom
 
@@ -88,7 +88,7 @@ data class UuidScheme(
         /**
          * The base icon for UUIDs.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "id", listOf(Color(185, 155, 248, 154)))
+        val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "id", listOf(Color(185, 155, 248, 154)))
 
 
         /**

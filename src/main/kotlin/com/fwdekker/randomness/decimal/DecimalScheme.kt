@@ -1,11 +1,11 @@
 package com.fwdekker.randomness.decimal
 
+import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
-import icons.RandomnessIcons
-import icons.TypeIcon
 import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.nextUp
@@ -96,7 +96,7 @@ data class DecimalScheme(
         /**
          * The base icon for decimals.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.basicScheme, "4.2", listOf(Color(98, 181, 67, 154)))
+        val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "4.2", listOf(Color(98, 181, 67, 154)))
 
 
         /**
