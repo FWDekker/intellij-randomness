@@ -82,7 +82,6 @@ object RandomnessIcons {
 data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) : Icon {
     init {
         require(colors.isNotEmpty()) { "At least one color must be defined." }
-        require(iconWidth == iconHeight) { "Base image must be square." }
     }
 
 
@@ -152,11 +151,6 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
  * the [base], or `null` if [base] is already a solid shape.
  */
 data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
-    init {
-        require(iconWidth == iconHeight) { "Base image must be square." }
-    }
-
-
     /**
      * Paints the overlay icon.
      *
@@ -171,7 +165,7 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
         IconUtil.filterIcon(background ?: base, { RadialColorReplacementFilter(listOf(c.background)) }, c)
             .paintIcon(c, g, x, y)
         IconUtil.scale(base, c, 1 - 2 * MARGIN)
-            .paintIcon(c, g, (x + MARGIN).toInt(), (y + MARGIN).toInt())
+            .paintIcon(c, g, x + (MARGIN * iconWidth).toInt(), y + (MARGIN * iconHeight).toInt())
     }
 
     /**
@@ -194,7 +188,7 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
          *
          * This number is a fraction relative to the base image's size.
          */
-        const val MARGIN = 2f / 32
+        const val MARGIN = 4f / 32
 
 
         /**
@@ -227,7 +221,7 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
  */
 data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList()) : Icon {
     init {
-        require(iconWidth == iconHeight) { "Base icon must be square." }
+        require(base.iconWidth == base.iconHeight) { "Base icon must be square." }
         require(overlays.all { it.iconWidth == it.iconHeight }) { "Overlays must be square." }
         require(overlays.map { it.iconWidth }.toSet().size <= 1) { "All overlays must have same size." }
     }
@@ -312,13 +306,9 @@ class RadialColorReplacementFilter(
      * @return 0 if [rgb] is 0, or one of [colors] with its alpha shifted by [rgb]'s alpha otherwise
      */
     override fun filterRGB(x: Int, y: Int, rgb: Int) =
-        if (rgb == 0) {
-            0
-        } else if (center == null) {
-            shiftAlpha(colors[0], Color(rgb, true)).rgb
-        } else {
-            shiftAlpha(positionToColor(Pair(center.second - y, center.first - x)), Color(rgb, true)).rgb
-        }
+        if (rgb == 0) 0
+        else if (center == null || colors.size == 1) shiftAlpha(colors[0], Color(rgb, true)).rgb
+        else shiftAlpha(positionToColor(Pair(x - center.first, y - center.second)), Color(rgb, true)).rgb
 
 
     /**
@@ -346,8 +336,8 @@ class RadialColorReplacementFilter(
      * @return the color to be displayed at [offset]
      */
     private fun positionToColor(offset: Pair<Int, Int>): Color {
-        val angle = atan2(offset.second.toDouble(), offset.first.toDouble()) + Math.PI
-        val index = (angle + STARTING_ANGLE) / (2 * Math.PI / colors.size)
+        val angle = 2 * Math.PI - (atan2(offset.second.toDouble(), offset.first.toDouble()) + STARTING_ANGLE)
+        val index = angle / (2 * Math.PI / colors.size)
         return colors[Math.floorMod(index.toInt(), colors.size)]
     }
 
@@ -364,6 +354,6 @@ class RadialColorReplacementFilter(
         /**
          * The angle in radians at which the first color should start being displayed.
          */
-        const val STARTING_ANGLE = 3 * Math.PI / 4
+        const val STARTING_ANGLE = -(3 * Math.PI / 4)
     }
 }
