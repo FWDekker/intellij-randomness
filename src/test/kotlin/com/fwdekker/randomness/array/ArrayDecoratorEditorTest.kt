@@ -9,13 +9,12 @@ import org.assertj.swing.fixture.FrameFixture
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import javax.swing.JCheckBox
-import javax.swing.JPanel
 
 
 /**
  * GUI tests for [ArrayDecoratorEditor].
  */
-object ArraySchemeDecoratorEditorTest : Spek({
+object ArrayDecoratorEditorTest : Spek({
     lateinit var scheme: ArrayDecorator
     lateinit var editor: ArrayDecoratorEditor
     lateinit var frame: FrameFixture
@@ -53,7 +52,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
             it("hides components if enabled is deselected") {
                 GuiActionRunner.execute { frame.checkBox("arrayEnabled").target().isSelected = false }
 
-                frame.panel(nameMatcher(JPanel::class.java, "arrayDetailsPanel")).requireNotVisible()
+                frame.spinner("arrayMinCount").requireDisabled()
             }
 
             it("shows components if enabled is reselected") {
@@ -62,7 +61,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
                     frame.checkBox("arrayEnabled").target().isSelected = true
                 }
 
-                frame.panel(nameMatcher(JPanel::class.java, "arrayDetailsPanel")).requireVisible()
+                frame.spinner("arrayMinCount").requireEnabled()
             }
 
             it("keeps components visible if the editor is not disablable") {
@@ -76,7 +75,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
                     frame.checkBox(nameMatcher(JCheckBox::class.java, "arrayEnabled")).target().isSelected = false
                 }
 
-                frame.panel(nameMatcher(JPanel::class.java, "arrayDetailsPanel")).requireVisible()
+                frame.spinner("arrayMinCount").requireEnabled()
             }
         }
 

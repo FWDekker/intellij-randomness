@@ -11,7 +11,7 @@ import org.spekframework.spek2.style.specification.describe
 /**
  * Unit tests for [ArrayDecorator].
  */
-object ArraySchemeDecoratorTest : Spek({
+object ArrayDecoratorTest : Spek({
     lateinit var arrayDecorator: ArrayDecorator
     lateinit var dummyScheme: DummyScheme
 

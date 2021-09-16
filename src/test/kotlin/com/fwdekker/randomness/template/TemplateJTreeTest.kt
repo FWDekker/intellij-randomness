@@ -28,7 +28,7 @@ import javax.swing.event.TreeModelListener
 
 
 /**
- * Unit and GUI tests for [TemplateJTree].
+ * GUI tests for [TemplateJTree].
  */
 object TemplateJTreeTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture

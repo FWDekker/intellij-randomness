@@ -116,15 +116,6 @@ class TemplateJTree(
         isRootVisible = false
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         setCellRenderer(CellRenderer())
-
-        myModel.list.templates.forEach { expandPath(myModel.getPathToRoot(StateNode(it))) }
-        myModel.rowToNode = { visibleNodes.getOrNull(it) }
-        myModel.nodeToRow = { visibleNodes.indexOf(it) }
-        myModel.expandAndSelect = {
-            expandPath(myModel.getPathToRoot(it))
-            selectedScheme = it.state as Scheme
-        }
-
         addTreeWillExpandListener(object : TreeWillExpandListener {
             override fun treeWillExpand(event: TreeExpansionEvent) {
                 explicitlyCollapsed.remove((event.path.lastPathComponent as StateNode).state.uuid)
@@ -134,6 +125,16 @@ class TemplateJTree(
                 explicitlyCollapsed.add((event.path.lastPathComponent as StateNode).state.uuid)
             }
         })
+
+        myModel.rowToNode = { visibleNodes.getOrNull(it) }
+        myModel.nodeToRow = { visibleNodes.indexOf(it) }
+        myModel.expandAndSelect = {
+            expandPath(myModel.getPathToRoot(it))
+            selectedScheme = it.state as Scheme
+        }
+
+        myModel.list.templates.forEach { expandPath(myModel.getPathToRoot(StateNode(it))) }
+        selectedScheme = null
     }
 
     /**

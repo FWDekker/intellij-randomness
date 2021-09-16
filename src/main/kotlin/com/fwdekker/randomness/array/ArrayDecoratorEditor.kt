@@ -7,6 +7,7 @@ import com.fwdekker.randomness.array.ArrayDecorator.Companion.MIN_COUNT
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
+import com.fwdekker.randomness.ui.forEach
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.jgoodies.forms.factories.DefaultComponentFactory
@@ -34,7 +35,6 @@ class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true)
 
     private lateinit var separator: JComponent
     private lateinit var enabledCheckBox: JCheckBox
-    private lateinit var arrayDetailsPanel: JPanel
     private lateinit var minCountSpinner: JIntSpinner
     private lateinit var maxCountSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
@@ -45,7 +45,14 @@ class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true)
 
     init {
         if (disablable) {
-            enabledCheckBox.addChangeListener { arrayDetailsPanel.isVisible = enabledCheckBox.isSelected }
+            enabledCheckBox.addChangeListener {
+                minCountSpinner.isEnabled = enabledCheckBox.isSelected
+                maxCountSpinner.isEnabled = enabledCheckBox.isSelected
+                bracketsGroup.forEach { it.isEnabled = enabledCheckBox.isSelected }
+                separatorGroup.forEach { it.isEnabled = enabledCheckBox.isSelected }
+                newlineSeparatorButton.isEnabled = enabledCheckBox.isSelected
+                spaceAfterSeparatorCheckBox.isEnabled = enabledCheckBox.isSelected
+            }
             enabledCheckBox.changeListeners.forEach { it.stateChanged(ChangeEvent(enabledCheckBox)) }
         } else {
             enabledCheckBox.isVisible = false
