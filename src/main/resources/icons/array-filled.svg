@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <g id="array-filled">
+    <path d="M0 0L16 0L16 16L0 16L0 0Z" id="Rectangle" fill="#D3D3D3" fill-rule="evenodd" stroke="none" />
+    <g id="array">
+      <path d="M0 16L0 13.6L4 13.6L4 2.4L0 2.4L0 0L6.4 0L6.4 16L0 16L0 16Z" transform="translate(9.599998 0)" id="Right" fill="#6E6E6E" fill-rule="evenodd" stroke="none" />
+      <path d="M0 16L0 0L6.4 0L6.4 2.4L2.4 2.4L2.4 13.6L6.4 13.6L6.4 16L0 16L0 16Z" id="Left" fill="#6E6E6E" fill-rule="evenodd" stroke="none" />
+    </g>
+  </g>
+</svg>

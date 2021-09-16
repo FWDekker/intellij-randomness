@@ -25,8 +25,6 @@ import org.spekframework.spek2.style.specification.describe
 
 /**
  * GUI tests for [TemplateListEditor].
- *
- * TODO: Docs: Unit or integration tests?
  */
 object TemplateListEditorTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture

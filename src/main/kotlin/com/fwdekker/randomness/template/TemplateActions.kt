@@ -1,12 +1,13 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.InsertAction
+import com.fwdekker.randomness.OverlayIcon
+import com.fwdekker.randomness.RandomnessIcons
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.options.ShowSettingsUtil
-import icons.RandomnessIcons
 import java.awt.event.ActionEvent
 
 
@@ -89,7 +90,7 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
  * @see TemplateGroupAction
  */
 class TemplateInsertAction(private val template: Template, private val repeat: Boolean = false) : InsertAction() {
-    override val icon = template.icon
+    override val icon = template.icon?.let { if (repeat) it.plusOverlay(RandomnessIcons.REPEAT) else it }
 
     override val name = (if (repeat) "Repeat " else "") + template.name
 
@@ -113,7 +114,9 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
     override fun update(event: AnActionEvent) {
         super.update(event)
 
-        event.presentation.icon = template?.icons?.Settings ?: RandomnessIcons.Data.Settings
+        event.presentation.icon =
+            if (template?.icon == null) RandomnessIcons.SETTINGS
+            else template.icon!!.plusOverlay(OverlayIcon.SETTINGS)
         event.presentation.text = "${if (template != null) template.name + " " else ""}Settings"
     }
 

@@ -1,7 +1,6 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArrayDecorator
-import icons.RandomnessIcons
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -43,29 +42,26 @@ object SchemeTest : Spek({
     }
 
     describe("icon") {
-        it("returns null if there are no icons") {
-            scheme.icons = null
+        it("returns null if the type icon is null") {
+            scheme.typeIcon = null
 
             assertThat(scheme.icon).isNull()
         }
 
-        it("returns null if there are no icons, even if the decorator is enabled") {
-            scheme.icons = null
-            scheme.arrayDecorator = ArrayDecorator(enabled = true)
-
-            assertThat(scheme.icon).isNull()
+        it("uses the type icon as a basis for the icon") {
+            assertThat((scheme.icon as OverlayedIcon).base).isEqualTo(scheme.typeIcon)
         }
 
-        it("returns the base icon if the decorator is disabled") {
-            scheme.arrayDecorator = ArrayDecorator(enabled = false)
+        it("does not add icon overlays if the scheme's decorators have no icons") {
+            scheme.arrayDecorator.enabled = false
 
-            assertThat(scheme.icon).isEqualTo(RandomnessIcons.Data.Base)
+            assertThat(scheme.icon!!.overlays).isEmpty()
         }
 
-        it("returns the array icon if the decorator is enabled") {
-            scheme.arrayDecorator = ArrayDecorator(enabled = true)
+        it("adds the scheme's decorators' icons") {
+            scheme.arrayDecorator.enabled = true
 
-            assertThat(scheme.icon).isEqualTo(RandomnessIcons.Data.Array)
+            assertThat(scheme.icon!!.overlays).containsExactly(scheme.arrayDecorator.icon)
         }
     }
 

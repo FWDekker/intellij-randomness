@@ -3,9 +3,9 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DummyScheme
+import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.integer.IntegerScheme
-import icons.RandomnessIcons
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -103,20 +103,48 @@ object TemplateReferenceTest : Spek({
         }
     }
 
-    describe("icons") {
-        it("returns default icons if the template cannot be found") {
+    describe("icon") {
+        it("uses the default type icon if the template cannot be found") {
             reference.templateUuid = null
 
-            assertThat(reference.icons).isEqualTo(RandomnessIcons.Data)
+            assertThat(reference.typeIcon).isEqualTo(TemplateReference.DEFAULT_ICON)
         }
 
-        it("returns the template's icons") {
-            val template = Template("milk", listOf(IntegerScheme()))
+        it("uses the template's type icon") {
+            val template = Template("Modern", listOf(IntegerScheme()))
             templateList.templates = listOf(template)
 
             reference.templateUuid = template.uuid
 
-            assertThat(reference.icons).isEqualTo(RandomnessIcons.Integer)
+            assertThat(reference.typeIcon).isEqualTo(template.typeIcon)
+        }
+
+        it("uses the default icon with a link overlay if the template cannot be found") {
+            reference.templateUuid = null
+
+            assertThat(reference.icon.base).isEqualTo(TemplateReference.DEFAULT_ICON)
+            assertThat(reference.icon.overlays).containsExactly(OverlayIcon.REFERENCE)
+        }
+
+        it("uses the template's icon with a link overlay") {
+            val template = Template("Milk", listOf(IntegerScheme()))
+            templateList.templates = listOf(template)
+
+            reference.templateUuid = template.uuid
+
+            assertThat(reference.icon.base).isEqualTo(template.typeIcon)
+            assertThat(reference.icon.overlays).containsExactly(OverlayIcon.REFERENCE)
+        }
+
+        it("appends the link overlay to its decorators' overlays") {
+            val template = Template("Tour", listOf(IntegerScheme()))
+            templateList.templates = listOf(template)
+
+            reference.templateUuid = template.uuid
+            reference.arrayDecorator.enabled = true
+
+            assertThat(reference.icon.overlays)
+                .containsExactly(reference.arrayDecorator.icon, OverlayIcon.REFERENCE)
         }
     }
 

@@ -1,10 +1,12 @@
 package com.fwdekker.randomness.decimal
 
+import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
-import icons.RandomnessIcons
+import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.nextUp
 
@@ -33,9 +35,9 @@ data class DecimalScheme(
     var suffix: String = DEFAULT_SUFFIX,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
-    @Transient
+    @get:Transient
     override val name = "Decimal"
-    override val icons = RandomnessIcons.Decimal
+    override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
@@ -91,6 +93,12 @@ data class DecimalScheme(
      * Holds constants.
      */
     companion object {
+        /**
+         * The base icon for decimals.
+         */
+        val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "4.2", listOf(Color(98, 181, 67, 154)))
+
+
         /**
          * The maximum valid difference between the [minValue] and [maxValue] fields.
          */

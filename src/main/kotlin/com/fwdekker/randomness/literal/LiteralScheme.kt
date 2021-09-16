@@ -1,11 +1,13 @@
 package com.fwdekker.randomness.literal
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
-import icons.RandomnessIcons
+import java.awt.Color
 
 
 /**
@@ -20,9 +22,9 @@ data class LiteralScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
-    @Transient
+    @get:Transient
     override val name = "Literal"
-    override val icons = RandomnessIcons.String
+    override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
@@ -48,6 +50,12 @@ data class LiteralScheme(
      * Holds constants.
      */
     companion object {
+        /**
+         * The base icon for literals.
+         */
+        val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "0x", listOf(Color(248, 19, 19, 154)))
+
+
         /**
          * The default value of the [literal] field.
          */

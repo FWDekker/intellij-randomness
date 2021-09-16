@@ -7,7 +7,6 @@ import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.literal.LiteralScheme
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.SymbolSetSettings
-import icons.RandomnessIcons
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -27,31 +26,33 @@ object TemplateTest : Spek({
     }
 
 
-    describe("icons") {
-        it("returns the single scheme's icons if the single scheme has icons") {
+    describe("typeIcon") {
+        it("returns the single scheme's icon if the single scheme has an icon") {
             val scheme = IntegerScheme()
             template.schemes = listOf(scheme)
 
-            assertThat(template.icons).isEqualTo(scheme.icons)
+            assertThat(template.typeIcon).isEqualTo(scheme.typeIcon)
         }
 
-        it("returns the default icons if the single scheme has no icons") {
+        it("returns the default icon if the single scheme has no icon") {
             val scheme = DummyScheme()
+            scheme.typeIcon = null
+
             template.schemes = listOf(scheme)
 
-            assertThat(template.icons).isEqualTo(RandomnessIcons.Data)
+            assertThat(template.typeIcon).isEqualTo(Template.DEFAULT_ICON)
         }
 
-        it("returns the default icons if no scheme is present") {
+        it("returns the default icon if no scheme is present") {
             template.schemes = emptyList()
 
-            assertThat(template.icons).isEqualTo(RandomnessIcons.Data)
+            assertThat(template.typeIcon).isEqualTo(Template.DEFAULT_ICON)
         }
 
-        it("returns the default icons if multiple schemes are present") {
+        it("returns the scheme's combined icon if multiple are present") {
             template.schemes = listOf(DummyScheme(), DummyScheme())
 
-            assertThat(template.icons).isEqualTo(RandomnessIcons.Data)
+            assertThat(template.typeIcon.colors.size).isGreaterThan(1)
         }
     }
 

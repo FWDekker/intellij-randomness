@@ -27,7 +27,7 @@
         <!-- Popup -->
         <action id="com.fwdekker.randomness.PopupAction" class="com.fwdekker.randomness.PopupAction"
                 text="Randomness" description="Opens the Randomness popup."
-                icon="/icons/data.svg">
+                icon="/icons/randomness.svg">
             <keyboard-shortcut first-keystroke="alt R" keymap="$default" />
             <add-to-group group-id="GenerateGroup" anchor="last" />
             <add-to-group group-id="ToolsMenu" anchor="last" />

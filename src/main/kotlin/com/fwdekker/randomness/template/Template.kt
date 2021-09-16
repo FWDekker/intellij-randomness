@@ -1,8 +1,10 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -11,8 +13,7 @@ import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.util.xmlb.annotations.XCollection
-import icons.RandomnessIcons
-import javax.swing.Icon
+import java.awt.Color
 
 
 /**
@@ -38,11 +39,8 @@ data class Template(
     var schemes: List<Scheme> = DEFAULT_SCHEMES.toMutableList(),
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
-    override val icons: RandomnessIcons
-        get() = schemes.singleOrNull()?.icons ?: RandomnessIcons.Data
-
-    override val icon: Icon
-        get() = icons.Base
+    override val typeIcon: TypeIcon
+        get() = schemes.mapNotNull { it.typeIcon }.reduceOrNull { acc, icon -> acc.combineWith(icon) } ?: DEFAULT_ICON
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
@@ -83,6 +81,12 @@ data class Template(
      * Holds constants.
      */
     companion object {
+        /**
+         * The icon displayed when a template has no schemes.
+         */
+        val DEFAULT_ICON = TypeIcon(RandomnessIcons.TEMPLATE, "", listOf(Color(110, 110, 110)))
+
+
         /**
          * The default value of the [name] field.
          */

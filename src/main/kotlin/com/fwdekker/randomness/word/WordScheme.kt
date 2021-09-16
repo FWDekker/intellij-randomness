@@ -2,14 +2,16 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
-import icons.RandomnessIcons
+import java.awt.Color
 
 
 /**
@@ -37,9 +39,9 @@ data class WordScheme(
     @get:Transient
     var dictionarySettings: Box<DictionarySettings> = Box({ DictionarySettings.default })
 
-    @Transient
+    @get:Transient
     override val name = "Word"
-    override val icons = RandomnessIcons.Word
+    override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
@@ -120,6 +122,12 @@ data class WordScheme(
      * Holds constants.
      */
     companion object {
+        /**
+         * The base icon for words.
+         */
+        val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "cat", listOf(Color(242, 101, 34, 154)))
+
+
         /**
          * The smallest valid value of the [minLength] field.
          */

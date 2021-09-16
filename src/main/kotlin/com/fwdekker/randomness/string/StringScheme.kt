@@ -2,13 +2,15 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.util.xmlb.annotations.Transient
-import icons.RandomnessIcons
+import java.awt.Color
 
 
 /**
@@ -37,9 +39,9 @@ data class StringScheme(
     @get:Transient
     var symbolSetSettings: Box<SymbolSetSettings> = Box({ SymbolSetSettings.default })
 
-    @Transient
+    @get:Transient
     override val name = "String"
-    override val icons = RandomnessIcons.String
+    override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
@@ -117,6 +119,12 @@ data class StringScheme(
      * Holds constants.
      */
     companion object {
+        /**
+         * The base icon for strings.
+         */
+        val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "abc", listOf(Color(244, 175, 61, 154)))
+
+
         /**
          * The smallest valid value of the [minLength] field.
          */
