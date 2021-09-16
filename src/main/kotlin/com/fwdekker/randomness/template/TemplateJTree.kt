@@ -81,7 +81,8 @@ class TemplateJTree(
     var selectedScheme: Scheme?
         get() = selectedNodeNotRoot?.state as? Scheme
         set(value) {
-            val node = value?.let { StateNode(it) }
+            // TODO: Figure out why `value?.let { StateNode(it) }` does not work
+            val node = value?.let { ix -> myModel.root.recursiveChildren.singleOrNull { it.state == ix } }
 
             selectionPath =
                 if (node == null || !myModel.root.contains(node))
@@ -466,7 +467,7 @@ class TemplateJTree(
             myModel.fireNodeStructureChanged(StateNode(toReset))
 
             clearSelection()
-            selectedScheme = toReset
+            myModel.expandAndSelect(StateNode(toReset))
         }
 
         override fun isEnabled() = selectedScheme?.let { isModified(it) } ?: false

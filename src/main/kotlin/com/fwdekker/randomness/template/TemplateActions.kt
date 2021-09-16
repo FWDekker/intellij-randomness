@@ -78,7 +78,12 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
      * @return variant actions for the main insertion action
      */
     override fun getChildren(event: AnActionEvent?) =
-        arrayOf(getActionByModifier(repeat = true), getActionByModifier(settings = true))
+        arrayOf(
+            getActionByModifier(array = true),
+            getActionByModifier(repeat = true),
+            getActionByModifier(array = true, repeat = true),
+            getActionByModifier(settings = true)
+        )
 }
 
 
@@ -90,7 +95,7 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
  * @see TemplateGroupAction
  */
 class TemplateInsertAction(private val template: Template, private val repeat: Boolean = false) : InsertAction() {
-    override val icon = template.icon?.let { if (repeat) it.plusOverlay(RandomnessIcons.REPEAT) else it }
+    override val icon = template.icon?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
 
     override val name = (if (repeat) "Repeat " else "") + template.name
 

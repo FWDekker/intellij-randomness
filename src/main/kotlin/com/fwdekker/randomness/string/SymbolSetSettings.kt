@@ -33,9 +33,13 @@ data class SymbolSetSettings(
      */
     @get:Transient
     var symbolSets: List<SymbolSet>
-        get() = serializedSymbolSets.map { SymbolSet(it.name, EmojiParser.parseToUnicode(it.symbols)) }
+        get() = serializedSymbolSets.map {
+            SymbolSet(it.name, EmojiParser.parseToUnicode(it.symbols).replace("\\\\", "\\").replace("\\:", ":"))
+        }
         set(value) {
-            serializedSymbolSets = value.map { SymbolSet(it.name, EmojiParser.parseToAliases(it.symbols)) }
+            serializedSymbolSets = value.map {
+                SymbolSet(it.name, EmojiParser.parseToAliases(it.symbols.replace("\\", "\\\\").replace(":", "\\:")))
+            }
         }
 
 

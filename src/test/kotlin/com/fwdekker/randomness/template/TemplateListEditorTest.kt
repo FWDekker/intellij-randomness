@@ -116,6 +116,14 @@ object TemplateListEditorTest : Spek({
     }
 
     describe("reset") {
+        it("undoes changes to the initial selection") {
+            GuiActionRunner.execute { frame.spinner("minValue").target().value = 7 }
+
+            GuiActionRunner.execute { editor.reset() }
+
+            assertThat(frame.spinner("minValue").target().value).isEqualTo(0L)
+        }
+
         it("retains the selection if `queueSelection` is null") {
             editor.queueSelection = null
 
@@ -124,7 +132,7 @@ object TemplateListEditorTest : Spek({
             assertThat(frame.tree().target().selectionRows).containsExactly(1)
         }
 
-        it("selects the indicated template") {
+        it("selects the indicated template after reset") {
             editor.queueSelection = state.templateList.templates[1].uuid
 
             GuiActionRunner.execute { editor.reset() }

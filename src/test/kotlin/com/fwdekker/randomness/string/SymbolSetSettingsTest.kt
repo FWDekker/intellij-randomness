@@ -21,6 +21,30 @@ object SymbolSetSettingsTest : Spek({
 
             assertThat(settings.symbolSets.single { it.name == "emoji" }.symbols).isEqualTo("👨‍❤️‍👨")
         }
+
+        it("does not deserialize pre-serialized emoji") {
+            val settings = SymbolSetSettings().also { it.symbolSets = listOf(SymbolSet("emoji", ":massage:")) }
+
+            assertThat(settings.symbolSets.single { it.name == "emoji" }.symbols).isEqualTo(":massage:")
+        }
+
+        it("does not deserialize pre-serialized emoji given a preceding first backslash") {
+            val settings = SymbolSetSettings().also { it.symbolSets = listOf(SymbolSet("emoji", "\\:massage:")) }
+
+            assertThat(settings.symbolSets.single { it.name == "emoji" }.symbols).isEqualTo("\\:massage:")
+        }
+
+        it("does not deserialize pre-serialized emoji given a preceding second backslash") {
+            val settings = SymbolSetSettings().also { it.symbolSets = listOf(SymbolSet("emoji", ":massage\\:")) }
+
+            assertThat(settings.symbolSets.single { it.name == "emoji" }.symbols).isEqualTo(":massage\\:")
+        }
+
+        it("does not deserialize pre-serialized emoji given multiple preceding backslashes") {
+            val settings = SymbolSetSettings().also { it.symbolSets = listOf(SymbolSet("emoji", "\\:massage\\:")) }
+
+            assertThat(settings.symbolSets.single { it.name == "emoji" }.symbols).isEqualTo("\\:massage\\:")
+        }
     }
 
 

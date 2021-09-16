@@ -222,7 +222,7 @@ object TemplateJTreeTest : Spek({
             it("appends (1) if a scheme with the given name already exists") {
                 GuiActionRunner.execute { tree.addScheme(Template(name = "Captain")) }
 
-                assertThat(list().templates.last().name).isEqualTo("Captain (1)")
+                assertThat(list().templates[1].name).isEqualTo("Captain (1)")
             }
 
             it("appends (2) if two schemes with the given name already exist") {
@@ -231,7 +231,7 @@ object TemplateJTreeTest : Spek({
                     tree.addScheme(Template(name = "Captain"))
                 }
 
-                assertThat(list().templates.last().name).isEqualTo("Captain (2)")
+                assertThat(list().templates[2].name).isEqualTo("Captain (2)")
             }
 
             it("appends (2) if a scheme ending with (1) already exists") {
@@ -240,7 +240,7 @@ object TemplateJTreeTest : Spek({
                     tree.addScheme(Template(name = "Captain"))
                 }
 
-                assertThat(list().templates.last().name).isEqualTo("Captain (2)")
+                assertThat(list().templates[2].name).isEqualTo("Captain (2)")
             }
 
             it("replaces (1) with (2) if a scheme ending with (1) already exists") {
@@ -249,7 +249,7 @@ object TemplateJTreeTest : Spek({
                     tree.addScheme(Template(name = "Captain (1)"))
                 }
 
-                assertThat(list().templates.last().name).isEqualTo("Captain (2)")
+                assertThat(list().templates[2].name).isEqualTo("Captain (2)")
             }
 
             it("replaces (13) with (14) if a scheme ending with (13) already exists") {
@@ -258,7 +258,7 @@ object TemplateJTreeTest : Spek({
                     tree.addScheme(Template(name = "Captain (13)"))
                 }
 
-                assertThat(list().templates.last().name).isEqualTo("Captain (14)")
+                assertThat(list().templates[2].name).isEqualTo("Captain (14)")
             }
         }
 
@@ -571,6 +571,14 @@ object TemplateJTreeTest : Spek({
                 }
 
                 assertThat(list().templates).isEmpty()
+            }
+
+            it("resets changes to the initially selected scheme") {
+                (currentState.templateList.templates[0].schemes[0] as DummyScheme).literals = listOf("approve")
+
+                GuiActionRunner.execute { frame.clickActionButton("Reset") }
+
+                assertThat((currentState.templateList.templates[0].schemes[0] as DummyScheme).name).isEqualTo("window")
             }
 
             it("resets changes to a template") {
