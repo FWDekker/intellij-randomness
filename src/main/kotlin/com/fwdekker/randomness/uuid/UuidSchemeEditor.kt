@@ -10,6 +10,9 @@ import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_VERSION
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
+import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
@@ -26,6 +29,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
     override val preferredFocusedComponent
         get() = versionGroup.buttons().firstOrNull { it.isSelected }
 
+    private lateinit var titleSeparator: TitledSeparator
     private lateinit var versionGroup: ButtonGroup
     private lateinit var enclosureGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
@@ -45,6 +49,9 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        val bundle = ResourceBundle.getBundle("randomness")
+        titleSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.uuid"), null)
+
         arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }

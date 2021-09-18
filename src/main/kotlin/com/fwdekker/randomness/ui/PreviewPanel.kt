@@ -3,10 +3,10 @@ package com.fwdekker.randomness.ui
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.generateTimely
-import com.jgoodies.forms.factories.DefaultComponentFactory
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
 import java.util.ResourceBundle
 import javax.swing.JButton
-import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JTextArea
 import kotlin.random.Random
@@ -27,7 +27,7 @@ class PreviewPanel(private val getGenerator: () -> Scheme) {
      * The root panel containing the preview elements.
      */
     lateinit var rootComponent: JPanel private set
-    private lateinit var separator: JComponent
+    private lateinit var separator: TitledSeparator
     private lateinit var refreshButton: JButton
     private lateinit var previewLabel: JTextArea
 
@@ -53,9 +53,8 @@ class PreviewPanel(private val getGenerator: () -> Scheme) {
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         val bundle = ResourceBundle.getBundle("randomness")
-        val factory = DefaultComponentFactory.getInstance()
 
-        separator = factory.createSeparator(bundle.getString("settings.preview"))
+        separator = SeparatorFactory.createSeparator(bundle.getString("settings.preview"), null)
     }
 
 

@@ -12,13 +12,13 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * GUI tests for [TemplateNameEditor].
+ * GUI tests for [TemplateEditor].
  */
-object TemplateNameEditorTest : Spek({
+object TemplateEditorTest : Spek({
     lateinit var frame: FrameFixture
 
     lateinit var template: Template
-    lateinit var editor: TemplateNameEditor
+    lateinit var editor: TemplateEditor
 
 
     beforeGroup {
@@ -27,7 +27,7 @@ object TemplateNameEditorTest : Spek({
 
     beforeEachTest {
         template = Template()
-        editor = GuiActionRunner.execute<TemplateNameEditor> { TemplateNameEditor(template) }
+        editor = GuiActionRunner.execute<TemplateEditor> { TemplateEditor(template) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 

@@ -10,13 +10,16 @@ import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.forEach
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
-import com.jgoodies.forms.factories.DefaultComponentFactory
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
+import com.intellij.ui.components.JBLabel
+import com.intellij.util.ui.UIUtil
 import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
-import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JRadioButton
+import javax.swing.JTextArea
 import javax.swing.event.ChangeEvent
 
 
@@ -26,15 +29,18 @@ import javax.swing.event.ChangeEvent
  * @param settings the settings to edit in the component
  * @param disablable true if and only if the user has the option of disabling the array scheme. If this is set to false,
  * [readState] will return a decorator which is always enabled
+ * @param helpText the text displayed right at the top
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true) :
+class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true, helpText: String? = null) :
     StateEditor<ArrayDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
-    override val preferredFocusedComponent = minCountSpinner.editorComponent
+    override val preferredFocusedComponent
+        get() = minCountSpinner.editorComponent
 
-    private lateinit var separator: JComponent
+    private lateinit var separator: TitledSeparator
     private lateinit var enabledCheckBox: JCheckBox
+    private lateinit var helpTextArea: JTextArea
     private lateinit var minCountSpinner: JIntSpinner
     private lateinit var maxCountSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
@@ -58,6 +64,13 @@ class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true)
             enabledCheckBox.isVisible = false
         }
 
+        if (helpText != null) {
+            helpTextArea.text = helpText
+            helpTextArea.border = null
+            helpTextArea.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
+            helpTextArea.isVisible = true
+        }
+
         newlineSeparatorButton.addChangeListener {
             spaceAfterSeparatorCheckBox.isEnabled = !newlineSeparatorButton.isSelected
         }
@@ -74,12 +87,11 @@ class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true)
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         val bundle = ResourceBundle.getBundle("randomness")
-        val factory = DefaultComponentFactory.getInstance()
+        separator = SeparatorFactory.createSeparator(bundle.getString("settings.array"), null)
 
         minCountSpinner = JIntSpinner(value = MIN_COUNT, minValue = MIN_COUNT)
         maxCountSpinner = JIntSpinner(value = MIN_COUNT, minValue = MIN_COUNT)
         bindSpinners(minCountSpinner, maxCountSpinner)
-        separator = factory.createSeparator(bundle.getString("settings.array"))
     }
 
 

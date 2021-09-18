@@ -7,6 +7,9 @@ import com.fwdekker.randomness.literal.LiteralScheme.Companion.DEFAULT_CAPITALIZ
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
+import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -20,8 +23,10 @@ import javax.swing.JTextField
 @Suppress("LateinitUsage") // Initialized by scene builder
 class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor<LiteralScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
-    override val preferredFocusedComponent = literalInput
+    override val preferredFocusedComponent
+        get() = literalInput
 
+    private lateinit var titleSeparator: TitledSeparator
     private lateinit var literalInput: JTextField
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var arrayDecoratorPanel: JPanel
@@ -39,6 +44,9 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        val bundle = ResourceBundle.getBundle("randomness")
+        titleSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.literal_title"), null)
+
         arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }

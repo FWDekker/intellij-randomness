@@ -12,6 +12,9 @@ import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
+import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
@@ -27,8 +30,10 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor<DecimalScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
-    override val preferredFocusedComponent = minValue.editorComponent
+    override val preferredFocusedComponent
+        get() = minValue.editorComponent
 
+    private lateinit var titleSeparator: TitledSeparator
     private lateinit var minValue: JDoubleSpinner
     private lateinit var maxValue: JDoubleSpinner
     private lateinit var decimalCount: JIntSpinner
@@ -55,6 +60,9 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        val bundle = ResourceBundle.getBundle("randomness")
+        titleSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.decimal"), null)
+
         minValue = JDoubleSpinner()
         maxValue = JDoubleSpinner()
         bindSpinners(minValue, maxValue, MAX_VALUE_DIFFERENCE)

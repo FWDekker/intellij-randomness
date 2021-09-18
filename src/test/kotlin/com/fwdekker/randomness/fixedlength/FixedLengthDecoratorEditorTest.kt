@@ -34,10 +34,10 @@ object FixedLengthDecoratorEditorTest : Spek({
 
 
     describe("event handling") {
-        it("truncates additional characters in the filler") {
+        it("keeps only the last input to the filler") {
             GuiActionRunner.execute { frame.textBox("fixedLengthFiller").target().text = "zAt" }
 
-            frame.textBox("fixedLengthFiller").requireText("z")
+            frame.textBox("fixedLengthFiller").requireText("t")
         }
 
         it("disables inputs when the scheme is disabled") {

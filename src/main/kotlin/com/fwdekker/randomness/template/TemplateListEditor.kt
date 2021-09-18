@@ -19,6 +19,7 @@ import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.util.ui.JBEmptyBorder
 import java.awt.BorderLayout
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
@@ -101,8 +102,9 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
                     templateTree.myModel.fireNodeStructureChanged(selectedNode)
                 }
 
+                editor.rootComponent.border = JBEmptyBorder(EDITOR_PANEL_MARGIN)
                 schemeEditorPanel.add(editor.rootComponent)
-                schemeEditorPanel.revalidate() // Show editor immediately
+                rootComponent.revalidate() // Show editor immediately
             }
     }
 
@@ -120,7 +122,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             is WordScheme -> WordSchemeEditor(scheme)
             is LiteralScheme -> LiteralSchemeEditor(scheme)
             is TemplateReference -> TemplateReferenceEditor(scheme)
-            is Template -> TemplateNameEditor(scheme)
+            is Template -> TemplateEditor(scheme)
             else -> error("Unknown scheme type '${scheme.javaClass.canonicalName}'.")
         }
 
@@ -165,5 +167,10 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
          * The default proportion of the splitter component.
          */
         const val DEFAULT_SPLITTER_PROPORTION = .25f
+
+        /**
+         * Pixels of margin outside the editor panel.
+         */
+        const val EDITOR_PANEL_MARGIN = 10
     }
 }

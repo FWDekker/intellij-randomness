@@ -12,12 +12,12 @@ import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
-import com.jgoodies.forms.factories.DefaultComponentFactory
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
 import java.awt.font.TextAttribute
 import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
-import javax.swing.JComponent
 import javax.swing.JPanel
 
 
@@ -30,14 +30,16 @@ import javax.swing.JPanel
 @Suppress("LateinitUsage") // Initialized by scene builder
 class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<StringScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
-    override val preferredFocusedComponent = minLength.editorComponent
+    override val preferredFocusedComponent
+        get() = minLength.editorComponent
 
+    private lateinit var titleSeparator: TitledSeparator
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
     private lateinit var enclosureGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var symbolSetPanel: JPanel
-    private lateinit var symbolSetSeparator: JComponent
+    private lateinit var symbolSetSeparator: TitledSeparator
     private lateinit var symbolSetTable: SymbolSetTable
     private lateinit var excludeLookAlikeSymbolsCheckBox: JCheckBox
     private lateinit var arrayDecoratorPanel: JPanel
@@ -62,13 +64,13 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         val bundle = ResourceBundle.getBundle("randomness")
-        val factory = DefaultComponentFactory.getInstance()
+        titleSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.string"), null)
 
         minLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         maxLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE.toDouble())
 
-        symbolSetSeparator = factory.createSeparator(bundle.getString("settings.symbol_sets"))
+        symbolSetSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.symbol_sets"), null)
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.panel
 

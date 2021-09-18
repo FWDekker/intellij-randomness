@@ -13,6 +13,9 @@ import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.forEach
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
+import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -27,8 +30,10 @@ import javax.swing.event.ChangeEvent
 @Suppress("LateinitUsage") // Initialized by scene builder
 class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor<IntegerScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
-    override val preferredFocusedComponent = minValue.editorComponent
+    override val preferredFocusedComponent
+        get() = minValue.editorComponent
 
+    private lateinit var titleSeparator: TitledSeparator
     private lateinit var minValue: JLongSpinner
     private lateinit var maxValue: JLongSpinner
     private lateinit var base: JIntSpinner
@@ -59,6 +64,9 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        val bundle = ResourceBundle.getBundle("randomness")
+        titleSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.integer"), null)
+
         minValue = JLongSpinner()
         maxValue = JLongSpinner()
         bindSpinners(minValue, maxValue, maxRange = null)

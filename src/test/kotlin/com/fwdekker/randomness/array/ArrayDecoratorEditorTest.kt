@@ -9,6 +9,7 @@ import org.assertj.swing.fixture.FrameFixture
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import javax.swing.JCheckBox
+import javax.swing.JTextArea
 
 
 /**
@@ -76,6 +77,24 @@ object ArrayDecoratorEditorTest : Spek({
                 }
 
                 frame.spinner("arrayMinCount").requireEnabled()
+            }
+        }
+
+        describe("helpText") {
+            it("hides the helpTextArea by default") {
+                frame.textBox(nameMatcher(JTextArea::class.java, "helpText")).requireNotVisible()
+            }
+
+            it("shows the helpTextArea if a helpText is given") {
+                frame.cleanUp()
+                editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
+                    ArrayDecoratorEditor(scheme, helpText = "Sorrow")
+                }
+                frame = showInFrame(editor.rootComponent)
+
+                frame.textBox("helpText")
+                    .requireVisible()
+                    .requireText("Sorrow")
             }
         }
 
