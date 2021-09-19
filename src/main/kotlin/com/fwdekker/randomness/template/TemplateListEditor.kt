@@ -18,9 +18,8 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
-import com.intellij.openapi.options.Configurable
-import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.ui.Splitter
+import com.intellij.openapi.util.Disposer
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBEmptyBorder
@@ -43,9 +42,7 @@ import javax.swing.SwingUtilities
  *
  * @param settings the settings containing the templates to edit
  */
-// TODO: Consider separating configurable from editor again, to prevent creating UI in constructor
-class TemplateListConfigurable(settings: SettingsState = SettingsState.default) :
-    StateEditor<SettingsState>(settings), Configurable {
+class TemplateListEditor(settings: SettingsState = SettingsState.default) : StateEditor<SettingsState>(settings) {
     override val rootComponent = JPanel(BorderLayout())
 
     private val currentState: SettingsState = SettingsState()
@@ -78,6 +75,7 @@ class TemplateListConfigurable(settings: SettingsState = SettingsState.default) 
             if (selectedNode.state is Template) selectedNode.state
             else parentNode.state as Template
         }
+        Disposer.register(this, previewPanel)
         addChangeListener { previewPanel.updatePreview() }
         schemeEditorPanel.border = JBEmptyBorder(EDITOR_PANEL_MARGIN)
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
@@ -142,44 +140,6 @@ class TemplateListConfigurable(settings: SettingsState = SettingsState.default) 
         }
 
 
-    /**
-     * Returns the [rootComponent].
-     *
-     * @return the [rootComponent]
-     */
-    override fun createComponent() = rootComponent
-
-    /**
-     * Saves the changes in the settings component to the default settings object.
-     *
-     * Similar to [applyState] except that an exception is thrown if [doValidate] returns a non-null value.
-     *
-     * @throws ConfigurationException if the changes cannot be saved
-     */
-    @Throws(ConfigurationException::class)
-    override fun apply() {
-        val validationInfo = doValidate()
-        if (validationInfo != null)
-            throw ConfigurationException(validationInfo, Bundle("template.list.error.failed_to_save_settings"))
-
-        applyState()
-    }
-
-    /**
-     * Returns the name of the configurable as displayed in the settings window.
-     *
-     * @return the name of the configurable as displayed in the settings window
-     */
-    override fun getDisplayName() = "Randomness"
-
-    /**
-     * Disposes all resources associated with this configurable.
-     */
-    override fun disposeUIResources() {
-        previewPanel.dispose()
-    }
-
-
     override fun loadState(state: SettingsState) {
         super.loadState(state)
 
@@ -190,10 +150,8 @@ class TemplateListConfigurable(settings: SettingsState = SettingsState.default) 
     override fun readState() = currentState.deepCopy(retainUuid = true)
 
 
-    override fun isModified() = super<StateEditor>.isModified() || doValidate() != null
-
     override fun reset() {
-        super<StateEditor>.reset()
+        super.reset()
 
         queueSelection?.also {
             templateTree.selectedScheme = currentState.templateList.getSchemeByUuid(it)

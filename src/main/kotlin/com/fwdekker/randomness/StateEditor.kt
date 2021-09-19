@@ -1,5 +1,7 @@
 package com.fwdekker.randomness
 
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.util.Disposer
 import java.awt.Component
 import javax.swing.JPanel
 
@@ -13,7 +15,7 @@ import javax.swing.JPanel
  * @param S the type of state that is edited; should be a self-reference
  * @property originalState the state object to write changes into
  */
-abstract class StateEditor<S : State>(val originalState: S) {
+abstract class StateEditor<S : State>(val originalState: S) : Disposable {
     /**
      * The root component of the editor.
      */
@@ -80,4 +82,11 @@ abstract class StateEditor<S : State>(val originalState: S) {
      * @param listener the listener that is invoked
      */
     abstract fun addChangeListener(listener: () -> Unit)
+
+    /**
+     * Disposes of this editor's resources.
+     */
+    override fun dispose() {
+        Disposer.dispose(this)
+    }
 }

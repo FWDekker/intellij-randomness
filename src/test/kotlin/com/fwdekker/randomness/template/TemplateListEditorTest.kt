@@ -10,7 +10,6 @@ import com.fwdekker.randomness.literal.LiteralScheme
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
-import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.JBSplitter
@@ -26,20 +25,20 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * GUI tests for [TemplateListConfigurable].
+ * GUI tests for [TemplateListEditor].
  */
-object TemplateListConfigurableTest : Spek({
+object TemplateListEditorTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
     lateinit var state: SettingsState
-    lateinit var configurable: TemplateListConfigurable
+    lateinit var editor: TemplateListEditor
 
 
     beforeGroup {
         FailOnThreadViolationRepaintManager.install()
 
-        TemplateListConfigurable.CREATE_SPLITTER =
+        TemplateListEditor.CREATE_SPLITTER =
             { vertical, proportionKey, defaultProportion -> JBSplitter(vertical, proportionKey, defaultProportion) }
     }
 
@@ -57,45 +56,14 @@ object TemplateListConfigurableTest : Spek({
         )
         state.templateList.applySettingsState(state)
 
-        configurable = GuiActionRunner.execute<TemplateListConfigurable> { TemplateListConfigurable(state) }
-        frame = Containers.showInFrame(configurable.rootComponent)
+        editor = GuiActionRunner.execute<TemplateListEditor> { TemplateListEditor(state) }
+        frame = Containers.showInFrame(editor.rootComponent)
     }
 
     afterEachTest {
         frame.cleanUp()
-        GuiActionRunner.execute { configurable.disposeUIResources() }
+        GuiActionRunner.execute { editor.dispose() }
         ideaFixture.tearDown()
-    }
-
-
-    describe("createComponent") {
-        it("returns the same instance each time") {
-            assertThat(configurable.createComponent()).isSameAs(configurable.createComponent())
-        }
-    }
-
-    describe("apply") {
-        it("stores correct settings") {
-            GuiActionRunner.execute {
-                frame.tree().target().setSelectionRow(5)
-                frame.spinner("minLength").target().value = 5
-            }
-
-            configurable.apply()
-
-            assertThat((state.templateList.templates[1].schemes[1] as WordScheme).minLength).isEqualTo(5)
-        }
-
-        it("rejects incorrect settings") {
-            GuiActionRunner.execute {
-                frame.tree().target().setSelectionRow(5)
-                frame.spinner("minLength").target().value = 500
-            }
-
-            assertThatThrownBy { configurable.apply() }.isInstanceOf(ConfigurationException::class.java)
-
-            assertThat((state.templateList.templates[1].schemes[1] as WordScheme).minLength).isEqualTo(3)
-        }
     }
 
 
@@ -107,7 +75,7 @@ object TemplateListConfigurableTest : Spek({
 
     describe("readState") {
         it("returns the original state if no editor changes are made") {
-            assertThat(configurable.readState()).isEqualTo(configurable.originalState)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns the editor's state") {
@@ -116,7 +84,7 @@ object TemplateListConfigurableTest : Spek({
                 frame.clickActionButton("Add")
             }
 
-            val readScheme = configurable.readState()
+            val readScheme = editor.readState()
             assertThat(readScheme.templateList.templates).hasSize(3)
         }
 
@@ -125,16 +93,16 @@ object TemplateListConfigurableTest : Spek({
                 frame.tree().target().clearSelection()
                 frame.clickActionButton("Add")
             }
-            assertThat(configurable.isModified()).isTrue()
+            assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { configurable.loadState(configurable.readState()) }
-            assertThat(configurable.isModified()).isFalse()
+            GuiActionRunner.execute { editor.loadState(editor.readState()) }
+            assertThat(editor.isModified()).isFalse()
 
-            assertThat(configurable.readState()).isEqualTo(configurable.originalState)
+            assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns different instances of the settings") {
-            val readState = configurable.readState()
+            val readState = editor.readState()
 
             assertThat(readState).isNotSameAs(state)
             assertThat(readState.templateList).isNotSameAs(state.templateList)
@@ -143,7 +111,7 @@ object TemplateListConfigurableTest : Spek({
         }
 
         it("retains the list's UUIDs") {
-            val readState = configurable.readState()
+            val readState = editor.readState()
 
             assertThat(readState.uuid).isEqualTo(state.uuid)
             assertThat(readState.templateList.uuid).isEqualTo(state.templateList.uuid)
@@ -153,59 +121,35 @@ object TemplateListConfigurableTest : Spek({
     }
 
 
-    describe("isModified") {
-        it("is not modified if the settings have not been modified and the settings are valid") {
-            assertThat(configurable.readState()).isEqualTo(state)
-            assertThat(configurable.isModified).isFalse()
-        }
-
-        it("is modified if the settings have been modified") {
-            GuiActionRunner.execute { frame.spinner("minValue").target().value = 7 }
-
-            assertThat(configurable.readState()).isNotEqualTo(state)
-            assertThat(configurable.isModified).isTrue()
-        }
-
-        it("is modified if the settings are unmodified but invalid") {
-            state.templateList.templates = listOf(
-                Template(schemes = listOf(IntegerScheme(), IntegerScheme(minValue = 743, maxValue = -420)))
-            )
-            GuiActionRunner.execute { configurable.reset() }
-
-            assertThat(configurable.readState()).isEqualTo(state)
-            assertThat(configurable.isModified).isTrue()
-        }
-    }
-
     describe("reset") {
         it("undoes changes to the initial selection") {
             GuiActionRunner.execute { frame.spinner("minValue").target().value = 7 }
 
-            GuiActionRunner.execute { configurable.reset() }
+            GuiActionRunner.execute { editor.reset() }
 
             assertThat(frame.spinner("minValue").target().value).isEqualTo(0L)
         }
 
         it("retains the selection if `queueSelection` is null") {
-            configurable.queueSelection = null
+            editor.queueSelection = null
 
-            GuiActionRunner.execute { configurable.reset() }
+            GuiActionRunner.execute { editor.reset() }
 
             assertThat(frame.tree().target().selectionRows).containsExactly(1)
         }
 
         it("selects the indicated template after reset") {
-            configurable.queueSelection = state.templateList.templates[1].uuid
+            editor.queueSelection = state.templateList.templates[1].uuid
 
-            GuiActionRunner.execute { configurable.reset() }
+            GuiActionRunner.execute { editor.reset() }
 
             assertThat(frame.tree().target().selectionRows).containsExactly(3)
         }
 
         it("does nothing if the indicated template could not be found") {
-            configurable.queueSelection = "231ee9da-8f72-4535-b770-0119fdf68f70"
+            editor.queueSelection = "231ee9da-8f72-4535-b770-0119fdf68f70"
 
-            GuiActionRunner.execute { configurable.reset() }
+            GuiActionRunner.execute { editor.reset() }
 
             assertThat(frame.tree().target().selectionRows).containsExactly(1)
         }
@@ -215,7 +159,7 @@ object TemplateListConfigurableTest : Spek({
         it("invokes the listener if the model is changed") {
             GuiActionRunner.execute { frame.tree().target().setSelectionRow(1) }
             var invoked = 0
-            GuiActionRunner.execute { configurable.addChangeListener { invoked++ } }
+            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
 
             GuiActionRunner.execute { frame.spinner("minValue").target().value = 321 }
 
@@ -225,7 +169,7 @@ object TemplateListConfigurableTest : Spek({
         it("invokes the listener if a scheme is added") {
             GuiActionRunner.execute { frame.tree().target().clearSelection() }
             var invoked = 0
-            GuiActionRunner.execute { configurable.addChangeListener { invoked++ } }
+            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
 
             GuiActionRunner.execute { frame.clickActionButton("Add") }
 
@@ -235,7 +179,7 @@ object TemplateListConfigurableTest : Spek({
         it("invokes the listener if the selection is changed") {
             GuiActionRunner.execute { frame.tree().target().clearSelection() }
             var invoked = 0
-            GuiActionRunner.execute { configurable.addChangeListener { invoked++ } }
+            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
 
             GuiActionRunner.execute { frame.tree().target().setSelectionRow(2) }
 
@@ -287,7 +231,7 @@ object TemplateListConfigurableTest : Spek({
                     state.templateList.templates = listOf(Template(schemes = listOf(scheme)))
                     state.templateList.applySettingsState(state)
 
-                    GuiActionRunner.execute { configurable.reset() }
+                    GuiActionRunner.execute { editor.reset() }
 
                     matcher(frame).requireVisible()
                 }
@@ -297,7 +241,7 @@ object TemplateListConfigurableTest : Spek({
                 state.templateList.templates = listOf(Template(schemes = emptyList()))
                 state.templateList.applySettingsState(state)
 
-                GuiActionRunner.execute { configurable.reset() }
+                GuiActionRunner.execute { editor.reset() }
 
                 frame.textBox("templateName").requireVisible()
             }
@@ -306,7 +250,7 @@ object TemplateListConfigurableTest : Spek({
                 state.templateList.templates = listOf(Template(schemes = listOf(DummyScheme.from("grain"))))
                 state.templateList.applySettingsState(state)
 
-                assertThatThrownBy { GuiActionRunner.execute { configurable.reset() } }
+                assertThatThrownBy { GuiActionRunner.execute { editor.reset() } }
                     .isInstanceOf(IllegalStateException::class.java)
                     .hasMessage("Unknown scheme type 'com.fwdekker.randomness.DummyScheme'.")
             }

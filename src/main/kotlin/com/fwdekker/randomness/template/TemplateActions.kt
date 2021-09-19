@@ -117,7 +117,7 @@ class TemplateInsertAction(private val template: Template, private val repeat: B
  *
  * @property template The template to select after opening the settings dialog.
  * @see TemplateGroupAction
- * @see TemplateListConfigurable
+ * @see TemplateListEditor
  */
 class TemplateSettingsAction(private val template: Template? = null) : AnAction() {
     /**
@@ -143,7 +143,7 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
      */
     override fun actionPerformed(event: AnActionEvent) =
         ShowSettingsUtil.getInstance()
-            .showSettingsDialog(event.project, TemplateListConfigurable::class.java) { configurable ->
-                configurable?.also { it.queueSelection = template?.uuid }
+            .showSettingsDialog(event.project, TemplateSettingsConfigurable::class.java) { configurable ->
+                configurable?.also { it.templateToSelect = template?.uuid }
             }
 }
