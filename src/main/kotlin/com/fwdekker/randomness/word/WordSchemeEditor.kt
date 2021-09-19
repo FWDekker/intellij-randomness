@@ -20,6 +20,7 @@ import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 import javax.swing.JTextArea
+import javax.swing.SwingUtilities
 
 
 /**
@@ -52,6 +53,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
 
         loadState()
+        SwingUtilities.invokeLater { dictionaryHelp.isVisible = true } // Required to disable auto-scrolling
     }
 
     /**
@@ -84,10 +86,8 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         maxLength.value = state.maxLength
         enclosureGroup.setValue(state.enclosure)
         capitalizationGroup.setValue(state.capitalization)
-        dictionaryTable.data =
-            (+state.dictionarySettings).dictionaries
-        dictionaryTable.activeData =
-            state.activeDictionaries.filter { dictionary -> dictionary in dictionaryTable.data }
+        dictionaryTable.data = (+state.dictionarySettings).dictionaries
+        dictionaryTable.activeData = state.activeDictionaries.filter { it in dictionaryTable.data }
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 

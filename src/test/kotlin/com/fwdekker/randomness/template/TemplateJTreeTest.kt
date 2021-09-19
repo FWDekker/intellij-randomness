@@ -7,9 +7,7 @@ import com.fwdekker.randomness.clickActionButton
 import com.fwdekker.randomness.getActionButton
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.SymbolSet
-import com.fwdekker.randomness.string.SymbolSetSettings
 import com.fwdekker.randomness.ui.SimpleTreeModelListener
-import com.fwdekker.randomness.word.DictionarySettings
 import com.fwdekker.randomness.word.UserDictionary
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
@@ -58,9 +56,7 @@ object TemplateJTreeTest : Spek({
                         Template("Particle", listOf(DummyScheme.from("republic"))),
                         Template("Village", listOf(DummyScheme.from("consider"), DummyScheme.from("tent")))
                     )
-                ),
-                SymbolSetSettings(),
-                DictionarySettings()
+                )
             )
         originalState.templateList.applySettingsState(originalState)
         currentState = originalState.deepCopy(retainUuid = true)

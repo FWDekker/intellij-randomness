@@ -10,8 +10,10 @@ import com.fwdekker.randomness.literal.LiteralScheme
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
+import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import com.intellij.ui.JBSplitter
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -24,18 +26,21 @@ import org.spekframework.spek2.style.specification.describe
 
 
 /**
- * GUI tests for [TemplateListEditor].
+ * GUI tests for [TemplateListConfigurable].
  */
-object TemplateListEditorTest : Spek({
+object TemplateListConfigurableTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
     lateinit var state: SettingsState
-    lateinit var editor: TemplateListEditor
+    lateinit var configurable: TemplateListConfigurable
 
 
     beforeGroup {
         FailOnThreadViolationRepaintManager.install()
+
+        TemplateListConfigurable.CREATE_SPLITTER =
+            { vertical, proportionKey, defaultProportion -> JBSplitter(vertical, proportionKey, defaultProportion) }
     }
 
     beforeEachTest {
@@ -46,31 +51,63 @@ object TemplateListEditorTest : Spek({
             TemplateList(
                 listOf(
                     Template("Whip", listOf(IntegerScheme(), StringScheme())),
-                    Template("Ability", listOf(DecimalScheme()))
+                    Template("Ability", listOf(DecimalScheme(), WordScheme()))
                 )
             )
         )
         state.templateList.applySettingsState(state)
 
-        editor = GuiActionRunner.execute<TemplateListEditor> { TemplateListEditor(state) }
-        frame = Containers.showInFrame(editor.rootComponent)
+        configurable = GuiActionRunner.execute<TemplateListConfigurable> { TemplateListConfigurable(state) }
+        frame = Containers.showInFrame(configurable.rootComponent)
     }
 
     afterEachTest {
         frame.cleanUp()
+        GuiActionRunner.execute { configurable.disposeUIResources() }
         ideaFixture.tearDown()
+    }
+
+
+    describe("createComponent") {
+        it("returns the same instance each time") {
+            assertThat(configurable.createComponent()).isSameAs(configurable.createComponent())
+        }
+    }
+
+    describe("apply") {
+        it("stores correct settings") {
+            GuiActionRunner.execute {
+                frame.tree().target().setSelectionRow(5)
+                frame.spinner("minLength").target().value = 5
+            }
+
+            configurable.apply()
+
+            assertThat((state.templateList.templates[1].schemes[1] as WordScheme).minLength).isEqualTo(5)
+        }
+
+        it("rejects incorrect settings") {
+            GuiActionRunner.execute {
+                frame.tree().target().setSelectionRow(5)
+                frame.spinner("minLength").target().value = 500
+            }
+
+            assertThatThrownBy { configurable.apply() }.isInstanceOf(ConfigurationException::class.java)
+
+            assertThat((state.templateList.templates[1].schemes[1] as WordScheme).minLength).isEqualTo(3)
+        }
     }
 
 
     describe("loadState") {
         it("loads the list's schemes") {
-            assertThat(GuiActionRunner.execute<Int> { frame.tree().target().rowCount }).isEqualTo(5)
+            assertThat(GuiActionRunner.execute<Int> { frame.tree().target().rowCount }).isEqualTo(6)
         }
     }
 
     describe("readState") {
         it("returns the original state if no editor changes are made") {
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
+            assertThat(configurable.readState()).isEqualTo(configurable.originalState)
         }
 
         it("returns the editor's state") {
@@ -79,7 +116,7 @@ object TemplateListEditorTest : Spek({
                 frame.clickActionButton("Add")
             }
 
-            val readScheme = editor.readState()
+            val readScheme = configurable.readState()
             assertThat(readScheme.templateList.templates).hasSize(3)
         }
 
@@ -88,16 +125,16 @@ object TemplateListEditorTest : Spek({
                 frame.tree().target().clearSelection()
                 frame.clickActionButton("Add")
             }
-            assertThat(editor.isModified()).isTrue()
+            assertThat(configurable.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
-            assertThat(editor.isModified()).isFalse()
+            GuiActionRunner.execute { configurable.loadState(configurable.readState()) }
+            assertThat(configurable.isModified()).isFalse()
 
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
+            assertThat(configurable.readState()).isEqualTo(configurable.originalState)
         }
 
         it("returns different instances of the settings") {
-            val readState = editor.readState()
+            val readState = configurable.readState()
 
             assertThat(readState).isNotSameAs(state)
             assertThat(readState.templateList).isNotSameAs(state.templateList)
@@ -106,7 +143,7 @@ object TemplateListEditorTest : Spek({
         }
 
         it("retains the list's UUIDs") {
-            val readState = editor.readState()
+            val readState = configurable.readState()
 
             assertThat(readState.uuid).isEqualTo(state.uuid)
             assertThat(readState.templateList.uuid).isEqualTo(state.templateList.uuid)
@@ -119,31 +156,31 @@ object TemplateListEditorTest : Spek({
         it("undoes changes to the initial selection") {
             GuiActionRunner.execute { frame.spinner("minValue").target().value = 7 }
 
-            GuiActionRunner.execute { editor.reset() }
+            GuiActionRunner.execute { configurable.reset() }
 
             assertThat(frame.spinner("minValue").target().value).isEqualTo(0L)
         }
 
         it("retains the selection if `queueSelection` is null") {
-            editor.queueSelection = null
+            configurable.queueSelection = null
 
-            GuiActionRunner.execute { editor.reset() }
+            GuiActionRunner.execute { configurable.reset() }
 
             assertThat(frame.tree().target().selectionRows).containsExactly(1)
         }
 
         it("selects the indicated template after reset") {
-            editor.queueSelection = state.templateList.templates[1].uuid
+            configurable.queueSelection = state.templateList.templates[1].uuid
 
-            GuiActionRunner.execute { editor.reset() }
+            GuiActionRunner.execute { configurable.reset() }
 
             assertThat(frame.tree().target().selectionRows).containsExactly(3)
         }
 
         it("does nothing if the indicated template could not be found") {
-            editor.queueSelection = "231ee9da-8f72-4535-b770-0119fdf68f70"
+            configurable.queueSelection = "231ee9da-8f72-4535-b770-0119fdf68f70"
 
-            GuiActionRunner.execute { editor.reset() }
+            GuiActionRunner.execute { configurable.reset() }
 
             assertThat(frame.tree().target().selectionRows).containsExactly(1)
         }
@@ -193,7 +230,7 @@ object TemplateListEditorTest : Spek({
                     state.templateList.templates = listOf(Template(schemes = listOf(scheme)))
                     state.templateList.applySettingsState(state)
 
-                    GuiActionRunner.execute { editor.reset() }
+                    GuiActionRunner.execute { configurable.reset() }
 
                     matcher(frame).requireVisible()
                 }
@@ -203,7 +240,7 @@ object TemplateListEditorTest : Spek({
                 state.templateList.templates = listOf(Template(schemes = emptyList()))
                 state.templateList.applySettingsState(state)
 
-                GuiActionRunner.execute { editor.reset() }
+                GuiActionRunner.execute { configurable.reset() }
 
                 frame.textBox("templateName").requireVisible()
             }
@@ -212,7 +249,7 @@ object TemplateListEditorTest : Spek({
                 state.templateList.templates = listOf(Template(schemes = listOf(DummyScheme.from("grain"))))
                 state.templateList.applySettingsState(state)
 
-                assertThatThrownBy { GuiActionRunner.execute { editor.reset() } }
+                assertThatThrownBy { GuiActionRunner.execute { configurable.reset() } }
                     .isInstanceOf(IllegalStateException::class.java)
                     .hasMessage("Unknown scheme type 'com.fwdekker.randomness.DummyScheme'.")
             }
@@ -224,7 +261,7 @@ object TemplateListEditorTest : Spek({
         it("invokes the listener if the model is changed") {
             GuiActionRunner.execute { frame.tree().target().setSelectionRow(1) }
             var invoked = 0
-            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
+            GuiActionRunner.execute { configurable.addChangeListener { invoked++ } }
 
             GuiActionRunner.execute { frame.spinner("minValue").target().value = 321 }
 
@@ -234,7 +271,7 @@ object TemplateListEditorTest : Spek({
         it("invokes the listener if a scheme is added") {
             GuiActionRunner.execute { frame.tree().target().clearSelection() }
             var invoked = 0
-            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
+            GuiActionRunner.execute { configurable.addChangeListener { invoked++ } }
 
             GuiActionRunner.execute { frame.clickActionButton("Add") }
 
@@ -244,7 +281,7 @@ object TemplateListEditorTest : Spek({
         it("invokes the listener if the selection is changed") {
             GuiActionRunner.execute { frame.tree().target().clearSelection() }
             var invoked = 0
-            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
+            GuiActionRunner.execute { configurable.addChangeListener { invoked++ } }
 
             GuiActionRunner.execute { frame.tree().target().setSelectionRow(2) }
 

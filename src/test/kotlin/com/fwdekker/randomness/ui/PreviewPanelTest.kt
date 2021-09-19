@@ -43,6 +43,7 @@ object PreviewPanelTest : Spek({
 
     afterEachTest {
         frame.cleanUp()
+        GuiActionRunner.execute { panel.dispose() }
         ideaFixture.tearDown()
     }
 

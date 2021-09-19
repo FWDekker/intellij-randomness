@@ -116,16 +116,6 @@ class DummySchemeEditor(scheme: DummyScheme = DummyScheme()) : StateEditor<Dummy
     }
 }
 
-
-/**
- * Dummy implementation of [SettingsConfigurable].
- */
-class DummySettingsConfigurable : SettingsConfigurable() {
-    override fun getDisplayName() = "Dummy"
-
-    override fun createEditor() = DummySchemeEditor()
-}
-
 /**
  * Inserts a dummy value.
  *

@@ -17,10 +17,14 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
-import com.intellij.ui.JBSplitter
+import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.options.ConfigurationException
+import com.intellij.openapi.ui.Splitter
+import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBEmptyBorder
 import java.awt.BorderLayout
+import java.awt.Dimension
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
@@ -38,32 +42,34 @@ import javax.swing.SwingUtilities
  *
  * @param settings the settings containing the templates to edit
  */
-class TemplateListEditor(settings: SettingsState = SettingsState.default) : StateEditor<SettingsState>(settings) {
+class TemplateListConfigurable(settings: SettingsState = SettingsState.default) :
+    StateEditor<SettingsState>(settings), Configurable {
     override val rootComponent = JPanel(BorderLayout())
-    private var currentState: SettingsState = SettingsState()
+
+    private val currentState: SettingsState = SettingsState()
     private val templateTree = TemplateJTree(originalState, currentState)
-    private var schemeEditorPanel = JPanel(BorderLayout())
+    private val schemeEditorPanel = JPanel(BorderLayout())
     private var schemeEditor: StateEditor<*>? = null
+    private val previewPanel: PreviewPanel
 
     /**
      * The UUID of the scheme to select after the next invocation of [reset].
      *
-     * @see TemplateSettingsConfigurable
      * @see TemplateSettingsAction
      */
     var queueSelection: String? = null
 
 
     init {
-        val splitter = JBSplitter(false, SPLITTER_PROPORTION_KEY, DEFAULT_SPLITTER_PROPORTION)
+        val splitter = CREATE_SPLITTER(false, SPLITTER_PROPORTION_KEY, DEFAULT_SPLITTER_PROPORTION)
         rootComponent.add(splitter, BorderLayout.CENTER)
 
         // Left half
         templateTree.addTreeSelectionListener { onTreeSelection() }
-        splitter.firstComponent = JBScrollPane(templateTree.asDecoratedPanel())
+        splitter.firstComponent = templateTree.asDecoratedPanel()
 
         // Right half
-        val previewPanel = PreviewPanel {
+        previewPanel = PreviewPanel {
             val selectedNode = templateTree.selectedNodeNotRoot ?: return@PreviewPanel LiteralScheme("")
             val parentNode = templateTree.myModel.getParentOf(selectedNode)!!
 
@@ -74,7 +80,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         schemeEditorPanel.border = JBEmptyBorder(EDITOR_PANEL_MARGIN)
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
 
-        splitter.secondComponent = JBScrollPane(schemeEditorPanel)
+        splitter.secondComponent = schemeEditorPanel
 
         loadState()
     }
@@ -84,7 +90,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
      */
     private fun onTreeSelection() {
         schemeEditor?.also {
-            schemeEditorPanel.remove(it.rootComponent)
+            schemeEditorPanel.remove((schemeEditorPanel.layout as BorderLayout).getLayoutComponent(BorderLayout.CENTER))
             schemeEditor = null
         }
 
@@ -103,7 +109,13 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
                     templateTree.myModel.fireNodeStructureChanged(selectedNode)
                 }
 
-                schemeEditorPanel.add(editor.rootComponent)
+                schemeEditorPanel.add(
+                    JBScrollPane(editor.rootComponent).also {
+                        it.border = null
+                        it.preferredSize = Dimension(Int.MAX_VALUE, Int.MAX_VALUE)
+                    },
+                    BorderLayout.CENTER
+                )
                 rootComponent.revalidate() // Show editor immediately
             }
     }
@@ -127,6 +139,44 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         }
 
 
+    /**
+     * Returns the [rootComponent].
+     *
+     * @return the [rootComponent]
+     */
+    override fun createComponent() = rootComponent
+
+    /**
+     * Saves the changes in the settings component to the default settings object.
+     *
+     * Similar to [applyState] except that an exception is thrown if [doValidate] returns a non-null value.
+     *
+     * @throws ConfigurationException if the changes cannot be saved
+     */
+    @Throws(ConfigurationException::class)
+    override fun apply() {
+        val validationInfo = doValidate()
+        if (validationInfo != null)
+            throw ConfigurationException(validationInfo, "Failed to save settings")
+
+        applyState()
+    }
+
+    /**
+     * Returns the name of the configurable as displayed in the settings window.
+     *
+     * @return the name of the configurable as displayed in the settings window
+     */
+    override fun getDisplayName() = "Randomness"
+
+    /**
+     * Disposes all resources associated with this configurable.
+     */
+    override fun disposeUIResources() {
+        previewPanel.dispose()
+    }
+
+
     override fun loadState(state: SettingsState) {
         super.loadState(state)
 
@@ -137,7 +187,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     override fun readState() = currentState.deepCopy(retainUuid = true)
 
     override fun reset() {
-        super.reset()
+        super<StateEditor>.reset()
 
         queueSelection?.also {
             templateTree.selectedScheme = currentState.templateList.getSchemeByUuid(it)
@@ -172,5 +222,16 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
          * Pixels of margin outside the editor panel.
          */
         const val EDITOR_PANEL_MARGIN = 10
+
+        /**
+         * Creates a new splitter.
+         *
+         * For some reason, `OnePixelSplitter` does not work in tests. Therefore, tests overwrite this field to inject a
+         * different constructor.
+         */
+        var CREATE_SPLITTER: (Boolean, String, Float) -> Splitter =
+            { vertical, proportionKey, defaultProportion ->
+                OnePixelSplitter(vertical, proportionKey, defaultProportion)
+            }
     }
 }

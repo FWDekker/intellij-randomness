@@ -4,8 +4,10 @@ import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.generateTimely
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.ui.InplaceButton
 import com.intellij.ui.SeparatorFactory
@@ -23,10 +25,12 @@ import kotlin.random.Random
  * generated value remains (approximately) the same and the user can easily see the effect of their changes. After
  * registering some components with this panel, the preview will be updated whenever those components are updated.
  *
+ * Note that [dispose] should be invoked when this panel is no longer used.
+ *
  * @property getGenerator Returns a scheme that generates previews. Its random source will be changed.
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class PreviewPanel(private val getGenerator: () -> Scheme) {
+class PreviewPanel(private val getGenerator: () -> Scheme) : Disposable {
     /**
      * The root panel containing the preview elements.
      */
@@ -34,6 +38,7 @@ class PreviewPanel(private val getGenerator: () -> Scheme) {
     private lateinit var separator: TitledSeparator
     private lateinit var refreshButton: JComponent
     private lateinit var previewDocument: Document
+    private lateinit var previewEditor: Editor
     private lateinit var previewComponent: JComponent
 
     /**
@@ -66,8 +71,16 @@ class PreviewPanel(private val getGenerator: () -> Scheme) {
 
         val factory = EditorFactory.getInstance()
         previewDocument = factory.createDocument(bundle.getString("settings.placeholder"))
-        val viewer = factory.createViewer(previewDocument)
-        previewComponent = viewer.component
+        previewEditor = factory.createViewer(previewDocument)
+            .also { it.settings.isRefrainFromScrolling = true }
+        previewComponent = previewEditor.component
+    }
+
+    /**
+     * Disposes of this panel's resources, to be used when this panel is no longer used.
+     */
+    override fun dispose() {
+        EditorFactory.getInstance().releaseEditor(previewEditor)
     }
 
 

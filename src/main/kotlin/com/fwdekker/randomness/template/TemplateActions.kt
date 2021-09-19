@@ -132,7 +132,7 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
      */
     override fun actionPerformed(event: AnActionEvent) =
         ShowSettingsUtil.getInstance()
-            .showSettingsDialog(event.project, TemplateSettingsConfigurable::class.java) { configurable ->
-                configurable?.also { it.templateToSelect = template?.uuid }
+            .showSettingsDialog(event.project, TemplateListConfigurable::class.java) { configurable ->
+                configurable?.also { it.queueSelection = template?.uuid }
             }
 }

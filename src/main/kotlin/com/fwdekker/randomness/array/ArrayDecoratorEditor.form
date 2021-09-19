@@ -22,7 +22,9 @@
           </grid>
         </constraints>
         <properties>
+          <autoscrolls value="false"/>
           <editable value="false"/>
+          <focusable value="false"/>
           <lineWrap value="true"/>
           <name value="helpText"/>
           <opaque value="false"/>
