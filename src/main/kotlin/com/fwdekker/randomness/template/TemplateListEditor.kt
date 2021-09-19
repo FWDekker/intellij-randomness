@@ -71,6 +71,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             else parentNode.state as Template
         }
         addChangeListener { previewPanel.updatePreview() }
+        schemeEditorPanel.border = JBEmptyBorder(EDITOR_PANEL_MARGIN)
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
 
         splitter.secondComponent = JBScrollPane(schemeEditorPanel)
@@ -102,7 +103,6 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
                     templateTree.myModel.fireNodeStructureChanged(selectedNode)
                 }
 
-                editor.rootComponent.border = JBEmptyBorder(EDITOR_PANEL_MARGIN)
                 schemeEditorPanel.add(editor.rootComponent)
                 rootComponent.revalidate() // Show editor immediately
             }
