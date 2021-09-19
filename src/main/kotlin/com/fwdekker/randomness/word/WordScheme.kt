@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.Box
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
@@ -40,7 +41,7 @@ data class WordScheme(
     var dictionarySettings: Box<DictionarySettings> = Box({ DictionarySettings.default })
 
     @get:Transient
-    override val name = "Word"
+    override val name = Bundle("word.title")
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
@@ -97,7 +98,7 @@ data class WordScheme(
     }
 
     override fun copyFrom(other: State) {
-        require(other is WordScheme) { "Cannot copy from different type." }
+        require(other is WordScheme) { Bundle("shared.error.cannot_copy_from_different_type") }
 
         (+dictionarySettings).also {
             it.copyFrom(+other.dictionarySettings)

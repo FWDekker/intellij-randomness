@@ -878,7 +878,7 @@ object TemplateTreeModelTest : Spek({
         it("throws an error if the given node is not a StateNode") {
             assertThatThrownBy { model.isLeaf("enter") }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("`node` must be a StateNode.")
+                .hasMessage("'node' must be a StateNode, but was a 'java.lang.String'.")
         }
 
         it("returns true if the node cannot have children") {
@@ -898,7 +898,7 @@ object TemplateTreeModelTest : Spek({
         it("throws an error if the given node is not a StateNode") {
             assertThatThrownBy { model.getChild("over", 0) }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("`parent` must be a StateNode.")
+                .hasMessage("'parent' must be a StateNode, but was a 'java.lang.String'.")
         }
 
         it("throws an error if the given node cannot have children") {
@@ -925,7 +925,7 @@ object TemplateTreeModelTest : Spek({
         it("throws an error if the given node is not a StateNode") {
             assertThatThrownBy { model.getChildCount("eager") }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("`parent` must be a StateNode.")
+                .hasMessage("'parent' must be a StateNode, but was a 'java.lang.String'.")
         }
 
         it("returns 0 if the node cannot have children") {
@@ -955,13 +955,13 @@ object TemplateTreeModelTest : Spek({
         it("throws an error if the parent is not a StateNode") {
             assertThatThrownBy { model.getIndexOfChild("mild", StateNode(DummyScheme())) }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("`parent` must be a StateNode.")
+                .hasMessage("'parent' must be a StateNode, but was a 'java.lang.String'.")
         }
 
         it("throws an error if the child is not a StateNode") {
             assertThatThrownBy { model.getIndexOfChild(StateNode(DummyScheme()), "soldier") }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("`child` must be a StateNode.")
+                .hasMessage("'child' must be a StateNode, but was a 'java.lang.String'.")
         }
 
         it("returns -1 if the child is not contained in the parent") {
@@ -1394,7 +1394,7 @@ object StateNodeTest : Spek({
             it("throws an error for a non-template scheme") {
                 assertThatThrownBy { StateNode(DummyScheme()).children }
                     .isInstanceOf(IllegalStateException::class.java)
-                    .hasMessage("Unknown parent type 'DummyScheme'.")
+                    .hasMessage("Unknown parent type 'com.fwdekker.randomness.DummyScheme'.")
             }
         }
 
@@ -1418,7 +1418,7 @@ object StateNodeTest : Spek({
             it("throws an error for a non-template scheme") {
                 assertThatThrownBy { StateNode(DummyScheme()).children = emptyList() }
                     .isInstanceOf(IllegalStateException::class.java)
-                    .hasMessage("Unknown parent type 'DummyScheme'.")
+                    .hasMessage("Unknown parent type 'com.fwdekker.randomness.DummyScheme'.")
             }
         }
     }

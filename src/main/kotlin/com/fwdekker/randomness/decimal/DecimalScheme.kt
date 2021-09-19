@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.decimal
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
@@ -36,7 +37,7 @@ data class DecimalScheme(
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @get:Transient
-    override val name = "Decimal"
+    override val name = Bundle("decimal.title")
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.Bundle
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonShortcuts
 import com.intellij.openapi.keymap.KeymapUtil
@@ -117,11 +118,16 @@ abstract class ActivityTableModelEditor<T>(
                     table.editCellAt(table.selectedRow, table.selectedColumn)
             }
             .setEditActionUpdater { table.selectedObject?.let { isEditable(it) } == true }
-            .addExtraAction(object : ToolbarDecorator.ElementActionButton("Copy", PlatformIcons.COPY_ICON) {
-                override fun actionPerformed(e: AnActionEvent) = copySelectedItems(table)
+            .addExtraAction(
+                object : ToolbarDecorator.ElementActionButton(
+                    Bundle("shared.action.copy"),
+                    PlatformIcons.COPY_ICON
+                ) {
+                    override fun actionPerformed(e: AnActionEvent) = copySelectedItems(table)
 
-                override fun isEnabled() = table.selection.all { isCopyable(it.datum) }
-            })
+                    override fun isEnabled() = table.selection.all { isCopyable(it.datum) }
+                }
+            )
             .createPanel()
     }
 

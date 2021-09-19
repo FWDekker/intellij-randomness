@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
@@ -16,7 +17,6 @@ import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.UIUtil
-import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 import javax.swing.JTextArea
@@ -63,14 +63,13 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        val bundle = ResourceBundle.getBundle("randomness")
-        titleSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.word"), null)
+        titleSeparator = SeparatorFactory.createSeparator(Bundle("word.title"), null)
 
         minLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         maxLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE.toDouble())
 
-        dictionarySeparator = SeparatorFactory.createSeparator(bundle.getString("settings.dictionaries"), null)
+        dictionarySeparator = SeparatorFactory.createSeparator(Bundle("word.dictionary.title"), null)
         dictionaryTable = DictionaryTable()
         dictionaryPanel = dictionaryTable.panel
 

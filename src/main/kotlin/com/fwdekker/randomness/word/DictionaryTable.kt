@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.ui.ActivityTableModelEditor
 import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -19,7 +20,7 @@ private typealias EditableDictionary = EditableDatum<Dictionary>
 class DictionaryTable : ActivityTableModelEditor<Dictionary>(
     arrayOf(TYPE_COLUMN, LOCATION_COLUMN),
     ITEM_EDITOR,
-    EMPTY_TEXT, EMPTY_SUB_TEXT,
+    Bundle("word.dictionary.empty"), Bundle("word.dictionary.empty_sub"),
     { it !is BundledDictionary },
     columnAdjuster = { it[1].maxWidth = it[1].preferredWidth }
 ) {
@@ -50,8 +51,8 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
             override fun getColumnClass() = String::class.java
 
             override fun valueOf(item: EditableDictionary) =
-                if (item.datum is BundledDictionary) "bundled"
-                else "custom"
+                if (item.datum is BundledDictionary) Bundle("word.dictionary.bundled")
+                else Bundle("word.dictionary.custom")
         }
 
         /**
@@ -87,16 +88,6 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
             override fun clone(item: EditableDictionary, forInPlaceEditing: Boolean) =
                 EditableDatum(item.active, item.datum.deepCopy())
         }
-
-        /**
-         * The text that is displayed when the table is empty.
-         */
-        const val EMPTY_TEXT = "No dictionaries configured."
-
-        /**
-         * The instruction that is displayed when the table is empty.
-         */
-        const val EMPTY_SUB_TEXT = "Add dictionary"
 
 
         /**

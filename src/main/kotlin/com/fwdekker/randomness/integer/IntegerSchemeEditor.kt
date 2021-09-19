@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.integer
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
@@ -15,7 +16,6 @@ import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
-import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -64,8 +64,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        val bundle = ResourceBundle.getBundle("randomness")
-        titleSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.integer"), null)
+        titleSeparator = SeparatorFactory.createSeparator(Bundle("integer.title"), null)
 
         minValue = JLongSpinner()
         maxValue = JLongSpinner()

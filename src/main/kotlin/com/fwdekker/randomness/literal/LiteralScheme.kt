@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.literal
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
@@ -23,7 +24,7 @@ data class LiteralScheme(
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @get:Transient
-    override val name = "Literal"
+    override val name = Bundle("literal.title")
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>

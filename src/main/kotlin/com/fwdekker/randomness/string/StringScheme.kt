@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.Box
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
@@ -40,7 +41,7 @@ data class StringScheme(
     var symbolSetSettings: Box<SymbolSetSettings> = Box({ SymbolSetSettings.default })
 
     @get:Transient
-    override val name = "String"
+    override val name = Bundle("string.title")
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
@@ -94,7 +95,7 @@ data class StringScheme(
     }
 
     override fun copyFrom(other: State) {
-        require(other is StringScheme) { "Cannot copy from different type." }
+        require(other is StringScheme) { Bundle("shared.error.cannot_copy_from_different_type") }
 
         (+symbolSetSettings).also {
             it.copyFrom(+other.symbolSetSettings)

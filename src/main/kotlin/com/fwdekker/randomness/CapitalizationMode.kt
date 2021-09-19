@@ -76,7 +76,7 @@ enum class CapitalizationMode(val descriptor: String, private val transformer: (
          */
         fun getMode(descriptor: String) =
             values().firstOrNull { it.descriptor == descriptor }
-                ?: throw IllegalArgumentException("There does not exist a capitalization mode with name `$descriptor`.")
+                ?: throw IllegalArgumentException(Bundle("shared.capitalization.error.name_not_found", descriptor))
 
 
         /**

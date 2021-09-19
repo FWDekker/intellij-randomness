@@ -4,6 +4,7 @@ import com.fasterxml.uuid.EthernetAddress
 import com.fasterxml.uuid.Generators
 import com.fasterxml.uuid.UUIDClock
 import com.fasterxml.uuid.UUIDTimer
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
@@ -32,7 +33,7 @@ data class UuidScheme(
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @get:Transient
-    override val name = "UUID"
+    override val name = Bundle("uuid.title")
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
@@ -59,7 +60,7 @@ data class UuidScheme(
                     )
                 )
             TYPE_4 -> Generators.randomBasedGenerator(random.asJavaRandom())
-            else -> error("Unknown UUID version '$version'.")
+            else -> error(Bundle("uuid.error.unknown_version", version))
         }
 
         return List(count) { generator.generate().toString() }
@@ -73,7 +74,7 @@ data class UuidScheme(
 
 
     override fun doValidate() =
-        if (version !in listOf(TYPE_1, TYPE_4)) "Unknown UUID version '$version'."
+        if (version !in listOf(TYPE_1, TYPE_4)) Bundle("uuid.error.unknown_version", version)
         else arrayDecorator.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =

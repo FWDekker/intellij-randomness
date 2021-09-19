@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsState
@@ -103,11 +104,11 @@ data class TemplateList(
          */
         val DEFAULT_TEMPLATES: List<Template>
             get() = listOf(
-                Template("Integer", listOf(IntegerScheme())),
-                Template("Decimal", listOf(DecimalScheme())),
-                Template("String", listOf(StringScheme())),
-                Template("Word", listOf(WordScheme())),
-                Template("UUID", listOf(UuidScheme()))
+                Template(Bundle("integer.title"), listOf(IntegerScheme())),
+                Template(Bundle("decimal.title"), listOf(DecimalScheme())),
+                Template(Bundle("string.title"), listOf(StringScheme())),
+                Template(Bundle("word.title"), listOf(WordScheme())),
+                Template(Bundle("uuid.title"), listOf(UuidScheme()))
             )
 
 
@@ -117,7 +118,7 @@ data class TemplateList(
          * @param schemes the schemes to give to the list's single template
          * @param name the name of the template
          */
-        fun from(vararg schemes: Scheme, name: String = Template.DEFAULT_NAME) =
+        fun from(vararg schemes: Scheme, name: String = Bundle("template.name.default")) =
             TemplateList(listOf(Template(name, schemes.toList())))
     }
 }

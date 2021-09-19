@@ -94,17 +94,6 @@ abstract class Scheme : State() {
 
 
     abstract override fun deepCopy(retainUuid: Boolean): Scheme
-
-
-    /**
-     * Holds constants.
-     */
-    companion object {
-        /**
-         * The default value of the [name] field.
-         */
-        const val DEFAULT_NAME: String = "Unnamed scheme"
-    }
 }
 
 /**

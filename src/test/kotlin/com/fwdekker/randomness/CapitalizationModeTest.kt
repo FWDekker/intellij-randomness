@@ -89,7 +89,7 @@ object CapitalizationModeTest : Spek({
         it("throws an exception if the descriptor is not recognized") {
             assertThatThrownBy { CapitalizationMode.getMode("river") }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("There does not exist a capitalization mode with name `river`.")
+                .hasMessage("There does not exist a capitalization mode with name 'river'.")
                 .hasNoCause()
         }
     }

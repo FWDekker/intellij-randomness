@@ -60,11 +60,10 @@ abstract class InsertAction(private val repeat: Boolean = false) : AnAction() {
             } catch (e: DataGenerationException) {
                 HintManager.getInstance().showErrorHint(
                     editor,
-                    """
-                        Randomness was unable to generate random data.
-                        ${if (!e.message.isNullOrBlank()) "The following error was encountered: ${e.message}\n" else ""}
-                        Check your Randomness settings and try again.
-                    """.trimIndent()
+                    if (e.message.isNullOrBlank())
+                        Bundle("shared.error.could_not_generate")
+                    else
+                        Bundle("shared.error.could_not_generate.no_message", e.message)
                 )
                 return
             }

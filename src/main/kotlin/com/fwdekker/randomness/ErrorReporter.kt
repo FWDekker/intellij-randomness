@@ -30,7 +30,7 @@ class ErrorReporter : ErrorReportSubmitter() {
      *
      * @return the text that is displayed in the button to report the error
      */
-    override fun getReportActionText() = "Report on GitHub"
+    override fun getReportActionText() = Bundle("reporter.report")
 
     /**
      * Submits the exception as desired by the user.
@@ -48,14 +48,14 @@ class ErrorReporter : ErrorReportSubmitter() {
         consumer: Consumer<in SubmittedReportInfo>
     ): Boolean {
         val project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(parentComponent))
-        object : Backgroundable(project, "Opening GitHub in browser") {
+        object : Backgroundable(project, Bundle("reporter.opening")) {
             override fun run(indicator: ProgressIndicator) {
                 BrowserUtil.open(getIssueUrl(events, additionalInfo))
                 ApplicationManager.getApplication().invokeLater {
                     consumer.consume(
                         SubmittedReportInfo(
                             "https://github.com/FWDekker/intellij-randomness/issues",
-                            "Issue on GitHub",
+                            Bundle("reporter.issue"),
                             SubmittedReportInfo.SubmissionStatus.NEW_ISSUE
                         )
                     )

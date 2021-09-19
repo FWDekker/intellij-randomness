@@ -1,8 +1,10 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.InsertAction
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.RandomnessIcons
+import com.fwdekker.randomness.generateTimely
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -91,16 +93,23 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
  * Inserts random strings in the editor based on the given template.
  *
  * @property template The template to use for inserting data.
- * @param repeat true if and only if the same value should be inserted at each caret
+ * @property repeat True if and only if the same value should be inserted at each caret.
  * @see TemplateGroupAction
  */
 class TemplateInsertAction(private val template: Template, private val repeat: Boolean = false) : InsertAction() {
     override val icon = template.icon?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
 
-    override val name = (if (repeat) "Repeat " else "") + template.name
+    override val name =
+        template.name
+            .let { if (template.arrayDecorator.enabled) Bundle("template.name.array_suffix", it) else it }
+            .let { if (repeat) Bundle("template.name.repeat_prefix", it) else it }
 
 
-    override fun generateStrings(count: Int) = template.generateStrings(count)
+    override fun generateStrings(count: Int) =
+        generateTimely {
+            if (repeat) template.generateStrings().single().let { string -> List(count) { string } }
+            else template.generateStrings(count)
+        }
 }
 
 /**
@@ -108,7 +117,7 @@ class TemplateInsertAction(private val template: Template, private val repeat: B
  *
  * @property template The template to select after opening the settings dialog.
  * @see TemplateGroupAction
- * @see TemplateSettingsConfigurable
+ * @see TemplateListConfigurable
  */
 class TemplateSettingsAction(private val template: Template? = null) : AnAction() {
     /**
@@ -122,7 +131,9 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
         event.presentation.icon =
             if (template?.icon == null) RandomnessIcons.SETTINGS
             else template.icon!!.plusOverlay(OverlayIcon.SETTINGS)
-        event.presentation.text = "${if (template != null) template.name + " " else ""}Settings"
+        event.presentation.text =
+            if (template == null) Bundle("template.name.settings")
+            else Bundle("template.name.settings_suffix", template.name)
     }
 
     /**

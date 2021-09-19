@@ -28,8 +28,7 @@ class Cache<K, V>(private val creator: (K) -> V) {
         if (useCache)
             values.getOrPut(key) { creator(key) }
         else
-            creator(key)
-                .also { values[key] = it }
+            creator(key).also { values[key] = it }
 
     /**
      * Removes all keys and values from the cache.

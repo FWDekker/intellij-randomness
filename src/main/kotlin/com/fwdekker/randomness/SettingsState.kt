@@ -21,7 +21,7 @@ data class SettingsState(
     override fun doValidate() = templateList.doValidate()
 
     override fun copyFrom(other: State) {
-        require(other is SettingsState) { "Cannot copy from different type." }
+        require(other is SettingsState) { Bundle("shared.error.cannot_copy_from_different_type") }
 
         uuid = other.uuid
         templateList.copyFrom(other.templateList)

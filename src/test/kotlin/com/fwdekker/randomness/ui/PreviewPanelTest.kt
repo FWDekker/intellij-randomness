@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.matcher
 import com.intellij.testFramework.fixtures.IdeaTestFixture
@@ -12,7 +13,6 @@ import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import java.util.ResourceBundle
 
 
 /**
@@ -24,7 +24,7 @@ object PreviewPanelTest : Spek({
     lateinit var frame: FrameFixture
 
     var scheme: DummyScheme? = null
-    val placeholder = ResourceBundle.getBundle("randomness").getString("settings.placeholder")
+    val placeholder = Bundle("preview.placeholder")
 
 
     beforeGroup {

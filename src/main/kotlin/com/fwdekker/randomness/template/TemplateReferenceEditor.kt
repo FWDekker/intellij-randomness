@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
@@ -10,7 +11,6 @@ import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
 import java.awt.BorderLayout
-import java.util.ResourceBundle
 import javax.swing.DefaultListModel
 import javax.swing.JList
 import javax.swing.JPanel
@@ -47,8 +47,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        val bundle = ResourceBundle.getBundle("randomness")
-        titleSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.reference"), null)
+        titleSeparator = SeparatorFactory.createSeparator(Bundle("reference.title"), null)
 
         templateListModel = DefaultListModel<Template>()
         templateList = JBList(templateListModel)
@@ -61,11 +60,11 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
                 hasFocus: Boolean
             ) {
                 icon = value?.icon ?: Template.DEFAULT_ICON
-                append(value?.name ?: "<unknown>")
+                append(value?.name ?: Bundle("template.name.unknown"))
             }
         }
         templateList.selectionMode = ListSelectionModel.SINGLE_SELECTION
-        templateList.setEmptyText("Cannot reference any other template without causing recursion.")
+        templateList.setEmptyText(Bundle("reference.empty"))
         templateListPanel = JPanel(BorderLayout())
         templateListPanel.add(JBScrollPane(templateList), BorderLayout.WEST)
 

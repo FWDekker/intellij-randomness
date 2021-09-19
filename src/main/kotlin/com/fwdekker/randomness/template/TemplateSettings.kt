@@ -42,7 +42,7 @@ class TemplateSettings : PersistentStateComponent<TemplateList> {
      */
     companion object {
         /**
-         * The persistent `TemplateSettings` instance.
+         * The persistent [TemplateSettings] instance.
          */
         val default: TemplateSettings
             get() = service()

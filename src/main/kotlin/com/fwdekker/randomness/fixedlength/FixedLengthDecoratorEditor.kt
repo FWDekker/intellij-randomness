@@ -1,11 +1,11 @@
 package com.fwdekker.randomness.fixedlength
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
-import java.util.ResourceBundle
 import javax.swing.JCheckBox
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -54,8 +54,7 @@ class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<F
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        val bundle = ResourceBundle.getBundle("randomness")
-        separator = SeparatorFactory.createSeparator(bundle.getString("settings.fixed_length"), null)
+        separator = SeparatorFactory.createSeparator(Bundle("fixed_length.title"), null)
 
         lengthInput = JIntSpinner(value = FixedLengthDecorator.MIN_LENGTH, minValue = FixedLengthDecorator.MIN_LENGTH)
 

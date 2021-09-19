@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Cache
 import java.io.File
 import java.io.FileNotFoundException
@@ -87,7 +88,7 @@ data class BundledDictionary(var filename: String = "") : Dictionary {
             try {
                 val stream =
                     BundledDictionary::class.java.classLoader.getResource(filename)?.openStream()
-                        ?: throw FileNotFoundException("File not found.")
+                        ?: throw FileNotFoundException(Bundle("word.dictionary.error.file_not_found"))
 
                 stream.bufferedReader()
                     .readLines()
@@ -128,8 +129,8 @@ data class UserDictionary(var filename: String = "") : Dictionary {
     @Suppress("ThrowsCount") // Improves error message specificity
     private fun validate() {
         val file = File(filename)
-        if (!file.exists()) throw InvalidDictionaryException("File not found.")
-        if (!file.canRead()) throw InvalidDictionaryException("File unreadable.")
+        if (!file.exists()) throw InvalidDictionaryException(Bundle("word.dictionary.error.file_not_found"))
+        if (!file.canRead()) throw InvalidDictionaryException(Bundle("word.dictionary.error.file_unreadable"))
 
         try {
             file.inputStream()

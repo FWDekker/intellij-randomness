@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.string
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.ui.ActivityTableModelEditor
 import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.ui.components.fields.ExpandableTextField
@@ -19,7 +20,7 @@ private typealias EditableSymbolSet = EditableDatum<SymbolSet>
 class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
     arrayOf(NAME_COLUMN, SYMBOLS_COLUMN),
     ITEM_EDITOR,
-    EMPTY_TEXT, EMPTY_SUB_TEXT
+    Bundle("string.symbol_sets.empty"), Bundle("string.symbol_sets.empty_sub")
 ) {
     /**
      * Creates a new placeholder [SymbolSet] instance.
@@ -88,16 +89,6 @@ class SymbolSetTable : ActivityTableModelEditor<SymbolSet>(
             override fun clone(item: EditableSymbolSet, forInPlaceEditing: Boolean) =
                 EditableSymbolSet(item.active, SymbolSet(item.datum.name, item.datum.symbols))
         }
-
-        /**
-         * The text that is displayed when the table is empty.
-         */
-        const val EMPTY_TEXT = "No symbol sets configured."
-
-        /**
-         * The instruction that is displayed when the table is empty.
-         */
-        const val EMPTY_SUB_TEXT = "Add symbol set"
 
 
         /**

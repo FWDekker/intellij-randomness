@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.string
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
@@ -15,7 +16,6 @@ import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
 import java.awt.font.TextAttribute
-import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
@@ -63,14 +63,13 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        val bundle = ResourceBundle.getBundle("randomness")
-        titleSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.string"), null)
+        titleSeparator = SeparatorFactory.createSeparator(Bundle("string.title"), null)
 
         minLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         maxLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE.toDouble())
 
-        symbolSetSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.symbol_sets"), null)
+        symbolSetSeparator = SeparatorFactory.createSeparator(Bundle("string.symbol_sets.title"), null)
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.panel
 

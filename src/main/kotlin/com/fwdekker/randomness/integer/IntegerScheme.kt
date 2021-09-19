@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.integer
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
@@ -37,7 +38,7 @@ data class IntegerScheme(
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @get:Transient
-    override val name = "Integer"
+    override val name = Bundle("integer.title")
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>

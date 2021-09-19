@@ -21,7 +21,7 @@ fun <T> generateTimely(generator: () -> T): T {
     try {
         return executor.submit<T> { generator() }.get(GENERATOR_TIMEOUT, TimeUnit.MILLISECONDS)
     } catch (e: TimeoutException) {
-        throw DataGenerationException("Timed out while generating data.", e)
+        throw DataGenerationException(Bundle("helpers.error.timed_out"), e)
     } catch (e: ExecutionException) {
         throw DataGenerationException(e.cause?.message ?: e.message, e)
     } finally {

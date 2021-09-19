@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
@@ -24,7 +25,7 @@ import java.awt.Color
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class Template(
-    override var name: String = DEFAULT_NAME,
+    override var name: String = Bundle("template.name.default"),
     @get:XCollection(
         elementTypes = [
             IntegerScheme::class,
@@ -86,11 +87,6 @@ data class Template(
          */
         val DEFAULT_ICON = TypeIcon(RandomnessIcons.TEMPLATE, "", listOf(Color(110, 110, 110)))
 
-
-        /**
-         * The default value of the [name] field.
-         */
-        const val DEFAULT_NAME = "Unnamed template"
 
         /**
          * The default value of the [schemes] field.

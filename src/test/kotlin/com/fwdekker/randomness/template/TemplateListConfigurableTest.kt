@@ -152,6 +152,31 @@ object TemplateListConfigurableTest : Spek({
         }
     }
 
+
+    describe("isModified") {
+        it("is not modified if the settings have not been modified and the settings are valid") {
+            assertThat(configurable.readState()).isEqualTo(state)
+            assertThat(configurable.isModified).isFalse()
+        }
+
+        it("is modified if the settings have been modified") {
+            GuiActionRunner.execute { frame.spinner("minValue").target().value = 7 }
+
+            assertThat(configurable.readState()).isNotEqualTo(state)
+            assertThat(configurable.isModified).isTrue()
+        }
+
+        it("is modified if the settings are unmodified but invalid") {
+            state.templateList.templates = listOf(
+                Template(schemes = listOf(IntegerScheme(), IntegerScheme(minValue = 743, maxValue = -420)))
+            )
+            GuiActionRunner.execute { configurable.reset() }
+
+            assertThat(configurable.readState()).isEqualTo(state)
+            assertThat(configurable.isModified).isTrue()
+        }
+    }
+
     describe("reset") {
         it("undoes changes to the initial selection") {
             GuiActionRunner.execute { frame.spinner("minValue").target().value = 7 }
@@ -183,6 +208,38 @@ object TemplateListConfigurableTest : Spek({
             GuiActionRunner.execute { configurable.reset() }
 
             assertThat(frame.tree().target().selectionRows).containsExactly(1)
+        }
+    }
+
+    describe("addChangeListener") {
+        it("invokes the listener if the model is changed") {
+            GuiActionRunner.execute { frame.tree().target().setSelectionRow(1) }
+            var invoked = 0
+            GuiActionRunner.execute { configurable.addChangeListener { invoked++ } }
+
+            GuiActionRunner.execute { frame.spinner("minValue").target().value = 321 }
+
+            assertThat(invoked).isNotZero()
+        }
+
+        it("invokes the listener if a scheme is added") {
+            GuiActionRunner.execute { frame.tree().target().clearSelection() }
+            var invoked = 0
+            GuiActionRunner.execute { configurable.addChangeListener { invoked++ } }
+
+            GuiActionRunner.execute { frame.clickActionButton("Add") }
+
+            assertThat(invoked).isNotZero()
+        }
+
+        it("invokes the listener if the selection is changed") {
+            GuiActionRunner.execute { frame.tree().target().clearSelection() }
+            var invoked = 0
+            GuiActionRunner.execute { configurable.addChangeListener { invoked++ } }
+
+            GuiActionRunner.execute { frame.tree().target().setSelectionRow(2) }
+
+            assertThat(invoked).isNotZero()
         }
     }
 
@@ -253,39 +310,6 @@ object TemplateListConfigurableTest : Spek({
                     .isInstanceOf(IllegalStateException::class.java)
                     .hasMessage("Unknown scheme type 'com.fwdekker.randomness.DummyScheme'.")
             }
-        }
-    }
-
-
-    describe("addChangeListener") {
-        it("invokes the listener if the model is changed") {
-            GuiActionRunner.execute { frame.tree().target().setSelectionRow(1) }
-            var invoked = 0
-            GuiActionRunner.execute { configurable.addChangeListener { invoked++ } }
-
-            GuiActionRunner.execute { frame.spinner("minValue").target().value = 321 }
-
-            assertThat(invoked).isNotZero()
-        }
-
-        it("invokes the listener if a scheme is added") {
-            GuiActionRunner.execute { frame.tree().target().clearSelection() }
-            var invoked = 0
-            GuiActionRunner.execute { configurable.addChangeListener { invoked++ } }
-
-            GuiActionRunner.execute { frame.clickActionButton("Add") }
-
-            assertThat(invoked).isNotZero()
-        }
-
-        it("invokes the listener if the selection is changed") {
-            GuiActionRunner.execute { frame.tree().target().clearSelection() }
-            var invoked = 0
-            GuiActionRunner.execute { configurable.addChangeListener { invoked++ } }
-
-            GuiActionRunner.execute { frame.tree().target().setSelectionRow(2) }
-
-            assertThat(invoked).isNotZero()
         }
     }
 })

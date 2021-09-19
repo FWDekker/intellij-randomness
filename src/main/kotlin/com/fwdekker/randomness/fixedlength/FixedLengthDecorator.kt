@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.fixedlength
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.SchemeDecorator
 
 
@@ -16,7 +17,7 @@ data class FixedLengthDecorator(
     var filler: String = DEFAULT_FILLER
 ) : SchemeDecorator() {
     override val decorators: List<SchemeDecorator> = emptyList()
-    override val name = "Array"
+    override val name = Bundle("fixed_length.title")
 
 
     override fun generateUndecoratedStrings(count: Int): List<String> =

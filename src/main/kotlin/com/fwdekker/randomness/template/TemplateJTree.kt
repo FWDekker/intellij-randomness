@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
@@ -112,7 +113,7 @@ class TemplateJTree(
     init {
         TreeSpeedSearch(this) { path -> path.path.filterIsInstance<Scheme>().joinToString { it.name } }
 
-        emptyText.text = EMPTY_TEXT
+        emptyText.text = Bundle("template.list.empty")
         isRootVisible = false
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         setCellRenderer(CellRenderer())
@@ -155,7 +156,15 @@ class TemplateJTree(
             .addExtraAction(UpButton())
             .addExtraAction(DownButton())
             .addExtraAction(ResetButton())
-            .setButtonComparator("Add", "Edit", "Remove", "Copy", "Up", "Down", "Reset")
+            .setButtonComparator(
+                Bundle("shared.action.add"),
+                Bundle("shared.action.edit"),
+                Bundle("shared.action.remove"),
+                Bundle("shared.action.copy"),
+                Bundle("shared.action.up"),
+                Bundle("shared.action.down"),
+                Bundle("shared.action.reset")
+            )
             .setForcedDnD()
             .createPanel()
 
@@ -189,7 +198,7 @@ class TemplateJTree(
         if (newScheme is Template) newScheme.name = findUniqueNameFor(newScheme)
 
         if (selectedNode == null) {
-            require(newScheme is Template) { "Cannot add non-template to root." }
+            require(newScheme is Template) { Bundle("template.list.error.add_template_to_non_root") }
             myModel.insertNode(myModel.root, newNode)
         } else if (selectedNode.state is Template) {
             if (newScheme is Template)
@@ -332,13 +341,13 @@ class TemplateJTree(
         ) {
             val scheme = (value as StateNode).state as? Scheme
             if (scheme == null) {
-                append("<unknown>")
+                append(Bundle("template.name.unknown"))
                 return
             }
             icon = scheme.icon
 
             append(
-                scheme.name.ifBlank { "<empty>" },
+                scheme.name.ifBlank { Bundle("template.name.empty") },
                 when {
                     scheme.doValidate() != null -> SimpleTextAttributes.ERROR_ATTRIBUTES
                     isModified(scheme) -> SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES
@@ -352,7 +361,7 @@ class TemplateJTree(
     /**
      * Displays a popup to add a scheme, or immediately adds a template if nothing is currently selected.
      */
-    private inner class AddButton : AnActionButton("Add", AllIcons.General.Add) {
+    private inner class AddButton : AnActionButton(Bundle("shared.action.add"), AllIcons.General.Add) {
         override fun actionPerformed(event: AnActionEvent) {
             if (selectedNodeNotRoot == null) {
                 addScheme(AVAILABLE_ADD_SCHEMES[0])
@@ -385,7 +394,7 @@ class TemplateJTree(
         ) {
             override fun getIconFor(value: Scheme?) = value?.icon
 
-            override fun getTextFor(value: Scheme?) = value?.name ?: Scheme.DEFAULT_NAME
+            override fun getTextFor(value: Scheme?) = value?.name ?: Bundle("misc.default_scheme_name")
 
             override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? {
                 if (value != null) addScheme(value.deepCopy().also { it.setSettingsState(currentState) })
@@ -406,7 +415,7 @@ class TemplateJTree(
     /**
      * Removes the selected scheme.
      */
-    private inner class RemoveButton : AnActionButton("Remove", AllIcons.General.Remove) {
+    private inner class RemoveButton : AnActionButton(Bundle("shared.action.remove"), AllIcons.General.Remove) {
         override fun actionPerformed(event: AnActionEvent) = removeScheme(selectedScheme!!)
 
         override fun isEnabled() = selectedNodeNotRoot != null
@@ -417,7 +426,7 @@ class TemplateJTree(
     /**
      * Duplicates the selected scheme.
      */
-    private inner class CopyButton : AnActionButton("Copy", AllIcons.Actions.Copy) {
+    private inner class CopyButton : AnActionButton(Bundle("shared.action.copy"), AllIcons.Actions.Copy) {
         override fun actionPerformed(event: AnActionEvent) {
             val copy = selectedScheme!!.deepCopy()
             copy.setSettingsState(currentState)
@@ -431,7 +440,7 @@ class TemplateJTree(
     /**
      * Moves a scheme up by one position.
      */
-    private inner class UpButton : AnActionButton("Up", AllIcons.Actions.MoveUp) {
+    private inner class UpButton : AnActionButton(Bundle("shared.action.up"), AllIcons.Actions.MoveUp) {
         override fun actionPerformed(event: AnActionEvent) = moveSchemeByOnePosition(selectedScheme!!, moveDown = false)
 
         override fun isEnabled() = selectedScheme?.let { canMoveSchemeByOnePosition(it, moveDown = false) } ?: false
@@ -442,7 +451,7 @@ class TemplateJTree(
     /**
      * Moves a scheme down by one position.
      */
-    private inner class DownButton : AnActionButton("Down", AllIcons.Actions.MoveDown) {
+    private inner class DownButton : AnActionButton(Bundle("shared.action.down"), AllIcons.Actions.MoveDown) {
         override fun actionPerformed(event: AnActionEvent) = moveSchemeByOnePosition(selectedScheme!!, moveDown = true)
 
         override fun isEnabled() = selectedScheme?.let { canMoveSchemeByOnePosition(it, moveDown = true) } ?: false
@@ -453,7 +462,7 @@ class TemplateJTree(
     /**
      * Resets the selected scheme to its original state, or removes it if it has no original state.
      */
-    private inner class ResetButton : AnActionButton("Reset", AllIcons.General.Reset) {
+    private inner class ResetButton : AnActionButton(Bundle("shared.action.reset"), AllIcons.General.Reset) {
         override fun actionPerformed(event: AnActionEvent) {
             val toReset = selectedScheme!!
             val toResetFrom = originalState.templateList.getSchemeByUuid(toReset.uuid)
@@ -481,16 +490,11 @@ class TemplateJTree(
      */
     companion object {
         /**
-         * The text that is displayed when the table is empty.
-         */
-        const val EMPTY_TEXT = "No templates configured."
-
-        /**
          * Returns the list of schemes that the user can add from the add action.
          */
         val AVAILABLE_ADD_SCHEMES: List<Scheme>
             get() = listOf(
-                Template("Template", emptyList()),
+                Template(Bundle("template.title"), emptyList()),
                 IntegerScheme(),
                 DecimalScheme(),
                 StringScheme(),
@@ -580,14 +584,14 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     /**
      * Not implemented because this method is used only if this is a model for a table.
      */
-    override fun addRow() = error("Cannot add empty row.")
+    override fun addRow() = error(Bundle("template.list.error.add_empty_row"))
 
     /**
      * Not implemented because this method is used only if this is a model for a table.
      *
      * @param index ignored
      */
-    override fun removeRow(index: Int) = error("Cannot remove row by index.")
+    override fun removeRow(index: Int) = error(Bundle("template.list.error.remove_row_by_index"))
 
     /**
      * Moves the node at row [oldIndex] to row [newIndex], and expands and selects the moved node.
@@ -653,7 +657,9 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      * @return true if and only if [node] does not have children
      */
     override fun isLeaf(node: Any?): Boolean {
-        require(node is StateNode) { "`node` must be a StateNode." }
+        require(node is StateNode) {
+            Bundle("template.list.error.must_be_state_node", "node", node?.let { it::class.java.canonicalName })
+        }
 
         return !node.canHaveChildren || node.children.isEmpty()
     }
@@ -668,8 +674,10 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      * @return the child at the given index in the parent
      */
     override fun getChild(parent: Any?, index: Int): StateNode {
-        require(parent is StateNode) { parentMustBeAStateNode }
-        require(parent.canHaveChildren) { "Cannot get child of parent that cannot have children." }
+        require(parent is StateNode) {
+            Bundle("template.list.error.must_be_state_node", "parent", parent?.let { it::class.java.canonicalName })
+        }
+        require(parent.canHaveChildren) { Bundle("template.list.error.child_of_infertile_parent") }
 
         return parent.children[index]
     }
@@ -681,7 +689,9 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      * @return the number of children in the parent
      */
     override fun getChildCount(parent: Any?): Int {
-        require(parent is StateNode) { parentMustBeAStateNode }
+        require(parent is StateNode) {
+            Bundle("template.list.error.must_be_state_node", "parent", parent?.let { it::class.java.canonicalName })
+        }
 
         return if (!parent.canHaveChildren) 0
         else parent.children.size
@@ -699,8 +709,12 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     override fun getIndexOfChild(parent: Any?, child: Any?): Int {
         if (parent == null || child == null) return -1
 
-        require(parent is StateNode) { parentMustBeAStateNode }
-        require(child is StateNode) { "`child` must be a StateNode." }
+        require(parent is StateNode) {
+            Bundle("template.list.error.must_be_state_node", "parent", parent::class.java.canonicalName)
+        }
+        require(child is StateNode) {
+            Bundle("template.list.error.must_be_state_node", "child", child::class.java.canonicalName)
+        }
 
         return parent.children.indexOf(child)
     }
@@ -714,7 +728,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      * @return the parent of the given node, or `null` if the node has no parent
      */
     fun getParentOf(node: StateNode): StateNode? {
-        require(root.contains(node)) { "Cannot get parent of node not in this model." }
+        require(root.contains(node)) { Bundle("template.list.error.parent_of_node_not_in_model") }
 
         return when (node.state) {
             is TemplateList -> null
@@ -732,7 +746,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      * @return the path from the [root] to the given node
      */
     fun getPathToRoot(node: StateNode): TreePath {
-        require(root.contains(node)) { "Cannot get path of node not in this model." }
+        require(root.contains(node)) { Bundle("template.list.error.path_of_node_not_in_model") }
 
         return when (node.state) {
             is TemplateList -> TreePath(arrayOf(node))
@@ -777,7 +791,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      */
     fun insertNodeAfter(parent: StateNode, child: StateNode, after: StateNode) {
         val afterIndex = getIndexOfChild(parent, after)
-        require(afterIndex >= 0) { "Cannot find node to insert after in parent." }
+        require(afterIndex >= 0) { Bundle("template.list.error.find_node_insert_parent") }
 
         insertNode(parent, child, afterIndex + 1)
     }
@@ -790,8 +804,8 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      * @param node the node to remove from the model
      */
     fun removeNode(node: StateNode) {
-        require(root.contains(node)) { "Cannot remove node not contained in this model." }
-        require(node != root) { "Cannot remove root from model." }
+        require(root.contains(node)) { Bundle("template.list.error.remove_node_not_in_model") }
+        require(node != root) { Bundle("template.list.error.remove_root") }
 
         val parent = getParentOf(node)!!
         val oldIndex = getIndexOfChild(parent, node)
@@ -837,7 +851,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      */
     fun fireNodeInserted(node: StateNode?, parent: StateNode, index: Int) {
         if (node == null) return
-        require(node.state !is TemplateList) { "Template list cannot have parent so cannot be inserted." }
+        require(node.state !is TemplateList) { Bundle("template.list.error.insert_list") }
 
         treeModelListeners.forEach {
             it.treeNodesInserted(TreeModelEvent(this, getPathToRoot(parent), intArrayOf(index), arrayOf(node)))
@@ -857,7 +871,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      */
     fun fireNodeRemoved(child: StateNode?, parent: StateNode, index: Int) {
         if (child == null) return
-        require(child.state !is TemplateList) { "Template list cannot have parent so cannot be removed." }
+        require(child.state !is TemplateList) { Bundle("template.list.error.remove_list") }
 
         treeModelListeners.forEach {
             it.treeNodesRemoved(TreeModelEvent(this, getPathToRoot(parent), intArrayOf(index), arrayOf(child)))
@@ -884,7 +898,8 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      * @param path ignored
      * @param newValue ignored
      */
-    override fun valueForPathChanged(path: TreePath, newValue: Any) = error("Cannot change value by path.")
+    override fun valueForPathChanged(path: TreePath, newValue: Any) =
+        error(Bundle("template.list.error.change_value_by_path"))
 
     /**
      * Adds the given listener.
@@ -902,17 +917,6 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      */
     override fun removeTreeModelListener(listener: TreeModelListener) {
         treeModelListeners.remove(listener)
-    }
-
-
-    /**
-     * Holds constants.
-     */
-    companion object {
-        /**
-         * Error message for type-checking errors when parameter `parent`.
-         */
-        const val parentMustBeAStateNode = "`parent` must be a StateNode."
     }
 }
 
@@ -945,13 +949,13 @@ class StateNode(val state: State) {
             when (state) {
                 is TemplateList -> state.templates.map { StateNode(it) }
                 is Template -> state.schemes.map { StateNode(it) }
-                else -> error("Unknown parent type '${state.javaClass.simpleName}'.")
+                else -> error(Bundle("template.list.error.unknown_parent_type", state.javaClass.canonicalName))
             }
         set(value) {
             when (state) {
                 is TemplateList -> state.templates = value.map { it.state as Template }
                 is Template -> state.schemes = value.map { it.state as Scheme }
-                else -> error("Unknown parent type '${state.javaClass.simpleName}'.")
+                else -> error(Bundle("template.list.error.unknown_parent_type", state.javaClass.canonicalName))
             }
         }
 

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.array
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecorator.Companion.DEFAULT_BRACKETS
 import com.fwdekker.randomness.array.ArrayDecorator.Companion.DEFAULT_SEPARATOR
@@ -14,7 +15,6 @@ import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.UIUtil
-import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
@@ -86,8 +86,7 @@ class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true,
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        val bundle = ResourceBundle.getBundle("randomness")
-        separator = SeparatorFactory.createSeparator(bundle.getString("settings.array"), null)
+        separator = SeparatorFactory.createSeparator(Bundle("array.title"), null)
 
         minCountSpinner = JIntSpinner(value = MIN_COUNT, minValue = MIN_COUNT)
         maxCountSpinner = JIntSpinner(value = MIN_COUNT, minValue = MIN_COUNT)

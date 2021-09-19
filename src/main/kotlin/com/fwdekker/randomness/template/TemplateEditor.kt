@@ -1,11 +1,11 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
-import java.util.ResourceBundle
 import javax.swing.JPanel
 import javax.swing.JTextField
 
@@ -38,13 +38,12 @@ class TemplateEditor(template: Template) : StateEditor<Template>(template) {
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        val bundle = ResourceBundle.getBundle("randomness")
-        titleSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.template"), null)
+        titleSeparator = SeparatorFactory.createSeparator(Bundle("template.title"), null)
 
         arrayDecoratorEditor = ArrayDecoratorEditor(
             originalState.arrayDecorator,
             disablable = false,
-            helpText = bundle.getString("settings.template_array_help")
+            helpText = Bundle("template.array_help")
         )
         arrayDecoratorEditorPanel = arrayDecoratorEditor.rootComponent
     }

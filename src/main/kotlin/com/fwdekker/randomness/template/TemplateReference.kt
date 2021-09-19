@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Box
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
@@ -26,7 +27,7 @@ data class TemplateReference(
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     override val name: String
-        get() = template?.name?.let { "[$it]" } ?: "Reference"
+        get() = template?.name?.let { "[$it]" } ?: Bundle("reference.title")
 
     override val typeIcon: TypeIcon
         get() = template?.typeIcon ?: DEFAULT_ICON
@@ -81,7 +82,7 @@ data class TemplateReference(
     }
 
     override fun copyFrom(other: State) {
-        require(other is TemplateReference) { "Cannot copy from different type." }
+        require(other is TemplateReference) { Bundle("shared.error.cannot_copy_from_different_type") }
 
         super.copyFrom(other)
         templateList = other.templateList.copy()

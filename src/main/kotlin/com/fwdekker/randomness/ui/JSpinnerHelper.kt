@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.Bundle
 import javax.swing.JSpinner
 
 
@@ -17,7 +18,7 @@ import javax.swing.JSpinner
  */
 fun bindSpinners(min: JSpinner, max: JSpinner, maxRange: Double? = null) {
     if (maxRange != null)
-        require(maxRange >= 0) { "maxRange must be a positive number." }
+        require(maxRange >= 0) { Bundle("helpers.error.max_range_must_be_positive") }
 
     min.addChangeListener {
         val minValue = (min.value as Number).toDouble()

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.generateTimely
@@ -12,7 +13,6 @@ import com.intellij.openapi.editor.EditorFactory
 import com.intellij.ui.InplaceButton
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
-import java.util.ResourceBundle
 import javax.swing.JComponent
 import javax.swing.JPanel
 import kotlin.random.Random
@@ -61,16 +61,14 @@ class PreviewPanel(private val getGenerator: () -> Scheme) : Disposable {
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        val bundle = ResourceBundle.getBundle("randomness")
-
-        separator = SeparatorFactory.createSeparator(bundle.getString("settings.preview"), null)
-        refreshButton = InplaceButton("Refresh", AllIcons.Actions.Refresh) {
+        separator = SeparatorFactory.createSeparator(Bundle("preview.title"), null)
+        refreshButton = InplaceButton(Bundle("shared.action.refresh"), AllIcons.Actions.Refresh) {
             seed = Random.nextInt()
             updatePreview()
         }
 
         val factory = EditorFactory.getInstance()
-        previewDocument = factory.createDocument(bundle.getString("settings.placeholder"))
+        previewDocument = factory.createDocument(Bundle("preview.placeholder"))
         previewEditor = factory.createViewer(previewDocument)
             .also { it.settings.isRefrainFromScrolling = true }
         previewComponent = previewEditor.component
@@ -92,7 +90,7 @@ class PreviewPanel(private val getGenerator: () -> Scheme) : Disposable {
         try {
             previewText = generateTimely { getGenerator().also { it.random = Random(seed) }.generateStrings() }.first()
         } catch (e: DataGenerationException) {
-            previewText = "Settings are invalid: ${e.message}"
+            previewText = Bundle("preview.invalid", e.message)
         } catch (e: IllegalArgumentException) {
             // Ignore exception; invalid settings are handled by form validation
         }

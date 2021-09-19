@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.array
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.SchemeDecorator
@@ -24,7 +25,7 @@ data class ArrayDecorator(
     var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR
 ) : SchemeDecorator() {
     override val decorators: List<SchemeDecorator> = emptyList()
-    override val name = "Array"
+    override val name = Bundle("array.title")
     override val icon: OverlayedIcon?
         get() = if (enabled) OverlayedIcon(OverlayIcon.ARRAY) else null
 

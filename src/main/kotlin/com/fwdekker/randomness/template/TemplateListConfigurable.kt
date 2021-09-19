@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.StateEditor
@@ -42,6 +43,7 @@ import javax.swing.SwingUtilities
  *
  * @param settings the settings containing the templates to edit
  */
+// TODO: Consider separating configurable from editor again, to prevent creating UI in constructor
 class TemplateListConfigurable(settings: SettingsState = SettingsState.default) :
     StateEditor<SettingsState>(settings), Configurable {
     override val rootComponent = JPanel(BorderLayout())
@@ -116,6 +118,7 @@ class TemplateListConfigurable(settings: SettingsState = SettingsState.default) 
                     },
                     BorderLayout.CENTER
                 )
+                editor.applyState() // Apply validation fixes from UI
                 rootComponent.revalidate() // Show editor immediately
             }
     }
@@ -135,7 +138,7 @@ class TemplateListConfigurable(settings: SettingsState = SettingsState.default) 
             is LiteralScheme -> LiteralSchemeEditor(scheme)
             is TemplateReference -> TemplateReferenceEditor(scheme)
             is Template -> TemplateEditor(scheme)
-            else -> error("Unknown scheme type '${scheme.javaClass.canonicalName}'.")
+            else -> error(Bundle("template.list.error.unknown_scheme_type", scheme.javaClass.canonicalName))
         }
 
 
@@ -157,7 +160,7 @@ class TemplateListConfigurable(settings: SettingsState = SettingsState.default) 
     override fun apply() {
         val validationInfo = doValidate()
         if (validationInfo != null)
-            throw ConfigurationException(validationInfo, "Failed to save settings")
+            throw ConfigurationException(validationInfo, Bundle("template.list.error.failed_to_save_settings"))
 
         applyState()
     }
@@ -186,6 +189,9 @@ class TemplateListConfigurable(settings: SettingsState = SettingsState.default) 
 
     override fun readState() = currentState.deepCopy(retainUuid = true)
 
+
+    override fun isModified() = super<StateEditor>.isModified() || doValidate() != null
+
     override fun reset() {
         super<StateEditor>.reset()
 
@@ -196,7 +202,6 @@ class TemplateListConfigurable(settings: SettingsState = SettingsState.default) 
             queueSelection = null
         }
     }
-
 
     override fun addChangeListener(listener: () -> Unit) {
         templateTree.model.addTreeModelListener(SimpleTreeModelListener { listener() })

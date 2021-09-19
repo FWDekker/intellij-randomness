@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import java.beans.PropertyChangeEvent
 import javax.swing.ButtonGroup
@@ -31,7 +32,9 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
             is JSpinner -> component.addChangeListener { listener() }
             is JTextField -> component.addChangeListener { listener() }
             is StateEditor<*> -> component.addChangeListener { listener() }
-            else -> throw IllegalArgumentException("Unknown component type '${component.javaClass.canonicalName}'.")
+            else -> throw IllegalArgumentException(
+                Bundle("helpers.error.unknown_component_type", component.javaClass.canonicalName)
+            )
         }
     }
 }
