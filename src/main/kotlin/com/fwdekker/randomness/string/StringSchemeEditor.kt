@@ -87,10 +87,8 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         capitalizationGroup.setValue(state.capitalization)
         excludeLookAlikeSymbolsCheckBox.isSelected = state.excludeLookAlikeSymbols
 
-        symbolSetTable.data =
-            (+state.symbolSetSettings).symbolSets
-        symbolSetTable.activeData =
-            (+state.symbolSetSettings).symbolSets.filter { symbolSet -> symbolSet.name in state.activeSymbolSets }
+        symbolSetTable.data = (+state.symbolSetSettings).symbolSets
+        symbolSetTable.activeData = (+state.symbolSetSettings).symbolSets.filter { it.name in state.activeSymbolSets }
 
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }

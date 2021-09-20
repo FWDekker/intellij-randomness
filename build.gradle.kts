@@ -7,7 +7,8 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    id("org.jetbrains.kotlin.jvm") version "1.5.30"  // See also `gradle.properties`
+    // TODO: Update to Kotlin 1.5.30 once https://github.com/jacoco/jacoco/issues/1182 has been fixed
+    id("org.jetbrains.kotlin.jvm") version "1.5.21"  // See also `gradle.properties`
     id("org.jetbrains.intellij") version "1.1.6"
 
     // Tests/coverage
