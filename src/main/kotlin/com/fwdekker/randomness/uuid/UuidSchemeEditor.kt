@@ -9,7 +9,7 @@ import com.fwdekker.randomness.ui.buttons
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_CAPITALIZATION
-import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_ENCLOSURE
+import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_QUOTATION
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_VERSION
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
@@ -31,7 +31,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
 
     private lateinit var titleSeparator: TitledSeparator
     private lateinit var versionGroup: ButtonGroup
-    private lateinit var enclosureGroup: ButtonGroup
+    private lateinit var quotationGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var addDashesCheckBox: JCheckBox
     private lateinit var arrayDecoratorPanel: JPanel
@@ -60,7 +60,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
         super.loadState(state)
 
         versionGroup.setValue(state.version.toString())
-        enclosureGroup.setValue(state.enclosure)
+        quotationGroup.setValue(state.quotation)
         capitalizationGroup.setValue(state.capitalization)
         addDashesCheckBox.isSelected = state.addDashes
         arrayDecoratorEditor.loadState(state.arrayDecorator)
@@ -69,7 +69,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
     override fun readState(): UuidScheme =
         UuidScheme(
             version = versionGroup.getValue()?.toInt() ?: DEFAULT_VERSION,
-            enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
+            quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             addDashes = addDashesCheckBox.isSelected,
             arrayDecorator = arrayDecoratorEditor.readState()
@@ -78,7 +78,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            versionGroup, enclosureGroup, capitalizationGroup, addDashesCheckBox, arrayDecoratorEditor,
+            versionGroup, quotationGroup, capitalizationGroup, addDashesCheckBox, arrayDecoratorEditor,
             listener = listener
         )
 }

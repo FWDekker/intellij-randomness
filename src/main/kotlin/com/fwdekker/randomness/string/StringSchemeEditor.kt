@@ -5,7 +5,7 @@ import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
-import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_ENCLOSURE
+import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_QUOTATION
 import com.fwdekker.randomness.string.StringScheme.Companion.MAX_LENGTH_DIFFERENCE
 import com.fwdekker.randomness.string.StringScheme.Companion.MIN_LENGTH
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -36,7 +36,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
     private lateinit var titleSeparator: TitledSeparator
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
-    private lateinit var enclosureGroup: ButtonGroup
+    private lateinit var quotationGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var symbolSetPanel: JPanel
     private lateinit var symbolSetSeparator: TitledSeparator
@@ -83,7 +83,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
         minLength.value = state.minLength
         maxLength.value = state.maxLength
-        enclosureGroup.setValue(state.enclosure)
+        quotationGroup.setValue(state.quotation)
         capitalizationGroup.setValue(state.capitalization)
         excludeLookAlikeSymbolsCheckBox.isSelected = state.excludeLookAlikeSymbols
 
@@ -97,7 +97,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         StringScheme(
             minLength = minLength.value,
             maxLength = maxLength.value,
-            enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
+            quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected,
             activeSymbolSets = symbolSetTable.activeData.map { symbolSet -> symbolSet.name }.toSet(),
@@ -117,7 +117,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            minLength, maxLength, enclosureGroup, capitalizationGroup, symbolSetTable, arrayDecoratorEditor,
+            minLength, maxLength, quotationGroup, capitalizationGroup, symbolSetTable, arrayDecoratorEditor,
             listener = listener
         )
 }

@@ -10,7 +10,7 @@ import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
-import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_ENCLOSURE
+import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_QUOTATION
 import com.fwdekker.randomness.word.WordScheme.Companion.MAX_LENGTH_DIFFERENCE
 import com.fwdekker.randomness.word.WordScheme.Companion.MIN_LENGTH
 import com.intellij.ui.SeparatorFactory
@@ -39,7 +39,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
     private lateinit var capitalizationGroup: ButtonGroup
-    private lateinit var enclosureGroup: ButtonGroup
+    private lateinit var quotationGroup: ButtonGroup
     private lateinit var dictionaryPanel: JPanel
     private lateinit var dictionarySeparator: TitledSeparator
     private lateinit var dictionaryTable: DictionaryTable
@@ -83,7 +83,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
         minLength.value = state.minLength
         maxLength.value = state.maxLength
-        enclosureGroup.setValue(state.enclosure)
+        quotationGroup.setValue(state.quotation)
         capitalizationGroup.setValue(state.capitalization)
         dictionaryTable.data = (+state.dictionarySettings).dictionaries
         dictionaryTable.activeData = state.activeDictionaries.filter { it in dictionaryTable.data }
@@ -94,7 +94,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         WordScheme(
             minLength = minLength.value,
             maxLength = maxLength.value,
-            enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
+            quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             activeDictionaries = dictionaryTable.activeData.toSet(),
             arrayDecorator = arrayDecoratorEditor.readState()
@@ -115,7 +115,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            minLength, maxLength, capitalizationGroup, enclosureGroup, dictionaryTable, arrayDecoratorEditor,
+            minLength, maxLength, capitalizationGroup, quotationGroup, dictionaryTable, arrayDecoratorEditor,
             listener = listener
         )
 }

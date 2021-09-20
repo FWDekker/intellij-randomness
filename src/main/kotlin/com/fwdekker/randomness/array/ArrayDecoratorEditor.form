@@ -38,7 +38,7 @@
         </constraints>
         <properties>
           <name value="arrayEnabled"/>
-          <text resource-bundle="randomness" key="shared.decorator.enabled"/>
+          <text resource-bundle="randomness" key="array.ui.enabled"/>
         </properties>
       </component>
       <grid id="c14ec" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -55,7 +55,7 @@
             </constraints>
             <properties>
               <labelFor value="38ced"/>
-              <text resource-bundle="randomness" key="shared.range.min_count_option"/>
+              <text resource-bundle="randomness" key="array.ui.min_count_option"/>
             </properties>
           </component>
           <component id="38ced" class="com.fwdekker.randomness.ui.JIntSpinner" binding="minCountSpinner" custom-create="true">
@@ -73,7 +73,7 @@
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="randomness" key="shared.range.max_count_option"/>
+              <text resource-bundle="randomness" key="array.ui.max_count_option"/>
             </properties>
           </component>
           <component id="83d86" class="com.fwdekker.randomness.ui.JIntSpinner" binding="maxCountSpinner" custom-create="true">

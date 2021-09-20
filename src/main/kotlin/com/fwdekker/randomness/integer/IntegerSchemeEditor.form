@@ -28,7 +28,7 @@
             </constraints>
             <properties>
               <labelFor value="44ac7"/>
-              <text resource-bundle="randomness" key="shared.range.min_value_option"/>
+              <text resource-bundle="randomness" key="integer.ui.min_value_option"/>
             </properties>
           </component>
           <component id="44ac7" class="com.fwdekker.randomness.ui.JLongSpinner" binding="minValue" custom-create="true">
@@ -47,7 +47,7 @@
             </constraints>
             <properties>
               <labelFor value="b9000"/>
-              <text resource-bundle="randomness" key="shared.range.max_value_option"/>
+              <text resource-bundle="randomness" key="integer.ui.max_value_option"/>
             </properties>
           </component>
           <component id="b9000" class="com.fwdekker.randomness.ui.JLongSpinner" binding="maxValue" custom-create="true">
@@ -101,7 +101,8 @@
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="randomness" key="shared.grouping_separator.option"/>
+              <labelFor value="71885"/>
+              <text resource-bundle="randomness" key="integer.ui.grouping_separator.option"/>
             </properties>
           </component>
           <grid id="74435" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -119,7 +120,7 @@
                 <properties>
                   <actionCommand value=""/>
                   <name value="groupingSeparatorNone" noi18n="true"/>
-                  <text resource-bundle="randomness" key="shared.grouping_separator.none"/>
+                  <text resource-bundle="randomness" key="integer.ui.grouping_separator.none"/>
                 </properties>
               </component>
               <component id="5fc7c" class="javax.swing.JRadioButton" default-binding="true">
@@ -161,7 +162,8 @@
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="randomness" key="shared.capitalization.option"/>
+              <labelFor value="75161"/>
+              <text resource-bundle="randomness" key="integer.ui.capitalization_option"/>
             </properties>
           </component>
           <grid id="2fe97" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -222,7 +224,7 @@
             </constraints>
             <properties>
               <labelFor value="e97b1"/>
-              <text resource-bundle="randomness" key="shared.affix.prefix_option"/>
+              <text resource-bundle="randomness" key="integer.ui.prefix_option"/>
             </properties>
           </component>
           <component id="e97b1" class="javax.swing.JTextField" binding="prefixInput">
@@ -241,7 +243,7 @@
             </constraints>
             <properties>
               <labelFor value="542dc"/>
-              <text resource-bundle="randomness" key="shared.affix.suffix_option"/>
+              <text resource-bundle="randomness" key="integer.ui.suffix_option"/>
             </properties>
           </component>
           <component id="542dc" class="javax.swing.JTextField" binding="suffixInput">

@@ -75,8 +75,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
             if (selectedNode.state is Template) selectedNode.state
             else parentNode.state as Template
-        }
-        Disposer.register(this, previewPanel)
+        }.also { Disposer.register(this, it) }
         addChangeListener { previewPanel.updatePreview() }
         schemeEditorPanel.border = JBEmptyBorder(EDITOR_PANEL_MARGIN)
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)

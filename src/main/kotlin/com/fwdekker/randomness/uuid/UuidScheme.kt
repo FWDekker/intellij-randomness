@@ -20,14 +20,14 @@ import kotlin.random.asJavaRandom
  * Contains settings for generating random UUIDs.
  *
  * @property version The version of UUIDs to generate.
- * @property enclosure The string that encloses the generated UUID on both sides.
+ * @property quotation The string that encloses the generated UUID on both sides.
  * @property capitalization The capitalization mode of the generated UUID.
  * @property addDashes `true` if and only if the UUID should have dashes in it.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class UuidScheme(
     var version: Int = DEFAULT_VERSION,
-    var enclosure: String = DEFAULT_ENCLOSURE,
+    var quotation: String = DEFAULT_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
@@ -69,7 +69,7 @@ data class UuidScheme(
                 if (addDashes) it
                 else it.replace("-", "")
             }
-            .map { enclosure + it + enclosure }
+            .map { quotation + it + quotation }
     }
 
 
@@ -97,9 +97,9 @@ data class UuidScheme(
         const val DEFAULT_VERSION = 4
 
         /**
-         * The default value of the [enclosure] field.
+         * The default value of the [quotation] field.
          */
-        const val DEFAULT_ENCLOSURE = "\""
+        const val DEFAULT_QUOTATION = "\""
 
         /**
          * The default value of the [capitalization] field.

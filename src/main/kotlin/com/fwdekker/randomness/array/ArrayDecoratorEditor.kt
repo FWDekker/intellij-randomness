@@ -57,7 +57,7 @@ class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true,
                 bracketsGroup.forEach { it.isEnabled = enabledCheckBox.isSelected }
                 separatorGroup.forEach { it.isEnabled = enabledCheckBox.isSelected }
                 newlineSeparatorButton.isEnabled = enabledCheckBox.isSelected
-                spaceAfterSeparatorCheckBox.isEnabled = enabledCheckBox.isSelected
+                spaceAfterSeparatorCheckBox.isEnabled = enabledCheckBox.isSelected && !newlineSeparatorButton.isSelected
             }
             enabledCheckBox.changeListeners.forEach { it.stateChanged(ChangeEvent(enabledCheckBox)) }
         } else {
@@ -72,7 +72,7 @@ class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true,
         }
 
         newlineSeparatorButton.addChangeListener {
-            spaceAfterSeparatorCheckBox.isEnabled = !newlineSeparatorButton.isSelected
+            spaceAfterSeparatorCheckBox.isEnabled = enabledCheckBox.isSelected && !newlineSeparatorButton.isSelected
         }
         newlineSeparatorButton.changeListeners.forEach { it.stateChanged(ChangeEvent(newlineSeparatorButton)) }
 

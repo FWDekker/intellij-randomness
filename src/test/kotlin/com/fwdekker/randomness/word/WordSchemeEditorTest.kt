@@ -85,13 +85,13 @@ object WordSchemeEditorTest : Spek({
             frame.spinner("maxLength").requireValue(6)
         }
 
-        it("loads the scheme's enclosure") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(enclosure = "'")) }
+        it("loads the scheme's quotation") {
+            GuiActionRunner.execute { editor.loadState(WordScheme(quotation = "'")) }
 
-            frame.radioButton("enclosureNone").requireSelected(false)
-            frame.radioButton("enclosureSingle").requireSelected(true)
-            frame.radioButton("enclosureDouble").requireSelected(false)
-            frame.radioButton("enclosureBacktick").requireSelected(false)
+            frame.radioButton("quotationNone").requireSelected(false)
+            frame.radioButton("quotationSingle").requireSelected(true)
+            frame.radioButton("quotationDouble").requireSelected(false)
+            frame.radioButton("quotationBacktick").requireSelected(false)
         }
 
         it("loads the scheme's capitalization") {
@@ -125,10 +125,10 @@ object WordSchemeEditorTest : Spek({
 
     describe("readState") {
         describe("defaults") {
-            it("returns default enclosure if no enclosure is selected") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(enclosure = "unsupported")) }
+            it("returns default quotation if no quotation is selected") {
+                GuiActionRunner.execute { editor.loadState(WordScheme(quotation = "unsupported")) }
 
-                assertThat(editor.readState().enclosure).isEqualTo(WordScheme.DEFAULT_ENCLOSURE)
+                assertThat(editor.readState().quotation).isEqualTo(WordScheme.DEFAULT_QUOTATION)
             }
 
             it("returns default brackets if no brackets are selected") {
@@ -146,14 +146,14 @@ object WordSchemeEditorTest : Spek({
             GuiActionRunner.execute {
                 frame.spinner("minLength").target().value = 840
                 frame.spinner("maxLength").target().value = 861
-                frame.radioButton("enclosureSingle").target().isSelected = true
+                frame.radioButton("quotationSingle").target().isSelected = true
                 frame.radioButton("capitalizationLower").target().isSelected = true
             }
 
             val readScheme = editor.readState()
             assertThat(readScheme.minLength).isEqualTo(840)
             assertThat(readScheme.maxLength).isEqualTo(861)
-            assertThat(readScheme.enclosure).isEqualTo("'")
+            assertThat(readScheme.quotation).isEqualTo("'")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.LOWER)
         }
 

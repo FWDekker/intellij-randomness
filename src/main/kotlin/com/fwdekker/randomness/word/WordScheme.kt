@@ -20,7 +20,7 @@ import java.awt.Color
  *
  * @property minLength The minimum length of the generated word, inclusive.
  * @property maxLength The maximum length of the generated word, inclusive.
- * @property enclosure The string that encloses the generated word on both sides.
+ * @property quotation The string that encloses the generated word on both sides.
  * @property capitalization The way in which the generated word should be capitalized.
  * @property activeDictionaries The list of dictionaries that are currently active.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
@@ -28,7 +28,7 @@ import java.awt.Color
 data class WordScheme(
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
-    var enclosure: String = DEFAULT_ENCLOSURE,
+    var quotation: String = DEFAULT_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     @get:XCollection(elementTypes = [BundledDictionary::class, UserDictionary::class])
     var activeDictionaries: Set<Dictionary> = DEFAULT_ACTIVE_DICTIONARIES.toMutableSet(),
@@ -64,7 +64,7 @@ data class WordScheme(
 
         return List(count) { words.random(random) }
             .map { capitalization.transform(it, random) }
-            .map { enclosure + it + enclosure }
+            .map { quotation + it + quotation }
     }
 
     override fun setSettingsState(settingsState: SettingsState) {
@@ -142,9 +142,9 @@ data class WordScheme(
         const val DEFAULT_MAX_LENGTH = 8
 
         /**
-         * The default value of the [enclosure] field.
+         * The default value of the [quotation] field.
          */
-        const val DEFAULT_ENCLOSURE = "\""
+        const val DEFAULT_QUOTATION = "\""
 
         /**
          * The default value of the [capitalization] field.

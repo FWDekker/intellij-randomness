@@ -19,7 +19,7 @@
         </constraints>
         <properties>
           <name value="fixedLengthEnabled"/>
-          <text resource-bundle="randomness" key="shared.decorator.enabled"/>
+          <text resource-bundle="randomness" key="fixed_length.ui.enabled"/>
         </properties>
       </component>
       <component id="f5bc0" class="javax.swing.JLabel" binding="lengthLabel">

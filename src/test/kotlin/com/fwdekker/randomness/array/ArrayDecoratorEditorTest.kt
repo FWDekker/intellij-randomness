@@ -78,6 +78,14 @@ object ArrayDecoratorEditorTest : Spek({
 
                 frame.spinner("arrayMinCount").requireEnabled()
             }
+
+            it("disables space after separator if the decorator is enabled but the newline separator is checked") {
+                scheme.enabled = false
+                scheme.separator = "\n"
+                GuiActionRunner.execute { editor.reset() }
+
+                frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
+            }
         }
 
         describe("helpText") {
@@ -109,6 +117,14 @@ object ArrayDecoratorEditorTest : Spek({
                 GuiActionRunner.execute { frame.radioButton("arraySeparatorNewline").target().isSelected = false }
 
                 frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
+            }
+
+            it("disables space after separator if the newline separator is unchecked but the decorator is disabled") {
+                scheme.enabled = false
+                scheme.separator = ","
+                GuiActionRunner.execute { editor.reset() }
+
+                frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
             }
         }
     }

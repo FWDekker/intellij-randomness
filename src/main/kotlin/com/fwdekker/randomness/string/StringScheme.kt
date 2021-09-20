@@ -19,7 +19,7 @@ import java.awt.Color
  *
  * @property minLength The minimum length of the generated string, inclusive.
  * @property maxLength The maximum length of the generated string, inclusive.
- * @property enclosure The string that encloses the generated string on both sides.
+ * @property quotation The string that encloses the generated string on both sides.
  * @property capitalization The capitalization mode of the generated string.
  * @property activeSymbolSets The names of the symbol sets that are available for generating strings.
  * @property excludeLookAlikeSymbols Whether the symbols in [SymbolSet.lookAlikeCharacters] should be excluded.
@@ -28,7 +28,7 @@ import java.awt.Color
 data class StringScheme(
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
-    var enclosure: String = DEFAULT_ENCLOSURE,
+    var quotation: String = DEFAULT_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var activeSymbolSets: Set<String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMutableSet(),
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS,
@@ -67,7 +67,7 @@ data class StringScheme(
             val text = List(length) { symbols.random(random) }.joinToString("")
             val capitalizedText = capitalization.transform(text, random)
 
-            enclosure + capitalizedText + enclosure
+            quotation + capitalizedText + quotation
         }
     }
 
@@ -141,9 +141,9 @@ data class StringScheme(
         const val DEFAULT_MAX_LENGTH = 8
 
         /**
-         * The default value of the [enclosure] field.
+         * The default value of the [quotation] field.
          */
-        const val DEFAULT_ENCLOSURE = "\""
+        const val DEFAULT_QUOTATION = "\""
 
         /**
          * The default value of the [capitalization] field.

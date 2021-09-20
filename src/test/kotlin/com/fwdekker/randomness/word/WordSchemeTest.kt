@@ -32,20 +32,20 @@ object WordSchemeTest : Spek({
                 Triple(3, 15, "\""),
                 Triple(3, 13, "`"),
                 Triple(7, 9, "delim")
-            ).forEach { (minLength, maxLength, enclosure) ->
+            ).forEach { (minLength, maxLength, quotation) ->
                 it("generates a formatted word between $minLength and $maxLength characters") {
                     wordScheme.minLength = minLength
                     wordScheme.maxLength = maxLength
-                    wordScheme.enclosure = enclosure
+                    wordScheme.quotation = quotation
 
                     val randomString = wordScheme.generateStrings().single()
 
                     assertThat(randomString)
-                        .startsWith(enclosure)
-                        .endsWith(enclosure)
+                        .startsWith(quotation)
+                        .endsWith(quotation)
                     assertThat(randomString.length)
-                        .isGreaterThanOrEqualTo(minLength + 2 * enclosure.length)
-                        .isLessThanOrEqualTo(maxLength + 2 * enclosure.length)
+                        .isGreaterThanOrEqualTo(minLength + 2 * quotation.length)
+                        .isLessThanOrEqualTo(maxLength + 2 * quotation.length)
                 }
             }
         }
@@ -177,7 +177,7 @@ object WordSchemeTest : Spek({
         it("copies state from another instance") {
             wordScheme.minLength = 502
             wordScheme.maxLength = 812
-            wordScheme.enclosure = "QJ8S4UrFaa"
+            wordScheme.quotation = "QJ8S4UrFaa"
             wordScheme.arrayDecorator.minCount = 513
 
             val newScheme = WordScheme()

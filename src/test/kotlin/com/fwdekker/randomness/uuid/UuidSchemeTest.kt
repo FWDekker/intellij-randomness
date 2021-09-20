@@ -31,7 +31,7 @@ object UuidSchemeTest : Spek({
         describe("format") {
             data class Param(
                 val version: Int,
-                val enclosure: String,
+                val quotation: String,
                 val capitalization: CapitalizationMode,
                 val addDashes: Boolean
             )
@@ -42,10 +42,10 @@ object UuidSchemeTest : Spek({
                 Param(1, "Eglzfpf5", CapitalizationMode.LOWER, true),
                 Param(4, "", CapitalizationMode.UPPER, true),
                 Param(1, "'", CapitalizationMode.UPPER, false)
-            ).forEach { (version, enclosure, capitalization, addDashes) ->
+            ).forEach { (version, quotation, capitalization, addDashes) ->
                 it("generates a formatted UUID") {
                     uuidScheme.version = version
-                    uuidScheme.enclosure = enclosure
+                    uuidScheme.quotation = quotation
                     uuidScheme.capitalization = capitalization
                     uuidScheme.addDashes = addDashes
 
@@ -55,13 +55,13 @@ object UuidSchemeTest : Spek({
                     assertThat(
                         Regex(
                             "" +
-                                "^$enclosure" +
+                                "^$quotation" +
                                 "[$alphabet]{8}$dash" +
                                 "[$alphabet]{4}$dash" +
                                 "[$alphabet]{4}$dash" +
                                 "[$alphabet]{4}$dash" +
                                 "[$alphabet]{12}" +
-                                "$enclosure$"
+                                "$quotation$"
                         ).matches(uuidScheme.generateStrings().single())
                     ).isTrue()
                 }
@@ -109,7 +109,7 @@ object UuidSchemeTest : Spek({
     describe("copyFrom") {
         it("copies state from another instance") {
             uuidScheme.version = 4
-            uuidScheme.enclosure = "nvpB"
+            uuidScheme.quotation = "nvpB"
             uuidScheme.capitalization = CapitalizationMode.FIRST_LETTER
             uuidScheme.addDashes = true
             uuidScheme.arrayDecorator.minCount = 264
