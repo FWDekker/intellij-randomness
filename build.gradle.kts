@@ -7,17 +7,17 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    id("org.jetbrains.kotlin.jvm") version "1.5.10"  // See also `gradle.properties`
-    id("org.jetbrains.intellij") version "0.7.3"
+    id("org.jetbrains.kotlin.jvm") version "1.5.30"  // See also `gradle.properties`
+    id("org.jetbrains.intellij") version "1.1.6"
 
     // Tests/coverage
     id("jacoco")
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.17.1"  // See also `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.18.1"  // See also `gradle.properties`
 
     // Documentation
-    id("org.jetbrains.dokka") version "1.4.32"
+    id("org.jetbrains.dokka") version "1.5.30"
 }
 
 
@@ -65,14 +65,23 @@ tasks {
     }
 
     intellij {
-        version = properties("intellijVersion")
-        updateSinceUntilBuild = false
+        version.set(properties("intellijVersion"))
+        downloadSources.set(true)
+        updateSinceUntilBuild.set(false)
     }
 
     patchPluginXml {
-        changeNotes(file("src/main/resources/META-INF/change-notes.html").readText())
-        pluginDescription(file("src/main/resources/META-INF/description.html").readText())
-        sinceBuild(properties("pluginSinceBuild"))
+        changeNotes.set(file("src/main/resources/META-INF/change-notes.html").readText())
+        pluginDescription.set(file("src/main/resources/META-INF/description.html").readText())
+        sinceBuild.set(properties("pluginSinceBuild"))
+    }
+
+    signPlugin {
+        if (System.getenv("CERTIFICATE_CHAIN") != null) {
+            certificateChainFile.set(file(System.getenv("CERTIFICATE_CHAIN")))
+            privateKeyFile.set(file(System.getenv("PRIVATE_KEY")))
+            password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+        }
     }
 
 
@@ -101,10 +110,10 @@ tasks {
         sourceSets { sourceSets.main }
 
         reports {
-            csv.isEnabled = false
-            html.isEnabled = true
-            xml.isEnabled = true
-            xml.destination = file("$buildDir/reports/jacoco/report.xml")
+            csv.required.set(false)
+            html.required.set(true)
+            xml.required.set(true)
+            xml.outputLocation.set(file("$buildDir/reports/jacoco/report.xml"))
         }
 
         dependsOn(test)
@@ -119,7 +128,7 @@ tasks {
     }
 
     runPluginVerifier {
-        ideVersions(properties("pluginVerifierIdeVersions"))
+        ideVersions.set(properties("pluginVerifierIdeVersions").split(","))
     }
 
 
