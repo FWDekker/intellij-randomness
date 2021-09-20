@@ -30,7 +30,7 @@ object DictionarySettingsTest : Spek({
                 listOf(UserDictionary(file.absolutePath), UserDictionary(file.absolutePath))
             )
 
-            assertThat(settings.doValidate()).matches("Duplicate dictionary '.*\\.dic'\\.")
+            assertThat(settings.doValidate()).matches("Remove duplicate dictionary '.*\\.dic'\\.")
         }
 
         it("fails if a dictionary of a now-deleted file is given") {

@@ -26,8 +26,8 @@ data class FixedLengthDecorator(
 
 
     override fun doValidate() =
-        if (length < MIN_LENGTH) "Fixed length should be at least $MIN_LENGTH, but is $length."
-        else if (filler.length != 1) "Filler should be exactly one character."
+        if (length < MIN_LENGTH) Bundle("fixed_length.error.length_too_low", MIN_LENGTH)
+        else if (filler.length != 1) Bundle("fixed_length.error.filler_length")
         else null
 
     override fun deepCopy(retainUuid: Boolean) = copy().also { if (retainUuid) it.uuid = this.uuid }

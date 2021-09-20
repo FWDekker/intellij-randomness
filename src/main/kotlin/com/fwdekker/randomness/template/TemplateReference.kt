@@ -64,7 +64,7 @@ data class TemplateReference(
 
     override fun generateUndecoratedStrings(count: Int) =
         template?.also { it.random = random }?.generateStrings(count)
-            ?: throw DataGenerationException("Cannot generate strings from null reference.")
+            ?: throw DataGenerationException(Bundle("reference.error.generate_null"))
 
     override fun setSettingsState(settingsState: SettingsState) {
         super.setSettingsState(settingsState)
@@ -75,10 +75,14 @@ data class TemplateReference(
     override fun doValidate(): String? {
         val recursion = (+templateList).findRecursionFrom(this)
 
-        return if (templateUuid == null) "No template to reference selected."
-        else if (template == null) "Cannot find referenced template."
-        else if (recursion != null) "Found recursion: (${recursion.joinToString(separator = " → ") { it.name }})"
-        else arrayDecorator.doValidate()
+        return if (templateUuid == null)
+            Bundle("reference.error.no_selection")
+        else if (template == null)
+            Bundle("reference.error.not_found")
+        else if (recursion != null)
+            Bundle("reference.error.recursion", "(${recursion.joinToString(separator = " → ") { it.name }})")
+        else
+            arrayDecorator.doValidate()
     }
 
     override fun copyFrom(other: State) {

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Settings
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
@@ -40,14 +41,14 @@ data class DictionarySettings(
         UserDictionary.clearCache()
 
         val duplicate = dictionaries.firstOrNull { dictionary -> dictionaries.count { it == dictionary } > 1 }
-        if (duplicate != null) return "Duplicate dictionary '$duplicate'."
+        if (duplicate != null) return Bundle("word.dictionary.error.duplicate", duplicate)
 
         return dictionaries.firstNotNullOfOrNull {
             try {
-                if (it.words.isEmpty()) "Dictionary '$it' is empty."
+                if (it.words.isEmpty()) Bundle("word.dictionary.error.empty", it)
                 else null
             } catch (e: InvalidDictionaryException) {
-                "Dictionary '$it' is invalid: ${e.message}"
+                Bundle("word.dictionary.error.invalid", it, e.message)
             }
         }
     }

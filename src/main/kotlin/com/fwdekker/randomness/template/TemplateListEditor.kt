@@ -136,7 +136,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             is LiteralScheme -> LiteralSchemeEditor(scheme)
             is TemplateReference -> TemplateReferenceEditor(scheme)
             is Template -> TemplateEditor(scheme)
-            else -> error(Bundle("template.list.error.unknown_scheme_type", scheme.javaClass.canonicalName))
+            else -> error(Bundle("template_list.error.unknown_scheme_type", scheme.javaClass.canonicalName))
         }
 
 

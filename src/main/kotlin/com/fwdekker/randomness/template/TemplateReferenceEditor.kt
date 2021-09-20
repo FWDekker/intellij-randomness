@@ -64,7 +64,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
             }
         }
         templateList.selectionMode = ListSelectionModel.SINGLE_SELECTION
-        templateList.setEmptyText(Bundle("reference.empty"))
+        templateList.setEmptyText(Bundle("reference.ui.empty"))
         templateListPanel = JPanel(BorderLayout())
         templateListPanel.add(JBScrollPane(templateList), BorderLayout.WEST)
 

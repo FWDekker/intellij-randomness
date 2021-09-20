@@ -81,15 +81,10 @@ data class StringScheme(
         (+symbolSetSettings).doValidate()?.also { return it }
 
         return when {
-            minLength < MIN_LENGTH ->
-                "Minimum length should not be smaller than $MIN_LENGTH."
-            minLength > maxLength ->
-                "Minimum length should not be larger than maximum length."
-            activeSymbolSets.isEmpty() ->
-                "Activate at least one symbol set."
-            activeSymbols.isEmpty() ->
-                "Active symbol sets should contain at least one non-look-alike character if look-alike characters " +
-                    "are excluded."
+            minLength < MIN_LENGTH -> Bundle("string.error.min_length_too_low", MIN_LENGTH)
+            minLength > maxLength -> Bundle("string.error.min_length_above_max")
+            activeSymbolSets.isEmpty() -> Bundle("string.error.no_active_symbols")
+            activeSymbols.isEmpty() -> Bundle("string.error.no_active_symbols_after_lookalike")
             else -> arrayDecorator.doValidate()
         }
     }

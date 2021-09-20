@@ -272,7 +272,7 @@
               <focusable value="false"/>
               <lineWrap value="true"/>
               <opaque value="false"/>
-              <text resource-bundle="randomness" key="word.dictionary.help"/>
+              <text resource-bundle="randomness" key="word.dictionary.ui.help"/>
               <visible value="false"/>
               <wrapStyleWord value="true"/>
             </properties>

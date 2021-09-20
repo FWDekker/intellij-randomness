@@ -48,8 +48,8 @@ data class ArrayDecorator(
 
 
     override fun doValidate() =
-        if (minCount > maxCount) "Minimum count should be greater than maximum count."
-        else if (minCount < MIN_COUNT) "Minimum count should be at least $MIN_COUNT, but is $minCount."
+        if (minCount > maxCount) Bundle("array.error.min_count_above_max")
+        else if (minCount < MIN_COUNT) Bundle("array.error.min_count_too_low", MIN_COUNT)
         else null
 
     override fun deepCopy(retainUuid: Boolean) = copy().also { if (retainUuid) it.uuid = this.uuid }

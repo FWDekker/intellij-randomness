@@ -84,7 +84,7 @@ data class TemplateList(
             templates.firstNotNullOfOrNull { template -> template.doValidate()?.let { "${template.name} > $it" } }
 
         return when {
-            duplicate != null -> "There are multiple templates with the name '$duplicate'."
+            duplicate != null -> Bundle("template_list.error.duplicate_name", duplicate)
             invalid != null -> invalid
             else -> null
         }

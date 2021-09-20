@@ -226,7 +226,7 @@ object WordSchemeEditorTest : Spek({
                 dictionaryTable.listTableModel.addRow(EditableDatum(active = true, UserDictionary(file.absolutePath)))
             }
 
-            assertThat(editor.doValidate()).matches("Duplicate dictionary '.*\\.dic'\\.")
+            assertThat(editor.doValidate()).matches("Remove duplicate dictionary '.*\\.dic'\\.")
         }
     }
 

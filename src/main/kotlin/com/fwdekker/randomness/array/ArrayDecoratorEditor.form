@@ -91,7 +91,7 @@
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="randomness" key="array.brackets.option"/>
+              <text resource-bundle="randomness" key="array.ui.brackets.option"/>
             </properties>
           </component>
           <grid id="fb183" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -109,7 +109,7 @@
                 <properties>
                   <actionCommand value=""/>
                   <name value="arrayBracketsNone" noi18n="true"/>
-                  <text resource-bundle="randomness" key="array.brackets.none"/>
+                  <text resource-bundle="randomness" key="array.ui.brackets.none"/>
                 </properties>
               </component>
               <component id="39bc6" class="javax.swing.JRadioButton" default-binding="true">
@@ -151,7 +151,7 @@
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="randomness" key="array.separator_option"/>
+              <text resource-bundle="randomness" key="array.ui.separator_option"/>
             </properties>
           </component>
           <grid id="4109" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -204,7 +204,7 @@
             </constraints>
             <properties>
               <name value="arraySpaceAfterSeparator" noi18n="true"/>
-              <text resource-bundle="randomness" key="array.space_after_separator"/>
+              <text resource-bundle="randomness" key="array.ui.space_after_separator"/>
             </properties>
           </component>
         </children>

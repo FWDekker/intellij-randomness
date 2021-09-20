@@ -27,7 +27,7 @@
             </constraints>
             <properties>
               <labelFor value="5b630"/>
-              <text resource-bundle="randomness" key="literal.literal_option"/>
+              <text resource-bundle="randomness" key="literal.ui.literal_option"/>
             </properties>
           </component>
           <component id="5b630" class="javax.swing.JTextField" binding="literalInput">

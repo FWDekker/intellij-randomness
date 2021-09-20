@@ -113,7 +113,7 @@ class TemplateJTree(
     init {
         TreeSpeedSearch(this) { path -> path.path.filterIsInstance<Scheme>().joinToString { it.name } }
 
-        emptyText.text = Bundle("template.list.empty")
+        emptyText.text = Bundle("template_list.ui.empty")
         isRootVisible = false
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         setCellRenderer(CellRenderer())
@@ -198,7 +198,7 @@ class TemplateJTree(
         if (newScheme is Template) newScheme.name = findUniqueNameFor(newScheme)
 
         if (selectedNode == null) {
-            require(newScheme is Template) { Bundle("template.list.error.add_template_to_non_root") }
+            require(newScheme is Template) { Bundle("template_list.error.add_template_to_non_root") }
             myModel.insertNode(myModel.root, newNode)
         } else if (selectedNode.state is Template) {
             if (newScheme is Template)
@@ -584,14 +584,14 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     /**
      * Not implemented because this method is used only if this is a model for a table.
      */
-    override fun addRow() = error(Bundle("template.list.error.add_empty_row"))
+    override fun addRow() = error(Bundle("template_list.error.add_empty_row"))
 
     /**
      * Not implemented because this method is used only if this is a model for a table.
      *
      * @param index ignored
      */
-    override fun removeRow(index: Int) = error(Bundle("template.list.error.remove_row_by_index"))
+    override fun removeRow(index: Int) = error(Bundle("template_list.error.remove_row_by_index"))
 
     /**
      * Moves the node at row [oldIndex] to row [newIndex], and expands and selects the moved node.
@@ -658,7 +658,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      */
     override fun isLeaf(node: Any?): Boolean {
         require(node is StateNode) {
-            Bundle("template.list.error.must_be_state_node", "node", node?.let { it::class.java.canonicalName })
+            Bundle("template_list.error.must_be_state_node", "node", node?.let { it::class.java.canonicalName })
         }
 
         return !node.canHaveChildren || node.children.isEmpty()
@@ -675,9 +675,9 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      */
     override fun getChild(parent: Any?, index: Int): StateNode {
         require(parent is StateNode) {
-            Bundle("template.list.error.must_be_state_node", "parent", parent?.let { it::class.java.canonicalName })
+            Bundle("template_list.error.must_be_state_node", "parent", parent?.let { it::class.java.canonicalName })
         }
-        require(parent.canHaveChildren) { Bundle("template.list.error.child_of_infertile_parent") }
+        require(parent.canHaveChildren) { Bundle("template_list.error.child_of_infertile_parent") }
 
         return parent.children[index]
     }
@@ -690,7 +690,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      */
     override fun getChildCount(parent: Any?): Int {
         require(parent is StateNode) {
-            Bundle("template.list.error.must_be_state_node", "parent", parent?.let { it::class.java.canonicalName })
+            Bundle("template_list.error.must_be_state_node", "parent", parent?.let { it::class.java.canonicalName })
         }
 
         return if (!parent.canHaveChildren) 0
@@ -710,10 +710,10 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
         if (parent == null || child == null) return -1
 
         require(parent is StateNode) {
-            Bundle("template.list.error.must_be_state_node", "parent", parent::class.java.canonicalName)
+            Bundle("template_list.error.must_be_state_node", "parent", parent::class.java.canonicalName)
         }
         require(child is StateNode) {
-            Bundle("template.list.error.must_be_state_node", "child", child::class.java.canonicalName)
+            Bundle("template_list.error.must_be_state_node", "child", child::class.java.canonicalName)
         }
 
         return parent.children.indexOf(child)
@@ -728,7 +728,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      * @return the parent of the given node, or `null` if the node has no parent
      */
     fun getParentOf(node: StateNode): StateNode? {
-        require(root.contains(node)) { Bundle("template.list.error.parent_of_node_not_in_model") }
+        require(root.contains(node)) { Bundle("template_list.error.parent_of_node_not_in_model") }
 
         return when (node.state) {
             is TemplateList -> null
@@ -746,7 +746,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      * @return the path from the [root] to the given node
      */
     fun getPathToRoot(node: StateNode): TreePath {
-        require(root.contains(node)) { Bundle("template.list.error.path_of_node_not_in_model") }
+        require(root.contains(node)) { Bundle("template_list.error.path_of_node_not_in_model") }
 
         return when (node.state) {
             is TemplateList -> TreePath(arrayOf(node))
@@ -791,7 +791,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      */
     fun insertNodeAfter(parent: StateNode, child: StateNode, after: StateNode) {
         val afterIndex = getIndexOfChild(parent, after)
-        require(afterIndex >= 0) { Bundle("template.list.error.find_node_insert_parent") }
+        require(afterIndex >= 0) { Bundle("template_list.error.find_node_insert_parent") }
 
         insertNode(parent, child, afterIndex + 1)
     }
@@ -804,8 +804,8 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      * @param node the node to remove from the model
      */
     fun removeNode(node: StateNode) {
-        require(root.contains(node)) { Bundle("template.list.error.remove_node_not_in_model") }
-        require(node != root) { Bundle("template.list.error.remove_root") }
+        require(root.contains(node)) { Bundle("template_list.error.remove_node_not_in_model") }
+        require(node != root) { Bundle("template_list.error.remove_root") }
 
         val parent = getParentOf(node)!!
         val oldIndex = getIndexOfChild(parent, node)
@@ -851,7 +851,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      */
     fun fireNodeInserted(node: StateNode?, parent: StateNode, index: Int) {
         if (node == null) return
-        require(node.state !is TemplateList) { Bundle("template.list.error.insert_list") }
+        require(node.state !is TemplateList) { Bundle("template_list.error.insert_list") }
 
         treeModelListeners.forEach {
             it.treeNodesInserted(TreeModelEvent(this, getPathToRoot(parent), intArrayOf(index), arrayOf(node)))
@@ -871,7 +871,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      */
     fun fireNodeRemoved(child: StateNode?, parent: StateNode, index: Int) {
         if (child == null) return
-        require(child.state !is TemplateList) { Bundle("template.list.error.remove_list") }
+        require(child.state !is TemplateList) { Bundle("template_list.error.remove_list") }
 
         treeModelListeners.forEach {
             it.treeNodesRemoved(TreeModelEvent(this, getPathToRoot(parent), intArrayOf(index), arrayOf(child)))
@@ -899,7 +899,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      * @param newValue ignored
      */
     override fun valueForPathChanged(path: TreePath, newValue: Any) =
-        error(Bundle("template.list.error.change_value_by_path"))
+        error(Bundle("template_list.error.change_value_by_path"))
 
     /**
      * Adds the given listener.
@@ -949,13 +949,13 @@ class StateNode(val state: State) {
             when (state) {
                 is TemplateList -> state.templates.map { StateNode(it) }
                 is Template -> state.schemes.map { StateNode(it) }
-                else -> error(Bundle("template.list.error.unknown_parent_type", state.javaClass.canonicalName))
+                else -> error(Bundle("template_list.error.unknown_parent_type", state.javaClass.canonicalName))
             }
         set(value) {
             when (state) {
                 is TemplateList -> state.templates = value.map { it.state as Template }
                 is Template -> state.schemes = value.map { it.state as Scheme }
-                else -> error(Bundle("template.list.error.unknown_parent_type", state.javaClass.canonicalName))
+                else -> error(Bundle("template_list.error.unknown_parent_type", state.javaClass.canonicalName))
             }
         }
 

@@ -142,14 +142,15 @@ object DecimalSchemeTest : Spek({
                 decimalScheme.maxValue = 264.0
 
                 assertThat(decimalScheme.doValidate())
-                    .isEqualTo("Minimum value should not be larger than maximum value.")
+                    .isEqualTo("Minimum value should be less than or equal to maximum value.")
             }
 
             it("fails if the range size overflows") {
                 decimalScheme.minValue = -1E53
                 decimalScheme.maxValue = 1E53
 
-                assertThat(decimalScheme.doValidate()).isEqualTo("Value range should not exceed 1.0E53.")
+                assertThat(decimalScheme.doValidate())
+                    .isEqualTo("Minimum and maximum value should not differ by more than 1.0E53.")
             }
         }
 

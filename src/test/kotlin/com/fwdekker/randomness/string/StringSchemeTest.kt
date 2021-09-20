@@ -98,7 +98,7 @@ object StringSchemeTest : Spek({
             it("fails if the minimum length is negative") {
                 stringScheme.minLength = -161
 
-                assertThat(stringScheme.doValidate()).isEqualTo("Minimum length should not be smaller than 1.")
+                assertThat(stringScheme.doValidate()).isEqualTo("Minimum length should be at least 1.")
             }
 
             it("fails if the minimum length is greater than the maximum length") {
@@ -106,7 +106,7 @@ object StringSchemeTest : Spek({
                 stringScheme.maxLength = 841
 
                 assertThat(stringScheme.doValidate())
-                    .isEqualTo("Minimum length should not be larger than maximum length.")
+                    .isEqualTo("Minimum length should be less than or equal to maximum length.")
             }
         }
 

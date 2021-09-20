@@ -32,7 +32,7 @@ abstract class SettingsConfigurable : Configurable {
     override fun apply() {
         val validationInfo = editor.doValidate()
         if (validationInfo != null)
-            throw ConfigurationException(validationInfo, Bundle("template.list.error.failed_to_save_settings"))
+            throw ConfigurationException(validationInfo, Bundle("template_list.error.failed_to_save_settings"))
 
         editor.applyState()
     }

@@ -208,7 +208,7 @@ object TemplateReferenceTest : Spek({
         it("fails if the template UUID is null") {
             reference.templateUuid = null
 
-            assertThat(reference.doValidate()).isEqualTo("No template to reference selected.")
+            assertThat(reference.doValidate()).isEqualTo("Select a template to reference.")
         }
 
         it("fails if the template cannot be found in the list") {

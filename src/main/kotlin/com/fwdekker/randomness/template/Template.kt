@@ -67,7 +67,7 @@ data class Template(
 
 
     override fun doValidate() =
-        if (name.isBlank()) "Templates must have a name."
+        if (name.isBlank()) Bundle("template.error.no_name", Bundle("template.name.empty"))
         else schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
             ?: arrayDecorator.doValidate()
 

@@ -233,7 +233,7 @@ object StringSchemeEditorTest : Spek({
                 symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("earth", "lNp5dG8k")))
             }
 
-            assertThat(editor.doValidate()).isEqualTo("Multiple symbol sets with name 'earth'.")
+            assertThat(editor.doValidate()).isEqualTo("Symbol set names should be unique. Rename symbol set 'earth'.")
         }
     }
 

@@ -51,7 +51,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             .also { it[TextAttribute.UNDERLINE] = TextAttribute.UNDERLINE_LOW_DOTTED }
             .let { excludeLookAlikeSymbolsCheckBox.font.deriveFont(it) }
         excludeLookAlikeSymbolsCheckBox.toolTipText =
-            "Excludes the following characters from all generated strings: ${SymbolSet.lookAlikeCharacters}"
+            Bundle("string.ui.exclude_look_alike_help", SymbolSet.lookAlikeCharacters)
 
         loadState()
     }

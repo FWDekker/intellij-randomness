@@ -81,18 +81,11 @@ data class WordScheme(
         val maxWordLength = words.map { it.length }.maxOrNull() ?: Integer.MAX_VALUE
 
         return when {
-            minLength < MIN_LENGTH ->
-                "Minimum length should not be smaller than $MIN_LENGTH."
-            minLength > maxLength ->
-                "Minimum length should not be larger than maximum length."
-            activeDictionaries.isEmpty() ->
-                "Activate at least one dictionary."
-            minLength > maxWordLength ->
-                "The longest word in the selected dictionaries is $maxWordLength characters. " +
-                    "Set the minimum length to a value less than or equal to $maxWordLength."
-            maxLength < minWordLength ->
-                "The shortest word in the selected dictionaries is $minWordLength characters. " +
-                    "Set the maximum length to a value less than or equal to $minWordLength."
+            minLength < MIN_LENGTH -> Bundle("word.error.min_length_too_low", MIN_LENGTH)
+            minLength > maxLength -> Bundle("word.error.min_length_above_max")
+            activeDictionaries.isEmpty() -> Bundle("word.error.no_active_dictionary")
+            minLength > maxWordLength -> Bundle("word.error.min_length_above_range", maxWordLength)
+            maxLength < minWordLength -> Bundle("word.error.max_length_below_range", minWordLength)
             else -> arrayDecorator.doValidate()
         }
     }

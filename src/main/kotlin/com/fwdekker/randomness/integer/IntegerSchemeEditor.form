@@ -83,7 +83,7 @@
             </constraints>
             <properties>
               <labelFor value="ad1d8"/>
-              <text resource-bundle="randomness" key="integer.base_option"/>
+              <text resource-bundle="randomness" key="integer.ui.base_option"/>
             </properties>
           </component>
           <component id="ad1d8" class="com.fwdekker.randomness.ui.JIntSpinner" binding="base" custom-create="true">

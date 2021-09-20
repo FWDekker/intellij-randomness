@@ -78,10 +78,10 @@ data class DecimalScheme(
 
     override fun doValidate() =
         when {
-            minValue > maxValue -> "Minimum value should not be larger than maximum value."
-            maxValue - minValue > MAX_VALUE_DIFFERENCE -> "Value range should not exceed $MAX_VALUE_DIFFERENCE."
-            decimalCount < MIN_DECIMAL_COUNT -> "Decimal count should be at least $MIN_DECIMAL_COUNT."
-            decimalSeparator.isEmpty() -> "Select a decimal separator."
+            minValue > maxValue -> Bundle("decimal.error.min_value_above_max")
+            maxValue - minValue > MAX_VALUE_DIFFERENCE -> Bundle("decimal.error.value_range", MAX_VALUE_DIFFERENCE)
+            decimalCount < MIN_DECIMAL_COUNT -> Bundle("decimal.error.decimal_count_too_low", MIN_DECIMAL_COUNT)
+            decimalSeparator.isEmpty() -> Bundle("decimal.error.select_decimal_separator")
             else -> arrayDecorator.doValidate()
         }
 

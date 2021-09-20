@@ -89,8 +89,8 @@ data class IntegerScheme(
 
     override fun doValidate() =
         when {
-            minValue > maxValue -> "Minimum value should not be larger than maximum value."
-            base !in MIN_BASE..MAX_BASE -> "Base should be in range $MIN_BASE..$MAX_BASE but is $base."
+            minValue > maxValue -> Bundle("integer.error.min_value_above_max")
+            base !in MIN_BASE..MAX_BASE -> Bundle("integer.error.base_range", "$MIN_BASE..$MAX_BASE")
             else -> fixedLengthDecorator.doValidate() ?: arrayDecorator.doValidate()
         }
 

@@ -230,7 +230,7 @@
             </constraints>
             <properties>
               <name value="excludeLookAlikeSymbolsCheckBox" noi18n="true"/>
-              <text resource-bundle="randomness" key="string.exclude_look_alike"/>
+              <text resource-bundle="randomness" key="string.ui.exclude_look_alike"/>
             </properties>
           </component>
         </children>

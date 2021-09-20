@@ -79,7 +79,7 @@ object WordSchemeTest : Spek({
             it("fails if the minimum length is negative") {
                 wordScheme.minLength = -780
 
-                assertThat(wordScheme.doValidate()).isEqualTo("Minimum length should not be smaller than 1.")
+                assertThat(wordScheme.doValidate()).isEqualTo("Minimum length should be at least 1.")
             }
 
             it("fails if the minimum length is larger than the maximum length") {
@@ -87,7 +87,7 @@ object WordSchemeTest : Spek({
                 wordScheme.maxLength = 98
 
                 assertThat(wordScheme.doValidate())
-                    .isEqualTo("Minimum length should not be larger than maximum length.")
+                    .isEqualTo("Minimum length should be less than or equal to maximum length.")
             }
 
             it("fails if the length range ends too low to match any words") {
@@ -98,8 +98,8 @@ object WordSchemeTest : Spek({
                 wordScheme.maxLength = 1
 
                 assertThat(wordScheme.doValidate()).isEqualTo(
-                    "The shortest word in the selected dictionaries is 4 characters. Set the maximum length to a " +
-                        "value less than or equal to 4."
+                    "Shortest word in selected dictionaries is 4 characters. Maximum length should be greater than " +
+                        "or equal to 4."
                 )
             }
 
@@ -108,8 +108,8 @@ object WordSchemeTest : Spek({
                 wordScheme.maxLength = 1000
 
                 assertThat(wordScheme.doValidate()).isEqualTo(
-                    "The longest word in the selected dictionaries is 15 characters. Set the minimum length to a " +
-                        "value less than or equal to 15."
+                    "Longest word in selected dictionaries is 15 characters. Minimum length should be less than or " +
+                        "equal to 15."
                 )
             }
         }
