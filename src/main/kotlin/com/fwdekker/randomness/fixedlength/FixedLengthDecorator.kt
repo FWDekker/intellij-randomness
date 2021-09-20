@@ -5,7 +5,7 @@ import com.fwdekker.randomness.SchemeDecorator
 
 
 /**
- * Forces generated strings to be exactly the given length.
+ * Forces generated strings to be exactly [length] characters.
  *
  * @property enabled Whether to apply this decorator.
  * @property length The enforced length.

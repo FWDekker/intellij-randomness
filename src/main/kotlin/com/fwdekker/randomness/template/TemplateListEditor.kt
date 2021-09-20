@@ -41,6 +41,7 @@ import javax.swing.SwingUtilities
  * copies are written into the given template list only when [applyState] is invoked.
  *
  * @param settings the settings containing the templates to edit
+ * @see TemplateSettingsConfigurable
  */
 class TemplateListEditor(settings: SettingsState = SettingsState.default) : StateEditor<SettingsState>(settings) {
     override val rootComponent = JPanel(BorderLayout())
@@ -54,7 +55,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     /**
      * The UUID of the scheme to select after the next invocation of [reset].
      *
-     * @see TemplateSettingsAction
+     * @see TemplateSettingsConfigurable
      */
     var queueSelection: String? = null
 
@@ -122,9 +123,10 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     }
 
     /**
-     * Creates an editor to edit the given scheme.
+     * Creates an editor to edit [scheme].
      *
      * @param scheme the scheme to create an editor for
+     * @return an editor to edit [scheme]
      */
     private fun createEditor(scheme: Scheme) =
         when (scheme) {

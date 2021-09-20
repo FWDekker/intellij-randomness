@@ -45,19 +45,19 @@ data class DecimalScheme(
 
 
     /**
-     * Returns random decimals between the minimum and maximum value, inclusive.
+     * Returns random formatted decimals in the range from [minValue] until [maxValue], inclusive.
      *
      * @param count the number of decimals to generate
-     * @return random decimals between the minimum and maximum value, inclusive
+     * @return random formatted decimals in the range from [minValue] until [maxValue], inclusive
      */
     override fun generateUndecoratedStrings(count: Int) =
         List(count) { doubleToString(random.nextDouble(minValue, maxValue.nextUp())) }
 
     /**
-     * Returns a nicely formatted representation of a decimal.
+     * Returns a nicely formatted representation of [decimal].
      *
      * @param decimal the decimal to format
-     * @return a nicely formatted representation of a decimal
+     * @return a nicely formatted representation of [decimal]
      */
     private fun doubleToString(decimal: Double): String {
         val format = DecimalFormat()
@@ -99,19 +99,18 @@ data class DecimalScheme(
          */
         val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "4.2", listOf(Color(98, 181, 67, 154)))
 
-
         /**
          * The maximum valid difference between the [minValue] and [maxValue] fields.
          */
         const val MAX_VALUE_DIFFERENCE = 1E53
 
         /**
-         * The default value of the [minValue][minValue] field.
+         * The default value of the [minValue] field.
          */
         const val DEFAULT_MIN_VALUE = 0.0
 
         /**
-         * The default value of the [maxValue][maxValue] field.
+         * The default value of the [maxValue] field.
          */
         const val DEFAULT_MAX_VALUE = 1_000.0
 
@@ -121,32 +120,32 @@ data class DecimalScheme(
         const val MIN_DECIMAL_COUNT = 0
 
         /**
-         * The default value of the [decimalCount][decimalCount] field.
+         * The default value of the [decimalCount] field.
          */
         const val DEFAULT_DECIMAL_COUNT = 2
 
         /**
-         * The default value of the [showTrailingZeroes][showTrailingZeroes] field.
+         * The default value of the [showTrailingZeroes] field.
          */
         const val DEFAULT_SHOW_TRAILING_ZEROES = true
 
         /**
-         * The default value of the [groupingSeparator][groupingSeparator] field.
+         * The default value of the [groupingSeparator] field.
          */
         const val DEFAULT_GROUPING_SEPARATOR = ""
 
         /**
-         * The default value of the [decimalSeparator][decimalSeparator] field.
+         * The default value of the [decimalSeparator] field.
          */
         const val DEFAULT_DECIMAL_SEPARATOR = "."
 
         /**
-         * The default value of the [prefix][prefix] field.
+         * The default value of the [prefix] field.
          */
         const val DEFAULT_PREFIX = ""
 
         /**
-         * The default value of the [suffix][suffix] field.
+         * The default value of the [suffix] field.
          */
         const val DEFAULT_SUFFIX = ""
     }

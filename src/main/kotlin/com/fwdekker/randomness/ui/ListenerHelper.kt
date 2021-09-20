@@ -16,7 +16,7 @@ import javax.swing.text.Document
 
 
 /**
- * Adds a `ChangeListener` to each of the given components.
+ * Adds [listener] to each of [components].
  *
  * @param components the components to add the listener to
  * @param listener the listener to invoke whenever any of the given components changes state
@@ -40,13 +40,13 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
 }
 
 /**
- * Adds a `ChangeListener` to a text field.
+ * Adds [listener] to a text field.
  *
- * Code taken from [StackOverflow][https://stackoverflow.com/a/27190162/3307872], but without the `invokeLater`.
+ * Code taken from https://stackoverflow.com/a/27190162/3307872, but without the `invokeLater`.
  *
- * @param changeListener the change listener that responds to changes in the text field
+ * @param listener the change listener that responds to changes in the text field
  */
-fun JTextField.addChangeListener(changeListener: (JTextField) -> Unit) {
+fun JTextField.addChangeListener(listener: (JTextField) -> Unit) {
     val dl = object : DocumentListener {
         private var lastChange = 0
         private var lastNotifiedChange = 0
@@ -57,7 +57,7 @@ fun JTextField.addChangeListener(changeListener: (JTextField) -> Unit) {
             if (lastNotifiedChange == lastChange) return
 
             lastNotifiedChange = lastChange
-            changeListener(this@addChangeListener)
+            listener(this@addChangeListener)
         }
 
         override fun insertUpdate(e: DocumentEvent?) = changedUpdate(e)

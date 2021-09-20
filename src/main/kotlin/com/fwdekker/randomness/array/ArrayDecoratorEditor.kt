@@ -27,9 +27,9 @@ import javax.swing.event.ChangeEvent
  * Component for settings of random array generation.
  *
  * @param settings the settings to edit in the component
- * @param disablable true if and only if the user has the option of disabling the array scheme. If this is set to false,
- * [readState] will return a decorator which is always enabled
- * @param helpText the text displayed right at the top
+ * @param disablable `true` if and only if the user has the option of disabling the array scheme. If this is set to
+ * `false`, [readState] will return a decorator which is always enabled.
+ * @param helpText the text displayed at the top
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
 class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true, helpText: String? = null) :
@@ -80,7 +80,7 @@ class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true,
     }
 
     /**
-     * Initialises custom UI components.
+     * Initializes custom UI components.
      *
      * This method is called by the scene builder at the start of the constructor.
      */

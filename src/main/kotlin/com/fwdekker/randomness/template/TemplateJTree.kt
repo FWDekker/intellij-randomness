@@ -170,7 +170,7 @@ class TemplateJTree(
 
 
     /**
-     * Loads the given list of templates.
+     * Reloads the list of templates in [myModel].
      *
      * This is a wrapper around [TemplateTreeModel.reload] that additionally tries to retain the current selection
      * and expansion state.
@@ -188,9 +188,9 @@ class TemplateJTree(
 
 
     /**
-     * Adds the given scheme at an appropriate location in the tree based on the currently selected node.
+     * Adds [newScheme] at an appropriate location in the tree based on the currently selected node.
      *
-     * @param newScheme the scheme to add. Must be an instance of [Template] if [selectedNodeNotRoot] is null
+     * @param newScheme the scheme to add. Must be an instance of [Template] if [selectedNodeNotRoot] is `null`.
      */
     fun addScheme(newScheme: Scheme) {
         val newNode = StateNode(newScheme)
@@ -216,9 +216,9 @@ class TemplateJTree(
     }
 
     /**
-     * Removes the given scheme from the tree, and selects an appropriate other scheme.
+     * Removes [scheme] from the tree, and selects an appropriate other scheme.
      *
-     * Throws an exception if the scheme is not in this tree.
+     * Throws an exception if [scheme] is not in this tree.
      *
      * @param scheme the scheme to remove
      */
@@ -253,13 +253,13 @@ class TemplateJTree(
     }
 
     /**
-     * Returns true if and only if [moveSchemeByOnePosition] can be invoked with these parameters.
+     * Returns `true` if and only if [moveSchemeByOnePosition] can be invoked with these parameters.
      *
      * Throws an exception if the scheme is not in this tree.
      *
      * @param scheme the scheme to move up or down
      * @param moveDown `true` if the scheme should be moved down, `false` if the scheme should be moved up
-     * @return true if and only if [moveSchemeByOnePosition] can be invoked with these parameters
+     * @return `true` if and only if [moveSchemeByOnePosition] can be invoked with these parameters
      */
     fun canMoveSchemeByOnePosition(scheme: Scheme, moveDown: Boolean) =
         myModel.canExchangeRows(myModel.nodeToRow(StateNode(scheme)), getMoveTargetIndex(scheme, moveDown))
@@ -289,10 +289,10 @@ class TemplateJTree(
 
 
     /**
-     * Returns true if and only if the given scheme has been modified with respect to the [originalState].
+     * Returns `true` if and only if [scheme] has been modified with respect to [originalState].
      *
      * @param scheme the scheme to check for modification
-     * @return true if and only if the given scheme has been modified with respect to the [originalState]
+     * @return `true` if and only if [scheme] has been modified with respect to [originalState]
      */
     private fun isModified(scheme: Scheme) =
         originalState.templateList.getSchemeByUuid(scheme.uuid) != scheme ||
@@ -300,14 +300,14 @@ class TemplateJTree(
             scheme is WordScheme && originalState.dictionarySettings != currentState.dictionarySettings
 
     /**
-     * Finds a good, unique name for the given template so that it can be inserted into this list without conflict.
+     * Finds a good, unique name for [template] so that it can be inserted into this list without conflict.
      *
      * If the name is already unique, that name is returned. Otherwise, the name is appended with the first number `i`
      * such that `$name ($i)` is unique. If the template's current name already ends with a number in parentheses, that
      * number is taken as the starting number.
      *
      * @param template the template to find a good name for
-     * @return a unique name for the given template
+     * @return a unique name for [template]
      */
     private fun findUniqueNameFor(template: Template): String {
         val templateNames = myModel.list.templates.map { it.name }
@@ -330,6 +330,17 @@ class TemplateJTree(
      * Renders a cell in the tree.
      */
     private inner class CellRenderer : ColoredTreeCellRenderer() {
+        /**
+         * Renders the [Scheme] in [value].
+         *
+         * @param tree ignored
+         * @param value the node to render
+         * @param selected ignored
+         * @param expanded ignored
+         * @param leaf ignored
+         * @param row ignored
+         * @param hasFocus ignored
+         */
         override fun customizeCellRenderer(
             tree: JTree,
             value: Any,
@@ -362,6 +373,11 @@ class TemplateJTree(
      * Displays a popup to add a scheme, or immediately adds a template if nothing is currently selected.
      */
     private inner class AddButton : AnActionButton(Bundle("shared.action.add"), AllIcons.General.Add) {
+        /**
+         * Displays a popup to add a scheme, or immediately adds a template if nothing is currently selected.
+         *
+         * @param event ignored
+         */
         override fun actionPerformed(event: AnActionEvent) {
             if (selectedNodeNotRoot == null) {
                 addScheme(AVAILABLE_ADD_SCHEMES[0])
@@ -373,8 +389,18 @@ class TemplateJTree(
                 .show(preferredPopupPoint ?: return)
         }
 
+        /**
+         * Returns the shortcut for this action.
+         *
+         * @return the shortcut for this action
+         */
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.ADD)
 
+        /**
+         * Updates the presentation of the button.
+         *
+         * @param event carries contextual information
+         */
         override fun updateButton(event: AnActionEvent) {
             super.updateButton(event)
 
@@ -388,45 +414,97 @@ class TemplateJTree(
         /**
          * The [Scheme]-related entries in [AddButton].
          */
-        private inner class AddSchemePopupStep : BaseListPopupStep<Scheme>(
-            null,
-            AVAILABLE_ADD_SCHEMES
-        ) {
+        private inner class AddSchemePopupStep : BaseListPopupStep<Scheme>(null, AVAILABLE_ADD_SCHEMES) {
+            /**
+             * Returns [value]'s icon.
+             *
+             * @param value the value to return the icon of
+             * @return [value]'s icon
+             */
             override fun getIconFor(value: Scheme?) = value?.icon
 
+            /**
+             * Returns [value]'s name.
+             *
+             * @param value the value to return the name of
+             * @return [value]'s name
+             */
             override fun getTextFor(value: Scheme?) = value?.name ?: Bundle("misc.default_scheme_name")
 
+            /**
+             * Inserts [value] into the tree.
+             *
+             * @param value the value to insert
+             * @param finalChoice ignored
+             * @return `null`
+             */
             override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? {
                 if (value != null) addScheme(value.deepCopy().also { it.setSettingsState(currentState) })
 
                 return null
             }
 
+            /**
+             * Returns `true`.
+             *
+             * @return `true`
+             */
             override fun isSpeedSearchEnabled() = true
 
+            /**
+             * Returns a separator if [value] should be preceded by a separator, or `null` otherwise.
+             *
+             * @param value the value to determine by whether to return a separator
+             * @return a separator if [value] should be preceded by a separator, or `null` otherwise
+             */
             override fun getSeparatorAbove(value: Scheme?) =
                 if (value == AVAILABLE_ADD_SCHEMES[1]) ListSeparator()
                 else null
 
+            /**
+             * Returns the index of the entry to select by default.
+             *
+             * @return the index of the entry to select by default
+             */
             override fun getDefaultOptionIndex() = 0
         }
     }
 
     /**
-     * Removes the selected scheme.
+     * Removes the selected scheme from the tree.
      */
     private inner class RemoveButton : AnActionButton(Bundle("shared.action.remove"), AllIcons.General.Remove) {
+        /**
+         * Removes the selected scheme from the tree.
+         *
+         * @param event ignored
+         */
         override fun actionPerformed(event: AnActionEvent) = removeScheme(selectedScheme!!)
 
+        /**
+         * Returns `true` if and only if this action is enabled.
+         *
+         * @return `true` if and only if this action is enabled
+         */
         override fun isEnabled() = selectedNodeNotRoot != null
 
+        /**
+         * Returns the shortcut for this action.
+         *
+         * @return the shortcut for this action
+         */
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.REMOVE)
     }
 
     /**
-     * Duplicates the selected scheme.
+     * Copies the selected scheme in the tree.
      */
     private inner class CopyButton : AnActionButton(Bundle("shared.action.copy"), AllIcons.Actions.Copy) {
+        /**
+         * Copies the selected scheme in the tree.
+         *
+         * @param event ignored
+         */
         override fun actionPerformed(event: AnActionEvent) {
             val copy = selectedScheme!!.deepCopy()
             copy.setSettingsState(currentState)
@@ -434,28 +512,63 @@ class TemplateJTree(
             addScheme(copy)
         }
 
+        /**
+         * Returns `true` if and only if this action is enabled.
+         *
+         * @return `true` if and only if this action is enabled
+         */
         override fun isEnabled() = selectedNodeNotRoot != null
     }
 
     /**
-     * Moves a scheme up by one position.
+     * Moves the selected scheme up by one position in the tree.
      */
     private inner class UpButton : AnActionButton(Bundle("shared.action.up"), AllIcons.Actions.MoveUp) {
+        /**
+         * Moves the selected scheme up by one position in the tree.
+         *
+         * @param event ignored
+         */
         override fun actionPerformed(event: AnActionEvent) = moveSchemeByOnePosition(selectedScheme!!, moveDown = false)
 
+        /**
+         * Returns `true` if and only if this action is enabled.
+         *
+         * @return `true` if and only if this action is enabled
+         */
         override fun isEnabled() = selectedScheme?.let { canMoveSchemeByOnePosition(it, moveDown = false) } ?: false
 
+        /**
+         * Returns the shortcut for this action.
+         *
+         * @return the shortcut for this action
+         */
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.UP)
     }
 
     /**
-     * Moves a scheme down by one position.
+     * Moves the selected scheme down by one position in the tree.
      */
     private inner class DownButton : AnActionButton(Bundle("shared.action.down"), AllIcons.Actions.MoveDown) {
+        /**
+         * Moves the selected scheme down by one position in the tree.
+         *
+         * @param event ignored
+         */
         override fun actionPerformed(event: AnActionEvent) = moveSchemeByOnePosition(selectedScheme!!, moveDown = true)
 
+        /**
+         * Returns `true` if and only if this action is enabled.
+         *
+         * @return `true` if and only if this action is enabled
+         */
         override fun isEnabled() = selectedScheme?.let { canMoveSchemeByOnePosition(it, moveDown = true) } ?: false
 
+        /**
+         * Returns the shortcut for this action.
+         *
+         * @return the shortcut for this action
+         */
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.DOWN)
     }
 
@@ -463,6 +576,11 @@ class TemplateJTree(
      * Resets the selected scheme to its original state, or removes it if it has no original state.
      */
     private inner class ResetButton : AnActionButton(Bundle("shared.action.reset"), AllIcons.General.Reset) {
+        /**
+         * Resets the selected scheme to its original state, or removes it if it has no original state.
+         *
+         * @param event ignored
+         */
         override fun actionPerformed(event: AnActionEvent) {
             val toReset = selectedScheme!!
             val toResetFrom = originalState.templateList.getSchemeByUuid(toReset.uuid)
@@ -481,6 +599,11 @@ class TemplateJTree(
             myModel.expandAndSelect(StateNode(toReset))
         }
 
+        /**
+         * Returns `true` if and only if this action is enabled.
+         *
+         * @return `true` if and only if this action is enabled
+         */
         override fun isEnabled() = selectedScheme?.let { isModified(it) } ?: false
     }
 
@@ -547,7 +670,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
 
     /**
      * Returns the row index of the given node, considering which nodes are currently collapsed, ignoring the root, or
-     * -1 if the node could not be found.
+     * `-1` if the node could not be found.
      *
      * Used to implement [EditableModel].
      */
@@ -567,7 +690,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     override fun getRoot() = StateNode(list)
 
     /**
-     * Reloads the entire model's structure to synchronize it with the changes in the given list.
+     * Reloads the entire model's structure to synchronize it with the changes in [newList].
      *
      * Use this method if the entire model should be reloaded from the list because major changes have been made. If
      * small changes have been made, consider using one of the `fire` methods such as [fireNodeChanged].
@@ -632,13 +755,13 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     }
 
     /**
-     * Returns true if and only if the node at row [oldIndex] can be moved to row [newIndex].
+     * Returns `true` if and only if the node at row [oldIndex] can be moved to row [newIndex].
      *
      * Indices are looked up using [rowToNode], and are typically relative to the current expansion state of the view.
      *
      * @param oldIndex the index of the row of the node to move
      * @param newIndex the index of the row to move the node to
-     * @return true if and only if the row at [oldIndex] can be moved to [newIndex]
+     * @return `true` if and only if the row at [oldIndex] can be moved to [newIndex]
      */
     override fun canExchangeRows(oldIndex: Int, newIndex: Int): Boolean {
         val oldNode = rowToNode(oldIndex)
@@ -651,10 +774,10 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
 
 
     /**
-     * Returns true if and only if [node] does not have children.
+     * Returns `true` if and only if [node] does not have children.
      *
      * @param node the node to check whether it is a leaf
-     * @return true if and only if [node] does not have children
+     * @return `true` if and only if [node] does not have children
      */
     override fun isLeaf(node: Any?): Boolean {
         require(node is StateNode) {
@@ -665,13 +788,13 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     }
 
     /**
-     * Returns the child at the given index in the parent.
+     * Returns the child at the index [index] in [parent].
      *
-     * Throws an exception if the index is out of bounds.
+     * Throws an exception if [index] is out of bounds in [parent].
      *
      * @param parent the parent to return the child of
      * @param index the index of the child in the parent
-     * @return the child at the given index in the parent
+     * @return the child at the index [index] in [parent]
      */
     override fun getChild(parent: Any?, index: Int): StateNode {
         require(parent is StateNode) {
@@ -698,13 +821,13 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     }
 
     /**
-     * Returns the index of the child in the parent, or -1 if either the parent or the child is null, or -1 if the child
-     * is not in the parent.
+     * Returns the index of the child in the parent, or `-1` if either the parent or the child is `null`, or `-1` if the
+     * child is not in the parent.
      *
      * @param parent the parent to find the index in
      * @param child the child to return the index of
-     * @return the index of the child in the parent, or -1 if either the parent or the child is null, or -1 if the child
-     * is not in the parent
+     * @return the index of the child in the parent, or `-1` if either the parent or the child is `null`, or `-1` if the
+     * child is not in the parent
      */
     override fun getIndexOfChild(parent: Any?, child: Any?): Int {
         if (parent == null || child == null) return -1
@@ -720,12 +843,12 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     }
 
     /**
-     * Returns the parent of the given node, or `null` if the node has no parent.
+     * Returns the parent of [node], or `null` if the node has no parent.
      *
-     * Throws an exception if the node is not contained in this model.
+     * Throws an exception if [node] is not contained in this model.
      *
      * @param node the node to return the parent of
-     * @return the parent of the given node, or `null` if the node has no parent
+     * @return the parent of [node], or `null` if the node has no parent
      */
     fun getParentOf(node: StateNode): StateNode? {
         require(root.contains(node)) { Bundle("template_list.error.parent_of_node_not_in_model") }
@@ -738,12 +861,12 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     }
 
     /**
-     * Returns the path from the [root] to the given node.
+     * Returns the path from the [root] to [node].
      *
-     * Throws an exception if the node is not contained in this model.
+     * Throws an exception if [node] is not contained in this model.
      *
      * @param node the node to return the path to
-     * @return the path from the [root] to the given node
+     * @return the path from the [root] to [node]
      */
     fun getPathToRoot(node: StateNode): TreePath {
         require(root.contains(node)) { Bundle("template_list.error.path_of_node_not_in_model") }
@@ -767,9 +890,9 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
 
 
     /**
-     * Inserts the given node as a child to the parent at the given index.
+     * Inserts [child] as a child into [parent] at index [index].
      *
-     * Throws an exception if the index is out of bounds.
+     * Throws an exception if [index] is out of bounds in [parent].
      *
      * @param parent the node to insert the child into
      * @param child the node to insert into the parent
@@ -781,9 +904,9 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     }
 
     /**
-     * Inserts the given state as a child to the parent right after [after].
+     * Inserts [child] as a child into [parent] right after [after].
      *
-     * Throws an exception if [child] and [after] are not siblings.
+     * Throws an exception if [after] is not a child of [parent].
      *
      * @param parent the state to insert the child into
      * @param child the state to insert into the parent
@@ -797,9 +920,9 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     }
 
     /**
-     * Removes the given node from the model.
+     * Removes [node] from this model.
      *
-     * Throws an exception if the node is not contained in this model, or if the node to remove is the root.
+     * Throws an exception if [node] is not contained in this model, or if [node] is [getRoot].
      *
      * @param node the node to remove from the model
      */
@@ -816,13 +939,13 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
 
 
     /**
-     * Informs listeners that the given node has been changed.
+     * Informs listeners that [node] has been changed.
      *
-     * This method is applicable if the given node's internal state has changed and the way it is displayed should be
-     * updated. However, this method is not applicable if the entire node has been replaced with a different instance
-     * or if the children of the node have been changed. In those two latter scenarios, use [fireNodeStructureChanged].
+     * This method is applicable if [node]'s internal state has changed and the way it is displayed should be updated.
+     * However, this method is not applicable if the entire node has been replaced with a different instance or if the
+     * children of [node] have been changed. In those two latter scenarios, use [fireNodeStructureChanged].
      *
-     * Does nothing if the node is `null`.
+     * Does nothing if [node] is `null`.
      *
      * @param node the node that has been changed
      */
@@ -841,9 +964,9 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     }
 
     /**
-     * Informs listeners that the given node has been inserted into the model.
+     * Informs listeners that [node] has been inserted into this model.
      *
-     * Does nothing if the node is null.
+     * Does nothing if [node] is `null`.
      *
      * @param node the node that has been inserted into the model
      * @param parent the parent into which the child was inserted
@@ -859,11 +982,11 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     }
 
     /**
-     * Informs listeners that the given child has been removed from the model.
+     * Informs listeners that [child] has been removed from this model.
      *
-     * If `child` has children nodes itself, then you must **not** invoke this method on those children.
+     * If [child] has children nodes itself, then you must **not** invoke this method on those children.
      *
-     * Does nothing if the child is null.
+     * Does nothing if [child] is `null`.
      *
      * @param child the child that has been removed from the model
      * @param parent the parent from which the child was removed
@@ -879,9 +1002,9 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     }
 
     /**
-     * Informs listeners that the given node's structure has been changed.
+     * Informs listeners that [node]'s structure has been changed.
      *
-     * Does nothing if the node is null.
+     * Does nothing if [node] is `null`.
      *
      * @param node the node of which the structure has been changed
      */
@@ -902,7 +1025,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
         error(Bundle("template_list.error.change_value_by_path"))
 
     /**
-     * Adds the given listener.
+     * Adds [listener] as a listener.
      *
      * @param listener the listener to add
      */
@@ -911,7 +1034,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
     }
 
     /**
-     * Removes the given listener.
+     * Removes [listener] as a listener.
      *
      * @param listener the listener to remove
      */
@@ -933,7 +1056,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
  */
 class StateNode(val state: State) {
     /**
-     * True if and only if this node can have children.
+     * `true` if and only if this node can have children.
      */
     val canHaveChildren: Boolean
         get() = state is TemplateList || state is Template
@@ -942,7 +1065,7 @@ class StateNode(val state: State) {
      * The child nodes contained in this node.
      *
      * The getter and setter throw an exception if this node cannot contain children. An exception is thrown if and
-     * only if [canHaveChildren] is false.
+     * only if [canHaveChildren] is `false`.
      */
     var children: List<StateNode>
         get() =
@@ -962,7 +1085,7 @@ class StateNode(val state: State) {
     /**
      * The recursive children of this node in depth-first order, excluding itself.
      *
-     * Returns an empty list if [canHaveChildren] is false.
+     * Returns an empty list if [canHaveChildren] is `false`.
      */
     val recursiveChildren: List<StateNode>
         get() =
@@ -971,20 +1094,20 @@ class StateNode(val state: State) {
 
 
     /**
-     * Returns true if and only if the given node is contained in the tree rooted at this node.
+     * Returns `true` if and only if [node] is contained in the tree rooted at this node.
      *
      * @param node the node to find
-     * @return true if and only if the given node is contained in the tree rooted at this node
+     * @return `true` if and only if [node] is contained in the tree rooted at this node
      */
     fun contains(node: StateNode): Boolean =
         this == node || canHaveChildren && children.any { it.contains(node) }
 
 
     /**
-     * Returns true if and only if [other]'s UUID is the same as [state]'s UUID.
+     * Returns `true` if and only if [other]'s UUID is the same as [state]'s UUID.
      *
      * @param other the object to compare against
-     * @return true if and only if [other]'s UUID is the same as [state]'s UUID
+     * @return `true` if and only if [other]'s UUID is the same as [state]'s UUID
      */
     override fun equals(other: Any?) = other is StateNode && this.state.uuid == other.state.uuid
 

@@ -15,7 +15,7 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
 /**
  * A collection of different templates.
  *
- * @property templates the collection of templates, each with a unique [Template.name]
+ * @property templates The collection of templates, each with a unique name.
  * @see TemplateSettings
  */
 data class TemplateList(
@@ -61,18 +61,18 @@ data class TemplateList(
 
 
     /**
-     * Returns the template in this list with the given UUID.
+     * Returns the template in this list with [uuid] as its UUID.
      *
      * @param uuid the UUID to search for
-     * @return the template in this list with the given UUID
+     * @return the template in this list with [uuid] as its UUID
      */
     fun getTemplateByUuid(uuid: String) = templates.singleOrNull { it.uuid == uuid }
 
     /**
-     * Returns the template or scheme in this list with the given UUID.
+     * Returns the template or scheme in this list with [uuid] as its UUID.
      *
      * @param uuid the UUID to search for
-     * @return the template or scheme in this list with the given UUID
+     * @return the template or scheme in this list with [uuid] as its UUID
      */
     fun getSchemeByUuid(uuid: String) = templates.flatMap { listOf(it) + it.schemes }.singleOrNull { it.uuid == uuid }
 
@@ -100,7 +100,7 @@ data class TemplateList(
      */
     companion object {
         /**
-         * The default value of the [templates][templates] field.
+         * The default value of the [templates] field.
          */
         val DEFAULT_TEMPLATES: List<Template>
             get() = listOf(
@@ -113,7 +113,7 @@ data class TemplateList(
 
 
         /**
-         * Constructs a [TemplateList] consisting of a single template with the given schemes.
+         * Constructs a [TemplateList] consisting of a single template containing [schemes].
          *
          * @param schemes the schemes to give to the list's single template
          * @param name the name of the template

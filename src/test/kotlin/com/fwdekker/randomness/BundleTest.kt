@@ -27,7 +27,7 @@ object BundleTest : Spek({
         }
 
         it("inserts the given arguments into the string") {
-            assertThat(Bundle("preview.invalid", "sweep")).isEqualTo("Settings are invalid: sweep")
+            assertThat(Bundle("preview.invalid", "sweep")).isEqualTo("Settings are invalid:\nsweep")
         }
     }
 })

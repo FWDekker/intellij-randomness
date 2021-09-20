@@ -19,7 +19,7 @@ import java.awt.event.ActionEvent
  */
 class PopupAction : AnAction() {
     /**
-     * Whether the user focused the editor when opening this popup.
+     * `true` if and only if the user focused the editor when opening this popup.
      */
     private var hasEditor: Boolean = true
 
@@ -27,7 +27,7 @@ class PopupAction : AnAction() {
     /**
      * Sets the icon of this action.
      *
-     * @param event carries information on the invocation place
+     * @param event carries contextual information
      */
     override fun update(event: AnActionEvent) {
         event.presentation.icon = RandomnessIcons.RANDOMNESS
@@ -37,7 +37,7 @@ class PopupAction : AnAction() {
     /**
      * Displays a popup with all actions provided by Randomness.
      *
-     * @param event carries information on the invocation place
+     * @param event carries contextual information
      */
     override fun actionPerformed(event: AnActionEvent) {
         val popupGroup = if (hasEditor) PopupGroup() else SettingsOnlyPopupGroup()
@@ -65,10 +65,10 @@ class PopupAction : AnAction() {
 
 
     /**
-     * Returns the desired title for the popup given an event.
+     * Returns the desired title for the popup given [event].
      *
      * @param event the event on which the title should be based
-     * @return the desired title for the popup given an event
+     * @return the desired title for the popup given [event]
      */
     @Suppress("ComplexMethod") // Cannot be simplified
     private fun captionModifier(event: ActionEvent?): String {
@@ -91,13 +91,13 @@ class PopupAction : AnAction() {
 
 
     /**
-     * The `ActionGroup` containing all Randomness actions.
+     * The [ActionGroup] containing all Randomness actions.
      */
     private class PopupGroup : ActionGroup() {
         /**
          * Returns all group actions.
          *
-         * @param event carries information on the invocation place
+         * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
             TemplateSettings.default.state.templates.map { TemplateGroupAction(it) }.toTypedArray<AnAction>() +
@@ -106,13 +106,13 @@ class PopupAction : AnAction() {
     }
 
     /**
-     * The `ActionGroup` containing only settings-related actions.
+     * The [ActionGroup] containing only settings-related actions.
      */
     private class SettingsOnlyPopupGroup : ActionGroup() {
         /**
          * Returns all settings actions.
          *
-         * @param event carries information on the invocation place
+         * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
             TemplateSettings.default.state.templates.map { TemplateSettingsAction(it) }.toTypedArray<AnAction>() +

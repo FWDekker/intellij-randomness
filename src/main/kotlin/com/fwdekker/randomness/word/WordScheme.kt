@@ -49,11 +49,11 @@ data class WordScheme(
 
 
     /**
-     * Returns random words from the dictionaries in `settings`.
+     * Returns formatted random words from the dictionaries in [dictionarySettings].
      *
      * @param count the number of words to generate
-     * @return random words from the dictionaries in `settings`
-     * @throws InvalidDictionaryException if no words could be found using the settings in `settings`
+     * @return formatted random words from the dictionaries in [dictionarySettings]
+     * @throws InvalidDictionaryException if no words could be found using the settings in [dictionarySettings]
      */
     override fun generateUndecoratedStrings(count: Int): List<String> {
         val words =
@@ -120,7 +120,6 @@ data class WordScheme(
          * The base icon for words.
          */
         val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "cat", listOf(Color(242, 101, 34, 154)))
-
 
         /**
          * The smallest valid value of the [minLength] field.

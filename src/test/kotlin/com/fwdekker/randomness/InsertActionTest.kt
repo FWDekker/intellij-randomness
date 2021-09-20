@@ -203,9 +203,9 @@ class InsertActionTest : BasePlatformTestCase() {
         caretModel.allCarets[0].setSelection(fromOffset, toOffset)
 
     /**
-     * Adds a caret at the given offset.
+     * Adds a caret at [offset].
      *
-     * @param offset an offset
+     * @param offset the offset to add a caret at
      */
     private fun addCaret(offset: Int) {
         caretModel.addCaret(myFixture.editor.offsetToVisualPosition(offset))

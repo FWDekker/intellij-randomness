@@ -16,7 +16,7 @@ object Bundle {
     /**
      * Returns the string at [key].
      *
-     * Throws an exception if no string with that key can be found.
+     * Throws an exception if no string with [key] can be found.
      *
      * @param key the key of the string to return
      * @return the string at [key]
@@ -25,6 +25,8 @@ object Bundle {
 
     /**
      * Returns the string at [key] formatted with [arguments].
+     *
+     * Throws an exception if no string with [key] can be found.
      *
      * @param key the key of the string to return
      * @param arguments the arguments to insert into the template

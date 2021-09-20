@@ -38,7 +38,7 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor
     }
 
     /**
-     * Initialises custom UI components.
+     * Initializes custom UI components.
      *
      * This method is called by the scene builder at the start of the constructor.
      */

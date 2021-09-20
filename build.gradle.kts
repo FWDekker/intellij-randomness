@@ -140,6 +140,7 @@ tasks {
         ))
         moduleName.set("Randomness v${properties("version")}")
         offlineMode.set(true)
+        suppressInheritedMembers.set(true)
 
         dokkaSourceSets {
             named("main") {
@@ -147,7 +148,7 @@ tasks {
 
                 jdkVersion.set(properties("javaVersion").toInt())
 
-                includeNonPublic.set(false)
+                includeNonPublic.set(true)
                 skipDeprecated.set(false)
                 reportUndocumented.set(true)
                 skipEmptyPackages.set(true)

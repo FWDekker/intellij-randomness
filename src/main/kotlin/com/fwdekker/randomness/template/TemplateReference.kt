@@ -39,8 +39,9 @@ data class TemplateReference(
         get() = listOf(arrayDecorator)
 
     /**
-     *The list in which this reference _must_ reside, and in which the referenced template _might_ reside. Using a [Box]
-     * to prevent recursive initialization.
+     * The list in which this reference _must_ reside, and in which the referenced template _might_ reside.
+     *
+     * Using a [Box] to prevent recursive initialization.
      */
     @get:Transient
     var templateList: Box<TemplateList> = Box({ TemplateSettings.default.state })

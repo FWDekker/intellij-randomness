@@ -1,5 +1,7 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.Timely.GENERATOR_TIMEOUT
+import com.fwdekker.randomness.Timely.generateTimely
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek

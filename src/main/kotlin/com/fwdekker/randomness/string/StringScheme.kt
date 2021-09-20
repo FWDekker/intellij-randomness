@@ -120,7 +120,6 @@ data class StringScheme(
          */
         val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "abc", listOf(Color(244, 175, 61, 154)))
 
-
         /**
          * The smallest valid value of the [minLength] field.
          */
@@ -132,33 +131,33 @@ data class StringScheme(
         const val MAX_LENGTH_DIFFERENCE = Int.MAX_VALUE
 
         /**
-         * The default value of the [minLength][minLength] field.
+         * The default value of the [minLength] field.
          */
         const val DEFAULT_MIN_LENGTH = 3
 
         /**
-         * The default value of the [maxLength][maxLength] field.
+         * The default value of the [maxLength] field.
          */
         const val DEFAULT_MAX_LENGTH = 8
 
         /**
-         * The default value of the [enclosure][enclosure] field.
+         * The default value of the [enclosure] field.
          */
         const val DEFAULT_ENCLOSURE = "\""
 
         /**
-         * The default value of the [capitalization][capitalization] field.
+         * The default value of the [capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RANDOM
 
         /**
-         * The default value of the [activeSymbolSets][activeSymbolSets] field.
+         * The default value of the [activeSymbolSets] field.
          */
         val DEFAULT_ACTIVE_SYMBOL_SETS: Set<String>
             get() = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).map { it.name }.toSet()
 
         /**
-         * The default value of the [excludeLookAlikeSymbols][excludeLookAlikeSymbols] field.
+         * The default value of the [excludeLookAlikeSymbols] field.
          */
         const val DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS = false
     }

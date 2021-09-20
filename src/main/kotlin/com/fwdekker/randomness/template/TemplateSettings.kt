@@ -61,8 +61,8 @@ class TemplateSettings : PersistentStateComponent<TemplateList> {
  * configurables may be created at any time in the background, so using [TemplateListEditor] as a configurable would
  * cause unnecessary lag.
  *
- * @see TemplateListEditor
  * @see TemplateSettingsAction
+ * @see TemplateListEditor
  */
 class TemplateSettingsConfigurable : SettingsConfigurable() {
     /**

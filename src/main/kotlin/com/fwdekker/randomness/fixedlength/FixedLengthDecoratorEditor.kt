@@ -48,7 +48,7 @@ class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<F
     }
 
     /**
-     * Initialises custom UI components.
+     * Initializes custom UI components.
      *
      * This method is called by the scene builder at the start of the constructor.
      */
@@ -86,9 +86,26 @@ class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<F
      * A document that can contain exactly one character.
      */
     private class OneByteDocumentFilter : DocumentFilter() {
+        /**
+         * Replaces the document's contents with the last character in [text].
+         *
+         * @param fb bypass to mutate the document
+         * @param offset ignored
+         * @param text the text of which to insert the last character
+         * @param attr the attributes to associate with the inserted content
+         */
         override fun insertString(fb: FilterBypass, offset: Int, text: String?, attr: AttributeSet?) =
             super.replace(fb, 0, fb.document.length, text?.takeLast(1), attr)
 
+        /**
+         * Replaces the document's contents with the last character in [text].
+         *
+         * @param fb bypass to mutate the document
+         * @param offset ignored
+         * @param length ignored
+         * @param text the text of which to insert the last character
+         * @param attr the attributes to associate with the inserted content
+         */
         override fun replace(fb: FilterBypass, offset: Int, length: Int, text: String?, attr: AttributeSet?) =
             super.replace(fb, 0, fb.document.length, text?.takeLast(1), attr)
     }

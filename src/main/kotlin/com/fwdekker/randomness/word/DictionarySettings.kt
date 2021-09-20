@@ -69,7 +69,7 @@ data class DictionarySettings(
             get() = listOf(BundledDictionary(BundledDictionary.SIMPLE_DICTIONARY))
 
         /**
-         * The persistent `DictionarySettings` instance.
+         * The persistent [DictionarySettings] instance.
          */
         val default: DictionarySettings
             get() = service()

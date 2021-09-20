@@ -9,12 +9,12 @@ import com.fwdekker.randomness.SchemeDecorator
 /**
  * The user-configurable collection of schemes applicable to generating arrays.
  *
- * @property enabled True if and only if arrays should be generated instead of singular values.
+ * @property enabled `true` if and only if arrays should be generated instead of singular values.
  * @property minCount The minimum number of elements to generate.
  * @property maxCount The maximum number of elements to generate.
  * @property brackets The brackets to surround arrays with.
  * @property separator The string to place between generated elements.
- * @property isSpaceAfterSeparator True if and only if a space should be placed after each separator.
+ * @property isSpaceAfterSeparator `true` if and only if a space should be placed after each separator.
  */
 data class ArrayDecorator(
     var enabled: Boolean = DEFAULT_ENABLED,

@@ -22,7 +22,7 @@ import kotlin.random.asJavaRandom
  * @property version The version of UUIDs to generate.
  * @property enclosure The string that encloses the generated UUID on both sides.
  * @property capitalization The capitalization mode of the generated UUID.
- * @property addDashes True if and only if the UUID should have dashes in it.
+ * @property addDashes `true` if and only if the UUID should have dashes in it.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class UuidScheme(
@@ -91,27 +91,25 @@ data class UuidScheme(
          */
         val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "id", listOf(Color(185, 155, 248, 154)))
 
-
         /**
-         * The default value of the [version][version] field.
+         * The default value of the [version] field.
          */
         const val DEFAULT_VERSION = 4
 
         /**
-         * The default value of the [enclosure][enclosure] field.
+         * The default value of the [enclosure] field.
          */
         const val DEFAULT_ENCLOSURE = "\""
 
         /**
-         * The default value of the [capitalization][capitalization] field.
+         * The default value of the [capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.LOWER
 
         /**
-         * The default value of the [addDashes][addDashes] field.
+         * The default value of the [addDashes] field.
          */
         const val DEFAULT_ADD_DASHES = true
-
 
         /**
          * Integer representing a type-1 UUID.

@@ -30,7 +30,7 @@ data class SymbolSetSettings(
     private val placeholder: String = ""
 ) : PersistentStateComponent<SymbolSetSettings>, Settings() {
     /**
-     * A list view of the deserialized `SymbolSet` objects described by [serializedSymbolSets].
+     * A list view of the deserialized [SymbolSet] objects described by [serializedSymbolSets].
      */
     @get:Transient
     var symbolSets: List<SymbolSet>
@@ -90,7 +90,7 @@ data class SymbolSetSettings(
             get() = SymbolSet.defaultSymbolSets
 
         /**
-         * The persistent `SymbolSetSettings` instance.
+         * The persistent [SymbolSetSettings] instance.
          */
         val default: SymbolSetSettings
             get() = service()

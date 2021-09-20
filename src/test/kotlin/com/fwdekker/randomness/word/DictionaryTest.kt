@@ -10,9 +10,9 @@ import java.util.Locale
 
 
 /**
- * Returns true if the current operating system is Windows.
+ * Returns `true` if the current operating system is Windows.
  *
- * @return true if the current operating system is Windows
+ * @return `true` if the current operating system is Windows
  */
 private fun isWindows() = System.getProperty("os.name").lowercase(Locale.getDefault()).contains("win")
 

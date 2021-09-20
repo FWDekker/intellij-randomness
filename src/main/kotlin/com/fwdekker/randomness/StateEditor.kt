@@ -28,7 +28,7 @@ abstract class StateEditor<S : State>(val originalState: S) : Disposable {
 
 
     /**
-     * Loads the given state into the editor and into [originalState].
+     * Loads [state] into the editor and into [originalState].
      *
      * @param state the state to load
      */
@@ -46,13 +46,13 @@ abstract class StateEditor<S : State>(val originalState: S) : Disposable {
     /**
      * Saves the editor's state into [originalState].
      *
-     * Does nothing if and only if [isModified] returns false.
+     * Does nothing if and only if [isModified] returns `false`.
      */
     open fun applyState() = originalState.copyFrom(readState())
 
 
     /**
-     * Returns true if and only if the editor contains modifications relative to the last saved state.
+     * Returns `true` if and only if the editor contains modifications relative to the last saved state.
      *
      * Override this method if the default equals method of [S] is not sufficient to detect changes.
      */
@@ -61,7 +61,7 @@ abstract class StateEditor<S : State>(val originalState: S) : Disposable {
     /**
      * Resets the editor's state to the last saved state.
      *
-     * Does nothing if and only if [isModified] return false.
+     * Does nothing if and only if [isModified] return `false`.
      */
     open fun reset() = loadState(originalState)
 

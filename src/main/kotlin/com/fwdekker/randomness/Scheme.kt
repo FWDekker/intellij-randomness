@@ -38,7 +38,8 @@ abstract class Scheme : State() {
      *
      * Decorators are automatically applied when [generateStrings] is invoked. To generate strings without using
      * decorators, use [generateUndecoratedStrings]. Decorators are applied in ascending order. That is, the output of
-     * the scheme is fed into the decorator at index 0, and that output is fed into the decorator at index 1, and so on.
+     * the scheme is fed into the decorator at index `0`, and that output is fed into the decorator at index `1`, and so
+     * on.
      */
     @get:Transient
     @get:XCollection(elementTypes = [ArrayDecorator::class, FixedLengthDecorator::class])

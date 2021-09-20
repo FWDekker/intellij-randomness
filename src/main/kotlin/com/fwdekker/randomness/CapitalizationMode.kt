@@ -48,7 +48,7 @@ enum class CapitalizationMode(val descriptor: String, private val transformer: (
 
 
     /**
-     * Invokes [transformer] with the given instance of [random].
+     * Invokes [transformer] with [random].
      *
      * @param string the string to transform
      * @param random the random instance to use for transforming
@@ -57,9 +57,9 @@ enum class CapitalizationMode(val descriptor: String, private val transformer: (
     fun transform(string: String, random: Random = Random.Default) = transformer(string, random)
 
     /**
-     * Returns the descriptor of the capitalization mode.
+     * Returns the [descriptor] of the capitalization mode.
      *
-     * @return the descriptor of the capitalization mode
+     * @return the [descriptor] of the capitalization mode
      */
     override fun toString() = descriptor
 
@@ -69,10 +69,10 @@ enum class CapitalizationMode(val descriptor: String, private val transformer: (
      */
     companion object {
         /**
-         * Returns the capitalization mode with the given name.
+         * Returns the capitalization mode corresponding to [descriptor].
          *
          * @param descriptor the descriptor of the capitalization mode to return
-         * @return the capitalization mode with the given descriptor
+         * @return the capitalization mode corresponding to [descriptor]
          */
         fun getMode(descriptor: String) =
             values().firstOrNull { it.descriptor == descriptor }

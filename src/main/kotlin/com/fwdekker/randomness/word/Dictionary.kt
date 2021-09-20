@@ -50,24 +50,24 @@ data class BundledDictionary(var filename: String = "") : Dictionary {
 
 
     /**
-     * Returns `true` iff this dictionary's filename equals [other]'s filename.
+     * Returns `true` if and only if this dictionary's filename equals [other]'s filename.
      *
      * @param other an object
-     * @return `true` iff this dictionary's filename equals [other]'s filename
+     * @return `true` if and only if this dictionary's filename equals [other]'s filename
      */
     override fun equals(other: Any?) = other is BundledDictionary && this.filename == other.filename
 
     /**
-     * Returns the hash code of the filename.
+     * Returns the hash code of [filename].
      *
-     * @return the hash code of the filename
+     * @return the hash code of [filename]
      */
     override fun hashCode() = filename.hashCode()
 
     /**
-     * Returns a human-readable string of the dictionary's filename.
+     * Returns a human-readable string representation of this dictionary.
      *
-     * @return a human-readable string of the dictionary's filename
+     * @return a human-readable string representation of this dictionary
      */
     override fun toString() = filename
 
@@ -81,8 +81,9 @@ data class BundledDictionary(var filename: String = "") : Dictionary {
          */
         const val SIMPLE_DICTIONARY = "english.dic"
 
+
         /**
-         * The cache of bundled dictionaries, used to improve word generation times.
+         * The cache of bundled dictionaries, used to improve the speed at which words can be generated.
          */
         private val cache = Cache<String, Set<String>> { filename ->
             try {
@@ -143,17 +144,10 @@ data class UserDictionary(var filename: String = "") : Dictionary {
 
 
     /**
-     * Returns a human-readable string of the dictionary's filename.
-     *
-     * @return a human-readable string of the dictionary's filename
-     */
-    override fun toString() = filename
-
-    /**
-     * Returns `true` iff this dictionary's filename equals [other]'s filename.
+     * Returns `true` if and only if this dictionary's filename equals [other]'s filename.
      *
      * @param other an object
-     * @return `true` iff this dictionary's filename equals [other]'s filename
+     * @return `true` if and only if this dictionary's filename equals [other]'s filename
      */
     override fun equals(other: Any?) = other is UserDictionary && this.filename == other.filename
 
@@ -164,13 +158,20 @@ data class UserDictionary(var filename: String = "") : Dictionary {
      */
     override fun hashCode() = filename.hashCode()
 
+    /**
+     * Returns a human-readable string of this dictionary.
+     *
+     * @return a human-readable string of this dictionary
+     */
+    override fun toString() = filename
+
 
     /**
      * Holds static elements.
      */
     companion object {
         /**
-         * The cache of bundled dictionaries, used to improve word generation times.
+         * The cache of bundled dictionaries, used to improve the speed at which words can be generated.
          */
         private val cache = Cache<String, Set<String>> { filename ->
             File(filename)

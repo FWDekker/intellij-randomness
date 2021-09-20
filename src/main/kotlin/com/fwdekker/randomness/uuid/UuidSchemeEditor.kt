@@ -43,7 +43,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
     }
 
     /**
-     * Initialises custom UI components.
+     * Initializes custom UI components.
      *
      * This method is called by the scene builder at the start of the constructor.
      */

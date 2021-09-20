@@ -12,8 +12,8 @@ import javax.swing.JSpinner
  * never becomes larger than the maximum value, and guarantees that the difference between the minimum and the maximum
  * never exceeds [maxRange].
  *
- * @param min the `JSpinner` that represents the minimum value
- * @param max the `JSpinner` that represents the maximum value
+ * @param min the [JSpinner] that represents the minimum value
+ * @param max the [JSpinner] that represents the maximum value
  * @param maxRange the maximum difference between `min` and `max`
  */
 fun bindSpinners(min: JSpinner, max: JSpinner, maxRange: Double? = null) {

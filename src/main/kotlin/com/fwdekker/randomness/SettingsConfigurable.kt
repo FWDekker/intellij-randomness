@@ -17,9 +17,9 @@ abstract class SettingsConfigurable : Configurable {
 
 
     /**
-     * Returns true if the settings were modified since they were loaded or they are invalid.
+     * Returns `true` if the settings were modified since they were loaded or they are invalid.
      *
-     * @return true if the settings were modified since they were loaded or they are invalid
+     * @return `true` if the settings were modified since they were loaded or they are invalid
      */
     override fun isModified() = editor.isModified() || editor.doValidate() != null
 

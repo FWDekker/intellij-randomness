@@ -87,7 +87,6 @@ data class Template(
          */
         val DEFAULT_ICON = TypeIcon(RandomnessIcons.TEMPLATE, "", listOf(Color(110, 110, 110)))
 
-
         /**
          * The default value of the [schemes] field.
          */
