@@ -43,7 +43,7 @@ class TemplateSettings : PersistentStateComponent<TemplateList> {
      */
     companion object {
         /**
-         * The persistent `TemplateSettings` instance.
+         * The persistent [TemplateSettings] instance.
          */
         val default: TemplateSettings
             get() = service()
@@ -57,8 +57,12 @@ class TemplateSettings : PersistentStateComponent<TemplateList> {
  * Set [templateToSelect] before [createComponent] is invoked to determine which template should be selected when the
  * configurable opens.
  *
- * @see TemplateListEditor
+ * This class is separate from [TemplateListEditor] because that class creates UI components in the constructor. But
+ * configurables may be created at any time in the background, so using [TemplateListEditor] as a configurable would
+ * cause unnecessary lag.
+ *
  * @see TemplateSettingsAction
+ * @see TemplateListEditor
  */
 class TemplateSettingsConfigurable : SettingsConfigurable() {
     /**

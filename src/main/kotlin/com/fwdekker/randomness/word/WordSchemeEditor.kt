@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
@@ -9,17 +10,17 @@ import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
-import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_ENCLOSURE
+import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_QUOTATION
 import com.fwdekker.randomness.word.WordScheme.Companion.MAX_LENGTH_DIFFERENCE
 import com.fwdekker.randomness.word.WordScheme.Companion.MIN_LENGTH
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.UIUtil
-import com.jgoodies.forms.factories.DefaultComponentFactory
-import java.util.ResourceBundle
 import javax.swing.ButtonGroup
-import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JTextArea
+import javax.swing.SwingUtilities
 
 
 /**
@@ -31,14 +32,16 @@ import javax.swing.JTextArea
 @Suppress("LateinitUsage") // Initialized by scene builder
 class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
-    override val preferredFocusedComponent = minLength.editorComponent
+    override val preferredFocusedComponent
+        get() = minLength.editorComponent
 
+    private lateinit var titleSeparator: TitledSeparator
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
     private lateinit var capitalizationGroup: ButtonGroup
-    private lateinit var enclosureGroup: ButtonGroup
+    private lateinit var quotationGroup: ButtonGroup
     private lateinit var dictionaryPanel: JPanel
-    private lateinit var dictionarySeparator: JComponent
+    private lateinit var dictionarySeparator: TitledSeparator
     private lateinit var dictionaryTable: DictionaryTable
     private lateinit var dictionaryHelp: JTextArea
     private lateinit var arrayDecoratorPanel: JPanel
@@ -50,23 +53,23 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
 
         loadState()
+        SwingUtilities.invokeLater { dictionaryHelp.isVisible = true } // Required to disable auto-scrolling
     }
 
     /**
-     * Initialises custom UI components.
+     * Initializes custom UI components.
      *
      * This method is called by the scene builder at the start of the constructor.
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        val bundle = ResourceBundle.getBundle("randomness")
-        val factory = DefaultComponentFactory.getInstance()
+        titleSeparator = SeparatorFactory.createSeparator(Bundle("word.title"), null)
 
         minLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         maxLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE.toDouble())
 
-        dictionarySeparator = factory.createSeparator(bundle.getString("settings.dictionaries"))
+        dictionarySeparator = SeparatorFactory.createSeparator(Bundle("word.dictionary.title"), null)
         dictionaryTable = DictionaryTable()
         dictionaryPanel = dictionaryTable.panel
 
@@ -80,12 +83,10 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
         minLength.value = state.minLength
         maxLength.value = state.maxLength
-        enclosureGroup.setValue(state.enclosure)
+        quotationGroup.setValue(state.quotation)
         capitalizationGroup.setValue(state.capitalization)
-        dictionaryTable.data =
-            (+state.dictionarySettings).dictionaries
-        dictionaryTable.activeData =
-            state.activeDictionaries.filter { dictionary -> dictionary in dictionaryTable.data }
+        dictionaryTable.data = (+state.dictionarySettings).dictionaries
+        dictionaryTable.activeData = state.activeDictionaries.filter { it in dictionaryTable.data }
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
@@ -93,7 +94,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         WordScheme(
             minLength = minLength.value,
             maxLength = maxLength.value,
-            enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE,
+            quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             activeDictionaries = dictionaryTable.activeData.toSet(),
             arrayDecorator = arrayDecoratorEditor.readState()
@@ -114,7 +115,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            minLength, maxLength, capitalizationGroup, enclosureGroup, dictionaryTable, arrayDecoratorEditor,
+            minLength, maxLength, capitalizationGroup, quotationGroup, dictionaryTable, arrayDecoratorEditor,
             listener = listener
         )
 }

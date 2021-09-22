@@ -9,13 +9,13 @@ import org.assertj.swing.fixture.FrameFixture
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import javax.swing.JCheckBox
-import javax.swing.JPanel
+import javax.swing.JTextArea
 
 
 /**
  * GUI tests for [ArrayDecoratorEditor].
  */
-object ArraySchemeDecoratorEditorTest : Spek({
+object ArrayDecoratorEditorTest : Spek({
     lateinit var scheme: ArrayDecorator
     lateinit var editor: ArrayDecoratorEditor
     lateinit var frame: FrameFixture
@@ -53,7 +53,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
             it("hides components if enabled is deselected") {
                 GuiActionRunner.execute { frame.checkBox("arrayEnabled").target().isSelected = false }
 
-                frame.panel(nameMatcher(JPanel::class.java, "arrayDetailsPanel")).requireNotVisible()
+                frame.spinner("arrayMinCount").requireDisabled()
             }
 
             it("shows components if enabled is reselected") {
@@ -62,7 +62,7 @@ object ArraySchemeDecoratorEditorTest : Spek({
                     frame.checkBox("arrayEnabled").target().isSelected = true
                 }
 
-                frame.panel(nameMatcher(JPanel::class.java, "arrayDetailsPanel")).requireVisible()
+                frame.spinner("arrayMinCount").requireEnabled()
             }
 
             it("keeps components visible if the editor is not disablable") {
@@ -76,7 +76,33 @@ object ArraySchemeDecoratorEditorTest : Spek({
                     frame.checkBox(nameMatcher(JCheckBox::class.java, "arrayEnabled")).target().isSelected = false
                 }
 
-                frame.panel(nameMatcher(JPanel::class.java, "arrayDetailsPanel")).requireVisible()
+                frame.spinner("arrayMinCount").requireEnabled()
+            }
+
+            it("disables space after separator if the decorator is enabled but the newline separator is checked") {
+                scheme.enabled = false
+                scheme.separator = "\n"
+                GuiActionRunner.execute { editor.reset() }
+
+                frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
+            }
+        }
+
+        describe("helpText") {
+            it("hides the helpTextArea by default") {
+                frame.textBox(nameMatcher(JTextArea::class.java, "helpText")).requireNotVisible()
+            }
+
+            it("shows the helpTextArea if a helpText is given") {
+                frame.cleanUp()
+                editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
+                    ArrayDecoratorEditor(scheme, helpText = "Sorrow")
+                }
+                frame = showInFrame(editor.rootComponent)
+
+                frame.textBox("helpText")
+                    .requireVisible()
+                    .requireText("Sorrow")
             }
         }
 
@@ -91,6 +117,14 @@ object ArraySchemeDecoratorEditorTest : Spek({
                 GuiActionRunner.execute { frame.radioButton("arraySeparatorNewline").target().isSelected = false }
 
                 frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
+            }
+
+            it("disables space after separator if the newline separator is unchecked but the decorator is disabled") {
+                scheme.enabled = false
+                scheme.separator = ","
+                GuiActionRunner.execute { editor.reset() }
+
+                frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
             }
         }
     }

@@ -1,11 +1,15 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.intellij.ui.ColoredListCellRenderer
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBList
+import com.intellij.ui.components.JBScrollPane
 import java.awt.BorderLayout
 import javax.swing.DefaultListModel
 import javax.swing.JList
@@ -18,16 +22,35 @@ import javax.swing.ListSelectionModel
  *
  * @param reference the reference to edit
  */
+@Suppress("LateinitUsage") // Initialized by scene builder
 class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<TemplateReference>(reference) {
-    override val rootComponent = JPanel(BorderLayout())
-    override val preferredFocusedComponent by lazy { templateList }
+    override lateinit var rootComponent: JPanel private set
+    override val preferredFocusedComponent
+        get() = templateList
 
-    private val templateListModel = DefaultListModel<Template>()
-    private val templateList = JBList(templateListModel)
-    private val arrayDecoratorEditor: ArrayDecoratorEditor
+    private lateinit var titleSeparator: TitledSeparator
+    private lateinit var templateListPanel: JPanel
+    private lateinit var templateListModel: DefaultListModel<Template>
+    private lateinit var templateList: JBList<Template>
+    private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
+    private lateinit var arrayDecoratorEditorPanel: JPanel
 
 
     init {
+        loadState()
+    }
+
+    /**
+     * Initializes custom UI components.
+     *
+     * This method is called by the scene builder at the start of the constructor.
+     */
+    @Suppress("UnusedPrivateMember") // Used by scene builder
+    private fun createUIComponents() {
+        titleSeparator = SeparatorFactory.createSeparator(Bundle("reference.title"), null)
+
+        templateListModel = DefaultListModel<Template>()
+        templateList = JBList(templateListModel)
         templateList.cellRenderer = object : ColoredListCellRenderer<Template>() {
             override fun customizeCellRenderer(
                 list: JList<out Template>,
@@ -36,17 +59,17 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
                 selected: Boolean,
                 hasFocus: Boolean
             ) {
-                append(value?.name ?: "<unknown>")
+                icon = value?.icon ?: Template.DEFAULT_ICON
+                append(value?.name ?: Bundle("template.name.unknown"))
             }
         }
         templateList.selectionMode = ListSelectionModel.SINGLE_SELECTION
-        templateList.setEmptyText("Cannot reference any other template without causing recursion.")
-        rootComponent.add(templateList, BorderLayout.CENTER)
+        templateList.setEmptyText(Bundle("reference.ui.empty"))
+        templateListPanel = JPanel(BorderLayout())
+        templateListPanel.add(JBScrollPane(templateList), BorderLayout.WEST)
 
         arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
-        rootComponent.add(arrayDecoratorEditor.rootComponent, BorderLayout.SOUTH)
-
-        loadState()
+        arrayDecoratorEditorPanel = arrayDecoratorEditor.rootComponent
     }
 
 

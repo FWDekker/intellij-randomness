@@ -7,9 +7,7 @@ import com.fwdekker.randomness.clickActionButton
 import com.fwdekker.randomness.getActionButton
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.SymbolSet
-import com.fwdekker.randomness.string.SymbolSetSettings
 import com.fwdekker.randomness.ui.SimpleTreeModelListener
-import com.fwdekker.randomness.word.DictionarySettings
 import com.fwdekker.randomness.word.UserDictionary
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
@@ -28,7 +26,7 @@ import javax.swing.event.TreeModelListener
 
 
 /**
- * Unit and GUI tests for [TemplateJTree].
+ * GUI tests for [TemplateJTree].
  */
 object TemplateJTreeTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
@@ -58,9 +56,7 @@ object TemplateJTreeTest : Spek({
                         Template("Particle", listOf(DummyScheme.from("republic"))),
                         Template("Village", listOf(DummyScheme.from("consider"), DummyScheme.from("tent")))
                     )
-                ),
-                SymbolSetSettings(),
-                DictionarySettings()
+                )
             )
         originalState.templateList.applySettingsState(originalState)
         currentState = originalState.deepCopy(retainUuid = true)
@@ -222,7 +218,7 @@ object TemplateJTreeTest : Spek({
             it("appends (1) if a scheme with the given name already exists") {
                 GuiActionRunner.execute { tree.addScheme(Template(name = "Captain")) }
 
-                assertThat(list().templates.last().name).isEqualTo("Captain (1)")
+                assertThat(list().templates[1].name).isEqualTo("Captain (1)")
             }
 
             it("appends (2) if two schemes with the given name already exist") {
@@ -231,7 +227,7 @@ object TemplateJTreeTest : Spek({
                     tree.addScheme(Template(name = "Captain"))
                 }
 
-                assertThat(list().templates.last().name).isEqualTo("Captain (2)")
+                assertThat(list().templates[2].name).isEqualTo("Captain (2)")
             }
 
             it("appends (2) if a scheme ending with (1) already exists") {
@@ -240,7 +236,7 @@ object TemplateJTreeTest : Spek({
                     tree.addScheme(Template(name = "Captain"))
                 }
 
-                assertThat(list().templates.last().name).isEqualTo("Captain (2)")
+                assertThat(list().templates[2].name).isEqualTo("Captain (2)")
             }
 
             it("replaces (1) with (2) if a scheme ending with (1) already exists") {
@@ -249,7 +245,7 @@ object TemplateJTreeTest : Spek({
                     tree.addScheme(Template(name = "Captain (1)"))
                 }
 
-                assertThat(list().templates.last().name).isEqualTo("Captain (2)")
+                assertThat(list().templates[2].name).isEqualTo("Captain (2)")
             }
 
             it("replaces (13) with (14) if a scheme ending with (13) already exists") {
@@ -258,7 +254,7 @@ object TemplateJTreeTest : Spek({
                     tree.addScheme(Template(name = "Captain (13)"))
                 }
 
-                assertThat(list().templates.last().name).isEqualTo("Captain (14)")
+                assertThat(list().templates[2].name).isEqualTo("Captain (14)")
             }
         }
 
@@ -573,6 +569,14 @@ object TemplateJTreeTest : Spek({
                 assertThat(list().templates).isEmpty()
             }
 
+            it("resets changes to the initially selected scheme") {
+                (currentState.templateList.templates[0].schemes[0] as DummyScheme).literals = listOf("approve")
+
+                GuiActionRunner.execute { frame.clickActionButton("Reset") }
+
+                assertThat((currentState.templateList.templates[0].schemes[0] as DummyScheme).name).isEqualTo("window")
+            }
+
             it("resets changes to a template") {
                 list().templates[0].name = "Know"
                 GuiActionRunner.execute { tree.reload() }
@@ -874,7 +878,7 @@ object TemplateTreeModelTest : Spek({
         it("throws an error if the given node is not a StateNode") {
             assertThatThrownBy { model.isLeaf("enter") }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("`node` must be a StateNode.")
+                .hasMessage("'node' must be a StateNode, but was a 'java.lang.String'.")
         }
 
         it("returns true if the node cannot have children") {
@@ -894,7 +898,7 @@ object TemplateTreeModelTest : Spek({
         it("throws an error if the given node is not a StateNode") {
             assertThatThrownBy { model.getChild("over", 0) }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("`parent` must be a StateNode.")
+                .hasMessage("'parent' must be a StateNode, but was a 'java.lang.String'.")
         }
 
         it("throws an error if the given node cannot have children") {
@@ -921,7 +925,7 @@ object TemplateTreeModelTest : Spek({
         it("throws an error if the given node is not a StateNode") {
             assertThatThrownBy { model.getChildCount("eager") }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("`parent` must be a StateNode.")
+                .hasMessage("'parent' must be a StateNode, but was a 'java.lang.String'.")
         }
 
         it("returns 0 if the node cannot have children") {
@@ -951,13 +955,13 @@ object TemplateTreeModelTest : Spek({
         it("throws an error if the parent is not a StateNode") {
             assertThatThrownBy { model.getIndexOfChild("mild", StateNode(DummyScheme())) }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("`parent` must be a StateNode.")
+                .hasMessage("'parent' must be a StateNode, but was a 'java.lang.String'.")
         }
 
         it("throws an error if the child is not a StateNode") {
             assertThatThrownBy { model.getIndexOfChild(StateNode(DummyScheme()), "soldier") }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("`child` must be a StateNode.")
+                .hasMessage("'child' must be a StateNode, but was a 'java.lang.String'.")
         }
 
         it("returns -1 if the child is not contained in the parent") {
@@ -1100,12 +1104,40 @@ object TemplateTreeModelTest : Spek({
             var lastEvent: TreeModelEvent? = null
             model.addTreeModelListener(SimpleTreeModelListener { lastEvent = it })
 
-            val template = Template(name = "Fortune")
+            val scheme = DummyScheme.from("fortune")
+            model.insertNode(model.root.children[0], StateNode(scheme))
+
+            assertThat(lastEvent!!.treePath.lastPathComponent).isEqualTo(model.root.children[0])
+            assertThat(lastEvent!!.childIndices).containsExactly(0)
+            assertThat(lastEvent!!.children).containsExactly(StateNode(scheme))
+        }
+
+        it("informs listeners of a node insertion if the root's not-only child was inserted") {
+            model.reload(TemplateList(listOf(Template(name = "Every"))))
+
+            var lastEvent: TreeModelEvent? = null
+            model.addTreeModelListener(SimpleTreeModelListener { lastEvent = it })
+
+            val template = Template(name = "Deed")
             model.insertNode(model.root, StateNode(template))
 
             assertThat(lastEvent!!.treePath.lastPathComponent).isEqualTo(model.root)
             assertThat(lastEvent!!.childIndices).containsExactly(1)
             assertThat(lastEvent!!.children).containsExactly(StateNode(template))
+        }
+
+        it("informs listeners of a structure change if the root's now-only child was inserted") {
+            model.reload(TemplateList(emptyList()))
+
+            var lastEvent: TreeModelEvent? = null
+            model.addTreeModelListener(SimpleTreeModelListener { lastEvent = it })
+
+            val template = Template(name = "Dot")
+            model.insertNode(model.root, StateNode(template))
+
+            assertThat(lastEvent!!.treePath.lastPathComponent).isEqualTo(model.root)
+            assertThat(lastEvent!!.childIndices).isEmpty()
+            assertThat(lastEvent!!.children).isNull()
         }
     }
 
@@ -1390,7 +1422,7 @@ object StateNodeTest : Spek({
             it("throws an error for a non-template scheme") {
                 assertThatThrownBy { StateNode(DummyScheme()).children }
                     .isInstanceOf(IllegalStateException::class.java)
-                    .hasMessage("Unknown parent type 'DummyScheme'.")
+                    .hasMessage("Unknown parent type 'com.fwdekker.randomness.DummyScheme'.")
             }
         }
 
@@ -1414,7 +1446,7 @@ object StateNodeTest : Spek({
             it("throws an error for a non-template scheme") {
                 assertThatThrownBy { StateNode(DummyScheme()).children = emptyList() }
                     .isInstanceOf(IllegalStateException::class.java)
-                    .hasMessage("Unknown parent type 'DummyScheme'.")
+                    .hasMessage("Unknown parent type 'com.fwdekker.randomness.DummyScheme'.")
             }
         }
     }

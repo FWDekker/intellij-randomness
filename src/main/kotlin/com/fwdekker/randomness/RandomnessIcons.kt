@@ -221,17 +221,17 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
  */
 data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList()) : Icon {
     init {
-        require(base.iconWidth == base.iconHeight) { "Base icon must be square." }
-        require(overlays.all { it.iconWidth == it.iconHeight }) { "Overlays must be square." }
-        require(overlays.map { it.iconWidth }.toSet().size <= 1) { "All overlays must have same size." }
+        require(base.iconWidth == base.iconHeight) { Bundle("icons.error.base_square") }
+        require(overlays.all { it.iconWidth == it.iconHeight }) { Bundle("icons.error.overlay_square") }
+        require(overlays.map { it.iconWidth }.toSet().size <= 1) { Bundle("icons.error.overlay_same_size") }
     }
 
 
     /**
-     * Returns a copy of this icon that additionally has the given overlay icon.
+     * Returns a copy of this icon that has [icon] as an additional overlay icon.
      *
      * @param icon the additional overlay icon
-     * @return a copy of this icon that additionally has the given overlay icon
+     * @return a copy of this icon that has [icon] as an additional overlay icon
      */
     fun plusOverlay(icon: Icon) = copy(overlays = overlays + icon)
 
@@ -291,19 +291,19 @@ class RadialColorReplacementFilter(
     private val center: Pair<Int, Int>? = null
 ) : RGBImageFilter() {
     init {
-        require(colors.isNotEmpty()) { "At least one color must be defined." }
-        require(colors.size == 1 || center != null) { "Center must be defined if more than one color is given." }
+        require(colors.isNotEmpty()) { Bundle("icons.error.one_colour") }
+        require(colors.size == 1 || center != null) { Bundle("icons.error.center_undefined") }
     }
 
 
     /**
-     * Returns the color to be displayed at the given point, considering the coordinates relative to the [center] and
-     * the relative alpha of the encountered color.
+     * Returns the color to be displayed at ([x], [y]), considering the coordinates relative to the [center] and the
+     * relative alpha of the encountered color.
      *
      * @param x the X coordinate of the pixel
      * @param y the Y coordinate of the pixel
-     * @param rgb 0 if and only if the pixel's color should be replaced
-     * @return 0 if [rgb] is 0, or one of [colors] with its alpha shifted by [rgb]'s alpha otherwise
+     * @param rgb `0` if and only if the pixel's color should be replaced
+     * @return `0` if [rgb] is `0`, or one of [colors] with its alpha shifted by [rgb]'s alpha otherwise
      */
     override fun filterRGB(x: Int, y: Int, rgb: Int) =
         if (rgb == 0) 0
@@ -322,7 +322,7 @@ class RadialColorReplacementFilter(
         ColorUtil.withAlpha(toShift, asFraction(toShift.alpha) * asFraction(shiftBy.alpha))
 
     /**
-     * Represents an integer in the range [0, 256) to a fraction of that range.
+     * Represents an integer in the range `[0, 256)` to a fraction of that range.
      *
      * @param number the number to represent as a fraction
      * @return number as a fraction

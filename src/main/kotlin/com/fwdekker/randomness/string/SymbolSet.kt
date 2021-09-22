@@ -4,16 +4,16 @@ import com.vdurmont.emoji.EmojiParser
 
 
 /**
- * A `SymbolSet` represents a named collection of symbols.
+ * Represents a named collection of symbols.
  *
- * @param name the name of the symbol set
- * @param symbols the symbols in the symbol set
+ * @property name The name of the symbol set.
+ * @property symbols The symbols in the symbol set.
  */
 data class SymbolSet(var name: String = "", var symbols: String = "") {
     /**
-     * Returns the `name` field.
+     * Returns [name].
      *
-     * @return the `name` field
+     * @return [name]]
      */
     override fun toString() = name
 

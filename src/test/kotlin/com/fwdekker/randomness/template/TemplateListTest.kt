@@ -165,7 +165,8 @@ object TemplateListTest : Spek({
             templateList.templates =
                 listOf(Template(name = "Solution"), Template(name = "Leg"), Template(name = "Solution"))
 
-            assertThat(templateList.doValidate()).isEqualTo("There are multiple templates with the name 'Solution'.")
+            assertThat(templateList.doValidate())
+                .isEqualTo("Template names should be unique. Rename template 'Solution'.")
         }
 
         it("fails if one of multiple templates is invalid") {

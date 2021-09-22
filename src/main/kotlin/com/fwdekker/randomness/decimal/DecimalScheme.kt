@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.decimal
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
@@ -36,7 +37,7 @@ data class DecimalScheme(
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @get:Transient
-    override val name = "Decimal"
+    override val name = Bundle("decimal.title")
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
@@ -44,19 +45,19 @@ data class DecimalScheme(
 
 
     /**
-     * Returns random decimals between the minimum and maximum value, inclusive.
+     * Returns random formatted decimals in the range from [minValue] until [maxValue], inclusive.
      *
      * @param count the number of decimals to generate
-     * @return random decimals between the minimum and maximum value, inclusive
+     * @return random formatted decimals in the range from [minValue] until [maxValue], inclusive
      */
     override fun generateUndecoratedStrings(count: Int) =
         List(count) { doubleToString(random.nextDouble(minValue, maxValue.nextUp())) }
 
     /**
-     * Returns a nicely formatted representation of a decimal.
+     * Returns a nicely formatted representation of [decimal].
      *
      * @param decimal the decimal to format
-     * @return a nicely formatted representation of a decimal
+     * @return a nicely formatted representation of [decimal]
      */
     private fun doubleToString(decimal: Double): String {
         val format = DecimalFormat()
@@ -77,10 +78,10 @@ data class DecimalScheme(
 
     override fun doValidate() =
         when {
-            minValue > maxValue -> "Minimum value should not be larger than maximum value."
-            maxValue - minValue > MAX_VALUE_DIFFERENCE -> "Value range should not exceed $MAX_VALUE_DIFFERENCE."
-            decimalCount < MIN_DECIMAL_COUNT -> "Decimal count should be at least $MIN_DECIMAL_COUNT."
-            decimalSeparator.isEmpty() -> "Select a decimal separator."
+            minValue > maxValue -> Bundle("decimal.error.min_value_above_max")
+            maxValue - minValue > MAX_VALUE_DIFFERENCE -> Bundle("decimal.error.value_range", MAX_VALUE_DIFFERENCE)
+            decimalCount < MIN_DECIMAL_COUNT -> Bundle("decimal.error.decimal_count_too_low", MIN_DECIMAL_COUNT)
+            decimalSeparator.isEmpty() -> Bundle("decimal.error.select_decimal_separator")
             else -> arrayDecorator.doValidate()
         }
 
@@ -98,19 +99,18 @@ data class DecimalScheme(
          */
         val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "4.2", listOf(Color(98, 181, 67, 154)))
 
-
         /**
          * The maximum valid difference between the [minValue] and [maxValue] fields.
          */
         const val MAX_VALUE_DIFFERENCE = 1E53
 
         /**
-         * The default value of the [minValue][minValue] field.
+         * The default value of the [minValue] field.
          */
         const val DEFAULT_MIN_VALUE = 0.0
 
         /**
-         * The default value of the [maxValue][maxValue] field.
+         * The default value of the [maxValue] field.
          */
         const val DEFAULT_MAX_VALUE = 1_000.0
 
@@ -120,32 +120,32 @@ data class DecimalScheme(
         const val MIN_DECIMAL_COUNT = 0
 
         /**
-         * The default value of the [decimalCount][decimalCount] field.
+         * The default value of the [decimalCount] field.
          */
         const val DEFAULT_DECIMAL_COUNT = 2
 
         /**
-         * The default value of the [showTrailingZeroes][showTrailingZeroes] field.
+         * The default value of the [showTrailingZeroes] field.
          */
         const val DEFAULT_SHOW_TRAILING_ZEROES = true
 
         /**
-         * The default value of the [groupingSeparator][groupingSeparator] field.
+         * The default value of the [groupingSeparator] field.
          */
         const val DEFAULT_GROUPING_SEPARATOR = ""
 
         /**
-         * The default value of the [decimalSeparator][decimalSeparator] field.
+         * The default value of the [decimalSeparator] field.
          */
         const val DEFAULT_DECIMAL_SEPARATOR = "."
 
         /**
-         * The default value of the [prefix][prefix] field.
+         * The default value of the [prefix] field.
          */
         const val DEFAULT_PREFIX = ""
 
         /**
-         * The default value of the [suffix][suffix] field.
+         * The default value of the [suffix] field.
          */
         const val DEFAULT_SUFFIX = ""
     }

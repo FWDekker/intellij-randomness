@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
@@ -24,7 +25,7 @@ import java.awt.Color
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class Template(
-    override var name: String = DEFAULT_NAME,
+    override var name: String = Bundle("template.name.default"),
     @get:XCollection(
         elementTypes = [
             IntegerScheme::class,
@@ -66,7 +67,7 @@ data class Template(
 
 
     override fun doValidate() =
-        if (name.isBlank()) "Templates must have a name."
+        if (name.isBlank()) Bundle("template.error.no_name", Bundle("template.name.empty"))
         else schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
             ?: arrayDecorator.doValidate()
 
@@ -85,12 +86,6 @@ data class Template(
          * The icon displayed when a template has no schemes.
          */
         val DEFAULT_ICON = TypeIcon(RandomnessIcons.TEMPLATE, "", listOf(Color(110, 110, 110)))
-
-
-        /**
-         * The default value of the [name] field.
-         */
-        const val DEFAULT_NAME = "Unnamed template"
 
         /**
          * The default value of the [schemes] field.

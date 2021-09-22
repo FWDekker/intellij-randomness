@@ -12,6 +12,7 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import com.intellij.ui.JBSplitter
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -36,6 +37,9 @@ object TemplateListEditorTest : Spek({
 
     beforeGroup {
         FailOnThreadViolationRepaintManager.install()
+
+        TemplateListEditor.CREATE_SPLITTER =
+            { vertical, proportionKey, defaultProportion -> JBSplitter(vertical, proportionKey, defaultProportion) }
     }
 
     beforeEachTest {
@@ -46,7 +50,7 @@ object TemplateListEditorTest : Spek({
             TemplateList(
                 listOf(
                     Template("Whip", listOf(IntegerScheme(), StringScheme())),
-                    Template("Ability", listOf(DecimalScheme()))
+                    Template("Ability", listOf(DecimalScheme(), WordScheme()))
                 )
             )
         )
@@ -58,13 +62,14 @@ object TemplateListEditorTest : Spek({
 
     afterEachTest {
         frame.cleanUp()
+        GuiActionRunner.execute { editor.dispose() }
         ideaFixture.tearDown()
     }
 
 
     describe("loadState") {
         it("loads the list's schemes") {
-            assertThat(GuiActionRunner.execute<Int> { frame.tree().target().rowCount }).isEqualTo(5)
+            assertThat(GuiActionRunner.execute<Int> { frame.tree().target().rowCount }).isEqualTo(6)
         }
     }
 
@@ -115,7 +120,16 @@ object TemplateListEditorTest : Spek({
         }
     }
 
+
     describe("reset") {
+        it("undoes changes to the initial selection") {
+            GuiActionRunner.execute { frame.spinner("minValue").target().value = 7 }
+
+            GuiActionRunner.execute { editor.reset() }
+
+            assertThat(frame.spinner("minValue").target().value).isEqualTo(0L)
+        }
+
         it("retains the selection if `queueSelection` is null") {
             editor.queueSelection = null
 
@@ -124,7 +138,7 @@ object TemplateListEditorTest : Spek({
             assertThat(frame.tree().target().selectionRows).containsExactly(1)
         }
 
-        it("selects the indicated template") {
+        it("selects the indicated template after reset") {
             editor.queueSelection = state.templateList.templates[1].uuid
 
             GuiActionRunner.execute { editor.reset() }
@@ -138,6 +152,38 @@ object TemplateListEditorTest : Spek({
             GuiActionRunner.execute { editor.reset() }
 
             assertThat(frame.tree().target().selectionRows).containsExactly(1)
+        }
+    }
+
+    describe("addChangeListener") {
+        it("invokes the listener if the model is changed") {
+            GuiActionRunner.execute { frame.tree().target().setSelectionRow(1) }
+            var invoked = 0
+            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
+
+            GuiActionRunner.execute { frame.spinner("minValue").target().value = 321 }
+
+            assertThat(invoked).isNotZero()
+        }
+
+        it("invokes the listener if a scheme is added") {
+            GuiActionRunner.execute { frame.tree().target().clearSelection() }
+            var invoked = 0
+            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
+
+            GuiActionRunner.execute { frame.clickActionButton("Add") }
+
+            assertThat(invoked).isNotZero()
+        }
+
+        it("invokes the listener if the selection is changed") {
+            GuiActionRunner.execute { frame.tree().target().clearSelection() }
+            var invoked = 0
+            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
+
+            GuiActionRunner.execute { frame.tree().target().setSelectionRow(2) }
+
+            assertThat(invoked).isNotZero()
         }
     }
 
@@ -208,39 +254,6 @@ object TemplateListEditorTest : Spek({
                     .isInstanceOf(IllegalStateException::class.java)
                     .hasMessage("Unknown scheme type 'com.fwdekker.randomness.DummyScheme'.")
             }
-        }
-    }
-
-
-    describe("addChangeListener") {
-        it("invokes the listener if the model is changed") {
-            GuiActionRunner.execute { frame.tree().target().setSelectionRow(1) }
-            var invoked = 0
-            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
-
-            GuiActionRunner.execute { frame.spinner("minValue").target().value = 321 }
-
-            assertThat(invoked).isNotZero()
-        }
-
-        it("invokes the listener if a scheme is added") {
-            GuiActionRunner.execute { frame.tree().target().clearSelection() }
-            var invoked = 0
-            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
-
-            GuiActionRunner.execute { frame.clickActionButton("Add") }
-
-            assertThat(invoked).isNotZero()
-        }
-
-        it("invokes the listener if the selection is changed") {
-            GuiActionRunner.execute { frame.tree().target().clearSelection() }
-            var invoked = 0
-            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
-
-            GuiActionRunner.execute { frame.tree().target().setSelectionRow(2) }
-
-            assertThat(invoked).isNotZero()
         }
     }
 })

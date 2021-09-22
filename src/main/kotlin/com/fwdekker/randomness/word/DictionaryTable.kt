@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.ui.ActivityTableModelEditor
 import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -19,7 +20,7 @@ private typealias EditableDictionary = EditableDatum<Dictionary>
 class DictionaryTable : ActivityTableModelEditor<Dictionary>(
     arrayOf(TYPE_COLUMN, LOCATION_COLUMN),
     ITEM_EDITOR,
-    EMPTY_TEXT, EMPTY_SUB_TEXT,
+    Bundle("word.dictionary.ui.empty"), Bundle("word.dictionary.ui.empty_sub"),
     { it !is BundledDictionary },
     columnAdjuster = { it[1].maxWidth = it[1].preferredWidth }
 ) {
@@ -31,10 +32,10 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
     override fun createElement() = Companion.createElement()
 
     /**
-     * Returns true if and only if the given item can be edited.
+     * Returns `true` if and only if [item] can be edited.
      *
      * @param item the item to check for editability
-     * @return true if and only if the given item can be edited
+     * @return `true` if and only if [item] can be edited
      */
     override fun isEditable(item: EditableDatum<Dictionary>) = item.datum !is BundledDictionary
 
@@ -46,35 +47,37 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
         /**
          * The column showing the type of the dictionary.
          */
-        private val TYPE_COLUMN = object : ColumnInfo<EditableDictionary, String>("Type") {
-            override fun getColumnClass() = String::class.java
+        private val TYPE_COLUMN =
+            object : ColumnInfo<EditableDictionary, String>(Bundle("word.dictionary.ui.type_column")) {
+                override fun getColumnClass() = String::class.java
 
-            override fun valueOf(item: EditableDictionary) =
-                if (item.datum is BundledDictionary) "bundled"
-                else "custom"
-        }
+                override fun valueOf(item: EditableDictionary) =
+                    if (item.datum is BundledDictionary) Bundle("word.dictionary.bundled")
+                    else Bundle("word.dictionary.custom")
+            }
 
         /**
          * The column with the dictionary's file location.
          */
-        private val LOCATION_COLUMN = object : EditableColumnInfo<EditableDictionary, String>("Location") {
-            override fun getColumnClass() = String::class.java
+        private val LOCATION_COLUMN =
+            object : EditableColumnInfo<EditableDictionary, String>(Bundle("word.dictionary.ui.location_column")) {
+                override fun getColumnClass() = String::class.java
 
-            override fun valueOf(item: EditableDictionary) = item.datum.toString()
+                override fun valueOf(item: EditableDictionary) = item.datum.toString()
 
-            override fun setValue(item: EditableDictionary, value: String) {
-                val datum = item.datum
-                if (datum is UserDictionary)
-                    datum.filename = value.removePrefix("file://")
+                override fun setValue(item: EditableDictionary, value: String) {
+                    val datum = item.datum
+                    if (datum is UserDictionary)
+                        datum.filename = value.removePrefix("file://")
+                }
+
+                override fun isCellEditable(item: EditableDictionary) = item.datum !is BundledDictionary
+
+                override fun getEditor(item: EditableDictionary?) =
+                    LocalPathCellEditor()
+                        .fileChooserDescriptor(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"))
+                        .normalizePath(true)
             }
-
-            override fun isCellEditable(item: EditableDictionary) = item.datum !is BundledDictionary
-
-            override fun getEditor(item: EditableDictionary?) =
-                LocalPathCellEditor()
-                    .fileChooserDescriptor(FileChooserDescriptorFactory.createSingleFileDescriptor("dic"))
-                    .normalizePath(true)
-        }
 
         /**
          * Describes how table rows are edited.
@@ -87,16 +90,6 @@ class DictionaryTable : ActivityTableModelEditor<Dictionary>(
             override fun clone(item: EditableDictionary, forInPlaceEditing: Boolean) =
                 EditableDatum(item.active, item.datum.deepCopy())
         }
-
-        /**
-         * The text that is displayed when the table is empty.
-         */
-        const val EMPTY_TEXT = "No dictionaries configured."
-
-        /**
-         * The instruction that is displayed when the table is empty.
-         */
-        const val EMPTY_SUB_TEXT = "Add dictionary"
 
 
         /**

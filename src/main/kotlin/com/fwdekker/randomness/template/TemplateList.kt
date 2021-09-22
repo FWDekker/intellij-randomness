@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsState
@@ -14,7 +15,7 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
 /**
  * A collection of different templates.
  *
- * @property templates the collection of templates, each with a unique [Template.name]
+ * @property templates The collection of templates, each with a unique name.
  * @see TemplateSettings
  */
 data class TemplateList(
@@ -60,18 +61,18 @@ data class TemplateList(
 
 
     /**
-     * Returns the template in this list with the given UUID.
+     * Returns the template in this list with [uuid] as its UUID.
      *
      * @param uuid the UUID to search for
-     * @return the template in this list with the given UUID
+     * @return the template in this list with [uuid] as its UUID
      */
     fun getTemplateByUuid(uuid: String) = templates.singleOrNull { it.uuid == uuid }
 
     /**
-     * Returns the template or scheme in this list with the given UUID.
+     * Returns the template or scheme in this list with [uuid] as its UUID.
      *
      * @param uuid the UUID to search for
-     * @return the template or scheme in this list with the given UUID
+     * @return the template or scheme in this list with [uuid] as its UUID
      */
     fun getSchemeByUuid(uuid: String) = templates.flatMap { listOf(it) + it.schemes }.singleOrNull { it.uuid == uuid }
 
@@ -83,12 +84,21 @@ data class TemplateList(
             templates.firstNotNullOfOrNull { template -> template.doValidate()?.let { "${template.name} > $it" } }
 
         return when {
-            duplicate != null -> "There are multiple templates with the name '$duplicate'."
+            duplicate != null -> Bundle("template_list.error.duplicate_name", duplicate)
             invalid != null -> invalid
             else -> null
         }
     }
 
+    /**
+     * Returns a deep copy of this list.
+     *
+     * Note that the schemes in the returned list do not necessarily use the [SettingsState] in which this list resides.
+     * It may be necessary to use [applySettingsState] afterwards.
+     *
+     * @param retainUuid `false` if and only if the copy should have a different, new [uuid]
+     * @return a deep copy of this list
+     */
     override fun deepCopy(retainUuid: Boolean) =
         TemplateList(templates.map { it.deepCopy(retainUuid) })
             .also { if (retainUuid) it.uuid = this.uuid }
@@ -99,25 +109,25 @@ data class TemplateList(
      */
     companion object {
         /**
-         * The default value of the [templates][templates] field.
+         * The default value of the [templates] field.
          */
         val DEFAULT_TEMPLATES: List<Template>
             get() = listOf(
-                Template("Integer", listOf(IntegerScheme())),
-                Template("Decimal", listOf(DecimalScheme())),
-                Template("String", listOf(StringScheme())),
-                Template("Word", listOf(WordScheme())),
-                Template("UUID", listOf(UuidScheme()))
+                Template(Bundle("integer.title"), listOf(IntegerScheme())),
+                Template(Bundle("decimal.title"), listOf(DecimalScheme())),
+                Template(Bundle("string.title"), listOf(StringScheme())),
+                Template(Bundle("word.title"), listOf(WordScheme())),
+                Template(Bundle("uuid.title"), listOf(UuidScheme()))
             )
 
 
         /**
-         * Constructs a [TemplateList] consisting of a single template with the given schemes.
+         * Constructs a [TemplateList] consisting of a single template containing [schemes].
          *
          * @param schemes the schemes to give to the list's single template
          * @param name the name of the template
          */
-        fun from(vararg schemes: Scheme, name: String = Template.DEFAULT_NAME) =
+        fun from(vararg schemes: Scheme, name: String = Bundle("template.name.default")) =
             TemplateList(listOf(Template(name, schemes.toList())))
     }
 }

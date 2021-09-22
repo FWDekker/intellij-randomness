@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.literal
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
@@ -7,6 +8,8 @@ import com.fwdekker.randomness.literal.LiteralScheme.Companion.DEFAULT_CAPITALIZ
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -20,8 +23,10 @@ import javax.swing.JTextField
 @Suppress("LateinitUsage") // Initialized by scene builder
 class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor<LiteralScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
-    override val preferredFocusedComponent = literalInput
+    override val preferredFocusedComponent
+        get() = literalInput
 
+    private lateinit var titleSeparator: TitledSeparator
     private lateinit var literalInput: JTextField
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var arrayDecoratorPanel: JPanel
@@ -33,12 +38,14 @@ class LiteralSchemeEditor(scheme: LiteralScheme = LiteralScheme()) : StateEditor
     }
 
     /**
-     * Initialises custom UI components.
+     * Initializes custom UI components.
      *
      * This method is called by the scene builder at the start of the constructor.
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        titleSeparator = SeparatorFactory.createSeparator(Bundle("literal.title"), null)
+
         arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }

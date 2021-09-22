@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.word
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Cache
 import java.io.File
 import java.io.FileNotFoundException
@@ -49,24 +50,24 @@ data class BundledDictionary(var filename: String = "") : Dictionary {
 
 
     /**
-     * Returns `true` iff this dictionary's filename equals [other]'s filename.
+     * Returns `true` if and only if this dictionary's filename equals [other]'s filename.
      *
      * @param other an object
-     * @return `true` iff this dictionary's filename equals [other]'s filename
+     * @return `true` if and only if this dictionary's filename equals [other]'s filename
      */
     override fun equals(other: Any?) = other is BundledDictionary && this.filename == other.filename
 
     /**
-     * Returns the hash code of the filename.
+     * Returns the hash code of [filename].
      *
-     * @return the hash code of the filename
+     * @return the hash code of [filename]
      */
     override fun hashCode() = filename.hashCode()
 
     /**
-     * Returns a human-readable string of the dictionary's filename.
+     * Returns a human-readable string representation of this dictionary.
      *
-     * @return a human-readable string of the dictionary's filename
+     * @return a human-readable string representation of this dictionary
      */
     override fun toString() = filename
 
@@ -80,14 +81,15 @@ data class BundledDictionary(var filename: String = "") : Dictionary {
          */
         const val SIMPLE_DICTIONARY = "english.dic"
 
+
         /**
-         * The cache of bundled dictionaries, used to improve word generation times.
+         * The cache of bundled dictionaries, used to improve the speed at which words can be generated.
          */
         private val cache = Cache<String, Set<String>> { filename ->
             try {
                 val stream =
                     BundledDictionary::class.java.classLoader.getResource(filename)?.openStream()
-                        ?: throw FileNotFoundException("File not found.")
+                        ?: throw FileNotFoundException(Bundle("word.dictionary.error.file_not_found"))
 
                 stream.bufferedReader()
                     .readLines()
@@ -128,8 +130,8 @@ data class UserDictionary(var filename: String = "") : Dictionary {
     @Suppress("ThrowsCount") // Improves error message specificity
     private fun validate() {
         val file = File(filename)
-        if (!file.exists()) throw InvalidDictionaryException("File not found.")
-        if (!file.canRead()) throw InvalidDictionaryException("File unreadable.")
+        if (!file.exists()) throw InvalidDictionaryException(Bundle("word.dictionary.error.file_not_found"))
+        if (!file.canRead()) throw InvalidDictionaryException(Bundle("word.dictionary.error.file_unreadable"))
 
         try {
             file.inputStream()
@@ -142,17 +144,10 @@ data class UserDictionary(var filename: String = "") : Dictionary {
 
 
     /**
-     * Returns a human-readable string of the dictionary's filename.
-     *
-     * @return a human-readable string of the dictionary's filename
-     */
-    override fun toString() = filename
-
-    /**
-     * Returns `true` iff this dictionary's filename equals [other]'s filename.
+     * Returns `true` if and only if this dictionary's filename equals [other]'s filename.
      *
      * @param other an object
-     * @return `true` iff this dictionary's filename equals [other]'s filename
+     * @return `true` if and only if this dictionary's filename equals [other]'s filename
      */
     override fun equals(other: Any?) = other is UserDictionary && this.filename == other.filename
 
@@ -163,13 +158,20 @@ data class UserDictionary(var filename: String = "") : Dictionary {
      */
     override fun hashCode() = filename.hashCode()
 
+    /**
+     * Returns a human-readable string of this dictionary.
+     *
+     * @return a human-readable string of this dictionary
+     */
+    override fun toString() = filename
+
 
     /**
      * Holds static elements.
      */
     companion object {
         /**
-         * The cache of bundled dictionaries, used to improve word generation times.
+         * The cache of bundled dictionaries, used to improve the speed at which words can be generated.
          */
         private val cache = Cache<String, Set<String>> { filename ->
             File(filename)

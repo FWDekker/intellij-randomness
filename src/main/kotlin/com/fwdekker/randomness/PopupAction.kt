@@ -19,7 +19,7 @@ import java.awt.event.ActionEvent
  */
 class PopupAction : AnAction() {
     /**
-     * Whether the user focused the editor when opening this popup.
+     * `true` if and only if the user focused the editor when opening this popup.
      */
     private var hasEditor: Boolean = true
 
@@ -27,7 +27,7 @@ class PopupAction : AnAction() {
     /**
      * Sets the icon of this action.
      *
-     * @param event carries information on the invocation place
+     * @param event carries contextual information
      */
     override fun update(event: AnActionEvent) {
         event.presentation.icon = RandomnessIcons.RANDOMNESS
@@ -37,13 +37,13 @@ class PopupAction : AnAction() {
     /**
      * Displays a popup with all actions provided by Randomness.
      *
-     * @param event carries information on the invocation place
+     * @param event carries contextual information
      */
     override fun actionPerformed(event: AnActionEvent) {
         val popupGroup = if (hasEditor) PopupGroup() else SettingsOnlyPopupGroup()
         val popup = JBPopupFactory.getInstance()
             .createActionGroupPopup(
-                TITLE, popupGroup, event.dataContext,
+                Bundle("popup.title"), popupGroup, event.dataContext,
                 JBPopupFactory.ActionSelectionAid.NUMBERING,
                 true
             )
@@ -51,13 +51,13 @@ class PopupAction : AnAction() {
 
         popup.speedSearch.setEnabled(false)
         if (hasEditor) {
-            popup.setCaption(TITLE)
-            popup.setAdText(AD_TEXT)
+            popup.setCaption(Bundle("popup.title"))
+            popup.setAdText(Bundle("popup.ad"))
             popup.registerModifierActions { this.captionModifier(it) }
         } else {
-            popup.setCaption(CTRL_TITLE)
-            popup.setAdText("Editor is not selected. Displaying settings only.")
-            popup.registerModifierActions { CTRL_TITLE }
+            popup.setCaption(Bundle("popup.title.ctrl"))
+            popup.setAdText(Bundle("popup.ad.settings_only"))
+            popup.registerModifierActions { Bundle("popup.title.ctrl") }
         }
 
         popup.showInBestPositionFor(event.dataContext)
@@ -65,10 +65,10 @@ class PopupAction : AnAction() {
 
 
     /**
-     * Returns the desired title for the popup given an event.
+     * Returns the desired title for the popup given [event].
      *
      * @param event the event on which the title should be based
-     * @return the desired title for the popup given an event
+     * @return the desired title for the popup given [event]
      */
     @Suppress("ComplexMethod") // Cannot be simplified
     private fun captionModifier(event: ActionEvent?): String {
@@ -78,26 +78,26 @@ class PopupAction : AnAction() {
         val shiftPressed = modifiers and ActionEvent.SHIFT_MASK != 0
 
         return when {
-            altPressed && ctrlPressed && shiftPressed -> ALT_CTRL_SHIFT_TITLE
-            altPressed && ctrlPressed -> ALT_CTRL_TITLE
-            altPressed && shiftPressed -> ALT_SHIFT_TITLE
-            ctrlPressed && shiftPressed -> CTRL_SHIFT_TITLE
-            altPressed -> ALT_TITLE
-            ctrlPressed -> CTRL_TITLE
-            shiftPressed -> SHIFT_TITLE
-            else -> TITLE
+            altPressed && ctrlPressed && shiftPressed -> Bundle("popup.title.alt_ctrl_shift")
+            altPressed && ctrlPressed -> Bundle("popup.title.alt_ctrl")
+            altPressed && shiftPressed -> Bundle("popup.title.alt_shift")
+            ctrlPressed && shiftPressed -> Bundle("popup.title.ctrl_shift")
+            altPressed -> Bundle("popup.title.alt")
+            ctrlPressed -> Bundle("popup.title.ctrl")
+            shiftPressed -> Bundle("popup.title.shift")
+            else -> Bundle("popup.title")
         }
     }
 
 
     /**
-     * The `ActionGroup` containing all Randomness actions.
+     * The [ActionGroup] containing all Randomness actions.
      */
     private class PopupGroup : ActionGroup() {
         /**
          * Returns all group actions.
          *
-         * @param event carries information on the invocation place
+         * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
             TemplateSettings.default.state.templates.map { TemplateGroupAction(it) }.toTypedArray<AnAction>() +
@@ -106,68 +106,17 @@ class PopupAction : AnAction() {
     }
 
     /**
-     * The `ActionGroup` containing only settings-related actions.
+     * The [ActionGroup] containing only settings-related actions.
      */
     private class SettingsOnlyPopupGroup : ActionGroup() {
         /**
          * Returns all settings actions.
          *
-         * @param event carries information on the invocation place
+         * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
             TemplateSettings.default.state.templates.map { TemplateSettingsAction(it) }.toTypedArray<AnAction>() +
                 Separator() +
                 TemplateSettingsAction()
-    }
-
-
-    /**
-     * Holds constants.
-     */
-    companion object {
-        /**
-         * The default popup title.
-         */
-        const val TITLE = "Insert Data"
-
-        /**
-         * The popup title while the alt key is held down.
-         */
-        const val ALT_TITLE = "Insert Repeated Data"
-
-        /**
-         * The popup title when the alt and control keys are held down.
-         */
-        const val ALT_CTRL_TITLE = "Quick Switch Scheme"
-
-        /**
-         * The popup title when the alt, control, and shift keys are held down.
-         */
-        const val ALT_CTRL_SHIFT_TITLE = "Quick Switch Array Scheme"
-
-        /**
-         * The popup title when the alt and shift keys are held down.
-         */
-        const val ALT_SHIFT_TITLE = "Insert Repeated Array"
-
-        /**
-         * The popup title when the control key is held down.
-         */
-        const val CTRL_TITLE = "Change Settings"
-
-        /**
-         * The popup title when the control and shift keys are held down.
-         */
-        const val CTRL_SHIFT_TITLE = "Change Array Settings"
-
-        /**
-         * The popup title when the shift key is held down.
-         */
-        const val SHIFT_TITLE = "Insert Array"
-
-        /**
-         * The text shown at the bottom of the popup.
-         */
-        const val AD_TEXT = "Shift = Array. Ctrl = Settings. Alt = Repeat."
     }
 }

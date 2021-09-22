@@ -4,6 +4,7 @@ import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.TypeIcon
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.testFramework.TestActionEvent
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -67,11 +68,37 @@ class TemplateGroupActionTest : Spek({
 object TemplateInsertActionTest : Spek({
     describe("name") {
         it("returns the template's name") {
-            assertThat(TemplateInsertAction(Template(name = "Head")).name).isEqualTo("Head")
+            val template = Template(name = "Head")
+            assertThat(TemplateInsertAction(template).name).isEqualTo("Head")
         }
 
         it("returns the template's name with 'repeat' before it") {
-            assertThat(TemplateInsertAction(Template(name = "Head"), repeat = true).name).isEqualTo("Repeat Head")
+            val template = Template(name = "Sting")
+            assertThat(TemplateInsertAction(template, repeat = true).name).isEqualTo("Repeat Sting")
+        }
+
+        it("returns the template's name with 'array' after it") {
+            val template = Template(name = "Invent", arrayDecorator = ArrayDecorator(enabled = true))
+            assertThat(TemplateInsertAction(template).name).isEqualTo("Invent Array")
+        }
+
+        it("returns the template's name with 'repeat' before it and 'array' after it") {
+            val template = Template(name = "Dust", arrayDecorator = ArrayDecorator(enabled = true))
+            assertThat(TemplateInsertAction(template, repeat = true).name).isEqualTo("Repeat Dust Array")
+        }
+    }
+
+
+    describe("generateStrings") {
+        it("returns the generated strings") {
+            val template = Template(schemes = listOf(DummyScheme.from("grass", "extent")))
+            assertThat(TemplateInsertAction(template).generateStrings(2)).containsExactly("grass", "extent")
+        }
+
+        it("repeats the generated strings") {
+            val template = Template(schemes = listOf(DummyScheme.from("refresh", "loss")))
+            assertThat(TemplateInsertAction(template, repeat = true).generateStrings(2))
+                .containsExactly("refresh", "refresh")
         }
     }
 })

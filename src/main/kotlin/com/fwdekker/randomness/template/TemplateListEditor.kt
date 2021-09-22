@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.StateEditor
@@ -17,9 +18,13 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
-import com.intellij.ui.JBSplitter
+import com.intellij.openapi.ui.Splitter
+import com.intellij.openapi.util.Disposer
+import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.util.ui.JBEmptyBorder
 import java.awt.BorderLayout
+import java.awt.Dimension
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
@@ -36,43 +41,46 @@ import javax.swing.SwingUtilities
  * copies are written into the given template list only when [applyState] is invoked.
  *
  * @param settings the settings containing the templates to edit
+ * @see TemplateSettingsConfigurable
  */
 class TemplateListEditor(settings: SettingsState = SettingsState.default) : StateEditor<SettingsState>(settings) {
     override val rootComponent = JPanel(BorderLayout())
-    private var currentState: SettingsState = SettingsState()
+
+    private val currentState: SettingsState = SettingsState()
     private val templateTree = TemplateJTree(originalState, currentState)
-    private var schemeEditorPanel = JPanel(BorderLayout())
+    private val schemeEditorPanel = JPanel(BorderLayout())
     private var schemeEditor: StateEditor<*>? = null
+    private val previewPanel: PreviewPanel
 
     /**
      * The UUID of the scheme to select after the next invocation of [reset].
      *
      * @see TemplateSettingsConfigurable
-     * @see TemplateSettingsAction
      */
     var queueSelection: String? = null
 
 
     init {
-        val splitter = JBSplitter(false, SPLITTER_PROPORTION_KEY, DEFAULT_SPLITTER_PROPORTION)
+        val splitter = CREATE_SPLITTER(false, SPLITTER_PROPORTION_KEY, DEFAULT_SPLITTER_PROPORTION)
         rootComponent.add(splitter, BorderLayout.CENTER)
 
         // Left half
         templateTree.addTreeSelectionListener { onTreeSelection() }
-        splitter.firstComponent = JBScrollPane(templateTree.asDecoratedPanel())
+        splitter.firstComponent = templateTree.asDecoratedPanel()
 
         // Right half
-        val previewPanel = PreviewPanel {
+        previewPanel = PreviewPanel {
             val selectedNode = templateTree.selectedNodeNotRoot ?: return@PreviewPanel LiteralScheme("")
             val parentNode = templateTree.myModel.getParentOf(selectedNode)!!
 
             if (selectedNode.state is Template) selectedNode.state
             else parentNode.state as Template
-        }
+        }.also { Disposer.register(this, it) }
         addChangeListener { previewPanel.updatePreview() }
+        schemeEditorPanel.border = JBEmptyBorder(EDITOR_PANEL_MARGIN)
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
 
-        splitter.secondComponent = JBScrollPane(schemeEditorPanel)
+        splitter.secondComponent = schemeEditorPanel
 
         loadState()
     }
@@ -82,34 +90,40 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
      */
     private fun onTreeSelection() {
         schemeEditor?.also {
-            schemeEditorPanel.remove(it.rootComponent)
+            schemeEditorPanel.remove((schemeEditorPanel.layout as BorderLayout).getLayoutComponent(BorderLayout.CENTER))
             schemeEditor = null
         }
 
         val selectedNode = templateTree.selectedNodeNotRoot
         val selectedState = selectedNode?.state
-        if (selectedState !is Scheme) {
-            templateTree.myModel.fireNodeChanged(selectedNode)
+        if (selectedState !is Scheme)
             return
-        }
 
         schemeEditor = createEditor(selectedState)
             .also { editor ->
                 editor.addChangeListener {
                     editor.applyState()
-                    templateTree.myModel.fireNodeChanged(selectedNode)
                     templateTree.myModel.fireNodeStructureChanged(selectedNode)
                 }
 
-                schemeEditorPanel.add(editor.rootComponent)
+                schemeEditorPanel.add(
+                    JBScrollPane(editor.rootComponent).also {
+                        it.border = null
+                        it.preferredSize = Dimension(Int.MAX_VALUE, Int.MAX_VALUE)
+                    },
+                    BorderLayout.CENTER
+                )
+                editor.applyState() // Apply validation fixes from UI
+                templateTree.myModel.fireNodeStructureChanged(selectedNode)
                 schemeEditorPanel.revalidate() // Show editor immediately
             }
     }
 
     /**
-     * Creates an editor to edit the given scheme.
+     * Creates an editor to edit [scheme].
      *
      * @param scheme the scheme to create an editor for
+     * @return an editor to edit [scheme]
      */
     private fun createEditor(scheme: Scheme) =
         when (scheme) {
@@ -120,8 +134,8 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             is WordScheme -> WordSchemeEditor(scheme)
             is LiteralScheme -> LiteralSchemeEditor(scheme)
             is TemplateReference -> TemplateReferenceEditor(scheme)
-            is Template -> TemplateNameEditor(scheme)
-            else -> error("Unknown scheme type '${scheme.javaClass.canonicalName}'.")
+            is Template -> TemplateEditor(scheme)
+            else -> error(Bundle("template_list.error.unknown_scheme_type", scheme.javaClass.canonicalName))
         }
 
 
@@ -134,6 +148,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
     override fun readState() = currentState.deepCopy(retainUuid = true)
 
+
     override fun reset() {
         super.reset()
 
@@ -144,7 +159,6 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             queueSelection = null
         }
     }
-
 
     override fun addChangeListener(listener: () -> Unit) {
         templateTree.model.addTreeModelListener(SimpleTreeModelListener { listener() })
@@ -165,5 +179,21 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
          * The default proportion of the splitter component.
          */
         const val DEFAULT_SPLITTER_PROPORTION = .25f
+
+        /**
+         * Pixels of margin outside the editor panel.
+         */
+        const val EDITOR_PANEL_MARGIN = 10
+
+        /**
+         * Creates a new splitter.
+         *
+         * For some reason, `OnePixelSplitter` does not work in tests. Therefore, tests overwrite this field to inject a
+         * different constructor.
+         */
+        var CREATE_SPLITTER: (Boolean, String, Float) -> Splitter =
+            { vertical, proportionKey, defaultProportion ->
+                OnePixelSplitter(vertical, proportionKey, defaultProportion)
+            }
     }
 }

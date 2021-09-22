@@ -30,7 +30,7 @@ class ErrorReporter : ErrorReportSubmitter() {
      *
      * @return the text that is displayed in the button to report the error
      */
-    override fun getReportActionText() = "Report on GitHub"
+    override fun getReportActionText() = Bundle("reporter.report")
 
     /**
      * Submits the exception as desired by the user.
@@ -48,14 +48,14 @@ class ErrorReporter : ErrorReportSubmitter() {
         consumer: Consumer<in SubmittedReportInfo>
     ): Boolean {
         val project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(parentComponent))
-        object : Backgroundable(project, "Opening GitHub in browser") {
+        object : Backgroundable(project, Bundle("reporter.opening")) {
             override fun run(indicator: ProgressIndicator) {
                 BrowserUtil.open(getIssueUrl(events, additionalInfo))
                 ApplicationManager.getApplication().invokeLater {
                     consumer.consume(
                         SubmittedReportInfo(
                             "https://github.com/FWDekker/intellij-randomness/issues",
-                            "Issue on GitHub",
+                            Bundle("reporter.issue"),
                             SubmittedReportInfo.SubmissionStatus.NEW_ISSUE
                         )
                     )
@@ -79,11 +79,11 @@ class ErrorReporter : ErrorReportSubmitter() {
 
 
     /**
-     * Constructs a URL to create an issue with the given information that is below the maximum URL limit.
+     * Constructs a URL to create an issue with [additionalInfo] that is below the maximum URL limit.
      *
      * @param events the events that caused the exception
      * @param additionalInfo additional information provided by the user
-     * @return a URL to create an issue with the given information that is below the maximum URL limit
+     * @return a URL to create an issue with [additionalInfo] that is below the maximum URL limit
      */
     // Public for testability
     fun getIssueUrl(events: Array<out IdeaLoggingEvent>, additionalInfo: String?): String {
@@ -114,7 +114,7 @@ class ErrorReporter : ErrorReportSubmitter() {
      *
      * @param title the title of the section
      * @param contents the contents of the section
-     * @return a Markdown "section" with the given title and contents
+     * @return a Markdown "section" with the [title] and [contents]
      */
     private fun createMarkdownSection(title: String, contents: String) = "**${title.trim()}**\n${contents.trim()}\n\n"
 
@@ -132,20 +132,20 @@ class ErrorReporter : ErrorReportSubmitter() {
         }.joinToString("\n\n")
 
     /**
-     * Creates a Markdown-style code block with the given language.
+     * Creates a Markdown-style code block for [language].
      *
      * @param contents the contents of the code block
      * @param language the language of the contents
-     * @return a Markdown-style code block with the given language
+     * @return a Markdown-style code block for [language]
      */
     private fun wrapInCodeBlock(contents: String, language: String = "") = "```$language\n$contents\n```"
 
     /**
-     * Creates a Markdown-style spoiler with the given title and contents.
+     * Creates a Markdown-style spoiler with [title] and [contents].
      *
      * @param title the title, which is the only thing that is displayed when the contents are hidden
      * @param contents the contents which are initially hidden
-     * @return a Markdown-style spoiler with the given title
+     * @return a Markdown-style spoiler [title] and [contents]
      */
     private fun wrapInMarkdownSpoiler(title: String, contents: String) =
         "<details>\n<summary>$title</summary>\n<p>\n\n$contents\n\n</p>\n</details>"

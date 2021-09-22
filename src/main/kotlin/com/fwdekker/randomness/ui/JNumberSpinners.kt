@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.ui
 
 import java.awt.Component
-import java.awt.Dimension
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 import javax.swing.JSpinner
@@ -77,11 +76,6 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
      */
     companion object {
         /**
-         * The default width of a number spinner.
-         */
-        const val DEFAULT_WIDTH = 52
-
-        /**
          * The default number format used to display numbers.
          */
         val DEFAULT_FORMAT = DecimalFormatSymbols(Locale.US)
@@ -109,8 +103,6 @@ class JDoubleSpinner(
 
     init {
         this.editor = NumberEditor(this).also { it.format.decimalFormatSymbols = DEFAULT_FORMAT }
-        this.minimumSize = Dimension(DEFAULT_WIDTH, minimumSize.height)
-        this.preferredSize = Dimension(DEFAULT_WIDTH, preferredSize.height)
     }
 }
 
@@ -135,8 +127,6 @@ class JLongSpinner(
 
     init {
         this.editor = NumberEditor(this).also { it.format.decimalFormatSymbols = DEFAULT_FORMAT }
-        this.minimumSize = Dimension(DEFAULT_WIDTH, minimumSize.height)
-        this.preferredSize = Dimension(DEFAULT_WIDTH, preferredSize.height)
     }
 }
 
@@ -161,7 +151,5 @@ class JIntSpinner(
 
     init {
         this.editor = NumberEditor(this).also { it.format.decimalFormatSymbols = DEFAULT_FORMAT }
-        this.minimumSize = Dimension(DEFAULT_WIDTH, minimumSize.height)
-        this.preferredSize = Dimension(DEFAULT_WIDTH, preferredSize.height)
     }
 }

@@ -37,7 +37,7 @@ object StringSchemeTest : Spek({
             data class Param(
                 val minLength: Int,
                 val maxLength: Int,
-                val enclosure: String,
+                val quotation: String,
                 val capitalization: CapitalizationMode,
                 val symbolSets: List<SymbolSet>
             )
@@ -49,12 +49,12 @@ object StringSchemeTest : Spek({
                 Param(1, 1, "2Rv", CapitalizationMode.FIRST_LETTER, listOf(SymbolSet("x", "x"))) to "2RvX2Rv",
                 Param(723, 723, "", CapitalizationMode.UPPER, listOf(SymbolSet("x", "x"))) to "X".repeat(723),
                 Param(466, 466, "z", CapitalizationMode.LOWER, listOf(SymbolSet("x", "x"))) to "z${"x".repeat(466)}z"
-            ).forEach { (minLength, maxLength, enclosure, capitalization, symbolSets), expectedString ->
+            ).forEach { (minLength, maxLength, quotation, capitalization, symbolSets), expectedString ->
                 it("generates a formatted string") {
                     stringScheme.symbolSetSettings += SymbolSetSettings().also { it.symbolSets = symbolSets }
                     stringScheme.minLength = minLength
                     stringScheme.maxLength = maxLength
-                    stringScheme.enclosure = enclosure
+                    stringScheme.quotation = quotation
                     stringScheme.capitalization = capitalization
                     stringScheme.activeSymbolSets = symbolSets.map { it.name }.toSet()
 
@@ -69,7 +69,7 @@ object StringSchemeTest : Spek({
                 stringScheme.symbolSetSettings += SymbolSetSettings().also { it.symbolSets = symbolSets }
                 stringScheme.minLength = 1
                 stringScheme.maxLength = 1
-                stringScheme.enclosure = ""
+                stringScheme.quotation = ""
                 stringScheme.capitalization = CapitalizationMode.RETAIN
                 stringScheme.activeSymbolSets = symbolSets.map { it.name }.toSet()
 
@@ -98,7 +98,7 @@ object StringSchemeTest : Spek({
             it("fails if the minimum length is negative") {
                 stringScheme.minLength = -161
 
-                assertThat(stringScheme.doValidate()).isEqualTo("Minimum length should not be smaller than 1.")
+                assertThat(stringScheme.doValidate()).isEqualTo("Minimum length should be at least 1.")
             }
 
             it("fails if the minimum length is greater than the maximum length") {
@@ -106,7 +106,7 @@ object StringSchemeTest : Spek({
                 stringScheme.maxLength = 841
 
                 assertThat(stringScheme.doValidate())
-                    .isEqualTo("Minimum length should not be larger than maximum length.")
+                    .isEqualTo("Minimum length should be less than or equal to maximum length.")
             }
         }
 
@@ -183,7 +183,7 @@ object StringSchemeTest : Spek({
         it("copies state from another instance") {
             stringScheme.minLength = 730
             stringScheme.maxLength = 891
-            stringScheme.enclosure = "Qh7"
+            stringScheme.quotation = "Qh7"
             stringScheme.activeSymbolSets = setOf(SymbolSet.BRACKETS.name)
             stringScheme.excludeLookAlikeSymbols = true
             stringScheme.arrayDecorator.minCount = 249

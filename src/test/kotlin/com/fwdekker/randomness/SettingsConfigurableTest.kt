@@ -81,11 +81,11 @@ object SettingsConfigurableTest : Spek({
         }
 
         it("declares itself modified if settings are invalid, even though no modifications have been made") {
-            // Ground truth: `isModified` is false after reloading valid settings
+            // Ground truth: `isModified` is `false` after reloading valid settings
             GuiActionRunner.execute { editor.loadState() }
             assertThat(configurable.isModified).isFalse()
 
-            // Actual test: `isModified` is true after reloading invalid settings
+            // Actual test: `isModified` is `true` after reloading invalid settings
             val invalidSettings = DummyScheme.from(DummyScheme.INVALID_OUTPUT)
             GuiActionRunner.execute { editor.loadState(invalidSettings) }
 

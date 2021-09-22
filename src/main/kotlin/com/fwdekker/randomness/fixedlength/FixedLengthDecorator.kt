@@ -1,10 +1,11 @@
 package com.fwdekker.randomness.fixedlength
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.SchemeDecorator
 
 
 /**
- * Forces generated strings to be exactly the given length.
+ * Forces generated strings to be exactly [length] characters.
  *
  * @property enabled Whether to apply this decorator.
  * @property length The enforced length.
@@ -16,7 +17,7 @@ data class FixedLengthDecorator(
     var filler: String = DEFAULT_FILLER
 ) : SchemeDecorator() {
     override val decorators: List<SchemeDecorator> = emptyList()
-    override val name = "Array"
+    override val name = Bundle("fixed_length.title")
 
 
     override fun generateUndecoratedStrings(count: Int): List<String> =
@@ -25,8 +26,8 @@ data class FixedLengthDecorator(
 
 
     override fun doValidate() =
-        if (length < MIN_LENGTH) "Fixed length should be at least $MIN_LENGTH, but is $length."
-        else if (filler.length != 1) "Filler should be exactly one character."
+        if (length < MIN_LENGTH) Bundle("fixed_length.error.length_too_low", MIN_LENGTH)
+        else if (filler.length != 1) Bundle("fixed_length.error.filler_length")
         else null
 
     override fun deepCopy(retainUuid: Boolean) = copy().also { if (retainUuid) it.uuid = this.uuid }

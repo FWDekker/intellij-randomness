@@ -89,8 +89,9 @@ private fun actionListener(actionPerformed: (ActionEvent?) -> Unit) =
 /**
  * Returns the cartesian product of two lists.
  *
- * By requiring both lists to actually be lists of lists, this method can be chained. Consider the following examples,
- * using a simplified notation for lists for readability.
+ * By requiring both lists to actually be lists of lists, this method can be chained.
+ *
+ * Consider the following examples, using a simplified notation for lists for readability:
  * ```
  * $ [[1, 2]] * [[3, 4]]
  * [[1, 3], [1, 4], [2, 3], [2, 4]]

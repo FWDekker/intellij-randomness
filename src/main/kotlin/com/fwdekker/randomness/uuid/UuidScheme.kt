@@ -4,6 +4,7 @@ import com.fasterxml.uuid.EthernetAddress
 import com.fasterxml.uuid.Generators
 import com.fasterxml.uuid.UUIDClock
 import com.fasterxml.uuid.UUIDTimer
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
@@ -19,20 +20,20 @@ import kotlin.random.asJavaRandom
  * Contains settings for generating random UUIDs.
  *
  * @property version The version of UUIDs to generate.
- * @property enclosure The string that encloses the generated UUID on both sides.
+ * @property quotation The string that encloses the generated UUID on both sides.
  * @property capitalization The capitalization mode of the generated UUID.
- * @property addDashes True if and only if the UUID should have dashes in it.
+ * @property addDashes `true` if and only if the UUID should have dashes in it.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class UuidScheme(
     var version: Int = DEFAULT_VERSION,
-    var enclosure: String = DEFAULT_ENCLOSURE,
+    var quotation: String = DEFAULT_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @get:Transient
-    override val name = "UUID"
+    override val name = Bundle("uuid.title")
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
@@ -59,7 +60,7 @@ data class UuidScheme(
                     )
                 )
             TYPE_4 -> Generators.randomBasedGenerator(random.asJavaRandom())
-            else -> error("Unknown UUID version '$version'.")
+            else -> error(Bundle("uuid.error.unknown_version", version))
         }
 
         return List(count) { generator.generate().toString() }
@@ -68,12 +69,12 @@ data class UuidScheme(
                 if (addDashes) it
                 else it.replace("-", "")
             }
-            .map { enclosure + it + enclosure }
+            .map { quotation + it + quotation }
     }
 
 
     override fun doValidate() =
-        if (version !in listOf(TYPE_1, TYPE_4)) "Unknown UUID version '$version'."
+        if (version !in listOf(TYPE_1, TYPE_4)) Bundle("uuid.error.unknown_version", version)
         else arrayDecorator.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =
@@ -90,27 +91,25 @@ data class UuidScheme(
          */
         val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "id", listOf(Color(185, 155, 248, 154)))
 
-
         /**
-         * The default value of the [version][version] field.
+         * The default value of the [version] field.
          */
         const val DEFAULT_VERSION = 4
 
         /**
-         * The default value of the [enclosure][enclosure] field.
+         * The default value of the [quotation] field.
          */
-        const val DEFAULT_ENCLOSURE = "\""
+        const val DEFAULT_QUOTATION = "\""
 
         /**
-         * The default value of the [capitalization][capitalization] field.
+         * The default value of the [capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.LOWER
 
         /**
-         * The default value of the [addDashes][addDashes] field.
+         * The default value of the [addDashes] field.
          */
         const val DEFAULT_ADD_DASHES = true
-
 
         /**
          * Integer representing a type-1 UUID.

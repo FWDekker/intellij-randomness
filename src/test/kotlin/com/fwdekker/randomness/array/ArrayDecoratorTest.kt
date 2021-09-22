@@ -11,7 +11,7 @@ import org.spekframework.spek2.style.specification.describe
 /**
  * Unit tests for [ArrayDecorator].
  */
-object ArraySchemeDecoratorTest : Spek({
+object ArrayDecoratorTest : Spek({
     lateinit var arrayDecorator: ArrayDecorator
     lateinit var dummyScheme: DummyScheme
 
@@ -111,15 +111,14 @@ object ArraySchemeDecoratorTest : Spek({
                 arrayDecorator.minCount = 0
                 arrayDecorator.maxCount = 0
 
-                assertThat(arrayDecorator.doValidate()).isEqualTo("Minimum count should be at least 1, but is 0.")
+                assertThat(arrayDecorator.doValidate()).isEqualTo("Minimum count should be at least 1.")
             }
 
             it("fails for negative count") {
                 arrayDecorator.minCount = -23
                 arrayDecorator.maxCount = -23
 
-                assertThat(arrayDecorator.doValidate())
-                    .isEqualTo("Minimum count should be at least 1, but is -23.")
+                assertThat(arrayDecorator.doValidate()).isEqualTo("Minimum count should be at least 1.")
             }
 
             it("fails if the minimum count is greater than the maximum count") {
@@ -127,7 +126,7 @@ object ArraySchemeDecoratorTest : Spek({
                 arrayDecorator.maxCount = 162
 
                 assertThat(arrayDecorator.doValidate())
-                    .isEqualTo("Minimum count should be greater than maximum count.")
+                    .isEqualTo("Minimum count should be less than or equal to maximum count.")
             }
         }
     }

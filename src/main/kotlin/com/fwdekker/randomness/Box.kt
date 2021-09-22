@@ -6,8 +6,8 @@ package com.fwdekker.randomness
  *
  * @param T the type of value referred to by this box
  * @property generator Returns the instance of [T] that should be returned by [get] if [set] has not been called before.
- * @property value Do not use this field. Placed in constructor to ensure Kotlin includes it in generated methods for
- * data class.
+ * @property value Do not assign this field in the constructor. Placed in constructor to ensure Kotlin includes it in
+ * the automatically generated [copy] method.
  */
 data class Box<T>(private val generator: () -> T, private var value: T? = null) {
     /**

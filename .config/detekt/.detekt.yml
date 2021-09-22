@@ -10,12 +10,15 @@ comments:
         active: false
 
 complexity:
+    # Acceptable if used sparingly.
+    LabeledExpression:
+      active: false
+    # Solved using resources bundled. All remaining duplicates are resource identifiers.
+    StringLiteralDuplication:
+      active: false
     # Static analysis is not good at estimating this.
     TooManyFunctions:
         thresholdInClasses: 20
-    # Acceptable if used sparingly.
-    LabeledExpression:
-        active: false
 
 formatting:
     # Bugged, see https://github.com/pinterest/ktlint/issues/1124

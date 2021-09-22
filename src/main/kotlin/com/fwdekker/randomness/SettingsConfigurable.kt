@@ -17,9 +17,9 @@ abstract class SettingsConfigurable : Configurable {
 
 
     /**
-     * Returns true if the settings were modified since they were loaded or they are invalid.
+     * Returns `true` if the settings were modified since they were loaded or they are invalid.
      *
-     * @return true if the settings were modified since they were loaded or they are invalid
+     * @return `true` if the settings were modified since they were loaded or they are invalid
      */
     override fun isModified() = editor.isModified() || editor.doValidate() != null
 
@@ -32,7 +32,7 @@ abstract class SettingsConfigurable : Configurable {
     override fun apply() {
         val validationInfo = editor.doValidate()
         if (validationInfo != null)
-            throw ConfigurationException(validationInfo, "Failed to save settings")
+            throw ConfigurationException(validationInfo, Bundle("template_list.error.failed_to_save_settings"))
 
         editor.applyState()
     }
@@ -41,6 +41,13 @@ abstract class SettingsConfigurable : Configurable {
      * Discards unsaved changes in the settings component.
      */
     override fun reset() = editor.reset()
+
+    /**
+     * Disposes of the configurable's resources.
+     */
+    override fun disposeUIResources() {
+        editor.dispose()
+    }
 
 
     /**

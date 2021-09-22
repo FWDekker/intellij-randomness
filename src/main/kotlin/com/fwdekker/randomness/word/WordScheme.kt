@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.Box
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
@@ -19,7 +20,7 @@ import java.awt.Color
  *
  * @property minLength The minimum length of the generated word, inclusive.
  * @property maxLength The maximum length of the generated word, inclusive.
- * @property enclosure The string that encloses the generated word on both sides.
+ * @property quotation The string that encloses the generated word on both sides.
  * @property capitalization The way in which the generated word should be capitalized.
  * @property activeDictionaries The list of dictionaries that are currently active.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
@@ -27,7 +28,7 @@ import java.awt.Color
 data class WordScheme(
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
-    var enclosure: String = DEFAULT_ENCLOSURE,
+    var quotation: String = DEFAULT_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     @get:XCollection(elementTypes = [BundledDictionary::class, UserDictionary::class])
     var activeDictionaries: Set<Dictionary> = DEFAULT_ACTIVE_DICTIONARIES.toMutableSet(),
@@ -40,7 +41,7 @@ data class WordScheme(
     var dictionarySettings: Box<DictionarySettings> = Box({ DictionarySettings.default })
 
     @get:Transient
-    override val name = "Word"
+    override val name = Bundle("word.title")
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
@@ -48,11 +49,11 @@ data class WordScheme(
 
 
     /**
-     * Returns random words from the dictionaries in `settings`.
+     * Returns formatted random words from the dictionaries in [dictionarySettings].
      *
      * @param count the number of words to generate
-     * @return random words from the dictionaries in `settings`
-     * @throws InvalidDictionaryException if no words could be found using the settings in `settings`
+     * @return formatted random words from the dictionaries in [dictionarySettings]
+     * @throws InvalidDictionaryException if no words could be found using the settings in [dictionarySettings]
      */
     override fun generateUndecoratedStrings(count: Int): List<String> {
         val words =
@@ -63,7 +64,7 @@ data class WordScheme(
 
         return List(count) { words.random(random) }
             .map { capitalization.transform(it, random) }
-            .map { enclosure + it + enclosure }
+            .map { quotation + it + quotation }
     }
 
     override fun setSettingsState(settingsState: SettingsState) {
@@ -80,24 +81,17 @@ data class WordScheme(
         val maxWordLength = words.map { it.length }.maxOrNull() ?: Integer.MAX_VALUE
 
         return when {
-            minLength < MIN_LENGTH ->
-                "Minimum length should not be smaller than $MIN_LENGTH."
-            minLength > maxLength ->
-                "Minimum length should not be larger than maximum length."
-            activeDictionaries.isEmpty() ->
-                "Activate at least one dictionary."
-            minLength > maxWordLength ->
-                "The longest word in the selected dictionaries is $maxWordLength characters. " +
-                    "Set the minimum length to a value less than or equal to $maxWordLength."
-            maxLength < minWordLength ->
-                "The shortest word in the selected dictionaries is $minWordLength characters. " +
-                    "Set the maximum length to a value less than or equal to $minWordLength."
+            minLength < MIN_LENGTH -> Bundle("word.error.min_length_too_low", MIN_LENGTH)
+            minLength > maxLength -> Bundle("word.error.min_length_above_max")
+            activeDictionaries.isEmpty() -> Bundle("word.error.no_active_dictionary")
+            minLength > maxWordLength -> Bundle("word.error.min_length_above_range", maxWordLength)
+            maxLength < minWordLength -> Bundle("word.error.max_length_below_range", minWordLength)
             else -> arrayDecorator.doValidate()
         }
     }
 
     override fun copyFrom(other: State) {
-        require(other is WordScheme) { "Cannot copy from different type." }
+        require(other is WordScheme) { Bundle("shared.error.cannot_copy_from_different_type") }
 
         (+dictionarySettings).also {
             it.copyFrom(+other.dictionarySettings)
@@ -127,7 +121,6 @@ data class WordScheme(
          */
         val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "cat", listOf(Color(242, 101, 34, 154)))
 
-
         /**
          * The smallest valid value of the [minLength] field.
          */
@@ -149,9 +142,9 @@ data class WordScheme(
         const val DEFAULT_MAX_LENGTH = 8
 
         /**
-         * The default value of the [enclosure] field.
+         * The default value of the [quotation] field.
          */
-        const val DEFAULT_ENCLOSURE = "\""
+        const val DEFAULT_QUOTATION = "\""
 
         /**
          * The default value of the [capitalization] field.

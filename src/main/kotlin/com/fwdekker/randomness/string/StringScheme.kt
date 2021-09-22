@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.Box
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
@@ -18,7 +19,7 @@ import java.awt.Color
  *
  * @property minLength The minimum length of the generated string, inclusive.
  * @property maxLength The maximum length of the generated string, inclusive.
- * @property enclosure The string that encloses the generated string on both sides.
+ * @property quotation The string that encloses the generated string on both sides.
  * @property capitalization The capitalization mode of the generated string.
  * @property activeSymbolSets The names of the symbol sets that are available for generating strings.
  * @property excludeLookAlikeSymbols Whether the symbols in [SymbolSet.lookAlikeCharacters] should be excluded.
@@ -27,7 +28,7 @@ import java.awt.Color
 data class StringScheme(
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
-    var enclosure: String = DEFAULT_ENCLOSURE,
+    var quotation: String = DEFAULT_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var activeSymbolSets: Set<String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMutableSet(),
     var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS,
@@ -40,7 +41,7 @@ data class StringScheme(
     var symbolSetSettings: Box<SymbolSetSettings> = Box({ SymbolSetSettings.default })
 
     @get:Transient
-    override val name = "String"
+    override val name = Bundle("string.title")
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
@@ -66,7 +67,7 @@ data class StringScheme(
             val text = List(length) { symbols.random(random) }.joinToString("")
             val capitalizedText = capitalization.transform(text, random)
 
-            enclosure + capitalizedText + enclosure
+            quotation + capitalizedText + quotation
         }
     }
 
@@ -80,21 +81,16 @@ data class StringScheme(
         (+symbolSetSettings).doValidate()?.also { return it }
 
         return when {
-            minLength < MIN_LENGTH ->
-                "Minimum length should not be smaller than $MIN_LENGTH."
-            minLength > maxLength ->
-                "Minimum length should not be larger than maximum length."
-            activeSymbolSets.isEmpty() ->
-                "Activate at least one symbol set."
-            activeSymbols.isEmpty() ->
-                "Active symbol sets should contain at least one non-look-alike character if look-alike characters " +
-                    "are excluded."
+            minLength < MIN_LENGTH -> Bundle("string.error.min_length_too_low", MIN_LENGTH)
+            minLength > maxLength -> Bundle("string.error.min_length_above_max")
+            activeSymbolSets.isEmpty() -> Bundle("string.error.no_active_symbols")
+            activeSymbols.isEmpty() -> Bundle("string.error.no_active_symbols_after_lookalike")
             else -> arrayDecorator.doValidate()
         }
     }
 
     override fun copyFrom(other: State) {
-        require(other is StringScheme) { "Cannot copy from different type." }
+        require(other is StringScheme) { Bundle("shared.error.cannot_copy_from_different_type") }
 
         (+symbolSetSettings).also {
             it.copyFrom(+other.symbolSetSettings)
@@ -124,7 +120,6 @@ data class StringScheme(
          */
         val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "abc", listOf(Color(244, 175, 61, 154)))
 
-
         /**
          * The smallest valid value of the [minLength] field.
          */
@@ -136,33 +131,33 @@ data class StringScheme(
         const val MAX_LENGTH_DIFFERENCE = Int.MAX_VALUE
 
         /**
-         * The default value of the [minLength][minLength] field.
+         * The default value of the [minLength] field.
          */
         const val DEFAULT_MIN_LENGTH = 3
 
         /**
-         * The default value of the [maxLength][maxLength] field.
+         * The default value of the [maxLength] field.
          */
         const val DEFAULT_MAX_LENGTH = 8
 
         /**
-         * The default value of the [enclosure][enclosure] field.
+         * The default value of the [quotation] field.
          */
-        const val DEFAULT_ENCLOSURE = "\""
+        const val DEFAULT_QUOTATION = "\""
 
         /**
-         * The default value of the [capitalization][capitalization] field.
+         * The default value of the [capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RANDOM
 
         /**
-         * The default value of the [activeSymbolSets][activeSymbolSets] field.
+         * The default value of the [activeSymbolSets] field.
          */
         val DEFAULT_ACTIVE_SYMBOL_SETS: Set<String>
             get() = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).map { it.name }.toSet()
 
         /**
-         * The default value of the [excludeLookAlikeSymbols][excludeLookAlikeSymbols] field.
+         * The default value of the [excludeLookAlikeSymbols] field.
          */
         const val DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS = false
     }

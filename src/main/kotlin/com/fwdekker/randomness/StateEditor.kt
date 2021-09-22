@@ -1,5 +1,7 @@
 package com.fwdekker.randomness
 
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.util.Disposer
 import java.awt.Component
 import javax.swing.JPanel
 
@@ -13,7 +15,7 @@ import javax.swing.JPanel
  * @param S the type of state that is edited; should be a self-reference
  * @property originalState the state object to write changes into
  */
-abstract class StateEditor<S : State>(val originalState: S) {
+abstract class StateEditor<S : State>(val originalState: S) : Disposable {
     /**
      * The root component of the editor.
      */
@@ -26,7 +28,7 @@ abstract class StateEditor<S : State>(val originalState: S) {
 
 
     /**
-     * Loads the given state into the editor and into [originalState].
+     * Loads [state] into the editor and into [originalState].
      *
      * @param state the state to load
      */
@@ -44,13 +46,13 @@ abstract class StateEditor<S : State>(val originalState: S) {
     /**
      * Saves the editor's state into [originalState].
      *
-     * Does nothing if and only if [isModified] returns false.
+     * Does nothing if and only if [isModified] returns `false`.
      */
     open fun applyState() = originalState.copyFrom(readState())
 
 
     /**
-     * Returns true if and only if the editor contains modifications relative to the last saved state.
+     * Returns `true` if and only if the editor contains modifications relative to the last saved state.
      *
      * Override this method if the default equals method of [S] is not sufficient to detect changes.
      */
@@ -59,7 +61,7 @@ abstract class StateEditor<S : State>(val originalState: S) {
     /**
      * Resets the editor's state to the last saved state.
      *
-     * Does nothing if and only if [isModified] return false.
+     * Does nothing if and only if [isModified] return `false`.
      */
     open fun reset() = loadState(originalState)
 
@@ -80,4 +82,11 @@ abstract class StateEditor<S : State>(val originalState: S) {
      * @param listener the listener that is invoked
      */
     abstract fun addChangeListener(listener: () -> Unit)
+
+    /**
+     * Disposes of this editor's resources.
+     */
+    override fun dispose() {
+        Disposer.dispose(this)
+    }
 }

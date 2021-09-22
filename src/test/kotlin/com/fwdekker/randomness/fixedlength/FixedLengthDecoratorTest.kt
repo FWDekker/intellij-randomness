@@ -71,8 +71,7 @@ object FixedLengthDecoratorTest : Spek({
         it("fails if the length is too low") {
             fixedLengthDecorator.length = -659
 
-            assertThat(fixedLengthDecorator.doValidate())
-                .isEqualTo("Fixed length should be at least $MIN_LENGTH, but is -659.")
+            assertThat(fixedLengthDecorator.doValidate()).isEqualTo("Fixed length should be at least $MIN_LENGTH.")
         }
 
         it("fails if the filler is an empty string") {

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.string
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Settings
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
@@ -29,13 +30,17 @@ data class SymbolSetSettings(
     private val placeholder: String = ""
 ) : PersistentStateComponent<SymbolSetSettings>, Settings() {
     /**
-     * A list view of the deserialized `SymbolSet` objects described by [serializedSymbolSets].
+     * A list view of the deserialized [SymbolSet] objects described by [serializedSymbolSets].
      */
     @get:Transient
     var symbolSets: List<SymbolSet>
-        get() = serializedSymbolSets.map { SymbolSet(it.name, EmojiParser.parseToUnicode(it.symbols)) }
+        get() = serializedSymbolSets.map {
+            SymbolSet(it.name, EmojiParser.parseToUnicode(it.symbols).replace("\\\\", "\\").replace("\\:", ":"))
+        }
         set(value) {
-            serializedSymbolSets = value.map { SymbolSet(it.name, EmojiParser.parseToAliases(it.symbols)) }
+            serializedSymbolSets = value.map {
+                SymbolSet(it.name, EmojiParser.parseToAliases(it.symbols.replace("\\", "\\\\").replace(":", "\\:")))
+            }
         }
 
 
@@ -56,14 +61,15 @@ data class SymbolSetSettings(
 
     override fun doValidate(): String? {
         val symbolSetNames = symbolSets.map { it.name }
+        val noNameIndex = symbolSets.indexOfFirst { it.name.isEmpty() }
         val duplicate = symbolSetNames.firstOrNull { symbolSet -> symbolSetNames.count { it == symbolSet } > 1 }
         val empty = symbolSets.firstOrNull { it.symbols.isEmpty() }?.name
 
         return when {
-            symbolSets.isEmpty() -> "Add at least one symbol set."
-            symbolSets.any { it.name.isEmpty() } -> "All symbol sets should have a name."
-            duplicate != null -> "Multiple symbol sets with name '$duplicate'."
-            empty != null -> "Symbol set `$empty` should contain at least one symbol."
+            symbolSets.isEmpty() -> Bundle("string.symbol_sets.error.no_sets")
+            noNameIndex >= 0 -> Bundle("string.symbol_sets.error.no_name", noNameIndex)
+            duplicate != null -> Bundle("string.symbol_sets.error.duplicate_name", duplicate)
+            empty != null -> Bundle("string.symbol_sets.error.no_symbols", empty)
             else -> null
         }
     }
@@ -84,7 +90,7 @@ data class SymbolSetSettings(
             get() = SymbolSet.defaultSymbolSets
 
         /**
-         * The persistent `SymbolSetSettings` instance.
+         * The persistent [SymbolSetSettings] instance.
          */
         val default: SymbolSetSettings
             get() = service()

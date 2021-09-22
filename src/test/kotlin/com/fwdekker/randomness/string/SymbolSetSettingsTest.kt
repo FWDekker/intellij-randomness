@@ -21,6 +21,30 @@ object SymbolSetSettingsTest : Spek({
 
             assertThat(settings.symbolSets.single { it.name == "emoji" }.symbols).isEqualTo("👨‍❤️‍👨")
         }
+
+        it("does not deserialize pre-serialized emoji") {
+            val settings = SymbolSetSettings().also { it.symbolSets = listOf(SymbolSet("emoji", ":massage:")) }
+
+            assertThat(settings.symbolSets.single { it.name == "emoji" }.symbols).isEqualTo(":massage:")
+        }
+
+        it("does not deserialize pre-serialized emoji given a preceding first backslash") {
+            val settings = SymbolSetSettings().also { it.symbolSets = listOf(SymbolSet("emoji", "\\:massage:")) }
+
+            assertThat(settings.symbolSets.single { it.name == "emoji" }.symbols).isEqualTo("\\:massage:")
+        }
+
+        it("does not deserialize pre-serialized emoji given a preceding second backslash") {
+            val settings = SymbolSetSettings().also { it.symbolSets = listOf(SymbolSet("emoji", ":massage\\:")) }
+
+            assertThat(settings.symbolSets.single { it.name == "emoji" }.symbols).isEqualTo(":massage\\:")
+        }
+
+        it("does not deserialize pre-serialized emoji given multiple preceding backslashes") {
+            val settings = SymbolSetSettings().also { it.symbolSets = listOf(SymbolSet("emoji", "\\:massage\\:")) }
+
+            assertThat(settings.symbolSets.single { it.name == "emoji" }.symbols).isEqualTo("\\:massage\\:")
+        }
     }
 
 
@@ -36,22 +60,21 @@ object SymbolSetSettingsTest : Spek({
         it("fails if a symbol set does not have a name") {
             val symbolSets = listOf(SymbolSet("", "hAA76o"))
 
-            assertThat(SymbolSetSettings(symbolSets).doValidate())
-                .isEqualTo("All symbol sets should have a name.")
+            assertThat(SymbolSetSettings(symbolSets).doValidate()).isEqualTo("Assign a name to symbol set at index 0.")
         }
 
         it("fails if two symbol sets have the same name") {
             val symbolSets = listOf(SymbolSet("seldom", "K0A6pdHk"), SymbolSet("seldom", "sllfXObM"))
 
             assertThat(SymbolSetSettings(symbolSets).doValidate())
-                .isEqualTo("Multiple symbol sets with name 'seldom'.")
+                .isEqualTo("Symbol set names should be unique. Rename symbol set 'seldom'.")
         }
 
         it("fails if a symbol set has no symbols") {
             val symbolSets = listOf(SymbolSet("value", ""))
 
             assertThat(SymbolSetSettings(symbolSets).doValidate())
-                .isEqualTo("Symbol set `value` should contain at least one symbol.")
+                .isEqualTo("Add at least one symbol to symbol set 'value'.")
         }
     }
 })

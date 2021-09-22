@@ -146,7 +146,7 @@ object OverlayedIconTest : Spek({
         it("fails if the base image is not square") {
             assertThatThrownBy { OverlayedIcon(PlainIcon(186, 132), emptyList()) }
                 .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("Base icon must be square.")
+                .hasMessage("Base must be square.")
         }
 
         it("fails if an overlay is not square") {

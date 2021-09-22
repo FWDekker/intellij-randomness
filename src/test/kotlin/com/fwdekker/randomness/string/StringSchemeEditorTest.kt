@@ -81,13 +81,13 @@ object StringSchemeEditorTest : Spek({
             frame.spinner("maxLength").requireValue(719)
         }
 
-        it("loads the scheme's enclosure") {
-            GuiActionRunner.execute { editor.loadState(StringScheme(enclosure = "\"")) }
+        it("loads the scheme's quotation") {
+            GuiActionRunner.execute { editor.loadState(StringScheme(quotation = "\"")) }
 
-            frame.radioButton("enclosureNone").requireSelected(false)
-            frame.radioButton("enclosureSingle").requireSelected(false)
-            frame.radioButton("enclosureDouble").requireSelected(true)
-            frame.radioButton("enclosureBacktick").requireSelected(false)
+            frame.radioButton("quotationNone").requireSelected(false)
+            frame.radioButton("quotationSingle").requireSelected(false)
+            frame.radioButton("quotationDouble").requireSelected(true)
+            frame.radioButton("quotationBacktick").requireSelected(false)
         }
 
         it("loads the scheme's capitalization") {
@@ -126,10 +126,10 @@ object StringSchemeEditorTest : Spek({
 
     describe("readState") {
         describe("defaults") {
-            it("returns default enclosure if no enclosure is selected") {
-                GuiActionRunner.execute { editor.loadState(StringScheme(enclosure = "unsupported")) }
+            it("returns default quotation if no quotation is selected") {
+                GuiActionRunner.execute { editor.loadState(StringScheme(quotation = "unsupported")) }
 
-                assertThat(editor.readState().enclosure).isEqualTo(StringScheme.DEFAULT_ENCLOSURE)
+                assertThat(editor.readState().quotation).isEqualTo(StringScheme.DEFAULT_QUOTATION)
             }
 
             it("returns default brackets if no capitalization is selected") {
@@ -147,7 +147,7 @@ object StringSchemeEditorTest : Spek({
             GuiActionRunner.execute {
                 frame.spinner("minLength").target().value = 445
                 frame.spinner("maxLength").target().value = 803
-                frame.radioButton("enclosureBacktick").target().isSelected = true
+                frame.radioButton("quotationBacktick").target().isSelected = true
                 frame.radioButton("capitalizationUpper").target().isSelected = true
                 frame.checkBox("excludeLookAlikeSymbolsCheckBox").target().isSelected = false
 
@@ -159,7 +159,7 @@ object StringSchemeEditorTest : Spek({
             val readScheme = editor.readState()
             assertThat(readScheme.minLength).isEqualTo(445)
             assertThat(readScheme.maxLength).isEqualTo(803)
-            assertThat(readScheme.enclosure).isEqualTo("`")
+            assertThat(readScheme.quotation).isEqualTo("`")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
             assertThat(readScheme.activeSymbolSets).containsExactly(SymbolSet.MINUS.name)
             assertThat(readScheme.excludeLookAlikeSymbols).isFalse()
@@ -233,7 +233,7 @@ object StringSchemeEditorTest : Spek({
                 symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("earth", "lNp5dG8k")))
             }
 
-            assertThat(editor.doValidate()).isEqualTo("Multiple symbol sets with name 'earth'.")
+            assertThat(editor.doValidate()).isEqualTo("Symbol set names should be unique. Rename symbol set 'earth'.")
         }
     }
 

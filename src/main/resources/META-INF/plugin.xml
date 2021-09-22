@@ -34,20 +34,20 @@
         </action>
 
         <!-- Template -->
-        <action id="com.fwdekker.randomness.template.TemplateInsertAction"
-                class="com.fwdekker.randomness.template.TemplateInsertAction"
-                text="Random Template"
-                description="Inserts a random template at each caret."
-                icon="/icons/data.svg" />
-        <action id="com.fwdekker.randomness.template.TemplateInsertAction$RepeatAction"
-                class="com.fwdekker.randomness.template.TemplateInsertAction$RepeatAction"
-                text="Random Repeated Template"
-                description="Inserts the same random template at each caret."
-                icon="/icons/data-repeat.svg" />
-        <action id="com.fwdekker.randomness.template.TemplateSettingsAction"
-                class="com.fwdekker.randomness.template.TemplateSettingsAction"
-                text="Template Settings"
-                description="Settings for the Random Template action."
-                icon="/icons/data-settings.svg" />
+<!--        <action id="com.fwdekker.randomness.template.TemplateInsertAction"-->
+<!--                class="com.fwdekker.randomness.template.TemplateInsertAction"-->
+<!--                text="Random Template"-->
+<!--                description="Inserts a random template at each caret."-->
+<!--                icon="/icons/data.svg" />-->
+<!--        <action id="com.fwdekker.randomness.template.TemplateInsertAction$RepeatAction"-->
+<!--                class="com.fwdekker.randomness.template.TemplateInsertAction$RepeatAction"-->
+<!--                text="Random Repeated Template"-->
+<!--                description="Inserts the same random template at each caret."-->
+<!--                icon="/icons/data-repeat.svg" />-->
+<!--        <action id="com.fwdekker.randomness.template.TemplateSettingsAction"-->
+<!--                class="com.fwdekker.randomness.template.TemplateSettingsAction"-->
+<!--                text="Template Settings"-->
+<!--                description="Settings for the Random Template action."-->
+<!--                icon="/icons/data-settings.svg" />-->
     </actions>
 </idea-plugin>

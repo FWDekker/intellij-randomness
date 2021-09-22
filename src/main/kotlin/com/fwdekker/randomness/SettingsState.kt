@@ -9,19 +9,22 @@ import com.fwdekker.randomness.word.DictionarySettings
 /**
  * Contains references to various [Settings] objects.
  *
+ * Note that schemes in [templateList] may not necessarily be using [symbolSetSettings] and [dictionarySettings]. To
+ * ensure this, invoke [TemplateList.applySettingsState] on [templateList] with this [SettingsState].
+ *
  * @property templateList The template list.
  * @property symbolSetSettings The symbol set settings.
  * @property dictionarySettings The dictionary settings.
  */
 data class SettingsState(
-    var templateList: TemplateList = TemplateList(emptyList()),
-    var symbolSetSettings: SymbolSetSettings = SymbolSetSettings(emptyList()),
-    var dictionarySettings: DictionarySettings = DictionarySettings(emptyList())
+    var templateList: TemplateList = TemplateList(),
+    var symbolSetSettings: SymbolSetSettings = SymbolSetSettings(),
+    var dictionarySettings: DictionarySettings = DictionarySettings()
 ) : State() {
     override fun doValidate() = templateList.doValidate()
 
     override fun copyFrom(other: State) {
-        require(other is SettingsState) { "Cannot copy from different type." }
+        require(other is SettingsState) { Bundle("shared.error.cannot_copy_from_different_type") }
 
         uuid = other.uuid
         templateList.copyFrom(other.templateList)
@@ -30,6 +33,15 @@ data class SettingsState(
         templateList.applySettingsState(this)
     }
 
+    /**
+     * Returns a deep copy of this state and the contained [Settings] instances.
+     *
+     * Additionally invokes [TemplateList.applySettingsState] to ensure that all copied templates and schemes use the
+     * new instances.
+     *
+     * @param retainUuid `false` if and only if the copy should have a different, new [uuid]
+     * @return a deep copy of this scheme
+     */
     override fun deepCopy(retainUuid: Boolean) =
         copy(
             templateList = templateList.deepCopy(retainUuid = retainUuid),
@@ -47,7 +59,7 @@ data class SettingsState(
      */
     companion object {
         /**
-         * The persistent `SettingsState` instance.
+         * The persistent [SettingsState] instance.
          */
         val default: SettingsState by lazy {
             SettingsState(

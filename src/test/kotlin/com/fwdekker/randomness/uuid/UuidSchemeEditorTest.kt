@@ -43,13 +43,13 @@ object UuidSchemeEditorTest : Spek({
             frame.radioButton("version4").requireSelected(true)
         }
 
-        it("loads the scheme's enclosure") {
-            GuiActionRunner.execute { editor.loadState(UuidScheme(enclosure = "'")) }
+        it("loads the scheme's quotation") {
+            GuiActionRunner.execute { editor.loadState(UuidScheme(quotation = "'")) }
 
-            frame.radioButton("enclosureNone").requireSelected(false)
-            frame.radioButton("enclosureSingle").requireSelected(true)
-            frame.radioButton("enclosureDouble").requireSelected(false)
-            frame.radioButton("enclosureBacktick").requireSelected(false)
+            frame.radioButton("quotationNone").requireSelected(false)
+            frame.radioButton("quotationSingle").requireSelected(true)
+            frame.radioButton("quotationDouble").requireSelected(false)
+            frame.radioButton("quotationBacktick").requireSelected(false)
         }
 
         it("loads the scheme's capitalization mode") {
@@ -74,10 +74,10 @@ object UuidSchemeEditorTest : Spek({
                 assertThat(editor.readState().version).isEqualTo(UuidScheme.DEFAULT_VERSION)
             }
 
-            it("returns default enclosure if no enclosure is selected") {
-                GuiActionRunner.execute { editor.loadState(UuidScheme(enclosure = "unsupported")) }
+            it("returns default quotation if no quotation is selected") {
+                GuiActionRunner.execute { editor.loadState(UuidScheme(quotation = "unsupported")) }
 
-                assertThat(editor.readState().enclosure).isEqualTo(UuidScheme.DEFAULT_ENCLOSURE)
+                assertThat(editor.readState().quotation).isEqualTo(UuidScheme.DEFAULT_QUOTATION)
             }
 
             it("returns default capitalization if no capitalization is selected") {
@@ -93,19 +93,19 @@ object UuidSchemeEditorTest : Spek({
 
         it("returns the editor's state") {
             GuiActionRunner.execute { frame.radioButton("version1").target().isSelected = true }
-            GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
+            GuiActionRunner.execute { frame.radioButton("quotationBacktick").target().isSelected = true }
             GuiActionRunner.execute { frame.radioButton("capitalizationUpper").target().isSelected = true }
             GuiActionRunner.execute { frame.checkBox("addDashesCheckBox").target().isSelected = true }
 
             val readScheme = editor.readState()
             assertThat(readScheme.version).isEqualTo(1)
-            assertThat(readScheme.enclosure).isEqualTo("`")
+            assertThat(readScheme.quotation).isEqualTo("`")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
             assertThat(readScheme.addDashes).isTrue()
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
+            GuiActionRunner.execute { frame.radioButton("quotationBacktick").target().isSelected = true }
             assertThat(editor.isModified()).isTrue()
 
             GuiActionRunner.execute { editor.loadState(editor.readState()) }
@@ -136,7 +136,7 @@ object UuidSchemeEditorTest : Spek({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.radioButton("enclosureBacktick").target().isSelected = true }
+            GuiActionRunner.execute { frame.radioButton("quotationBacktick").target().isSelected = true }
 
             assertThat(listenerInvoked).isTrue()
         }

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.literal
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
@@ -23,7 +24,7 @@ data class LiteralScheme(
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @get:Transient
-    override val name = "Literal"
+    override val name = Bundle("literal.title")
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
@@ -31,10 +32,10 @@ data class LiteralScheme(
 
 
     /**
-     * Returns a list containing the given number of copies of the literal.
+     * Returns a list containing [count] copies of the literal.
      *
      * @param count the number of copies of the literal to generate
-     * @return a list containing the given number of copies of the literal
+     * @return a list containing [count] copies of the literal
      */
     override fun generateUndecoratedStrings(count: Int) = List(count) { capitalization.transform(literal, random) }
 
@@ -54,7 +55,6 @@ data class LiteralScheme(
          * The base icon for literals.
          */
         val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "0x", listOf(Color(248, 19, 19, 154)))
-
 
         /**
          * The default value of the [literal] field.

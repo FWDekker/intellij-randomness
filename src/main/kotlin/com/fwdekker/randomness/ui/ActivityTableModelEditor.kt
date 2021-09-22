@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.Bundle
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonShortcuts
 import com.intellij.openapi.keymap.KeymapUtil
@@ -24,8 +25,8 @@ import javax.swing.table.TableColumn
  * its reference to another datum.
  *
  * @param T the type of datum
- * @property active whether the entry is active
- * @property datum a reference to a piece of data
+ * @property active Whether the entry is active.
+ * @property datum A reference to a piece of data.
  */
 data class EditableDatum<T>(var active: Boolean, var datum: T)
 
@@ -84,11 +85,11 @@ abstract class ActivityTableModelEditor<T>(
 
 
     /**
-     * Creates a new `JPanel` with the table and the corresponding buttons.
+     * Creates a new [JPanel] with the table and the corresponding buttons.
      *
-     * Do not use this method; instead, use the `panel` property.
+     * Do not use this method; instead, use the [panel] property.
      *
-     * @return a new `JPanel` with the table and the corresponding buttons
+     * @return a new [JPanel] with the table and the corresponding buttons
      */
     final override fun createComponent(): JPanel {
         @Suppress("UNCHECKED_CAST") // Reflection, see superclass for correctness
@@ -117,16 +118,21 @@ abstract class ActivityTableModelEditor<T>(
                     table.editCellAt(table.selectedRow, table.selectedColumn)
             }
             .setEditActionUpdater { table.selectedObject?.let { isEditable(it) } == true }
-            .addExtraAction(object : ToolbarDecorator.ElementActionButton("Copy", PlatformIcons.COPY_ICON) {
-                override fun actionPerformed(e: AnActionEvent) = copySelectedItems(table)
+            .addExtraAction(
+                object : ToolbarDecorator.ElementActionButton(
+                    Bundle("shared.action.copy"),
+                    PlatformIcons.COPY_ICON
+                ) {
+                    override fun actionPerformed(e: AnActionEvent) = copySelectedItems(table)
 
-                override fun isEnabled() = table.selection.all { isCopyable(it.datum) }
-            })
+                    override fun isEnabled() = table.selection.all { isCopyable(it.datum) }
+                }
+            )
             .createPanel()
     }
 
     /**
-     * Adds a listener that is called whenever this table is updated.
+     * Adds [listener] so that it is invoked whenever this table is updated.
      *
      * @param listener the listener to invoke
      */
@@ -139,15 +145,15 @@ abstract class ActivityTableModelEditor<T>(
     }
 
     /**
-     * Returns true.
+     * Returns `true`.
      *
-     * @return true
+     * @return `true`
      */
     final override fun canCreateElement() = true
 
 
     /**
-     * Adds a new item to the table, brings that item into view, and applies focus to that item's first editable column.
+     * Adds a new item to [table], brings that item into view, and applies focus to that item's first editable column.
      *
      * @param table the table to add the item to
      */
@@ -173,7 +179,7 @@ abstract class ActivityTableModelEditor<T>(
     }
 
     /**
-     * Copies all selected items in the given table.
+     * Copies all selected items in [table].
      *
      * @param table the table to copy the selected items in
      */

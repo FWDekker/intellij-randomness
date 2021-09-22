@@ -1,8 +1,10 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.InsertAction
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.RandomnessIcons
+import com.fwdekker.randomness.Timely.generateTimely
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -15,14 +17,16 @@ import java.awt.event.ActionEvent
  * All actions related to inserting template-based strings.
  *
  * @property template The template to create actions for.
+ * @see TemplateInsertAction
+ * @see TemplateSettingsAction
  */
 class TemplateGroupAction(private val template: Template) : ActionGroup() {
     /**
      * Returns the action that is appropriate for the given keyboard modifiers.
      *
-     * @param array true if and only if the output should be in array form
-     * @param repeat true if and only if the output should be repeated
-     * @param settings true if and only if settings should be shown
+     * @param array `true` if and only if the output should be in array form
+     * @param repeat `true` if and only if the output should be repeated
+     * @param settings `true` if and only if settings should be shown
      */
     private fun getActionByModifier(array: Boolean = false, repeat: Boolean = false, settings: Boolean = false) =
         if (settings) TemplateSettingsAction(template)
@@ -35,7 +39,7 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
     /**
      * Sets the title of this action.
      *
-     * @param event carries information on the invocation place
+     * @param event carries contextual information
      */
     override fun update(event: AnActionEvent) {
         super.update(event)
@@ -55,7 +59,7 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
     /**
      * Chooses one of the three actions to execute based on the key modifiers in [event].
      *
-     * @param event carries information on the invocation place
+     * @param event carries contextual information
      */
     override fun actionPerformed(event: AnActionEvent) =
         getActionByModifier(
@@ -74,32 +78,44 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
     /**
      * Returns variant actions for the main insertion action.
      *
-     * @param event carries information on the invocation place
+     * @param event carries contextual information
      * @return variant actions for the main insertion action
      */
     override fun getChildren(event: AnActionEvent?) =
-        arrayOf(getActionByModifier(repeat = true), getActionByModifier(settings = true))
+        arrayOf(
+            getActionByModifier(array = true),
+            getActionByModifier(repeat = true),
+            getActionByModifier(array = true, repeat = true),
+            getActionByModifier(settings = true)
+        )
 }
 
 
 /**
- * Inserts random strings in the editor based on the given template.
+ * Inserts random strings in the editor using [template].
  *
  * @property template The template to use for inserting data.
- * @param repeat true if and only if the same value should be inserted at each caret
+ * @property repeat `true` if and only if the same value should be inserted at each caret.
  * @see TemplateGroupAction
  */
 class TemplateInsertAction(private val template: Template, private val repeat: Boolean = false) : InsertAction() {
-    override val icon = template.icon?.let { if (repeat) it.plusOverlay(RandomnessIcons.REPEAT) else it }
+    override val icon = template.icon?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
 
-    override val name = (if (repeat) "Repeat " else "") + template.name
+    override val name =
+        template.name
+            .let { if (template.arrayDecorator.enabled) Bundle("template.name.array_suffix", it) else it }
+            .let { if (repeat) Bundle("template.name.repeat_prefix", it) else it }
 
 
-    override fun generateStrings(count: Int) = template.generateStrings(count)
+    override fun generateStrings(count: Int) =
+        generateTimely {
+            if (repeat) template.generateStrings().single().let { string -> List(count) { string } }
+            else template.generateStrings(count)
+        }
 }
 
 /**
- * Open the settings dialog to edit the given template settings.
+ * Open the settings dialog to edit [template].
  *
  * @property template The template to select after opening the settings dialog.
  * @see TemplateGroupAction
@@ -109,7 +125,7 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
     /**
      * Sets the title of this action.
      *
-     * @param event carries information on the invocation place
+     * @param event carries contextual information
      */
     override fun update(event: AnActionEvent) {
         super.update(event)
@@ -117,13 +133,15 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
         event.presentation.icon =
             if (template?.icon == null) RandomnessIcons.SETTINGS
             else template.icon!!.plusOverlay(OverlayIcon.SETTINGS)
-        event.presentation.text = "${if (template != null) template.name + " " else ""}Settings"
+        event.presentation.text =
+            if (template == null) Bundle("template.name.settings")
+            else Bundle("template.name.settings_suffix", template.name)
     }
 
     /**
      * Opens the IntelliJ settings menu at the right location to adjust the template configurable.
      *
-     * @param event carries information on the invocation place
+     * @param event carries contextual information
      */
     override fun actionPerformed(event: AnActionEvent) =
         ShowSettingsUtil.getInstance()
