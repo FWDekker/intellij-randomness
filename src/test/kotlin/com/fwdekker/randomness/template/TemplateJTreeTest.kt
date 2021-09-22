@@ -1104,12 +1104,40 @@ object TemplateTreeModelTest : Spek({
             var lastEvent: TreeModelEvent? = null
             model.addTreeModelListener(SimpleTreeModelListener { lastEvent = it })
 
-            val template = Template(name = "Fortune")
+            val scheme = DummyScheme.from("fortune")
+            model.insertNode(model.root.children[0], StateNode(scheme))
+
+            assertThat(lastEvent!!.treePath.lastPathComponent).isEqualTo(model.root.children[0])
+            assertThat(lastEvent!!.childIndices).containsExactly(0)
+            assertThat(lastEvent!!.children).containsExactly(StateNode(scheme))
+        }
+
+        it("informs listeners of a node insertion if the root's not-only child was inserted") {
+            model.reload(TemplateList(listOf(Template(name = "Every"))))
+
+            var lastEvent: TreeModelEvent? = null
+            model.addTreeModelListener(SimpleTreeModelListener { lastEvent = it })
+
+            val template = Template(name = "Deed")
             model.insertNode(model.root, StateNode(template))
 
             assertThat(lastEvent!!.treePath.lastPathComponent).isEqualTo(model.root)
             assertThat(lastEvent!!.childIndices).containsExactly(1)
             assertThat(lastEvent!!.children).containsExactly(StateNode(template))
+        }
+
+        it("informs listeners of a structure change if the root's now-only child was inserted") {
+            model.reload(TemplateList(emptyList()))
+
+            var lastEvent: TreeModelEvent? = null
+            model.addTreeModelListener(SimpleTreeModelListener { lastEvent = it })
+
+            val template = Template(name = "Dot")
+            model.insertNode(model.root, StateNode(template))
+
+            assertThat(lastEvent!!.treePath.lastPathComponent).isEqualTo(model.root)
+            assertThat(lastEvent!!.childIndices).isEmpty()
+            assertThat(lastEvent!!.children).isNull()
         }
     }
 

@@ -96,16 +96,13 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
         val selectedNode = templateTree.selectedNodeNotRoot
         val selectedState = selectedNode?.state
-        if (selectedState !is Scheme) {
-            templateTree.myModel.fireNodeChanged(selectedNode)
+        if (selectedState !is Scheme)
             return
-        }
 
         schemeEditor = createEditor(selectedState)
             .also { editor ->
                 editor.addChangeListener {
                     editor.applyState()
-                    templateTree.myModel.fireNodeChanged(selectedNode)
                     templateTree.myModel.fireNodeStructureChanged(selectedNode)
                 }
 
@@ -117,7 +114,8 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
                     BorderLayout.CENTER
                 )
                 editor.applyState() // Apply validation fixes from UI
-                rootComponent.revalidate() // Show editor immediately
+                templateTree.myModel.fireNodeStructureChanged(selectedNode)
+                schemeEditorPanel.revalidate() // Show editor immediately
             }
     }
 

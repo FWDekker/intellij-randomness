@@ -82,14 +82,14 @@ class TemplateJTree(
     var selectedScheme: Scheme?
         get() = selectedNodeNotRoot?.state as? Scheme
         set(value) {
-            // TODO: Figure out why `value?.let { StateNode(it) }` does not work
-            val node = value?.let { ix -> myModel.root.recursiveChildren.singleOrNull { it.state == ix } }
+            val node = value?.let { StateNode(it) }
 
-            selectionPath =
-                if (node == null || !myModel.root.contains(node))
-                    myModel.getPathToRoot(myModel.getFirstLeaf())
-                else
-                    myModel.getPathToRoot(node)
+            setSelectionRow(
+                myModel.nodeToRow(
+                    if (node == null || !myModel.root.contains(node)) myModel.getFirstLeaf()
+                    else node
+                )
+            )
         }
 
     /**
@@ -130,7 +130,7 @@ class TemplateJTree(
         myModel.rowToNode = { visibleNodes.getOrNull(it) }
         myModel.nodeToRow = { visibleNodes.indexOf(it) }
         myModel.expandAndSelect = {
-            expandPath(myModel.getPathToRoot(it))
+            expandNode(it)
             selectedScheme = it.state as Scheme
         }
 
@@ -212,6 +212,7 @@ class TemplateJTree(
                 myModel.insertNodeAfter(myModel.getParentOf(selectedNode)!!, newNode, selectedNode)
         }
 
+        expandNode(newNode)
         selectedScheme = newScheme
     }
 
@@ -287,6 +288,19 @@ class TemplateJTree(
         else myModel.nodeToRow(myModel.getChild(parent, uncleIndexInParent))
     }
 
+
+    /**
+     * Expands the path to [node] even if it is a leaf node.
+     *
+     * @param node the node to expand
+     */
+    private fun expandNode(node: StateNode?) {
+        if (node == null) return
+
+        val path = myModel.getPathToRoot(node)
+        expandPath(path.parentPath)
+        expandPath(path)
+    }
 
     /**
      * Returns `true` if and only if [scheme] has been modified with respect to [originalState].
@@ -900,7 +914,11 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
      */
     fun insertNode(parent: StateNode, child: StateNode, index: Int = getChildCount(parent)) {
         parent.children = parent.children.toMutableList().also { it.add(index, child) }
-        fireNodeInserted(child, parent, index)
+
+        if (parent == root && parent.children.size == 1)
+            fireNodeStructureChanged(root)
+        else
+            fireNodeInserted(child, parent, index)
     }
 
     /**

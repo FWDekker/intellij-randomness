@@ -90,6 +90,15 @@ data class TemplateList(
         }
     }
 
+    /**
+     * Returns a deep copy of this list.
+     *
+     * Note that the schemes in the returned list do not necessarily use the [SettingsState] in which this list resides.
+     * It may be necessary to use [applySettingsState] afterwards.
+     *
+     * @param retainUuid `false` if and only if the copy should have a different, new [uuid]
+     * @return a deep copy of this list
+     */
     override fun deepCopy(retainUuid: Boolean) =
         TemplateList(templates.map { it.deepCopy(retainUuid) })
             .also { if (retainUuid) it.uuid = this.uuid }
