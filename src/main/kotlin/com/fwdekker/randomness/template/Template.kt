@@ -7,6 +7,7 @@ import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.literal.LiteralScheme
@@ -33,6 +34,7 @@ data class Template(
             StringScheme::class,
             WordScheme::class,
             UuidScheme::class,
+            DateTimeScheme::class,
             LiteralScheme::class,
             TemplateReference::class,
         ]
