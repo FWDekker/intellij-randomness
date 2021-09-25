@@ -53,14 +53,15 @@ fun ListPopupImpl.registerModifierActions(captionModifier: (ActionEvent?) -> Str
         )
 
         @Suppress("MagicNumber") // Not worth a constant
-        for (key in 1..9) {
+        for (key in 0..9) {
             registerAction(
                 "${a}${b}${c}invokeAction$key",
                 KeyStroke.getKeyStroke("$a $b $c pressed $key"),
                 actionListener { event ->
                     event ?: return@actionListener
 
-                    list.addSelectionInterval(key - 1, key - 1)
+                    val targetRow = if (key == 0) 9 else key - 1
+                    list.addSelectionInterval(targetRow, targetRow)
                     handleSelect(
                         true,
                         KeyEvent(
