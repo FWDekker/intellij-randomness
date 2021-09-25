@@ -10,8 +10,6 @@ import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.decimal.DecimalSchemeEditor
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.integer.IntegerSchemeEditor
-import com.fwdekker.randomness.literal.LiteralScheme
-import com.fwdekker.randomness.literal.LiteralSchemeEditor
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.StringSchemeEditor
 import com.fwdekker.randomness.ui.PreviewPanel
@@ -72,7 +70,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
         // Right half
         previewPanel = PreviewPanel {
-            val selectedNode = templateTree.selectedNodeNotRoot ?: return@PreviewPanel LiteralScheme("")
+            val selectedNode = templateTree.selectedNodeNotRoot ?: return@PreviewPanel StringScheme("")
             val parentNode = templateTree.myModel.getParentOf(selectedNode)!!
 
             if (selectedNode.state is Template) selectedNode.state
@@ -135,7 +133,6 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             is UuidScheme -> UuidSchemeEditor(scheme)
             is WordScheme -> WordSchemeEditor(scheme)
             is DateTimeScheme -> DateTimeSchemeEditor(scheme)
-            is LiteralScheme -> LiteralSchemeEditor(scheme)
             is TemplateReference -> TemplateReferenceEditor(scheme)
             is Template -> TemplateEditor(scheme)
             else -> error(Bundle("template_list.error.unknown_scheme_type", scheme.javaClass.canonicalName))

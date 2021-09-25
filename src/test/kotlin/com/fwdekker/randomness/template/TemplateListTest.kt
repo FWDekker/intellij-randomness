@@ -3,9 +3,9 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.SettingsState
-import com.fwdekker.randomness.literal.LiteralScheme
 import com.fwdekker.randomness.string.StringScheme
-import com.fwdekker.randomness.string.SymbolSetSettings
+import com.fwdekker.randomness.word.DictionarySettings
+import com.fwdekker.randomness.word.WordScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.spekframework.spek2.Spek
@@ -30,13 +30,13 @@ object TemplateListTest : Spek({
         }
 
         it("overwrites the settings of contained schemes") {
-            val newSettings = SymbolSetSettings()
-            val stringScheme = StringScheme()
-            templateList.templates = listOf(Template(schemes = listOf(stringScheme)))
+            val newSettings = DictionarySettings()
+            val wordScheme = WordScheme()
+            templateList.templates = listOf(Template(schemes = listOf(wordScheme)))
 
-            templateList.applySettingsState(SettingsState(symbolSetSettings = newSettings))
+            templateList.applySettingsState(SettingsState(dictionarySettings = newSettings))
 
-            assertThat(+stringScheme.symbolSetSettings).isSameAs(newSettings)
+            assertThat(+wordScheme.dictionarySettings).isSameAs(newSettings)
         }
     }
 
@@ -186,12 +186,12 @@ object TemplateListTest : Spek({
 
     describe("deepCopy") {
         it("creates an independent copy") {
-            templateList.templates = listOf(Template(schemes = listOf(LiteralScheme("refuse"))))
+            templateList.templates = listOf(Template(schemes = listOf(StringScheme("refuse"))))
 
             val copy = templateList.deepCopy()
-            (copy.templates.first().schemes.first() as LiteralScheme).literal = "cheer"
+            (copy.templates.first().schemes.first() as StringScheme).pattern = "cheer"
 
-            assertThat((templateList.templates.first().schemes.first() as LiteralScheme).literal).isEqualTo("refuse")
+            assertThat((templateList.templates.first().schemes.first() as StringScheme).pattern).isEqualTo("refuse")
         }
     }
 

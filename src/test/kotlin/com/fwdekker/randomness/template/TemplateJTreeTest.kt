@@ -5,8 +5,6 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.clickActionButton
 import com.fwdekker.randomness.getActionButton
-import com.fwdekker.randomness.string.StringScheme
-import com.fwdekker.randomness.string.SymbolSet
 import com.fwdekker.randomness.ui.SimpleTreeModelListener
 import com.fwdekker.randomness.word.UserDictionary
 import com.fwdekker.randomness.word.WordScheme
@@ -483,7 +481,7 @@ object TemplateJTreeTest : Spek({
             }
 
             it("ensures the copy uses the same settings state") {
-                val scheme = StringScheme().also { it.setSettingsState(currentState) }
+                val scheme = WordScheme().also { it.setSettingsState(currentState) }
                 GuiActionRunner.execute {
                     list().templates[0].schemes = listOf(scheme)
                     tree.reload()
@@ -493,10 +491,10 @@ object TemplateJTreeTest : Spek({
                     tree.selectedScheme = list().templates[0].schemes[0]
                     frame.clickActionButton("Copy")
                 }
-                (+scheme.symbolSetSettings).symbolSets = listOf(SymbolSet("deliver", "lhO"))
+                (+scheme.dictionarySettings).dictionaries = listOf(UserDictionary("queen.dic"))
 
-                assertThat((+(list().templates[0].schemes[1] as StringScheme).symbolSetSettings).symbolSets)
-                    .containsExactly(SymbolSet("deliver", "lhO"))
+                assertThat((+(list().templates[0].schemes[1] as WordScheme).dictionarySettings).dictionaries)
+                    .containsExactly(UserDictionary("queen.dic"))
             }
         }
 
@@ -623,25 +621,6 @@ object TemplateJTreeTest : Spek({
                 }
 
                 assertThat(list().templates[2].schemes[0].name).isEqualTo("consider")
-            }
-
-            it("resets the symbol set settings if a string scheme is selected") {
-                val scheme = StringScheme().also { it.setSettingsState(currentState) }
-                GuiActionRunner.execute {
-                    list().templates[0].schemes = listOf(scheme)
-                    originalState.copyFrom(currentState)
-                    tree.reload()
-                }
-
-                GuiActionRunner.execute {
-                    tree.selectedScheme = scheme
-                    (+scheme.symbolSetSettings).symbolSets = listOf(SymbolSet("hardly", "6i9HY9"))
-
-                    frame.clickActionButton("Reset")
-                }
-
-                assertThat(currentState.symbolSetSettings.symbolSets)
-                    .containsExactlyElementsOf(originalState.symbolSetSettings.symbolSets)
             }
 
             it("resets the dictionary settings if a word scheme is selected") {

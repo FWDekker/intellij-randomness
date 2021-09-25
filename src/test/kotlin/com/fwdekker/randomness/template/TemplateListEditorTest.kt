@@ -7,7 +7,6 @@ import com.fwdekker.randomness.clickActionButton
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
-import com.fwdekker.randomness.literal.LiteralScheme
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
@@ -107,7 +106,6 @@ object TemplateListEditorTest : Spek({
 
             assertThat(readState).isNotSameAs(state)
             assertThat(readState.templateList).isNotSameAs(state.templateList)
-            assertThat(readState.symbolSetSettings).isNotSameAs(state.symbolSetSettings)
             assertThat(readState.dictionarySettings).isNotSameAs(state.dictionarySettings)
         }
 
@@ -193,22 +191,21 @@ object TemplateListEditorTest : Spek({
         it("loads the selected scheme's editor") {
             GuiActionRunner.execute { frame.tree().target().setSelectionRow(2) }
 
-            frame.spinner("minLength").requireVisible()
+            frame.textBox("pattern").requireVisible()
         }
 
         it("retains changes made in a scheme editor") {
             GuiActionRunner.execute {
                 frame.tree().target().setSelectionRow(2)
-                frame.spinner("minLength").target().value = 711
+                frame.textBox("pattern").target().text = "strange"
             }
-
 
             GuiActionRunner.execute {
                 frame.tree().target().setSelectionRow(1)
                 frame.tree().target().setSelectionRow(2)
             }
 
-            frame.spinner("minLength").requireValue(711)
+            frame.textBox("pattern").requireText("strange")
         }
 
 
@@ -222,11 +219,10 @@ object TemplateListEditorTest : Spek({
             listOf(
                 Param("integer", IntegerScheme()) { it.spinner("minValue") },
                 Param("decimal", DecimalScheme()) { it.spinner("minValue") },
-                Param("string", StringScheme()) { it.spinner("minLength") },
+                Param("string", StringScheme()) { it.textBox("pattern") },
                 Param("UUID", UuidScheme()) { it.radioButton("version1") },
                 Param("word", WordScheme()) { it.spinner("minLength") },
                 Param("date-time", DateTimeScheme()) { it.textBox("minDateTime") },
-                Param("literal", LiteralScheme()) { it.textBox("literal") },
                 Param("template reference", TemplateReference()) { it.list() }
             ).forEach { (name, scheme, matcher) ->
                 it("loads an editor for ${name}s") {

@@ -4,9 +4,9 @@ import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.integer.IntegerScheme
-import com.fwdekker.randomness.literal.LiteralScheme
 import com.fwdekker.randomness.string.StringScheme
-import com.fwdekker.randomness.string.SymbolSetSettings
+import com.fwdekker.randomness.word.DictionarySettings
+import com.fwdekker.randomness.word.WordScheme
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -87,7 +87,7 @@ object TemplateTest : Spek({
 
             val schemeA = IntegerScheme(minValue = 461, maxValue = 664)
                 .also { it.random = random() }
-            val schemeB = LiteralScheme("-")
+            val schemeB = StringScheme("-")
                 .also { it.random = schemeA.random }
             val schemeC = IntegerScheme(minValue = 125, maxValue = 607)
                 .also { it.random = schemeB.random }
@@ -105,14 +105,14 @@ object TemplateTest : Spek({
     }
 
     describe("setSettingsState") {
-        it("overwrites the symbol set settings of the contained schemes") {
-            val newSettings = SymbolSetSettings()
-            val stringScheme = StringScheme()
-            template.schemes = listOf(stringScheme)
+        it("overwrites the settings state of the contained schemes") {
+            val newSettings = DictionarySettings()
+            val wordScheme = WordScheme()
+            template.schemes = listOf(wordScheme)
 
-            template.setSettingsState(SettingsState(symbolSetSettings = newSettings))
+            template.setSettingsState(SettingsState(dictionarySettings = newSettings))
 
-            assertThat(+stringScheme.symbolSetSettings).isSameAs(newSettings)
+            assertThat(+wordScheme.dictionarySettings).isSameAs(newSettings)
         }
     }
 
@@ -162,14 +162,14 @@ object TemplateTest : Spek({
 
     describe("deepCopy") {
         it("creates an independent copy") {
-            template.schemes = listOf(LiteralScheme("rubber"))
+            template.schemes = listOf(StringScheme("rubber"))
             template.arrayDecorator.maxCount = 857
 
             val copy = template.deepCopy()
-            (copy.schemes.first() as LiteralScheme).literal = "ribbon"
+            (copy.schemes.first() as StringScheme).pattern = "ribbon"
             copy.arrayDecorator.maxCount = 410
 
-            assertThat((template.schemes.first() as LiteralScheme).literal).isEqualTo("rubber")
+            assertThat((template.schemes.first() as StringScheme).pattern).isEqualTo("rubber")
             assertThat(template.arrayDecorator.maxCount).isEqualTo(857)
         }
     }
@@ -177,7 +177,7 @@ object TemplateTest : Spek({
     describe("copyFrom") {
         it("copies state from another instance") {
             template.name = "become"
-            template.schemes = listOf(LiteralScheme("quarrel"))
+            template.schemes = listOf(StringScheme("quarrel"))
             template.arrayDecorator.minCount = 820
 
             val newTemplate = Template()

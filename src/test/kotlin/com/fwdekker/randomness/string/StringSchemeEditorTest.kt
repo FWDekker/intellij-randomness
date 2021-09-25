@@ -2,10 +2,8 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.ui.EditableDatum
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import com.intellij.ui.table.TableView
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -22,27 +20,21 @@ object StringSchemeEditorTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
-    lateinit var symbolSetSettings: SymbolSetSettings
     lateinit var scheme: StringScheme
     lateinit var editor: StringSchemeEditor
-    lateinit var symbolSetTable: TableView<EditableDatum<SymbolSet>>
 
 
     beforeGroup {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    @Suppress("UNCHECKED_CAST") // I checked it myself!
     beforeEachTest {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        symbolSetSettings = SymbolSetSettings()
-        scheme = StringScheme().also { it.symbolSetSettings += symbolSetSettings }
+        scheme = StringScheme()
         editor = GuiActionRunner.execute<StringSchemeEditor> { StringSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
-
-        symbolSetTable = frame.table().target() as TableView<EditableDatum<SymbolSet>>
     }
 
     afterEachTest {
@@ -51,34 +43,11 @@ object StringSchemeEditorTest : Spek({
     }
 
 
-    describe("input handling") {
-        describe("length range") {
-            it("truncates decimals in the minimum length") {
-                GuiActionRunner.execute { frame.spinner("minLength").target().value = 553.92f }
-
-                frame.spinner("minLength").requireValue(553)
-            }
-
-            it("truncates decimals in the maximum length") {
-                GuiActionRunner.execute { frame.spinner("maxLength").target().value = 796.01f }
-
-                frame.spinner("maxLength").requireValue(796)
-            }
-        }
-    }
-
-
     describe("loadState") {
-        it("loads the scheme's minimum length") {
-            GuiActionRunner.execute { editor.loadState(StringScheme(minLength = 144, maxLength = 163)) }
+        it("loads the scheme's pattern") {
+            GuiActionRunner.execute { editor.loadState(StringScheme(pattern = "[0-9]{3}")) }
 
-            frame.spinner("minLength").requireValue(144)
-        }
-
-        it("loads the scheme's maximum length") {
-            GuiActionRunner.execute { editor.loadState(StringScheme(minLength = 372, maxLength = 719)) }
-
-            frame.spinner("maxLength").requireValue(719)
+            frame.textBox("pattern").requireText("[0-9]{3}")
         }
 
         it("loads the scheme's quotation") {
@@ -93,34 +62,16 @@ object StringSchemeEditorTest : Spek({
         it("loads the scheme's capitalization") {
             GuiActionRunner.execute { editor.loadState(StringScheme(capitalization = CapitalizationMode.RANDOM)) }
 
+            frame.radioButton("capitalizationRetain").requireSelected(false)
             frame.radioButton("capitalizationLower").requireSelected(false)
             frame.radioButton("capitalizationUpper").requireSelected(false)
             frame.radioButton("capitalizationRandom").requireSelected(true)
         }
 
-        it("loads the scheme's symbol sets") {
-            val allSymbolSets = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS, SymbolSet.HEXADECIMAL)
-            val activeSymbolSets = listOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
+        it("loads the scheme's setting for removing look-alike symbols") {
+            GuiActionRunner.execute { editor.loadState(StringScheme(removeLookAlikeSymbols = true)) }
 
-            GuiActionRunner.execute {
-                val settings = SymbolSetSettings()
-                settings.symbolSets = allSymbolSets
-                val newScheme = StringScheme(activeSymbolSets = activeSymbolSets.map { it.name }.toSet())
-                newScheme.symbolSetSettings += settings
-
-                editor.loadState(newScheme)
-            }
-
-            assertThat(symbolSetTable.items.map { it.datum })
-                .containsExactlyElementsOf(allSymbolSets)
-            assertThat(symbolSetTable.items.filter { it.active }.map { it.datum })
-                .containsExactlyElementsOf(activeSymbolSets)
-        }
-
-        it("loads the scheme's setting for excluding look-alike symbols") {
-            GuiActionRunner.execute { editor.loadState(StringScheme(excludeLookAlikeSymbols = true)) }
-
-            frame.checkBox("excludeLookAlikeSymbolsCheckBox").requireSelected()
+            frame.checkBox("removeLookAlikeCharacters").requireSelected()
         }
     }
 
@@ -145,28 +96,21 @@ object StringSchemeEditorTest : Spek({
 
         it("returns the editor's state") {
             GuiActionRunner.execute {
-                frame.spinner("minLength").target().value = 445
-                frame.spinner("maxLength").target().value = 803
+                frame.textBox("pattern").target().text = "AqqR"
                 frame.radioButton("quotationBacktick").target().isSelected = true
                 frame.radioButton("capitalizationUpper").target().isSelected = true
-                frame.checkBox("excludeLookAlikeSymbolsCheckBox").target().isSelected = false
-
-                repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
-                symbolSetTable.listTableModel.addRow(EditableDatum(false, SymbolSet.BRACKETS))
-                symbolSetTable.listTableModel.addRow(EditableDatum(true, SymbolSet.MINUS))
+                frame.checkBox("removeLookAlikeCharacters").target().isSelected = false
             }
 
             val readScheme = editor.readState()
-            assertThat(readScheme.minLength).isEqualTo(445)
-            assertThat(readScheme.maxLength).isEqualTo(803)
+            assertThat(readScheme.pattern).isEqualTo("AqqR")
             assertThat(readScheme.quotation).isEqualTo("`")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
-            assertThat(readScheme.activeSymbolSets).containsExactly(SymbolSet.MINUS.name)
-            assertThat(readScheme.excludeLookAlikeSymbols).isFalse()
+            assertThat(readScheme.removeLookAlikeSymbols).isFalse()
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.spinner("minLength").target().value = 445 }
+            GuiActionRunner.execute { frame.textBox("pattern").target().text = "loyal" }
             assertThat(editor.isModified()).isTrue()
 
             GuiActionRunner.execute { editor.loadState(editor.readState()) }
@@ -181,59 +125,13 @@ object StringSchemeEditorTest : Spek({
             assertThat(readState)
                 .isEqualTo(editor.originalState)
                 .isNotSameAs(editor.originalState)
-            assertThat(+readState.symbolSetSettings)
-                .isEqualTo(+editor.originalState.symbolSetSettings)
-                .isNotSameAs(+editor.originalState.symbolSetSettings)
             assertThat(readState.arrayDecorator)
                 .isEqualTo(editor.originalState.arrayDecorator)
                 .isNotSameAs(editor.originalState.arrayDecorator)
         }
 
-        it("returns a scheme with a deep copy of the symbol set settings") {
-            GuiActionRunner.execute {
-                repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
-                symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("feel", "5vG6eeU")))
-            }
-
-            assertThat((+editor.readState().symbolSetSettings).symbolSets)
-                .containsExactly(SymbolSet("feel", "5vG6eeU"))
-            assertThat(symbolSetSettings.symbolSets)
-                .doesNotContain(SymbolSet("feel", "5vG6eeU"))
-        }
-
         it("retains the scheme's UUID") {
             assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
-        }
-    }
-
-    describe("applyState") {
-        it("does not change the target's reference to the symbol set settings") {
-            GuiActionRunner.execute { editor.applyState() }
-
-            assertThat(+scheme.symbolSetSettings).isSameAs(symbolSetSettings)
-        }
-
-        it("copies the changes from the table into the original state's symbol set settings") {
-            GuiActionRunner.execute {
-                repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
-                symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("excess", "uWX4POU")))
-            }
-
-            GuiActionRunner.execute { editor.applyState() }
-
-            assertThat(symbolSetSettings.symbolSets).containsExactly(SymbolSet("excess", "uWX4POU"))
-        }
-    }
-
-
-    describe("doValidate") {
-        it("is invalid if multiple symbol sets with the same name have been defined") {
-            GuiActionRunner.execute {
-                symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("earth", "P3ogL")))
-                symbolSetTable.listTableModel.addRow(EditableDatum(active = true, SymbolSet("earth", "lNp5dG8k")))
-            }
-
-            assertThat(editor.doValidate()).isEqualTo("Symbol set names should be unique. Rename symbol set 'earth'.")
         }
     }
 
@@ -243,7 +141,7 @@ object StringSchemeEditorTest : Spek({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("minLength").target().value = 206 }
+            GuiActionRunner.execute { frame.textBox("pattern").target().text = "[ho]spital" }
 
             assertThat(listenerInvoked).isTrue()
         }

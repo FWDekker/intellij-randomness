@@ -7,7 +7,6 @@ import com.fwdekker.randomness.State
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
-import com.fwdekker.randomness.literal.LiteralScheme
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
@@ -311,7 +310,6 @@ class TemplateJTree(
      */
     private fun isModified(scheme: Scheme) =
         originalState.templateList.getSchemeByUuid(scheme.uuid) != scheme ||
-            scheme is StringScheme && originalState.symbolSetSettings != currentState.symbolSetSettings ||
             scheme is WordScheme && originalState.dictionarySettings != currentState.dictionarySettings
 
     /**
@@ -639,7 +637,6 @@ class TemplateJTree(
                 WordScheme(),
                 UuidScheme(),
                 DateTimeScheme(),
-                LiteralScheme(),
                 TemplateReference()
             )
     }

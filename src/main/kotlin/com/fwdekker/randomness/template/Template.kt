@@ -10,7 +10,6 @@ import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
-import com.fwdekker.randomness.literal.LiteralScheme
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
@@ -35,7 +34,6 @@ data class Template(
             WordScheme::class,
             UuidScheme::class,
             DateTimeScheme::class,
-            LiteralScheme::class,
             TemplateReference::class,
         ]
     )
