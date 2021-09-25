@@ -4,6 +4,8 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.datetime.DateTimeScheme
+import com.fwdekker.randomness.datetime.DateTimeSchemeEditor
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.decimal.DecimalSchemeEditor
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -132,6 +134,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
             is StringScheme -> StringSchemeEditor(scheme)
             is UuidScheme -> UuidSchemeEditor(scheme)
             is WordScheme -> WordSchemeEditor(scheme)
+            is DateTimeScheme -> DateTimeSchemeEditor(scheme)
             is LiteralScheme -> LiteralSchemeEditor(scheme)
             is TemplateReference -> TemplateReferenceEditor(scheme)
             is Template -> TemplateEditor(scheme)

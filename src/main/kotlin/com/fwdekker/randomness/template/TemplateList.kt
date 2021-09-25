@@ -78,8 +78,8 @@ data class TemplateList(
 
 
     override fun doValidate(): String? {
-        val duplicate =
-            templates.firstOrNull { templates.indexOf(it) != templates.lastIndexOf(it) }?.name
+        val templateNames = templates.map { it.name }
+        val duplicate = templateNames.firstOrNull { templateNames.indexOf(it) != templateNames.lastIndexOf(it) }
         val invalid =
             templates.firstNotNullOfOrNull { template -> template.doValidate()?.let { "${template.name} > $it" } }
 

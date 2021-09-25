@@ -4,6 +4,7 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
+import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.literal.LiteralScheme
@@ -637,6 +638,7 @@ class TemplateJTree(
                 StringScheme(),
                 WordScheme(),
                 UuidScheme(),
+                DateTimeScheme(),
                 LiteralScheme(),
                 TemplateReference()
             )

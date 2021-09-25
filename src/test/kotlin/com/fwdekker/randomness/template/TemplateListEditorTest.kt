@@ -4,6 +4,7 @@ import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.clickActionButton
+import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.literal.LiteralScheme
@@ -224,6 +225,7 @@ object TemplateListEditorTest : Spek({
                 Param("string", StringScheme()) { it.spinner("minLength") },
                 Param("UUID", UuidScheme()) { it.radioButton("version1") },
                 Param("word", WordScheme()) { it.spinner("minLength") },
+                Param("date-time", DateTimeScheme()) { it.textBox("minDateTime") },
                 Param("literal", LiteralScheme()) { it.textBox("literal") },
                 Param("template reference", TemplateReference()) { it.list() }
             ).forEach { (name, scheme, matcher) ->
