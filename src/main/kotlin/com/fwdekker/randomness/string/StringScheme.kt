@@ -1,57 +1,42 @@
 package com.fwdekker.randomness.string
 
-import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
-import com.fwdekker.randomness.SettingsState
-import com.fwdekker.randomness.State
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.string.StringScheme.Companion.LOOK_ALIKE_CHARACTERS
+import com.github.curiousoddman.rgxgen.RgxGen
+import com.github.curiousoddman.rgxgen.parsing.dflt.RgxGenParseException
 import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
+import kotlin.random.asJavaRandom
 
 
 /**
  * Contains settings for generating random strings.
  *
- * @property minLength The minimum length of the generated string, inclusive.
- * @property maxLength The maximum length of the generated string, inclusive.
+ * @property pattern The regex-like pattern according to which the string is generated.
  * @property quotation The string that encloses the generated string on both sides.
  * @property capitalization The capitalization mode of the generated string.
- * @property activeSymbolSets The names of the symbol sets that are available for generating strings.
- * @property excludeLookAlikeSymbols Whether the symbols in [SymbolSet.lookAlikeCharacters] should be excluded.
+ * @property removeLookAlikeSymbols Whether the symbols in [LOOK_ALIKE_CHARACTERS] should be removed.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class StringScheme(
-    var minLength: Int = DEFAULT_MIN_LENGTH,
-    var maxLength: Int = DEFAULT_MAX_LENGTH,
+    var pattern: String = DEFAULT_PATTERN,
     var quotation: String = DEFAULT_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var activeSymbolSets: Set<String> = DEFAULT_ACTIVE_SYMBOL_SETS.toMutableSet(),
-    var excludeLookAlikeSymbols: Boolean = DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS,
+    var removeLookAlikeSymbols: Boolean = DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
-    /**
-     * Persistent storage of available symbol sets.
-     */
-    @get:Transient
-    var symbolSetSettings: Box<SymbolSetSettings> = Box({ SymbolSetSettings.default })
-
     @get:Transient
     override val name = Bundle("string.title")
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
-
-    private val activeSymbols: List<String>
-        get() =
-            (+symbolSetSettings).symbolSets
-                .filter { it.name in activeSymbolSets }
-                .sum(excludeLookAlikeSymbols)
 
 
     /**
@@ -61,54 +46,34 @@ data class StringScheme(
      * @return strings of random alphanumerical characters
      */
     override fun generateUndecoratedStrings(count: Int): List<String> {
-        val symbols = activeSymbols
+        val rgxGen = RgxGen(pattern)
         return List(count) {
-            val length = random.nextInt(minLength, maxLength + 1)
-            val text = List(length) { symbols.random(random) }.joinToString("")
+            val text = rgxGen.generate(random.asJavaRandom())
             val capitalizedText = capitalization.transform(text, random)
+            val secondText =
+                if (removeLookAlikeSymbols) capitalizedText.filterNot { it in LOOK_ALIKE_CHARACTERS }
+                else capitalizedText
 
-            quotation + capitalizedText + quotation
+            quotation + secondText + quotation
         }
     }
 
-    override fun setSettingsState(settingsState: SettingsState) {
-        super.setSettingsState(settingsState)
-        symbolSetSettings += settingsState.symbolSetSettings
-    }
 
-
-    override fun doValidate(): String? {
-        (+symbolSetSettings).doValidate()?.also { return it }
-
-        return when {
-            minLength < MIN_LENGTH -> Bundle("string.error.min_length_too_low", MIN_LENGTH)
-            minLength > maxLength -> Bundle("string.error.min_length_above_max")
-            activeSymbolSets.isEmpty() -> Bundle("string.error.no_active_symbols")
-            activeSymbols.isEmpty() -> Bundle("string.error.no_active_symbols_after_lookalike")
-            else -> arrayDecorator.doValidate()
+    override fun doValidate() =
+        try {
+            RgxGen(pattern)
+            arrayDecorator.doValidate()
+        } catch (e: RgxGenParseException) {
+            e.message
         }
-    }
-
-    override fun copyFrom(other: State) {
-        require(other is StringScheme) { Bundle("shared.error.cannot_copy_from_different_type") }
-
-        (+symbolSetSettings).also {
-            it.copyFrom(+other.symbolSetSettings)
-
-            super.copyFrom(other)
-            symbolSetSettings += it
-        }
-    }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(
-            activeSymbolSets = activeSymbolSets.toSet(),
+        StringScheme(
+            pattern = pattern,
+            quotation = quotation,
+            removeLookAlikeSymbols = removeLookAlikeSymbols,
             arrayDecorator = arrayDecorator.deepCopy(retainUuid)
-        ).also {
-            if (retainUuid) it.uuid = this.uuid
-
-            it.symbolSetSettings += (+symbolSetSettings).deepCopy(retainUuid = retainUuid)
-        }
+        ).also { if (retainUuid) it.uuid = this.uuid }
 
 
     /**
@@ -116,29 +81,21 @@ data class StringScheme(
      */
     companion object {
         /**
+         * Symbols that look like other symbols.
+         *
+         * To be precise, this string contains the symbols `0`, `1`, `l`, `I`, `O`, `|`, and `﹒`.
+         */
+        const val LOOK_ALIKE_CHARACTERS = "01lLiIoO|﹒"
+
+        /**
          * The base icon for strings.
          */
         val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "abc", listOf(Color(244, 175, 61, 154)))
 
         /**
-         * The smallest valid value of the [minLength] field.
+         * The default value of the [pattern] field.
          */
-        const val MIN_LENGTH = 1
-
-        /**
-         * The largest valid difference between the [minLength] and [maxLength] fields.
-         */
-        const val MAX_LENGTH_DIFFERENCE = Int.MAX_VALUE
-
-        /**
-         * The default value of the [minLength] field.
-         */
-        const val DEFAULT_MIN_LENGTH = 3
-
-        /**
-         * The default value of the [maxLength] field.
-         */
-        const val DEFAULT_MAX_LENGTH = 8
+        const val DEFAULT_PATTERN = "[a-z0-9]{8}"
 
         /**
          * The default value of the [quotation] field.
@@ -148,17 +105,11 @@ data class StringScheme(
         /**
          * The default value of the [capitalization] field.
          */
-        val DEFAULT_CAPITALIZATION = CapitalizationMode.RANDOM
+        val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
 
         /**
-         * The default value of the [activeSymbolSets] field.
+         * The default value of the [removeLookAlikeSymbols] field.
          */
-        val DEFAULT_ACTIVE_SYMBOL_SETS: Set<String>
-            get() = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS).map { it.name }.toSet()
-
-        /**
-         * The default value of the [excludeLookAlikeSymbols] field.
-         */
-        const val DEFAULT_EXCLUDE_LOOK_ALIKE_SYMBOLS = false
+        const val DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS = false
     }
 }

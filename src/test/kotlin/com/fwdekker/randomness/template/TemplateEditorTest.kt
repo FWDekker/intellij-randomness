@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.literal.LiteralScheme
+import com.fwdekker.randomness.integer.IntegerScheme
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -103,7 +103,7 @@ object TemplateEditorTest : Spek({
         }
 
         it("retains the scheme's schemes") {
-            GuiActionRunner.execute { editor.loadState(Template(schemes = listOf(LiteralScheme()))) }
+            GuiActionRunner.execute { editor.loadState(Template(schemes = listOf(IntegerScheme()))) }
 
             assertThat(editor.readState().schemes).containsExactlyElementsOf(editor.originalState.schemes)
         }

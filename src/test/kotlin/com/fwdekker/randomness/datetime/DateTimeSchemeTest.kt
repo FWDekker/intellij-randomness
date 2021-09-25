@@ -33,13 +33,13 @@ object DateTimeSchemeTest : Spek({
             dateTimeScheme.minDateTime = 45_582
             dateTimeScheme.maxDateTime = 1_289_568_956
 
-            dateTimeScheme.generateStrings(1000)
-                .map { DateParserUtils.parseDateTime(it).toEpochMilli() }
-                .forEach {
-                    assertThat(it)
-                        .isGreaterThanOrEqualTo(dateTimeScheme.minDateTime)
-                        .isLessThanOrEqualTo(dateTimeScheme.maxDateTime)
-                }
+            repeat(256) {
+                val generatedString = dateTimeScheme.generateStrings().single()
+
+                assertThat(DateParserUtils.parseDateTime(generatedString).toEpochMilli())
+                    .isGreaterThanOrEqualTo(dateTimeScheme.minDateTime)
+                    .isLessThanOrEqualTo(dateTimeScheme.maxDateTime)
+            }
         }
 
         it("generates a date according to the given format") {

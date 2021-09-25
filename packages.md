@@ -6,6 +6,10 @@ Entry point of the plugin. Contains main classes, shared classes, and helper cla
 
 Decorator for generating multiple values each time.
 
+# Package com.fwdekker.randomness.datetime
+
+Scheme for random dates and times.
+
 # Package com.fwdekker.randomness.decimal
 
 Scheme for random decimal numbers.
@@ -18,13 +22,9 @@ Decorator for forcing values to a specified length.
 
 Scheme for random non-decimal numbers.
 
-# Package com.fwdekker.randomness.literal
-
-Scheme for non-random strings.
-
 # Package com.fwdekker.randomness.string
 
-Scheme for random strings.
+Scheme for random and non-random strings.
 
 # Package com.fwdekker.randomness.template
 

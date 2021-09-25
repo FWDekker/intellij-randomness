@@ -30,6 +30,7 @@ repositories {
 dependencies {
     implementation("com.fasterxml.uuid:java-uuid-generator:${properties("uuidGeneratorVersion")}")
     implementation("com.github.sisyphsu:dateparser:${properties("dateparserVersion")}")
+    implementation("com.github.curious-odd-man:rgxgen:${properties("rgxgenVersion")}")
     implementation("com.vdurmont:emoji-java:${properties("emojiVersion")}")
     // Use bundled Kotlin (ca. 4MB) to ensure forwards compatibility with IDE versions
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

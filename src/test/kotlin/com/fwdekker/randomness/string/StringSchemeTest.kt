@@ -2,8 +2,6 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
-import com.fwdekker.randomness.DummyScheme
-import com.fwdekker.randomness.SettingsState
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -14,77 +12,59 @@ import org.spekframework.spek2.style.specification.describe
  * Unit tests for [StringScheme].
  */
 object StringSchemeTest : Spek({
-    lateinit var symbolSetSettings: SymbolSetSettings
     lateinit var stringScheme: StringScheme
 
 
     beforeEachTest {
-        symbolSetSettings = SymbolSetSettings(listOf(SymbolSet("steam", "bH2")))
-        stringScheme = StringScheme(activeSymbolSets = setOf("steam"))
-        stringScheme.symbolSetSettings += symbolSetSettings
+        stringScheme = StringScheme()
     }
 
 
     describe("generateStrings") {
         it("throws an exception if the scheme is invalid") {
-            stringScheme.minLength = 99
-            stringScheme.maxLength = 21
+            stringScheme.pattern = "[a-Z"
 
             assertThatThrownBy { stringScheme.generateStrings() }.isInstanceOf(DataGenerationException::class.java)
         }
 
-        describe("pattern") {
-            data class Param(
-                val minLength: Int,
-                val maxLength: Int,
-                val quotation: String,
-                val capitalization: CapitalizationMode,
-                val symbolSets: List<SymbolSet>
-            )
+        it("returns the non-regex pattern") {
+            stringScheme.pattern = "mercy"
+            stringScheme.quotation = ""
 
-            mapOf(
-                Param(1, 1, "", CapitalizationMode.RETAIN, listOf(SymbolSet("x", "x"))) to "x",
-                Param(1, 1, "'", CapitalizationMode.UPPER, listOf(SymbolSet("x", "x"))) to "'X'",
-                Param(1, 1, "a", CapitalizationMode.LOWER, listOf(SymbolSet("x", "x"))) to "axa",
-                Param(1, 1, "2Rv", CapitalizationMode.FIRST_LETTER, listOf(SymbolSet("x", "x"))) to "2RvX2Rv",
-                Param(723, 723, "", CapitalizationMode.UPPER, listOf(SymbolSet("x", "x"))) to "X".repeat(723),
-                Param(466, 466, "z", CapitalizationMode.LOWER, listOf(SymbolSet("x", "x"))) to "z${"x".repeat(466)}z"
-            ).forEach { (minLength, maxLength, quotation, capitalization, symbolSets), expectedString ->
-                it("generates a formatted string") {
-                    stringScheme.symbolSetSettings += SymbolSetSettings().also { it.symbolSets = symbolSets }
-                    stringScheme.minLength = minLength
-                    stringScheme.maxLength = maxLength
-                    stringScheme.quotation = quotation
-                    stringScheme.capitalization = capitalization
-                    stringScheme.activeSymbolSets = symbolSets.map { it.name }.toSet()
+            assertThat(stringScheme.generateStrings()).containsExactly("mercy")
+        }
 
-                    assertThat(stringScheme.generateStrings()).containsExactly(expectedString)
-                }
-            }
+        it("returns the non-regex pattern with quotes") {
+            stringScheme.pattern = "shield"
+            stringScheme.quotation = "'"
 
-            it("retains emoji modifiers in the right order") {
-                val emoji = "👩‍👩‍👧‍👧"
-                val symbolSets = listOf(SymbolSet("emoji", emoji))
+            assertThat(stringScheme.generateStrings()).containsExactly("'shield'")
+        }
 
-                stringScheme.symbolSetSettings += SymbolSetSettings().also { it.symbolSets = symbolSets }
-                stringScheme.minLength = 1
-                stringScheme.maxLength = 1
-                stringScheme.quotation = ""
-                stringScheme.capitalization = CapitalizationMode.RETAIN
-                stringScheme.activeSymbolSets = symbolSets.map { it.name }.toSet()
+        it("returns the capitalized non-regex with quotes") {
+            stringScheme.pattern = "mean"
+            stringScheme.quotation = "q"
+            stringScheme.capitalization = CapitalizationMode.UPPER
 
-                assertThat(stringScheme.generateStrings()).containsExactly(emoji)
+            assertThat(stringScheme.generateStrings()).containsExactly("qMEANq")
+        }
+
+        it("returns a reverse-regexed string") {
+            stringScheme.pattern = "[a-z]{3} warn [A-Z]{2,3}"
+            stringScheme.quotation = ""
+
+            repeat(256) {
+                assertThat(stringScheme.generateStrings().single()).matches(stringScheme.pattern)
             }
         }
-    }
 
-    describe("setSettingsState") {
-        it("overwrites the default symbol set settings") {
-            val newSettings = SymbolSetSettings()
+        it("returns a reverse-regexed string without look-alike characters") {
+            stringScheme.pattern = "[a-z]{4}"
+            stringScheme.quotation = ""
 
-            stringScheme.setSettingsState(SettingsState(symbolSetSettings = newSettings))
-
-            assertThat(+stringScheme.symbolSetSettings).isSameAs(newSettings)
+            repeat(256) {
+                assertThat(stringScheme.generateStrings().single()).matches(stringScheme.pattern)
+            }
         }
     }
 
@@ -94,130 +74,49 @@ object StringSchemeTest : Spek({
             assertThat(stringScheme.doValidate()).isNull()
         }
 
-        describe("length range") {
-            it("fails if the minimum length is negative") {
-                stringScheme.minLength = -161
+        it("fails if the pattern is invalid") {
+            stringScheme.pattern = "{9"
 
-                assertThat(stringScheme.doValidate()).isEqualTo("Minimum length should be at least 1.")
-            }
-
-            it("fails if the minimum length is greater than the maximum length") {
-                stringScheme.minLength = 878
-                stringScheme.maxLength = 841
-
-                assertThat(stringScheme.doValidate())
-                    .isEqualTo("Minimum length should be less than or equal to maximum length.")
-            }
+            assertThat(stringScheme.doValidate()).isEqualTo("Cannot repeat nothing at\n'{9'\n ^")
         }
 
-        describe("symbol sets") {
-            it("fails if the symbol set settings are invalid") {
-                symbolSetSettings.symbolSets = emptyList()
-                stringScheme.activeSymbolSets = emptySet()
+        it("fails if the decorator is invalid") {
+            stringScheme.arrayDecorator.maxCount = -985
 
-                assertThat(stringScheme.doValidate()).isEqualTo("Add at least one symbol set.")
-            }
-
-            it("fails if no symbol sets are active") {
-                stringScheme.activeSymbolSets = emptySet()
-
-                assertThat(stringScheme.doValidate()).isEqualTo("Activate at least one symbol set.")
-            }
-
-            it("fails if only look-alike symbols are selected and look-alike symbols are excluded") {
-                symbolSetSettings.symbolSets = listOf(SymbolSet("Look-alike", "l01"))
-                stringScheme.activeSymbolSets = setOf("Look-alike")
-                stringScheme.excludeLookAlikeSymbols = true
-
-                assertThat(stringScheme.doValidate()).isEqualTo(
-                    "Active symbol sets should contain at least one non-look-alike character if look-alike " +
-                        "characters are excluded."
-                )
-            }
-        }
-
-        describe("decorator") {
-            it("fails if the decorator is invalid") {
-                stringScheme.arrayDecorator.maxCount = -985
-
-                assertThat(stringScheme.doValidate()).isNotNull()
-            }
+            assertThat(stringScheme.doValidate()).isNotNull()
         }
     }
 
     describe("deepCopy") {
         it("creates an independent copy") {
-            stringScheme.minLength = 49
+            stringScheme.pattern = "compose"
             stringScheme.arrayDecorator.maxCount = 943
 
             val copy = stringScheme.deepCopy()
-            copy.minLength = 244
+            copy.pattern = "tidy"
             copy.arrayDecorator.maxCount = 173
 
-            assertThat(stringScheme.minLength).isEqualTo(49)
+            assertThat(stringScheme.pattern).isEqualTo("compose")
             assertThat(stringScheme.arrayDecorator.maxCount).isEqualTo(943)
-        }
-
-        it("creates an independent copy of the symbol set settings box") {
-            val copy = stringScheme.deepCopy(retainUuid = true)
-            copy.symbolSetSettings += SymbolSetSettings()
-
-            assertThat(+copy.symbolSetSettings).isNotSameAs(+stringScheme.symbolSetSettings)
-        }
-
-        it("creates an independent copy of the symbol set settings") {
-            (+stringScheme.symbolSetSettings).symbolSets = listOf(SymbolSet("formal", "feXw8M"))
-
-            val copy = stringScheme.deepCopy()
-            (+copy.symbolSetSettings).symbolSets = listOf(SymbolSet("absent", "9hDt"))
-
-            assertThat((+stringScheme.symbolSetSettings).symbolSets.map { it.name }).containsExactly("formal")
         }
     }
 
     describe("copyFrom") {
-        it("cannot copy from a different type") {
-            assertThatThrownBy { stringScheme.copyFrom(DummyScheme()) }.isNotNull()
-        }
-
         it("copies state from another instance") {
-            stringScheme.minLength = 730
-            stringScheme.maxLength = 891
+            stringScheme.pattern = "trust"
             stringScheme.quotation = "Qh7"
-            stringScheme.activeSymbolSets = setOf(SymbolSet.BRACKETS.name)
-            stringScheme.excludeLookAlikeSymbols = true
+            stringScheme.removeLookAlikeSymbols = true
             stringScheme.arrayDecorator.minCount = 249
 
             val newScheme = StringScheme()
-            newScheme.symbolSetSettings += SymbolSetSettings()
             newScheme.copyFrom(stringScheme)
 
             assertThat(newScheme)
                 .isEqualTo(stringScheme)
                 .isNotSameAs(stringScheme)
-            assertThat(+newScheme.symbolSetSettings)
-                .isEqualTo(+stringScheme.symbolSetSettings)
-                .isNotSameAs(+stringScheme.symbolSetSettings)
             assertThat(newScheme.arrayDecorator)
                 .isEqualTo(stringScheme.arrayDecorator)
                 .isNotSameAs(stringScheme.arrayDecorator)
-        }
-
-        it("does not change the target's reference to the symbol set settings") {
-            stringScheme.copyFrom(StringScheme().also { it.symbolSetSettings += SymbolSetSettings() })
-
-            assertThat(+stringScheme.symbolSetSettings).isSameAs(symbolSetSettings)
-        }
-
-        it("writes a deep copy of the given scheme's symbol set settings into the target") {
-            val otherSettings = SymbolSetSettings(listOf(SymbolSet("sew", "2eNco")))
-            val otherScheme = StringScheme()
-            otherScheme.symbolSetSettings += otherSettings
-
-            stringScheme.copyFrom(otherScheme)
-            (+otherScheme.symbolSetSettings).symbolSets = listOf(SymbolSet("wife", "4g5X0"))
-
-            assertThat((+stringScheme.symbolSetSettings).symbolSets.map { it.name }).containsExactly("sew")
         }
     }
 })

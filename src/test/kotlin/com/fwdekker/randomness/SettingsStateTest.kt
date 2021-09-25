@@ -1,8 +1,5 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.string.StringScheme
-import com.fwdekker.randomness.string.SymbolSet
-import com.fwdekker.randomness.string.SymbolSetSettings
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
 import com.fwdekker.randomness.template.TemplateReference
@@ -22,7 +19,7 @@ object SettingsStateTest : Spek({
 
 
     beforeEachTest {
-        state = SettingsState(symbolSetSettings = SymbolSetSettings(listOf(SymbolSet("film", "C0ouF"))))
+        state = SettingsState()
     }
 
 
@@ -35,20 +32,6 @@ object SettingsStateTest : Spek({
             state.templateList.templates = listOf(Template(name = "Among"), Template(name = "Among"))
 
             assertThat(state.doValidate()).isNotNull()
-        }
-
-        it("fails if the symbol set settings are invalid") {
-            state.symbolSetSettings.symbolSets = listOf(SymbolSet("", "9KNKtWw"))
-            state.templateList.templates = listOf(Template(schemes = listOf(StringScheme())))
-            state.templateList.applySettingsState(state)
-
-            assertThat(state.doValidate()).isNotNull()
-        }
-
-        it("passes if the symbol set settings are invalid but unused") {
-            state.symbolSetSettings.symbolSets = listOf(SymbolSet("", "wF7Tl6wX"))
-
-            assertThat(state.doValidate()).isNull()
         }
 
         it("fails if the dictionary settings are invalid") {
@@ -78,7 +61,6 @@ object SettingsStateTest : Spek({
 
             assertThat(state.uuid).isEqualTo(other.uuid)
             assertThat(state.templateList.uuid).isEqualTo(other.templateList.uuid)
-            assertThat(state.symbolSetSettings.uuid).isEqualTo(other.symbolSetSettings.uuid)
             assertThat(state.dictionarySettings.uuid).isEqualTo(other.dictionarySettings.uuid)
         }
 
@@ -90,9 +72,6 @@ object SettingsStateTest : Spek({
             assertThat(state.templateList)
                 .isEqualTo(otherState.templateList)
                 .isNotSameAs(otherState.templateList)
-            assertThat(state.symbolSetSettings)
-                .isEqualTo(otherState.symbolSetSettings)
-                .isNotSameAs(otherState.symbolSetSettings)
             assertThat(state.dictionarySettings)
                 .isEqualTo(otherState.dictionarySettings)
                 .isNotSameAs(otherState.dictionarySettings)
