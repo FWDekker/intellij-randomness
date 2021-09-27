@@ -39,12 +39,12 @@ object ArrayDecoratorTest : Spek({
         it("returns an array-like string given a non-singular separator") {
             arrayDecorator.minCount = 3
             arrayDecorator.maxCount = 3
-            arrayDecorator.brackets = "@#"
+            arrayDecorator.brackets = "[@#"
             arrayDecorator.separator = ";;"
             arrayDecorator.isSpaceAfterSeparator = true
             dummyScheme.literals = listOf("Garhwali", "Pattypan", "Troll")
 
-            assertThat(dummyScheme.generateStrings()).containsExactly("@Garhwali;; Pattypan;; Troll#")
+            assertThat(dummyScheme.generateStrings()).containsExactly("[Garhwali;; Pattypan;; Troll#")
         }
 
         it("returns an array-like string given no brackets") {
@@ -61,7 +61,7 @@ object ArrayDecoratorTest : Spek({
         it("returns an array-like string given a disabled separator") {
             arrayDecorator.minCount = 3
             arrayDecorator.maxCount = 3
-            arrayDecorator.brackets = "<>"
+            arrayDecorator.brackets = "<@>"
             arrayDecorator.separator = "-"
             arrayDecorator.isSpaceAfterSeparator = false
             dummyScheme.literals = listOf("Remain", "Pound")
@@ -72,7 +72,7 @@ object ArrayDecoratorTest : Spek({
         it("returns an array-like string without space after separator given the newline separator") {
             arrayDecorator.minCount = 2
             arrayDecorator.maxCount = 2
-            arrayDecorator.brackets = "[]"
+            arrayDecorator.brackets = "[@]"
             arrayDecorator.separator = "\n"
             arrayDecorator.isSpaceAfterSeparator = true
             dummyScheme.literals = listOf("Union", "Bell")
@@ -147,7 +147,7 @@ object ArrayDecoratorTest : Spek({
             arrayDecorator.enabled = false
             arrayDecorator.minCount = 808
             arrayDecorator.maxCount = 997
-            arrayDecorator.brackets = "0fWx<i6jTJ"
+            arrayDecorator.brackets = "0fWx<@i6jTJ"
             arrayDecorator.separator = "f3hu)Rxiz1"
             arrayDecorator.isSpaceAfterSeparator = false
 

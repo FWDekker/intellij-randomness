@@ -31,7 +31,7 @@ object WordSchemeTest : Spek({
                 Triple(12, 12, ""),
                 Triple(3, 15, "\""),
                 Triple(3, 13, "`"),
-                Triple(7, 9, "delim")
+                Triple(7, 9, "d")
             ).forEach { (minLength, maxLength, quotation) ->
                 it("generates a formatted word between $minLength and $maxLength characters") {
                     wordScheme.minLength = minLength

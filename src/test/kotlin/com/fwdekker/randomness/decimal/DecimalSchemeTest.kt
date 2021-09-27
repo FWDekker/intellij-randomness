@@ -172,7 +172,7 @@ object DecimalSchemeTest : Spek({
             it("fails if no decimal separator was selected") {
                 decimalScheme.decimalSeparator = ""
 
-                assertThat(decimalScheme.doValidate()).isEqualTo("Select a decimal separator.")
+                assertThat(decimalScheme.doValidate()).isEqualTo("Decimal separator must be exactly 1 character.")
             }
         }
 

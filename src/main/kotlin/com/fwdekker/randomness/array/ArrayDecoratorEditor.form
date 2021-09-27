@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="490" height="311"/>
+      <xy x="20" y="20" width="515" height="311"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -14,7 +14,7 @@
         </constraints>
         <properties/>
       </component>
-      <component id="4f682" class="javax.swing.JTextArea" binding="helpTextArea">
+      <component id="2cff7" class="javax.swing.JLabel" binding="helpLabel" custom-create="true">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <minimum-size width="10" height="-1"/>
@@ -22,14 +22,9 @@
           </grid>
         </constraints>
         <properties>
-          <autoscrolls value="false"/>
-          <editable value="false"/>
           <focusable value="false"/>
-          <lineWrap value="true"/>
           <name value="helpText"/>
-          <opaque value="false"/>
           <visible value="false"/>
-          <wrapStyleWord value="true"/>
         </properties>
       </component>
       <component id="30ce4" class="javax.swing.JCheckBox" binding="enabledCheckBox">
@@ -41,7 +36,7 @@
           <text resource-bundle="randomness" key="array.ui.enabled"/>
         </properties>
       </component>
-      <grid id="c14ec" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="c14ec" binding="controlPanel" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -94,7 +89,7 @@
               <text resource-bundle="randomness" key="array.ui.brackets.option"/>
             </properties>
           </component>
-          <grid id="fb183" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="fb183" layout-manager="GridLayoutManager" row-count="1" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -117,6 +112,7 @@
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
+                  <actionCommand value="[@]"/>
                   <name value="arrayBracketsSquare" noi18n="true"/>
                   <text value="[]" noi18n="true"/>
                 </properties>
@@ -126,6 +122,7 @@
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
+                  <actionCommand value="{@}"/>
                   <name value="arrayBracketsCurly" noi18n="true"/>
                   <text value="{}" noi18n="true"/>
                 </properties>
@@ -135,13 +132,20 @@
                   <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
+                  <actionCommand value="(@)"/>
                   <name value="arrayBracketsRound" noi18n="true"/>
                   <text value="()" noi18n="true"/>
                 </properties>
               </component>
+              <component id="d74b1" class="com.fwdekker.randomness.ui.VariableLabelRadioButton" binding="customBrackets" custom-create="true">
+                <constraints>
+                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="3" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
               <hspacer id="5907d">
                 <constraints>
-                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
               </hspacer>
             </children>
@@ -154,7 +158,7 @@
               <text resource-bundle="randomness" key="array.ui.separator_option"/>
             </properties>
           </component>
-          <grid id="4109" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="4109" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -191,9 +195,15 @@
                   <text value="\n" noi18n="true"/>
                 </properties>
               </component>
+              <component id="9f3e8" class="com.fwdekker.randomness.ui.VariableLabelRadioButton" binding="customSeparator" custom-create="true">
+                <constraints>
+                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="3" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
               <hspacer id="5caa9">
                 <constraints>
-                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
               </hspacer>
             </children>
@@ -223,10 +233,11 @@
       <member id="66c28"/>
     </group>
     <group name="bracketsGroup" bound="true">
+      <member id="fec91"/>
       <member id="39bc6"/>
       <member id="d4c77"/>
       <member id="30ee2"/>
-      <member id="fec91"/>
+      <member id="cc46b"/>
     </group>
   </buttonGroups>
 </form>

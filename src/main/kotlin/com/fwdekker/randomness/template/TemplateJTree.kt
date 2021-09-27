@@ -367,7 +367,8 @@ class TemplateJTree(
 
             if (scheme is Template) {
                 val index = myModel.list.templates.indexOf(scheme) + 1
-                if (index <= 10) append("${index % 10} ", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES, false)
+                if (index <= INDEXED_TEMPLATE_COUNT)
+                    append("${index % INDEXED_TEMPLATE_COUNT} ", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES, false)
             }
 
             append(
@@ -639,5 +640,10 @@ class TemplateJTree(
                 DateTimeScheme(),
                 TemplateReference()
             )
+
+        /**
+         * Number of [Template]s that should be rendered with the index in front.
+         */
+        const val INDEXED_TEMPLATE_COUNT = 10
     }
 }

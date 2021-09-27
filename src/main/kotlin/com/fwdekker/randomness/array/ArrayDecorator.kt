@@ -13,7 +13,9 @@ import com.fwdekker.randomness.SchemeDecorator
  * @property minCount The minimum number of elements to generate.
  * @property maxCount The maximum number of elements to generate.
  * @property brackets The brackets to surround arrays with.
+ * @property customBrackets The brackets defined in the custom option.
  * @property separator The string to place between generated elements.
+ * @property customSeparator The separator defined in the custom option.
  * @property isSpaceAfterSeparator `true` if and only if a space should be placed after each separator.
  */
 data class ArrayDecorator(
@@ -21,7 +23,9 @@ data class ArrayDecorator(
     var minCount: Int = DEFAULT_MIN_COUNT,
     var maxCount: Int = DEFAULT_MAX_COUNT,
     var brackets: String = DEFAULT_BRACKETS,
+    var customBrackets: String = DEFAULT_CUSTOM_BRACKETS,
     var separator: String = DEFAULT_SEPARATOR,
+    var customSeparator: String = DEFAULT_CUSTOM_SEPARATOR,
     var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR
 ) : SchemeDecorator() {
     override val decorators: List<SchemeDecorator> = emptyList()
@@ -37,11 +41,11 @@ data class ArrayDecorator(
         val generatedParts = generator(count * countPerString)
         val separator = this.separator + if (isSpaceAfterSeparator && this.separator !== "\n") " " else ""
 
-        return generatedParts.chunked(countPerString) {
-            it.joinToString(
+        return generatedParts.chunked(countPerString) { parts ->
+            parts.joinToString(
                 separator = separator,
-                prefix = brackets.getOrNull(0)?.toString() ?: "",
-                postfix = brackets.getOrNull(1)?.toString() ?: ""
+                prefix = brackets.takeWhile { it != '@' },
+                postfix = brackets.takeLastWhile { it != '@' }
             )
         }
     }
@@ -82,12 +86,22 @@ data class ArrayDecorator(
         /**
          * The default value of the [brackets] field.
          */
-        const val DEFAULT_BRACKETS = "[]"
+        const val DEFAULT_BRACKETS = "[@]"
+
+        /**
+         * The default value of the [customBrackets] field.
+         */
+        const val DEFAULT_CUSTOM_BRACKETS = "listOf(@)"
 
         /**
          * The default value of the [separator] field.
          */
         const val DEFAULT_SEPARATOR = ","
+
+        /**
+         * The default value of the [customSeparator] field.
+         */
+        const val DEFAULT_CUSTOM_SEPARATOR = ";"
 
         /**
          * The default value of the [isSpaceAfterSeparator] field.

@@ -9,6 +9,9 @@ import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_CAPITALIZ
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JLongSpinner
+import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
+import com.fwdekker.randomness.ui.UIConstants
+import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.forEach
@@ -38,6 +41,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
     private lateinit var maxValue: JLongSpinner
     private lateinit var base: JIntSpinner
     private lateinit var groupingSeparatorGroup: ButtonGroup
+    private lateinit var customGroupingSeparator: VariableLabelRadioButton
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var prefixInput: JTextField
     private lateinit var suffixInput: JTextField
@@ -50,9 +54,13 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
     init {
         base.addChangeListener {
             groupingSeparatorGroup.forEach { it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE }
+            customGroupingSeparator.isEnabled = base.value == IntegerScheme.DECIMAL_BASE
+
             capitalizationGroup.forEach { it.isEnabled = base.value > IntegerScheme.DECIMAL_BASE }
         }
         base.changeListeners.forEach { it.stateChanged(ChangeEvent(base)) }
+
+        customGroupingSeparator.addToButtonGroup(groupingSeparatorGroup)
 
         loadState()
     }
@@ -71,6 +79,8 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
         bindSpinners(minValue, maxValue, maxRange = null)
         base = JIntSpinner(IntegerScheme.DECIMAL_BASE, IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE)
 
+        customGroupingSeparator = VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(1))
+
         fixedLengthDecoratorEditor = FixedLengthDecoratorEditor(originalState.fixedLengthDecorator)
         fixedLengthDecoratorPanel = fixedLengthDecoratorEditor.rootComponent
 
@@ -86,6 +96,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
         maxValue.value = state.maxValue
         base.value = state.base
         groupingSeparatorGroup.setValue(state.groupingSeparator)
+        customGroupingSeparator.label = state.customGroupingSeparator
         capitalizationGroup.setValue(state.capitalization)
         prefixInput.text = state.prefix
         suffixInput.text = state.suffix
@@ -99,6 +110,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
             maxValue = maxValue.value,
             base = base.value,
             groupingSeparator = groupingSeparatorGroup.getValue() ?: DEFAULT_GROUPING_SEPARATOR,
+            customGroupingSeparator = customGroupingSeparator.label,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             prefix = prefixInput.text,
             suffix = suffixInput.text,
@@ -108,8 +120,8 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            minValue, maxValue, base, groupingSeparatorGroup, capitalizationGroup, prefixInput, suffixInput,
-            fixedLengthDecoratorEditor, arrayDecoratorEditor,
+            minValue, maxValue, base, groupingSeparatorGroup, customGroupingSeparator, capitalizationGroup, prefixInput,
+            suffixInput, fixedLengthDecoratorEditor, arrayDecoratorEditor,
             listener = listener
         )
 }

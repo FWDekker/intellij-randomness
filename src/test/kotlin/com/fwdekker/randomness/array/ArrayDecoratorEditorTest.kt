@@ -9,7 +9,7 @@ import org.assertj.swing.fixture.FrameFixture
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import javax.swing.JCheckBox
-import javax.swing.JTextArea
+import javax.swing.JLabel
 
 
 /**
@@ -90,7 +90,7 @@ object ArrayDecoratorEditorTest : Spek({
 
         describe("helpText") {
             it("hides the helpTextArea by default") {
-                frame.textBox(nameMatcher(JTextArea::class.java, "helpText")).requireNotVisible()
+                frame.label(nameMatcher(JLabel::class.java, "helpText")).requireNotVisible()
             }
 
             it("shows the helpTextArea if a helpText is given") {
@@ -100,9 +100,9 @@ object ArrayDecoratorEditorTest : Spek({
                 }
                 frame = showInFrame(editor.rootComponent)
 
-                frame.textBox("helpText")
+                frame.label("helpText")
                     .requireVisible()
-                    .requireText("Sorrow")
+                    .requireText("<html>Sorrow")
             }
         }
 
@@ -150,7 +150,7 @@ object ArrayDecoratorEditorTest : Spek({
         }
 
         it("loads the scheme's brackets") {
-            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, brackets = "{}")) }
+            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, brackets = "{@}")) }
 
             frame.radioButton("arrayBracketsNone").requireSelected(false)
             frame.radioButton("arrayBracketsSquare").requireSelected(false)
@@ -212,7 +212,7 @@ object ArrayDecoratorEditorTest : Spek({
             assertThat(readScheme.enabled).isTrue()
             assertThat(readScheme.minCount).isEqualTo(642)
             assertThat(readScheme.maxCount).isEqualTo(876)
-            assertThat(readScheme.brackets).isEqualTo("{}")
+            assertThat(readScheme.brackets).isEqualTo("{@}")
             assertThat(readScheme.separator).isEqualTo(";")
             assertThat(readScheme.isSpaceAfterSeparator).isFalse()
         }

@@ -4,6 +4,9 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
+import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
+import com.fwdekker.randomness.ui.UIConstants
+import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.buttons
 import com.fwdekker.randomness.ui.getValue
@@ -33,12 +36,15 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
     private lateinit var versionGroup: ButtonGroup
     private lateinit var quotationGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
+    private lateinit var customQuotation: VariableLabelRadioButton
     private lateinit var addDashesCheckBox: JCheckBox
     private lateinit var arrayDecoratorPanel: JPanel
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
 
     init {
+        customQuotation.addToButtonGroup(quotationGroup)
+
         loadState()
     }
 
@@ -51,6 +57,8 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
     private fun createUIComponents() {
         titleSeparator = SeparatorFactory.createSeparator(Bundle("uuid.title"), null)
 
+        customQuotation = VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
+
         arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
@@ -62,6 +70,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
         versionGroup.setValue(state.version.toString())
         quotationGroup.setValue(state.quotation)
         capitalizationGroup.setValue(state.capitalization)
+        customQuotation.label = state.customQuotation
         addDashesCheckBox.isSelected = state.addDashes
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
@@ -70,6 +79,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
         UuidScheme(
             version = versionGroup.getValue()?.toInt() ?: DEFAULT_VERSION,
             quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
+            customQuotation = customQuotation.label,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             addDashes = addDashesCheckBox.isSelected,
             arrayDecorator = arrayDecoratorEditor.readState()
@@ -78,7 +88,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            versionGroup, quotationGroup, capitalizationGroup, addDashesCheckBox, arrayDecoratorEditor,
+            versionGroup, quotationGroup, customQuotation, capitalizationGroup, addDashesCheckBox, arrayDecoratorEditor,
             listener = listener
         )
 }

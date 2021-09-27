@@ -19,14 +19,12 @@ import kotlin.random.asJavaRandom
  * Contains settings for generating random strings.
  *
  * @property pattern The regex-like pattern according to which the string is generated.
- * @property quotation The string that encloses the generated string on both sides.
  * @property capitalization The capitalization mode of the generated string.
  * @property removeLookAlikeSymbols Whether the symbols in [LOOK_ALIKE_CHARACTERS] should be removed.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class StringScheme(
     var pattern: String = DEFAULT_PATTERN,
-    var quotation: String = DEFAULT_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var removeLookAlikeSymbols: Boolean = DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
@@ -50,11 +48,9 @@ data class StringScheme(
         return List(count) {
             val text = rgxGen.generate(random.asJavaRandom())
             val capitalizedText = capitalization.transform(text, random)
-            val secondText =
-                if (removeLookAlikeSymbols) capitalizedText.filterNot { it in LOOK_ALIKE_CHARACTERS }
-                else capitalizedText
 
-            quotation + secondText + quotation
+            if (removeLookAlikeSymbols) capitalizedText.filterNot { it in LOOK_ALIKE_CHARACTERS }
+            else capitalizedText
         }
     }
 
@@ -70,7 +66,7 @@ data class StringScheme(
     override fun deepCopy(retainUuid: Boolean) =
         StringScheme(
             pattern = pattern,
-            quotation = quotation,
+            capitalization = capitalization,
             removeLookAlikeSymbols = removeLookAlikeSymbols,
             arrayDecorator = arrayDecorator.deepCopy(retainUuid)
         ).also { if (retainUuid) it.uuid = this.uuid }
@@ -96,11 +92,6 @@ data class StringScheme(
          * The default value of the [pattern] field.
          */
         const val DEFAULT_PATTERN = "[a-z0-9]{8}"
-
-        /**
-         * The default value of the [quotation] field.
-         */
-        const val DEFAULT_QUOTATION = "\""
 
         /**
          * The default value of the [capitalization] field.

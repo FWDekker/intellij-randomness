@@ -29,29 +29,19 @@ object StringSchemeTest : Spek({
 
         it("returns the non-regex pattern") {
             stringScheme.pattern = "mercy"
-            stringScheme.quotation = ""
 
             assertThat(stringScheme.generateStrings()).containsExactly("mercy")
         }
 
-        it("returns the non-regex pattern with quotes") {
-            stringScheme.pattern = "shield"
-            stringScheme.quotation = "'"
-
-            assertThat(stringScheme.generateStrings()).containsExactly("'shield'")
-        }
-
-        it("returns the capitalized non-regex with quotes") {
+        it("returns the capitalized non-regex pattern") {
             stringScheme.pattern = "mean"
-            stringScheme.quotation = "q"
             stringScheme.capitalization = CapitalizationMode.UPPER
 
-            assertThat(stringScheme.generateStrings()).containsExactly("qMEANq")
+            assertThat(stringScheme.generateStrings()).containsExactly("MEAN")
         }
 
         it("returns a reverse-regexed string") {
             stringScheme.pattern = "[a-z]{3} warn [A-Z]{2,3}"
-            stringScheme.quotation = ""
 
             repeat(256) {
                 assertThat(stringScheme.generateStrings().single()).matches(stringScheme.pattern)
@@ -60,7 +50,6 @@ object StringSchemeTest : Spek({
 
         it("returns a reverse-regexed string without look-alike characters") {
             stringScheme.pattern = "[a-z]{4}"
-            stringScheme.quotation = ""
 
             repeat(256) {
                 assertThat(stringScheme.generateStrings().single()).matches(stringScheme.pattern)
@@ -104,7 +93,6 @@ object StringSchemeTest : Spek({
     describe("copyFrom") {
         it("copies state from another instance") {
             stringScheme.pattern = "trust"
-            stringScheme.quotation = "Qh7"
             stringScheme.removeLookAlikeSymbols = true
             stringScheme.arrayDecorator.minCount = 249
 

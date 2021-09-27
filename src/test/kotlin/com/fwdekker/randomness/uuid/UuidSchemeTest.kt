@@ -39,7 +39,7 @@ object UuidSchemeTest : Spek({
             listOf(
                 Param(1, "", CapitalizationMode.LOWER, true),
                 Param(4, "'", CapitalizationMode.LOWER, true),
-                Param(1, "Eglzfpf5", CapitalizationMode.LOWER, true),
+                Param(1, "E", CapitalizationMode.LOWER, true),
                 Param(4, "", CapitalizationMode.UPPER, true),
                 Param(1, "'", CapitalizationMode.UPPER, false)
             ).forEach { (version, quotation, capitalization, addDashes) ->
