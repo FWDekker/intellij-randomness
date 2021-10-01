@@ -2,7 +2,7 @@ package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DataInsertAction
-import com.jgoodies.forms.factories.DefaultComponentFactory
+import com.intellij.ui.SeparatorFactory
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.beans.PropertyChangeEvent
@@ -75,9 +75,8 @@ class PreviewPanel(private val getGenerator: () -> DataInsertAction) {
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         val bundle = ResourceBundle.getBundle("randomness")
-        val factory = DefaultComponentFactory.getInstance()
 
-        separator = factory.createSeparator(bundle.getString("settings.preview"))
+        separator = SeparatorFactory.createSeparator(bundle.getString("settings.preview"), null)
     }
 
 

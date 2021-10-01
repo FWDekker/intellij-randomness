@@ -134,5 +134,7 @@ In chronological order of contribution:
   [suggesting the byte preset](https://github.com/FWDekker/intellij-randomness/issues/368)!
 * Thanks to [Martin Kaspar van Laak](https://github.com/MartinKvL) for
   [reporting that symbol sets didn't get saved](https://github.com/FWDekker/intellij-randomness/issues/382)!
+* Thanks to [Aleksey Bobyr](https://github.com/Alexsey) for
+  [reporting a critical UI bug in WebStorm EAP](https://github.com/FWDekker/intellij-randomness/issues/418)!
 
 If I should add, remove, or change anything here, just open an issue or email me!

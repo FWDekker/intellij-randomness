@@ -13,7 +13,7 @@ import com.fwdekker.randomness.ui.JSpinnerRange
 import com.fwdekker.randomness.ui.PreviewPanel
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
-import com.jgoodies.forms.factories.DefaultComponentFactory
+import com.intellij.ui.SeparatorFactory
 import java.awt.font.TextAttribute
 import java.util.ArrayList
 import java.util.ResourceBundle
@@ -76,7 +76,6 @@ class StringSettingsComponent(settings: StringSettings = default) :
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         val bundle = ResourceBundle.getBundle("randomness")
-        val factory = DefaultComponentFactory.getInstance()
 
         unsavedSettings = StringSettings()
         schemesPanel = StringSchemesPanel(unsavedSettings)
@@ -91,7 +90,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
         symbolSetTable = SymbolSetTable()
         symbolSetPanel = symbolSetTable.panel
 
-        symbolSetSeparator = factory.createSeparator(bundle.getString("settings.symbol_sets"))
+        symbolSetSeparator = SeparatorFactory.createSeparator(bundle.getString("settings.symbol_sets"), null)
     }
 
     override fun loadScheme(scheme: StringScheme) {

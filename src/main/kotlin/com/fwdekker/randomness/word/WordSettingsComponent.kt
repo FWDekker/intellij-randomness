@@ -14,9 +14,9 @@ import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_ENCLOSURE
 import com.fwdekker.randomness.word.WordSettings.Companion.DEFAULT_SCHEMES
 import com.fwdekker.randomness.word.WordSettings.Companion.default
+import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.UIUtil
-import com.jgoodies.forms.factories.DefaultComponentFactory
 import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JComponent
@@ -73,7 +73,6 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         val bundle = ResourceBundle.getBundle("randomness")
-        val factory = DefaultComponentFactory.getInstance()
 
         unsavedSettings = WordSettings()
         schemesPanel = WordSchemesPanel(unsavedSettings)
@@ -88,7 +87,7 @@ class WordSettingsComponent(settings: WordSettings = default) : SettingsComponen
         dictionaryTable = DictionaryTable()
         dictionaryPanel = dictionaryTable.panel
 
-        dictionarySeparator = factory.createSeparator(bundle.getString("settings.dictionaries"))
+        dictionarySeparator = SeparatorFactory.createSeparator(bundle.getString("settings.dictionaries"), null)
     }
 
     override fun loadScheme(scheme: WordScheme) {
