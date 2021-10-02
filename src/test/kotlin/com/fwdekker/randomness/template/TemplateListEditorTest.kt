@@ -122,7 +122,10 @@ object TemplateListEditorTest : Spek({
 
     describe("reset") {
         it("undoes changes to the initial selection") {
-            GuiActionRunner.execute { frame.spinner("minValue").target().value = 7 }
+            GuiActionRunner.execute {
+                frame.tree().target().setSelectionRow(1)
+                frame.spinner("minValue").target().value = 7
+            }
 
             GuiActionRunner.execute { editor.reset() }
 
@@ -134,7 +137,7 @@ object TemplateListEditorTest : Spek({
 
             GuiActionRunner.execute { editor.reset() }
 
-            assertThat(frame.tree().target().selectionRows).containsExactly(1)
+            assertThat(frame.tree().target().selectionRows).containsExactly(0)
         }
 
         it("selects the indicated template after reset") {
@@ -150,7 +153,7 @@ object TemplateListEditorTest : Spek({
 
             GuiActionRunner.execute { editor.reset() }
 
-            assertThat(frame.tree().target().selectionRows).containsExactly(1)
+            assertThat(frame.tree().target().selectionRows).containsExactly(0)
         }
     }
 
@@ -229,7 +232,10 @@ object TemplateListEditorTest : Spek({
                     state.templateList.templates = listOf(Template(schemes = listOf(scheme)))
                     state.templateList.applySettingsState(state)
 
-                    GuiActionRunner.execute { editor.reset() }
+                    GuiActionRunner.execute {
+                        editor.reset()
+                        frame.tree().target().setSelectionRow(1)
+                    }
 
                     matcher(frame).requireVisible()
                 }
@@ -248,7 +254,12 @@ object TemplateListEditorTest : Spek({
                 state.templateList.templates = listOf(Template(schemes = listOf(DummyScheme.from("grain"))))
                 state.templateList.applySettingsState(state)
 
-                assertThatThrownBy { GuiActionRunner.execute { editor.reset() } }
+                assertThatThrownBy {
+                    GuiActionRunner.execute {
+                        editor.reset()
+                        frame.tree().target().setSelectionRow(1)
+                    }
+                }
                     .isInstanceOf(IllegalStateException::class.java)
                     .hasMessage("Unknown scheme type 'com.fwdekker.randomness.DummyScheme'.")
             }

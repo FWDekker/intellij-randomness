@@ -50,15 +50,6 @@ object StringSchemeEditorTest : Spek({
             frame.textBox("pattern").requireText("[0-9]{3}")
         }
 
-        it("loads the scheme's quotation") {
-            GuiActionRunner.execute { editor.loadState(StringScheme(quotation = "\"")) }
-
-            frame.radioButton("quotationNone").requireSelected(false)
-            frame.radioButton("quotationSingle").requireSelected(false)
-            frame.radioButton("quotationDouble").requireSelected(true)
-            frame.radioButton("quotationBacktick").requireSelected(false)
-        }
-
         it("loads the scheme's capitalization") {
             GuiActionRunner.execute { editor.loadState(StringScheme(capitalization = CapitalizationMode.RANDOM)) }
 
@@ -77,12 +68,6 @@ object StringSchemeEditorTest : Spek({
 
     describe("readState") {
         describe("defaults") {
-            it("returns default quotation if no quotation is selected") {
-                GuiActionRunner.execute { editor.loadState(StringScheme(quotation = "unsupported")) }
-
-                assertThat(editor.readState().quotation).isEqualTo(StringScheme.DEFAULT_QUOTATION)
-            }
-
             it("returns default brackets if no capitalization is selected") {
                 GuiActionRunner.execute { editor.loadState(StringScheme(capitalization = CapitalizationMode.DUMMY)) }
 
@@ -97,14 +82,12 @@ object StringSchemeEditorTest : Spek({
         it("returns the editor's state") {
             GuiActionRunner.execute {
                 frame.textBox("pattern").target().text = "AqqR"
-                frame.radioButton("quotationBacktick").target().isSelected = true
                 frame.radioButton("capitalizationUpper").target().isSelected = true
                 frame.checkBox("removeLookAlikeCharacters").target().isSelected = false
             }
 
             val readScheme = editor.readState()
             assertThat(readScheme.pattern).isEqualTo("AqqR")
-            assertThat(readScheme.quotation).isEqualTo("`")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
             assertThat(readScheme.removeLookAlikeSymbols).isFalse()
         }

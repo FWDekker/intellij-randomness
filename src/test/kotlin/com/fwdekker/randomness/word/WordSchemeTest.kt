@@ -13,14 +13,23 @@ import org.spekframework.spek2.style.specification.describe
  * Unit tests for [WordScheme].
  */
 object WordSchemeTest : Spek({
+    lateinit var tempFileHelper: TempFileHelper
     lateinit var dictionarySettings: DictionarySettings
     lateinit var wordScheme: WordScheme
 
+
+    beforeGroup {
+        tempFileHelper = TempFileHelper()
+    }
 
     beforeEachTest {
         dictionarySettings = DictionarySettings()
         wordScheme = WordScheme()
         wordScheme.dictionarySettings += dictionarySettings
+    }
+
+    afterGroup {
+        tempFileHelper.cleanUp()
     }
 
 
@@ -31,7 +40,7 @@ object WordSchemeTest : Spek({
                 Triple(12, 12, ""),
                 Triple(3, 15, "\""),
                 Triple(3, 13, "`"),
-                Triple(7, 9, "delim")
+                Triple(7, 9, "d")
             ).forEach { (minLength, maxLength, quotation) ->
                 it("generates a formatted word between $minLength and $maxLength characters") {
                     wordScheme.minLength = minLength
@@ -49,6 +58,35 @@ object WordSchemeTest : Spek({
                 }
             }
         }
+
+        describe("quotation") {
+            it("adds no quotations if the quotations are an empty string") {
+                val dictionary = tempFileHelper.createFile("show")
+
+                wordScheme.quotation = ""
+                wordScheme.activeDictionaries = setOf(UserDictionary(dictionary.absolutePath))
+
+                assertThat(wordScheme.generateStrings().single()).isEqualTo("show")
+            }
+
+            it("repeats the first character of the quotations on both ends") {
+                val dictionary = tempFileHelper.createFile("country")
+
+                wordScheme.quotation = "L"
+                wordScheme.activeDictionaries = setOf(UserDictionary(dictionary.absolutePath))
+
+                assertThat(wordScheme.generateStrings().single()).isEqualTo("LcountryL")
+            }
+
+            it("surrounds the output with the respective characters of the quotation string") {
+                val dictionary = tempFileHelper.createFile("argue")
+
+                wordScheme.quotation = "pn"
+                wordScheme.activeDictionaries = setOf(UserDictionary(dictionary.absolutePath))
+
+                assertThat(wordScheme.generateStrings().single()).isEqualTo("parguen")
+            }
+        }
     }
 
     describe("setSettingsState") {
@@ -63,16 +101,20 @@ object WordSchemeTest : Spek({
 
 
     describe("doValidate") {
-        val tempFileHelper = TempFileHelper()
-
-
-        afterGroup {
-            tempFileHelper.cleanUp()
-        }
-
-
         it("passes for the default settings") {
             assertThat(wordScheme.doValidate()).isNull()
+        }
+
+        it("fails if the decorator is invalid") {
+            wordScheme.arrayDecorator.minCount = -88
+
+            assertThat(wordScheme.doValidate()).isNotNull()
+        }
+
+        it("fails if the custom quotation has more than two characters") {
+            wordScheme.customQuotation = "3D7F"
+
+            assertThat(wordScheme.doValidate()).isEqualTo("Quotation must be at most 2 characters.")
         }
 
         describe("length range") {
@@ -129,14 +171,6 @@ object WordSchemeTest : Spek({
                 assertThat(wordScheme.doValidate()).isEqualTo("Activate at least one dictionary.")
             }
         }
-
-        describe("decorator") {
-            it("fails if the decorator is invalid") {
-                wordScheme.arrayDecorator.minCount = -88
-
-                assertThat(wordScheme.doValidate()).isNotNull()
-            }
-        }
     }
 
     describe("deepCopy") {
@@ -177,7 +211,8 @@ object WordSchemeTest : Spek({
         it("copies state from another instance") {
             wordScheme.minLength = 502
             wordScheme.maxLength = 812
-            wordScheme.quotation = "QJ8S4UrFaa"
+            wordScheme.quotation = "xs"
+            wordScheme.customQuotation = "Ae"
             wordScheme.arrayDecorator.minCount = 513
 
             val newScheme = WordScheme()

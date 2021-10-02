@@ -92,7 +92,21 @@ object WordSchemeEditorTest : Spek({
             frame.radioButton("quotationSingle").requireSelected(true)
             frame.radioButton("quotationDouble").requireSelected(false)
             frame.radioButton("quotationBacktick").requireSelected(false)
+            frame.panel("quotationCustom").radioButton().requireSelected(false)
         }
+
+        it("loads the scheme's custom quotation") {
+            GuiActionRunner.execute { editor.loadState(WordScheme(customQuotation = "eN")) }
+
+            frame.panel("quotationCustom").textBox().requireText("eN")
+        }
+
+        it("selects the scheme's custom quotation") {
+            GuiActionRunner.execute { editor.loadState(WordScheme(quotation = "s", customQuotation = "s")) }
+
+            frame.panel("quotationCustom").radioButton().requireSelected()
+        }
+
 
         it("loads the scheme's capitalization") {
             GuiActionRunner.execute { editor.loadState(WordScheme(capitalization = CapitalizationMode.LOWER)) }

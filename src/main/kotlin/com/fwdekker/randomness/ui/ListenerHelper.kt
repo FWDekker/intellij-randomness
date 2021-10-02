@@ -2,6 +2,8 @@ package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
+import java.awt.event.FocusEvent
+import java.awt.event.FocusListener
 import java.beans.PropertyChangeEvent
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
@@ -32,6 +34,7 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
             is JSpinner -> component.addChangeListener { listener() }
             is JTextField -> component.addChangeListener { listener() }
             is StateEditor<*> -> component.addChangeListener { listener() }
+            is VariableLabelRadioButton -> component.addChangeListener { listener() }
             else -> throw IllegalArgumentException(
                 Bundle("helpers.error.unknown_component_type", component.javaClass.canonicalName)
             )
@@ -75,7 +78,7 @@ fun JTextField.addChangeListener(listener: (JTextField) -> Unit) {
 
 
 /**
- * A [TreeModelListener] that invokes the same listener on each event.
+ * A [TreeModelListener] that invokes [listener] on each event.
  *
  * @property listener The listener to invoke on any event.
  */
@@ -107,4 +110,30 @@ class SimpleTreeModelListener(private val listener: (TreeModelEvent) -> Unit) : 
      * @param event ignored
      */
     override fun treeStructureChanged(event: TreeModelEvent) = listener(event)
+}
+
+
+/**
+ * A [FocusListener] that invokes [listener] when focus is gained only.
+ *
+ * @property listener The listener to invoke when focus is gained.
+ */
+class FocusGainListener(private val listener: (FocusEvent) -> Unit) : FocusListener {
+    /**
+     * Invokes [listener].
+     *
+     * @param event the event passed to [listener]
+     */
+    override fun focusGained(event: FocusEvent) {
+        listener(event)
+    }
+
+    /**
+     * Does nothing.
+     *
+     * @param event ignored
+     */
+    override fun focusLost(event: FocusEvent) {
+        // Do nothing
+    }
 }

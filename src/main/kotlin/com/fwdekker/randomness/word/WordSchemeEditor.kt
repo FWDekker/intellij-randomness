@@ -5,6 +5,9 @@ import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.JIntSpinner
+import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
+import com.fwdekker.randomness.ui.UIConstants
+import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
@@ -16,11 +19,10 @@ import com.fwdekker.randomness.word.WordScheme.Companion.MIN_LENGTH
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBLabel
-import com.intellij.util.ui.UIUtil
+import com.intellij.util.ui.JBUI
 import javax.swing.ButtonGroup
+import javax.swing.JLabel
 import javax.swing.JPanel
-import javax.swing.JTextArea
-import javax.swing.SwingUtilities
 
 
 /**
@@ -39,21 +41,20 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
     private lateinit var capitalizationGroup: ButtonGroup
+    private lateinit var customQuotation: VariableLabelRadioButton
     private lateinit var quotationGroup: ButtonGroup
     private lateinit var dictionaryPanel: JPanel
     private lateinit var dictionarySeparator: TitledSeparator
     private lateinit var dictionaryTable: DictionaryTable
-    private lateinit var dictionaryHelp: JTextArea
+    private lateinit var dictionaryHelp: JLabel
     private lateinit var arrayDecoratorPanel: JPanel
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
 
     init {
-        dictionaryHelp.border = null
-        dictionaryHelp.font = JBLabel().font.deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL))
+        customQuotation.addToButtonGroup(quotationGroup)
 
         loadState()
-        SwingUtilities.invokeLater { dictionaryHelp.isVisible = true } // Required to disable auto-scrolling
     }
 
     /**
@@ -69,9 +70,12 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         maxLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE.toDouble())
 
+        customQuotation = VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
+
         dictionarySeparator = SeparatorFactory.createSeparator(Bundle("word.dictionary.title"), null)
         dictionaryTable = DictionaryTable()
         dictionaryPanel = dictionaryTable.panel
+        dictionaryHelp = JBLabel().also { it.foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND }
 
         arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
@@ -83,6 +87,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
         minLength.value = state.minLength
         maxLength.value = state.maxLength
+        customQuotation.label = state.customQuotation
         quotationGroup.setValue(state.quotation)
         capitalizationGroup.setValue(state.capitalization)
         dictionaryTable.data = (+state.dictionarySettings).dictionaries
@@ -95,6 +100,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             minLength = minLength.value,
             maxLength = maxLength.value,
             quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
+            customQuotation = customQuotation.label,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             activeDictionaries = dictionaryTable.activeData.toSet(),
             arrayDecorator = arrayDecoratorEditor.readState()
@@ -115,7 +121,8 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            minLength, maxLength, capitalizationGroup, quotationGroup, dictionaryTable, arrayDecoratorEditor,
+            minLength, maxLength, capitalizationGroup, quotationGroup, customQuotation, dictionaryTable,
+            arrayDecoratorEditor,
             listener = listener
         )
 }

@@ -76,6 +76,21 @@ object DecimalSchemeEditorTest : Spek({
             frame.radioButton("groupingSeparatorPeriod").requireSelected(false)
             frame.radioButton("groupingSeparatorComma").requireSelected(false)
             frame.radioButton("groupingSeparatorUnderscore").requireSelected(true)
+            frame.panel("groupingSeparatorCustom").radioButton().requireSelected(false)
+        }
+
+        it("loads the scheme's custom grouping separator") {
+            GuiActionRunner.execute { editor.loadState(DecimalScheme(customGroupingSeparator = "c")) }
+
+            frame.panel("groupingSeparatorCustom").textBox().requireText("c")
+        }
+
+        it("selects the scheme's custom grouping separator") {
+            GuiActionRunner.execute {
+                editor.loadState(DecimalScheme(groupingSeparator = "s", customGroupingSeparator = "s"))
+            }
+
+            frame.panel("groupingSeparatorCustom").radioButton().requireSelected()
         }
 
         it("loads the scheme's decimal separator") {
@@ -83,6 +98,21 @@ object DecimalSchemeEditorTest : Spek({
 
             frame.radioButton("decimalSeparatorComma").requireSelected(false)
             frame.radioButton("decimalSeparatorPeriod").requireSelected(true)
+            frame.panel("decimalSeparatorCustom").radioButton().requireSelected(false)
+        }
+
+        it("loads the scheme's custom decimal separator") {
+            GuiActionRunner.execute { editor.loadState(DecimalScheme(customDecimalSeparator = "j")) }
+
+            frame.panel("decimalSeparatorCustom").textBox().requireText("j")
+        }
+
+        it("selects the scheme's custom decimal separator") {
+            GuiActionRunner.execute {
+                editor.loadState(DecimalScheme(decimalSeparator = "o", customDecimalSeparator = "o"))
+            }
+
+            frame.panel("decimalSeparatorCustom").radioButton().requireSelected()
         }
 
         it("loads the scheme's prefix") {
@@ -124,7 +154,9 @@ object DecimalSchemeEditorTest : Spek({
                 frame.spinner("decimalCount").target().value = 485
                 frame.checkBox("showTrailingZeroes").target().isSelected = false
                 frame.radioButton("groupingSeparatorUnderscore").target().isSelected = true
+                frame.panel("groupingSeparatorCustom").textBox().target().text = "u"
                 frame.radioButton("decimalSeparatorComma").target().isSelected = true
+                frame.panel("decimalSeparatorCustom").textBox().target().text = "p"
                 frame.textBox("prefix").target().text = "exercise"
                 frame.textBox("suffix").target().text = "court"
             }
@@ -135,7 +167,9 @@ object DecimalSchemeEditorTest : Spek({
             assertThat(readScheme.decimalCount).isEqualTo(485)
             assertThat(readScheme.showTrailingZeroes).isFalse()
             assertThat(readScheme.groupingSeparator).isEqualTo("_")
+            assertThat(readScheme.customGroupingSeparator).isEqualTo("u")
             assertThat(readScheme.decimalSeparator).isEqualTo(",")
+            assertThat(readScheme.customDecimalSeparator).isEqualTo("p")
             assertThat(readScheme.prefix).isEqualTo("exercise")
             assertThat(readScheme.suffix).isEqualTo("court")
         }

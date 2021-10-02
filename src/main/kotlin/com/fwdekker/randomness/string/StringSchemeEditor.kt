@@ -5,12 +5,12 @@ import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
-import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_QUOTATION
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
+import com.intellij.ui.components.JBCheckBox
 import com.intellij.util.ui.UI
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
@@ -31,7 +31,6 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
     private lateinit var titleSeparator: TitledSeparator
     private lateinit var patternField: JTextField
-    private lateinit var quotationGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var removeLookAlikeSymbolsPanel: JPanel
     private lateinit var removeLookAlikeSymbolsCheckBox: JCheckBox
@@ -52,7 +51,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
     private fun createUIComponents() {
         titleSeparator = SeparatorFactory.createSeparator(Bundle("string.title"), null)
 
-        removeLookAlikeSymbolsCheckBox = JCheckBox(Bundle("string.ui.remove_look_alike"))
+        removeLookAlikeSymbolsCheckBox = JBCheckBox(Bundle("string.ui.remove_look_alike"))
             .also { box ->
                 box.name = "removeLookAlikeCharacters"
                 box.setMnemonic(box.text.dropWhile { it != '&' }[1])
@@ -71,7 +70,6 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         super.loadState(state)
 
         patternField.text = state.pattern
-        quotationGroup.setValue(state.quotation)
         capitalizationGroup.setValue(state.capitalization)
         removeLookAlikeSymbolsCheckBox.isSelected = state.removeLookAlikeSymbols
 
@@ -81,7 +79,6 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
     override fun readState() =
         StringScheme(
             pattern = patternField.text,
-            quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             removeLookAlikeSymbols = removeLookAlikeSymbolsCheckBox.isSelected,
             arrayDecorator = arrayDecoratorEditor.readState()
@@ -89,8 +86,5 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
 
     override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(
-            patternField, quotationGroup, capitalizationGroup, arrayDecoratorEditor,
-            listener = listener
-        )
+        addChangeListenerTo(patternField, capitalizationGroup, arrayDecoratorEditor, listener = listener)
 }

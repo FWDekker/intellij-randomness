@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="9" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="736" height="3402"/>
+      <xy x="20" y="20" width="1018" height="3402"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -86,7 +86,7 @@
               <text resource-bundle="randomness" key="word.ui.quotation_marks.option"/>
             </properties>
           </component>
-          <grid id="5ae1b" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="5ae1b" layout-manager="GridLayoutManager" row-count="1" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -131,9 +131,17 @@
                   <text value="`" noi18n="true"/>
                 </properties>
               </component>
+              <component id="f5345" class="com.fwdekker.randomness.ui.VariableLabelRadioButton" binding="customQuotation" custom-create="true">
+                <constraints>
+                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="3" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <name value="quotationCustom"/>
+                </properties>
+              </component>
               <hspacer id="7e6ae">
                 <constraints>
-                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
               </hspacer>
             </children>
@@ -261,22 +269,17 @@
             <border type="none"/>
             <children/>
           </grid>
-          <component id="915cd" class="javax.swing.JTextArea" binding="dictionaryHelp">
+          <component id="a5bab" class="javax.swing.JLabel" binding="dictionaryHelp" custom-create="true">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
                 <minimum-size width="10" height="-1"/>
                 <preferred-size width="10" height="-1"/>
               </grid>
             </constraints>
             <properties>
-              <autoscrolls value="false"/>
-              <editable value="false"/>
               <focusable value="false"/>
-              <lineWrap value="true"/>
-              <opaque value="false"/>
+              <name value="dictionaryHelp"/>
               <text resource-bundle="randomness" key="word.dictionary.ui.help"/>
-              <visible value="false"/>
-              <wrapStyleWord value="true"/>
             </properties>
           </component>
         </children>

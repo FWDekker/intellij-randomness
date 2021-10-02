@@ -21,6 +21,7 @@ import java.awt.Color
  * @property minLength The minimum length of the generated word, inclusive.
  * @property maxLength The maximum length of the generated word, inclusive.
  * @property quotation The string that encloses the generated word on both sides.
+ * @property customQuotation The quotation defined in the custom option.
  * @property capitalization The way in which the generated word should be capitalized.
  * @property activeDictionaries The list of dictionaries that are currently active.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
@@ -29,6 +30,7 @@ data class WordScheme(
     var minLength: Int = DEFAULT_MIN_LENGTH,
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var quotation: String = DEFAULT_QUOTATION,
+    var customQuotation: String = DEFAULT_CUSTOM_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     @get:XCollection(elementTypes = [BundledDictionary::class, UserDictionary::class])
     var activeDictionaries: Set<Dictionary> = DEFAULT_ACTIVE_DICTIONARIES.toMutableSet(),
@@ -64,7 +66,20 @@ data class WordScheme(
 
         return List(count) { words.random(random) }
             .map { capitalization.transform(it, random) }
-            .map { quotation + it + quotation }
+            .map { inQuotes(it) }
+    }
+
+    /**
+     * Encapsulates [string] in the quotes defined by [quotation].
+     *
+     * @param string the string to encapsulate
+     * @return [string] encapsulated in the quotes defined by [quotation]
+     */
+    private fun inQuotes(string: String): String {
+        val startQuote = quotation.getOrNull(0) ?: ""
+        val endQuote = quotation.getOrNull(1) ?: startQuote
+
+        return "$startQuote$string$endQuote"
     }
 
     override fun setSettingsState(settingsState: SettingsState) {
@@ -86,6 +101,7 @@ data class WordScheme(
             activeDictionaries.isEmpty() -> Bundle("word.error.no_active_dictionary")
             minLength > maxWordLength -> Bundle("word.error.min_length_above_range", maxWordLength)
             maxLength < minWordLength -> Bundle("word.error.max_length_below_range", minWordLength)
+            customQuotation.length > 2 -> Bundle("word.error.quotation_length")
             else -> arrayDecorator.doValidate()
         }
     }
@@ -145,6 +161,11 @@ data class WordScheme(
          * The default value of the [quotation] field.
          */
         const val DEFAULT_QUOTATION = "\""
+
+        /**
+         * The default value of the [customQuotation] field.
+         */
+        const val DEFAULT_CUSTOM_QUOTATION = "<>"
 
         /**
          * The default value of the [capitalization] field.

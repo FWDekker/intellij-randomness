@@ -3,6 +3,7 @@ package com.fwdekker.randomness.fixedlength
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.ui.JIntSpinner
+import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
@@ -11,9 +12,7 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.event.ChangeEvent
-import javax.swing.text.AttributeSet
-import javax.swing.text.DefaultStyledDocument
-import javax.swing.text.DocumentFilter
+import javax.swing.text.PlainDocument
 
 
 /**
@@ -58,7 +57,7 @@ class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<F
 
         lengthInput = JIntSpinner(value = FixedLengthDecorator.MIN_LENGTH, minValue = FixedLengthDecorator.MIN_LENGTH)
 
-        fillerInput = JTextField(DefaultStyledDocument().also { it.documentFilter = OneByteDocumentFilter() }, "", 0)
+        fillerInput = JTextField(PlainDocument().also { it.documentFilter = MaxLengthDocumentFilter(1) }, "", 0)
     }
 
 
@@ -80,33 +79,4 @@ class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<F
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(enabledCheckBox, lengthInput, fillerInput, listener = listener)
-
-
-    /**
-     * A document that can contain exactly one character.
-     */
-    private class OneByteDocumentFilter : DocumentFilter() {
-        /**
-         * Replaces the document's contents with the last character in [text].
-         *
-         * @param fb bypass to mutate the document
-         * @param offset ignored
-         * @param text the text of which to insert the last character
-         * @param attr the attributes to associate with the inserted content
-         */
-        override fun insertString(fb: FilterBypass, offset: Int, text: String?, attr: AttributeSet?) =
-            super.replace(fb, 0, fb.document.length, text?.takeLast(1), attr)
-
-        /**
-         * Replaces the document's contents with the last character in [text].
-         *
-         * @param fb bypass to mutate the document
-         * @param offset ignored
-         * @param length ignored
-         * @param text the text of which to insert the last character
-         * @param attr the attributes to associate with the inserted content
-         */
-        override fun replace(fb: FilterBypass, offset: Int, length: Int, text: String?, attr: AttributeSet?) =
-            super.replace(fb, 0, fb.document.length, text?.takeLast(1), attr)
-    }
 }

@@ -36,48 +36,70 @@ object ArrayDecoratorTest : Spek({
             assertThat(dummyScheme.generateStrings()).containsExactly("Heal")
         }
 
-        it("returns an array-like string given a non-singular separator") {
-            arrayDecorator.minCount = 3
-            arrayDecorator.maxCount = 3
-            arrayDecorator.brackets = "@#"
-            arrayDecorator.separator = ";;"
-            arrayDecorator.isSpaceAfterSeparator = true
-            dummyScheme.literals = listOf("Garhwali", "Pattypan", "Troll")
+        describe("brackets") {
+            it("returns an array-like string given no brackets") {
+                arrayDecorator.minCount = 4
+                arrayDecorator.maxCount = 4
+                arrayDecorator.brackets = ""
+                arrayDecorator.separator = "h"
+                arrayDecorator.isSpaceAfterSeparator = false
+                dummyScheme.literals = listOf("Elvish", "Stride")
 
-            assertThat(dummyScheme.generateStrings()).containsExactly("@Garhwali;; Pattypan;; Troll#")
+                assertThat(dummyScheme.generateStrings()).containsExactly("ElvishhStridehElvishhStride")
+            }
+
+            it("returns an array-like string with the brackets on both sides of the output") {
+                arrayDecorator.minCount = 2
+                arrayDecorator.maxCount = 2
+                arrayDecorator.brackets = "yn"
+                dummyScheme.literals = listOf("Fatten", "Across")
+
+                assertThat(dummyScheme.generateStrings()).containsExactly("ynFatten, Acrossyn")
+            }
+
+            it("returns an array-like string with the different brackets surrounding the input") {
+                arrayDecorator.minCount = 2
+                arrayDecorator.maxCount = 2
+                arrayDecorator.brackets = "wl@ga"
+                dummyScheme.literals = listOf("Cloud", "Taxi")
+
+                assertThat(dummyScheme.generateStrings()).containsExactly("wlCloud, Taxiga")
+            }
         }
 
-        it("returns an array-like string given no brackets") {
-            arrayDecorator.minCount = 4
-            arrayDecorator.maxCount = 4
-            arrayDecorator.brackets = ""
-            arrayDecorator.separator = "h"
-            arrayDecorator.isSpaceAfterSeparator = false
-            dummyScheme.literals = listOf("Elvish", "Stride")
+        describe("separator") {
+            it("returns an array-like string given a non-singular separator") {
+                arrayDecorator.minCount = 3
+                arrayDecorator.maxCount = 3
+                arrayDecorator.brackets = "[@#"
+                arrayDecorator.separator = ";;"
+                arrayDecorator.isSpaceAfterSeparator = true
+                dummyScheme.literals = listOf("Garhwali", "Pattypan", "Troll")
 
-            assertThat(dummyScheme.generateStrings()).containsExactly("ElvishhStridehElvishhStride")
-        }
+                assertThat(dummyScheme.generateStrings()).containsExactly("[Garhwali;; Pattypan;; Troll#")
+            }
 
-        it("returns an array-like string given a disabled separator") {
-            arrayDecorator.minCount = 3
-            arrayDecorator.maxCount = 3
-            arrayDecorator.brackets = "<>"
-            arrayDecorator.separator = "-"
-            arrayDecorator.isSpaceAfterSeparator = false
-            dummyScheme.literals = listOf("Remain", "Pound")
+            it("returns an array-like string given a disabled space-after-separator") {
+                arrayDecorator.minCount = 3
+                arrayDecorator.maxCount = 3
+                arrayDecorator.brackets = "<@>"
+                arrayDecorator.separator = "-"
+                arrayDecorator.isSpaceAfterSeparator = false
+                dummyScheme.literals = listOf("Remain", "Pound")
 
-            assertThat(dummyScheme.generateStrings()).containsExactly("<Remain-Pound-Remain>")
-        }
+                assertThat(dummyScheme.generateStrings()).containsExactly("<Remain-Pound-Remain>")
+            }
 
-        it("returns an array-like string without space after separator given the newline separator") {
-            arrayDecorator.minCount = 2
-            arrayDecorator.maxCount = 2
-            arrayDecorator.brackets = "[]"
-            arrayDecorator.separator = "\n"
-            arrayDecorator.isSpaceAfterSeparator = true
-            dummyScheme.literals = listOf("Union", "Bell")
+            it("returns an array-like string without space after separator given the newline separator") {
+                arrayDecorator.minCount = 2
+                arrayDecorator.maxCount = 2
+                arrayDecorator.brackets = "[@]"
+                arrayDecorator.separator = "\n"
+                arrayDecorator.isSpaceAfterSeparator = true
+                dummyScheme.literals = listOf("Union", "Bell")
 
-            assertThat(dummyScheme.generateStrings()).containsExactly("[Union\nBell]")
+                assertThat(dummyScheme.generateStrings()).containsExactly("[Union\nBell]")
+            }
         }
 
         it("returns multiple array-like strings that appropriately chunk the underlying generator's outputs") {
@@ -147,8 +169,10 @@ object ArrayDecoratorTest : Spek({
             arrayDecorator.enabled = false
             arrayDecorator.minCount = 808
             arrayDecorator.maxCount = 997
-            arrayDecorator.brackets = "0fWx<i6jTJ"
+            arrayDecorator.brackets = "0fWx<@i6jTJ"
+            arrayDecorator.customBrackets = "Wvtx2Lz7"
             arrayDecorator.separator = "f3hu)Rxiz1"
+            arrayDecorator.customSeparator = "pKlq0b2"
             arrayDecorator.isSpaceAfterSeparator = false
 
             val newScheme = ArrayDecorator()

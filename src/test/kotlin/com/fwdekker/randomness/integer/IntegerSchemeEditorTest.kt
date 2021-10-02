@@ -89,6 +89,21 @@ object IntegerSchemeEditorTest : Spek({
             frame.radioButton("groupingSeparatorPeriod").requireSelected(false)
             frame.radioButton("groupingSeparatorComma").requireSelected(false)
             frame.radioButton("groupingSeparatorUnderscore").requireSelected(true)
+            frame.panel("groupingSeparatorCustom").radioButton().requireSelected(false)
+        }
+
+        it("loads the scheme's custom grouping separator") {
+            GuiActionRunner.execute { editor.loadState(IntegerScheme(customGroupingSeparator = "r")) }
+
+            frame.panel("groupingSeparatorCustom").textBox().requireText("r")
+        }
+
+        it("selects the scheme's custom grouping separator") {
+            GuiActionRunner.execute {
+                editor.loadState(IntegerScheme(groupingSeparator = "a", customGroupingSeparator = "a"))
+            }
+
+            frame.panel("groupingSeparatorCustom").radioButton().requireSelected()
         }
 
         it("loads the scheme's capitalization mode") {
@@ -136,6 +151,7 @@ object IntegerSchemeEditorTest : Spek({
                 frame.spinner("maxValue").target().value = 2_147_483_649L
                 frame.spinner("base").target().value = 14
                 frame.radioButton("groupingSeparatorPeriod").target().isSelected = true
+                frame.panel("groupingSeparatorCustom").textBox().target().text = "s"
                 frame.radioButton("capitalizationUpper").target().isSelected = true
                 frame.textBox("prefix").target().text = "silent"
                 frame.textBox("suffix").target().text = "pain"
@@ -146,6 +162,7 @@ object IntegerSchemeEditorTest : Spek({
             assertThat(readScheme.maxValue).isEqualTo(2_147_483_649L)
             assertThat(readScheme.base).isEqualTo(14)
             assertThat(readScheme.groupingSeparator).isEqualTo(".")
+            assertThat(readScheme.customGroupingSeparator).isEqualTo("s")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
             assertThat(readScheme.prefix).isEqualTo("silent")
             assertThat(readScheme.suffix).isEqualTo("pain")

@@ -136,6 +136,12 @@ object DecimalSchemeTest : Spek({
             assertThat(DecimalScheme().doValidate()).isNull()
         }
 
+        it("fails if the decorator is invalid") {
+            decimalScheme.arrayDecorator.maxCount = -284
+
+            assertThat(decimalScheme.doValidate()).isNotNull()
+        }
+
         describe("value range") {
             it("fails if the minimum value is larger than the maximum value") {
                 decimalScheme.minValue = 395.0
@@ -168,19 +174,23 @@ object DecimalSchemeTest : Spek({
             }
         }
 
-        describe("grouping separator") {
+        describe("separators") {
+            it("fails if the grouping separator has multiple characters") {
+                decimalScheme.groupingSeparator = "tce"
+
+                assertThat(decimalScheme.doValidate()).isEqualTo("Grouping separator must be at most 1 character.")
+            }
+
             it("fails if no decimal separator was selected") {
                 decimalScheme.decimalSeparator = ""
 
-                assertThat(decimalScheme.doValidate()).isEqualTo("Select a decimal separator.")
+                assertThat(decimalScheme.doValidate()).isEqualTo("Decimal separator must be exactly 1 character.")
             }
-        }
 
-        describe("decorator") {
-            it("fails if the decorator is invalid") {
-                decimalScheme.arrayDecorator.maxCount = -284
+            it("fails if the decimal separator has multiple characters") {
+                decimalScheme.decimalSeparator = "ned"
 
-                assertThat(decimalScheme.doValidate()).isNotNull()
+                assertThat(decimalScheme.doValidate()).isEqualTo("Decimal separator must be exactly 1 character.")
             }
         }
     }
@@ -206,7 +216,9 @@ object DecimalSchemeTest : Spek({
             decimalScheme.decimalCount = 205
             decimalScheme.showTrailingZeroes = false
             decimalScheme.groupingSeparator = "a"
+            decimalScheme.customGroupingSeparator = "2"
             decimalScheme.decimalSeparator = "D"
+            decimalScheme.customDecimalSeparator = "P"
             decimalScheme.prefix = "baby"
             decimalScheme.suffix = "many"
             decimalScheme.arrayDecorator.minCount = 19

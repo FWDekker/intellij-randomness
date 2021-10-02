@@ -9,6 +9,10 @@ import com.fwdekker.randomness.decimal.DecimalScheme.Companion.MAX_VALUE_DIFFERE
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.MIN_DECIMAL_COUNT
 import com.fwdekker.randomness.ui.JDoubleSpinner
 import com.fwdekker.randomness.ui.JIntSpinner
+import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
+import com.fwdekker.randomness.ui.MinMaxLengthDocumentFilter
+import com.fwdekker.randomness.ui.UIConstants
+import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
@@ -39,7 +43,9 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
     private lateinit var decimalCount: JIntSpinner
     private lateinit var showTrailingZeroesCheckBox: JCheckBox
     private lateinit var groupingSeparatorGroup: ButtonGroup
+    private lateinit var customGroupingSeparator: VariableLabelRadioButton
     private lateinit var decimalSeparatorGroup: ButtonGroup
+    private lateinit var customDecimalSeparator: VariableLabelRadioButton
     private lateinit var prefixInput: JTextField
     private lateinit var suffixInput: JTextField
     private lateinit var arrayDecoratorPanel: JPanel
@@ -49,6 +55,9 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
     init {
         decimalCount.addChangeListener { showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0 }
         decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
+
+        customGroupingSeparator.addToButtonGroup(groupingSeparatorGroup)
+        customDecimalSeparator.addToButtonGroup(decimalSeparatorGroup)
 
         loadState()
     }
@@ -67,6 +76,9 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
         bindSpinners(minValue, maxValue, MAX_VALUE_DIFFERENCE)
         decimalCount = JIntSpinner(value = MIN_DECIMAL_COUNT, minValue = MIN_DECIMAL_COUNT)
 
+        customGroupingSeparator = VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(1))
+        customDecimalSeparator = VariableLabelRadioButton(UIConstants.WIDTH_TINY, MinMaxLengthDocumentFilter(1, 1))
+
         arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
@@ -79,7 +91,9 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
         maxValue.value = state.maxValue
         decimalCount.value = state.decimalCount
         showTrailingZeroesCheckBox.isSelected = state.showTrailingZeroes
+        customGroupingSeparator.label = state.customGroupingSeparator
         groupingSeparatorGroup.setValue(state.groupingSeparator)
+        customDecimalSeparator.label = state.customDecimalSeparator
         decimalSeparatorGroup.setValue(state.decimalSeparator)
         prefixInput.text = state.prefix
         suffixInput.text = state.suffix
@@ -93,7 +107,9 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
             decimalCount = decimalCount.value,
             showTrailingZeroes = showTrailingZeroesCheckBox.isSelected,
             groupingSeparator = groupingSeparatorGroup.getValue() ?: DEFAULT_GROUPING_SEPARATOR,
+            customGroupingSeparator = customGroupingSeparator.label,
             decimalSeparator = decimalSeparatorGroup.getValue() ?: DEFAULT_DECIMAL_SEPARATOR,
+            customDecimalSeparator = customDecimalSeparator.label,
             prefix = prefixInput.text,
             suffix = suffixInput.text,
             arrayDecorator = arrayDecoratorEditor.readState()
@@ -102,8 +118,9 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            minValue, maxValue, decimalCount, showTrailingZeroesCheckBox, groupingSeparatorGroup, decimalSeparatorGroup,
-            prefixInput, suffixInput, arrayDecoratorEditor,
+            minValue, maxValue, decimalCount, showTrailingZeroesCheckBox, groupingSeparatorGroup,
+            customGroupingSeparator, decimalSeparatorGroup, customDecimalSeparator, prefixInput, suffixInput,
+            arrayDecoratorEditor,
             listener = listener
         )
 }

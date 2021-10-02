@@ -21,6 +21,7 @@ import kotlin.random.asJavaRandom
  *
  * @property version The version of UUIDs to generate.
  * @property quotation The string that encloses the generated UUID on both sides.
+ * @property customQuotation The grouping separator defined in the custom option.
  * @property capitalization The capitalization mode of the generated UUID.
  * @property addDashes `true` if and only if the UUID should have dashes in it.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
@@ -28,6 +29,7 @@ import kotlin.random.asJavaRandom
 data class UuidScheme(
     var version: Int = DEFAULT_VERSION,
     var quotation: String = DEFAULT_QUOTATION,
+    var customQuotation: String = DEFAULT_CUSTOM_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
@@ -69,13 +71,29 @@ data class UuidScheme(
                 if (addDashes) it
                 else it.replace("-", "")
             }
-            .map { quotation + it + quotation }
+            .map { inQuotes(it) }
+    }
+
+    /**
+     * Encapsulates [string] in the quotes defined by [quotation].
+     *
+     * @param string the string to encapsulate
+     * @return [string] encapsulated in the quotes defined by [quotation]
+     */
+    private fun inQuotes(string: String): String {
+        val startQuote = quotation.getOrNull(0) ?: ""
+        val endQuote = quotation.getOrNull(1) ?: startQuote
+
+        return "$startQuote$string$endQuote"
     }
 
 
     override fun doValidate() =
-        if (version !in listOf(TYPE_1, TYPE_4)) Bundle("uuid.error.unknown_version", version)
-        else arrayDecorator.doValidate()
+        when {
+            version !in listOf(TYPE_1, TYPE_4) -> Bundle("uuid.error.unknown_version", version)
+            quotation.length > 2 -> Bundle("uuid.error.quotation_length")
+            else -> arrayDecorator.doValidate()
+        }
 
     override fun deepCopy(retainUuid: Boolean) =
         copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid))
@@ -100,6 +118,11 @@ data class UuidScheme(
          * The default value of the [quotation] field.
          */
         const val DEFAULT_QUOTATION = "\""
+
+        /**
+         * The default value of the [quotation] field.
+         */
+        const val DEFAULT_CUSTOM_QUOTATION = "<>"
 
         /**
          * The default value of the [capitalization] field.

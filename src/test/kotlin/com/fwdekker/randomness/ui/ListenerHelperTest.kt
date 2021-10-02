@@ -30,8 +30,8 @@ object ListenerHelperTest : Spek({
     }
 
 
-    describe("updatePreviewOnUpdateOf") {
-        it("updates when an activity table is updated") {
+    describe("addChangeListenerTo") {
+        it("invokes the listener when an ActivityTableModelEditor is updated") {
             val ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
             ideaFixture.setUp()
 
@@ -46,6 +46,7 @@ object ListenerHelperTest : Spek({
                     val table = object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, "", "") {}
 
                     addChangeListenerTo(table, listener = listener)
+                    listenerInvoked = false
 
                     table.data = listOf("a")
                 }
@@ -56,7 +57,7 @@ object ListenerHelperTest : Spek({
             }
         }
 
-        it("updates when a group of JRadioButtons is updated") {
+        it("invokes the listener when a ButtonGroup is updated") {
             GuiActionRunner.execute {
                 val group = ButtonGroup()
                 JRadioButton("a").also { group.add(it) }
@@ -64,6 +65,7 @@ object ListenerHelperTest : Spek({
                 JRadioButton("c").also { group.add(it) }
 
                 addChangeListenerTo(group, listener = listener)
+                listenerInvoked = false
 
                 group.buttons()[1].isSelected = true
             }
@@ -71,11 +73,12 @@ object ListenerHelperTest : Spek({
             assertThat(listenerInvoked).isTrue()
         }
 
-        it("updates when a JCheckBox is updated") {
+        it("invokes the listener when a JCheckBox is updated") {
             GuiActionRunner.execute {
                 val checkBox = JCheckBox()
 
                 addChangeListenerTo(checkBox, listener = listener)
+                listenerInvoked = false
 
                 checkBox.isSelected = true
             }
@@ -83,11 +86,25 @@ object ListenerHelperTest : Spek({
             assertThat(listenerInvoked).isTrue()
         }
 
-        it("updates when a JSpinner is updated") {
+        it("invokes the listener when a JRadioButton is updated") {
+            GuiActionRunner.execute {
+                val radioButton = JRadioButton()
+
+                addChangeListenerTo(radioButton, listener = listener)
+                listenerInvoked = false
+
+                radioButton.isSelected = true
+            }
+
+            assertThat(listenerInvoked).isTrue()
+        }
+
+        it("invokes the listener when a JSpinner is updated") {
             GuiActionRunner.execute {
                 val spinner = JSpinner()
 
                 addChangeListenerTo(spinner, listener = listener)
+                listenerInvoked = false
 
                 spinner.value = 5
             }
@@ -95,11 +112,12 @@ object ListenerHelperTest : Spek({
             assertThat(listenerInvoked).isTrue()
         }
 
-        it("updates when a JTextField is updated") {
+        it("invokes the listener when a JTextField is updated") {
             GuiActionRunner.execute {
                 val textField = JTextField()
 
                 addChangeListenerTo(textField, listener = listener)
+                listenerInvoked = false
 
                 textField.text = "delight"
             }
@@ -107,13 +125,27 @@ object ListenerHelperTest : Spek({
             assertThat(listenerInvoked).isTrue()
         }
 
-        it("updates when a SchemeEditor is updated") {
+        it("invokes the listener when a StateEditor is updated") {
             GuiActionRunner.execute {
                 val editor = DummySchemeEditor()
 
                 addChangeListenerTo(editor, listener = listener)
+                listenerInvoked = false
 
                 editor.loadState(DummyScheme.from("prove"))
+            }
+
+            assertThat(listenerInvoked).isTrue()
+        }
+
+        it("invokes the listener when a VariableLabelRadioButton is changed") {
+            GuiActionRunner.execute {
+                val button = VariableLabelRadioButton()
+
+                addChangeListenerTo(button, listener = listener)
+                listenerInvoked = false
+
+                button.label = "supply"
             }
 
             assertThat(listenerInvoked).isTrue()

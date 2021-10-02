@@ -9,7 +9,7 @@ import org.assertj.swing.fixture.FrameFixture
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import javax.swing.JCheckBox
-import javax.swing.JTextArea
+import javax.swing.JLabel
 
 
 /**
@@ -90,7 +90,7 @@ object ArrayDecoratorEditorTest : Spek({
 
         describe("helpText") {
             it("hides the helpTextArea by default") {
-                frame.textBox(nameMatcher(JTextArea::class.java, "helpText")).requireNotVisible()
+                frame.label(nameMatcher(JLabel::class.java, "helpText")).requireNotVisible()
             }
 
             it("shows the helpTextArea if a helpText is given") {
@@ -100,9 +100,9 @@ object ArrayDecoratorEditorTest : Spek({
                 }
                 frame = showInFrame(editor.rootComponent)
 
-                frame.textBox("helpText")
+                frame.label("helpText")
                     .requireVisible()
-                    .requireText("Sorrow")
+                    .requireText("<html>Sorrow")
             }
         }
 
@@ -150,12 +150,27 @@ object ArrayDecoratorEditorTest : Spek({
         }
 
         it("loads the scheme's brackets") {
-            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, brackets = "{}")) }
+            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, brackets = "{@}")) }
 
             frame.radioButton("arrayBracketsNone").requireSelected(false)
             frame.radioButton("arrayBracketsSquare").requireSelected(false)
             frame.radioButton("arrayBracketsCurly").requireSelected(true)
             frame.radioButton("arrayBracketsRound").requireSelected(false)
+            frame.panel("arrayBracketsCustom").radioButton().requireSelected(false)
+        }
+
+        it("loads the scheme's custom brackets") {
+            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, customBrackets = "a@b")) }
+
+            frame.panel("arrayBracketsCustom").textBox().requireText("a@b")
+        }
+
+        it("selects the scheme's custom brackets") {
+            GuiActionRunner.execute {
+                editor.loadState(ArrayDecorator(enabled = true, brackets = "a@b", customBrackets = "a@b"))
+            }
+
+            frame.panel("arrayBracketsCustom").radioButton().requireSelected()
         }
 
         it("loads the scheme's separator") {
@@ -164,6 +179,21 @@ object ArrayDecoratorEditorTest : Spek({
             frame.radioButton("arraySeparatorComma").requireSelected(false)
             frame.radioButton("arraySeparatorSemicolon").requireSelected(true)
             frame.radioButton("arraySeparatorNewline").requireSelected(false)
+            frame.panel("arraySeparatorCustom").radioButton().requireSelected(false)
+        }
+
+        it("loads the scheme's custom separator") {
+            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, customSeparator = "fashion")) }
+
+            frame.panel("arraySeparatorCustom").textBox().requireText("fashion")
+        }
+
+        it("selects the scheme's custom separator") {
+            GuiActionRunner.execute {
+                editor.loadState(ArrayDecorator(enabled = true, separator = "steady", customSeparator = "steady"))
+            }
+
+            frame.panel("arraySeparatorCustom").radioButton().requireSelected()
         }
 
         it("loads the scheme's settings for using a space after separator") {
@@ -204,7 +234,9 @@ object ArrayDecoratorEditorTest : Spek({
                 frame.spinner("arrayMinCount").target().value = 642
                 frame.spinner("arrayMaxCount").target().value = 876
                 frame.radioButton("arrayBracketsCurly").target().isSelected = true
+                frame.panel("arrayBracketsCustom").textBox().target().text = "y@v"
                 frame.radioButton("arraySeparatorSemicolon").target().isSelected = true
+                frame.panel("arraySeparatorCustom").textBox().target().text = "prb"
                 frame.checkBox("arraySpaceAfterSeparator").target().isSelected = false
             }
 
@@ -212,8 +244,10 @@ object ArrayDecoratorEditorTest : Spek({
             assertThat(readScheme.enabled).isTrue()
             assertThat(readScheme.minCount).isEqualTo(642)
             assertThat(readScheme.maxCount).isEqualTo(876)
-            assertThat(readScheme.brackets).isEqualTo("{}")
+            assertThat(readScheme.brackets).isEqualTo("{@}")
+            assertThat(readScheme.customBrackets).isEqualTo("y@v")
             assertThat(readScheme.separator).isEqualTo(";")
+            assertThat(readScheme.customSeparator).isEqualTo("prb")
             assertThat(readScheme.isSpaceAfterSeparator).isFalse()
         }
 
