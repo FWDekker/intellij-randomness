@@ -134,6 +134,18 @@ object IntegerSchemeTest : Spek({
             assertThat(IntegerScheme().doValidate()).isNull()
         }
 
+        it("fails if the fixed-length decorator is invalid") {
+            integerScheme.fixedLengthDecorator.length = -45
+
+            assertThat(integerScheme.doValidate()).isNotNull()
+        }
+
+        it("fails if the array decorator is invalid") {
+            integerScheme.arrayDecorator.minCount = -584
+
+            assertThat(integerScheme.doValidate()).isNotNull()
+        }
+
         describe("base") {
             it("fails if the base is negative") {
                 integerScheme.base = -189
@@ -160,11 +172,11 @@ object IntegerSchemeTest : Spek({
             }
         }
 
-        describe("decorator") {
-            it("fails if the decorator is invalid") {
-                integerScheme.arrayDecorator.minCount = -584
+        describe("grouping separator") {
+            it("fails if the grouping separator contains multiple characters") {
+                integerScheme.groupingSeparator = "awc"
 
-                assertThat(integerScheme.doValidate()).isNotNull()
+                assertThat(integerScheme.doValidate()).isEqualTo("Grouping separator must be at most 1 character.")
             }
         }
     }
@@ -172,13 +184,16 @@ object IntegerSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             integerScheme.minValue = 159
+            integerScheme.fixedLengthDecorator.length = 67
             integerScheme.arrayDecorator.maxCount = 757
 
             val copy = integerScheme.deepCopy()
             copy.minValue = 48
+            copy.fixedLengthDecorator.length = 61
             copy.arrayDecorator.maxCount = 554
 
             assertThat(integerScheme.minValue).isEqualTo(159)
+            assertThat(integerScheme.fixedLengthDecorator.length).isEqualTo(67)
             assertThat(integerScheme.arrayDecorator.maxCount).isEqualTo(757)
         }
     }
@@ -188,6 +203,12 @@ object IntegerSchemeTest : Spek({
             integerScheme.minValue = 742
             integerScheme.maxValue = 908
             integerScheme.base = 12
+            integerScheme.groupingSeparator = "B"
+            integerScheme.customGroupingSeparator = "3"
+            integerScheme.capitalization = CapitalizationMode.UPPER
+            integerScheme.prefix = "M9d1uey"
+            integerScheme.suffix = "m45tL1"
+            integerScheme.fixedLengthDecorator.length = 87
             integerScheme.arrayDecorator.maxCount = 963
 
             val newScheme = IntegerScheme()
@@ -196,6 +217,9 @@ object IntegerSchemeTest : Spek({
             assertThat(newScheme)
                 .isEqualTo(integerScheme)
                 .isNotSameAs(integerScheme)
+            assertThat(newScheme.fixedLengthDecorator)
+                .isEqualTo(integerScheme.fixedLengthDecorator)
+                .isNotSameAs(integerScheme.fixedLengthDecorator)
             assertThat(newScheme.arrayDecorator)
                 .isEqualTo(integerScheme.arrayDecorator)
                 .isNotSameAs(integerScheme.arrayDecorator)

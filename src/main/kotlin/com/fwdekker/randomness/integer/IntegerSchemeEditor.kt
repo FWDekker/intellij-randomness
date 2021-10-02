@@ -95,8 +95,8 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
         minValue.value = state.minValue
         maxValue.value = state.maxValue
         base.value = state.base
-        groupingSeparatorGroup.setValue(state.groupingSeparator)
         customGroupingSeparator.label = state.customGroupingSeparator
+        groupingSeparatorGroup.setValue(state.groupingSeparator)
         capitalizationGroup.setValue(state.capitalization)
         prefixInput.text = state.prefix
         suffixInput.text = state.suffix

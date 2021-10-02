@@ -87,8 +87,8 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
         minLength.value = state.minLength
         maxLength.value = state.maxLength
-        quotationGroup.setValue(state.quotation)
         customQuotation.label = state.customQuotation
+        quotationGroup.setValue(state.quotation)
         capitalizationGroup.setValue(state.capitalization)
         dictionaryTable.data = (+state.dictionarySettings).dictionaries
         dictionaryTable.activeData = state.activeDictionaries.filter { it in dictionaryTable.data }

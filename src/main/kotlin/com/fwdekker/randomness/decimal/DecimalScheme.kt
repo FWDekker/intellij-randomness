@@ -86,7 +86,7 @@ data class DecimalScheme(
             maxValue - minValue > MAX_VALUE_DIFFERENCE -> Bundle("decimal.error.value_range", MAX_VALUE_DIFFERENCE)
             decimalCount < MIN_DECIMAL_COUNT -> Bundle("decimal.error.decimal_count_too_low", MIN_DECIMAL_COUNT)
             groupingSeparator.length > 1 -> Bundle("decimal.error.grouping_separator_length")
-            decimalSeparator.isEmpty() -> Bundle("decimal.error.decimal_separator_length")
+            decimalSeparator.length != 1 -> Bundle("decimal.error.decimal_separator_length")
             else -> arrayDecorator.doValidate()
         }
 

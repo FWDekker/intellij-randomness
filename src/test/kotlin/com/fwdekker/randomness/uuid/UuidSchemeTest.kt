@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
+import kotlin.random.Random
 
 
 /**
@@ -67,6 +68,38 @@ object UuidSchemeTest : Spek({
                 }
             }
         }
+
+        describe("quotation") {
+            it("adds no quotations if the quotations are an empty string") {
+                uuidScheme.quotation = ""
+                uuidScheme.random = Random(512_615)
+                val uuid = uuidScheme.generateStrings().single()
+
+                uuidScheme.quotation = ""
+                uuidScheme.random = Random(512_615)
+                assertThat(uuidScheme.generateStrings().single()).isEqualTo(uuid)
+            }
+
+            it("repeats the first character of the quotations on both ends") {
+                uuidScheme.quotation = ""
+                uuidScheme.random = Random(47_334)
+                val uuid = uuidScheme.generateStrings().single()
+
+                uuidScheme.quotation = "r"
+                uuidScheme.random = Random(47_334)
+                assertThat(uuidScheme.generateStrings().single()).isEqualTo("r${uuid}r")
+            }
+
+            it("surrounds the output with the respective characters of the quotation string") {
+                uuidScheme.quotation = ""
+                uuidScheme.random = Random(908_309)
+                val uuid = uuidScheme.generateStrings().single()
+
+                uuidScheme.quotation = "bv"
+                uuidScheme.random = Random(908_309)
+                assertThat(uuidScheme.generateStrings().single()).isEqualTo("b${uuid}v")
+            }
+        }
     }
 
 
@@ -75,20 +108,22 @@ object UuidSchemeTest : Spek({
             assertThat(UuidScheme().doValidate()).isNull()
         }
 
-        describe("version") {
-            it("fails for unsupported UUID version") {
-                uuidScheme.version = 2
+        it("fails if the decorator is invalid") {
+            uuidScheme.arrayDecorator.maxCount = -671
 
-                assertThat(uuidScheme.doValidate()).isEqualTo("Unknown UUID version '2'.")
-            }
+            assertThat(uuidScheme.doValidate()).isNotNull()
         }
 
-        describe("decorator") {
-            it("fails if the decorator is invalid") {
-                uuidScheme.arrayDecorator.maxCount = -671
+        it("fails for an unsupported UUID version") {
+            uuidScheme.version = 2
 
-                assertThat(uuidScheme.doValidate()).isNotNull()
-            }
+            assertThat(uuidScheme.doValidate()).isEqualTo("Unknown UUID version '2'.")
+        }
+
+        it("fails for a quotation string that has more than two characters") {
+            uuidScheme.quotation = "police"
+
+            assertThat(uuidScheme.doValidate()).isEqualTo("Quotation must be at most 2 characters.")
         }
     }
 
@@ -109,7 +144,8 @@ object UuidSchemeTest : Spek({
     describe("copyFrom") {
         it("copies state from another instance") {
             uuidScheme.version = 4
-            uuidScheme.quotation = "nvpB"
+            uuidScheme.quotation = "nv"
+            uuidScheme.customQuotation = "to"
             uuidScheme.capitalization = CapitalizationMode.FIRST_LETTER
             uuidScheme.addDashes = true
             uuidScheme.arrayDecorator.minCount = 264

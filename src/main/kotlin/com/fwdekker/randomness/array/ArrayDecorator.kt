@@ -39,7 +39,7 @@ data class ArrayDecorator(
 
         val countPerString = random.nextInt(minCount, maxCount + 1)
         val generatedParts = generator(count * countPerString)
-        val separator = this.separator + if (isSpaceAfterSeparator && this.separator !== "\n") " " else ""
+        val separator = separator + if (isSpaceAfterSeparator && separator !== "\n") " " else ""
 
         return generatedParts.chunked(countPerString) { parts ->
             parts.joinToString(

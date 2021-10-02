@@ -91,10 +91,10 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
         maxValue.value = state.maxValue
         decimalCount.value = state.decimalCount
         showTrailingZeroesCheckBox.isSelected = state.showTrailingZeroes
-        groupingSeparatorGroup.setValue(state.groupingSeparator)
         customGroupingSeparator.label = state.customGroupingSeparator
-        decimalSeparatorGroup.setValue(state.decimalSeparator)
+        groupingSeparatorGroup.setValue(state.groupingSeparator)
         customDecimalSeparator.label = state.customDecimalSeparator
+        decimalSeparatorGroup.setValue(state.decimalSeparator)
         prefixInput.text = state.prefix
         suffixInput.text = state.suffix
         arrayDecoratorEditor.loadState(state.arrayDecorator)

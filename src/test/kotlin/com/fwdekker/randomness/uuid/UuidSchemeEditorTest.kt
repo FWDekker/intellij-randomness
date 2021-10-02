@@ -50,7 +50,21 @@ object UuidSchemeEditorTest : Spek({
             frame.radioButton("quotationSingle").requireSelected(true)
             frame.radioButton("quotationDouble").requireSelected(false)
             frame.radioButton("quotationBacktick").requireSelected(false)
+            frame.panel("quotationCustom").radioButton().requireSelected(false)
         }
+
+        it("loads the scheme's custom separator") {
+            GuiActionRunner.execute { editor.loadState(UuidScheme(customQuotation = "bi")) }
+
+            frame.panel("quotationCustom").textBox().requireText("bi")
+        }
+
+        it("selects the scheme's custom separator") {
+            GuiActionRunner.execute { editor.loadState(UuidScheme(quotation = "pl", customQuotation = "pl")) }
+
+            frame.panel("quotationCustom").radioButton().requireSelected()
+        }
+
 
         it("loads the scheme's capitalization mode") {
             GuiActionRunner.execute { editor.loadState(UuidScheme(capitalization = CapitalizationMode.UPPER)) }
@@ -92,14 +106,18 @@ object UuidSchemeEditorTest : Spek({
         }
 
         it("returns the editor's state") {
-            GuiActionRunner.execute { frame.radioButton("version1").target().isSelected = true }
-            GuiActionRunner.execute { frame.radioButton("quotationBacktick").target().isSelected = true }
-            GuiActionRunner.execute { frame.radioButton("capitalizationUpper").target().isSelected = true }
-            GuiActionRunner.execute { frame.checkBox("addDashesCheckBox").target().isSelected = true }
+            GuiActionRunner.execute {
+                frame.radioButton("version1").target().isSelected = true
+                frame.radioButton("quotationBacktick").target().isSelected = true
+                frame.panel("quotationCustom").textBox().target().text = "yl"
+                frame.radioButton("capitalizationUpper").target().isSelected = true
+                frame.checkBox("addDashesCheckBox").target().isSelected = true
+            }
 
             val readScheme = editor.readState()
             assertThat(readScheme.version).isEqualTo(1)
             assertThat(readScheme.quotation).isEqualTo("`")
+            assertThat(readScheme.customQuotation).isEqualTo("yl")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
             assertThat(readScheme.addDashes).isTrue()
         }

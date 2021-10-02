@@ -141,7 +141,9 @@
                 <constraints>
                   <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="3" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties/>
+                <properties>
+                  <name value="arrayBracketsCustom"/>
+                </properties>
               </component>
               <hspacer id="5907d">
                 <constraints>
@@ -199,7 +201,9 @@
                 <constraints>
                   <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="3" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties/>
+                <properties>
+                  <name value="arraySeparatorCustom"/>
+                </properties>
               </component>
               <hspacer id="5caa9">
                 <constraints>

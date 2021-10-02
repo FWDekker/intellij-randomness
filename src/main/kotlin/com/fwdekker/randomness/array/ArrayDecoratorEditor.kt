@@ -99,16 +99,17 @@ class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true,
         bindSpinners(minCountSpinner, maxCountSpinner)
     }
 
+
     override fun loadState(state: ArrayDecorator) {
         super.loadState(state)
 
         enabledCheckBox.isSelected = state.enabled
         minCountSpinner.value = state.minCount
         maxCountSpinner.value = state.maxCount
-        bracketsGroup.setValue(state.brackets)
         customBrackets.label = state.customBrackets
-        separatorGroup.setValue(state.separator)
+        bracketsGroup.setValue(state.brackets)
         customSeparator.label = state.customSeparator
+        separatorGroup.setValue(state.separator)
         spaceAfterSeparatorCheckBox.isSelected = state.isSpaceAfterSeparator
     }
 

@@ -93,6 +93,7 @@ object StringSchemeTest : Spek({
     describe("copyFrom") {
         it("copies state from another instance") {
             stringScheme.pattern = "trust"
+            stringScheme.capitalization = CapitalizationMode.RANDOM
             stringScheme.removeLookAlikeSymbols = true
             stringScheme.arrayDecorator.minCount = 249
 

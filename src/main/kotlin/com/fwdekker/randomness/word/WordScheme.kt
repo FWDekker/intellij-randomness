@@ -101,6 +101,7 @@ data class WordScheme(
             activeDictionaries.isEmpty() -> Bundle("word.error.no_active_dictionary")
             minLength > maxWordLength -> Bundle("word.error.min_length_above_range", maxWordLength)
             maxLength < minWordLength -> Bundle("word.error.max_length_below_range", minWordLength)
+            customQuotation.length > 2 -> Bundle("word.error.quotation_length")
             else -> arrayDecorator.doValidate()
         }
     }

@@ -68,9 +68,9 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
         super.loadState(state)
 
         versionGroup.setValue(state.version.toString())
+        customQuotation.label = state.customQuotation
         quotationGroup.setValue(state.quotation)
         capitalizationGroup.setValue(state.capitalization)
-        customQuotation.label = state.customQuotation
         addDashesCheckBox.isSelected = state.addDashes
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }

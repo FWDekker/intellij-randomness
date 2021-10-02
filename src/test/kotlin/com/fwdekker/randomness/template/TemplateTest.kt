@@ -151,12 +151,10 @@ object TemplateTest : Spek({
             assertThat(template.doValidate()).isEqualTo("${DummyScheme.INVALID_OUTPUT} > Invalid input!")
         }
 
-        describe("decorator") {
-            it("fails if the decorator is invalid") {
-                template.arrayDecorator.minCount = -160
+        it("fails if the decorator is invalid") {
+            template.arrayDecorator.minCount = -160
 
-                assertThat(template.doValidate()).isNotNull()
-            }
+            assertThat(template.doValidate()).isNotNull()
         }
     }
 

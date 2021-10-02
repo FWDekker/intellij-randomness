@@ -68,6 +68,22 @@ object VariableLabelRadioButtonTest : Spek({
 
             assertThat(frame.textBox().target().preferredSize.width).isEqualTo(398)
         }
+
+        it("focuses the text box when the radio button is selected") {
+            assertThat(frame.textBox().target().hasFocus()).isFalse()
+
+            GuiActionRunner.execute { frame.radioButton().target().isSelected = true }
+
+            assertThat(frame.textBox().target().hasFocus()).isTrue()
+        }
+
+        it("selects the radio button when the text box is focused") {
+            frame.radioButton().requireNotSelected()
+
+            GuiActionRunner.execute { frame.textBox().target().grabFocus() }
+
+            frame.radioButton().requireSelected()
+        }
     }
 
 
