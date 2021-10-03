@@ -11,6 +11,7 @@ import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
+import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_QUOTATION
@@ -37,11 +38,12 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
     override val preferredFocusedComponent
         get() = minLength.editorComponent
 
-    private lateinit var titleSeparator: TitledSeparator
     private lateinit var minLength: JIntSpinner
     private lateinit var maxLength: JIntSpinner
+    private lateinit var capitalizationLabel: JLabel
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var customQuotation: VariableLabelRadioButton
+    private lateinit var quotationLabel: JLabel
     private lateinit var quotationGroup: ButtonGroup
     private lateinit var dictionaryPanel: JPanel
     private lateinit var dictionarySeparator: TitledSeparator
@@ -52,7 +54,12 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
 
     init {
+        nop() // Cannot use `lateinit` property as first statement in init
+
+        capitalizationGroup.setLabel(capitalizationLabel)
+
         customQuotation.addToButtonGroup(quotationGroup)
+        quotationGroup.setLabel(quotationLabel)
 
         loadState()
     }
@@ -64,8 +71,6 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        titleSeparator = SeparatorFactory.createSeparator(Bundle("word.title"), null)
-
         minLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         maxLength = JIntSpinner(value = MIN_LENGTH, minValue = MIN_LENGTH)
         bindSpinners(minLength, maxLength, maxRange = MAX_LENGTH_DIFFERENCE.toDouble())
@@ -125,4 +130,12 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             arrayDecoratorEditor,
             listener = listener
         )
+}
+
+
+/**
+ * Null operation, does nothing.
+ */
+private fun nop() {
+    // Does nothing
 }

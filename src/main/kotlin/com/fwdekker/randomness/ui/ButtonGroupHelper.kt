@@ -2,6 +2,7 @@ package com.fwdekker.randomness.ui
 
 import javax.swing.AbstractButton
 import javax.swing.ButtonGroup
+import javax.swing.JLabel
 
 
 /**
@@ -37,3 +38,11 @@ fun ButtonGroup.setValue(value: Any?) {
  * @return the buttons in this button group as a typed array
  */
 fun ButtonGroup.buttons(): Array<AbstractButton> = elements.toList().toTypedArray()
+
+/**
+ * Sets the [JLabel] of this group, updating its [JLabel.labelFor] property whenever a different button is selected.
+ *
+ * @param label the label to change the [JLabel.labelFor] property of
+ */
+fun ButtonGroup.setLabel(label: JLabel) =
+    buttons().forEach { button -> button.addItemListener { if (button.isSelected) label.labelFor = button } }

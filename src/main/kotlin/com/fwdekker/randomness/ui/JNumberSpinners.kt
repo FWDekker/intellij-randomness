@@ -1,8 +1,8 @@
 package com.fwdekker.randomness.ui
 
-import java.awt.Component
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+import javax.swing.JComponent
 import javax.swing.JSpinner
 import javax.swing.SpinnerNumberModel
 
@@ -50,8 +50,8 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
     /**
      * The component that can be used to edit the spinner.
      */
-    val editorComponent: Component
-        get() = editor.getComponent(0)
+    val editorComponent: JComponent?
+        get() = editor.getComponent(0) as? JComponent
 
 
     /**

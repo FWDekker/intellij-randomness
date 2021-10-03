@@ -4,7 +4,6 @@ import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.TypeIcon
-import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.testFramework.TestActionEvent
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -78,13 +77,13 @@ object TemplateInsertActionTest : Spek({
         }
 
         it("returns the template's name with 'array' after it") {
-            val template = Template(name = "Invent", arrayDecorator = ArrayDecorator(enabled = true))
-            assertThat(TemplateInsertAction(template).name).isEqualTo("Invent Array")
+            val template = Template(name = "Invent")
+            assertThat(TemplateInsertAction(template, array = true).name).isEqualTo("Invent Array")
         }
 
         it("returns the template's name with 'repeat' before it and 'array' after it") {
-            val template = Template(name = "Dust", arrayDecorator = ArrayDecorator(enabled = true))
-            assertThat(TemplateInsertAction(template, repeat = true).name).isEqualTo("Repeat Dust Array")
+            val template = Template(name = "Dust")
+            assertThat(TemplateInsertAction(template, array = true, repeat = true).name).isEqualTo("Repeat Dust Array")
         }
     }
 

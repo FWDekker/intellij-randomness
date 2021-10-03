@@ -7,13 +7,13 @@ import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
+import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
-import com.intellij.ui.SeparatorFactory
-import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.util.ui.UI
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
+import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 
@@ -29,8 +29,8 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
     override val preferredFocusedComponent
         get() = patternField
 
-    private lateinit var titleSeparator: TitledSeparator
     private lateinit var patternField: JTextField
+    private lateinit var capitalizationLabel: JLabel
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var removeLookAlikeSymbolsPanel: JPanel
     private lateinit var removeLookAlikeSymbolsCheckBox: JCheckBox
@@ -39,6 +39,10 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
 
     init {
+        nop() // Cannot use `lateinit` property as first statement in init
+
+        capitalizationGroup.setLabel(capitalizationLabel)
+
         loadState()
     }
 
@@ -49,8 +53,6 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        titleSeparator = SeparatorFactory.createSeparator(Bundle("string.title"), null)
-
         removeLookAlikeSymbolsCheckBox = JBCheckBox(Bundle("string.ui.remove_look_alike"))
             .also { box ->
                 box.name = "removeLookAlikeCharacters"
@@ -87,4 +89,12 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(patternField, capitalizationGroup, arrayDecoratorEditor, listener = listener)
+}
+
+
+/**
+ * Null operation, does nothing.
+ */
+private fun nop() {
+    // Does nothing
 }

@@ -12,7 +12,6 @@
         <errorHandler implementation="com.fwdekker.randomness.ErrorReporter" />
 
         <!-- Persistence -->
-        <applicationService serviceImplementation="com.fwdekker.randomness.string.SymbolSetSettings" />
         <applicationService serviceImplementation="com.fwdekker.randomness.template.TemplateSettings" />
         <applicationService serviceImplementation="com.fwdekker.randomness.word.DictionarySettings" />
 
@@ -24,7 +23,6 @@
     </extensions>
 
     <actions>
-        <!-- Popup -->
         <action id="com.fwdekker.randomness.PopupAction" class="com.fwdekker.randomness.PopupAction"
                 text="Randomness" description="Opens the Randomness popup."
                 icon="/icons/randomness.svg">
@@ -32,22 +30,5 @@
             <add-to-group group-id="GenerateGroup" anchor="last" />
             <add-to-group group-id="ToolsMenu" anchor="last" />
         </action>
-
-        <!-- Template -->
-<!--        <action id="com.fwdekker.randomness.template.TemplateInsertAction"-->
-<!--                class="com.fwdekker.randomness.template.TemplateInsertAction"-->
-<!--                text="Random Template"-->
-<!--                description="Inserts a random template at each caret."-->
-<!--                icon="/icons/data.svg" />-->
-<!--        <action id="com.fwdekker.randomness.template.TemplateInsertAction$RepeatAction"-->
-<!--                class="com.fwdekker.randomness.template.TemplateInsertAction$RepeatAction"-->
-<!--                text="Random Repeated Template"-->
-<!--                description="Inserts the same random template at each caret."-->
-<!--                icon="/icons/data-repeat.svg" />-->
-<!--        <action id="com.fwdekker.randomness.template.TemplateSettingsAction"-->
-<!--                class="com.fwdekker.randomness.template.TemplateSettingsAction"-->
-<!--                text="Template Settings"-->
-<!--                description="Settings for the Random Template action."-->
-<!--                icon="/icons/data-settings.svg" />-->
     </actions>
 </idea-plugin>

@@ -6,8 +6,6 @@ import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.intellij.ui.ColoredListCellRenderer
-import com.intellij.ui.SeparatorFactory
-import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
 import java.awt.BorderLayout
@@ -28,7 +26,6 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
     override val preferredFocusedComponent
         get() = templateList
 
-    private lateinit var titleSeparator: TitledSeparator
     private lateinit var templateListPanel: JPanel
     private lateinit var templateListModel: DefaultListModel<Template>
     private lateinit var templateList: JBList<Template>
@@ -47,8 +44,6 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        titleSeparator = SeparatorFactory.createSeparator(Bundle("reference.title"), null)
-
         templateListModel = DefaultListModel<Template>()
         templateList = JBList(templateListModel)
         templateList.cellRenderer = object : ColoredListCellRenderer<Template>() {

@@ -59,7 +59,7 @@ object TemplateEditorTest : Spek({
         }
 
         it("loads the array's minimum count") {
-            frame.spinner("arrayMinCount").requireVisible()
+            frame.spinner("arrayCount").requireVisible()
         }
     }
 
@@ -126,7 +126,7 @@ object TemplateEditorTest : Spek({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 78 }
+            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 78 }
 
             assertThat(listenerInvoked).isTrue()
         }

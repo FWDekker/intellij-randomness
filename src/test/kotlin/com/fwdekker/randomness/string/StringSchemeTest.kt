@@ -70,7 +70,7 @@ object StringSchemeTest : Spek({
         }
 
         it("fails if the decorator is invalid") {
-            stringScheme.arrayDecorator.maxCount = -985
+            stringScheme.arrayDecorator.count = -985
 
             assertThat(stringScheme.doValidate()).isNotNull()
         }
@@ -79,14 +79,14 @@ object StringSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             stringScheme.pattern = "compose"
-            stringScheme.arrayDecorator.maxCount = 943
+            stringScheme.arrayDecorator.count = 943
 
             val copy = stringScheme.deepCopy()
             copy.pattern = "tidy"
-            copy.arrayDecorator.maxCount = 173
+            copy.arrayDecorator.count = 173
 
             assertThat(stringScheme.pattern).isEqualTo("compose")
-            assertThat(stringScheme.arrayDecorator.maxCount).isEqualTo(943)
+            assertThat(stringScheme.arrayDecorator.count).isEqualTo(943)
         }
     }
 
@@ -95,7 +95,7 @@ object StringSchemeTest : Spek({
             stringScheme.pattern = "trust"
             stringScheme.capitalization = CapitalizationMode.RANDOM
             stringScheme.removeLookAlikeSymbols = true
-            stringScheme.arrayDecorator.minCount = 249
+            stringScheme.arrayDecorator.count = 249
 
             val newScheme = StringScheme()
             newScheme.copyFrom(stringScheme)

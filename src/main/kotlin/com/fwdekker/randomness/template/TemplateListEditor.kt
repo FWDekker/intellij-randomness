@@ -25,6 +25,8 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBEmptyBorder
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.awt.KeyboardFocusManager
+import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
@@ -113,6 +115,21 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
                     },
                     BorderLayout.CENTER
                 )
+                KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("focusOwner") {
+                    val focused = it.newValue as? JComponent
+                    if (focused == null || !editor.rootComponent.isAncestorOf(focused))
+                        return@addPropertyChangeListener
+
+                    editor.rootComponent.scrollRectToVisible(
+                        SwingUtilities.convertRectangle(
+                            focused,
+                            focused.bounds,
+                            editor.rootComponent
+                        )
+                    )
+                }
+
+
                 editor.applyState() // Apply validation fixes from UI
                 templateTree.myModel.fireNodeStructureChanged(selectedNode)
                 schemeEditorPanel.revalidate() // Show editor immediately

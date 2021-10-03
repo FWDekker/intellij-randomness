@@ -1,11 +1,14 @@
 package com.fwdekker.randomness.ui
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import javax.swing.ButtonGroup
 import javax.swing.JButton
+import javax.swing.JLabel
+import javax.swing.JRadioButton
 
 
 /**
@@ -15,12 +18,16 @@ object ButtonGroupKtTest : Spek({
     lateinit var group: ButtonGroup
 
 
+    beforeGroup {
+        FailOnThreadViolationRepaintManager.install()
+    }
+
     beforeEachTest {
         group = ButtonGroup()
     }
 
 
-    describe("for each") {
+    describe("forEach") {
         it("iterates 0 times over an empty group") {
             var sum = 0
             group.forEach { sum++ }
@@ -40,7 +47,7 @@ object ButtonGroupKtTest : Spek({
         }
     }
 
-    describe("get value") {
+    describe("getValue") {
         it("returns null if the group is empty") {
             assertThat(group.getValue()).isNull()
         }
@@ -65,7 +72,7 @@ object ButtonGroupKtTest : Spek({
         }
     }
 
-    describe("set value") {
+    describe("setSalue") {
         it("deselects the currently selected button if no button has the given action command") {
             val buttonA = createJButton(actionCommand = "plenty")
             val buttonB = createJButton(actionCommand = "date")
@@ -124,6 +131,21 @@ object ButtonGroupKtTest : Spek({
             group.add(buttonC)
 
             assertThat(group.buttons()).containsExactly(buttonA, buttonB, buttonC)
+        }
+    }
+
+    describe("setLabel") {
+        it("sets the `labelFor` if another button is selected") {
+            val button1 = GuiActionRunner.execute<JRadioButton> { JRadioButton() }
+            val button2 = GuiActionRunner.execute<JRadioButton> { JRadioButton() }
+            group.add(button1)
+            group.add(button2)
+
+            val label = GuiActionRunner.execute<JLabel> { JLabel() }
+            group.setLabel(label)
+            GuiActionRunner.execute { button2.isSelected = true }
+
+            assertThat(label.labelFor).isEqualTo(button2)
         }
     }
 })

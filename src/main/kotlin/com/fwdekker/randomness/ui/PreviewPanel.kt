@@ -71,7 +71,6 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
         val factory = EditorFactory.getInstance()
         previewDocument = factory.createDocument(Bundle("preview.placeholder"))
         previewEditor = factory.createViewer(previewDocument)
-            .also { it.settings.isRefrainFromScrolling = true }
         previewComponent = previewEditor.component
     }
 

@@ -5,12 +5,18 @@ import com.fwdekker.randomness.InsertAction
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Timely.generateTimely
+import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.array.ArrayDecoratorEditor
+import com.fwdekker.randomness.ui.PreviewPanel
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ShowSettingsUtil
+import java.awt.BorderLayout
 import java.awt.event.ActionEvent
+import javax.swing.JPanel
 
 
 /**
@@ -30,10 +36,7 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
      */
     private fun getActionByModifier(array: Boolean = false, repeat: Boolean = false, settings: Boolean = false) =
         if (settings) TemplateSettingsAction(template)
-        else TemplateInsertAction(
-            template.deepCopy(retainUuid = true).also { it.arrayDecorator.enabled = array },
-            repeat = repeat
-        )
+        else TemplateInsertAction(template, array = array, repeat = repeat)
 
 
     /**
@@ -95,23 +98,80 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
  * Inserts random strings in the editor using [template].
  *
  * @property template The template to use for inserting data.
+ * @property array `true` if and only if an array of values should be inserted.
  * @property repeat `true` if and only if the same value should be inserted at each caret.
  * @see TemplateGroupAction
  */
-class TemplateInsertAction(private val template: Template, private val repeat: Boolean = false) : InsertAction() {
-    override val icon = template.icon?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
+class TemplateInsertAction(
+    private val template: Template,
+    private val array: Boolean = false,
+    private val repeat: Boolean = false
+) : InsertAction() {
+    override val icon
+        get() = template.icon?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
 
-    override val name =
-        template.name
-            .let { if (template.arrayDecorator.enabled) Bundle("template.name.array_suffix", it) else it }
-            .let { if (repeat) Bundle("template.name.repeat_prefix", it) else it }
+    override val name
+        get() =
+            template.name
+                .let { if (array) Bundle("template.name.array_suffix", it) else it }
+                .let { if (repeat) Bundle("template.name.repeat_prefix", it) else it }
+
+    override val configurable
+        get() =
+            if (array) ArrayDecoratorConfigurable(template.arrayDecorator)
+            else null
 
 
     override fun generateStrings(count: Int) =
         generateTimely {
+            val template = template.deepCopy().also { it.arrayDecorator.enabled = array }
+
             if (repeat) template.generateStrings().single().let { string -> List(count) { string } }
             else template.generateStrings(count)
         }
+
+
+    /**
+     * Edits the [ArrayDecorator] of a template and shows a preview.
+     *
+     * @param arrayDecorator the decorator being edited in this configurable
+     */
+    inner class ArrayDecoratorConfigurable(arrayDecorator: ArrayDecorator) : Configurable {
+        private val editor = ArrayDecoratorEditor(arrayDecorator, disablable = false, showSeparator = false)
+        private val previewPanel = PreviewPanel {
+            template.deepCopy().also {
+                it.arrayDecorator = editor.readState()
+                it.arrayDecorator.enabled = true
+            }
+        }
+
+
+        init {
+            editor.addChangeListener { previewPanel.updatePreview() }
+            previewPanel.updatePreview()
+        }
+
+
+        override fun getPreferredFocusedComponent() = editor.preferredFocusedComponent
+
+        override fun createComponent() =
+            JPanel(BorderLayout())
+                .also {
+                    it.add(editor.rootComponent, BorderLayout.NORTH)
+                    it.add(previewPanel.rootComponent, BorderLayout.SOUTH)
+                }
+
+        override fun isModified() = editor.isModified()
+
+        override fun apply() = editor.applyState()
+
+        override fun getDisplayName() = name
+
+        override fun disposeUIResources() {
+            editor.dispose()
+            previewPanel.dispose()
+        }
+    }
 }
 
 /**
