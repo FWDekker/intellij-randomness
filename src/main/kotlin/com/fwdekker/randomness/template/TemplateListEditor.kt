@@ -115,20 +115,19 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
                     },
                     BorderLayout.CENTER
                 )
-                KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                    .addPropertyChangeListener("focusOwner") {
-                        val focused = it.newValue as? JComponent
-                        if (focused == null || !editor.rootComponent.isAncestorOf(focused))
-                            return@addPropertyChangeListener
+                KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("focusOwner") {
+                    val focused = it.newValue as? JComponent
+                    if (focused == null || !editor.rootComponent.isAncestorOf(focused))
+                        return@addPropertyChangeListener
 
-                        editor.rootComponent.scrollRectToVisible(
-                            SwingUtilities.convertRectangle(
-                                focused,
-                                focused.bounds,
-                                editor.rootComponent
-                            )
+                    editor.rootComponent.scrollRectToVisible(
+                        SwingUtilities.convertRectangle(
+                            focused,
+                            focused.bounds,
+                            editor.rootComponent
                         )
-                    }
+                    )
+                }
 
 
                 editor.applyState() // Apply validation fixes from UI

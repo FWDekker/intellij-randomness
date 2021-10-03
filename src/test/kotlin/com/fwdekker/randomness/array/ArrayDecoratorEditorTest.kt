@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.array
 
+import com.fwdekker.randomness.matcher
 import com.fwdekker.randomness.nameMatcher
+import com.intellij.ui.TitledSeparator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -106,20 +108,58 @@ object ArrayDecoratorEditorTest : Spek({
             }
         }
 
-        describe("toggles space after separator depending on newline separator") {
-            it("disables space after separator if newline separator is checked") {
+        describe("showSeparator") {
+            it("shows the separator by default") {
+                frame.panel(matcher(TitledSeparator::class.java) { true }).requireVisible()
+            }
+
+            it("hides the separator if desired") {
+                frame.cleanUp()
+                editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
+                    ArrayDecoratorEditor(scheme, showSeparator = false)
+                }
+                frame = showInFrame(editor.rootComponent)
+
+                frame.panel(matcher(TitledSeparator::class.java) { true }).requireNotVisible()
+            }
+        }
+
+        describe("toggles space-after-separator depending on newline separator") {
+            it("enables space-after-separator if not disablable and newline separator is checked") {
+                frame.cleanUp()
+                editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
+                    ArrayDecoratorEditor(scheme, disablable = false)
+                }
+                frame = showInFrame(editor.rootComponent)
+
                 GuiActionRunner.execute { frame.radioButton("arraySeparatorNewline").target().isSelected = true }
 
                 frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
             }
 
-            it("enables space after separator if newline separator is unchecked") {
+            it("enables space-after-separator if not disablable and newline separator is unchecked") {
+                frame.cleanUp()
+                editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
+                    ArrayDecoratorEditor(scheme, disablable = false)
+                }
+                frame = showInFrame(editor.rootComponent)
+
+                frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
+            }
+
+            it("disables space-after-separator if newline separator is checked") {
+                GuiActionRunner.execute { frame.radioButton("arraySeparatorNewline").target().isSelected = true }
+
+                frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
+            }
+
+            it("enables space-after-separator if newline separator is unchecked") {
                 GuiActionRunner.execute { frame.radioButton("arraySeparatorNewline").target().isSelected = false }
 
                 frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
             }
 
-            it("disables space after separator if the newline separator is unchecked but the decorator is disabled") {
+            it("disables space-after-separator if the newline separator is unchecked but the decorator is disabled") {
                 scheme.enabled = false
                 scheme.separator = ","
                 GuiActionRunner.execute { editor.reset() }

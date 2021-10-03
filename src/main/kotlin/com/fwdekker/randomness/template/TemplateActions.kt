@@ -102,7 +102,7 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
  * @property repeat `true` if and only if the same value should be inserted at each caret.
  * @see TemplateGroupAction
  */
-open class TemplateInsertAction(
+class TemplateInsertAction(
     private val template: Template,
     private val array: Boolean = false,
     private val repeat: Boolean = false
