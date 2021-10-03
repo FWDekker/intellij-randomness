@@ -137,7 +137,7 @@ open class TemplateInsertAction(
      * @param arrayDecorator the decorator being edited in this configurable
      */
     inner class ArrayDecoratorConfigurable(arrayDecorator: ArrayDecorator) : Configurable {
-        private val editor = ArrayDecoratorEditor(arrayDecorator, false)
+        private val editor = ArrayDecoratorEditor(arrayDecorator, disablable = false, showSeparator = false)
         private val previewPanel = PreviewPanel {
             template.deepCopy().also {
                 it.arrayDecorator = editor.readState()

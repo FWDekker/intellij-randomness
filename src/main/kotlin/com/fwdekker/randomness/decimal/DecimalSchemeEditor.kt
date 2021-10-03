@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.decimal
 
-import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_DECIMAL_SEPARATOR
@@ -16,11 +15,11 @@ import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
+import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
-import com.intellij.ui.SeparatorFactory
-import com.intellij.ui.TitledSeparator
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
+import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.event.ChangeEvent
@@ -37,13 +36,14 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
     override val preferredFocusedComponent
         get() = minValue.editorComponent
 
-    private lateinit var titleSeparator: TitledSeparator
     private lateinit var minValue: JDoubleSpinner
     private lateinit var maxValue: JDoubleSpinner
     private lateinit var decimalCount: JIntSpinner
     private lateinit var showTrailingZeroesCheckBox: JCheckBox
+    private lateinit var groupingSeparatorLabel: JLabel
     private lateinit var groupingSeparatorGroup: ButtonGroup
     private lateinit var customGroupingSeparator: VariableLabelRadioButton
+    private lateinit var decimalSeparatorLabel: JLabel
     private lateinit var decimalSeparatorGroup: ButtonGroup
     private lateinit var customDecimalSeparator: VariableLabelRadioButton
     private lateinit var prefixInput: JTextField
@@ -57,7 +57,10 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
         decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
 
         customGroupingSeparator.addToButtonGroup(groupingSeparatorGroup)
+        groupingSeparatorGroup.setLabel(groupingSeparatorLabel)
+
         customDecimalSeparator.addToButtonGroup(decimalSeparatorGroup)
+        decimalSeparatorGroup.setLabel(decimalSeparatorLabel)
 
         loadState()
     }
@@ -69,8 +72,6 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        titleSeparator = SeparatorFactory.createSeparator(Bundle("decimal.title"), null)
-
         minValue = JDoubleSpinner()
         maxValue = JDoubleSpinner()
         bindSpinners(minValue, maxValue, MAX_VALUE_DIFFERENCE)

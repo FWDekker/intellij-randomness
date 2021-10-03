@@ -19,7 +19,7 @@ import kotlin.random.asJavaRandom
 /**
  * Contains settings for generating random UUIDs.
  *
- * @property version The version of UUIDs to generate.
+ * @property type The type (or version) of UUIDs to generate.
  * @property quotation The string that encloses the generated UUID on both sides.
  * @property customQuotation The grouping separator defined in the custom option.
  * @property capitalization The capitalization mode of the generated UUID.
@@ -27,7 +27,7 @@ import kotlin.random.asJavaRandom
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class UuidScheme(
-    var version: Int = DEFAULT_VERSION,
+    var type: Int = DEFAULT_TYPE,
     var quotation: String = DEFAULT_QUOTATION,
     var customQuotation: String = DEFAULT_CUSTOM_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
@@ -49,7 +49,7 @@ data class UuidScheme(
      * @return random type 4 UUIDs
      */
     override fun generateUndecoratedStrings(count: Int): List<String> {
-        val generator = when (version) {
+        val generator = when (type) {
             TYPE_1 ->
                 Generators.timeBasedGenerator(
                     EthernetAddress(random.nextLong()),
@@ -62,7 +62,7 @@ data class UuidScheme(
                     )
                 )
             TYPE_4 -> Generators.randomBasedGenerator(random.asJavaRandom())
-            else -> error(Bundle("uuid.error.unknown_version", version))
+            else -> error(Bundle("uuid.error.unknown_type", type))
         }
 
         return List(count) { generator.generate().toString() }
@@ -90,7 +90,7 @@ data class UuidScheme(
 
     override fun doValidate() =
         when {
-            version !in listOf(TYPE_1, TYPE_4) -> Bundle("uuid.error.unknown_version", version)
+            type !in listOf(TYPE_1, TYPE_4) -> Bundle("uuid.error.unknown_type", type)
             quotation.length > 2 -> Bundle("uuid.error.quotation_length")
             else -> arrayDecorator.doValidate()
         }
@@ -110,9 +110,9 @@ data class UuidScheme(
         val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "id", listOf(Color(185, 155, 248, 154)))
 
         /**
-         * The default value of the [version] field.
+         * The default value of the [type] field.
          */
-        const val DEFAULT_VERSION = 4
+        const val DEFAULT_TYPE = 4
 
         /**
          * The default value of the [quotation] field.

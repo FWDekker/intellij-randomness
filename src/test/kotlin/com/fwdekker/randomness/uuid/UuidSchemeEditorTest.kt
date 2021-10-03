@@ -36,11 +36,11 @@ object UuidSchemeEditorTest : Spek({
 
 
     describe("loadState") {
-        it("loads the scheme's version") {
-            GuiActionRunner.execute { editor.loadState(UuidScheme(version = 4)) }
+        it("loads the scheme's type") {
+            GuiActionRunner.execute { editor.loadState(UuidScheme(type = 4)) }
 
-            frame.radioButton("version1").requireSelected(false)
-            frame.radioButton("version4").requireSelected(true)
+            frame.radioButton("type1").requireSelected(false)
+            frame.radioButton("type4").requireSelected(true)
         }
 
         it("loads the scheme's quotation") {
@@ -82,10 +82,10 @@ object UuidSchemeEditorTest : Spek({
 
     describe("readState") {
         describe("defaults") {
-            it("returns default version if no version is selected") {
-                GuiActionRunner.execute { editor.loadState(UuidScheme(version = 967)) }
+            it("returns default typetype if no type is selected") {
+                GuiActionRunner.execute { editor.loadState(UuidScheme(type = 967)) }
 
-                assertThat(editor.readState().version).isEqualTo(UuidScheme.DEFAULT_VERSION)
+                assertThat(editor.readState().type).isEqualTo(UuidScheme.DEFAULT_TYPE)
             }
 
             it("returns default quotation if no quotation is selected") {
@@ -107,7 +107,7 @@ object UuidSchemeEditorTest : Spek({
 
         it("returns the editor's state") {
             GuiActionRunner.execute {
-                frame.radioButton("version1").target().isSelected = true
+                frame.radioButton("type1").target().isSelected = true
                 frame.radioButton("quotationBacktick").target().isSelected = true
                 frame.panel("quotationCustom").textBox().target().text = "yl"
                 frame.radioButton("capitalizationUpper").target().isSelected = true
@@ -115,7 +115,7 @@ object UuidSchemeEditorTest : Spek({
             }
 
             val readScheme = editor.readState()
-            assertThat(readScheme.version).isEqualTo(1)
+            assertThat(readScheme.type).isEqualTo(1)
             assertThat(readScheme.quotation).isEqualTo("`")
             assertThat(readScheme.customQuotation).isEqualTo("yl")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)

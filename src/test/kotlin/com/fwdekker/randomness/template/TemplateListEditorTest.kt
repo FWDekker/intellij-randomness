@@ -223,7 +223,7 @@ object TemplateListEditorTest : Spek({
                 Param("integer", IntegerScheme()) { it.spinner("minValue") },
                 Param("decimal", DecimalScheme()) { it.spinner("minValue") },
                 Param("string", StringScheme()) { it.textBox("pattern") },
-                Param("UUID", UuidScheme()) { it.radioButton("version1") },
+                Param("UUID", UuidScheme()) { it.radioButton("type1") },
                 Param("word", WordScheme()) { it.spinner("minLength") },
                 Param("date-time", DateTimeScheme()) { it.textBox("minDateTime") },
                 Param("template reference", TemplateReference()) { it.list() }

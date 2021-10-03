@@ -10,6 +10,7 @@ import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
+import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
@@ -30,11 +31,16 @@ import javax.swing.event.ChangeEvent
  * @param settings the settings to edit in the component
  * @param disablable `true` if and only if the user has the option of disabling the array scheme. If this is set to
  * `false`, [readState] will return a decorator which is always enabled.
+ * @param showSeparator `true` if and only if a titled separator should be shown at the top
  * @param helpText the text displayed at the top
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
-class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true, helpText: String? = null) :
-    StateEditor<ArrayDecorator>(settings) {
+class ArrayDecoratorEditor(
+    settings: ArrayDecorator,
+    disablable: Boolean = true,
+    helpText: String? = null,
+    showSeparator: Boolean = true
+) : StateEditor<ArrayDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent
         get() = countSpinner.editorComponent
@@ -44,8 +50,10 @@ class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true,
     private lateinit var helpLabel: JLabel
     private lateinit var controlPanel: JPanel
     private lateinit var countSpinner: JIntSpinner
+    private lateinit var bracketsLabel: JLabel
     private lateinit var bracketsGroup: ButtonGroup
     private lateinit var customBrackets: VariableLabelRadioButton
+    private lateinit var separatorLabel: JLabel
     private lateinit var separatorGroup: ButtonGroup
     private lateinit var customSeparator: VariableLabelRadioButton
     private lateinit var newlineSeparatorButton: JRadioButton
@@ -68,8 +76,13 @@ class ArrayDecoratorEditor(settings: ArrayDecorator, disablable: Boolean = true,
             helpLabel.isVisible = true
         }
 
+        if (!showSeparator) separator.isVisible = false
+
         customBrackets.addToButtonGroup(bracketsGroup)
+        bracketsGroup.setLabel(bracketsLabel)
+
         customSeparator.addToButtonGroup(separatorGroup)
+        separatorGroup.setLabel(separatorLabel)
 
         newlineSeparatorButton.addChangeListener {
             spaceAfterSeparatorCheckBox.isEnabled =

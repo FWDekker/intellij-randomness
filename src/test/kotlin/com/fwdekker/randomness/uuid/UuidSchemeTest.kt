@@ -23,7 +23,7 @@ object UuidSchemeTest : Spek({
 
     describe("generateStrings") {
         it("throws an exception if the scheme is invalid") {
-            uuidScheme.version = 9
+            uuidScheme.type = 9
 
             assertThatThrownBy { uuidScheme.generateStrings() }.isInstanceOf(DataGenerationException::class.java)
         }
@@ -31,7 +31,7 @@ object UuidSchemeTest : Spek({
 
         describe("format") {
             data class Param(
-                val version: Int,
+                val type: Int,
                 val quotation: String,
                 val capitalization: CapitalizationMode,
                 val addDashes: Boolean
@@ -43,9 +43,9 @@ object UuidSchemeTest : Spek({
                 Param(1, "E", CapitalizationMode.LOWER, true),
                 Param(4, "", CapitalizationMode.UPPER, true),
                 Param(1, "'", CapitalizationMode.UPPER, false)
-            ).forEach { (version, quotation, capitalization, addDashes) ->
+            ).forEach { (type, quotation, capitalization, addDashes) ->
                 it("generates a formatted UUID") {
-                    uuidScheme.version = version
+                    uuidScheme.type = type
                     uuidScheme.quotation = quotation
                     uuidScheme.capitalization = capitalization
                     uuidScheme.addDashes = addDashes
@@ -114,10 +114,10 @@ object UuidSchemeTest : Spek({
             assertThat(uuidScheme.doValidate()).isNotNull()
         }
 
-        it("fails for an unsupported UUID version") {
-            uuidScheme.version = 2
+        it("fails for an unsupported UUID type") {
+            uuidScheme.type = 2
 
-            assertThat(uuidScheme.doValidate()).isEqualTo("Unknown UUID version '2'.")
+            assertThat(uuidScheme.doValidate()).isEqualTo("Unknown UUID type '2'.")
         }
 
         it("fails for a quotation string that has more than two characters") {
@@ -129,21 +129,21 @@ object UuidSchemeTest : Spek({
 
     describe("deepCopy") {
         it("creates an independent copy") {
-            uuidScheme.version = 4
+            uuidScheme.type = 4
             uuidScheme.arrayDecorator.count = 754
 
             val copy = uuidScheme.deepCopy()
-            copy.version = 1
+            copy.type = 1
             copy.arrayDecorator.count = 640
 
-            assertThat(uuidScheme.version).isEqualTo(4)
+            assertThat(uuidScheme.type).isEqualTo(4)
             assertThat(uuidScheme.arrayDecorator.count).isEqualTo(754)
         }
     }
 
     describe("copyFrom") {
         it("copies state from another instance") {
-            uuidScheme.version = 4
+            uuidScheme.type = 4
             uuidScheme.quotation = "nv"
             uuidScheme.customQuotation = "to"
             uuidScheme.capitalization = CapitalizationMode.FIRST_LETTER

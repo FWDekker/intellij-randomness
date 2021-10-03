@@ -4,8 +4,6 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.intellij.ui.SeparatorFactory
-import com.intellij.ui.TitledSeparator
 import javax.swing.JPanel
 import javax.swing.JTextField
 
@@ -21,7 +19,6 @@ class TemplateEditor(template: Template) : StateEditor<Template>(template) {
     override val preferredFocusedComponent
         get() = nameInput
 
-    private lateinit var titleSeparator: TitledSeparator
     private lateinit var nameInput: JTextField
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
     private lateinit var arrayDecoratorEditorPanel: JPanel
@@ -38,8 +35,6 @@ class TemplateEditor(template: Template) : StateEditor<Template>(template) {
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        titleSeparator = SeparatorFactory.createSeparator(Bundle("template.title"), null)
-
         arrayDecoratorEditor = ArrayDecoratorEditor(
             originalState.arrayDecorator,
             disablable = false,

@@ -63,7 +63,7 @@
               <name value="arrayCount" noi18n="true"/>
             </properties>
           </component>
-          <component id="37af5" class="javax.swing.JLabel">
+          <component id="37af5" class="javax.swing.JLabel" binding="bracketsLabel">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -135,7 +135,7 @@
               </hspacer>
             </children>
           </grid>
-          <component id="99096" class="javax.swing.JLabel">
+          <component id="99096" class="javax.swing.JLabel" binding="separatorLabel">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -215,17 +215,17 @@
     </children>
   </grid>
   <buttonGroups>
-    <group name="separatorGroup" bound="true">
-      <member id="6b534"/>
-      <member id="61c87"/>
-      <member id="66c28"/>
-    </group>
     <group name="bracketsGroup" bound="true">
       <member id="fec91"/>
       <member id="39bc6"/>
       <member id="d4c77"/>
       <member id="30ee2"/>
       <member id="cc46b"/>
+    </group>
+    <group name="separatorGroup" bound="true">
+      <member id="6b534"/>
+      <member id="61c87"/>
+      <member id="66c28"/>
     </group>
   </buttonGroups>
 </form>

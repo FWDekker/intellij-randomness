@@ -1,28 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.fwdekker.randomness.uuid.UuidSchemeEditor">
-  <grid id="cbd77" binding="rootComponent" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="cbd77" binding="rootComponent" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="48" y="54" width="520" height="214"/>
+      <xy x="48" y="54" width="520" height="189"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <component id="3cf3f" class="com.intellij.ui.TitledSeparator" binding="titleSeparator" custom-create="true">
-        <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties/>
-      </component>
       <grid id="b9dc4" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
         <children>
-          <component id="aafa9" class="javax.swing.JLabel">
+          <component id="aafa9" class="javax.swing.JLabel" binding="typeLabel">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -45,7 +39,7 @@
                 </constraints>
                 <properties>
                   <actionCommand value="1"/>
-                  <name value="version1" noi18n="true"/>
+                  <name value="type1" noi18n="true"/>
                   <text resource-bundle="randomness" key="uuid.type1"/>
                 </properties>
               </component>
@@ -55,7 +49,7 @@
                 </constraints>
                 <properties>
                   <actionCommand value="4"/>
-                  <name value="version4" noi18n="true"/>
+                  <name value="type4" noi18n="true"/>
                   <text resource-bundle="randomness" key="uuid.type4"/>
                 </properties>
               </component>
@@ -66,7 +60,7 @@
               </hspacer>
             </children>
           </grid>
-          <component id="edfe5" class="javax.swing.JLabel">
+          <component id="edfe5" class="javax.swing.JLabel" binding="quotationLabel">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -135,7 +129,7 @@
               </hspacer>
             </children>
           </grid>
-          <component id="f7e2e" class="javax.swing.JLabel">
+          <component id="f7e2e" class="javax.swing.JLabel" binding="capitalizationLabel">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -192,14 +186,14 @@
       </grid>
       <vspacer id="4978a">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
             <preferred-size width="-1" height="15"/>
           </grid>
         </constraints>
       </vspacer>
       <grid id="fb216" binding="arrayDecoratorPanel" custom-create="true" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -207,12 +201,16 @@
       </grid>
       <vspacer id="4d1ec">
         <constraints>
-          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
     </children>
   </grid>
   <buttonGroups>
+    <group name="typeGroup" bound="true">
+      <member id="1c5cf"/>
+      <member id="23ba4"/>
+    </group>
     <group name="quotationGroup" bound="true">
       <member id="eedf3"/>
       <member id="1b72d"/>
@@ -222,10 +220,6 @@
     <group name="capitalizationGroup" bound="true">
       <member id="e2448"/>
       <member id="15731"/>
-    </group>
-    <group name="versionGroup" bound="true">
-      <member id="1c5cf"/>
-      <member id="23ba4"/>
     </group>
   </buttonGroups>
 </form>
