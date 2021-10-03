@@ -2,7 +2,7 @@ package com.fwdekker.randomness
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
-import java.awt.Component
+import javax.swing.JComponent
 import javax.swing.JPanel
 
 
@@ -24,7 +24,7 @@ abstract class StateEditor<S : State>(val originalState: S) : Disposable {
     /**
      * The component that this editor prefers to be focused when the editor is focused.
      */
-    open val preferredFocusedComponent: Component? = null
+    open val preferredFocusedComponent: JComponent? = null
 
 
     /**
@@ -32,9 +32,7 @@ abstract class StateEditor<S : State>(val originalState: S) : Disposable {
      *
      * @param state the state to load
      */
-    open fun loadState(state: S = originalState) {
-        originalState.copyFrom(state)
-    }
+    open fun loadState(state: S = originalState) = originalState.copyFrom(state)
 
     /**
      * Returns the editor's current state, including potentially unsaved changes.
@@ -86,7 +84,5 @@ abstract class StateEditor<S : State>(val originalState: S) : Disposable {
     /**
      * Disposes of this editor's resources.
      */
-    override fun dispose() {
-        Disposer.dispose(this)
-    }
+    override fun dispose() = Disposer.dispose(this)
 }

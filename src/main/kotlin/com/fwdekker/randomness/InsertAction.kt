@@ -6,11 +6,17 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.options.newEditor.SettingsDialogFactory
 import javax.swing.Icon
 
 
 /**
  * Inserts strings in the editor.
+ *
+ * If [configurable] is not `null` when [actionPerformed] is invoked, a modal editor is shown to edit that
+ * [configurable] right before inserting the strings to allow for last-minute adjustments to how the strings are
+ * generated.
  *
  * @property repeat `true` if and only if the same value should be inserted at each caret.
  */
@@ -24,6 +30,13 @@ abstract class InsertAction(private val repeat: Boolean = false) : AnAction() {
      * The name of this action.
      */
     abstract val name: String
+
+    /**
+     * The configurable to open as soon as the action is performed but before the strings are inserted.
+     *
+     * Use this to make modifications to settings right before inserting strings.
+     */
+    protected open val configurable: Configurable? = null
 
 
     /**
@@ -49,6 +62,11 @@ abstract class InsertAction(private val repeat: Boolean = false) : AnAction() {
     override fun actionPerformed(event: AnActionEvent) {
         val editor = event.getData(CommonDataKeys.EDITOR) ?: return
         val project = event.getData(CommonDataKeys.PROJECT) ?: return
+
+        configurable?.also {
+            if (!SettingsDialogFactory.getInstance().create(project, name, it, false, false).showAndGet())
+                return
+        }
 
         val data =
             try {

@@ -10,8 +10,7 @@ import com.fwdekker.randomness.SchemeDecorator
  * The user-configurable collection of schemes applicable to generating arrays.
  *
  * @property enabled `true` if and only if arrays should be generated instead of singular values.
- * @property minCount The minimum number of elements to generate.
- * @property maxCount The maximum number of elements to generate.
+ * @property count The number of elements to generate.
  * @property brackets The brackets to surround arrays with.
  * @property customBrackets The brackets defined in the custom option.
  * @property separator The string to place between generated elements.
@@ -20,8 +19,7 @@ import com.fwdekker.randomness.SchemeDecorator
  */
 data class ArrayDecorator(
     var enabled: Boolean = DEFAULT_ENABLED,
-    var minCount: Int = DEFAULT_MIN_COUNT,
-    var maxCount: Int = DEFAULT_MAX_COUNT,
+    var count: Int = DEFAULT_COUNT,
     var brackets: String = DEFAULT_BRACKETS,
     var customBrackets: String = DEFAULT_CUSTOM_BRACKETS,
     var separator: String = DEFAULT_SEPARATOR,
@@ -37,11 +35,10 @@ data class ArrayDecorator(
     override fun generateUndecoratedStrings(count: Int): List<String> {
         if (!enabled) return generator(count)
 
-        val countPerString = random.nextInt(minCount, maxCount + 1)
-        val generatedParts = generator(count * countPerString)
+        val generatedParts = generator(count * this.count)
         val separator = separator + if (isSpaceAfterSeparator && separator !== "\n") " " else ""
 
-        return generatedParts.chunked(countPerString) { parts ->
+        return generatedParts.chunked(this.count) { parts ->
             parts.joinToString(
                 separator = separator,
                 prefix = brackets.takeWhile { it != '@' },
@@ -52,8 +49,7 @@ data class ArrayDecorator(
 
 
     override fun doValidate() =
-        if (minCount > maxCount) Bundle("array.error.min_count_above_max")
-        else if (minCount < MIN_COUNT) Bundle("array.error.min_count_too_low", MIN_COUNT)
+        if (count < MIN_COUNT) Bundle("array.error.min_count_too_low", MIN_COUNT)
         else null
 
     override fun deepCopy(retainUuid: Boolean) = copy().also { if (retainUuid) it.uuid = this.uuid }
@@ -74,14 +70,9 @@ data class ArrayDecorator(
         const val MIN_COUNT = 1
 
         /**
-         * The default value of the [minCount] field.
+         * The default value of the [count] field.
          */
-        const val DEFAULT_MIN_COUNT = 3
-
-        /**
-         * The default value of the [maxCount] field.
-         */
-        const val DEFAULT_MAX_COUNT = 5
+        const val DEFAULT_COUNT = 3
 
         /**
          * The default value of the [brackets] field.

@@ -138,7 +138,7 @@ object TemplateReferenceEditorTest : Spek({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("arrayMaxCount").target().value = 59 }
+            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 59 }
 
             assertThat(listenerInvoked).isTrue()
         }
