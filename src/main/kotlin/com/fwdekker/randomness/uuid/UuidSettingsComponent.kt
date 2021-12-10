@@ -60,7 +60,7 @@ class UuidSettingsComponent(settings: UuidSettings = default) : SettingsComponen
         schemesPanel = UuidSchemesPanel(unsavedSettings)
             .also { it.addListener(SettingsComponentListener(this)) }
 
-        previewPanelHolder = PreviewPanel { UuidInsertAction(UuidScheme().also { saveScheme(it) }) }
+        previewPanelHolder = PreviewPanel { UuidInsertAction { UuidScheme().also { saveScheme(it) } } }
         previewPanel = previewPanelHolder.rootPane
     }
 

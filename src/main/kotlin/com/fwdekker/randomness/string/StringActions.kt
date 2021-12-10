@@ -33,7 +33,7 @@ class StringGroupAction : DataGroupAction(RandomnessIcons.String.Base) {
  *
  * @param scheme the scheme to use for generating strings
  */
-class StringInsertAction(private val scheme: StringScheme = StringSettings.default.currentScheme) :
+class StringInsertAction(private val scheme: () -> StringScheme = { StringSettings.default.currentScheme }) :
     DataInsertAction(RandomnessIcons.String.Base) {
     override val name = "Random String"
 
@@ -45,6 +45,7 @@ class StringInsertAction(private val scheme: StringScheme = StringSettings.defau
      * @return strings of random alphanumerical characters
      */
     override fun generateStrings(count: Int): List<String> {
+        val scheme = scheme()
         if (scheme.minLength > scheme.maxLength)
             throw DataGenerationException("Minimum length is larger than maximum length.")
 
@@ -69,8 +70,8 @@ class StringInsertAction(private val scheme: StringScheme = StringSettings.defau
      * @param scheme the scheme to use for generating strings
      */
     class ArrayAction(
-        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-        scheme: StringScheme = StringSettings.default.currentScheme
+        arrayScheme: () -> ArrayScheme = { ArraySettings.default.currentScheme },
+        scheme: () -> StringScheme = { StringSettings.default.currentScheme }
     ) : DataInsertArrayAction(arrayScheme, StringInsertAction(scheme), RandomnessIcons.String.Array) {
         override val name = "Random String Array"
     }
@@ -80,7 +81,7 @@ class StringInsertAction(private val scheme: StringScheme = StringSettings.defau
      *
      * @param scheme the settings to use for generating strings
      */
-    class RepeatAction(scheme: StringScheme = StringSettings.default.currentScheme) :
+    class RepeatAction(scheme: () -> StringScheme = { StringSettings.default.currentScheme }) :
         DataInsertRepeatAction(StringInsertAction(scheme), RandomnessIcons.String.Repeat) {
         override val name = "Random Repeated String"
     }
@@ -92,8 +93,8 @@ class StringInsertAction(private val scheme: StringScheme = StringSettings.defau
      * @param scheme the scheme to use for generating strings
      */
     class RepeatArrayAction(
-        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-        scheme: StringScheme = StringSettings.default.currentScheme
+        arrayScheme: () -> ArrayScheme = { ArraySettings.default.currentScheme },
+        scheme: () -> StringScheme = { StringSettings.default.currentScheme }
     ) : DataInsertRepeatArrayAction(ArrayAction(arrayScheme, scheme), RandomnessIcons.String.RepeatArray) {
         override val name = "Random Repeated String Array"
     }

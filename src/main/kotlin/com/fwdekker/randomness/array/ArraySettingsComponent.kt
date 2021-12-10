@@ -70,7 +70,7 @@ class ArraySettingsComponent(settings: ArraySettings = default) :
 
         previewPanelHolder = PreviewPanel {
             val scheme = ArrayScheme().also { saveScheme(it) }
-            DummyInsertArrayAction(scheme) { it.nextInt(previewMin, previewMax + 1).toString() }
+            DummyInsertArrayAction({ scheme }) { it.nextInt(previewMin, previewMax + 1).toString() }
         }
         previewPanel = previewPanelHolder.rootPane
 

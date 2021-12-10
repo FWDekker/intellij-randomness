@@ -35,7 +35,7 @@ class IntegerGroupAction : DataGroupAction(RandomnessIcons.Integer.Base) {
  *
  * @param scheme the scheme to use for generating integers
  */
-class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.default.currentScheme) :
+class IntegerInsertAction(private val scheme: () -> IntegerScheme = { IntegerSettings.default.currentScheme }) :
     DataInsertAction(RandomnessIcons.Integer.Base) {
     override val name = "Random Integer"
 
@@ -47,6 +47,7 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
      * @return random integers between the minimum and maximum value, inclusive
      */
     override fun generateStrings(count: Int): List<String> {
+        val scheme = scheme()
         if (scheme.minValue > scheme.maxValue)
             throw DataGenerationException("Minimum value is larger than maximum value.")
 
@@ -75,6 +76,7 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
      * @return a nicely formatted representation of an integer
      */
     private fun convertToString(value: Long): String {
+        val scheme = scheme()
         if (scheme.base != DECIMAL_BASE)
             return scheme.capitalization.transform(value.toString(scheme.base))
 
@@ -96,8 +98,8 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
      * @param scheme the scheme to use for generating integers
      */
     class ArrayAction(
-        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-        scheme: IntegerScheme = IntegerSettings.default.currentScheme
+        arrayScheme: () -> ArrayScheme = { ArraySettings.default.currentScheme },
+        scheme: () -> IntegerScheme = { IntegerSettings.default.currentScheme }
     ) : DataInsertArrayAction(arrayScheme, IntegerInsertAction(scheme), RandomnessIcons.Integer.Array) {
         override val name = "Random Integer Array"
     }
@@ -107,7 +109,7 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
      *
      * @param scheme the settings to use for generating integers
      */
-    class RepeatAction(scheme: IntegerScheme = IntegerSettings.default.currentScheme) :
+    class RepeatAction(scheme: () -> IntegerScheme = { IntegerSettings.default.currentScheme }) :
         DataInsertRepeatAction(IntegerInsertAction(scheme), RandomnessIcons.Integer.Repeat) {
         override val name = "Random Repeated Integer"
     }
@@ -119,8 +121,8 @@ class IntegerInsertAction(private val scheme: IntegerScheme = IntegerSettings.de
      * @param scheme the scheme to use for generating integers
      */
     class RepeatArrayAction(
-        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-        scheme: IntegerScheme = IntegerSettings.default.currentScheme
+        arrayScheme: () -> ArrayScheme = { ArraySettings.default.currentScheme },
+        scheme: () -> IntegerScheme = { IntegerSettings.default.currentScheme }
     ) : DataInsertRepeatArrayAction(ArrayAction(arrayScheme, scheme), RandomnessIcons.Integer.RepeatArray) {
         override val name = "Random Repeated Integer Array"
     }

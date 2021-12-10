@@ -54,7 +54,7 @@ class DecimalInsertActionTest : Spek({
                 decimalScheme.decimalCount = decimalCount
                 decimalScheme.showTrailingZeroes = showTrailingZeroes
 
-                val insertRandomDecimal = DecimalInsertAction(decimalScheme)
+                val insertRandomDecimal = DecimalInsertAction { decimalScheme }
                 val randomString = insertRandomDecimal.generateString()
 
                 assertThat(randomString).isEqualTo(expectedString)
@@ -62,7 +62,7 @@ class DecimalInsertActionTest : Spek({
         }
 
         it("throws an exception of the minimum is larger than the maximum") {
-            val action = DecimalInsertAction(DecimalScheme("Default", 365.85, 241.54))
+            val action = DecimalInsertAction { DecimalScheme("Default", 365.85, 241.54) }
             assertThatThrownBy { action.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
                 .hasMessage("Minimum value is larger than maximum value.")
@@ -105,7 +105,7 @@ class DecimalInsertActionTest : Spek({
                     decimalSeparator = decimalSeparator
                 )
 
-                val insertRandomDecimal = DecimalInsertAction(decimalScheme)
+                val insertRandomDecimal = DecimalInsertAction { decimalScheme }
                 val randomString = insertRandomDecimal.generateString()
 
                 assertThat(randomString).isEqualTo(expectedString)
@@ -128,7 +128,7 @@ class DecimalInsertActionTest : Spek({
                     suffix = suffix
                 )
 
-                val insertRandomDecimal = DecimalInsertAction(decimalScheme)
+                val insertRandomDecimal = DecimalInsertAction { decimalScheme }
                 val randomString = insertRandomDecimal.generateString()
 
                 assertThat(randomString).isEqualTo(expectedString)

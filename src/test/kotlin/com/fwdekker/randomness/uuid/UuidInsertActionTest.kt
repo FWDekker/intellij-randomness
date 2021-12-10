@@ -36,7 +36,7 @@ class UuidInsertActionTest : Spek({
                     addDashes = addDashes
                 )
 
-                val insertRandomUuid = UuidInsertAction(uuidScheme)
+                val insertRandomUuid = UuidInsertAction { uuidScheme }
                 val generatedString = insertRandomUuid.generateString()
 
                 val alphabet = capitalization.transform("0-9a-fA-F")
@@ -58,7 +58,7 @@ class UuidInsertActionTest : Spek({
         }
 
         it("throws an exception if an invalid UUID version is given") {
-            Assertions.assertThatThrownBy { UuidInsertAction(UuidScheme(version = 9)).generateString() }
+            Assertions.assertThatThrownBy { UuidInsertAction { UuidScheme(version = 9) }.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
                 .hasMessage("Unknown UUID version `9`.")
         }

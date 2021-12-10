@@ -28,7 +28,7 @@ class DummyInsertAction(private val dummySupplier: (Random) -> String) : DataIns
  * @param dummySupplier generates dummy values to insert
  */
 class DummyInsertArrayAction(
-    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+    arrayScheme: () -> ArrayScheme = { ArraySettings.default.currentScheme },
     dummySupplier: (Random) -> String
 ) : DataInsertArrayAction(arrayScheme, DummyInsertAction(dummySupplier), RandomnessIcons.Data.Array) {
     override val name = "Random Dummy Array"
@@ -55,7 +55,7 @@ class DummyInsertRepeatAction(dummySupplier: (Random) -> String) :
  * @param dummySupplier generates dummy values to insert
  */
 class DummyInsertRepeatArrayAction(
-    arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
+    arrayScheme: () -> ArrayScheme = { ArraySettings.default.currentScheme },
     dummySupplier: (Random) -> String
 ) : DataInsertRepeatArrayAction(DummyInsertArrayAction(arrayScheme, dummySupplier), RandomnessIcons.Data.Repeat) {
     override val name = "Random Repeat Dummy"

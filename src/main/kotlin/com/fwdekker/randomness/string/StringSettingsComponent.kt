@@ -15,7 +15,6 @@ import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.SeparatorFactory
 import java.awt.font.TextAttribute
-import java.util.ArrayList
 import java.util.ResourceBundle
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
@@ -81,7 +80,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
         schemesPanel = StringSchemesPanel(unsavedSettings)
             .also { it.addListener(SettingsComponentListener(this)) }
 
-        previewPanelHolder = PreviewPanel { StringInsertAction(StringScheme().also { saveScheme(it) }) }
+        previewPanelHolder = PreviewPanel { StringInsertAction { StringScheme().also { saveScheme(it) } } }
         previewPanel = previewPanelHolder.rootPane
 
         minLength = JIntSpinner(1, 1, description = "minimum length")

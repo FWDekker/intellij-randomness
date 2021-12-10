@@ -24,7 +24,7 @@ class WordInsertActionParamTest : Spek({
             it("generates a formatted word") {
                 val wordScheme = WordScheme(minLength = minLength, maxLength = maxLength, enclosure = enclosure)
 
-                val insertRandomWord = WordInsertAction(wordScheme)
+                val insertRandomWord = WordInsertAction { wordScheme }
                 val randomString = insertRandomWord.generateString()
 
                 assertThat(randomString)
@@ -50,7 +50,7 @@ class WordInsertActionParamTest : Spek({
             val wordScheme = WordScheme()
             wordScheme.activeBundledDictionaries = emptySet()
 
-            val insertRandomWord = WordInsertAction(wordScheme)
+            val insertRandomWord = WordInsertAction { wordScheme }
 
             assertThatThrownBy { insertRandomWord.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
@@ -67,7 +67,7 @@ class WordInsertActionParamTest : Spek({
             wordScheme.activeBundledDictionaries = emptySet()
             wordScheme.activeUserDictionaries = setOf(dictionary)
 
-            val insertRandomWord = WordInsertAction(wordScheme)
+            val insertRandomWord = WordInsertAction { wordScheme }
 
             assertThatThrownBy { insertRandomWord.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
@@ -83,7 +83,7 @@ class WordInsertActionParamTest : Spek({
             wordScheme.activeBundledDictionaries = emptySet()
             wordScheme.activeUserDictionaries = setOf(dictionary)
 
-            val insertRandomWord = WordInsertAction(wordScheme)
+            val insertRandomWord = WordInsertAction { wordScheme }
 
             assertThatThrownBy { insertRandomWord.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
@@ -100,7 +100,7 @@ class WordInsertActionParamTest : Spek({
             wordScheme.activeBundledDictionaries = emptySet()
             wordScheme.activeUserDictionaries = setOf(dictionary)
 
-            val insertRandomWord = WordInsertAction(wordScheme)
+            val insertRandomWord = WordInsertAction { wordScheme }
 
             assertThatThrownBy { insertRandomWord.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)

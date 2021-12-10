@@ -289,7 +289,7 @@ abstract class DataInsertAction(private val icon: Icon) : AnAction() {
  * @param icon the icon to display with the action
  */
 abstract class DataInsertArrayAction(
-    private val arrayScheme: ArrayScheme,
+    private val arrayScheme: () -> ArrayScheme,
     private val dataInsertAction: DataInsertAction,
     icon: Icon = RandomnessIcons.Data.Array
 ) : DataInsertAction(icon) {
@@ -302,6 +302,7 @@ abstract class DataInsertArrayAction(
      */
     @Throws(DataGenerationException::class)
     override fun generateStrings(count: Int): List<String> {
+        val arrayScheme = arrayScheme()
         if (arrayScheme.count <= 0)
             throw DataGenerationException("Array cannot have fewer than 1 element.")
 

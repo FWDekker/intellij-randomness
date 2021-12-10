@@ -26,7 +26,7 @@ class IntegerInsertActionTest : Spek({
             it("generates $expectedString") {
                 val integerScheme = IntegerScheme(minValue = minValue, maxValue = maxValue)
 
-                val insertRandomInteger = IntegerInsertAction(integerScheme)
+                val insertRandomInteger = IntegerInsertAction { integerScheme }
                 val randomString = insertRandomInteger.generateString()
 
                 assertThat(randomString).isEqualTo(expectedString)
@@ -34,7 +34,7 @@ class IntegerInsertActionTest : Spek({
         }
 
         it("throws an exception if the minimum is larger than the maximum") {
-            val action = IntegerInsertAction(IntegerScheme(minValue = 65, maxValue = 24))
+            val action = IntegerInsertAction { IntegerScheme(minValue = 65, maxValue = 24) }
             Assertions.assertThatThrownBy { action.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
                 .hasMessage("Minimum value is larger than maximum value.")
@@ -43,7 +43,7 @@ class IntegerInsertActionTest : Spek({
         it("generates a random value at maximum range size") {
             val integerScheme = IntegerScheme(minValue = Long.MIN_VALUE, maxValue = Long.MAX_VALUE)
 
-            val insertRandomInteger = IntegerInsertAction(integerScheme)
+            val insertRandomInteger = IntegerInsertAction { integerScheme }
             val randomString = insertRandomInteger.generateString()
 
             // Passes with extremely high probability (p = 1 - (2/(2^64))
@@ -67,7 +67,7 @@ class IntegerInsertActionTest : Spek({
                     groupingSeparator = groupingSeparator
                 )
 
-                val insertRandomInteger = IntegerInsertAction(integerScheme)
+                val insertRandomInteger = IntegerInsertAction { integerScheme }
                 val randomString = insertRandomInteger.generateString()
 
                 assertThat(randomString).isEqualTo(expectedString)
@@ -88,7 +88,7 @@ class IntegerInsertActionTest : Spek({
                     groupingSeparator = groupingSeparator
                 )
 
-                val insertRandomInteger = IntegerInsertAction(integerScheme)
+                val insertRandomInteger = IntegerInsertAction { integerScheme }
                 val randomString = insertRandomInteger.generateString()
 
                 assertThat(randomString).isEqualTo(expectedString)
@@ -113,7 +113,7 @@ class IntegerInsertActionTest : Spek({
                     capitalization = capitalization
                 )
 
-                val insertRandomInteger = IntegerInsertAction(integerScheme)
+                val insertRandomInteger = IntegerInsertAction { integerScheme }
                 val randomString = insertRandomInteger.generateString()
 
                 assertThat(randomString).isEqualTo(expectedString)
@@ -136,7 +136,7 @@ class IntegerInsertActionTest : Spek({
                     suffix = suffix
                 )
 
-                val insertRandomInteger = IntegerInsertAction(integerScheme)
+                val insertRandomInteger = IntegerInsertAction { integerScheme }
                 val randomString = insertRandomInteger.generateString()
 
                 assertThat(randomString).isEqualTo(expectedString)

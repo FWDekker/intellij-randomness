@@ -71,7 +71,7 @@ class DecimalSettingsComponent(settings: DecimalSettings = default) :
         schemesPanel = DecimalSchemesPanel(unsavedSettings)
             .also { it.addListener(SettingsComponentListener(this)) }
 
-        previewPanelHolder = PreviewPanel { DecimalInsertAction(DecimalScheme().also { saveScheme(it) }) }
+        previewPanelHolder = PreviewPanel { DecimalInsertAction { DecimalScheme().also { saveScheme(it) } } }
         previewPanel = previewPanelHolder.rootPane
 
         minValue = JDoubleSpinner(description = "minimum value")

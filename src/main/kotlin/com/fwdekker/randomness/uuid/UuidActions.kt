@@ -38,7 +38,7 @@ class UuidGroupAction : DataGroupAction(RandomnessIcons.Uuid.Base) {
  *
  * @param scheme the scheme to use for generating UUIDs
  */
-class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.currentScheme) :
+class UuidInsertAction(private val scheme: () -> UuidScheme = { UuidSettings.default.currentScheme }) :
     DataInsertAction(RandomnessIcons.Uuid.Base) {
     override val name = "Random UUID"
 
@@ -50,6 +50,8 @@ class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.cur
      * @return random type 4 UUIDs
      */
     override fun generateStrings(count: Int): List<String> {
+        val scheme = scheme()
+
         @Suppress("MagicNumber") // UUID version is not magic
         val generator = when (scheme.version) {
             1 ->
@@ -84,8 +86,8 @@ class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.cur
      * @param scheme the scheme to use for generating UUIDs
      */
     class ArrayAction(
-        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-        scheme: UuidScheme = UuidSettings.default.currentScheme
+        arrayScheme: () -> ArrayScheme = { ArraySettings.default.currentScheme },
+        scheme: () -> UuidScheme = { UuidSettings.default.currentScheme }
     ) : DataInsertArrayAction(arrayScheme, UuidInsertAction(scheme), RandomnessIcons.Uuid.Array) {
         override val name = "Random UUID Array"
     }
@@ -95,7 +97,7 @@ class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.cur
      *
      * @param scheme the settings to use for generating UUIDs
      */
-    class RepeatAction(scheme: UuidScheme = UuidSettings.default.currentScheme) :
+    class RepeatAction(scheme: () -> UuidScheme = { UuidSettings.default.currentScheme }) :
         DataInsertRepeatAction(UuidInsertAction(scheme), RandomnessIcons.Uuid.Repeat) {
         override val name = "Random Repeated Uuid"
     }
@@ -107,8 +109,8 @@ class UuidInsertAction(private val scheme: UuidScheme = UuidSettings.default.cur
      * @param scheme the scheme to use for generating UUIDs
      */
     class RepeatArrayAction(
-        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-        scheme: UuidScheme = UuidSettings.default.currentScheme
+        arrayScheme: () -> ArrayScheme = { ArraySettings.default.currentScheme },
+        scheme: () -> UuidScheme = { UuidSettings.default.currentScheme }
     ) : DataInsertRepeatArrayAction(ArrayAction(arrayScheme, scheme), RandomnessIcons.Uuid.RepeatArray) {
         override val name = "Random Repeated Uuid Array"
     }

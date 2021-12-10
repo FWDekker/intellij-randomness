@@ -39,7 +39,7 @@ class StringInsertActionTest : Spek({
                     serializedActiveSymbolSets = symbolSets.toMap()
                 )
 
-                val insertRandomString = StringInsertAction(stringScheme)
+                val insertRandomString = StringInsertAction { stringScheme }
                 assertThat(insertRandomString.generateString()).isEqualTo(expected)
             }
         }
@@ -54,20 +54,20 @@ class StringInsertActionTest : Spek({
                 serializedActiveSymbolSets = setOf(SymbolSet("emoji", "👩‍👩‍👧‍👧")).toMap()
             )
 
-            assertThat(StringInsertAction(stringScheme).generateString()).isEqualTo(emoji)
+            assertThat(StringInsertAction { stringScheme }.generateString()).isEqualTo(emoji)
         }
     }
 
     describe("error handling") {
         it("throws an exception if the minimum is larger than the maximum") {
-            val action = StringInsertAction(StringScheme(minLength = 99, maxLength = 21))
+            val action = StringInsertAction { StringScheme(minLength = 99, maxLength = 21) }
             Assertions.assertThatThrownBy { action.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
                 .hasMessage("Minimum length is larger than maximum length.")
         }
 
         it("throws an exception if no valid symbols are found") {
-            val action = StringInsertAction(StringScheme(serializedActiveSymbolSets = emptyMap()))
+            val action = StringInsertAction { StringScheme(serializedActiveSymbolSets = emptyMap()) }
             Assertions.assertThatThrownBy { action.generateString() }
                 .isInstanceOf(DataGenerationException::class.java)
                 .hasMessage("No valid symbols found in active symbol sets.")

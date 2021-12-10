@@ -35,7 +35,7 @@ class DecimalGroupAction : DataGroupAction(RandomnessIcons.Decimal.Base) {
  *
  * @param scheme the settings to use for generating decimals
  */
-class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.default.currentScheme) :
+class DecimalInsertAction(private val scheme: () -> DecimalScheme = { DecimalSettings.default.currentScheme }) :
     DataInsertAction(RandomnessIcons.Decimal.Base) {
     override val name = "Random Decimal"
 
@@ -47,6 +47,7 @@ class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.de
      * @return random decimals between the minimum and maximum value, inclusive
      */
     override fun generateStrings(count: Int): List<String> {
+        val scheme = scheme()
         if (scheme.minValue > scheme.maxValue)
             throw DataGenerationException("Minimum value is larger than maximum value.")
 
@@ -61,6 +62,8 @@ class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.de
      * @return a nicely formatted representation of a decimal
      */
     private fun convertToString(decimal: Double): String {
+        val scheme = scheme()
+
         val format = DecimalFormat()
         format.isGroupingUsed = scheme.groupingSeparator.isNotEmpty()
 
@@ -82,8 +85,8 @@ class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.de
      * @param scheme the scheme to use for generating decimals
      */
     class ArrayAction(
-        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-        scheme: DecimalScheme = DecimalSettings.default.currentScheme
+        arrayScheme: () -> ArrayScheme = { ArraySettings.default.currentScheme },
+        scheme: () -> DecimalScheme = { DecimalSettings.default.currentScheme }
     ) : DataInsertArrayAction(arrayScheme, DecimalInsertAction(scheme), RandomnessIcons.Decimal.Array) {
         override val name = "Random Decimal Array"
     }
@@ -93,7 +96,7 @@ class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.de
      *
      * @param scheme the settings to use for generating decimals
      */
-    class RepeatAction(scheme: DecimalScheme = DecimalSettings.default.currentScheme) :
+    class RepeatAction(scheme: () -> DecimalScheme = { DecimalSettings.default.currentScheme }) :
         DataInsertRepeatAction(DecimalInsertAction(scheme), RandomnessIcons.Decimal.Repeat) {
         override val name = "Random Repeated Decimal"
     }
@@ -105,8 +108,8 @@ class DecimalInsertAction(private val scheme: DecimalScheme = DecimalSettings.de
      * @param scheme the scheme to use for generating decimals
      */
     class RepeatArrayAction(
-        arrayScheme: ArrayScheme = ArraySettings.default.currentScheme,
-        scheme: DecimalScheme = DecimalSettings.default.currentScheme
+        arrayScheme: () -> ArrayScheme = { ArraySettings.default.currentScheme },
+        scheme: () -> DecimalScheme = { DecimalSettings.default.currentScheme }
     ) : DataInsertRepeatArrayAction(ArrayAction(arrayScheme, scheme), RandomnessIcons.Decimal.RepeatArray) {
         override val name = "Random Repeated Decimal Array"
     }
