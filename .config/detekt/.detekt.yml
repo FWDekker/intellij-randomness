@@ -66,6 +66,9 @@ style:
     # No braces are easier to read.
     MandatoryBracesIfStatements:
         active: false
+    # Three is fine
+    ReturnCount:
+        max: 3
     # False positives when there are two newlines after the imports.
     SpacingBetweenPackageAndImports:
         active: false

@@ -30,6 +30,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         get() = patternField
 
     private lateinit var patternField: JTextField
+    private lateinit var isRegexCheckBox: JCheckBox
     private lateinit var capitalizationLabel: JLabel
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var removeLookAlikeSymbolsPanel: JPanel
@@ -72,6 +73,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         super.loadState(state)
 
         patternField.text = state.pattern
+        isRegexCheckBox.isSelected = state.isRegex
         capitalizationGroup.setValue(state.capitalization)
         removeLookAlikeSymbolsCheckBox.isSelected = state.removeLookAlikeSymbols
 
@@ -81,6 +83,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
     override fun readState() =
         StringScheme(
             pattern = patternField.text,
+            isRegex = isRegexCheckBox.isSelected,
             capitalization = capitalizationGroup.getValue()?.let(::getMode) ?: DEFAULT_CAPITALIZATION,
             removeLookAlikeSymbols = removeLookAlikeSymbolsCheckBox.isSelected,
             arrayDecorator = arrayDecoratorEditor.readState()
@@ -88,7 +91,10 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
 
     override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(patternField, capitalizationGroup, arrayDecoratorEditor, listener = listener)
+        addChangeListenerTo(
+            patternField, isRegexCheckBox, capitalizationGroup, arrayDecoratorEditor,
+            listener = listener
+        )
 }
 
 

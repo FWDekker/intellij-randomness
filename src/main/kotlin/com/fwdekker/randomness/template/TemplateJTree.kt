@@ -379,6 +379,12 @@ class TemplateJTree(
                     else -> SimpleTextAttributes.REGULAR_ATTRIBUTES
                 }
             )
+
+            if (scheme is StringScheme && scheme.doValidate() == null) {
+                val randomString = scheme.generateStrings(1)[0]
+                if (randomString == scheme.pattern)
+                    append("  $randomString", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
+            }
         }
     }
 

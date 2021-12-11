@@ -19,12 +19,14 @@ import kotlin.random.asJavaRandom
  * Contains settings for generating random strings.
  *
  * @property pattern The regex-like pattern according to which the string is generated.
+ * @property isRegex `true` if and only if [pattern] should be interpreted as a regex.
  * @property capitalization The capitalization mode of the generated string.
  * @property removeLookAlikeSymbols Whether the symbols in [LOOK_ALIKE_CHARACTERS] should be removed.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class StringScheme(
     var pattern: String = DEFAULT_PATTERN,
+    var isRegex: Boolean = DEFAULT_IS_REGEX,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var removeLookAlikeSymbols: Boolean = DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
@@ -44,28 +46,42 @@ data class StringScheme(
      * @return strings of random alphanumerical characters
      */
     override fun generateUndecoratedStrings(count: Int): List<String> {
-        val rgxGen = RgxGen(pattern)
-        return List(count) {
-            val text = rgxGen.generate(random.asJavaRandom())
-            val capitalizedText = capitalization.transform(text, random)
+        val rawStrings =
+            if (isRegex) {
+                val rgxGen = RgxGen(pattern)
+                List(count) { rgxGen.generate(random.asJavaRandom()) }
+            } else {
+                List(count) { pattern }
+            }
 
-            if (removeLookAlikeSymbols) capitalizedText.filterNot { it in LOOK_ALIKE_CHARACTERS }
-            else capitalizedText
+        return rawStrings.map { rawString ->
+            val capitalizedString = capitalization.transform(rawString, random)
+
+            if (removeLookAlikeSymbols) capitalizedString.filterNot { it in LOOK_ALIKE_CHARACTERS }
+            else capitalizedString
         }
     }
 
 
-    override fun doValidate() =
-        try {
-            RgxGen(pattern)
-            arrayDecorator.doValidate()
-        } catch (e: RgxGenParseException) {
-            e.message
+    override fun doValidate(): String? {
+        if (isRegex) {
+            if (pattern.takeLastWhile { it == '\\' }.length.mod(2) != 0)
+                return Bundle("string.error.trailing_backslash")
+
+            try {
+                RgxGen(pattern)
+            } catch (e: RgxGenParseException) {
+                return e.message
+            }
         }
+
+        return arrayDecorator.doValidate()
+    }
 
     override fun deepCopy(retainUuid: Boolean) =
         StringScheme(
             pattern = pattern,
+            isRegex = isRegex,
             capitalization = capitalization,
             removeLookAlikeSymbols = removeLookAlikeSymbols,
             arrayDecorator = arrayDecorator.deepCopy(retainUuid)
@@ -92,6 +108,11 @@ data class StringScheme(
          * The default value of the [pattern] field.
          */
         const val DEFAULT_PATTERN = "[a-z0-9]{8}"
+
+        /**
+         * The default value of the [isRegex] field.
+         */
+        const val DEFAULT_IS_REGEX = true
 
         /**
          * The default value of the [capitalization] field.
