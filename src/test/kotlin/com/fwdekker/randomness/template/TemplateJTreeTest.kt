@@ -4,7 +4,6 @@ import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.clickActionButton
 import com.fwdekker.randomness.getActionButton
-import com.fwdekker.randomness.word.UserDictionary
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory

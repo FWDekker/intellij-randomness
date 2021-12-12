@@ -5,7 +5,6 @@ import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.string.StringScheme
-import com.fwdekker.randomness.word.DictionarySettings
 import com.fwdekker.randomness.word.WordScheme
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy

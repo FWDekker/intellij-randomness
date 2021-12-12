@@ -2,8 +2,6 @@ package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.DummySchemeEditor
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import com.intellij.util.ui.CollectionItemEditor
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.GuiActionRunner
@@ -31,32 +29,6 @@ object ListenerHelperTest : Spek({
 
 
     describe("addChangeListenerTo") {
-        it("invokes the listener when an ActivityTableModelEditor is updated") {
-            val ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-            ideaFixture.setUp()
-
-            try {
-                GuiActionRunner.execute {
-                    val itemEditor = object : CollectionItemEditor<EditableDatum<String>> {
-                        override fun getItemClass() = EditableDatum(false, "")::class.java
-
-                        override fun clone(item: EditableDatum<String>, forInPlaceEditing: Boolean) =
-                            EditableDatum(item.active, item.datum)
-                    }
-                    val table = object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, "", "") {}
-
-                    addChangeListenerTo(table, listener = listener)
-                    listenerInvoked = false
-
-                    table.data = listOf("a")
-                }
-
-                assertThat(listenerInvoked).isTrue()
-            } finally {
-                ideaFixture.tearDown()
-            }
-        }
-
         it("invokes the listener when a ButtonGroup is updated") {
             GuiActionRunner.execute {
                 val group = ButtonGroup()

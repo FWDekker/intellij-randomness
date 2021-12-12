@@ -9,6 +9,7 @@ import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JRadioButton
 import javax.swing.JSpinner
+import javax.swing.JTextArea
 import javax.swing.JTextField
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
@@ -27,11 +28,11 @@ import javax.swing.text.Document
 fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
     components.forEach { component ->
         when (component) {
-            is ActivityTableModelEditor<*> -> component.addChangeListener(listener)
             is ButtonGroup -> addChangeListenerTo(*component.buttons(), listener = listener)
             is JCheckBox -> component.addItemListener { listener() }
             is JRadioButton -> component.addItemListener { listener() }
             is JSpinner -> component.addChangeListener { listener() }
+            is JTextArea -> component.document.addDocumentListener(SimpleDocumentListener { listener() })
             is JTextField -> component.addChangeListener { listener() }
             is StateEditor<*> -> component.addChangeListener { listener() }
             is VariableLabelRadioButton -> component.addChangeListener { listener() }
@@ -78,6 +79,34 @@ fun JTextField.addChangeListener(listener: (JTextField) -> Unit) {
 
 
 /**
+ * A [DocumentListener] that invokes [listener] on each event.
+ *
+ * @property listener The listener to invoke on any event.
+ */
+class SimpleDocumentListener(private val listener: (DocumentEvent) -> Unit) : DocumentListener {
+    /**
+     * Invoked after text has been inserted.
+     *
+     * @param event the event that triggered the listener
+     */
+    override fun insertUpdate(event: DocumentEvent) = listener(event)
+
+    /**
+     * Invoked after text has been removed.
+     *
+     * @param event the event that triggered the listener
+     */
+    override fun removeUpdate(event: DocumentEvent) = listener(event)
+
+    /**
+     * Invoked after attributes have been changed.
+     *
+     * @param event the event that triggered the listener
+     */
+    override fun changedUpdate(event: DocumentEvent) = listener(event)
+}
+
+/**
  * A [TreeModelListener] that invokes [listener] on each event.
  *
  * @property listener The listener to invoke on any event.
@@ -86,28 +115,28 @@ class SimpleTreeModelListener(private val listener: (TreeModelEvent) -> Unit) : 
     /**
      * Invoked after a node has changed.
      *
-     * @param event ignored
+     * @param event the event that triggered the listener
      */
     override fun treeNodesChanged(event: TreeModelEvent) = listener(event)
 
     /**
      * Invoked after a node has been inserted.
      *
-     * @param event ignored
+     * @param event the event that triggered the listener
      */
     override fun treeNodesInserted(event: TreeModelEvent) = listener(event)
 
     /**
      * Invoked after a node has been removed.
      *
-     * @param event ignored
+     * @param event the event that triggered the listener
      */
     override fun treeNodesRemoved(event: TreeModelEvent) = listener(event)
 
     /**
      * Invoked after the structure of the tree has changed.
      *
-     * @param event ignored
+     * @param event the event that triggered the listener
      */
     override fun treeStructureChanged(event: TreeModelEvent) = listener(event)
 }

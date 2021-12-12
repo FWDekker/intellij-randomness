@@ -4,7 +4,6 @@ import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.string.StringScheme
-import com.fwdekker.randomness.word.DictionarySettings
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat

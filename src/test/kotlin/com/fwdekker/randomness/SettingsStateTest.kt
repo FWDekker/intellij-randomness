@@ -3,8 +3,6 @@ package com.fwdekker.randomness
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
 import com.fwdekker.randomness.template.TemplateReference
-import com.fwdekker.randomness.word.UserDictionary
-import com.fwdekker.randomness.word.WordScheme
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -33,20 +31,6 @@ object SettingsStateTest : Spek({
 
             assertThat(state.doValidate()).isNotNull()
         }
-
-        it("fails if the dictionary settings are invalid") {
-            state.dictionarySettings.dictionaries = listOf(UserDictionary("does_not_exist.dic"))
-            state.templateList.templates = listOf(Template(schemes = listOf(WordScheme())))
-            state.templateList.applySettingsState(state)
-
-            assertThat(state.doValidate()).isNotNull()
-        }
-
-        it("passes if the dictionary settings are invalid but unused") {
-            state.dictionarySettings.dictionaries = listOf(UserDictionary("does_not_exist.dic"))
-
-            assertThat(state.doValidate()).isNull()
-        }
     }
 
     describe("copyFrom") {
@@ -61,7 +45,6 @@ object SettingsStateTest : Spek({
 
             assertThat(state.uuid).isEqualTo(other.uuid)
             assertThat(state.templateList.uuid).isEqualTo(other.templateList.uuid)
-            assertThat(state.dictionarySettings.uuid).isEqualTo(other.dictionarySettings.uuid)
         }
 
         it("writes deep copies into the target's settings fields") {
@@ -72,9 +55,6 @@ object SettingsStateTest : Spek({
             assertThat(state.templateList)
                 .isEqualTo(otherState.templateList)
                 .isNotSameAs(otherState.templateList)
-            assertThat(state.dictionarySettings)
-                .isEqualTo(otherState.dictionarySettings)
-                .isNotSameAs(otherState.dictionarySettings)
         }
 
         it("writes itself into the template list's templates") {

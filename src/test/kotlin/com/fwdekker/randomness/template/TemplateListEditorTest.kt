@@ -106,7 +106,6 @@ object TemplateListEditorTest : Spek({
 
             assertThat(readState).isNotSameAs(state)
             assertThat(readState.templateList).isNotSameAs(state.templateList)
-            assertThat(readState.dictionarySettings).isNotSameAs(state.dictionarySettings)
         }
 
         it("retains the list's UUIDs") {

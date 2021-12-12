@@ -13,7 +13,6 @@
 
         <!-- Persistence -->
         <applicationService serviceImplementation="com.fwdekker.randomness.template.TemplateSettings" />
-        <applicationService serviceImplementation="com.fwdekker.randomness.word.DictionarySettings" />
 
         <!-- Settings window -->
         <applicationConfigurable instance="com.fwdekker.randomness.template.TemplateSettingsConfigurable"
