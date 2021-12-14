@@ -13,14 +13,16 @@ import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_QUOTATION
+import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.EditorFactory
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
-import com.intellij.ui.components.JBTextArea
 import javax.swing.ButtonGroup
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
-import javax.swing.JTextArea
 
 
 /**
@@ -40,9 +42,18 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
     private lateinit var quotationLabel: JLabel
     private lateinit var quotationGroup: ButtonGroup
     private lateinit var dictionarySeparator: TitledSeparator
-    private lateinit var dictionaryTextArea: JTextArea
+    private lateinit var dictionaryDocument: Document
+    private lateinit var dictionaryEditor: Editor
+    private lateinit var dictionaryComponent: JComponent
     private lateinit var arrayDecoratorPanel: JPanel
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
+
+    /**
+     * The text currently displayed in [dictionaryComponent].
+     */
+    private var dictionaryText: String
+        get() = dictionaryDocument.text
+        set(value) = runWriteAction { dictionaryDocument.setText(value) }
 
 
     init {
@@ -66,10 +77,20 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         customQuotation = VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
 
         dictionarySeparator = SeparatorFactory.createSeparator(Bundle("word.dictionary.title"), null)
-        dictionaryTextArea = JBTextArea()
+        val factory = EditorFactory.getInstance()
+        dictionaryDocument = factory.createDocument("")
+        dictionaryEditor = factory.createEditor(dictionaryDocument)
+        dictionaryComponent = dictionaryEditor.component
 
         arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
+    }
+
+    /**
+     * Disposes of this panel's resources, to be used when this panel is no longer used.
+     */
+    override fun dispose() {
+        EditorFactory.getInstance().releaseEditor(dictionaryEditor)
     }
 
 
@@ -79,7 +100,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         customQuotation.label = state.customQuotation
         quotationGroup.setValue(state.quotation)
         capitalizationGroup.setValue(state.capitalization)
-        dictionaryTextArea.text = state.words.joinToString(separator = "\n")
+        dictionaryText = state.words.joinToString(separator = "\n")
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
@@ -88,14 +109,14 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
             customQuotation = customQuotation.label,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
-            words = dictionaryTextArea.text.split('\n').filterNot { it.isBlank() },
+            words = dictionaryText.split('\n').filterNot { it.isBlank() },
             arrayDecorator = arrayDecoratorEditor.readState()
         ).also { it.uuid = originalState.uuid }
 
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            capitalizationGroup, quotationGroup, customQuotation, dictionaryTextArea, arrayDecoratorEditor,
+            capitalizationGroup, quotationGroup, customQuotation, dictionaryDocument, arrayDecoratorEditor,
             listener = listener
         )
 }

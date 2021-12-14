@@ -16,6 +16,9 @@ import javax.swing.event.DocumentListener
 import javax.swing.event.TreeModelEvent
 import javax.swing.event.TreeModelListener
 import javax.swing.text.Document
+import com.intellij.openapi.editor.Document as JBDocument
+import com.intellij.openapi.editor.event.DocumentEvent as JBDocumentEvent
+import com.intellij.openapi.editor.event.DocumentListener as JBDocumentListener
 
 
 /**
@@ -29,6 +32,7 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
     components.forEach { component ->
         when (component) {
             is ButtonGroup -> addChangeListenerTo(*component.buttons(), listener = listener)
+            is JBDocument -> component.addDocumentListener(SimpleJBDocumentListener { listener() })
             is JCheckBox -> component.addItemListener { listener() }
             is JRadioButton -> component.addItemListener { listener() }
             is JSpinner -> component.addChangeListener { listener() }
@@ -77,6 +81,22 @@ fun JTextField.addChangeListener(listener: (JTextField) -> Unit) {
     this.document.addDocumentListener(dl)
 }
 
+
+/**
+ * A [JBDocumentListener] that invokes [listener] on each event.
+ *
+ * @property listener The listener to invoke on any event.
+ */
+class SimpleJBDocumentListener(private val listener: (JBDocumentEvent) -> Unit) : JBDocumentListener {
+    /**
+     * Invoked after contents have been changed.
+     *
+     * @param event the event that triggered the listener
+     */
+    override fun documentChanged(event: JBDocumentEvent) {
+        listener(event)
+    }
+}
 
 /**
  * A [DocumentListener] that invokes [listener] on each event.

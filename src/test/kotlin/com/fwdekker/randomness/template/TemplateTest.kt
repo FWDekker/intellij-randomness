@@ -5,7 +5,6 @@ import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.string.StringScheme
-import com.fwdekker.randomness.word.WordScheme
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
@@ -105,13 +104,13 @@ object TemplateTest : Spek({
 
     describe("setSettingsState") {
         it("overwrites the settings state of the contained schemes") {
-            val newSettings = DictionarySettings()
-            val wordScheme = WordScheme()
-            template.schemes = listOf(wordScheme)
+            val newSettings = TemplateList()
+            val reference = TemplateReference()
+            template.schemes = listOf(reference)
 
-            template.setSettingsState(SettingsState(dictionarySettings = newSettings))
+            template.setSettingsState(SettingsState(templateList = newSettings))
 
-            assertThat(+wordScheme.dictionarySettings).isSameAs(newSettings)
+            assertThat(+reference.templateList).isSameAs(newSettings)
         }
     }
 

@@ -4,7 +4,7 @@ import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.clickActionButton
 import com.fwdekker.randomness.getActionButton
-import com.fwdekker.randomness.word.WordScheme
+import com.fwdekker.randomness.string.StringScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
@@ -496,20 +496,26 @@ object TemplateJTreeTest : Spek({
             }
 
             it("ensures the copy uses the same settings state") {
-                val scheme = WordScheme().also { it.setSettingsState(currentState) }
+                val referredScheme = StringScheme()
+                val referredTemplate = Template("break", listOf(referredScheme))
+
+                val referenceScheme = TemplateReference(referredTemplate.uuid)
+                val referenceTemplate = Template("airplane", listOf(referenceScheme))
+                referenceTemplate.setSettingsState(currentState)
+
                 GuiActionRunner.execute {
-                    list().templates[0].schemes = listOf(scheme)
+                    list().templates = listOf(referredTemplate, referenceTemplate)
                     tree.reload()
                 }
 
                 GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[0].schemes[0]
+                    tree.selectedScheme = list().templates[1].schemes[0]
                     frame.clickActionButton("Copy")
                 }
-                (+scheme.dictionarySettings).dictionaries = listOf(UserDictionary("queen.dic"))
 
-                assertThat((+(list().templates[0].schemes[1] as WordScheme).dictionarySettings).dictionaries)
-                    .containsExactly(UserDictionary("queen.dic"))
+                val selectedScheme = tree.selectedScheme!! as TemplateReference
+                assertThat(selectedScheme).isNotSameAs(referenceScheme)
+                assertThat(selectedScheme.template).isSameAs(referredTemplate)
             }
         }
 
@@ -636,26 +642,6 @@ object TemplateJTreeTest : Spek({
                 }
 
                 assertThat(list().templates[2].schemes[0].name).isEqualTo("consider")
-            }
-
-            it("resets the dictionary settings if a word scheme is selected") {
-                val scheme = WordScheme().also { it.setSettingsState(currentState) }
-                GuiActionRunner.execute {
-                    list().templates[0].schemes = listOf(scheme)
-                    originalState.copyFrom(currentState)
-
-                    tree.reload()
-                }
-
-                GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[0].schemes[0]
-                    (+scheme.dictionarySettings).dictionaries = listOf(UserDictionary("somebody.dic"))
-
-                    frame.clickActionButton("Reset")
-                }
-
-                assertThat((+scheme.dictionarySettings).dictionaries)
-                    .containsExactlyElementsOf(originalState.dictionarySettings.dictionaries)
             }
         }
     }
