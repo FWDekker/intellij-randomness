@@ -126,7 +126,7 @@ In chronological order of contribution:
   [suggesting a configurable popup](https://github.com/FWDekker/intellij-randomness/issues/305#issuecomment-661530711)!
 * Thanks to [Alex Pernot](https://github.com/AlexPernot) for
   [participating in the data type discussion](https://github.com/FWDekker/intellij-randomness/issues/305#issuecomment-662499058)!
-* Thanks to [solo](https://github.com/solonovamax) for
+* Thanks to [solonovamax](https://github.com/solonovamax) for
   [his contributions](https://github.com/FWDekker/intellij-randomness/issues/305#issuecomment-804415489)
   [to the data type discussion](https://github.com/FWDekker/intellij-randomness/issues/363#issuecomment-804976008)
   [in several places](https://github.com/FWDekker/intellij-randomness/issues/365#issuecomment-805052007),
@@ -134,5 +134,11 @@ In chronological order of contribution:
   [suggesting the byte preset](https://github.com/FWDekker/intellij-randomness/issues/368)!
 * Thanks to [Martin Kaspar van Laak](https://github.com/MartinKvL) for
   [reporting that symbol sets didn't get saved](https://github.com/FWDekker/intellij-randomness/issues/382)!
+* Thanks to [Aleksey Bobyr](https://github.com/Alexsey) for
+  [reporting a critical UI bug in WebStorm EAP](https://github.com/FWDekker/intellij-randomness/issues/418)!
+* Thanks to [LukasAppleFan](https://github.com/LukasAppleFan) for
+  [helping me find a bug in IntelliJ](https://github.com/FWDekker/intellij-randomness/issues/421)!
+* Thanks to [Xiakitl](https://github.com/Xiakitl) for
+  [reporting a bug with custom shortcuts](https://github.com/FWDekker/intellij-randomness/issues/423)!
 
 If I should add, remove, or change anything here, just open an issue or email me!
