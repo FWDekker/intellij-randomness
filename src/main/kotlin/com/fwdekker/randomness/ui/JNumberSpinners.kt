@@ -12,11 +12,11 @@ import javax.swing.SpinnerNumberModel
  *
  * @param T the type of number
  * @param value the default value
- * @param minValue the smallest number that may be represented
- * @param maxValue the largest number that may be represented
+ * @param minValue the smallest number that may be represented, or `null` if there is no limit
+ * @param maxValue the largest number that may be represented, or `null` if there is no limit
  * @param stepSize the default value to increment and decrement by
  */
-abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T) :
+abstract class JNumberSpinner<T>(value: T, minValue: T?, maxValue: T?, stepSize: T) :
     JSpinner(SpinnerNumberModel(value, minValue, maxValue, stepSize)) where T : Number, T : Comparable<T> {
     /**
      * Transforms a [Number] into a [T].
@@ -68,6 +68,9 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
 /**
  * A [JNumberSpinner] for doubles.
  *
+ * Note that setting `minValue` or `maxValue` to a very large number may cause the parent component's width to be overly
+ * large.
+ *
  * @param value the default value
  * @param minValue the smallest number that may be represented
  * @param maxValue the largest number that may be represented
@@ -75,8 +78,8 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
  */
 class JDoubleSpinner(
     value: Double = 0.0,
-    minValue: Double = -Double.MAX_VALUE,
-    maxValue: Double = Double.MAX_VALUE,
+    minValue: Double? = null,
+    maxValue: Double? = null,
     stepSize: Double = 0.1
 ) : JNumberSpinner<Double>(value, minValue, maxValue, stepSize) {
     override val numberToT: (Number) -> Double
