@@ -91,8 +91,9 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
      * Invoked when an entry is (de)selected in the tree.
      */
     private fun onTreeSelection() {
-        schemeEditor?.also {
+        schemeEditor?.also { editor ->
             schemeEditorPanel.remove((schemeEditorPanel.layout as BorderLayout).getLayoutComponent(BorderLayout.CENTER))
+            editor.dispose()
             schemeEditor = null
         }
 
@@ -103,6 +104,8 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
         schemeEditor = createEditor(selectedState)
             .also { editor ->
+                Disposer.register(this, editor)
+
                 editor.addChangeListener {
                     editor.applyState()
                     templateTree.myModel.fireNodeStructureChanged(selectedNode)

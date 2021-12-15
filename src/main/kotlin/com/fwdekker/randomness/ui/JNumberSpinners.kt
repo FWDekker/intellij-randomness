@@ -30,24 +30,6 @@ abstract class JNumberSpinner<T>(value: T, minValue: T, maxValue: T, stepSize: T
         get() = super.getModel() as SpinnerNumberModel
 
     /**
-     * The minimal allowed value.
-     */
-    var minValue: T
-        get() = numberToT(numberModel.minimum as Number)
-        set(value) {
-            numberModel.minimum = value
-        }
-
-    /**
-     * The maximal allowed value.
-     */
-    var maxValue: T
-        get() = numberToT(numberModel.maximum as Number)
-        set(value) {
-            numberModel.maximum = value
-        }
-
-    /**
      * The component that can be used to edit the spinner.
      */
     val editorComponent: JComponent?

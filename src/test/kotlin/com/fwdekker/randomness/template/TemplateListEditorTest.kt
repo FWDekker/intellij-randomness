@@ -106,7 +106,6 @@ object TemplateListEditorTest : Spek({
 
             assertThat(readState).isNotSameAs(state)
             assertThat(readState.templateList).isNotSameAs(state.templateList)
-            assertThat(readState.dictionarySettings).isNotSameAs(state.dictionarySettings)
         }
 
         it("retains the list's UUIDs") {
@@ -224,7 +223,7 @@ object TemplateListEditorTest : Spek({
                 Param("decimal", DecimalScheme()) { it.spinner("minValue") },
                 Param("string", StringScheme()) { it.textBox("pattern") },
                 Param("UUID", UuidScheme()) { it.radioButton("type1") },
-                Param("word", WordScheme()) { it.spinner("minLength") },
+                Param("word", WordScheme()) { it.radioButton("capitalizationRetain") },
                 Param("date-time", DateTimeScheme()) { it.textBox("minDateTime") },
                 Param("template reference", TemplateReference()) { it.list() }
             ).forEach { (name, scheme, matcher) ->

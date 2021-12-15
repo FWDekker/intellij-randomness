@@ -2,21 +2,15 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.template.TemplateList
 import com.fwdekker.randomness.template.TemplateSettings
-import com.fwdekker.randomness.word.DictionarySettings
 
 
 /**
  * Contains references to various [Settings] objects.
  *
- * Note that schemes in [templateList] may not necessarily be using [dictionarySettings]. To ensure this, invoke
- * [TemplateList.applySettingsState] on [templateList] with this [SettingsState].
- *
  * @property templateList The template list.
- * @property dictionarySettings The dictionary settings.
  */
 data class SettingsState(
-    var templateList: TemplateList = TemplateList(),
-    var dictionarySettings: DictionarySettings = DictionarySettings()
+    var templateList: TemplateList = TemplateList()
 ) : State() {
     override fun doValidate() = templateList.doValidate()
 
@@ -25,7 +19,6 @@ data class SettingsState(
 
         uuid = other.uuid
         templateList.copyFrom(other.templateList)
-        dictionarySettings.copyFrom(other.dictionarySettings)
         templateList.applySettingsState(this)
     }
 
@@ -39,10 +32,7 @@ data class SettingsState(
      * @return a deep copy of this scheme
      */
     override fun deepCopy(retainUuid: Boolean) =
-        copy(
-            templateList = templateList.deepCopy(retainUuid = retainUuid),
-            dictionarySettings = dictionarySettings.deepCopy(retainUuid = retainUuid)
-        ).also {
+        copy(templateList = templateList.deepCopy(retainUuid = retainUuid)).also {
             if (retainUuid) it.uuid = uuid
 
             it.templateList.applySettingsState(it)
@@ -56,6 +46,6 @@ data class SettingsState(
         /**
          * The persistent [SettingsState] instance.
          */
-        val default: SettingsState by lazy { SettingsState(TemplateSettings.default.state, DictionarySettings.default) }
+        val default: SettingsState by lazy { SettingsState(TemplateSettings.default.state) }
     }
 }

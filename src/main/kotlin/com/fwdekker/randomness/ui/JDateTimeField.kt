@@ -36,7 +36,7 @@ class JDateTimeField(private val default: LocalDateTime) : JFormattedTextField(D
     /**
      * Formats a string to a [LocalDateTime] and vice versa.
      */
-    class DateTimeFormatter : JFormattedTextField.AbstractFormatter() {
+    class DateTimeFormatter : AbstractFormatter() {
         /**
          * Attempts to parse [text] to a [LocalDateTime] using a best guess to detect the date format used.
          *

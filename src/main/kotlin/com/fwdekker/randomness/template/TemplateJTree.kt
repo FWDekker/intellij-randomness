@@ -100,6 +100,7 @@ class TemplateJTree(
                 .mapNotNull { myModel.list.getTemplateByUuid(it) }
                 .flatMap { it.schemes }
                 .map { StateNode(it) }
+                .toSet()
             return myModel.root.recursiveChildren.minus(hidden)
         }
 
@@ -302,9 +303,7 @@ class TemplateJTree(
      * @param scheme the scheme to check for modification
      * @return `true` if and only if [scheme] has been modified with respect to [originalState]
      */
-    private fun isModified(scheme: Scheme) =
-        originalState.templateList.getSchemeByUuid(scheme.uuid) != scheme ||
-            scheme is WordScheme && originalState.dictionarySettings != currentState.dictionarySettings
+    private fun isModified(scheme: Scheme) = originalState.templateList.getSchemeByUuid(scheme.uuid) != scheme
 
     /**
      * Finds a good, unique name for [template] so that it can be inserted into this list without conflict.
