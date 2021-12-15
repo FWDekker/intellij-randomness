@@ -62,11 +62,13 @@ class ArrayDecoratorEditor(
 
     init {
         if (disablable) {
-            enabledCheckBox.addChangeListener {
-                controlPanel.getChildren().forEach { it.isEnabled = enabledCheckBox.isSelected }
-                spaceAfterSeparatorCheckBox.isEnabled = enabledCheckBox.isSelected && !newlineSeparatorButton.isSelected
-            }
-            enabledCheckBox.changeListeners.forEach { it.stateChanged(ChangeEvent(enabledCheckBox)) }
+            enabledCheckBox.addChangeListener(
+                { _: ChangeEvent? ->
+                    controlPanel.getChildren().forEach { it.isEnabled = enabledCheckBox.isSelected }
+                    spaceAfterSeparatorCheckBox.isEnabled =
+                        enabledCheckBox.isSelected && !newlineSeparatorButton.isSelected
+                }.also { it(null) }
+            )
         } else {
             enabledCheckBox.isVisible = false
         }
@@ -84,11 +86,12 @@ class ArrayDecoratorEditor(
         customSeparator.addToButtonGroup(separatorGroup)
         separatorGroup.setLabel(separatorLabel)
 
-        newlineSeparatorButton.addChangeListener {
-            spaceAfterSeparatorCheckBox.isEnabled =
-                (!disablable || enabledCheckBox.isSelected) && !newlineSeparatorButton.isSelected
-        }
-        newlineSeparatorButton.changeListeners.forEach { it.stateChanged(ChangeEvent(newlineSeparatorButton)) }
+        newlineSeparatorButton.addChangeListener(
+            { _: ChangeEvent? ->
+                spaceAfterSeparatorCheckBox.isEnabled =
+                    (!disablable || enabledCheckBox.isSelected) && !newlineSeparatorButton.isSelected
+            }.also { it(null) }
+        )
 
         loadState()
     }
@@ -150,6 +153,9 @@ class ArrayDecoratorEditor(
  */
 private fun JPanel.getChildren(): List<Component> =
     components.flatMap {
-        if (it is JPanel) listOf(it) + it.getChildren()
-        else listOf(it)
+        when (it) {
+            is VariableLabelRadioButton -> listOf(it)
+            is JPanel -> listOf(it) + it.getChildren()
+            else -> listOf(it)
+        }
     }.toList()

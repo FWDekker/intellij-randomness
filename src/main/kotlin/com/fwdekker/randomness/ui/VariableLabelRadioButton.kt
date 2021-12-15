@@ -5,6 +5,7 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.UIUtil
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.awt.event.ItemEvent
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 import javax.swing.JRadioButton
@@ -47,7 +48,12 @@ class VariableLabelRadioButton(
 
 
     init {
-        button.addItemListener { if (button.isSelected) textField.requestFocus() }
+        button.addItemListener(
+            { _: ItemEvent? ->
+                textField.isEnabled = button.isSelected
+                if (button.isSelected) textField.requestFocus()
+            }.also { it(null) }
+        )
         textField.addFocusListener(FocusGainListener { button.isSelected = true })
 
         add(button, BorderLayout.WEST)
@@ -88,6 +94,6 @@ class VariableLabelRadioButton(
         super.setEnabled(enabled)
 
         button.isEnabled = enabled
-        textField.isEnabled = enabled
+        textField.isEnabled = enabled && button.isSelected
     }
 }
