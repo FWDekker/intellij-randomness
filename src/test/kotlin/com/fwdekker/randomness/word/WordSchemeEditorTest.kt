@@ -51,6 +51,12 @@ object WordSchemeEditorTest : Spek({
 
 
     describe("loadState") {
+        it("loads the scheme's words") {
+            GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("summer", "another"))) }
+
+            assertThat(wordsEditor.text).isEqualTo("summer\nanother")
+        }
+
         it("loads the scheme's quotation") {
             GuiActionRunner.execute { editor.loadState(WordScheme(quotation = "'")) }
 
@@ -83,12 +89,6 @@ object WordSchemeEditorTest : Spek({
             frame.radioButton("capitalizationSentence").requireSelected(false)
             frame.radioButton("capitalizationFirstLetter").requireSelected(false)
         }
-
-        it("loads the scheme's words") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("summer", "another"))) }
-
-            assertThat(wordsEditor.text).isEqualTo("summer\nanother")
-        }
     }
 
     describe("readState") {
@@ -106,15 +106,21 @@ object WordSchemeEditorTest : Spek({
             }
         }
 
+        it("removes blank lines from the words input") {
+            GuiActionRunner.execute { runWriteAction { wordsEditor.editor.document.setText("suppose\n  \nsand\n") } }
+
+            assertThat(editor.readState().words).isEqualTo(listOf("suppose", "sand"))
+        }
+
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns the editor's state") {
             GuiActionRunner.execute {
+                runWriteAction { wordsEditor.editor.document.setText("might\nexpense") }
                 frame.radioButton("quotationSingle").target().isSelected = true
                 frame.radioButton("capitalizationLower").target().isSelected = true
-                runWriteAction { wordsEditor.editor.document.setText("might\nexpense") }
             }
 
             val readScheme = editor.readState()

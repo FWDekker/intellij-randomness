@@ -14,17 +14,17 @@ import java.awt.Color
 /**
  * Contains settings for generating random words.
  *
+ * @property words The list of words to choose from.
  * @property quotation The string that encloses the generated word on both sides.
  * @property customQuotation The quotation defined in the custom option.
  * @property capitalization The way in which the generated word should be capitalized.
- * @property words The list of words to choose from.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class WordScheme(
+    var words: List<String> = DEFAULT_WORDS,
     var quotation: String = DEFAULT_QUOTATION,
     var customQuotation: String = DEFAULT_CUSTOM_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var words: List<String> = DEFAULT_WORDS,
     var arrayDecorator: ArrayDecorator = ArrayDecorator()
 ) : Scheme() {
     @get:Transient
@@ -69,7 +69,7 @@ data class WordScheme(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid))
+        copy(words = words.toList(), arrayDecorator = arrayDecorator.deepCopy(retainUuid))
             .also { if (retainUuid) it.uuid = this.uuid }
 
 
@@ -81,6 +81,12 @@ data class WordScheme(
          * The base icon for words.
          */
         val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "cat", listOf(Color(242, 101, 34, 154)))
+
+        /**
+         * The default value of the [words] field.
+         */
+        val DEFAULT_WORDS: List<String>
+            get() = listOf("lorem", "ipsum", "dolor", "sit", "amet")
 
         /**
          * The default value of the [quotation] field.
@@ -96,11 +102,5 @@ data class WordScheme(
          * The default value of the [capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
-
-        /**
-         * The default value of the [words] field.
-         */
-        val DEFAULT_WORDS: List<String>
-            get() = listOf("lorem", "ipsum", "dolor", "sit", "amet")
     }
 }

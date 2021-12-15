@@ -100,6 +100,7 @@ class TemplateJTree(
                 .mapNotNull { myModel.list.getTemplateByUuid(it) }
                 .flatMap { it.schemes }
                 .map { StateNode(it) }
+                .toSet()
             return myModel.root.recursiveChildren.minus(hidden)
         }
 

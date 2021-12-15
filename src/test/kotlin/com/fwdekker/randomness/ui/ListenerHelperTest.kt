@@ -1,7 +1,10 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.DummySchemeEditor
+import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.editor.EditorFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.GuiActionRunner
@@ -11,6 +14,7 @@ import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JRadioButton
 import javax.swing.JSpinner
+import javax.swing.JTextArea
 import javax.swing.JTextField
 
 
@@ -40,6 +44,19 @@ object ListenerHelperTest : Spek({
                 listenerInvoked = false
 
                 group.buttons()[1].isSelected = true
+            }
+
+            assertThat(listenerInvoked).isTrue()
+        }
+
+        it("invokes the listener when a JBDocument is updated") {
+            GuiActionRunner.execute {
+                val document = EditorFactory.getInstance().createDocument(Bundle("preview.placeholder"))
+
+                addChangeListenerTo(document, listener = listener)
+                listenerInvoked = false
+
+                runWriteAction { document.setText("weak") }
             }
 
             assertThat(listenerInvoked).isTrue()
@@ -79,6 +96,19 @@ object ListenerHelperTest : Spek({
                 listenerInvoked = false
 
                 spinner.value = 5
+            }
+
+            assertThat(listenerInvoked).isTrue()
+        }
+
+        it("invokes the listener when a JTextArea is updated") {
+            GuiActionRunner.execute {
+                val textArea = JTextArea()
+
+                addChangeListenerTo(textArea, listener = listener)
+                listenerInvoked = false
+
+                textArea.text = "network"
             }
 
             assertThat(listenerInvoked).isTrue()

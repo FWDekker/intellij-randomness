@@ -36,24 +36,25 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
     override val preferredFocusedComponent
         get() = capitalizationLabel.labelFor as JComponent
 
+    private lateinit var wordListSeparator: TitledSeparator
+    private lateinit var wordListDocument: Document
+    private lateinit var wordListEditor: Editor
+    private lateinit var wordListComponent: JComponent
+    private lateinit var appearanceSeparator: TitledSeparator
     private lateinit var capitalizationLabel: JLabel
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var customQuotation: VariableLabelRadioButton
     private lateinit var quotationLabel: JLabel
     private lateinit var quotationGroup: ButtonGroup
-    private lateinit var dictionarySeparator: TitledSeparator
-    private lateinit var dictionaryDocument: Document
-    private lateinit var dictionaryEditor: Editor
-    private lateinit var dictionaryComponent: JComponent
     private lateinit var arrayDecoratorPanel: JPanel
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
     /**
-     * The text currently displayed in [dictionaryComponent].
+     * The words currently displayed in [wordListComponent].
      */
-    private var dictionaryText: String
-        get() = dictionaryDocument.text
-        set(value) = runWriteAction { dictionaryDocument.setText(value) }
+    private var wordList: List<String>
+        get() = wordListDocument.text.split('\n').filterNot { it.isBlank() }
+        set(value) = runWriteAction { wordListDocument.setText(value.joinToString(separator = "\n")) }
 
 
     init {
@@ -74,13 +75,14 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
-        customQuotation = VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
-
-        dictionarySeparator = SeparatorFactory.createSeparator(Bundle("word.dictionary.title"), null)
+        wordListSeparator = SeparatorFactory.createSeparator(Bundle("word.ui.word_list"), null)
         val factory = EditorFactory.getInstance()
-        dictionaryDocument = factory.createDocument("")
-        dictionaryEditor = factory.createEditor(dictionaryDocument)
-        dictionaryComponent = dictionaryEditor.component
+        wordListDocument = factory.createDocument("")
+        wordListEditor = factory.createEditor(wordListDocument)
+        wordListComponent = wordListEditor.component
+
+        appearanceSeparator = SeparatorFactory.createSeparator(Bundle("word.ui.appearance"), null)
+        customQuotation = VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
 
         arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
@@ -90,33 +92,33 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
      * Disposes of this panel's resources, to be used when this panel is no longer used.
      */
     override fun dispose() {
-        EditorFactory.getInstance().releaseEditor(dictionaryEditor)
+        EditorFactory.getInstance().releaseEditor(wordListEditor)
     }
 
 
     override fun loadState(state: WordScheme) {
         super.loadState(state)
 
+        wordList = state.words
         customQuotation.label = state.customQuotation
         quotationGroup.setValue(state.quotation)
         capitalizationGroup.setValue(state.capitalization)
-        dictionaryText = state.words.joinToString(separator = "\n")
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
         WordScheme(
+            words = wordList,
             quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
             customQuotation = customQuotation.label,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
-            words = dictionaryText.split('\n').filterNot { it.isBlank() },
             arrayDecorator = arrayDecoratorEditor.readState()
         ).also { it.uuid = originalState.uuid }
 
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            capitalizationGroup, quotationGroup, customQuotation, dictionaryDocument, arrayDecoratorEditor,
+            wordListDocument, capitalizationGroup, quotationGroup, customQuotation, arrayDecoratorEditor,
             listener = listener
         )
 }
