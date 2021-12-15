@@ -35,13 +35,14 @@ class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<F
 
 
     init {
-        enabledCheckBox.addChangeListener {
-            lengthLabel.isEnabled = enabledCheckBox.isSelected
-            lengthInput.isEnabled = enabledCheckBox.isSelected
-            fillerLabel.isEnabled = enabledCheckBox.isSelected
-            fillerInput.isEnabled = enabledCheckBox.isSelected
-        }
-        enabledCheckBox.changeListeners.forEach { it.stateChanged(ChangeEvent(enabledCheckBox)) }
+        enabledCheckBox.addChangeListener(
+            { _: ChangeEvent? ->
+                lengthLabel.isEnabled = enabledCheckBox.isSelected
+                lengthInput.isEnabled = enabledCheckBox.isSelected
+                fillerLabel.isEnabled = enabledCheckBox.isSelected
+                fillerInput.isEnabled = enabledCheckBox.isSelected
+            }.also { it(null) }
+        )
 
         loadState()
     }

@@ -52,13 +52,14 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
 
 
     init {
-        base.addChangeListener {
-            groupingSeparatorGroup.forEach { it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE }
-            customGroupingSeparator.isEnabled = base.value == IntegerScheme.DECIMAL_BASE
+        base.addChangeListener(
+            { _: ChangeEvent? ->
+                groupingSeparatorGroup.forEach { it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE }
+                customGroupingSeparator.isEnabled = base.value == IntegerScheme.DECIMAL_BASE
 
-            capitalizationGroup.forEach { it.isEnabled = base.value > IntegerScheme.DECIMAL_BASE }
-        }
-        base.changeListeners.forEach { it.stateChanged(ChangeEvent(base)) }
+                capitalizationGroup.forEach { it.isEnabled = base.value > IntegerScheme.DECIMAL_BASE }
+            }.also { it(null) }
+        )
 
         customGroupingSeparator.addToButtonGroup(groupingSeparatorGroup)
         groupingSeparatorGroup.setLabel(groupingSeparatorLabel)

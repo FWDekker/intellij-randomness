@@ -84,6 +84,18 @@ object VariableLabelRadioButtonTest : Spek({
 
             frame.radioButton().requireSelected()
         }
+
+        it("enables the text box if the radio button is selected") {
+            GuiActionRunner.execute { frame.radioButton().target().isSelected = true }
+
+            frame.textBox().requireEnabled()
+        }
+
+        it("disables the text box if the radio button is not selected") {
+            GuiActionRunner.execute { frame.radioButton().target().isSelected = false }
+
+            frame.textBox().requireDisabled()
+        }
     }
 
 
@@ -121,11 +133,6 @@ object VariableLabelRadioButtonTest : Spek({
 
 
     describe("setEnabled") {
-        it("has elements enabled by default") {
-            frame.radioButton().requireEnabled()
-            frame.textBox().requireEnabled()
-        }
-
         it("disables elements") {
             GuiActionRunner.execute { variableButton.isEnabled = false }
 
@@ -133,14 +140,28 @@ object VariableLabelRadioButtonTest : Spek({
             frame.textBox().requireDisabled()
         }
 
-        it("re-enables elements") {
+        it("enables the radio button") {
+            GuiActionRunner.execute { variableButton.isEnabled = true }
+
+            frame.radioButton().requireEnabled()
+        }
+
+        it("enables the text box if the radio button is selected") {
             GuiActionRunner.execute {
-                variableButton.isEnabled = false
+                frame.radioButton().target().isSelected = true
                 variableButton.isEnabled = true
             }
 
-            frame.radioButton().requireEnabled()
             frame.textBox().requireEnabled()
+        }
+
+        it("does not enable the text box if the radio button is not selected") {
+            GuiActionRunner.execute {
+                frame.radioButton().target().isSelected = false
+                variableButton.isEnabled = true
+            }
+
+            frame.textBox().requireDisabled()
         }
     }
 })

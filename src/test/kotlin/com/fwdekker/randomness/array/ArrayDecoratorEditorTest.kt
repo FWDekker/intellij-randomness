@@ -52,13 +52,13 @@ object ArrayDecoratorEditorTest : Spek({
         }
 
         describe("enabled state") {
-            it("hides components if enabled is deselected") {
+            it("disables components if enabled is deselected") {
                 GuiActionRunner.execute { frame.checkBox("arrayEnabled").target().isSelected = false }
 
                 frame.spinner("arrayCount").requireDisabled()
             }
 
-            it("shows components if enabled is reselected") {
+            it("enables components if enabled is reselected") {
                 GuiActionRunner.execute {
                     frame.checkBox("arrayEnabled").target().isSelected = false
                     frame.checkBox("arrayEnabled").target().isSelected = true
@@ -87,6 +87,15 @@ object ArrayDecoratorEditorTest : Spek({
                 GuiActionRunner.execute { editor.reset() }
 
                 frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
+            }
+
+            it("does not enable the text box of `customBrackets` if the radio button is not selected") {
+                GuiActionRunner.execute {
+                    frame.checkBox("arrayEnabled").target().isSelected = false
+                    frame.checkBox("arrayEnabled").target().isSelected = true
+                }
+
+                frame.panel("arrayBracketsCustom").textBox().requireDisabled()
             }
         }
 

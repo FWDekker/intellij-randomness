@@ -53,8 +53,11 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
 
 
     init {
-        decimalCount.addChangeListener { showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0 }
-        decimalCount.changeListeners.forEach { it.stateChanged(ChangeEvent(decimalCount)) }
+        decimalCount.addChangeListener(
+            { _: ChangeEvent? ->
+                showTrailingZeroesCheckBox.isEnabled = decimalCount.value > 0
+            }.also { it(null) }
+        )
 
         customGroupingSeparator.addToButtonGroup(groupingSeparatorGroup)
         groupingSeparatorGroup.setLabel(groupingSeparatorLabel)
