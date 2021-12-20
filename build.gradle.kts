@@ -9,16 +9,16 @@ plugins {
     // Compilation
     // TODO: Update to Kotlin 1.5.30 once https://github.com/jacoco/jacoco/issues/1182 has been fixed
     id("org.jetbrains.kotlin.jvm") version "1.5.21"  // See also `gradle.properties`
-    id("org.jetbrains.intellij") version "1.1.6"
+    id("org.jetbrains.intellij") version "1.3.0"
 
     // Tests/coverage
     id("jacoco")
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.18.1"  // See also `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.19.0"  // See also `gradle.properties`
 
     // Documentation
-    id("org.jetbrains.dokka") version "1.5.30"
+    id("org.jetbrains.dokka") version "1.6.0"
 }
 
 

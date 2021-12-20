@@ -11,7 +11,6 @@ import com.intellij.openapi.components.service
  * The user-configurable persistent collection of schemes applicable to generating arbitrary strings using template
  * syntax.
  *
- * @property templateList The list of templates to be stored persistently.
  * @see TemplateSettingsAction
  * @see TemplateSettingsConfigurable
  */

@@ -31,8 +31,8 @@ import javax.swing.event.ChangeEvent
  * @param settings the settings to edit in the component
  * @param disablable `true` if and only if the user has the option of disabling the array scheme. If this is set to
  * `false`, [readState] will return a decorator which is always enabled.
- * @param showSeparator `true` if and only if a titled separator should be shown at the top
  * @param helpText the text displayed at the top
+ * @param showSeparator `true` if and only if a titled separator should be shown at the top
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
 class ArrayDecoratorEditor(

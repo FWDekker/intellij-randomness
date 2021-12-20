@@ -67,6 +67,7 @@ open class MaxLengthDocumentFilter(private val maxLength: Int) : DocumentFilter(
  *
  * @property minLength The minimum allowable length of the document. If the length is initially below this value, any
  * progress made towards this value is accepted but cannot be undone.
+ * @param maxLength the maximum allowable length of the document
  */
 class MinMaxLengthDocumentFilter(private val minLength: Int, maxLength: Int) : MaxLengthDocumentFilter(maxLength) {
     init {

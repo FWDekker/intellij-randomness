@@ -21,6 +21,7 @@ fun <T : Component> matcher(klass: Class<T>, matcher: (T) -> Boolean) =
  * Returns a [GenericTypeMatcher] for returning the first component that is named [name].
  *
  * @param T the type of matcher to return
+ * @param klass the type to match an instance of
  * @param name the name to return a matcher for
  * @return a [GenericTypeMatcher] for returning the first component that is named [name]
  */
