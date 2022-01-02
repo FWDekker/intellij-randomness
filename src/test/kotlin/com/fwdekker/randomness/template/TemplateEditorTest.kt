@@ -57,17 +57,11 @@ object TemplateEditorTest : Spek({
 
             frame.textBox("templateName").requireText("Tin")
         }
-
-        it("loads the array's minimum count") {
-            frame.spinner("arrayCount").requireVisible()
-        }
     }
 
     describe("readState") {
-        it("returns a template with a disabled decorator") {
-            GuiActionRunner.execute {
-                editor.loadState(Template(arrayDecorator = ArrayDecorator(enabled = true)))
-            }
+        it("returns a template with a disabled array decorator") {
+            GuiActionRunner.execute { editor.loadState(Template(arrayDecorator = ArrayDecorator(enabled = true))) }
 
             assertThat(editor.readState().arrayDecorator.enabled).isFalse()
         }
@@ -92,17 +86,17 @@ object TemplateEditorTest : Spek({
             assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
-        it("returns a different instance from the loaded scheme") {
+        it("returns a different instance from the loaded template") {
             assertThat(editor.readState())
                 .isEqualTo(editor.originalState)
                 .isNotSameAs(editor.originalState)
         }
 
-        it("retains the scheme's UUID") {
+        it("retains the template's UUID") {
             assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
         }
 
-        it("retains the scheme's schemes") {
+        it("retains the template's schemes") {
             GuiActionRunner.execute { editor.loadState(Template(schemes = listOf(IntegerScheme()))) }
 
             assertThat(editor.readState().schemes).containsExactlyElementsOf(editor.originalState.schemes)
@@ -116,17 +110,6 @@ object TemplateEditorTest : Spek({
             editor.addChangeListener { listenerInvoked = true }
 
             GuiActionRunner.execute { frame.textBox("templateName").target().text = "Human" }
-
-            assertThat(listenerInvoked).isTrue()
-        }
-
-        it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute { editor.loadState(Template(arrayDecorator = ArrayDecorator())) }
-
-            var listenerInvoked = false
-            editor.addChangeListener { listenerInvoked = true }
-
-            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 78 }
 
             assertThat(listenerInvoked).isTrue()
         }

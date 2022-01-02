@@ -73,6 +73,6 @@ class JDateTimeField(private val default: LocalDateTime) : JFormattedTextField(D
         /**
          * The format used to represent [value] as a string.
          */
-        const val DATE_TIME_FORMAT = "YYYY-MM-dd HH:mm:ss.SSS"
+        const val DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS"
     }
 }
