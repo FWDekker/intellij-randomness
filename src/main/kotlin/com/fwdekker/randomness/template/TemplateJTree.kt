@@ -379,11 +379,8 @@ class TemplateJTree(
                 }
             )
 
-            if (scheme is StringScheme && scheme.doValidate() == null) {
-                val randomString = scheme.generateStrings(1)[0]
-                if (randomString == scheme.pattern)
-                    append("  $randomString", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
-            }
+            if (scheme is StringScheme && scheme.isSimple())
+                append("  ${scheme.generateStrings()[0]}", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
         }
     }
 
@@ -405,7 +402,7 @@ class TemplateJTree(
 
             JBPopupFactory.getInstance()
                 .createListPopup(AddSchemePopupStep())
-                .show(preferredPopupPoint ?: return)
+                .show(preferredPopupPoint)
         }
 
         /**

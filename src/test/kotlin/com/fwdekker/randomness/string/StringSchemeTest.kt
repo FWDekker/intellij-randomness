@@ -66,6 +66,72 @@ object StringSchemeTest : Spek({
     }
 
 
+    describe("isSimple") {
+        it("returns false if the scheme is invalid") {
+            stringScheme.pattern = "\\"
+            stringScheme.isRegex = true
+
+            assertThat(stringScheme.isSimple()).isFalse()
+        }
+
+        it("returns false if the pattern repeats characters") {
+            stringScheme.pattern = "[u]{4}"
+            stringScheme.isRegex = true
+
+            assertThat(stringScheme.isSimple()).isFalse()
+        }
+
+        it("returns false if the pattern uses grouping") {
+            stringScheme.pattern = "(a|b)"
+            stringScheme.isRegex = true
+
+            assertThat(stringScheme.isSimple()).isFalse()
+        }
+
+        it("returns true if the pattern is a plain string") {
+            stringScheme.pattern = "loud"
+            stringScheme.isRegex = false
+
+            assertThat(stringScheme.isSimple()).isTrue()
+        }
+
+        it("returns true if the pattern is a plain string, even if regex interpretation is enabled") {
+            stringScheme.pattern = "shield"
+            stringScheme.isRegex = true
+
+            assertThat(stringScheme.isSimple()).isTrue()
+        }
+
+        it("returns true if the pattern contains an escaped character, even if regex interpretation is disabled") {
+            stringScheme.pattern = "wi\\\\ll"
+            stringScheme.isRegex = false
+
+            assertThat(stringScheme.isSimple()).isTrue()
+        }
+
+        it("returns true if the pattern contains an escaped character") {
+            stringScheme.pattern = "kit\\chen"
+            stringScheme.isRegex = true
+
+            assertThat(stringScheme.isSimple()).isTrue()
+        }
+
+        it("returns true if the pattern contains an escaped backslash") {
+            stringScheme.pattern = "bo\\\\ttle"
+            stringScheme.isRegex = true
+
+            assertThat(stringScheme.isSimple()).isTrue()
+        }
+
+        it("returns true if the pattern contains a regex, but regex interpretation is disabled") {
+            stringScheme.pattern = "[a-z]{4}"
+            stringScheme.isRegex = false
+
+            assertThat(stringScheme.isSimple()).isTrue()
+        }
+    }
+
+
     describe("doValidate") {
         it("passes for the default settings") {
             assertThat(stringScheme.doValidate()).isNull()

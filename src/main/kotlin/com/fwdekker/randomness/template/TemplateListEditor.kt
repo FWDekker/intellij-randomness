@@ -132,7 +132,6 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
                     )
                 }
 
-
                 editor.applyState() // Apply validation fixes from UI
                 templateTree.myModel.fireNodeStructureChanged(selectedNode)
                 schemeEditorPanel.revalidate() // Show editor immediately
