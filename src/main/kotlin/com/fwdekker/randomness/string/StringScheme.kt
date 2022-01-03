@@ -70,7 +70,7 @@ data class StringScheme(
      */
     fun isSimple() =
         doValidate() == null &&
-            generateStrings()[0] == (if (isRegex) pattern.replace(Regex("\\\\(.)"), "$1") else pattern)
+            generateStrings()[0] == if (isRegex) pattern.replace(Regex("\\\\(.)"), "$1") else pattern
 
 
     override fun doValidate(): String? {
