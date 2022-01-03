@@ -27,7 +27,7 @@ class JDateTimeField(private val default: LocalDateTime) : JFormattedTextField(D
      * @param value the [LocalDateTime] to set
      */
     override fun setValue(value: Any) {
-        require(value is LocalDateTime) { Bundle("datetimefield.error.invalid_type") }
+        require(value is LocalDateTime) { Bundle("datetime_field.error.invalid_type") }
 
         super.setValue(value)
     }
@@ -46,7 +46,7 @@ class JDateTimeField(private val default: LocalDateTime) : JFormattedTextField(D
          */
         override fun stringToValue(text: String?): LocalDateTime =
             if (text.isNullOrBlank())
-                throw ParseException(Bundle("datetimefield.error.empty_string"), 0)
+                throw ParseException(Bundle("datetime_field.error.empty_string"), 0)
             else
                 try {
                     DateParserUtils.parseDateTime(text)
@@ -61,7 +61,7 @@ class JDateTimeField(private val default: LocalDateTime) : JFormattedTextField(D
          * @return the ISO-8601-ish representation of [value], which must be a [LocalDateTime]
          */
         override fun valueToString(value: Any?): String =
-            if (value !is LocalDateTime) throw ParseException(Bundle("datetimefield.error.invalid_type"), 0)
+            if (value !is LocalDateTime) throw ParseException(Bundle("datetime_field.error.invalid_type"), 0)
             else java.time.format.DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).format(value)
     }
 

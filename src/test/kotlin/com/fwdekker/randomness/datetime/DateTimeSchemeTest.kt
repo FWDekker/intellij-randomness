@@ -43,7 +43,7 @@ object DateTimeSchemeTest : Spek({
         }
 
         it("generates a date according to the given format") {
-            dateTimeScheme.pattern = "YYYY.MM"
+            dateTimeScheme.pattern = "yyyy.MM"
 
             val generatedStrings = dateTimeScheme.generateStrings(1000)
 
@@ -66,7 +66,7 @@ object DateTimeSchemeTest : Spek({
         }
 
         it("fails if the date-time pattern is invalid") {
-            dateTimeScheme.pattern = "YYYY-ffff"
+            dateTimeScheme.pattern = "yyyy-ffff"
 
             assertThat(dateTimeScheme.doValidate()).isEqualTo("Unknown pattern letter: f")
         }

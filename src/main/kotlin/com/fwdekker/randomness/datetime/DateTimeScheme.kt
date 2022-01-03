@@ -86,7 +86,7 @@ data class DateTimeScheme(
         /**
          * The default value of the [pattern] field.
          */
-        const val DEFAULT_PATTERN: String = "YYYY-MM-dd HH:mm:ss"
+        const val DEFAULT_PATTERN: String = "yyyy-MM-dd HH:mm:ss"
     }
 }
 

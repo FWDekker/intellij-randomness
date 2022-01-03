@@ -6,6 +6,8 @@ import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.JDateTimeField
 import com.fwdekker.randomness.ui.addChangeListener
 import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.BrowserLink
 import javax.swing.JButton
 import javax.swing.JPanel
@@ -23,6 +25,7 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
     override val preferredFocusedComponent
         get() = rootComponent
 
+    private lateinit var valueSeparator: TitledSeparator
     private lateinit var minDateTimeField: JDateTimeField
     private lateinit var maxDateTimeField: JDateTimeField
     private lateinit var patternField: JTextField
@@ -44,6 +47,8 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        valueSeparator = SeparatorFactory.createSeparator(Bundle("datetime.ui.value_separator"), null)
+
         minDateTimeField = JDateTimeField(DateTimeScheme.DEFAULT_MIN_DATE_TIME.toLocalDateTime())
         maxDateTimeField = JDateTimeField(DateTimeScheme.DEFAULT_MAX_DATE_TIME.toLocalDateTime())
 
