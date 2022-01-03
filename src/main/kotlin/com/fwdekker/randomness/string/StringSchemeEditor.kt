@@ -9,9 +9,13 @@ import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
+import com.intellij.ui.components.BrowserLink
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.util.ui.UI
 import javax.swing.ButtonGroup
+import javax.swing.JButton
 import javax.swing.JCheckBox
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -29,7 +33,9 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
     override val preferredFocusedComponent
         get() = patternField
 
+    private lateinit var valueSeparator: TitledSeparator
     private lateinit var patternField: JTextField
+    private lateinit var patternHelpButton: JButton
     private lateinit var isRegexCheckBox: JCheckBox
     private lateinit var capitalizationLabel: JLabel
     private lateinit var capitalizationGroup: ButtonGroup
@@ -54,6 +60,13 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        valueSeparator = SeparatorFactory.createSeparator(Bundle("string.ui.value_separator"), null)
+
+        patternHelpButton = BrowserLink(
+            Bundle("string.ui.pattern_help"),
+            "https://github.com/curious-odd-man/RgxGen/tree/1.3#supported-syntax"
+        )
+
         removeLookAlikeSymbolsCheckBox = JBCheckBox(Bundle("string.ui.remove_look_alike"))
             .also { box ->
                 box.name = "removeLookAlikeCharacters"

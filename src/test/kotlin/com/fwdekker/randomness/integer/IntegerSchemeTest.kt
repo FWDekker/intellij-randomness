@@ -141,7 +141,7 @@ object IntegerSchemeTest : Spek({
         }
 
         it("fails if the array decorator is invalid") {
-            integerScheme.arrayDecorator.count = -584
+            integerScheme.arrayDecorator.minCount = -584
 
             assertThat(integerScheme.doValidate()).isNotNull()
         }
@@ -185,16 +185,16 @@ object IntegerSchemeTest : Spek({
         it("creates an independent copy") {
             integerScheme.minValue = 159
             integerScheme.fixedLengthDecorator.length = 67
-            integerScheme.arrayDecorator.count = 757
+            integerScheme.arrayDecorator.minCount = 757
 
             val copy = integerScheme.deepCopy()
             copy.minValue = 48
             copy.fixedLengthDecorator.length = 61
-            copy.arrayDecorator.count = 554
+            copy.arrayDecorator.minCount = 554
 
             assertThat(integerScheme.minValue).isEqualTo(159)
             assertThat(integerScheme.fixedLengthDecorator.length).isEqualTo(67)
-            assertThat(integerScheme.arrayDecorator.count).isEqualTo(757)
+            assertThat(integerScheme.arrayDecorator.minCount).isEqualTo(757)
         }
     }
 
@@ -209,7 +209,7 @@ object IntegerSchemeTest : Spek({
             integerScheme.prefix = "M9d1uey"
             integerScheme.suffix = "m45tL1"
             integerScheme.fixedLengthDecorator.length = 87
-            integerScheme.arrayDecorator.count = 963
+            integerScheme.arrayDecorator.minCount = 963
 
             val newScheme = IntegerScheme()
             newScheme.copyFrom(integerScheme)

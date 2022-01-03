@@ -1,8 +1,6 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -20,27 +18,10 @@ class TemplateEditor(template: Template) : StateEditor<Template>(template) {
         get() = nameInput
 
     private lateinit var nameInput: JTextField
-    private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
-    private lateinit var arrayDecoratorEditorPanel: JPanel
 
 
     init {
         loadState()
-    }
-
-    /**
-     * Initializes custom UI components.
-     *
-     * This method is called by the scene builder at the start of the constructor.
-     */
-    @Suppress("UnusedPrivateMember") // Used by scene builder
-    private fun createUIComponents() {
-        arrayDecoratorEditor = ArrayDecoratorEditor(
-            originalState.arrayDecorator,
-            disablable = false,
-            helpText = Bundle("template.array_help")
-        )
-        arrayDecoratorEditorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
@@ -48,17 +29,15 @@ class TemplateEditor(template: Template) : StateEditor<Template>(template) {
         super.loadState(state)
 
         nameInput.text = state.name.trim()
-        arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
         Template(
             name = nameInput.text.trim(),
             schemes = originalState.schemes.map { it.deepCopy(retainUuid = true) },
-            arrayDecorator = arrayDecoratorEditor.readState().also { it.enabled = false }
+            arrayDecorator = originalState.arrayDecorator.deepCopy(retainUuid = true).also { it.enabled = false }
         ).also { it.uuid = originalState.uuid }
 
 
-    override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(nameInput, arrayDecoratorEditor, listener = listener)
+    override fun addChangeListener(listener: () -> Unit) = addChangeListenerTo(nameInput, listener = listener)
 }

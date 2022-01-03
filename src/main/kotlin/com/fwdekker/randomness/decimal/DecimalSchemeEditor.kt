@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.decimal
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_DECIMAL_SEPARATOR
@@ -17,6 +18,8 @@ import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JLabel
@@ -36,6 +39,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
     override val preferredFocusedComponent
         get() = minValue.editorComponent
 
+    private lateinit var valueSeparator: TitledSeparator
     private lateinit var minValue: JDoubleSpinner
     private lateinit var maxValue: JDoubleSpinner
     private lateinit var decimalCount: JIntSpinner
@@ -75,6 +79,8 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        valueSeparator = SeparatorFactory.createSeparator(Bundle("decimal.ui.value_separator"), null)
+
         minValue = JDoubleSpinner()
         maxValue = JDoubleSpinner()
         bindSpinners(minValue, maxValue, MAX_VALUE_DIFFERENCE)

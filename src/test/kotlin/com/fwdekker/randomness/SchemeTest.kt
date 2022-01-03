@@ -84,7 +84,8 @@ object SchemeTest : Spek({
 
         it("returns decorated strings if there is a decorator") {
             scheme.arrayDecorator.enabled = true
-            scheme.arrayDecorator.count = 1
+            scheme.arrayDecorator.minCount = 1
+            scheme.arrayDecorator.maxCount = 1
 
             assertThat(scheme.generateStrings(2))
                 .containsExactly("[${DummyScheme.DEFAULT_OUTPUT}]", "[${DummyScheme.DEFAULT_OUTPUT}]")
@@ -92,12 +93,12 @@ object SchemeTest : Spek({
 
         it("applies decorators on each other in ascending order") {
             scheme.decorators = listOf(
-                ArrayDecorator(enabled = true, count = 2),
-                ArrayDecorator(enabled = true, count = 3),
+                ArrayDecorator(enabled = true, minCount = 2, maxCount = 2),
+                ArrayDecorator(enabled = true, minCount = 3, maxCount = 3),
             )
             scheme.literals = listOf("save")
 
-            assertThat(scheme.generateStrings(1)).containsExactly("[[save, save], [save, save], [save, save]]")
+            assertThat(scheme.generateStrings()).containsExactly("[[save, save], [save, save], [save, save]]")
         }
     }
 })

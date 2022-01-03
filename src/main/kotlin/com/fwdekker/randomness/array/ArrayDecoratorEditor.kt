@@ -4,18 +4,17 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecorator.Companion.DEFAULT_BRACKETS
 import com.fwdekker.randomness.array.ArrayDecorator.Companion.DEFAULT_SEPARATOR
-import com.fwdekker.randomness.array.ArrayDecorator.Companion.MIN_COUNT
+import com.fwdekker.randomness.array.ArrayDecorator.Companion.MIN_MIN_COUNT
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
-import com.intellij.ui.components.JBLabel
-import com.intellij.util.ui.JBUI
 import java.awt.Component
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
@@ -32,24 +31,22 @@ import javax.swing.event.ChangeEvent
  * @param disablable `true` if and only if the user has the option of disabling the array scheme. If this is set to
  * `false`, [readState] will return a decorator which is always enabled.
  * @param showSeparator `true` if and only if a titled separator should be shown at the top
- * @param helpText the text displayed at the top
  */
 @Suppress("LateinitUsage") // Initialized by scene builder
 class ArrayDecoratorEditor(
     settings: ArrayDecorator,
     disablable: Boolean = true,
-    helpText: String? = null,
     showSeparator: Boolean = true
 ) : StateEditor<ArrayDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent
-        get() = countSpinner.editorComponent
+        get() = minCountSpinner.editorComponent
 
     private lateinit var separator: TitledSeparator
     private lateinit var enabledCheckBox: JCheckBox
-    private lateinit var helpLabel: JLabel
     private lateinit var controlPanel: JPanel
-    private lateinit var countSpinner: JIntSpinner
+    private lateinit var minCountSpinner: JIntSpinner
+    private lateinit var maxCountSpinner: JIntSpinner
     private lateinit var bracketsLabel: JLabel
     private lateinit var bracketsGroup: ButtonGroup
     private lateinit var customBrackets: VariableLabelRadioButton
@@ -71,11 +68,6 @@ class ArrayDecoratorEditor(
             )
         } else {
             enabledCheckBox.isVisible = false
-        }
-
-        if (helpText != null) {
-            helpLabel.text = "<html>$helpText"
-            helpLabel.isVisible = true
         }
 
         if (!showSeparator) separator.isVisible = false
@@ -104,12 +96,13 @@ class ArrayDecoratorEditor(
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         separator = SeparatorFactory.createSeparator(Bundle("array.title"), null)
-        helpLabel = JBLabel().also { it.foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND }
 
         customBrackets = VariableLabelRadioButton(UIConstants.WIDTH_MEDIUM)
         customSeparator = VariableLabelRadioButton()
 
-        countSpinner = JIntSpinner(value = MIN_COUNT, minValue = MIN_COUNT)
+        minCountSpinner = JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT)
+        maxCountSpinner = JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT)
+        bindSpinners(minCountSpinner, maxCountSpinner)
     }
 
 
@@ -117,7 +110,8 @@ class ArrayDecoratorEditor(
         super.loadState(state)
 
         enabledCheckBox.isSelected = state.enabled
-        countSpinner.value = state.count
+        minCountSpinner.value = state.minCount
+        maxCountSpinner.value = state.maxCount
         customBrackets.label = state.customBrackets
         bracketsGroup.setValue(state.brackets)
         customSeparator.label = state.customSeparator
@@ -128,7 +122,8 @@ class ArrayDecoratorEditor(
     override fun readState(): ArrayDecorator =
         ArrayDecorator(
             enabled = enabledCheckBox.isSelected,
-            count = countSpinner.value,
+            minCount = minCountSpinner.value,
+            maxCount = maxCountSpinner.value,
             brackets = bracketsGroup.getValue() ?: DEFAULT_BRACKETS,
             customBrackets = customBrackets.label,
             separator = separatorGroup.getValue() ?: DEFAULT_SEPARATOR,
@@ -139,8 +134,8 @@ class ArrayDecoratorEditor(
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            enabledCheckBox, countSpinner, bracketsGroup, customBrackets, separatorGroup, customSeparator,
-            spaceAfterSeparatorCheckBox,
+            enabledCheckBox, minCountSpinner, maxCountSpinner, bracketsGroup, customBrackets, separatorGroup,
+            customSeparator, spaceAfterSeparatorCheckBox,
             listener = listener
         )
 }

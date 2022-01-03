@@ -131,8 +131,8 @@ class DummySettingsConfigurable : SettingsConfigurable() {
  *
  * Mostly for testing and demonstration purposes.
  *
- * @property dummySupplier Generates dummy values to insert.
  * @param repeat `true` if and only if the same value should be inserted at each caret
+ * @property dummySupplier Generates dummy values to insert.
  */
 class DummyInsertAction(repeat: Boolean = false, private val dummySupplier: (Random) -> String) : InsertAction(repeat) {
     override val icon: Icon? = null

@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Box
+import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.array.ArrayDecorator
 import org.assertj.core.api.Assertions.assertThat
@@ -75,17 +76,90 @@ object TemplateReferenceEditorTest : Spek({
             assertThat((frame.list().target().model as DefaultListModel<Template>).elements().toList())
                 .doesNotContain(reference.parent)
         }
+
+        it("loads the scheme's quotation") {
+            GuiActionRunner.execute {
+                reference.quotation = "'"
+                editor.loadState(reference)
+            }
+
+            frame.radioButton("quotationNone").requireSelected(false)
+            frame.radioButton("quotationSingle").requireSelected(true)
+            frame.radioButton("quotationDouble").requireSelected(false)
+            frame.radioButton("quotationBacktick").requireSelected(false)
+            frame.panel("quotationCustom").radioButton().requireSelected(false)
+        }
+
+        it("loads the scheme's custom quotation") {
+            GuiActionRunner.execute {
+                reference.customQuotation = "nL"
+                editor.loadState(reference)
+            }
+
+            frame.panel("quotationCustom").textBox().requireText("nL")
+        }
+
+        it("selects the scheme's custom quotation") {
+            GuiActionRunner.execute {
+                reference.quotation = "5"
+                reference.customQuotation = "5"
+                editor.loadState(reference)
+            }
+
+            frame.panel("quotationCustom").radioButton().requireSelected()
+        }
+
+        it("loads the scheme's capitalization") {
+            GuiActionRunner.execute {
+                reference.capitalization = CapitalizationMode.RETAIN
+                editor.loadState(reference)
+            }
+
+            frame.radioButton("capitalizationRetain").requireSelected(true)
+            frame.radioButton("capitalizationLower").requireSelected(false)
+            frame.radioButton("capitalizationUpper").requireSelected(false)
+            frame.radioButton("capitalizationRandom").requireSelected(false)
+            frame.radioButton("capitalizationSentence").requireSelected(false)
+            frame.radioButton("capitalizationFirstLetter").requireSelected(false)
+        }
     }
 
     describe("readState") {
+        describe("defaults") {
+            it("returns default quotation if no quotation is selected") {
+                GuiActionRunner.execute {
+                    reference.quotation = "unsupported"
+                    editor.loadState(reference)
+                }
+
+                assertThat(editor.readState().quotation).isEqualTo(TemplateReference.DEFAULT_QUOTATION)
+            }
+
+            it("returns default capitalization if unknown capitalization is selected") {
+                GuiActionRunner.execute {
+                    reference.capitalization = CapitalizationMode.DUMMY
+                    editor.loadState(reference)
+                }
+
+                assertThat(editor.readState().capitalization).isEqualTo(TemplateReference.DEFAULT_CAPITALIZATION)
+            }
+        }
+
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
 
         it("returns the editor's state") {
-            GuiActionRunner.execute { frame.list().target().setSelectedValue(templateList.templates[2], false) }
+            GuiActionRunner.execute {
+                frame.list().target().setSelectedValue(templateList.templates[2], false)
+                frame.radioButton("quotationBacktick").target().isSelected = true
+                frame.radioButton("capitalizationRandom").target().isSelected = true
+            }
 
-            assertThat(editor.readState().template).isEqualTo(templateList.templates[2])
+            val readScheme = editor.readState()
+            assertThat(readScheme.template).isEqualTo(templateList.templates[2])
+            assertThat(readScheme.quotation).isEqualTo("`")
+            assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.RANDOM)
         }
 
         it("returns the loaded state if no editor changes are made") {
@@ -138,7 +212,7 @@ object TemplateReferenceEditorTest : Spek({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 59 }
+            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 59 }
 
             assertThat(listenerInvoked).isTrue()
         }

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.integer
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
@@ -17,6 +18,8 @@ import com.fwdekker.randomness.ui.forEach
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
+import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.TitledSeparator
 import javax.swing.ButtonGroup
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -35,6 +38,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
     override val preferredFocusedComponent
         get() = minValue.editorComponent
 
+    private lateinit var valueSeparator: TitledSeparator
     private lateinit var minValue: JLongSpinner
     private lateinit var maxValue: JLongSpinner
     private lateinit var base: JIntSpinner
@@ -76,6 +80,8 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
      */
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
+        valueSeparator = SeparatorFactory.createSeparator(Bundle("integer.ui.value_separator"), null)
+
         minValue = JLongSpinner()
         maxValue = JLongSpinner()
         bindSpinners(minValue, maxValue, maxRange = null)

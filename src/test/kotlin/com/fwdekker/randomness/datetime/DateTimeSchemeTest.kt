@@ -43,7 +43,7 @@ object DateTimeSchemeTest : Spek({
         }
 
         it("generates a date according to the given format") {
-            dateTimeScheme.pattern = "YYYY.MM"
+            dateTimeScheme.pattern = "yyyy.MM"
 
             val generatedStrings = dateTimeScheme.generateStrings(1000)
 
@@ -66,7 +66,7 @@ object DateTimeSchemeTest : Spek({
         }
 
         it("fails if the date-time pattern is invalid") {
-            dateTimeScheme.pattern = "YYYY-ffff"
+            dateTimeScheme.pattern = "yyyy-ffff"
 
             assertThat(dateTimeScheme.doValidate()).isEqualTo("Unknown pattern letter: f")
         }
@@ -75,14 +75,14 @@ object DateTimeSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             dateTimeScheme.minDateTime = 952_549
-            dateTimeScheme.arrayDecorator.count = 567
+            dateTimeScheme.arrayDecorator.minCount = 567
 
             val copy = dateTimeScheme.deepCopy()
             copy.minDateTime = 356_934
-            copy.arrayDecorator.count = 30
+            copy.arrayDecorator.minCount = 30
 
             assertThat(dateTimeScheme.minDateTime).isEqualTo(952_549)
-            assertThat(dateTimeScheme.arrayDecorator.count).isEqualTo(567)
+            assertThat(dateTimeScheme.arrayDecorator.minCount).isEqualTo(567)
         }
     }
 
@@ -91,7 +91,7 @@ object DateTimeSchemeTest : Spek({
             dateTimeScheme.minDateTime = 445
             dateTimeScheme.maxDateTime = 478
             dateTimeScheme.pattern = "mm-Y"
-            dateTimeScheme.arrayDecorator.count = 904
+            dateTimeScheme.arrayDecorator.minCount = 904
 
             val newScheme = DateTimeScheme()
             newScheme.copyFrom(dateTimeScheme)

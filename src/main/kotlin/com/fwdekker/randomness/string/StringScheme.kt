@@ -63,6 +63,16 @@ data class StringScheme(
     }
 
 
+    /**
+     * Returns `true` if and only if this scheme does not use any regex functionality beyond escape characters.
+     *
+     * @return `true` if and only if this scheme does not use any regex functionality beyond escape characters
+     */
+    fun isSimple() =
+        doValidate() == null &&
+            generateStrings()[0] == if (isRegex) pattern.replace(Regex("\\\\(.)"), "$1") else pattern
+
+
     override fun doValidate(): String? {
         if (isRegex) {
             if (pattern.takeLastWhile { it == '\\' }.length.mod(2) != 0)
