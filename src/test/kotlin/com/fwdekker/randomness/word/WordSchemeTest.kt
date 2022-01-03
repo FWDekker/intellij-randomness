@@ -79,7 +79,7 @@ object WordSchemeTest : Spek({
         }
 
         it("fails if the decorator is invalid") {
-            wordScheme.arrayDecorator.count = -88
+            wordScheme.arrayDecorator.minCount = -88
 
             assertThat(wordScheme.doValidate()).isNotNull()
         }
@@ -100,14 +100,14 @@ object WordSchemeTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             wordScheme.words = listOf("soul", "suspect", "due")
-            wordScheme.arrayDecorator.count = 333
+            wordScheme.arrayDecorator.minCount = 333
 
             val copy = wordScheme.deepCopy()
             copy.words = listOf("lonely", "travel", "alive")
-            copy.arrayDecorator.count = 531
+            copy.arrayDecorator.minCount = 531
 
             assertThat(wordScheme.words).containsExactly("soul", "suspect", "due")
-            assertThat(wordScheme.arrayDecorator.count).isEqualTo(333)
+            assertThat(wordScheme.arrayDecorator.minCount).isEqualTo(333)
         }
 
         it("creates an independent list of words") {
@@ -131,7 +131,7 @@ object WordSchemeTest : Spek({
             wordScheme.quotation = "xs"
             wordScheme.customQuotation = "Ae"
             wordScheme.capitalization = CapitalizationMode.LOWER
-            wordScheme.arrayDecorator.count = 513
+            wordScheme.arrayDecorator.minCount = 513
 
             val newScheme = WordScheme()
             newScheme.copyFrom(wordScheme)

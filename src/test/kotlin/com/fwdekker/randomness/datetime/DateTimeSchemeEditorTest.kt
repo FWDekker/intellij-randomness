@@ -160,7 +160,7 @@ object DateTimeSchemeEditorTest : Spek({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 940 }
+            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 940 }
 
             assertThat(listenerInvoked).isTrue()
         }

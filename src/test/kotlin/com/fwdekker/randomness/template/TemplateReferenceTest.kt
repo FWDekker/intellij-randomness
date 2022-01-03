@@ -170,7 +170,8 @@ object TemplateReferenceTest : Spek({
                 schemes = listOf(
                     DummyScheme.from("bus").also {
                         it.arrayDecorator.enabled = true
-                        it.arrayDecorator.count = 6
+                        it.arrayDecorator.minCount = 6
+                        it.arrayDecorator.maxCount = 6
                     }
                 )
             )
@@ -233,7 +234,7 @@ object TemplateReferenceTest : Spek({
         }
 
         it("fails if the decorator is invalid") {
-            reference.arrayDecorator.count = -36
+            reference.arrayDecorator.minCount = -36
 
             assertThat(reference.doValidate()).isNotNull()
         }
@@ -242,14 +243,14 @@ object TemplateReferenceTest : Spek({
     describe("deepCopy") {
         it("creates an independent copy") {
             reference.templateUuid = "5d5e755f-73b9-4929-9878-17708d436f79"
-            reference.arrayDecorator.count = 803
+            reference.arrayDecorator.minCount = 803
 
             val copy = reference.deepCopy()
             copy.templateUuid = "e5ffae74-0142-433f-a3f3-1b1bfa1aa0fa"
-            copy.arrayDecorator.count = 431
+            copy.arrayDecorator.minCount = 431
 
             assertThat(reference.templateUuid).isEqualTo("5d5e755f-73b9-4929-9878-17708d436f79")
-            assertThat(reference.arrayDecorator.count).isEqualTo(803)
+            assertThat(reference.arrayDecorator.minCount).isEqualTo(803)
         }
 
         it("creates an independent copy of the template list box") {
@@ -276,7 +277,7 @@ object TemplateReferenceTest : Spek({
 
         it("copies state from another instance") {
             reference.templateUuid = "1e97e778-8698-4c29-ad1a-2bd892be6292"
-            reference.arrayDecorator.count = 249
+            reference.arrayDecorator.minCount = 249
 
             val newScheme = TemplateReference()
             newScheme.copyFrom(reference)

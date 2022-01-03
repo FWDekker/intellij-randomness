@@ -103,7 +103,7 @@ object StringSchemeTest : Spek({
         }
 
         it("fails if the decorator is invalid") {
-            stringScheme.arrayDecorator.count = -985
+            stringScheme.arrayDecorator.minCount = -985
 
             assertThat(stringScheme.doValidate()).isNotNull()
         }
@@ -113,16 +113,16 @@ object StringSchemeTest : Spek({
         it("creates an independent copy") {
             stringScheme.pattern = "compose"
             stringScheme.isRegex = false
-            stringScheme.arrayDecorator.count = 943
+            stringScheme.arrayDecorator.minCount = 943
 
             val copy = stringScheme.deepCopy()
             copy.pattern = "tidy"
             copy.isRegex = true
-            copy.arrayDecorator.count = 173
+            copy.arrayDecorator.minCount = 173
 
             assertThat(stringScheme.pattern).isEqualTo("compose")
             assertThat(stringScheme.isRegex).isEqualTo(false)
-            assertThat(stringScheme.arrayDecorator.count).isEqualTo(943)
+            assertThat(stringScheme.arrayDecorator.minCount).isEqualTo(943)
         }
     }
 
@@ -132,7 +132,7 @@ object StringSchemeTest : Spek({
             stringScheme.isRegex = false
             stringScheme.capitalization = CapitalizationMode.RANDOM
             stringScheme.removeLookAlikeSymbols = true
-            stringScheme.arrayDecorator.count = 249
+            stringScheme.arrayDecorator.minCount = 249
 
             val newScheme = StringScheme()
             newScheme.copyFrom(stringScheme)

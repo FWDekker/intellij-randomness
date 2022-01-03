@@ -219,7 +219,7 @@ object DecimalSchemeEditorTest : Spek({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("arrayCount").target().value = 528 }
+            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 528 }
 
             assertThat(listenerInvoked).isTrue()
         }
