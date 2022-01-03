@@ -128,7 +128,7 @@ object WordSchemeTest : Spek({
 
         it("copies state from another instance") {
             wordScheme.words = listOf("strap", "tip", "tray")
-            wordScheme.quotation = "xs"
+            wordScheme.quotation = "'"
             wordScheme.customQuotation = "Ae"
             wordScheme.capitalization = CapitalizationMode.LOWER
             wordScheme.arrayDecorator.minCount = 513

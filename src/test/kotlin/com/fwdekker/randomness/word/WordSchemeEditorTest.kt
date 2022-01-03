@@ -99,7 +99,7 @@ object WordSchemeEditorTest : Spek({
                 assertThat(editor.readState().quotation).isEqualTo(WordScheme.DEFAULT_QUOTATION)
             }
 
-            it("returns default brackets if no brackets are selected") {
+            it("returns default capitalization if unknown capitalization is selected") {
                 GuiActionRunner.execute { editor.loadState(WordScheme(capitalization = CapitalizationMode.DUMMY)) }
 
                 assertThat(editor.readState().capitalization).isEqualTo(WordScheme.DEFAULT_CAPITALIZATION)

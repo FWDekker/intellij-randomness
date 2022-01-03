@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Box
+import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.OverlayIcon
@@ -18,12 +20,16 @@ import org.spekframework.spek2.style.specification.describe
 object TemplateReferenceTest : Spek({
     lateinit var templateList: TemplateList
     lateinit var reference: TemplateReference
+    lateinit var companion: Template
 
 
     beforeEachTest {
         reference = TemplateReference()
-        templateList = TemplateList.from(reference)
+        companion = Template("station", listOf(DummyScheme.from("bus")))
+
+        templateList = TemplateList(listOf(companion, Template("reference", listOf(reference))))
         reference.templateList = Box({ templateList })
+        reference.templateUuid = companion.uuid
     }
 
 
@@ -157,30 +163,48 @@ object TemplateReferenceTest : Spek({
         }
 
         it("returns the referenced template's value") {
-            templateList.templates = listOf(Template(schemes = listOf(DummyScheme.from("bus"))))
-
-            reference.templateUuid = templateList.templates.single().uuid
-
-            assertThat(reference.generateStrings(2))
-                .containsExactlyElementsOf(templateList.templates.single().generateStrings(2))
+            assertThat(reference.generateStrings(2)).isEqualTo(companion.generateStrings(2))
         }
 
         it("returns an array of strings if the referenced scheme returns an array of schemes") {
-            val template = Template(
-                schemes = listOf(
-                    DummyScheme.from("bus").also {
-                        it.arrayDecorator.enabled = true
-                        it.arrayDecorator.minCount = 6
-                        it.arrayDecorator.maxCount = 6
-                    }
-                )
-            )
-            templateList.templates = listOf(template)
+            companion.arrayDecorator.also {
+                it.enabled = true
+                it.minCount = 6
+                it.maxCount = 6
+            }
 
-            reference.templateUuid = templateList.templates.single().uuid
+            reference.templateUuid = companion.uuid
 
-            assertThat(reference.generateStrings(2))
-                .containsExactlyElementsOf(templateList.templates.single().generateStrings(2))
+            assertThat(reference.generateStrings(2)).isEqualTo(companion.generateStrings(2))
+        }
+
+        describe("quotation") {
+            it("adds no quotations if the quotations are an empty string") {
+                reference.quotation = ""
+
+                assertThat(reference.generateStrings().single()).isEqualTo("bus")
+            }
+
+            it("repeats the first character of the quotations on both ends") {
+                reference.quotation = "L"
+
+                assertThat(reference.generateStrings().single()).isEqualTo("LbusL")
+            }
+
+            it("surrounds the output with the respective characters of the quotation string") {
+                reference.quotation = "pn"
+
+                assertThat(reference.generateStrings().single()).isEqualTo("pbusn")
+            }
+        }
+
+        describe("capitalization") {
+            it("applies the given capitalization") {
+                reference.quotation = ""
+                reference.capitalization = CapitalizationMode.UPPER
+
+                assertThat(reference.generateStrings().single()).isEqualTo("BUS")
+            }
         }
     }
 
@@ -196,12 +220,7 @@ object TemplateReferenceTest : Spek({
 
 
     describe("doValidate") {
-        it("passes for valid settings") {
-            val template = Template(schemes = listOf(DummyScheme()))
-            templateList.templates = listOf(template)
-
-            reference.templateUuid = template.uuid
-
+        it("passes for the default settings, after setting the template to reference") {
             assertThat(reference.doValidate()).isNull()
         }
 
@@ -212,9 +231,6 @@ object TemplateReferenceTest : Spek({
         }
 
         it("fails if the template cannot be found in the list") {
-            val template = Template(schemes = listOf(DummyScheme()))
-            templateList.templates = listOf(template)
-
             reference.templateUuid = "ca27e68d-11be-4679-af92-4f5f13c69772"
 
             assertThat(reference.doValidate()).isEqualTo("Cannot find referenced template.")
@@ -222,15 +238,21 @@ object TemplateReferenceTest : Spek({
 
         it("fails if the reference is recursive") {
             val otherReference = TemplateReference().also { it.templateList += templateList }
-            val otherTemplate = Template("Ray", listOf(otherReference))
-            reference.template = otherTemplate
-            val template = Template("Various", listOf(reference))
 
+            val otherTemplate = Template("Ray", listOf(otherReference))
+            val template = Template("Various", listOf(reference))
             otherReference.template = template
             reference.template = otherTemplate
+
             templateList.templates = listOf(template, otherTemplate)
 
             assertThat(reference.doValidate()).isEqualTo("Found recursion: (Various → Ray → Various)")
+        }
+
+        it("fails if the custom quotation has more than two characters") {
+            reference.customQuotation = "week"
+
+            assertThat(reference.doValidate()).isEqualTo(Bundle("reference.error.quotation_length"))
         }
 
         it("fails if the decorator is invalid") {
@@ -277,6 +299,9 @@ object TemplateReferenceTest : Spek({
 
         it("copies state from another instance") {
             reference.templateUuid = "1e97e778-8698-4c29-ad1a-2bd892be6292"
+            reference.quotation = "fe"
+            reference.customQuotation = "fe"
+            reference.capitalization = CapitalizationMode.RANDOM
             reference.arrayDecorator.minCount = 249
 
             val newScheme = TemplateReference()
