@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.io.IOException
+import kotlin.system.measureNanoTime
 
 
 /**
@@ -37,6 +38,37 @@ class DefaultWordListTest : Spek({
             val list = DefaultWordList("wander", "word-lists/with-blank-lines.txt")
 
             assertThat(list.words).containsExactly("afraid", "dive", "snow", "enemy")
+        }
+
+        describe("caching") {
+            it("throws an exception again if the words are read again") {
+                val list = DefaultWordList("bound", "word-lists/does-not-exist.txt")
+
+                assertThatThrownBy { list.words }.isInstanceOf(IOException::class.java)
+                    .hasMessage(Bundle("word_list.error.file_not_found"))
+
+                assertThatThrownBy { list.words }.isInstanceOf(IOException::class.java)
+                    .hasMessage(Bundle("word_list.error.file_not_found"))
+            }
+
+            it("returns words quicker if read again from the same instance") {
+                val list = DefaultWordList("height", "word-lists/timing-test-instance.txt")
+
+                val firstTime = measureNanoTime { list.words }
+                val secondTime = measureNanoTime { list.words }
+
+                assertThat(secondTime).isLessThan(firstTime / 2)
+            }
+
+            it("returns words quicker if read again from another instance") {
+                val firstList = DefaultWordList("charge", "word-lists/timing-test-global.txt")
+                val firstTime = measureNanoTime { firstList.words }
+
+                val secondList = DefaultWordList("charge", "word-lists/timing-test-global.txt")
+                val secondTime = measureNanoTime { secondList.words }
+
+                assertThat(secondTime).isLessThan(firstTime / 2)
+            }
         }
     }
 })
