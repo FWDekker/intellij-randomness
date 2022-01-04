@@ -54,7 +54,7 @@ object WordSchemeEditorTest : Spek({
         it("loads the scheme's words") {
             GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("summer", "another"))) }
 
-            assertThat(wordsEditor.text).isEqualTo("summer\nanother")
+            assertThat(wordsEditor.text).isEqualTo("summer\nanother\n")
         }
 
         it("loads the scheme's quotation") {
@@ -152,6 +152,83 @@ object WordSchemeEditorTest : Spek({
 
         it("retains the scheme's UUID") {
             assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
+        }
+    }
+
+
+    describe("word list insertion") {
+        lateinit var firstList: DefaultWordList
+        lateinit var firstListAsString: String
+
+
+        beforeEachTest {
+            firstList = frame.comboBox("wordListBox").target().getItemAt(1) as DefaultWordList
+            firstListAsString = firstList.words.joinToString(separator = "\n", postfix = "\n")
+        }
+
+
+        describe("pre-selection") {
+            it("selects the placeholder if the initial words do no match any word list") {
+                GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("ugly", "wait"))) }
+
+                assertThat(frame.comboBox("wordListBox").target().selectedIndex).isEqualTo(0)
+            }
+
+            it("selects the corresponding word list if the contents match that list") {
+                GuiActionRunner.execute { editor.loadState(WordScheme(words = firstList.words)) }
+
+                assertThat(frame.comboBox("wordListBox").target().selectedIndex).isEqualTo(1)
+            }
+
+            it("selects the placeholder if a word is changed") {
+                GuiActionRunner.execute { editor.loadState(WordScheme(words = firstList.words)) }
+
+                GuiActionRunner.execute {
+                    runWriteAction {
+                        wordsEditor.editor.document.setText("${firstListAsString}jealous")
+                    }
+                }
+
+                assertThat(frame.comboBox("wordListBox").target().selectedIndex).isEqualTo(0)
+            }
+
+            it("retains the non-placeholder selection if a newline is appended") {
+                GuiActionRunner.execute { editor.loadState(WordScheme(words = firstList.words)) }
+
+                GuiActionRunner.execute {
+                    runWriteAction {
+                        wordsEditor.editor.document.setText("$firstListAsString\n \n")
+                    }
+                }
+
+                assertThat(frame.comboBox("wordListBox").target().selectedIndex).isEqualTo(1)
+            }
+        }
+
+        describe("insertion") {
+            it("does nothing if the placeholder is selected") {
+                GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("street", "sell"))) }
+
+                GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 0 }
+
+                assertThat(wordsEditor.text).isEqualTo("street\nsell\n")
+            }
+
+            it("does nothing if another entry is selected and then the placeholder is selected") {
+                GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 1 }
+
+                GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 0 }
+
+                assertThat(wordsEditor.text).isEqualTo(firstListAsString)
+            }
+
+            it("inserts the words of the selected entry") {
+                GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("grow", "trip"))) }
+
+                GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 1 }
+
+                assertThat(wordsEditor.text).isEqualTo(firstListAsString)
+            }
         }
     }
 

@@ -19,7 +19,6 @@ import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
 import com.intellij.openapi.ui.Splitter
-import com.intellij.openapi.util.Disposer
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBEmptyBorder
@@ -77,7 +76,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
             if (selectedNode.state is Template) selectedNode.state
             else parentNode.state as Template
-        }.also { Disposer.register(this, it) }
+        }
         addChangeListener { previewPanel.updatePreview() }
         schemeEditorPanel.border = JBEmptyBorder(EDITOR_PANEL_MARGIN)
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
@@ -104,8 +103,6 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
         schemeEditor = createEditor(selectedState)
             .also { editor ->
-                Disposer.register(this, editor)
-
                 editor.addChangeListener {
                     editor.applyState()
                     templateTree.myModel.fireNodeStructureChanged(selectedNode)
@@ -179,9 +176,15 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         }
     }
 
+
     override fun addChangeListener(listener: () -> Unit) {
         templateTree.model.addTreeModelListener(SimpleTreeModelListener { listener() })
         templateTree.addTreeSelectionListener { listener() }
+    }
+
+    override fun dispose() {
+        schemeEditor?.dispose()
+        previewPanel.dispose()
     }
 
 

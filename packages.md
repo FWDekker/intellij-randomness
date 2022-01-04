@@ -40,4 +40,4 @@ Scheme for random UUIDs.
 
 # Package com.fwdekker.randomness.word
 
-Scheme for random words selected from dictionaries.
+Scheme for random words selected from word lists.

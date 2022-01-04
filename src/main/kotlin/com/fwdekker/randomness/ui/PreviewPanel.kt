@@ -7,6 +7,7 @@ import com.fwdekker.randomness.Timely.generateTimely
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.command.undo.UndoUtil
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
@@ -70,6 +71,7 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
 
         val factory = EditorFactory.getInstance()
         previewDocument = factory.createDocument(Bundle("preview.placeholder"))
+        UndoUtil.disableUndoFor(previewDocument)
         previewEditor = factory.createViewer(previewDocument)
         previewComponent = previewEditor.component
     }
