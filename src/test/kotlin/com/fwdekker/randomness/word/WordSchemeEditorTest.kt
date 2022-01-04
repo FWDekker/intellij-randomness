@@ -54,7 +54,7 @@ object WordSchemeEditorTest : Spek({
         it("loads the scheme's words") {
             GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("summer", "another"))) }
 
-            assertThat(wordsEditor.text).isEqualTo("summer\nanother")
+            assertThat(wordsEditor.text).isEqualTo("summer\nanother\n")
         }
 
         it("loads the scheme's quotation") {
@@ -162,7 +162,7 @@ object WordSchemeEditorTest : Spek({
 
             GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 0 }
 
-            assertThat(wordsEditor.text).isEqualTo("street\nsell")
+            assertThat(wordsEditor.text).isEqualTo("street\nsell\n")
         }
 
         it("inserts the words of the selected entry") {
@@ -171,7 +171,7 @@ object WordSchemeEditorTest : Spek({
             GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 1 }
 
             val expectedList = frame.comboBox("wordListBox").target().getItemAt(1) as DefaultWordList
-            assertThat(wordsEditor.text).isEqualTo(expectedList.words.joinToString("\n"))
+            assertThat(wordsEditor.text).isEqualTo(expectedList.words.joinToString(separator = "\n", postfix = "\n"))
         }
     }
 

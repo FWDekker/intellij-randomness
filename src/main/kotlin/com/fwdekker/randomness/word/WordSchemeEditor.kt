@@ -5,6 +5,7 @@ import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
+import com.fwdekker.randomness.ui.SimpleJBDocumentListener
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
@@ -17,6 +18,7 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
+import com.intellij.openapi.roots.ui.whenItemSelected
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
@@ -57,7 +59,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
      */
     private var wordList: List<String>
         get() = wordListDocument.text.split('\n').filterNot { it.isBlank() }
-        set(value) = runWriteAction { wordListDocument.setText(value.joinToString(separator = "\n")) }
+        set(value) = runWriteAction { wordListDocument.setText(value.joinToString(separator = "\n", postfix = "\n")) }
 
 
     init {
@@ -82,15 +84,18 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
         wordListBox = ComboBox(arrayOf(PRESET_ITEM) + DefaultWordList.wordLists)
         wordListBox.setRenderer { _, value, _, _, _ -> JBLabel(value.name) }
-        wordListBox.addActionListener {
-            if (wordListBox.selectedIndex != 0)
-                wordList = (wordListBox.selectedItem as DefaultWordList).words
-        }
+        wordListBox.whenItemSelected { if (it != PRESET_ITEM) wordList = it.words }
 
         val factory = EditorFactory.getInstance()
         wordListDocument = factory.createDocument("")
         wordListEditor = factory.createEditor(wordListDocument)
         wordListComponent = wordListEditor.component
+        wordListDocument.addDocumentListener(
+            SimpleJBDocumentListener {
+                if (wordListBox.selectedIndex != 0 && wordList != wordListBox.item.words)
+                    wordListBox.selectedIndex = 0
+            }
+        )
 
         appearanceSeparator = SeparatorFactory.createSeparator(Bundle("word.ui.appearance"), null)
         customQuotation = VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
@@ -110,6 +115,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
     override fun loadState(state: WordScheme) {
         super.loadState(state)
 
+        wordListBox.selectedIndex = DefaultWordList.wordLists.map { it.words }.indexOf(state.words) + 1
         wordList = state.words
         customQuotation.label = state.customQuotation
         quotationGroup.setValue(state.quotation)
