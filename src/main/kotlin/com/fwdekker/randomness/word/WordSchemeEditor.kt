@@ -17,8 +17,10 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
+import com.intellij.ui.components.JBLabel
 import javax.swing.ButtonGroup
 import javax.swing.JComponent
 import javax.swing.JLabel
@@ -37,6 +39,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         get() = capitalizationLabel.labelFor as JComponent
 
     private lateinit var wordListSeparator: TitledSeparator
+    private lateinit var wordListBox: ComboBox<DefaultWordList>
     private lateinit var wordListDocument: Document
     private lateinit var wordListEditor: Editor
     private lateinit var wordListComponent: JComponent
@@ -76,6 +79,14 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
     @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         wordListSeparator = SeparatorFactory.createSeparator(Bundle("word.ui.word_list"), null)
+
+        wordListBox = ComboBox(arrayOf(PRESET_ITEM) + DefaultWordList.wordLists)
+        wordListBox.setRenderer { _, value, _, _, _ -> JBLabel(value.name) }
+        wordListBox.addActionListener {
+            if (wordListBox.selectedIndex != 0)
+                wordList = (wordListBox.selectedItem as DefaultWordList).words
+        }
+
         val factory = EditorFactory.getInstance()
         wordListDocument = factory.createDocument("")
         wordListEditor = factory.createEditor(wordListDocument)
@@ -121,6 +132,18 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             wordListDocument, capitalizationGroup, quotationGroup, customQuotation, arrayDecoratorEditor,
             listener = listener
         )
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The "header" item inserted at the top of the [wordListBox].
+         */
+        val PRESET_ITEM
+            get() = DefaultWordList("<html><i>${Bundle("word_list.ui.select_preset")}</i>", "")
+    }
 }
 
 

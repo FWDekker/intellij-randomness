@@ -156,6 +156,26 @@ object WordSchemeEditorTest : Spek({
     }
 
 
+    describe("word list insertion") {
+        it("does nothing if the first entry is selected") {
+            GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("street", "sell"))) }
+
+            GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 0 }
+
+            assertThat(wordsEditor.text).isEqualTo("street\nsell")
+        }
+
+        it("inserts the words of the selected entry") {
+            GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("grow", "trip"))) }
+
+            GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 1 }
+
+            val expectedList = frame.comboBox("wordListBox").target().getItemAt(1) as DefaultWordList
+            assertThat(wordsEditor.text).isEqualTo(expectedList.words.joinToString("\n"))
+        }
+    }
+
+
     describe("addChangeListener") {
         it("invokes the listener if a field changes") {
             var listenerInvoked = false
