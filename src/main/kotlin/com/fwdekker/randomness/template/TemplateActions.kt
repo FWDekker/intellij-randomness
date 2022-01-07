@@ -9,9 +9,11 @@ import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.PreviewPanel
 import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.impl.ActionConfigurationCustomizer
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ShowSettingsUtil
 import java.awt.BorderLayout
@@ -208,4 +210,21 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
             .showSettingsDialog(event.project, TemplateSettingsConfigurable::class.java) { configurable ->
                 configurable?.also { it.templateToSelect = template?.uuid }
             }
+}
+
+/**
+ * Registers actions for the user's [Template]s so that they can be inserted using shortcuts.
+ */
+class TemplateActionLoader : ActionConfigurationCustomizer {
+    override fun customize(actionManager: ActionManager) {
+        TemplateSettings.default.state.templates.forEach { template ->
+            // TODO: Register all variants (e.g. array, repeat, etc.)
+            val newAction = TemplateInsertAction(template, array = false, repeat = false)
+
+            println("Registered initial action for `${template.name}` (${template.actionId})")
+            actionManager.registerAction(template.actionId, newAction)
+        }
+    }
+
+    // TODO: Add methods for updating
 }

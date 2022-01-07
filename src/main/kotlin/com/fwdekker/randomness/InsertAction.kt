@@ -5,6 +5,7 @@ import com.intellij.codeInsight.hint.HintManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.newEditor.SettingsDialogFactory
@@ -37,6 +38,14 @@ abstract class InsertAction(private val repeat: Boolean = false) : AnAction() {
      * Use this to make modifications to settings right before inserting strings.
      */
     protected open val configurable: Configurable? = null
+
+
+    init {
+        invokeLater {
+            templatePresentation.text = name
+            templatePresentation.icon = icon
+        }
+    }
 
 
     /**

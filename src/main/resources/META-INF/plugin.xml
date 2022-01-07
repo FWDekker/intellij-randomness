@@ -19,6 +19,8 @@
                                  id="com.fwdekker.randomness.template.TemplateSettingsConfigurable"
                                  groupId="tools"
                                  bundle="randomness" />
+
+        <actionConfigurationCustomizer implementation="com.fwdekker.randomness.template.TemplateActionLoader"/>
     </extensions>
 
     <actions>
@@ -28,6 +30,7 @@
             <keyboard-shortcut first-keystroke="alt R" keymap="$default" />
             <add-to-group group-id="GenerateGroup" anchor="last" />
             <add-to-group group-id="ToolsMenu" anchor="last" />
+            <synonym text="Random Data Generator" />
         </action>
     </actions>
 </idea-plugin>
