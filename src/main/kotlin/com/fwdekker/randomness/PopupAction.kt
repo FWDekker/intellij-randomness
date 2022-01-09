@@ -20,7 +20,7 @@ import javax.swing.KeyStroke
 /**
  * Shows a popup for all available Randomness actions.
  */
-class PopupAction : AnAction() {
+class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
     /**
      * `true` if and only if the user focused the editor when opening this popup.
      */
@@ -34,6 +34,8 @@ class PopupAction : AnAction() {
      */
     override fun update(event: AnActionEvent) {
         event.presentation.icon = RandomnessIcons.RANDOMNESS
+
+        // Running this in `actionPerformed` always sets it to `true`
         hasEditor = event.getData(CommonDataKeys.EDITOR) != null
     }
 

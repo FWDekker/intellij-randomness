@@ -28,7 +28,7 @@ import javax.swing.JPanel
  * @see TemplateInsertAction
  * @see TemplateSettingsAction
  */
-class TemplateGroupAction(private val template: Template) : ActionGroup() {
+class TemplateGroupAction(private val template: Template) : ActionGroup(template.name, null, template.icon) {
     /**
      * Returns the action that is appropriate for the given keyboard modifiers.
      *
@@ -40,18 +40,6 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
         if (settings) TemplateSettingsAction(template)
         else TemplateInsertAction(template, array = array, repeat = repeat)
 
-
-    /**
-     * Sets the title of this action.
-     *
-     * @param event carries contextual information
-     */
-    override fun update(event: AnActionEvent) {
-        super.update(event)
-
-        event.presentation.icon = template.icon
-        event.presentation.text = template.name
-    }
 
     /**
      * Returns `true`.
@@ -101,23 +89,20 @@ class TemplateGroupAction(private val template: Template) : ActionGroup() {
  *
  * @property template The template to use for inserting data.
  * @property array `true` if and only if an array of values should be inserted.
- * @property repeat `true` if and only if the same value should be inserted at each caret.
+ * @param repeat `true` if and only if the same value should be inserted at each caret
  * @see TemplateGroupAction
  */
 class TemplateInsertAction(
     private val template: Template,
     private val array: Boolean = false,
-    private val repeat: Boolean = false
-) : InsertAction() {
-    override val icon
-        get() = template.icon?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
-
-    override val name
-        get() =
-            template.name
-                .let { if (array) Bundle("template.name.array_suffix", it) else it }
-                .let { if (repeat) Bundle("template.name.repeat_prefix", it) else it }
-
+    repeat: Boolean = false
+) : InsertAction(
+    repeat = repeat,
+    text = template.name
+        .let { if (array) Bundle("template.name.array_suffix", it) else it }
+        .let { if (repeat) Bundle("template.name.repeat_prefix", it) else it },
+    icon = template.icon?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
+) {
     override val configurable
         get() =
             if (array) ArrayDecoratorConfigurable(template.arrayDecorator)
@@ -167,7 +152,7 @@ class TemplateInsertAction(
 
         override fun apply() = editor.applyState()
 
-        override fun getDisplayName() = name
+        override fun getDisplayName() = text
 
         override fun disposeUIResources() {
             editor.dispose()
@@ -183,23 +168,12 @@ class TemplateInsertAction(
  * @see TemplateGroupAction
  * @see TemplateSettingsConfigurable
  */
-class TemplateSettingsAction(private val template: Template? = null) : AnAction() {
-    /**
-     * Sets the title of this action.
-     *
-     * @param event carries contextual information
-     */
-    override fun update(event: AnActionEvent) {
-        super.update(event)
-
-        event.presentation.icon =
-            if (template?.icon == null) RandomnessIcons.SETTINGS
-            else template.icon!!.plusOverlay(OverlayIcon.SETTINGS)
-        event.presentation.text =
-            if (template == null) Bundle("template.name.settings")
-            else Bundle("template.name.settings_suffix", template.name)
-    }
-
+class TemplateSettingsAction(private val template: Template? = null) : AnAction(
+    if (template == null) Bundle("template.name.settings")
+    else Bundle("template.name.settings_suffix", template.name),
+    null,
+    template?.icon?.plusOverlay(OverlayIcon.SETTINGS) ?: RandomnessIcons.SETTINGS
+) {
     /**
      * Opens the IntelliJ settings menu at the right location to adjust the template configurable.
      *
@@ -221,7 +195,6 @@ class TemplateActionLoader : ActionConfigurationCustomizer {
             // TODO: Register all variants (e.g. array, repeat, etc.)
             val newAction = TemplateInsertAction(template, array = false, repeat = false)
 
-            println("Registered initial action for `${template.name}` (${template.actionId})")
             actionManager.registerAction(template.actionId, newAction)
         }
     }

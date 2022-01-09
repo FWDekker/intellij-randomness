@@ -5,7 +5,6 @@ import com.intellij.codeInsight.hint.HintManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.newEditor.SettingsDialogFactory
@@ -20,32 +19,22 @@ import javax.swing.Icon
  * generated.
  *
  * @property repeat `true` if and only if the same value should be inserted at each caret.
+ * @property text The text that identifies the action to the user.
+ * @param description The optional description of the action.
+ * @param icon The icon that represents the action.
  */
-abstract class InsertAction(private val repeat: Boolean = false) : AnAction() {
-    /**
-     * The icon to display as representing this action.
-     */
-    abstract val icon: Icon?
-
-    /**
-     * The name of this action.
-     */
-    abstract val name: String
-
+abstract class InsertAction(
+    val repeat: Boolean = false,
+    val text: String,
+    description: String? = null,
+    icon: Icon? = null
+) : AnAction(text, description, icon) {
     /**
      * The configurable to open as soon as the action is performed but before the strings are inserted.
      *
      * Use this to make modifications to settings right before inserting strings.
      */
     protected open val configurable: Configurable? = null
-
-
-    init {
-        invokeLater {
-            templatePresentation.text = name
-            templatePresentation.icon = icon
-        }
-    }
 
 
     /**
@@ -57,8 +46,6 @@ abstract class InsertAction(private val repeat: Boolean = false) : AnAction() {
         val presentation = event.presentation
         val editor = event.getData(CommonDataKeys.EDITOR)
 
-        presentation.icon = icon
-        presentation.text = name
         presentation.isEnabled = editor != null
     }
 
@@ -73,7 +60,7 @@ abstract class InsertAction(private val repeat: Boolean = false) : AnAction() {
         val project = event.getData(CommonDataKeys.PROJECT) ?: return
 
         configurable?.also {
-            if (!SettingsDialogFactory.getInstance().create(project, name, it, false, false).showAndGet())
+            if (!SettingsDialogFactory.getInstance().create(project, text, it, false, false).showAndGet())
                 return
         }
 
