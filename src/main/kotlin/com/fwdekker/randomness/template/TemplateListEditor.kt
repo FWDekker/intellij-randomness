@@ -18,7 +18,6 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
-import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.ui.Splitter
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBScrollPane
@@ -166,37 +165,11 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
     override fun readState() = currentState.deepCopy(retainUuid = true)
 
     override fun applyState() {
-        val oldTemplates = originalState.templateList.templates.toSet()
+        val oldList = originalState.templateList.templates.toSet()
         super.applyState()
-        val newTemplates = originalState.templateList.templates.toSet()
-//        println("Old: ${oldTemplates.map { it.uuid }}")
-//        println("New: ${newTemplates.map { it.uuid }}")
+        val newList = originalState.templateList.templates.toSet()
 
-        val manager = ActionManager.getInstance()
-//        val group = manager.getAction("GenerateGroup") as DefaultActionGroup
-        oldTemplates.filterNot { template -> template.uuid in newTemplates.map { it.uuid } }.forEach { template ->
-            val oldAction = manager.getAction(template.actionId)
-
-            if (oldAction != null) {
-                println("Removed action for `${template.name}` (${template.actionId})")
-//                group.remove(oldAction)
-                manager.unregisterAction(template.actionId)
-            }
-        }
-        newTemplates.forEach { template ->
-            val oldAction = manager.getAction(template.actionId)
-            val newAction = TemplateInsertAction(template, array = false, repeat = false)
-
-            if (oldAction == null) {
-                println("Registered action for `${template.name}` (${template.actionId})")
-                manager.registerAction(template.actionId, newAction)
-//                group.add(newAction)
-            } else {
-                println("Replaced action for `${template.name}` (${template.actionId})")
-//                group.replaceAction(oldAction, newAction)
-                manager.replaceAction(template.actionId, newAction)
-            }
-        }
+        TemplateActionLoader.updateActions(oldList, newList)
     }
 
 

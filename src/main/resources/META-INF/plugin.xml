@@ -20,7 +20,7 @@
                                  groupId="tools"
                                  bundle="randomness" />
 
-        <actionConfigurationCustomizer implementation="com.fwdekker.randomness.template.TemplateActionLoader"/>
+        <dynamicActionConfigurationCustomizer implementation="com.fwdekker.randomness.template.TemplateActionLoader"/>
     </extensions>
 
     <actions>

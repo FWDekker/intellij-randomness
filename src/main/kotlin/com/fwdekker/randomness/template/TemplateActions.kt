@@ -13,7 +13,7 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.actionSystem.impl.ActionConfigurationCustomizer
+import com.intellij.openapi.actionSystem.impl.DynamicActionConfigurationCustomizer
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ShowSettingsUtil
 import java.awt.BorderLayout
@@ -187,17 +187,67 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
 }
 
 /**
- * Registers actions for the user's [Template]s so that they can be inserted using shortcuts.
+ * Registers and unregisters actions for the user's [Template]s so that they can be inserted using shortcuts.
  */
-class TemplateActionLoader : ActionConfigurationCustomizer {
-    override fun customize(actionManager: ActionManager) {
-        TemplateSettings.default.state.templates.forEach { template ->
-            // TODO: Register all variants (e.g. array, repeat, etc.)
-            val newAction = TemplateInsertAction(template, array = false, repeat = false)
+object TemplateActionLoader : DynamicActionConfigurationCustomizer {
+    /**
+     * Shorthand to return all the user's stored [Template]s.
+     */
+    private val templates: List<Template>
+        get() = TemplateSettings.default.state.templates
 
-            actionManager.registerAction(template.actionId, newAction)
+
+    /**
+     * Registers an action for every [Template] in the user's [TemplateSettings].
+     *
+     * @param actionManager the manager to register actions through
+     */
+    override fun registerActions(actionManager: ActionManager) {
+        // TODO: Register all variants (e.g. array, repeat, etc.)
+
+        templates.forEach {
+            val action = TemplateInsertAction(it, array = false, repeat = false)
+            actionManager.registerAction(it.actionId, action)
+            actionManager.replaceAction(it.actionId, action)
         }
     }
 
-    // TODO: Add methods for updating
+    /**
+     * Unregisters every action that has been registered so far.
+     *
+     * @param actionManager the manager to unregister actions through
+     */
+    override fun unregisterActions(actionManager: ActionManager) {
+        templates.forEach { actionManager.unregisterAction(it.actionId) }
+    }
+
+    /**
+     * Registers, unregisters, and updates actions to be appropriate for a transition from [oldList] to [newList].
+     *
+     * @param oldList the list of stored [Template]s before storing [newList]
+     * @param newList the list of stored [Template]s after storing them
+     */
+    fun updateActions(oldList: Set<Template>, newList: Set<Template>) {
+        val actionManager = ActionManager.getInstance()
+
+        val newUuids = newList.map { it.uuid }
+        oldList.filterNot { template -> template.uuid in newUuids }.forEach { template ->
+            val oldAction = actionManager.getAction(template.actionId)
+
+            if (oldAction != null)
+                actionManager.unregisterAction(template.actionId)
+        }
+
+        newList.forEach { template ->
+            val oldAction = actionManager.getAction(template.actionId)
+            val newAction = TemplateInsertAction(template, array = false, repeat = false)
+
+            if (oldAction == null) {
+                actionManager.registerAction(template.actionId, newAction)
+                actionManager.replaceAction(template.actionId, newAction)
+            } else {
+                actionManager.replaceAction(template.actionId, newAction)
+            }
+        }
+    }
 }
