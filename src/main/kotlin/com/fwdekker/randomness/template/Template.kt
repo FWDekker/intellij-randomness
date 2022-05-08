@@ -34,7 +34,7 @@ data class Template(
             WordScheme::class,
             UuidScheme::class,
             DateTimeScheme::class,
-            TemplateReference::class,
+            TemplateReference::class
         ]
     )
     var schemes: List<Scheme> = DEFAULT_SCHEMES.toMutableList(),

@@ -77,24 +77,24 @@ enum class CapitalizationMode(val descriptor: String, private val transformer: (
         fun getMode(descriptor: String) =
             values().firstOrNull { it.descriptor == descriptor }
                 ?: throw IllegalArgumentException(Bundle("shared.capitalization.error.name_not_found", descriptor))
-
-
-        /**
-         * Randomly converts this character to uppercase or lowercase.
-         *
-         * @param random the source of randomness to use
-         * @return the uppercase or lowercase version of this character
-         */
-        private fun Char.toRandomCase(random: Random) =
-            if (random.nextBoolean()) this.lowercaseChar()
-            else this.uppercaseChar()
-
-        /**
-         * Turns the first character uppercase while all other characters become lowercase.
-         *
-         * @return the sentence-case form of this string
-         */
-        private fun String.toSentenceCase() =
-            this.lowercase(Locale.getDefault()).replaceFirstChar { it.uppercaseChar() }
     }
 }
+
+
+/**
+ * Randomly converts this character to uppercase or lowercase.
+ *
+ * @param random the source of randomness to use
+ * @return the uppercase or lowercase version of this character
+ */
+private fun Char.toRandomCase(random: Random) =
+    if (random.nextBoolean()) this.lowercaseChar()
+    else this.uppercaseChar()
+
+/**
+ * Turns the first character uppercase while all other characters become lowercase.
+ *
+ * @return the sentence-case form of this string
+ */
+private fun String.toSentenceCase() =
+    this.lowercase(Locale.getDefault()).replaceFirstChar { it.uppercaseChar() }

@@ -94,7 +94,7 @@ object SchemeTest : Spek({
         it("applies decorators on each other in ascending order") {
             scheme.decorators = listOf(
                 ArrayDecorator(enabled = true, minCount = 2, maxCount = 2),
-                ArrayDecorator(enabled = true, minCount = 3, maxCount = 3),
+                ArrayDecorator(enabled = true, minCount = 3, maxCount = 3)
             )
             scheme.literals = listOf("save")
 
