@@ -11,7 +11,7 @@ import kotlin.random.Random
  *
  * Mostly for testing and demonstration purposes.
  *
- * @param dummySupplier generates dummy values to insert
+ * @property dummySupplier generates dummy values to insert
  */
 class DummyInsertAction(private val dummySupplier: (Random) -> String) : DataInsertAction(RandomnessIcons.Data.Base) {
     override val name = "Random Dummy"

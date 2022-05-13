@@ -45,7 +45,7 @@ data class IntegerSettings(
             get() = mutableListOf(
                 IntegerScheme(),
                 IntegerScheme("Byte", minValue = -128, maxValue = 127),
-                IntegerScheme("Hex", minValue = 0, maxValue = 256, base = 16, groupingSeparator = "", prefix = "0x"),
+                IntegerScheme("Hex", minValue = 0, maxValue = 256, base = 16, groupingSeparator = "", prefix = "0x")
             )
 
         /**

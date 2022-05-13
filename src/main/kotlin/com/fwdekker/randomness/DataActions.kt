@@ -37,7 +37,7 @@ class DataGenerationException(message: String? = null, cause: Throwable? = null)
 /**
  * A group of actions for a particular type of random data that can be generated.
  *
- * @param icon the icon to display with the action
+ * @property icon the icon to display with the action
  */
 abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Base) : ActionGroup() {
     /**
@@ -140,7 +140,7 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
 /**
  * Inserts randomly generated strings at the event's editor's carets.
  *
- * @param icon the icon to display with the action
+ * @property icon the icon to display with the action
  */
 abstract class DataInsertAction(private val icon: Icon) : AnAction() {
     /**
@@ -284,8 +284,8 @@ abstract class DataInsertAction(private val icon: Icon) : AnAction() {
 /**
  * Inserts randomly generated arrays of strings at the event's editor's carets.
  *
- * @param arrayScheme the scheme to use for generating arrays
- * @param dataInsertAction the action to generate data with
+ * @property arrayScheme the scheme to use for generating arrays
+ * @property dataInsertAction the action to generate data with
  * @param icon the icon to display with the action
  */
 abstract class DataInsertArrayAction(
@@ -317,7 +317,7 @@ abstract class DataInsertArrayAction(
 /**
  * Inserts the same randomly generated string at the event's editor's carets.
  *
- * @param dataInsertAction the action to generate data with
+ * @property dataInsertAction the action to generate data with
  * @param icon the icon to display with the action
  */
 abstract class DataInsertRepeatAction(
@@ -342,7 +342,7 @@ abstract class DataInsertRepeatAction(
 /**
  * Inserts the same randomly generated array of strings at the event's editor's carets.
  *
- * @param dataInsertArrayAction the action to generate data with
+ * @property dataInsertArrayAction the action to generate data with
  * @param icon the icon to display with the action
  */
 abstract class DataInsertRepeatArrayAction(
@@ -405,8 +405,8 @@ abstract class DataSettingsAction(private val icon: Icon = RandomnessIcons.Data.
  * Opens a popup to allow the user to quickly switch to the selected scheme.
  *
  * @param T the type of scheme that can be switched between
- * @param settings the settings containing the schemes that can be switched between
- * @param icon the icon to present with this action
+ * @property settings the settings containing the schemes that can be switched between
+ * @property icon the icon to present with this action
  */
 abstract class DataQuickSwitchSchemeAction<T : Scheme<T>>(
     private val settings: Settings<*, T>,

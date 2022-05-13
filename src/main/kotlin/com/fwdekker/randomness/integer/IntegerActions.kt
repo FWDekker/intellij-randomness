@@ -33,7 +33,7 @@ class IntegerGroupAction : DataGroupAction(RandomnessIcons.Integer.Base) {
 /**
  * Inserts random integers.
  *
- * @param scheme the scheme to use for generating integers
+ * @property scheme the scheme to use for generating integers
  */
 class IntegerInsertAction(private val scheme: () -> IntegerScheme = { IntegerSettings.default.currentScheme }) :
     DataInsertAction(RandomnessIcons.Integer.Base) {

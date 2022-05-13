@@ -21,7 +21,7 @@ class IntegerInsertActionTest : Spek({
             Pair(488L, 488L) to "488",
             Pair(-876L, -876L) to "-876",
             Pair(Long.MIN_VALUE, Long.MIN_VALUE) to Long.MIN_VALUE.toString(),
-            Pair(Long.MAX_VALUE, Long.MAX_VALUE) to Long.MAX_VALUE.toString(),
+            Pair(Long.MAX_VALUE, Long.MAX_VALUE) to Long.MAX_VALUE.toString()
         ).forEach { (minValue, maxValue), expectedString ->
             it("generates $expectedString") {
                 val integerScheme = IntegerScheme(minValue = minValue, maxValue = maxValue)
@@ -102,7 +102,7 @@ class IntegerInsertActionTest : Spek({
         mapOf(
             Param(624L, 10, "", CapitalizationMode.UPPER) to "624",
             Param(254L, 16, "", CapitalizationMode.UPPER) to "FE",
-            Param(254L, 16, "0x", CapitalizationMode.FIRST_LETTER) to "0xFe",
+            Param(254L, 16, "0x", CapitalizationMode.FIRST_LETTER) to "0xFe"
         ).forEach { (value, base, prefix, capitalization), expectedString ->
             it("generates $expectedString") {
                 val integerScheme = IntegerScheme(

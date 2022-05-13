@@ -18,6 +18,7 @@ import javax.swing.JComponent
  * Allows the settings to be displayed in IntelliJ's settings window.
  *
  * @param S the type of settings the configurable changes.
+ * @param T the type of scheme the configurable contains
  */
 abstract class SettingsConfigurable<S : Settings<S, T>, T : Scheme<T>> : Configurable {
     /**

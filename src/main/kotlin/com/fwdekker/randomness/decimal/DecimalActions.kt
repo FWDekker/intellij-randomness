@@ -33,7 +33,7 @@ class DecimalGroupAction : DataGroupAction(RandomnessIcons.Decimal.Base) {
 /**
  * Inserts random decimals.
  *
- * @param scheme the settings to use for generating decimals
+ * @property scheme the settings to use for generating decimals
  */
 class DecimalInsertAction(private val scheme: () -> DecimalScheme = { DecimalSettings.default.currentScheme }) :
     DataInsertAction(RandomnessIcons.Decimal.Base) {

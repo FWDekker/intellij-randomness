@@ -6,8 +6,8 @@ import com.vdurmont.emoji.EmojiParser
 /**
  * A `SymbolSet` represents a named collection of symbols.
  *
- * @param name the name of the symbol set
- * @param symbols the symbols in the symbol set
+ * @property name the name of the symbol set
+ * @property symbols the symbols in the symbol set
  */
 data class SymbolSet(var name: String, var symbols: String) {
     /**

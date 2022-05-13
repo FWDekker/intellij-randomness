@@ -37,9 +37,9 @@ data class EditableDatum<T>(var active: Boolean, var datum: T)
  * @param columns the columns of the table, excluding the activity column
  * @param itemEditor describes what happens when a row is edited
  * @param emptyText the text to display when the table is empty
- * @param emptySubText the instruction to display when the table is empty
- * @param isCopyable returns `true` if and only if the given datum can be copied
- * @param columnAdjuster invoked on the list of columns (including the activity column) to allow adjusting their
+ * @property emptySubText the instruction to display when the table is empty
+ * @property isCopyable returns `true` if and only if the given datum can be copied
+ * @property columnAdjuster invoked on the list of columns (including the activity column) to allow adjusting their
  * properties
  */
 abstract class ActivityTableModelEditor<T>(

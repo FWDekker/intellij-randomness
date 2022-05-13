@@ -6,8 +6,8 @@ package com.fwdekker.randomness
  *
  * @param K the type of keys
  * @param V the type of values
- * @param creator a function that maps a key to a value, used to instantiate a value when it is requested and not in the
- * cache
+ * @property creator a function that maps a key to a value, used to instantiate a value when it is requested and not in
+ * the cache
  */
 class Cache<K, V>(private val creator: (K) -> V) {
     private val values = mutableMapOf<K, V>()

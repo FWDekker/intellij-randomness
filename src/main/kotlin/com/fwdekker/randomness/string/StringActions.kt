@@ -31,7 +31,7 @@ class StringGroupAction : DataGroupAction(RandomnessIcons.String.Base) {
 /**
  * Inserts random alphanumerical strings.
  *
- * @param scheme the scheme to use for generating strings
+ * @property scheme the scheme to use for generating strings
  */
 class StringInsertAction(private val scheme: () -> StringScheme = { StringSettings.default.currentScheme }) :
     DataInsertAction(RandomnessIcons.String.Base) {

@@ -6,8 +6,8 @@ import java.util.Locale
 /**
  * A mode in which a word should be capitalized.
  *
- * @param descriptor the name of the capitalization mode
- * @param transform the function which capitalizes the given string to the mode's format
+ * @property descriptor the name of the capitalization mode
+ * @property transform the function which capitalizes the given string to the mode's format
  */
 enum class CapitalizationMode(val descriptor: String, val transform: (String) -> String) {
     /**
@@ -62,22 +62,23 @@ enum class CapitalizationMode(val descriptor: String, val transform: (String) ->
         fun getMode(descriptor: String) =
             values().firstOrNull { it.descriptor == descriptor }
                 ?: throw IllegalArgumentException("There does not exist a capitalization mode with name `$descriptor`.")
-
-        /**
-         * Randomly converts this character to uppercase or lowercase.
-         *
-         * @return the uppercase or lowercase version of this character
-         */
-        private fun Char.toRandomCase() =
-            if (kotlin.random.Random.nextBoolean()) this.lowercaseChar()
-            else this.uppercaseChar()
-
-        /**
-         * Turns the first character uppercase while all other characters become lowercase.
-         *
-         * @return the sentence-case form of this string
-         */
-        private fun String.toSentenceCase() =
-            this.lowercase(Locale.getDefault()).replaceFirstChar { it.uppercaseChar() }
     }
 }
+
+
+/**
+ * Randomly converts this character to uppercase or lowercase.
+ *
+ * @return the uppercase or lowercase version of this character
+ */
+private fun Char.toRandomCase() =
+    if (kotlin.random.Random.nextBoolean()) this.lowercaseChar()
+    else this.uppercaseChar()
+
+/**
+ * Turns the first character uppercase while all other characters become lowercase.
+ *
+ * @return the sentence-case form of this string
+ */
+private fun String.toSentenceCase() =
+    this.lowercase(Locale.getDefault()).replaceFirstChar { it.uppercaseChar() }

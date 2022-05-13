@@ -8,6 +8,9 @@ comments:
     # Nothing wrong with documenting private properties.
     CommentOverPrivateProperty:
         active: false
+    # Bugged, see https://github.com/detekt/detekt/issues/4727, fixed in Detekt 1.21.0
+    OutdatedDocumentation:
+        active: false
 
 complexity:
     # Static analysis is not good at estimating this.
@@ -18,9 +21,6 @@ complexity:
         active: false
 
 formatting:
-    # Bugged, see https://github.com/pinterest/ktlint/issues/1124
-    AnnotationSpacing:
-        active: false
     # Experimental. Too many false positives.
     ArgumentListWrapping:
         active: false
@@ -35,7 +35,7 @@ naming:
     # Static analysis is not good at estimating this.
     FunctionMaxLength:
         active: false
-    # Cannot be suppressed in case of false positives
+    # Cannot be suppressed in case of false positives.
     MatchingDeclarationName:
         active: false
 

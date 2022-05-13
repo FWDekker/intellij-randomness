@@ -8,17 +8,17 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
     // Compilation
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.5.10"  // See also `gradle.properties`
-    id("org.jetbrains.intellij") version "0.7.3"
+    id("org.jetbrains.kotlin.jvm") version "1.6.20"  // See also `gradle.properties`
+    id("org.jetbrains.intellij") version "1.5.2"
 
     // Tests/coverage
     id("jacoco")
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.17.1"  // See also `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.20.0"  // See also `gradle.properties`
 
     // Documentation
-    id("org.jetbrains.dokka") version "1.4.32"
+    id("org.jetbrains.dokka") version "1.6.21"
 }
 
 
@@ -67,20 +67,20 @@ tasks {
     }
 
     intellij {
-        version = properties("intellijVersion")
-        updateSinceUntilBuild = false
+        version.set(properties("intellijVersion"))
+        downloadSources.set(true)
+        updateSinceUntilBuild.set(false)
     }
 
     patchPluginXml {
-        changeNotes(file("src/main/resources/META-INF/change-notes.html").readText())
-        pluginDescription(file("src/main/resources/META-INF/description.html").readText())
-        sinceBuild(properties("pluginSinceBuild"))
+        changeNotes.set(file("src/main/resources/META-INF/change-notes.html").readText())
+        pluginDescription.set(file("src/main/resources/META-INF/description.html").readText())
+        sinceBuild.set(properties("pluginSinceBuild"))
     }
 
 
     // Tests/coverage
     test {
-        systemProperty("java.awt.headless", "false")
         systemProperty("spek2.execution.test.timeout", 0)
 
         useJUnitPlatform {
@@ -103,10 +103,10 @@ tasks {
         sourceSets { sourceSets.main }
 
         reports {
-            csv.isEnabled = false
-            html.isEnabled = true
-            xml.isEnabled = true
-            xml.destination = file("$buildDir/reports/jacoco/report.xml")
+            csv.required.set(false)
+            html.required.set(true)
+            xml.required.set(true)
+            xml.outputLocation.set(file("$buildDir/reports/jacoco/report.xml"))
         }
 
         dependsOn(test)
@@ -121,7 +121,7 @@ tasks {
     }
 
     runPluginVerifier {
-        ideVersions(properties("pluginVerifierIdeVersions"))
+        ideVersions.set(properties("pluginVerifierIdeVersions").split(","))
     }
 
 

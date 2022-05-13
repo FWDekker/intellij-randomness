@@ -31,7 +31,7 @@ class WordGroupAction : DataGroupAction(RandomnessIcons.Word.Base) {
 /**
  * Inserts random words.
  *
- * @param scheme the scheme to use for generating words
+ * @property scheme the scheme to use for generating words
  */
 class WordInsertAction(private val scheme: () -> WordScheme = { WordSettings.default.currentScheme }) :
     DataInsertAction(RandomnessIcons.Word.Base) {

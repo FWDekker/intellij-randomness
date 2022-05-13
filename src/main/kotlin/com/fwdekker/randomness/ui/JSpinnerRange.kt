@@ -7,9 +7,9 @@ import javax.swing.JSpinner
 /**
  * A container for two [JSpinner]s that indicate a range of values.
  *
- * @param min the `JSpinner` that represents the minimum value
- * @param max the `JSpinner` that represents the maximum value
- * @param maxRange the maximum difference between `min` and `max`
+ * @property min the `JSpinner` that represents the minimum value
+ * @property max the `JSpinner` that represents the maximum value
+ * @property maxRange the maximum difference between `min` and `max`
  * @param name the name to use in error messages
  */
 class JSpinnerRange(

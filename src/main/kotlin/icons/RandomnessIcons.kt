@@ -98,30 +98,30 @@ enum class RandomnessIcons(
     /**
      * The basic icon for the data type.
      */
-    val Base = IconLoader.findIcon(base)!!
+    val Base = IconLoader.findIcon(base, this.javaClass.classLoader)!!
 
     /**
      * The array variant of the basic icon.
      */
-    val Array = IconLoader.findIcon(array)!!
+    val Array = IconLoader.findIcon(array, this.javaClass.classLoader)!!
 
     /**
      * The repeat variant of the basic icon.
      */
-    val Repeat = IconLoader.findIcon(repeat)!!
+    val Repeat = IconLoader.findIcon(repeat, this.javaClass.classLoader)!!
 
     /**
      * The repeat array variant of the basic icon.
      */
-    val RepeatArray = IconLoader.findIcon(repeatArray)!!
+    val RepeatArray = IconLoader.findIcon(repeatArray, this.javaClass.classLoader)!!
 
     /**
      * The settings variant of the basic icon.
      */
-    val Settings = IconLoader.findIcon(settings)!!
+    val Settings = IconLoader.findIcon(settings, this.javaClass.classLoader)!!
 
     /**
      * The quick switch scheme variant of the basic icon.
      */
-    val QuickSwitchScheme = IconLoader.findIcon(quickSwitchScheme)!!
+    val QuickSwitchScheme = IconLoader.findIcon(quickSwitchScheme, this.javaClass.classLoader)!!
 }

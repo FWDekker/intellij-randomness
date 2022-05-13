@@ -36,7 +36,7 @@ class UuidGroupAction : DataGroupAction(RandomnessIcons.Uuid.Base) {
 /**
  * Inserts random type 4 UUID.
  *
- * @param scheme the scheme to use for generating UUIDs
+ * @property scheme the scheme to use for generating UUIDs
  */
 class UuidInsertAction(private val scheme: () -> UuidScheme = { UuidSettings.default.currentScheme }) :
     DataInsertAction(RandomnessIcons.Uuid.Base) {

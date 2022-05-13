@@ -88,7 +88,7 @@ class DataInsertActionTimeoutTest : Spek({
     /**
      * Inserts a dummy value after a delay that is longer than [GENERATOR_TIMEOUT].
      *
-     * @param dummySupplier generates dummy values to insert
+     * @property dummySupplier generates dummy values to insert
      */
     class SlowDummyInsertAction(private val dummySupplier: (Random) -> String) :
         DataInsertAction(RandomnessIcons.Data.Base) {

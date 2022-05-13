@@ -68,9 +68,9 @@ data class WordSettings(
  * @property enclosure The string that encloses the generated word on both sides.
  * @property capitalization The way in which the generated word should be capitalized.
  * @property bundledDictionaryFiles The list of all dictionary files provided by the plugin.
- * @property userDictionaryFiles The list of all dictionary files registered by the user.
  * @property activeBundledDictionaryFiles The list of bundled dictionary files that are currently active; a subset of
  * [bundledDictionaryFiles].
+ * @property userDictionaryFiles The list of all dictionary files registered by the user.
  * @property activeUserDictionaryFiles The list of user dictionary files that are currently active; a subset of
  * [userDictionaryFiles].
  *
