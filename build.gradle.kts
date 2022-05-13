@@ -89,7 +89,6 @@ tasks {
 
     // Tests/coverage
     test {
-        systemProperty("java.awt.headless", "false")
         systemProperty("spek2.execution.test.timeout", 0)
 
         useJUnitPlatform {
