@@ -68,6 +68,8 @@ data class StringSettings(
  * @property maxLength The maximum length of the generated string, inclusive.
  * @property enclosure The string that encloses the generated string on both sides.
  * @property capitalization The capitalization mode of the generated string.
+ * @property prefix The string to prepend to the generated value.
+ * @property suffix The string to append to the generated value.
  * @property serializedSymbolSets The symbol sets that are available for generating strings. Emoji have been serialized
  * for compatibility with JetBrains' serializer.
  * @property serializedActiveSymbolSets The symbol sets that are actually used for generating strings; a subset of
@@ -83,6 +85,8 @@ data class StringScheme(
     var maxLength: Int = DEFAULT_MAX_LENGTH,
     var enclosure: String = DEFAULT_ENCLOSURE,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
+    var prefix: String = DEFAULT_PREFIX,
+    var suffix: String = DEFAULT_SUFFIX,
     @MapAnnotation(sortBeforeSave = false)
     var serializedSymbolSets: Map<String, String> = DEFAULT_SYMBOL_SETS.toMap(),
     @MapAnnotation(sortBeforeSave = false)
@@ -158,6 +162,16 @@ data class StringScheme(
          * The default value of the [capitalization][capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RANDOM
+
+        /**
+         * The default value of the [prefix][prefix] field.
+         */
+        const val DEFAULT_PREFIX = ""
+
+        /**
+         * The default value of the [suffix][suffix] field.
+         */
+        const val DEFAULT_SUFFIX = ""
 
         /**
          * The default value of the [symbolSets][symbolSets] field.

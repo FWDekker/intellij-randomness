@@ -1,45 +1,55 @@
 package com.fwdekker.randomness
 
 import java.util.Locale
+import kotlin.random.Random
 
 
 /**
  * A mode in which a word should be capitalized.
  *
  * @property descriptor the name of the capitalization mode
- * @property transform the function which capitalizes the given string to the mode's format
+ * @property transformer the function which capitalizes the given string to the mode's format
  */
-enum class CapitalizationMode(val descriptor: String, val transform: (String) -> String) {
+enum class CapitalizationMode(val descriptor: String, private val transformer: (String, Random) -> String) {
     /**
      * Does not change the string.
      */
-    RETAIN("retain", { string -> string }),
+    RETAIN("retain", { string, _ -> string }),
 
     /**
      * Makes the first character uppercase and all characters after that lowercase.
      */
-    SENTENCE("sentence", { string -> string.toSentenceCase() }),
+    SENTENCE("sentence", { string, _ -> string.toSentenceCase() }),
 
     /**
      * Makes all characters uppercase.
      */
-    UPPER("upper", { string -> string.uppercase(Locale.getDefault()) }),
+    UPPER("upper", { string, _ -> string.uppercase(Locale.getDefault()) }),
 
     /**
      * Makes all characters lowercase.
      */
-    LOWER("lower", { string -> string.lowercase(Locale.getDefault()) }),
+    LOWER("lower", { string, _ -> string.lowercase(Locale.getDefault()) }),
 
     /**
      * Makes the first letter of each word uppercase.
      */
-    FIRST_LETTER("first letter", { string -> string.split(' ').joinToString(" ") { it.toSentenceCase() } }),
+    FIRST_LETTER("first letter", { string, _ -> string.split(' ').joinToString(" ") { it.toSentenceCase() } }),
 
     /**
      * Makes each letter randomly uppercase or lowercase.
      */
-    RANDOM("random", { string -> string.toCharArray().map { it.toRandomCase() }.joinToString("") });
+    RANDOM("random", { string, random -> string.toCharArray().map { it.toRandomCase(random) }.joinToString("") });
 
+
+    /**
+     * Invokes [transformer] with [random].
+     *
+     * @param string the string to transform
+     * @param random the random instance to use for transforming
+     * @return the returned value of [transformer]
+     */
+    fun transform(string: String, random: Random = Random.Default) = transformer(string, random)
 
     /**
      * Returns the descriptor of the capitalization mode.
@@ -69,10 +79,11 @@ enum class CapitalizationMode(val descriptor: String, val transform: (String) ->
 /**
  * Randomly converts this character to uppercase or lowercase.
  *
+ * @param random the source of randomness to use
  * @return the uppercase or lowercase version of this character
  */
-private fun Char.toRandomCase() =
-    if (kotlin.random.Random.nextBoolean()) this.lowercaseChar()
+private fun Char.toRandomCase(random: Random) =
+    if (random.nextBoolean()) this.lowercaseChar()
     else this.uppercaseChar()
 
 /**

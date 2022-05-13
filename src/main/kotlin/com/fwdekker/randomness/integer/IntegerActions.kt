@@ -78,7 +78,7 @@ class IntegerInsertAction(private val scheme: () -> IntegerScheme = { IntegerSet
     private fun convertToString(value: Long): String {
         val scheme = scheme()
         if (scheme.base != DECIMAL_BASE)
-            return scheme.capitalization.transform(value.toString(scheme.base))
+            return scheme.capitalization.transform(value.toString(scheme.base), random)
 
         val format = DecimalFormat()
         format.isGroupingUsed = scheme.groupingSeparator.isNotEmpty()

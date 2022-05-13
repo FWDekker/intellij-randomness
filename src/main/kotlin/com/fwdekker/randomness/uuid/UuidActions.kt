@@ -70,7 +70,7 @@ class UuidInsertAction(private val scheme: () -> UuidScheme = { UuidSettings.def
         }
 
         return List(count) { generator.generate().toString() }
-            .map { scheme.capitalization.transform(it) }
+            .map { scheme.capitalization.transform(it, random) }
             .map {
                 if (scheme.addDashes) it
                 else it.replace("-", "")

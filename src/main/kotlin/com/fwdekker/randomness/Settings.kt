@@ -10,7 +10,7 @@ import com.intellij.util.xmlb.annotations.Transient
  * @param SELF the type of settings that should be persisted; should be a self reference
  * @param SCHEME the type of scheme that the settings consist of
  */
-interface Settings<SELF, SCHEME : Scheme<SCHEME>> : PersistentStateComponent<SELF> {
+interface Settings<SELF : Any, SCHEME : Scheme<SCHEME>> : PersistentStateComponent<SELF> {
     /**
      * The various schemes that are contained within the settings.
      */

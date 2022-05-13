@@ -32,6 +32,8 @@ object StringSettingsTest : Spek({
             stringSettings.currentScheme.minLength = 730
             stringSettings.currentScheme.maxLength = 891
             stringSettings.currentScheme.enclosure = "Qh7"
+            stringSettings.currentScheme.prefix = "6sea"
+            stringSettings.currentScheme.suffix = "hdEnf"
             stringSettings.currentScheme.symbolSetList = symbolSets
             stringSettings.currentScheme.excludeLookAlikeSymbols = true
 
@@ -41,6 +43,8 @@ object StringSettingsTest : Spek({
             assertThat(newStringSettings.currentScheme.minLength).isEqualTo(730)
             assertThat(newStringSettings.currentScheme.maxLength).isEqualTo(891)
             assertThat(newStringSettings.currentScheme.enclosure).isEqualTo("Qh7")
+            assertThat(newStringSettings.currentScheme.prefix).isEqualTo("6sea")
+            assertThat(newStringSettings.currentScheme.suffix).isEqualTo("hdEnf")
             assertThat(newStringSettings.currentScheme.symbolSetList).isEqualTo(symbolSets)
             assertThat(newStringSettings.currentScheme.excludeLookAlikeSymbols).isEqualTo(true)
         }

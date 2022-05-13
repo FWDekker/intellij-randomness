@@ -56,9 +56,9 @@ class StringInsertAction(private val scheme: () -> StringScheme = { StringSettin
         return List(count) {
             val length = random.nextInt(scheme.minLength, scheme.maxLength + 1)
             val text = List(length) { symbols.random(random) }.joinToString("")
-            val capitalizedText = scheme.capitalization.transform(text)
+            val capitalizedText = scheme.capitalization.transform(text, random)
 
-            scheme.enclosure + capitalizedText + scheme.enclosure
+            scheme.prefix + scheme.enclosure + capitalizedText + scheme.enclosure + scheme.suffix
         }
     }
 

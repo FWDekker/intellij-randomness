@@ -20,6 +20,7 @@ import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.JTextField
 
 
 /**
@@ -44,6 +45,8 @@ class StringSettingsComponent(settings: StringSettings = default) :
     private lateinit var maxLength: JIntSpinner
     private lateinit var enclosureGroup: ButtonGroup
     private lateinit var capitalizationGroup: ButtonGroup
+    private lateinit var prefixInput: JTextField
+    private lateinit var suffixInput: JTextField
     private lateinit var symbolSetPanel: JPanel
     private lateinit var symbolSetSeparator: JComponent
     private lateinit var symbolSetTable: SymbolSetTable
@@ -62,7 +65,7 @@ class StringSettingsComponent(settings: StringSettings = default) :
             "Excludes the following characters from all generated strings: ${SymbolSet.lookAlikeCharacters}"
 
         previewPanelHolder.updatePreviewOnUpdateOf(minLength, maxLength, enclosureGroup, capitalizationGroup)
-        previewPanelHolder.updatePreviewOnUpdateOf(symbolSetTable)
+        previewPanelHolder.updatePreviewOnUpdateOf(prefixInput, suffixInput, symbolSetTable)
         previewPanelHolder.updatePreview()
     }
 
@@ -97,6 +100,8 @@ class StringSettingsComponent(settings: StringSettings = default) :
         maxLength.value = scheme.maxLength
         enclosureGroup.setValue(scheme.enclosure)
         capitalizationGroup.setValue(scheme.capitalization)
+        prefixInput.text = scheme.prefix
+        suffixInput.text = scheme.suffix
         symbolSetTable.data = scheme.symbolSetList
         symbolSetTable.activeData = scheme.activeSymbolSetList
         excludeLookAlikeSymbolsCheckBox.isSelected = scheme.excludeLookAlikeSymbols
@@ -107,6 +112,8 @@ class StringSettingsComponent(settings: StringSettings = default) :
         scheme.maxLength = maxLength.value
         scheme.enclosure = enclosureGroup.getValue() ?: DEFAULT_ENCLOSURE
         scheme.capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION
+        scheme.prefix = prefixInput.text
+        scheme.suffix = suffixInput.text
         scheme.symbolSetList = symbolSetTable.data
         scheme.activeSymbolSetList = symbolSetTable.activeData
         scheme.excludeLookAlikeSymbols = excludeLookAlikeSymbolsCheckBox.isSelected

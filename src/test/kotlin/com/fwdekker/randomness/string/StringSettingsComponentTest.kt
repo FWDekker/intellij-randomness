@@ -39,6 +39,8 @@ object StringSettingsComponentTest : Spek({
                 currentScheme.minLength = 144
                 currentScheme.maxLength = 719
                 currentScheme.enclosure = "\""
+                currentScheme.prefix = "string("
+                currentScheme.suffix = ")"
                 currentScheme.capitalization = CapitalizationMode.RANDOM
                 currentScheme.symbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.DIGITS, SymbolSet.HEXADECIMAL)
                 currentScheme.activeSymbolSetList = listOf(SymbolSet.ALPHABET, SymbolSet.HEXADECIMAL)
@@ -80,6 +82,14 @@ object StringSettingsComponentTest : Spek({
             frame.radioButton("capitalizationRandom").requireSelected(true)
         }
 
+        it("loads the settings' prefix") {
+            frame.textBox("prefix").requireText("string(")
+        }
+
+        it("loads the settings' suffix") {
+            frame.textBox("suffix").requireText(")")
+        }
+
         it("loads the settings' symbol sets") {
             assertThat(symbolSetTable.items.map { it.datum })
                 .containsExactly(SymbolSet.ALPHABET, SymbolSet.DIGITS, SymbolSet.HEXADECIMAL)
@@ -99,6 +109,8 @@ object StringSettingsComponentTest : Spek({
                 frame.spinner("maxLength").target().value = 803
                 frame.radioButton("enclosureBacktick").target().isSelected = true
                 frame.radioButton("capitalizationUpper").target().isSelected = true
+                frame.textBox("prefix").target().text = "3ZL"
+                frame.textBox("suffix").target().text = "dXnO5"
                 frame.checkBox("excludeLookAlikeSymbolsCheckBox").target().isSelected = false
 
                 repeat(symbolSetTable.items.size) { symbolSetTable.listTableModel.removeRow(0) }
@@ -112,6 +124,8 @@ object StringSettingsComponentTest : Spek({
             assertThat(stringSettings.currentScheme.maxLength).isEqualTo(803)
             assertThat(stringSettings.currentScheme.enclosure).isEqualTo("`")
             assertThat(stringSettings.currentScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
+            assertThat(stringSettings.currentScheme.prefix).isEqualTo("3ZL")
+            assertThat(stringSettings.currentScheme.suffix).isEqualTo("dXnO5")
             assertThat(stringSettings.currentScheme.symbolSetList)
                 .isEqualTo(listOf(SymbolSet.BRACKETS, SymbolSet.MINUS))
             assertThat(stringSettings.currentScheme.activeSymbolSetList).isEqualTo(listOf(SymbolSet.MINUS))

@@ -19,23 +19,28 @@ class StringInsertActionTest : Spek({
             val maxLength: Int,
             val enclosure: String,
             val capitalization: CapitalizationMode,
+            val prefix: String,
+            val suffix: String,
             val symbolSets: Set<SymbolSet>
         )
 
         mapOf(
-            Param(0, 0, "", CapitalizationMode.RETAIN, setOf(SymbolSet("x", "x"))) to "",
-            Param(0, 0, "'", CapitalizationMode.UPPER, setOf(SymbolSet("x", "x"))) to "''",
-            Param(0, 0, "a", CapitalizationMode.LOWER, setOf(SymbolSet("x", "x"))) to "aa",
-            Param(0, 0, "2Rv", CapitalizationMode.FIRST_LETTER, setOf(SymbolSet("x", "x"))) to "2Rv2Rv",
-            Param(723, 723, "", CapitalizationMode.UPPER, setOf(SymbolSet("x", "x"))) to "X".repeat(723),
-            Param(466, 466, "z", CapitalizationMode.LOWER, setOf(SymbolSet("x", "x"))) to "z${"x".repeat(466)}z"
-        ).forEach { (minLength, maxLength, enclosure, capitalization, symbolSets), expected ->
+            Param(0, 0, "", CapitalizationMode.RETAIN, "", "", setOf(SymbolSet("x", "x"))) to "",
+            Param(0, 0, "'", CapitalizationMode.UPPER, "", "", setOf(SymbolSet("x", "x"))) to "''",
+            Param(0, 0, "a", CapitalizationMode.LOWER, "", "", setOf(SymbolSet("x", "x"))) to "aa",
+            Param(0, 0, "2Rv", CapitalizationMode.FIRST_LETTER, "", "", setOf(SymbolSet("x", "x"))) to "2Rv2Rv",
+            Param(0, 0, "", CapitalizationMode.RETAIN, "pre", "post", setOf(SymbolSet("x", "x"))) to "prepost",
+            Param(723, 723, "", CapitalizationMode.UPPER, "", "", setOf(SymbolSet("x", "x"))) to "X".repeat(723),
+            Param(466, 466, "z", CapitalizationMode.LOWER, "", "", setOf(SymbolSet("x", "x"))) to "z${"x".repeat(466)}z"
+        ).forEach { (minLength, maxLength, enclosure, capitalization, prefix, suffix, symbolSets), expected ->
             it("generates a formatted string") {
                 val stringScheme = StringScheme(
                     minLength = minLength,
                     maxLength = maxLength,
                     enclosure = enclosure,
                     capitalization = capitalization,
+                    prefix = prefix,
+                    suffix = suffix,
                     serializedActiveSymbolSets = symbolSets.toMap()
                 )
 
