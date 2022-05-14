@@ -21,9 +21,6 @@ complexity:
         thresholdInClasses: 20
 
 formatting:
-    # Bugged, see https://github.com/pinterest/ktlint/issues/1124
-    AnnotationSpacing:
-        active: false
     # Experimental. Too many false positives.
     ArgumentListWrapping:
         active: false
