@@ -110,6 +110,7 @@ class TemplateJTree(
 
         emptyText.text = Bundle("template_list.ui.empty")
         isRootVisible = false
+        showsRootHandles = true
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         setCellRenderer(CellRenderer())
         addTreeWillExpandListener(object : TreeWillExpandListener {

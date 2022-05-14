@@ -7,15 +7,14 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    // TODO: Update to Kotlin 1.5.30 once https://github.com/jacoco/jacoco/issues/1182 has been fixed
-    id("org.jetbrains.kotlin.jvm") version "1.5.21"  // See also `gradle.properties`
-    id("org.jetbrains.intellij") version "1.3.0"
+    id("org.jetbrains.kotlin.jvm") version "1.6.20"  // See also `gradle.properties`
+    id("org.jetbrains.intellij") version "1.5.2"
 
     // Tests/coverage
     id("jacoco")
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.19.0"  // See also `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.20.0"  // See also `gradle.properties`
 
     // Documentation
     id("org.jetbrains.dokka") version "1.6.0"
@@ -90,7 +89,6 @@ tasks {
 
     // Tests/coverage
     test {
-        systemProperty("java.awt.headless", "false")
         systemProperty("spek2.execution.test.timeout", 0)
 
         useJUnitPlatform {
