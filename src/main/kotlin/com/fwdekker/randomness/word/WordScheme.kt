@@ -91,7 +91,7 @@ data class WordScheme(
         /**
          * The default value of the [quotation] field.
          */
-        const val DEFAULT_QUOTATION = "\""
+        const val DEFAULT_QUOTATION = ""
 
         /**
          * The default value of the [customQuotation] field.

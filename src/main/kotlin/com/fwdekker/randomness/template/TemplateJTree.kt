@@ -531,7 +531,7 @@ class TemplateJTree(
         /**
          * A `PopupStep` that shows only the default templates.
          */
-        private inner class DefaultTemplatesPopupStep : AddSchemePopupStep(DEFAULT_TEMPLATES)
+        private inner class DefaultTemplatesPopupStep : AddSchemePopupStep(TemplateList.DEFAULT_TEMPLATES)
 
         /**
          * A `PopupStep` that contains a [TemplateReference] for each [Template] that can currently be referenced from
@@ -713,15 +713,6 @@ class TemplateJTree(
                 UuidScheme(),
                 DateTimeScheme(),
                 TemplateReference()
-            )
-
-        /**
-         * The list of default templates that can be inserted.
-         */
-        val DEFAULT_TEMPLATES: List<Template>
-            get() = listOf(
-                Template("Default 1", listOf(IntegerScheme(minValue = 13, maxValue = 37))),
-                Template("Default 2", listOf(StringScheme(pattern = "Default Pattern")))
             )
 
         /**
