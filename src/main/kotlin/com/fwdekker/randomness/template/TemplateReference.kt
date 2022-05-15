@@ -18,7 +18,7 @@ import java.awt.Color
 
 
 /**
- * A reference to an existing template.
+ * A reference to an existing template, to allow using a template as if it were a scheme.
  *
  * @property templateUuid The UUID of the referenced template; defaults to the first template in [TemplateList].
  * @property quotation The string that encloses the generated word on both sides.

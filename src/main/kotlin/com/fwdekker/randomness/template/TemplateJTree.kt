@@ -37,7 +37,7 @@ import kotlin.math.min
  * A tree containing [Template]s and [Scheme]s.
  *
  * The tree contains the templates and schemes defined in the [TemplateList] of [currentState] by loading that list into
- * this tree's [TemplateTreeModel]. Furthermore, when a new [Scheme] is added or copied, it will use the [currentState].
+ * this tree's [TemplateJTreeModel]. Furthermore, when a new [Scheme] is added or copied, it will use the [currentState].
  *
  * This tree reads from [originalState] to determine whether particular [Scheme]s have been modified. Modified [Scheme]s
  * can be reset, in which case the original state is copied into that scheme in the [currentState].
@@ -48,15 +48,15 @@ import kotlin.math.min
 class TemplateJTree(
     private val originalState: SettingsState,
     private var currentState: SettingsState
-) : Tree(TemplateTreeModel(currentState.templateList)) {
+) : Tree(TemplateJTreeModel(currentState.templateList)) {
     /**
      * The tree's model.
      *
      * This field cannot be named `model` because this causes an NPE during initialization. This field cannot be named
      * `treeModel` because this name is already taken and cannot be overridden.
      */
-    val myModel: TemplateTreeModel
-        get() = super.getModel() as TemplateTreeModel
+    val myModel: TemplateJTreeModel
+        get() = super.getModel() as TemplateJTreeModel
 
     /**
      * The currently selected node, or `null` if no node is selected, or `null` if the root is selected.
@@ -168,7 +168,7 @@ class TemplateJTree(
     /**
      * Reloads the list of templates in [myModel].
      *
-     * This is a wrapper around [TemplateTreeModel.reload] that additionally tries to retain the current selection
+     * This is a wrapper around [TemplateJTreeModel.reload] that additionally tries to retain the current selection
      * and expansion state.
      */
     fun reload() {

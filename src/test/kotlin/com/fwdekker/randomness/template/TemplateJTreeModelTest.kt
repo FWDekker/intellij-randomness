@@ -12,14 +12,14 @@ import javax.swing.event.TreeModelListener
 
 
 /**
- * Unit tests for [TemplateTreeModel].
+ * Unit tests for [TemplateJTreeModel].
  */
-object TemplateTreeModelTest : Spek({
-    lateinit var model: TemplateTreeModel
+object TemplateJTreeModelTest : Spek({
+    lateinit var model: TemplateJTreeModel
 
 
     beforeEachTest {
-        model = TemplateTreeModel(
+        model = TemplateJTreeModel(
             TemplateList(
                 listOf(
                     Template("Strong", listOf(DummyScheme.from("bell"), DummyScheme.from("people"))),

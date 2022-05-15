@@ -28,7 +28,7 @@ import javax.swing.tree.TreePath
  * @param list the list to be modeled
  */
 @Suppress("TooManyFunctions") // Normal for Swing implementations
-class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeModel, EditableModel {
+class TemplateJTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeModel, EditableModel {
     /**
      * The listeners that are informed when the state of the tree changes.
      */
@@ -427,7 +427,7 @@ class TemplateTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeMo
  * allowing it to contain two nodes that equal each other as long as their UUIDs are different.
  *
  * @property state The state contained in this node.
- * @see TemplateTreeModel
+ * @see TemplateJTreeModel
  */
 class StateNode(val state: State) {
     /**
