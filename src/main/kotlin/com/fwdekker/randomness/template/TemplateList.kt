@@ -153,7 +153,7 @@ data class TemplateList(
                         ),
                         StringScheme(pattern = ".", isRegex = false)
                     ),
-                    ArrayDecorator(brackets = "", separator = "", customSeparator = "")
+                    ArrayDecorator(brackets = "", separator = "")
                 ),
                 Template(
                     "IP address",
