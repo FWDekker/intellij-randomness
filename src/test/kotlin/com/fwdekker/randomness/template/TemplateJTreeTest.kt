@@ -442,17 +442,8 @@ object TemplateJTreeTest : Spek({
         }
 
 
-        describe("AddButton") {
-            it("immediately adds a template if the tree is empty") {
-                GuiActionRunner.execute {
-                    list().templates = emptyList()
-                    tree.reload()
-                }
-
-                GuiActionRunner.execute { frame.clickActionButton("Add") }
-
-                assertThat(list().templates).hasSize(1)
-            }
+        xdescribe("AddButton") {
+            // No non-popup behavior to test
         }
 
         describe("RemoveButton") {

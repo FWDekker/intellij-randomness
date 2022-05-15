@@ -37,7 +37,8 @@ import kotlin.math.min
  * A tree containing [Template]s and [Scheme]s.
  *
  * The tree contains the templates and schemes defined in the [TemplateList] of [currentState] by loading that list into
- * this tree's [TemplateJTreeModel]. Furthermore, when a new [Scheme] is added or copied, it will use the [currentState].
+ * this tree's [TemplateJTreeModel]. Furthermore, when a new [Scheme] is added or copied, it will use the
+ * [currentState].
  *
  * This tree reads from [originalState] to determine whether particular [Scheme]s have been modified. Modified [Scheme]s
  * can be reset, in which case the original state is copied into that scheme in the [currentState].
@@ -84,6 +85,24 @@ class TemplateJTree(
                     else myModel.root.children.firstOrNull() ?: myModel.root
                 )
             )
+        }
+
+    /**
+     * The currently selected template, or `null` if no template is currently selected.
+     *
+     * If a non-template scheme is currently selected, the template parent of that scheme is returned.
+     *
+     * Setting `null` will select the first template in the tree, or the root if there are no templates.
+     */
+    var selectedTemplate: Template?
+        get() {
+            val node = selectedNodeNotRoot ?: return null
+
+            return if (node.state is Template) node.state
+            else myModel.getParentOf(node)!!.state as Template
+        }
+        set(value) {
+            selectedScheme = value
         }
 
     /**
@@ -395,16 +414,13 @@ class TemplateJTree(
          *
          * @param event ignored
          */
-        override fun actionPerformed(event: AnActionEvent) {
-            if (selectedNodeNotRoot == null) {
-                addScheme(AVAILABLE_ADD_SCHEMES[0])
-                return
-            }
-
+        override fun actionPerformed(event: AnActionEvent) =
             JBPopupFactory.getInstance()
-                .createListPopup(AddSchemePopupStep())
+                .createListPopup(
+                    if (selectedNodeNotRoot == null) DefaultTemplatesPopupStep()
+                    else MainPopupStep()
+                )
                 .show(preferredPopupPoint)
-        }
 
         /**
          * Returns the shortcut for this action.
@@ -429,9 +445,14 @@ class TemplateJTree(
 
 
         /**
-         * The [Scheme]-related entries in [AddButton].
+         * A `PopupStep` for a list of [Scheme]s that can be inserted.
+         *
+         * Elements can be nested by overriding [hasSubstep] and [onChosen].
+         *
+         * @param schemes the schemes that can be inserted
          */
-        private inner class AddSchemePopupStep : BaseListPopupStep<Scheme>(null, AVAILABLE_ADD_SCHEMES) {
+        private abstract inner class AddSchemePopupStep(schemes: List<Scheme>) :
+            BaseListPopupStep<Scheme>(null, schemes) {
             /**
              * Returns [value]'s icon.
              *
@@ -451,15 +472,16 @@ class TemplateJTree(
             /**
              * Inserts [value] into the tree.
              *
+             * Subclasses may modify the behavior of this method to instead return the `PopupStep` nested under this
+             * entry.
+             *
              * @param value the value to insert
              * @param finalChoice ignored
-             * @return `null`
+             * @return `null`, or the `PopupStep` that is nested under this entry
              */
-            override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? {
-                if (value != null) addScheme(value.deepCopy().also { it.setSettingsState(currentState) })
-
-                return null
-            }
+            override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? =
+                if (value == null) null
+                else addScheme(value.deepCopy().also { it.setSettingsState(currentState) }).let { null }
 
             /**
              * Returns `true`.
@@ -469,22 +491,71 @@ class TemplateJTree(
             override fun isSpeedSearchEnabled() = true
 
             /**
-             * Returns a separator if [value] should be preceded by a separator, or `null` otherwise.
-             *
-             * @param value the value to determine by whether to return a separator
-             * @return a separator if [value] should be preceded by a separator, or `null` otherwise
-             */
-            override fun getSeparatorAbove(value: Scheme?) =
-                if (value == AVAILABLE_ADD_SCHEMES[1]) ListSeparator()
-                else null
-
-            /**
              * Returns the index of the entry to select by default.
              *
              * @return the index of the entry to select by default
              */
             override fun getDefaultOptionIndex() = 0
         }
+
+        /**
+         * The top-level `PopupStep`, which includes the default templates and various reference types.
+         */
+        private inner class MainPopupStep : AddSchemePopupStep(POPUP_STEP_SCHEMES) {
+            override fun onChosen(value: Scheme?, finalChoice: Boolean) =
+                when (value) {
+                    POPUP_STEP_SCHEMES[0] -> DefaultTemplatesPopupStep()
+                    POPUP_STEP_SCHEMES[POPUP_STEP_SCHEMES.size - 1] -> ReferencesPopupStep()
+                    else -> super.onChosen(value, finalChoice)
+                }
+
+            /**
+             * Returns `true` if and only if the [Template] or [TemplateReference] entry is selected.
+             *
+             * @param value the value to check for
+             */
+            override fun hasSubstep(value: Scheme?) =
+                value == POPUP_STEP_SCHEMES[0] || value == POPUP_STEP_SCHEMES[POPUP_STEP_SCHEMES.size - 1]
+
+            /**
+             * Returns a separator if [value] should be preceded by a separator, or `null` otherwise.
+             *
+             * @param value the value to determine by whether to return a separator
+             * @return a separator if [value] should be preceded by a separator, or `null` otherwise
+             */
+            override fun getSeparatorAbove(value: Scheme?) =
+                if (value == POPUP_STEP_SCHEMES[1]) ListSeparator()
+                else null
+        }
+
+        /**
+         * A `PopupStep` that shows only the default templates.
+         */
+        private inner class DefaultTemplatesPopupStep : AddSchemePopupStep(DEFAULT_TEMPLATES)
+
+        /**
+         * A `PopupStep` that contains a [TemplateReference] for each [Template] that can currently be referenced from
+         * [selectedTemplate].
+         *
+         * Ineligible `Template`s are automatically filtered out.
+         */
+        private inner class ReferencesPopupStep : AddSchemePopupStep(
+            run {
+                val listCopy = currentState.templateList.deepCopy(retainUuid = true)
+                    .also { it.applySettingsState(SettingsState(it)) }
+                val reference = TemplateReference().also { it.templateList += listCopy }
+
+                val templateCopy = listCopy.templates.single { it.uuid == selectedTemplate!!.uuid }
+                templateCopy.schemes = templateCopy.schemes.toMutableList().also { it.add(reference) }
+
+                listCopy.templates
+                    .filter {
+                        reference.template = it
+                        listCopy.findRecursionFrom(reference) == null
+                    }
+                    .map { TemplateReference(it.uuid) }
+            }
+        )
     }
 
     /**
@@ -630,9 +701,9 @@ class TemplateJTree(
      */
     companion object {
         /**
-         * Returns the list of schemes that the user can add from the add action.
+         * The list of schemes that the user can add from the add action.
          */
-        val AVAILABLE_ADD_SCHEMES: List<Scheme>
+        val POPUP_STEP_SCHEMES: List<Scheme>
             get() = listOf(
                 Template(Bundle("template.title"), emptyList()),
                 IntegerScheme(),
@@ -642,6 +713,15 @@ class TemplateJTree(
                 UuidScheme(),
                 DateTimeScheme(),
                 TemplateReference()
+            )
+
+        /**
+         * The list of default templates that can be inserted.
+         */
+        val DEFAULT_TEMPLATES: List<Template>
+            get() = listOf(
+                Template("Default 1", listOf(IntegerScheme(minValue = 13, maxValue = 37))),
+                Template("Default 2", listOf(StringScheme(pattern = "Default Pattern")))
             )
 
         /**

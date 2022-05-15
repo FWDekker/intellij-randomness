@@ -80,18 +80,18 @@ object TemplateListEditorTest : Spek({
 
         it("returns the editor's state") {
             GuiActionRunner.execute {
-                frame.tree().target().clearSelection()
-                frame.clickActionButton("Add")
+                frame.tree().target().selectionRows = intArrayOf(0)
+                frame.clickActionButton("Remove")
             }
 
             val readScheme = editor.readState()
-            assertThat(readScheme.templateList.templates).hasSize(3)
+            assertThat(readScheme.templateList.templates).hasSize(1)
         }
 
         it("returns the loaded state if no editor changes are made") {
             GuiActionRunner.execute {
-                frame.tree().target().clearSelection()
-                frame.clickActionButton("Add")
+                frame.tree().target().selectionRows = intArrayOf(0)
+                frame.clickActionButton("Remove")
             }
             assertThat(editor.isModified()).isTrue()
 
@@ -167,12 +167,12 @@ object TemplateListEditorTest : Spek({
             assertThat(invoked).isNotZero()
         }
 
-        it("invokes the listener if a scheme is added") {
-            GuiActionRunner.execute { frame.tree().target().clearSelection() }
+        it("invokes the listener if a scheme is removed") {
+            GuiActionRunner.execute { frame.tree().target().selectionRows = intArrayOf(0) }
             var invoked = 0
             GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
 
-            GuiActionRunner.execute { frame.clickActionButton("Add") }
+            GuiActionRunner.execute { frame.clickActionButton("Remove") }
 
             assertThat(invoked).isNotZero()
         }
