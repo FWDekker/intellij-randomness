@@ -5,7 +5,6 @@ import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import java.awt.BorderLayout
 import java.awt.Color
-import javax.swing.Icon
 import javax.swing.JPanel
 import javax.swing.JTextField
 import kotlin.random.Random
@@ -134,11 +133,7 @@ class DummySettingsConfigurable : SettingsConfigurable() {
  * @param repeat `true` if and only if the same value should be inserted at each caret
  * @property dummySupplier Generates dummy values to insert.
  */
-class DummyInsertAction(repeat: Boolean = false, private val dummySupplier: (Random) -> String) : InsertAction(repeat) {
-    override val icon: Icon? = null
-
-    override val name = "Random Dummy"
-
-
+class DummyInsertAction(repeat: Boolean = false, private val dummySupplier: (Random) -> String) :
+    InsertAction(repeat, "Random Dummy", null, null) {
     override fun generateStrings(count: Int) = List(count) { dummySupplier(Random.Default) }
 }

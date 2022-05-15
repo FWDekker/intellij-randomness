@@ -1,10 +1,10 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
+import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.TypeIcon
-import com.intellij.testFramework.TestActionEvent
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
@@ -16,19 +16,13 @@ import java.awt.Color
 /**
  * Unit tests for [TemplateGroupAction].
  */
-class TemplateGroupActionTest : Spek({
+object TemplateGroupActionTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
-
-    lateinit var template: Template
-    lateinit var groupAction: TemplateGroupAction
 
 
     beforeEachTest {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
-
-        template = Template(name = "Former")
-        groupAction = TemplateGroupAction(template)
     }
 
     afterEachTest {
@@ -36,26 +30,15 @@ class TemplateGroupActionTest : Spek({
     }
 
 
-    describe("update") {
-        describe("icon") {
-            it("uses the template's icon as a base") {
-                val typeIcon = TypeIcon(RandomnessIcons.SCHEME, "t2Y", listOf(Color.BLUE))
-                template.schemes = listOf(DummyScheme().also { it.typeIcon = typeIcon })
+    describe("init") {
+        it("uses the template's text, description, and icon") {
+            val icon = TypeIcon(RandomnessIcons.SCHEME, "t2Y", listOf(Color.BLUE))
+            val template = Template("Match", listOf(DummyScheme().also { it.typeIcon = icon }))
+            val action = TemplateGroupAction(template)
 
-                val event = TestActionEvent(groupAction)
-                groupAction.update(event)
-
-                assertThat((event.presentation.icon as OverlayedIcon).base).isEqualTo(typeIcon)
-            }
-        }
-
-        describe("text") {
-            it("uses the template's text") {
-                val event = TestActionEvent(groupAction)
-                groupAction.update(event)
-
-                assertThat(event.presentation.text).isEqualTo("Former")
-            }
+            assertThat(action.templatePresentation.text).isEqualTo(template.name)
+            assertThat(action.templatePresentation.description).isEqualTo("Inserts a(n) Match at all carets.")
+            assertThat(action.templatePresentation.icon).isEqualTo(template.icon)
         }
     }
 })
@@ -65,25 +48,57 @@ class TemplateGroupActionTest : Spek({
  * Unit tests for [TemplateInsertAction].
  */
 object TemplateInsertActionTest : Spek({
-    describe("name") {
-        it("returns the template's name") {
-            val template = Template(name = "Head")
-            assertThat(TemplateInsertAction(template).name).isEqualTo("Head")
+    describe("init") {
+        describe("text and description") {
+            it("returns the template's default variant") {
+                val template = Template(name = "Head")
+                val action = TemplateInsertAction(template)
+
+                assertThat(action.text).isEqualTo("Head")
+                assertThat(action.templatePresentation.description).isEqualTo("Inserts a(n) Head at all carets.")
+            }
+
+            it("returns the template's array variant") {
+                val template = Template(name = "Case")
+                val action = TemplateInsertAction(template, array = true)
+
+                assertThat(action.text).isEqualTo("Case Array")
+                assertThat(action.templatePresentation.description).isEqualTo("Inserts an array of Case at all carets.")
+            }
+
+            it("returns the template's repeat variant") {
+                val template = Template(name = "Sting")
+                val action = TemplateInsertAction(template, repeat = true)
+
+                assertThat(action.text).isEqualTo("Sting Repeat")
+                assertThat(action.templatePresentation.description).isEqualTo("Inserts the same Sting at each caret.")
+            }
+
+            it("returns the template's repeat-array variant") {
+                val template = Template(name = "Dust")
+                val action = TemplateInsertAction(template, array = true, repeat = true)
+
+                assertThat(action.text).isEqualTo("Dust Repeat Array")
+                assertThat(action.templatePresentation.description)
+                    .isEqualTo("Inserts the same array of Dust at each caret.")
+            }
         }
 
-        it("returns the template's name with 'repeat' before it") {
-            val template = Template(name = "Sting")
-            assertThat(TemplateInsertAction(template, repeat = true).name).isEqualTo("Repeat Sting")
-        }
+        describe("icon") {
+            it("does not add a repeat overlay for a non-repeat variant") {
+                val template = Template(name = "Woolen")
+                val action = TemplateInsertAction(template, repeat = false)
 
-        it("returns the template's name with 'array' after it") {
-            val template = Template(name = "Invent")
-            assertThat(TemplateInsertAction(template, array = true).name).isEqualTo("Invent Array")
-        }
+                assertThat((action.templatePresentation.icon as OverlayedIcon).overlays)
+                    .doesNotContain(OverlayIcon.REPEAT)
+            }
 
-        it("returns the template's name with 'repeat' before it and 'array' after it") {
-            val template = Template(name = "Dust")
-            assertThat(TemplateInsertAction(template, array = true, repeat = true).name).isEqualTo("Repeat Dust Array")
+            it("adds a repeat overlay for a repeat variant") {
+                val template = Template(name = "Chalk")
+                val action = TemplateInsertAction(template, repeat = true)
+
+                assertThat((action.templatePresentation.icon as OverlayedIcon).overlays).contains(OverlayIcon.REPEAT)
+            }
         }
     }
 
@@ -91,13 +106,18 @@ object TemplateInsertActionTest : Spek({
     describe("generateStrings") {
         it("returns the generated strings") {
             val template = Template(schemes = listOf(DummyScheme.from("grass", "extent")))
-            assertThat(TemplateInsertAction(template).generateStrings(2)).containsExactly("grass", "extent")
+
+            val strings = TemplateInsertAction(template).generateStrings(2)
+
+            assertThat(strings).containsExactly("grass", "extent")
         }
 
         it("repeats the generated strings") {
             val template = Template(schemes = listOf(DummyScheme.from("refresh", "loss")))
-            assertThat(TemplateInsertAction(template, repeat = true).generateStrings(2))
-                .containsExactly("refresh", "refresh")
+
+            val strings = TemplateInsertAction(template, repeat = true).generateStrings(2)
+
+            assertThat(strings).containsExactly("refresh", "refresh")
         }
     }
 })
@@ -108,16 +128,10 @@ object TemplateInsertActionTest : Spek({
 object TemplateSettingsActionTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
 
-    lateinit var template: Template
-    lateinit var settingsAction: TemplateSettingsAction
-
 
     beforeEachTest {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
-
-        template = Template(name = "Broad")
-        settingsAction = TemplateSettingsAction(template)
     }
 
     afterEachTest {
@@ -125,39 +139,48 @@ object TemplateSettingsActionTest : Spek({
     }
 
 
-    describe("update") {
+    describe("init") {
         describe("text") {
             it("uses a default text if the template is null") {
-                val event = TestActionEvent(settingsAction)
-                TemplateSettingsAction(template = null).update(event)
+                val action = TemplateSettingsAction(template = null)
 
-                assertThat(event.presentation.text).isEqualTo("Settings")
+                assertThat(action.templatePresentation.text).isEqualTo("Settings")
             }
 
             it("uses the template's name if the template is not null") {
-                val event = TestActionEvent(settingsAction)
-                settingsAction.update(event)
+                val action = TemplateSettingsAction(Template(name = "Broad"))
 
-                assertThat(event.presentation.text).isEqualTo("Broad Settings")
+                assertThat(action.templatePresentation.text).isEqualTo("Broad Settings")
+            }
+        }
+
+        describe("description") {
+            it("has no description of the template is null") {
+                val action = TemplateSettingsAction(Template(name = "Year"))
+
+                assertThat(action.templatePresentation.description).isEqualTo("Opens settings for Year.")
+            }
+
+            it("uses the template's name to describe the action if the template is not null") {
+                val action = TemplateSettingsAction(template = null)
+
+                assertThat(action.templatePresentation.description).isNull()
             }
         }
 
         describe("icon") {
             it("uses a default icon if the template is null") {
-                val event = TestActionEvent(settingsAction)
-                TemplateSettingsAction(template = null).update(event)
+                val action = TemplateSettingsAction(template = null)
 
-                assertThat(event.presentation.icon).isEqualTo(RandomnessIcons.SETTINGS)
+                assertThat(action.templatePresentation.icon).isEqualTo(RandomnessIcons.SETTINGS)
             }
 
             it("uses the template's icon if the template is not null") {
-                val typeIcon = TypeIcon(RandomnessIcons.SCHEME, "war", listOf(Color.GREEN))
-                template.schemes = listOf(DummyScheme().also { it.typeIcon = typeIcon })
+                val icon = TypeIcon(RandomnessIcons.SCHEME, "war", listOf(Color.GREEN))
+                val template = Template("subject", listOf(DummyScheme().also { it.typeIcon = icon }))
+                val action = TemplateSettingsAction(template)
 
-                val event = TestActionEvent(settingsAction)
-                settingsAction.update(event)
-
-                assertThat((event.presentation.icon as OverlayedIcon).base).isEqualTo(typeIcon)
+                assertThat((action.templatePresentation.icon as OverlayedIcon).base).isEqualTo(icon)
             }
         }
     }

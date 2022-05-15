@@ -164,6 +164,14 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
     override fun readState() = currentState.deepCopy(retainUuid = true)
 
+    override fun applyState() {
+        val oldList = originalState.templateList.templates.toSet()
+        super.applyState()
+        val newList = originalState.templateList.templates.toSet()
+
+        TemplateActionLoader.updateActions(oldList, newList)
+    }
+
 
     override fun reset() {
         super.reset()

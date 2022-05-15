@@ -12,7 +12,7 @@ import kotlin.system.measureNanoTime
 /**
  * Unit tests for [DefaultWordList].
  */
-class DefaultWordListTest : Spek({
+object DefaultWordListTest : Spek({
     describe("words") {
         it("throws an exception if the file does not exist") {
             val list = DefaultWordList("throw", "word-lists/does-not-exist.txt")

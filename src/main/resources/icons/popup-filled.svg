@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <g id="popup-filled">
+    <path d="M0 0L16 0L16 16L0 16L0 0Z" id="Rectangle" fill="#D3D3D3" fill-rule="evenodd" stroke="none" />
+    <g id="popup">
+      <path d="M0 12.8L16 12.8L16 16L0 16L0 12.8Z" id="Rectangle" fill="#6E6E6E" fill-rule="evenodd" stroke="none" />
+      <path d="M0 6.4L16 6.4L16 9.6L0 9.6L0 6.4Z" id="Rectangle" fill="#6E6E6E" fill-rule="evenodd" stroke="none" />
+      <path d="M0 0L16 0L16 3.2L0 3.2L0 0Z" id="Rectangle" fill="#6E6E6E" fill-rule="evenodd" stroke="none" />
+    </g>
+  </g>
+</svg>

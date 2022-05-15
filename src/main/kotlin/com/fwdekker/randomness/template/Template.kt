@@ -46,6 +46,12 @@ data class Template(
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
 
+    /**
+     * The identifier of the action that inserts this [Template].
+     */
+    val actionId
+        get() = "com.fwdekker.randomness.insert.${uuid.replace("-", "")}"
+
 
     /**
      * Generates random strings by concatenating the outputs of the [schemes].

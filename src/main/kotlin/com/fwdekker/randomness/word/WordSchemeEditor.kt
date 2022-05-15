@@ -15,6 +15,9 @@ import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_QUOTATION
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.command.impl.UndoManagerImpl
+import com.intellij.openapi.command.undo.DocumentReferenceManager
+import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
@@ -71,6 +74,8 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
         quotationGroup.setLabel(quotationLabel)
 
         loadState()
+        (UndoManager.getGlobalInstance() as UndoManagerImpl) // Reset undo history
+            .invalidateActionsFor(DocumentReferenceManager.getInstance().create(wordListDocument))
     }
 
     /**
