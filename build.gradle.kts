@@ -135,9 +135,12 @@ tasks {
 
     // Documentation
     dokkaHtml.configure {
-        pluginsMapConfiguration.set(mapOf(
-            "org.jetbrains.dokka.base.DokkaBase" to """{ "footerMessage": "© ${Year.now().value} F.W.&nbsp;Dekker" }"""
-        ))
+        pluginsMapConfiguration.set(
+            mapOf(
+                "org.jetbrains.dokka.base.DokkaBase" to
+                    """{ "footerMessage": "© ${Year.now().value} Florine&nbsp;W.&nbsp;Dekker" }"""
+            )
+        )
         moduleName.set("Randomness v${properties("version")}")
         offlineMode.set(true)
         suppressInheritedMembers.set(true)

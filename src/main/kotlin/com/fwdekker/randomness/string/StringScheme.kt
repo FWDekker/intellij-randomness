@@ -117,7 +117,7 @@ data class StringScheme(
         /**
          * The default value of the [pattern] field.
          */
-        const val DEFAULT_PATTERN = "[a-z0-9]{8}"
+        const val DEFAULT_PATTERN = "[a-zA-Z0-9]{7,11}"
 
         /**
          * The default value of the [isRegex] field.

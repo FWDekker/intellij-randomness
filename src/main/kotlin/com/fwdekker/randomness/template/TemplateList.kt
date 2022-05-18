@@ -1,13 +1,17 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
+import com.fwdekker.randomness.word.DefaultWordList
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.util.xmlb.annotations.MapAnnotation
 
@@ -113,11 +117,61 @@ data class TemplateList(
          */
         val DEFAULT_TEMPLATES: List<Template>
             get() = listOf(
-                Template(Bundle("integer.title"), listOf(IntegerScheme())),
-                Template(Bundle("decimal.title"), listOf(DecimalScheme())),
-                Template(Bundle("string.title"), listOf(StringScheme())),
-                Template(Bundle("word.title"), listOf(WordScheme())),
-                Template(Bundle("uuid.title"), listOf(UuidScheme()))
+                Template("Integer", listOf(IntegerScheme())),
+                Template("Decimal", listOf(DecimalScheme())),
+                Template("String", listOf(StringScheme())),
+                Template("UUID", listOf(UuidScheme())),
+                Template("Date-Time", listOf(DateTimeScheme())),
+                Template("Hex color", listOf(StringScheme(pattern = "#[0-9a-f]{6}"))),
+                Template(
+                    "Name",
+                    listOf(
+                        WordScheme(words = DefaultWordList.wordListMap["Forenames"]!!.words),
+                        StringScheme(pattern = " ", isRegex = false),
+                        WordScheme(words = DefaultWordList.wordListMap["Surnames"]!!.words)
+                    )
+                ),
+                Template(
+                    "Lorem Ipsum",
+                    listOf(
+                        WordScheme(
+                            words = DefaultWordList.wordListMap["Lorem"]!!.words,
+                            capitalization = CapitalizationMode.FIRST_LETTER
+                        ),
+                        StringScheme(pattern = " ", isRegex = false),
+                        WordScheme(
+                            words = DefaultWordList.wordListMap["Lorem"]!!.words,
+                            arrayDecorator = ArrayDecorator(
+                                enabled = true,
+                                minCount = 3,
+                                maxCount = 7,
+                                brackets = "",
+                                separator = "",
+                                customSeparator = "",
+                                isSpaceAfterSeparator = true
+                            )
+                        ),
+                        StringScheme(pattern = ".", isRegex = false)
+                    ),
+                    ArrayDecorator(brackets = "", separator = "")
+                ),
+                Template(
+                    "IP address",
+                    listOf(
+                        IntegerScheme(
+                            minValue = 0,
+                            maxValue = 255,
+                            arrayDecorator = ArrayDecorator(
+                                enabled = true,
+                                minCount = 4,
+                                maxCount = 4,
+                                separator = ".",
+                                customSeparator = ".",
+                                isSpaceAfterSeparator = false
+                            )
+                        )
+                    )
+                )
             )
 
 

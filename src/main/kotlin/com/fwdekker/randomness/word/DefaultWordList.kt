@@ -43,8 +43,9 @@ data class DefaultWordList(val name: String, val filename: String) {
          * The list of all available word lists.
          */
         val wordLists = listOf(
-            DefaultWordList("Names", "word-lists/names.txt"),
-            DefaultWordList("Places", "word-lists/places.txt")
+            DefaultWordList("Forenames", "word-lists/forenames.txt"),
+            DefaultWordList("Lorem", "word-lists/lorem.txt"),
+            DefaultWordList("Surnames", "word-lists/surnames.txt")
         )
 
         /**

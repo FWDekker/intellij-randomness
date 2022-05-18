@@ -114,7 +114,7 @@ object TemplateJTreeTest : Spek({
                 assertThat(tree.selectedScheme).isEqualTo(list().templates[0])
             }
 
-            it("selects the root if null is set and there are not templates") {
+            it("selects the root if null is set and there are no templates") {
                 GuiActionRunner.execute {
                     list().templates = emptyList()
                     tree.reload()
@@ -144,6 +144,62 @@ object TemplateJTreeTest : Spek({
                 GuiActionRunner.execute { tree.selectedScheme = list().templates[1].schemes[0] }
 
                 assertThat(tree.selectedScheme).isEqualTo(list().templates[1].schemes[0])
+            }
+        }
+    }
+
+    describe("selectedTemplate") {
+        describe("get") {
+            it("returns null if nothing is selected") {
+                GuiActionRunner.execute { tree.clearSelection() }
+
+                assertThat(tree.selectedTemplate).isNull()
+            }
+
+            it("returns null if the root is selected") {
+                GuiActionRunner.execute { tree.selectionPath = model().getPathToRoot(root()) }
+
+                assertThat(tree.selectedTemplate).isNull()
+            }
+
+            it("returns null if a non-template scheme is selected") {
+                GuiActionRunner.execute {
+                    tree.selectionPath = model().getPathToRoot(StateNode(list().templates[1]))
+                }
+
+                assertThat(tree.selectedTemplate).isEqualTo(list().templates[1])
+            }
+
+            it("returns the selected template otherwise") {
+                GuiActionRunner.execute {
+                    tree.selectionPath = model().getPathToRoot(StateNode(list().templates[0]))
+                }
+
+                assertThat(tree.selectedTemplate).isEqualTo(list().templates[0])
+            }
+        }
+
+        describe("set") {
+            it("selects the first template if null is set") {
+                GuiActionRunner.execute { tree.selectedTemplate = null }
+
+                assertThat(tree.selectedTemplate).isEqualTo(list().templates[0])
+            }
+
+            it("selects the root if null is set and there are no templates") {
+                GuiActionRunner.execute {
+                    list().templates = emptyList()
+                    tree.reload()
+                    tree.selectedTemplate = null
+                }
+
+                assertThat(tree.selectedTemplate).isNull()
+            }
+
+            it("selects the given template if it exists") {
+                GuiActionRunner.execute { tree.selectedTemplate = list().templates[1] }
+
+                assertThat(tree.selectedTemplate).isEqualTo(list().templates[1])
             }
         }
     }
@@ -442,17 +498,8 @@ object TemplateJTreeTest : Spek({
         }
 
 
-        describe("AddButton") {
-            it("immediately adds a template if the tree is empty") {
-                GuiActionRunner.execute {
-                    list().templates = emptyList()
-                    tree.reload()
-                }
-
-                GuiActionRunner.execute { frame.clickActionButton("Add") }
-
-                assertThat(list().templates).hasSize(1)
-            }
+        xdescribe("AddButton") {
+            // No non-popup behavior to test
         }
 
         describe("RemoveButton") {

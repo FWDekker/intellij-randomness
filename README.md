@@ -140,5 +140,7 @@ In chronological order of contribution:
   [helping me find a bug in IntelliJ](https://github.com/FWDekker/intellij-randomness/issues/421)!
 * Thanks to [Xiakitl](https://github.com/Xiakitl) for
   [reporting a bug with custom shortcuts](https://github.com/FWDekker/intellij-randomness/issues/423)!
+* Thanks to [Rishi Maharaj](https://github.com/rshmhrj) for
+  [suggesting to add prefix and postfix options to strings]!
 
 If I should add, remove, or change anything here, just open an issue or email me!
