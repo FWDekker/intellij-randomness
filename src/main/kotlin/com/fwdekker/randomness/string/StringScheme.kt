@@ -73,20 +73,23 @@ data class StringScheme(
             generateStrings()[0] == if (isRegex) pattern.replace(Regex("\\\\(.)"), "$1") else pattern
 
 
-    override fun doValidate(): String? {
-        if (isRegex) {
-            if (pattern.takeLastWhile { it == '\\' }.length.mod(2) != 0)
-                return Bundle("string.error.trailing_backslash")
-
-            try {
-                RgxGen(pattern)
-            } catch (e: RgxGenParseException) {
-                return e.message
-            }
+    override fun doValidate() =
+        when {
+            !isRegex -> arrayDecorator.doValidate()
+            pattern.takeLastWhile { it == '\\' }.length.mod(2) != 0 -> Bundle("string.error.trailing_backslash")
+            pattern == "{}" || pattern.contains(Regex("[^\\\\]\\{}")) -> Bundle("string.error.empty_curly")
+            pattern == "[]" || pattern.contains(Regex("[^\\\\]\\[]")) -> Bundle("string.error.empty_square")
+            else ->
+                @Suppress("TooGenericExceptionCaught") // Consequence of incomplete validation in RgxGen
+                try {
+                    RgxGen(pattern).generate()
+                    arrayDecorator.doValidate()
+                } catch (e: RgxGenParseException) {
+                    e.message
+                } catch (e: Exception) {
+                    "Uncaught RgxGen exception: ${e.message}"
+                }
         }
-
-        return arrayDecorator.doValidate()
-    }
 
     override fun deepCopy(retainUuid: Boolean) =
         StringScheme(

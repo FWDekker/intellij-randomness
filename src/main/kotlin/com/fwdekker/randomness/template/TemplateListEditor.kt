@@ -98,8 +98,10 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
         val selectedNode = templateTree.selectedNodeNotRoot
         val selectedState = selectedNode?.state
-        if (selectedState !is Scheme)
+        if (selectedState !is Scheme) {
+            schemeEditorPanel.revalidate() // Hide editor immediately
             return
+        }
 
         schemeEditor = createEditor(selectedState)
             .also { editor ->

@@ -22,9 +22,9 @@ import javax.swing.KeyStroke
  */
 class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
     /**
-     * `true` if and only if the user focused the editor when opening this popup.
+     * `true` if and only if the user focused a non-viewer editor when opening this popup.
      */
-    private var hasEditor: Boolean = true
+    private var isEditable: Boolean = true
 
 
     /**
@@ -36,7 +36,7 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
         event.presentation.icon = RandomnessIcons.RANDOMNESS
 
         // Running this in `actionPerformed` always sets it to `true`
-        hasEditor = event.getData(CommonDataKeys.EDITOR) != null
+        isEditable = event.getData(CommonDataKeys.EDITOR)?.isViewer == true
     }
 
     /**
@@ -45,7 +45,7 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
      * @param event carries contextual information
      */
     override fun actionPerformed(event: AnActionEvent) {
-        val popupGroup = if (hasEditor) PopupGroup() else SettingsOnlyPopupGroup()
+        val popupGroup = if (isEditable) PopupGroup() else SettingsOnlyPopupGroup()
         val popup = JBPopupFactory.getInstance()
             .createActionGroupPopup(
                 Bundle("popup.title"), popupGroup, event.dataContext,
@@ -54,7 +54,7 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
             )
             as ListPopupImpl
 
-        if (hasEditor) {
+        if (isEditable) {
             popup.setCaption(Bundle("popup.title"))
             popup.setAdText(Bundle("popup.ad"))
             popup.registerModifierActions { this.captionModifier(it) }
