@@ -77,11 +77,17 @@ data class StringScheme(
         if (isRegex) {
             if (pattern.takeLastWhile { it == '\\' }.length.mod(2) != 0)
                 return Bundle("string.error.trailing_backslash")
+            else if (pattern == "{}" || pattern.contains(Regex("[^\\\\]\\{}")))
+                return Bundle("string.error.empty_curly")
+            else if (pattern == "[]" || pattern.contains(Regex("[^\\\\]\\[]")))
+                return Bundle("string.error.empty_square")
 
             try {
-                RgxGen(pattern)
+                RgxGen(pattern).generate()
             } catch (e: RgxGenParseException) {
                 return e.message
+            } catch (e: Exception) {
+                return "Uncaught RgxGen exception: ${e.message}"
             }
         }
 

@@ -137,31 +137,6 @@ object StringSchemeTest : Spek({
             assertThat(stringScheme.doValidate()).isNull()
         }
 
-        it("fails if the pattern ends with a trailing backslash") {
-            stringScheme.pattern = "14\\"
-
-            assertThat(stringScheme.doValidate()).isEqualTo(Bundle("string.error.trailing_backslash"))
-        }
-
-        it("fails if the pattern ends with an odd number of trailing backslashes") {
-            stringScheme.pattern = "deb\\\\\\"
-
-            assertThat(stringScheme.doValidate()).isEqualTo(Bundle("string.error.trailing_backslash"))
-        }
-
-        it("does not fail if the trailing backslash is escaped") {
-            stringScheme.pattern = "12\\\\"
-
-            assertThat(stringScheme.doValidate()).isNull()
-        }
-
-        it("does not fail if the pattern has a trailing backslash but is not a regex") {
-            stringScheme.pattern = "q\\"
-            stringScheme.isRegex = false
-
-            assertThat(stringScheme.doValidate()).isNull()
-        }
-
         it("fails if the pattern is invalid") {
             stringScheme.pattern = "{9"
 
@@ -172,6 +147,73 @@ object StringSchemeTest : Spek({
             stringScheme.arrayDecorator.minCount = -985
 
             assertThat(stringScheme.doValidate()).isNotNull()
+        }
+
+        describe("trailing backslash") {
+            it("fails if the pattern ends with a trailing backslash") {
+                stringScheme.pattern = "14\\"
+
+                assertThat(stringScheme.doValidate()).isEqualTo(Bundle("string.error.trailing_backslash"))
+            }
+
+            it("fails if the pattern ends with an odd number of trailing backslashes") {
+                stringScheme.pattern = "deb\\\\\\"
+
+                assertThat(stringScheme.doValidate()).isEqualTo(Bundle("string.error.trailing_backslash"))
+            }
+
+            it("does not fail if the trailing backslash is escaped") {
+                stringScheme.pattern = "12\\\\"
+
+                assertThat(stringScheme.doValidate()).isNull()
+            }
+
+            it("does not fail if the pattern has a trailing backslash but is not a regex") {
+                stringScheme.pattern = "q\\"
+                stringScheme.isRegex = false
+
+                assertThat(stringScheme.doValidate()).isNull()
+            }
+        }
+
+        describe("empty {}") {
+            it("fails if the pattern is '{}}'") {
+                stringScheme.pattern = "{}"
+
+                assertThat(stringScheme.doValidate()).isEqualTo(Bundle("string.error.empty_curly"))
+            }
+
+            it("fails if the pattern has an unescaped '{}}' in the middle") {
+                stringScheme.pattern = "admit{}annoy"
+
+                assertThat(stringScheme.doValidate()).isEqualTo(Bundle("string.error.empty_curly"))
+            }
+
+            it("passes if the '{}}' is escaped") {
+                stringScheme.pattern = "find\\{}ray"
+
+                assertThat(stringScheme.doValidate()).isNull()
+            }
+        }
+
+        describe("empty []") {
+            it("fails if the pattern is '[]'") {
+                stringScheme.pattern = "[]"
+
+                assertThat(stringScheme.doValidate()).isEqualTo(Bundle("string.error.empty_square"))
+            }
+
+            it("fails if the pattern has an unescaped '[]' in the middle") {
+                stringScheme.pattern = "admit[]annoy"
+
+                assertThat(stringScheme.doValidate()).isEqualTo(Bundle("string.error.empty_square"))
+            }
+
+            it("passes if the '[]' is escaped") {
+                stringScheme.pattern = "find\\[]ray"
+
+                assertThat(stringScheme.doValidate()).isNull()
+            }
         }
     }
 
