@@ -531,7 +531,8 @@ class TemplateJTree(
         /**
          * A `PopupStep` that shows only the default templates.
          */
-        private inner class DefaultTemplatesPopupStep : AddSchemePopupStep(TemplateList.DEFAULT_TEMPLATES)
+        private inner class DefaultTemplatesPopupStep :
+            AddSchemePopupStep(listOf(Template("Empty")) + TemplateList.DEFAULT_TEMPLATES)
 
         /**
          * A `PopupStep` that contains a [TemplateReference] for each [Template] that can currently be referenced from
