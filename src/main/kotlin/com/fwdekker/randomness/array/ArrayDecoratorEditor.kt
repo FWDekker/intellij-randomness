@@ -13,6 +13,7 @@ import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
+import com.intellij.ui.ContextHelpLabel
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
 import java.awt.Component
@@ -50,6 +51,7 @@ class ArrayDecoratorEditor(
     private lateinit var bracketsLabel: JLabel
     private lateinit var bracketsGroup: ButtonGroup
     private lateinit var customBrackets: VariableLabelRadioButton
+    private lateinit var customBracketsHelpLabel: JLabel
     private lateinit var separatorLabel: JLabel
     private lateinit var separatorGroup: ButtonGroup
     private lateinit var customSeparator: VariableLabelRadioButton
@@ -98,6 +100,7 @@ class ArrayDecoratorEditor(
         separator = SeparatorFactory.createSeparator(Bundle("array.title"), null)
 
         customBrackets = VariableLabelRadioButton(UIConstants.WIDTH_MEDIUM)
+        customBracketsHelpLabel = ContextHelpLabel.create(Bundle("array.ui.brackets.comment"))
         customSeparator = VariableLabelRadioButton()
 
         minCountSpinner = JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT)

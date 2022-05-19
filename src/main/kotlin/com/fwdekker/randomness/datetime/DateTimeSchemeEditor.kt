@@ -9,9 +9,13 @@ import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.BrowserLink
+import com.intellij.ui.components.JBLabel
+import com.intellij.util.ui.JBUI
 import javax.swing.JButton
+import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
+import javax.swing.SwingConstants
 
 
 /**
@@ -30,6 +34,7 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
     private lateinit var maxDateTimeField: JDateTimeField
     private lateinit var patternField: JTextField
     private lateinit var patternHelpButton: JButton
+    private lateinit var patternCommentLabel: JLabel
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
     private lateinit var arrayDecoratorPanel: JPanel
 
@@ -56,6 +61,13 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
             Bundle("datetime.ui.pattern_help"),
             "https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html"
         )
+        patternCommentLabel = JBLabel()
+            .also {
+                it.foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
+                it.isFocusable = false
+                it.setCopyable(false)
+                it.verticalTextPosition = SwingConstants.TOP
+            }
 
         arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
         arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
