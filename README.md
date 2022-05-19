@@ -5,68 +5,76 @@
 </h1>
 
 <p align="center">
+    <a href="https://plugins.jetbrains.com/plugin/9836-randomness"><img src="https://img.shields.io/jetbrains/plugin/d/9836?style=for-the-badge" alt="Downloads" /></a>
+    <a href="https://plugins.jetbrains.com/plugin/9836-randomness/reviews"><img src="https://img.shields.io/jetbrains/plugin/r/rating/9836?style=for-the-badge" alt="Rating" /></a>
     <a href="https://plugins.jetbrains.com/plugin/9836-randomness"><img src="https://img.shields.io/github/release/FWDekker/intellij-randomness.svg?style=for-the-badge" alt="Release" /></a>
-    <a href="https://fwdekker.github.io/intellij-randomness/"><img src="https://img.shields.io/badge/documentation-ready-blue.svg?style=for-the-badge" alt="Documentation" /></a>
     <br />
-    <a href="https://github.com/FWDekker/intellij-randomness/actions?query=branch%3Amaster"><img src="https://img.shields.io/github/workflow/status/FWDekker/intellij-randomness/CI?style=for-the-badge" alt="GitHub build status" /></a>
-    <a href="https://codecov.io/gh/FWDekker/intellij-randomness"><img src="https://img.shields.io/codecov/c/github/FWDekker/intellij-randomness.svg?style=for-the-badge" alt="Line coverage" /></a>
+    <a href="https://github.com/FWDekker/intellij-randomness/actions?query=branch%3Amaster"><img src="https://img.shields.io/github/workflow/status/FWDekker/intellij-randomness/CI?style=for-the-badge" alt="Build" /></a>
+    <a href="https://codecov.io/gh/FWDekker/intellij-randomness"><img src="https://img.shields.io/codecov/c/github/FWDekker/intellij-randomness.svg?style=for-the-badge" alt="Coverage" /></a>
+    <a href="https://fwdekker.github.io/intellij-randomness/"><img src="https://img.shields.io/badge/documentation-ready-blue.svg?style=for-the-badge" alt="Documentation" /></a>
 </p>
 
-Rather than going to [random.org](https://www.random.org/) or making up your own random data, you can now insert random
-numbers, strings, and UUIDs using an IntelliJ action!
+# This README is about the upcoming v3 release. For information about the latest public version, [check the old README](https://github.com/FWDekker/intellij-randomness/tree/v2)
 
-This plugin is also available on the [plugin repository](https://plugins.jetbrains.com/plugin/9836-randomness).
+Rather than going to [random.org](https://www.random.org/) or making up your own random data, you can now insert random
+numbers, strings, UUIDs, and custom formats using an IntelliJ action!
+
+This plugin is also available on the [plugin repository](https://plugins.jetbrains.com/plugin/9836-randomness)!
 
 
 ## 📖 How to use
-<img align="right" width="450px" src=".github/img/live-sample.gif" alt="Animated sample usage of Randomness." />
+<img align="right" width="450px" src=".github/img/insertion-sample.gif" alt="Animated sample usage of Randomness." />
 
-To insert random data, press <kbd>Alt + R</kbd> (<kbd>⌥R</kbd>) and choose the type of data you want to insert.
-A different value will be inserted at each caret.
+To insert random data, press <kbd>Alt + R</kbd> (<kbd>or ⌥R</kbd>) to open the list of available templates and choose
+one that suits your task.
+By default, a different value is inserted at each caret.
 
 You can modify this behavior by holding a key while selecting the type of data to insert:
-* **Array**: Hold <kbd>Shift</kbd> to insert a whole array of values.
+* **Array**: Hold <kbd>Shift</kbd> to insert a customisable array of values.
+* **Repeat**: Hold <kbd>Alt</kbd> (or <kbd>⌥</kbd>) to insert the same value at each caret.
 * **Settings**: Hold <kbd>Ctrl</kbd> to open the settings of that data type.
-* **Repeat**: Hold <kbd>Alt</kbd> (<kbd>⌥</kbd>) to insert the same value at each caret.
 
-You can also hold multiple modifier keys to combine their effects.
+You can hold multiple modifier keys to combine their effects.
 
 Randomness can also be found in the main menu under <kbd>Tools</kbd> or in <kbd>Code > Generate</kbd>.
 
 ## ✨ Features
 * 🕸 **Data Types**<br />
-  There are five types of data that can be inserted:
-  1. **Integers**, such as `7,826,922`, in any base from binary to hexatrigesimal.
-  2. **Decimals**, such as `8,816,573.10`, using customisable separators.
-  3. **Strings**, such as `"PaQDQqSBEH"`, with custom symbol lists.
-  4. **Words**, such as `"Bridge"`, with custom word lists.
-  5. **UUIDs**, such as `0caa7b28-fe58-4ba6-a25a-9e5beaaf8f4b`, with or without dashes.
-
-  In addition to these data types, it's also possible to generate entire **arrays** of a data type.
+  <img align="right" width="450px" src=".github/img/configuration-sample.gif" alt="Animated sample usage of Randomness." />
+  There are six basic data types that can be inserted and customised:
+    1. **Integers**, such as `7,826,922`, from a custom range, in any base from binary to hexatrigesimal.
+    2. **Decimals**, such as `8,816,573.10`, using customisable separators.
+    3. **Strings**, such as `"PaQDQqSBEH"`, specified using a regex.
+    4. **Words**, such as `"Bridge"`, with predefined or custom word lists.
+    5. **UUIDs**, such as `0caa7b28-fe58-4ba6-a25a-9e5beaaf8f4b`, with or without dashes.
+    6. **Date-times**, such as `2022-02-03 19:03`, or any other format you want.
+* 🧬 **Templates**<br />
+  For complex kinds of data, you can use templates.
+  A template is a list of data types that should be concatenated to create random data.
+  Insert **phone numbers**, **email addresses**, **URLs**, **IP addresses**, or any **custom data type** you can think
+  of.
+  Of course, Randomness comes bundled with a whole array of predefined templates to help you out.
+  If needed, you can reuse a template by including it in another template using a **reference**.
+* 🗃️ **Arrays**<br />
+  <img align="right" width="450px" src=".github/img/array-insertion-sample.gif" alt="Animated sample usage of Randomness." />
+  Need a lot of data?
+  Insert **an entire array** of any template you want.
   For example, an array of integers might look like `[978, 881, 118, 286, 288]`.
-* ⚙ **Settings**<br />
-  The way the data is generated can be **adjusted to your demands**.
-  You can customise the smallest integer to generate, the quotation marks to surround strings with, the number of
-  elements to put in an array, the decimal separator to use, the capitalisation of strings and UUIDs, and much more.
-* 👀 **Previews**<br />
-  To **help you decide** what settings to choose, a preview of the data that is generated with your current settings is
-  shown at the bottom of the settings window.
-* 💨 **Shortcuts**<br />
+  You can customise the brackets, delimiter, and number of elements to your liking every time you insert an array,
+  because no two arrays are the same.
+* ⌨️ **Shortcuts**<br />
   Instead of using up all your shortcuts, Randomness only uses the <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) shortcut by
   default.
-  However, you have the option to assign a unique shortcut to each individual data type and each settings window to
-  **streamline your workflow**.
-* 💬 **Symbol sets**<br />
-  While Randomness comes with a varied selection of symbols to use for generating strings, it also gives you the option
-  to **add your own symbols**, with support for Chinese symbols and emoji.
-* 📚 **Dictionaries**<br />
-  Randomness is bundled with a small English dictionary from which it chooses random words.
-  However, you may want to add random words from another language or insert random movie quotes.
-  You can **create your own dictionaries** by creating a text file and putting one option on each line, and saving the
-  file with the `.dic` extension.
-  Empty lines and lines that start with a `#` are ignored.
-
-  <p align="center"><img src=".github/img/word-settings.png" alt="Dictionary settings" /></p>
+  However, to **streamline your workflow**, you can assign shortcuts to any template under your IDE's <kbd>Keymap</kbd>
+  settings.
+* 💨 **Fast insertion**<br />
+  The insertion popup (shown when you press <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) by default) is **searchable**:
+  Just type something in the popup and relevant templates will be filtered out.
+  Or use the **hotkeys** that are assigned to the first 10 templates in the list:
+  Press any digit to directly insert the corresponding template.
+  **Reorder templates** in the settings menu to change which template uses which hotkey.
+* 👀 **Previews**<br />
+  To **help you decide** what settings to choose, a preview of the template is shown while you're editing.
 
 
 ## 💻 Development
