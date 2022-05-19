@@ -23,8 +23,6 @@ This plugin is also available on the [plugin repository](https://plugins.jetbrai
 
 
 ## 📖 How to use
-<img align="right" width="450px" src=".github/img/insertion-sample.gif" alt="Animated sample usage of Randomness." />
-
 To insert random data, press <kbd>Alt + R</kbd> (<kbd>or ⌥R</kbd>) to open the list of available templates and choose
 one that suits your task.
 By default, a different value is inserted at each caret.
@@ -38,9 +36,10 @@ You can hold multiple modifier keys to combine their effects.
 
 Randomness can also be found in the main menu under <kbd>Tools</kbd> or in <kbd>Code > Generate</kbd>.
 
+<img width="450px" src=".github/img/insertion-sample.gif" alt="Animation of how to insert data" />
+
 ## ✨ Features
 * 🕸 **Data Types**<br />
-  <img align="right" width="450px" src=".github/img/configuration-sample.gif" alt="Animated sample usage of Randomness." />
   There are six basic data types that can be inserted and customised:
     1. **Integers**, such as `7,826,922`, from a custom range, in any base from binary to hexatrigesimal.
     2. **Decimals**, such as `8,816,573.10`, using customisable separators.
@@ -55,24 +54,31 @@ Randomness can also be found in the main menu under <kbd>Tools</kbd> or in <kbd>
   of.
   Of course, Randomness comes bundled with a whole array of predefined templates to help you out.
   If needed, you can reuse a template by including it in another template using a **reference**.
+
+  <img width="450px" src=".github/img/configuration-sample.gif" alt="Animation of how to configure templates" />
 * 🗃️ **Arrays**<br />
-  <img align="right" width="450px" src=".github/img/array-insertion-sample.gif" alt="Animated sample usage of Randomness." />
   Need a lot of data?
   Insert **an entire array** of any template you want.
   For example, an array of integers might look like `[978, 881, 118, 286, 288]`.
   You can customise the brackets, delimiter, and number of elements to your liking every time you insert an array,
   because no two arrays are the same.
+
+  <img width="450px" src=".github/img/array-insertion-sample.gif" alt="Animation of how to insert arrays" />
 * ⌨️ **Shortcuts**<br />
   Instead of using up all your shortcuts, Randomness only uses the <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) shortcut by
   default.
   However, to **streamline your workflow**, you can assign shortcuts to any template under your IDE's <kbd>Keymap</kbd>
   settings.
+
+  <img width="450px" src=".github/img/shortcuts.png" alt="Shortcut settings for Randomness" />
 * 💨 **Fast insertion**<br />
   The insertion popup (shown when you press <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) by default) is **searchable**:
   Just type something in the popup and relevant templates will be filtered out.
   Or use the **hotkeys** that are assigned to the first 10 templates in the list:
   Press any digit to directly insert the corresponding template.
   **Reorder templates** in the settings menu to change which template uses which hotkey.
+
+  <img src=".github/img/fast-insertion.png" alt="Insertion popup" />
 * 👀 **Previews**<br />
   To **help you decide** what settings to choose, a preview of the template is shown while you're editing.
 
