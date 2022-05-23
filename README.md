@@ -17,7 +17,7 @@
 # This README is about the upcoming v3 release. For information about the latest public version, [check the old README](https://github.com/FWDekker/intellij-randomness/tree/v2)
 
 Rather than going to [random.org](https://www.random.org/) or making up your own random data, you can now insert random
-numbers, strings, UUIDs, and custom formats using an IntelliJ action!
+numbers, UUIDs, names, IP addresses, and much more using an IntelliJ action!
 
 This plugin is also available on the [plugin repository](https://plugins.jetbrains.com/plugin/9836-randomness)!
 
@@ -91,7 +91,10 @@ Please also check the [contribution guidelines](.github/CONTRIBUTING.md).
 ```bash
 $ gradlew runIde       # Open a sandbox IntelliJ instance running the plugin
 $ gradlew buildPlugin  # Build an installable zip of the plugin
+$ gradlew signPlugin   # Sign built plugin
 ```
+Signing the plugin requires specific environment variables to be set to refer to appropriate key files.
+See [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html) for more information.
 
 ### 🧪 Quality assurance
 ```bash
