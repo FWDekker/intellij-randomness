@@ -144,8 +144,18 @@ class TemplateInsertAction(
         }
 
 
+        /**
+         * Returns the component that the [editor] prefers to be focused when the editor is focused.
+         *
+         * @return the component that the [editor] prefers to be focused when the editor is focused.
+         */
         override fun getPreferredFocusedComponent() = editor.preferredFocusedComponent
 
+        /**
+         * Creates a component containing the [editor] and the [previewPanel].
+         *
+         * @return a component containing the [editor] and the [previewPanel]
+         */
         override fun createComponent() =
             JPanel(BorderLayout())
                 .also {
@@ -153,12 +163,28 @@ class TemplateInsertAction(
                     it.add(previewPanel.rootComponent, BorderLayout.SOUTH)
                 }
 
+        /**
+         * Returns `true` if and only if the [editor] contains modifications relative to the last saved state.
+         *
+         * @return `true` if and only if the [editor] contains modifications relative to the last saved state
+         */
         override fun isModified() = editor.isModified()
 
+        /**
+         * Saves the [editor]'s state.
+         */
         override fun apply() = editor.applyState()
 
+        /**
+         * Returns [text].
+         *
+         * @return [text]
+         */
         override fun getDisplayName() = text
 
+        /**
+         * Disposes the [editor] and [previewPanel].
+         */
         override fun disposeUIResources() {
             editor.dispose()
             previewPanel.dispose()

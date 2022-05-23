@@ -132,6 +132,11 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
  * @property myActionPerformed The code to execute in [actionPerformed].
  */
 private class SimpleAbstractAction(private val myActionPerformed: (ActionEvent?) -> Unit) : AbstractAction() {
+    /**
+     * Runs [myActionPerformed].
+     *
+     * @param event the event to pass to [myActionPerformed]
+     */
     override fun actionPerformed(event: ActionEvent?) = myActionPerformed(event)
 }
 

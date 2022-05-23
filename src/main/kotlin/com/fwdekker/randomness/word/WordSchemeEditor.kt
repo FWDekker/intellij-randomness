@@ -21,11 +21,11 @@ import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.roots.ui.whenItemSelected
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBLabel
+import java.awt.event.ItemEvent
 import javax.swing.ButtonGroup
 import javax.swing.JComponent
 import javax.swing.JLabel
@@ -89,7 +89,12 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
         wordListBox = ComboBox(arrayOf(PRESET_ITEM) + DefaultWordList.wordLists)
         wordListBox.setRenderer { _, value, _, _, _ -> JBLabel(value.name) }
-        wordListBox.whenItemSelected { if (it != PRESET_ITEM) wordList = it.words }
+        wordListBox.addItemListener {
+            if (it.stateChange == ItemEvent.SELECTED) {
+                val item = it.item as DefaultWordList
+                if (item != PRESET_ITEM) wordList = item.words
+            }
+        }
 
         val factory = EditorFactory.getInstance()
         wordListDocument = factory.createDocument("")

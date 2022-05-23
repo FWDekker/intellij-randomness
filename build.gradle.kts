@@ -17,7 +17,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.20.0"  // See also `gradle.properties`
 
     // Documentation
-    id("org.jetbrains.dokka") version "1.6.0"
+    id("org.jetbrains.dokka") version "1.6.21"
 }
 
 
@@ -31,7 +31,7 @@ dependencies {
     implementation("com.github.sisyphsu:dateparser:${properties("dateparserVersion")}")
     implementation("com.github.curious-odd-man:rgxgen:${properties("rgxgenVersion")}")
     implementation("com.vdurmont:emoji-java:${properties("emojiVersion")}")
-    // Use bundled Kotlin (ca. 4MB) to ensure forwards compatibility with IDE versions
+    // Use bundled Kotlin (ca. 4MB) to ensure forwards and backwards compatibility with IDE versions
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
