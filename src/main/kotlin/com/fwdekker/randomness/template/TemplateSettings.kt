@@ -16,7 +16,7 @@ import com.intellij.openapi.components.service
  */
 @State(
     name = "com.fwdekker.randomness.template.TemplateSettings",
-    storages = [Storage("\$APP_CONFIG\$/randomness.xml")]
+    storages = [Storage("\$APP_CONFIG\$/randomness-beta.xml")]
 )
 class TemplateSettings : PersistentStateComponent<TemplateList> {
     private val templateList: TemplateList = TemplateList()
