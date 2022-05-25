@@ -14,7 +14,7 @@ import javax.swing.JRadioButton
 /**
  * Unit tests for the extension functions in `ButtonGroupKt`.
  */
-object ButtonGroupKtTest : Spek({
+object ButtonGroupHelperTest : Spek({
     lateinit var group: ButtonGroup
 
 
