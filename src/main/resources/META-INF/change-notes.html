@@ -1,62 +1,7 @@
-<b>Welcome to Randomness 3!</b>
-<p>
-    This release brings a major overhaul of how data is generated, allowing you to create your own data types such as
-    IP addresses or entire JSON objects.
-    At the same time, it remains just as easy to generate plain numbers.
-    Check the plugin description for more details and animated usage examples.
-</p>
-<br />
-<b>Breaking changes</b>
-<ul>
-    <li>
-        Minimum IDE version has been increased to 2021.2.
-    </li>
-    <li>
-        Randomness now uses templates to generate data.
-        A template consists of a list of "primitive" data types which are concatenated together.
-        Data types include the old data types (integer, decimal, string, word, UUID), but also the new date-time, and
-        the template reference.
-    </li>
-    <li>
-        Strings no longer consist of customisable symbol sets, but are specified using a regex.
-    </li>
-    <li>
-        Words are no longer read from dictionary files, but are stored directly in the settings window.
-        To reuse words in multiple templates, consider using template references.
-    </li>
-</ul>
-<br />
-<b>New features</b>
-<ul>
-    <li>
-        In addition to a list of standard separators, you can now also choose your own separator for all data types,
-        including for arrays.
-    </li>
-    <li>
-        Each time you insert an array your demands will be slightly different, so when you insert an array a dialog is
-        shown in which you can quickly vary the array's settings.
-    </li>
-    <li>
-        You can automatically pad (or truncate) integers to a specific length.
-    </li>
-    <li>
-        Icons for templates and data types are dynamically generated based on the involved data types.
-    </li>
-    <li>
-        The preview pane now looks more beautiful :-)
-    </li>
-    <li>
-        Invalid settings are now easier to correct with more specific error messages.
-    </li>
-    <li>
-        All strings have been internationalised, to make future translation easier.
-    </li>
-</ul>
-<br />
 <b>Fixes</b>
 <ul>
     <li>
-        The settings-only popup is now also shown when editing a read-only file.
+        Settings-only popup is only shown in editors instead of the other way around.
     </li>
 </ul>
 <br />
