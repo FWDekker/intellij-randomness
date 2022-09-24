@@ -111,8 +111,7 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
         if (c == null || g == null) return
 
         val filter = RadialColorReplacementFilter(colors, Pair(iconWidth / 2, iconHeight / 2))
-        val filterL = { filter } // TODO: Remove unnecessary variable after detekt/detekt#4387 has been fixed
-        IconUtil.filterIcon(base, filterL, c).paintIcon(c, g, x, y)
+        IconUtil.filterIcon(base, { filter }, c).paintIcon(c, g, x, y)
 
         val textIcon = IconUtil.textToIcon(text, c, FONT_SIZE * iconWidth)
         textIcon.paintIcon(c, g, x + (iconWidth - textIcon.iconWidth) / 2, y + (iconHeight - textIcon.iconHeight) / 2)

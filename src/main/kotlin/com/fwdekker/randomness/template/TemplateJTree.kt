@@ -439,8 +439,7 @@ class TemplateJTree(
 
             event.presentation.icon =
                 if (selectedNodeNotRoot == null) AllIcons.General.Add
-                // TODO: Replace with `LayeredIcon.ADD_WITH_DROPDOWN` starting at versions >= 2021.2
-                else LayeredIcon(AllIcons.General.Add, AllIcons.General.Dropdown)
+                else LayeredIcon.ADD_WITH_DROPDOWN
         }
 
 

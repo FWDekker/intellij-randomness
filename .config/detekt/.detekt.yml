@@ -16,9 +16,6 @@ complexity:
     # Solved using resources bundled. All remaining duplicates are resource identifiers.
     StringLiteralDuplication:
       active: false
-    # Static analysis is not good at estimating this.
-    TooManyFunctions:
-        thresholdInClasses: 20
 
 formatting:
     # Experimental. Too many false positives.
@@ -32,16 +29,8 @@ formatting:
         active: false
 
 naming:
-    # Static analysis is not good at estimating this.
+    # Too many false positives in JUnit 4 tests.
     FunctionMaxLength:
-        active: false
-    # Cannot be suppressed in case of false positives
-    MatchingDeclarationName:
-        active: false
-
-potential-bugs:
-    # The alternative is to safe cast and throw an exception, which is equally bad.
-    UnsafeCast:
         active: false
 
 style:
@@ -51,10 +40,10 @@ style:
     # Not if they're settings objects.
     DataClassShouldBeImmutable:
         active: false
-    # Not an issue if names are self-explanatory.
+    # Acceptable in parameterized tests.
     DestructuringDeclarationWithTooManyEntries:
         active: false
-    # Such comments are OK.
+    # Comments indicating TODOs are acceptable.
     ForbiddenComment:
         active: false
     # One more is fine in my opinion.
