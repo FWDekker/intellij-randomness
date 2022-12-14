@@ -96,7 +96,7 @@ data class DecimalScheme(
      * @param groupingSeparator the possibly-unsafe grouping separator string
      */
     fun safeSetGroupingSeparator(groupingSeparator: String?) =
-        if (groupingSeparator == null || groupingSeparator.isEmpty())
+        if (groupingSeparator.isNullOrEmpty())
             this.groupingSeparator = DEFAULT_GROUPING_SEPARATOR
         else
             this.groupingSeparator = groupingSeparator.substring(0, 1)
@@ -107,7 +107,7 @@ data class DecimalScheme(
      * @param decimalSeparator the possibly-unsafe decimal separator string
      */
     fun safeSetDecimalSeparator(decimalSeparator: String?) =
-        if (decimalSeparator == null || decimalSeparator.isEmpty())
+        if (decimalSeparator.isNullOrEmpty())
             this.decimalSeparator = DEFAULT_DECIMAL_SEPARATOR
         else
             this.decimalSeparator = decimalSeparator.substring(0, 1)

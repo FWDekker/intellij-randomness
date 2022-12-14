@@ -99,7 +99,7 @@ data class IntegerScheme(
      * @param groupingSeparator the possibly-unsafe grouping separator string
      */
     fun safeSetGroupingSeparator(groupingSeparator: String?) {
-        if (groupingSeparator == null || groupingSeparator.isEmpty())
+        if (groupingSeparator.isNullOrEmpty())
             this.groupingSeparator = DEFAULT_GROUPING_SEPARATOR
         else
             this.groupingSeparator = groupingSeparator.substring(0, 1)

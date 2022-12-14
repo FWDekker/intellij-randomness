@@ -86,14 +86,6 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
         arrayOf(insertArrayAction, insertRepeatAction, insertRepeatArrayAction, settingsAction, quickSwitchSchemeAction)
 
     /**
-     * Returns `true`.
-     *
-     * @param context carries information about the context of the invocation
-     * @return `true`
-     */
-    override fun canBePerformed(context: DataContext) = true
-
-    /**
      * Chooses one of the three actions to execute based on the key modifiers in [event].
      *
      * @param event carries information on the invocation place
@@ -126,14 +118,9 @@ abstract class DataGroupAction(private val icon: Icon = RandomnessIcons.Data.Bas
 
         event.presentation.text = insertAction.name
         event.presentation.icon = icon
+        event.presentation.isPerformGroup = true
+        event.presentation.isPopupGroup = true
     }
-
-    /**
-     * Returns `true`.
-     *
-     * @return `true`
-     */
-    override fun isPopup() = true
 }
 
 
@@ -392,7 +379,7 @@ abstract class DataSettingsAction(private val icon: Icon = RandomnessIcons.Data.
     }
 
     /**
-     * Opens the IntelliJ settings menu at the right location to adjust the configurable of type [configurableClass].
+     * Opens the IntelliJ settings menu at the right location to adjust the `Configurable` of type [configurableClass].
      *
      * @param event carries information on the invocation place
      */

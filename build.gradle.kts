@@ -8,8 +8,8 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
     // Compilation
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.6.20"  // See also `gradle.properties`
-    id("org.jetbrains.intellij") version "1.5.2"
+    id("org.jetbrains.kotlin.jvm") version "1.6.21"  // See also `gradle.properties`
+    id("org.jetbrains.intellij") version "1.10.1"
 
     // Tests/coverage
     id("jacoco")
@@ -18,7 +18,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.20.0"  // See also `gradle.properties`
 
     // Documentation
-    id("org.jetbrains.dokka") version "1.6.21"
+    id("org.jetbrains.dokka") version "1.7.20"
 }
 
 
@@ -30,17 +30,15 @@ repositories {
 dependencies {
     implementation("com.fasterxml.uuid:java-uuid-generator:${properties("uuidGeneratorVersion")}")
     implementation("com.vdurmont:emoji-java:${properties("emojiVersion")}")
-    // Use bundled Kotlin (ca. 4MB) to ensure forwards compatibility with IDE versions
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
-    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:${properties("mockitoKotlinVersion")}")
     testImplementation("org.assertj:assertj-core:${properties("assertjVersion")}")
     testImplementation("org.assertj:assertj-swing-junit:${properties("assertjSwingVersion")}")
     testImplementation("org.junit.platform:junit-platform-runner:${properties("junitRunnerVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${properties("junitVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${properties("junitVersion")}")
     testImplementation("org.junit.vintage:junit-vintage-engine:${properties("junitVersion")}")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:${properties("mockitoKotlinVersion")}")
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:${properties("spekVersion")}")
     testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:${properties("spekVersion")}")
 

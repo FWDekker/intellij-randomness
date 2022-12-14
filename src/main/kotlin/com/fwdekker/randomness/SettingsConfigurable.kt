@@ -5,9 +5,10 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.options.ex.Settings.KEY
 import com.intellij.ui.components.ActionLink
-import com.intellij.ui.layout.panel
+import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.JBEmptyBorder
 import java.util.ResourceBundle
+import javax.swing.BorderFactory
 import javax.swing.Box
 import javax.swing.JComponent
 
@@ -98,30 +99,31 @@ class RandomnessConfigurable : Configurable {
      *
      * @return a panel containing links to the other configurables
      */
-    override fun createComponent() =
-        panel {
-            val children =
-                Configurable.APPLICATION_CONFIGURABLE.extensionList
-                    .single { it.id == "randomness.MainConfigurable" }
-                    .children
+    override fun createComponent(): JComponent {
+        val box = Box.createVerticalBox()
 
-            row {
-                label(ResourceBundle.getBundle("randomness").getString("settings.main_text"))
+        box.add(JBLabel(ResourceBundle.getBundle("randomness").getString("settings.main_text")))
 
-                val manager = DataManager.getInstance().dataContextFromFocusAsync.blockingGet(FIND_SETTINGS_TIMEOUT)
-                val settings = manager?.let { KEY.getData(it) } ?: return@row
-                row {
-                    val box = Box.createVerticalBox().also { it() }
-                    children
-                        .mapNotNull { child -> settings.find(child.id)?.let { Pair(child.id, it) } }
-                        .map { (id, child) ->
-                            ActionLink(child.displayName ?: id) { settings.select(child) }
-                                .apply { border = JBEmptyBorder(LINK_MARGIN_TOP, 0, LINK_MARGIN_BOTTOM, 0) }
-                        }
-                        .forEach { box.add(it) }
-                }
+        val actionBox = Box.createVerticalBox()
+            .also { it.border = BorderFactory.createEmptyBorder(LINK_GROUP_MARGIN_TOP, LINK_GROUP_MARGIN_LEFT, 0, 0) }
+
+        val settings = DataManager.getInstance()
+            .dataContextFromFocusAsync.blockingGet(FIND_SETTINGS_TIMEOUT)
+            ?.let { KEY.getData(it) }
+            ?: return box
+        Configurable.APPLICATION_CONFIGURABLE.extensionList
+            .single { it.id == "randomness.MainConfigurable" }
+            .children
+            .mapNotNull { child -> settings.find(child.id)?.let { Pair(child.id, it) } }
+            .map { (id, child) ->
+                ActionLink(child.displayName ?: id) { settings.select(child) }
+                    .also { it.border = JBEmptyBorder(LINK_MARGIN_TOP, 0, LINK_MARGIN_BOTTOM, 0) }
             }
-        }
+            .forEach { actionBox.add(it) }
+        box.add(actionBox)
+
+        return box
+    }
 
 
     /**
@@ -134,12 +136,22 @@ class RandomnessConfigurable : Configurable {
         const val FIND_SETTINGS_TIMEOUT = 1000
 
         /**
-         * The margin to insert above each link in the panel.
+         * The margin to insert above the group of links.
+         */
+        const val LINK_GROUP_MARGIN_TOP = 10
+
+        /**
+         * The margin to insert left of the group of links.
+         */
+        const val LINK_GROUP_MARGIN_LEFT = 20
+
+        /**
+         * The margin to insert above each link.
          */
         const val LINK_MARGIN_TOP = 1
 
         /**
-         * The margin to insert below each link in the panel.
+         * The margin to insert below each link.
          */
         const val LINK_MARGIN_BOTTOM = 3
     }

@@ -82,7 +82,7 @@ data class SymbolSet(var name: String, var symbols: String) {
  *
  * @return a map from the symbol sets' names to the respective symbols
  */
-fun Collection<SymbolSet>.toMap() = this.map { (name, symbols) -> name to symbols }.toMap()
+fun Collection<SymbolSet>.toMap() = this.associate { (name, symbols) -> name to symbols }
 
 /**
  * Converts a map to a list of symbol sets, using the key as the name and the value as the symbols.

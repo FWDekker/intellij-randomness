@@ -127,18 +127,17 @@ class ErrorReporter : ErrorReportSubmitter() {
         events.mapIndexed { i, event ->
             wrapInMarkdownSpoiler(
                 title = "Stacktrace ${i + 1}/${events.size}",
-                contents = wrapInCodeBlock(contents = event.throwableText.trim(), language = "java")
+                contents = wrapInJavaCodeBlock(event.throwableText.trim())
             )
         }.joinToString("\n\n")
 
     /**
-     * Creates a Markdown-style code block with the given language.
+     * Creates a Markdown-style Java code block.
      *
      * @param contents the contents of the code block
-     * @param language the language of the contents
-     * @return a Markdown-style code block with the given language
+     * @return a Markdown-style Java code block
      */
-    private fun wrapInCodeBlock(contents: String, language: String = "") = "```$language\n$contents\n```"
+    private fun wrapInJavaCodeBlock(contents: String) = "```java\n$contents\n```"
 
     /**
      * Creates a Markdown-style spoiler with the given title and contents.
