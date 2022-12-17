@@ -7,11 +7,11 @@
 <p align="center">
     <a href="https://plugins.jetbrains.com/plugin/9836-randomness"><img src="https://img.shields.io/jetbrains/plugin/d/9836?style=for-the-badge" alt="Downloads" /></a>
     <a href="https://plugins.jetbrains.com/plugin/9836-randomness/reviews"><img src="https://img.shields.io/jetbrains/plugin/r/rating/9836?style=for-the-badge" alt="Rating" /></a>
-    <a href="https://plugins.jetbrains.com/plugin/9836-randomness"><img src="https://img.shields.io/github/release/FWDekker/intellij-randomness.svg?style=for-the-badge" alt="Release" /></a>
+    <a href="https://plugins.jetbrains.com/plugin/9836-randomness"><img src="https://img.shields.io/github/v/release/FWDekker/intellij-randomness?style=for-the-badge" alt="Release" /></a>
     <br />
-    <a href="https://github.com/FWDekker/intellij-randomness/actions?query=branch%3Amaster"><img src="https://img.shields.io/github/workflow/status/FWDekker/intellij-randomness/CI?style=for-the-badge" alt="Build" /></a>
-    <a href="https://codecov.io/gh/FWDekker/intellij-randomness"><img src="https://img.shields.io/codecov/c/github/FWDekker/intellij-randomness.svg?style=for-the-badge" alt="Coverage" /></a>
-    <a href="https://fwdekker.github.io/intellij-randomness/"><img src="https://img.shields.io/badge/documentation-ready-blue.svg?style=for-the-badge" alt="Documentation" /></a>
+    <a href="https://github.com/FWDekker/intellij-randomness/actions/workflows/ci.yml?query=branch%3Amaster"><img src="https://img.shields.io/github/actions/workflow/status/FWDekker/intellij-randomness/ci.yml?branch=master&style=for-the-badge" alt="CI status" /></a>
+    <a href="https://app.codecov.io/gh/FWDekker/intellij-randomness"><img src="https://img.shields.io/codecov/c/github/FWDekker/intellij-randomness?style=for-the-badge" alt="Coverage" /></a>
+    <a href="https://fwdekker.github.io/intellij-randomness/"><img src="https://img.shields.io/badge/documentation-ready-blue?style=for-the-badge" alt="Documentation" /></a>
 </p>
 
 # This README is about the upcoming v3 release. For information about the latest public version, [check the old README](https://github.com/FWDekker/intellij-randomness/tree/v2)
