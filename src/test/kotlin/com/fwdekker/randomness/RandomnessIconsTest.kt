@@ -291,7 +291,7 @@ object RadialColorReplacementFilterTest : Spek({
 private data class PlainIcon(
     private val width: Int = 32,
     private val height: Int = 32,
-    private val color: Int = 0
+    private val color: Int = 0,
 ) : Icon {
     override fun paintIcon(c: Component?, g: Graphics?, x: Int, y: Int) {
         g?.color = Color(color, true)

@@ -13,8 +13,8 @@ import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
+import com.intellij.ui.Gray
 import com.intellij.util.xmlb.annotations.XCollection
-import java.awt.Color
 
 
 /**
@@ -38,7 +38,7 @@ data class Template(
         ]
     )
     var schemes: List<Scheme> = DEFAULT_SCHEMES.toMutableList(),
-    var arrayDecorator: ArrayDecorator = ArrayDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
     override val typeIcon: TypeIcon
         get() = schemes.mapNotNull { it.typeIcon }.reduceOrNull { acc, icon -> acc.combineWith(icon) } ?: DEFAULT_ICON
@@ -91,7 +91,7 @@ data class Template(
         /**
          * The icon displayed when a template has no schemes.
          */
-        val DEFAULT_ICON = TypeIcon(RandomnessIcons.TEMPLATE, "", listOf(Color(110, 110, 110)))
+        val DEFAULT_ICON = TypeIcon(RandomnessIcons.TEMPLATE, "", listOf(Gray._110))
 
         /**
          * The default value of the [schemes] field.

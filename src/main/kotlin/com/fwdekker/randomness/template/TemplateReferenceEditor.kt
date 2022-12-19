@@ -81,7 +81,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
                 value: Template?,
                 index: Int,
                 selected: Boolean,
-                hasFocus: Boolean
+                hasFocus: Boolean,
             ) {
                 icon = value?.icon ?: Template.DEFAULT_ICON
                 append(value?.name ?: Bundle("template.name.unknown"))

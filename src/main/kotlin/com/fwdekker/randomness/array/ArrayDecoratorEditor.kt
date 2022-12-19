@@ -37,7 +37,7 @@ import javax.swing.event.ChangeEvent
 class ArrayDecoratorEditor(
     settings: ArrayDecorator,
     disablable: Boolean = true,
-    showSeparator: Boolean = true
+    showSeparator: Boolean = true,
 ) : StateEditor<ArrayDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent

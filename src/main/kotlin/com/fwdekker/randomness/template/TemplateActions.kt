@@ -11,7 +11,6 @@ import com.fwdekker.randomness.ui.PreviewPanel
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ShowSettingsUtil
 import java.awt.BorderLayout
@@ -41,12 +40,16 @@ class TemplateGroupAction(private val template: Template) :
 
 
     /**
-     * Returns `true`.
+     * Update the presentation of the action.
      *
-     * @param context carries information about the context of the invocation
-     * @return `true`
+     * @param event the event to set the presentation on
      */
-    override fun canBePerformed(context: DataContext) = true
+    override fun update(event: AnActionEvent) {
+        super.update(event)
+
+        event.presentation.isPerformGroup = true
+        event.presentation.isPopupGroup = true
+    }
 
     /**
      * Chooses one of the three actions to execute based on the key modifiers in [event].
@@ -59,13 +62,6 @@ class TemplateGroupAction(private val template: Template) :
             repeat = event.modifiers and event.modifiers and ActionEvent.ALT_MASK != 0,
             settings = event.modifiers and event.modifiers and ActionEvent.CTRL_MASK != 0
         ).actionPerformed(event)
-
-    /**
-     * Returns `true`.
-     *
-     * @return `true`
-     */
-    override fun isPopup() = true
 
     /**
      * Returns variant actions for the main insertion action.
@@ -84,7 +80,7 @@ class TemplateGroupAction(private val template: Template) :
 
 
 /**
- * Inserts random strings in the editor using [template].
+ * Inserts random strings in the editor using the given template.
  *
  * @property template The template to use for inserting data.
  * @property array `true` if and only if an array of values should be inserted.
@@ -94,7 +90,7 @@ class TemplateGroupAction(private val template: Template) :
 class TemplateInsertAction(
     private val template: Template,
     private val array: Boolean = false,
-    repeat: Boolean = false
+    repeat: Boolean = false,
 ) : InsertAction(
     repeat = repeat,
     text = template.name

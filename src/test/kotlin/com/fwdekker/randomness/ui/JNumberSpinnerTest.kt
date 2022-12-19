@@ -15,7 +15,7 @@ object JNumberSpinnerTest : Spek({
     class JFloatSpinner(
         value: Float = 0.0f,
         minValue: Float = -Float.MAX_VALUE,
-        maxValue: Float = Float.MAX_VALUE
+        maxValue: Float = Float.MAX_VALUE,
     ) : JNumberSpinner<Float>(value, minValue, maxValue, 0.1f) {
         override val numberToT: (Number) -> Float
             get() = { it.toFloat() }

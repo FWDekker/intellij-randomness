@@ -215,7 +215,7 @@ object TemplateListEditorTest : Spek({
             data class Param(
                 val name: String,
                 val scheme: Scheme,
-                val matcher: (FrameFixture) -> AbstractComponentFixture<*, *, *>
+                val matcher: (FrameFixture) -> AbstractComponentFixture<*, *, *>,
             )
 
             listOf(

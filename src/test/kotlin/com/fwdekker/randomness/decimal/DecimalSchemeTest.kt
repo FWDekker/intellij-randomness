@@ -77,7 +77,7 @@ object DecimalSchemeTest : Spek({
                 val value: Double,
                 val decimalCount: Int,
                 val groupingSeparator: String,
-                val decimalSeparator: String
+                val decimalSeparator: String,
             )
 
             mapOf(

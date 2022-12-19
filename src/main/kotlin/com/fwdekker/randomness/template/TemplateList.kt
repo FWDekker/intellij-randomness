@@ -24,7 +24,7 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
  */
 data class TemplateList(
     @MapAnnotation(sortBeforeSave = false)
-    var templates: List<Template> = DEFAULT_TEMPLATES.toMutableList()
+    var templates: List<Template> = DEFAULT_TEMPLATES.toMutableList(),
 ) : Settings() {
     /**
      * Sets the [SettingsState] for each template in this list and returns this instance.
@@ -52,7 +52,7 @@ data class TemplateList(
      */
     private fun findRecursionFrom(
         reference: TemplateReference,
-        history: MutableList<TemplateReference>
+        history: MutableList<TemplateReference>,
     ): List<Template>? {
         if (reference in history) return listOf(reference.parent)
         history += reference

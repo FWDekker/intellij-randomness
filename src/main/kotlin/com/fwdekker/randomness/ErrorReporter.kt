@@ -42,7 +42,7 @@ class ErrorReporter : ErrorReportSubmitter() {
         events: Array<IdeaLoggingEvent>,
         additionalInfo: String?,
         parentComponent: Component,
-        consumer: Consumer<in SubmittedReportInfo>
+        consumer: Consumer<in SubmittedReportInfo>,
     ): Boolean {
         val project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(parentComponent))
         object : Backgroundable(project, Bundle("reporter.opening")) {
@@ -112,10 +112,10 @@ class ErrorReporter : ErrorReportSubmitter() {
      */
     private fun getFormattedVersionInformation() =
         """
-        - Randomness version: ${pluginDescriptor?.version ?: "_Unknown_"}
-        - IDE version: ${ApplicationInfo.getInstance().apiVersion}
-        - Operating system: ${System.getProperty("os.name")}
-        - Java version: ${System.getProperty("java.version")}
+            - Randomness version: ${pluginDescriptor?.version ?: "_Unknown_"}
+            - IDE version: ${ApplicationInfo.getInstance().apiVersion}
+            - Operating system: ${System.getProperty("os.name")}
+            - Java version: ${System.getProperty("java.version")}
         """.trimIndent()
 
 

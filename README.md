@@ -155,9 +155,9 @@ In chronological order of contribution:
   [reporting a critical UI bug in WebStorm EAP](https://github.com/FWDekker/intellij-randomness/issues/418)!
 * Thanks to [LukasAppleFan](https://github.com/LukasAppleFan) for
   [helping me find a bug in IntelliJ](https://github.com/FWDekker/intellij-randomness/issues/421)!
-* Thanks to [Xiakitl](https://github.com/Xiakitl) for
+* Thanks to [Pascal](https://github.com/theMunichDev) for
   [reporting a bug with custom shortcuts](https://github.com/FWDekker/intellij-randomness/issues/423)!
 * Thanks to [Rishi Maharaj](https://github.com/rshmhrj) for
-  [suggesting to add prefix and postfix options to strings]!
+  [suggesting to add prefix and postfix options to strings](https://github.com/FWDekker/intellij-randomness/issues/431)!
 
 If I should add, remove, or change anything here, just open an issue or email me!

@@ -48,7 +48,7 @@ import kotlin.math.min
  */
 class TemplateJTree(
     private val originalState: SettingsState,
-    private var currentState: SettingsState
+    private var currentState: SettingsState,
 ) : Tree(TemplateJTreeModel(currentState.templateList)) {
     /**
      * The tree's model.
@@ -374,7 +374,7 @@ class TemplateJTree(
             expanded: Boolean,
             leaf: Boolean,
             row: Int,
-            hasFocus: Boolean
+            hasFocus: Boolean,
         ) {
             val scheme = (value as StateNode).state as? Scheme
             if (scheme == null) {

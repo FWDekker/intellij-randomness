@@ -34,7 +34,7 @@ object UuidSchemeTest : Spek({
                 val type: Int,
                 val quotation: String,
                 val capitalization: CapitalizationMode,
-                val addDashes: Boolean
+                val addDashes: Boolean,
             )
 
             listOf(

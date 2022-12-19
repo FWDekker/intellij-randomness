@@ -7,17 +7,17 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    id("org.jetbrains.kotlin.jvm") version "1.6.20"  // See also `gradle.properties`
-    id("org.jetbrains.intellij") version "1.5.2"
+    id("org.jetbrains.kotlin.jvm") version "1.6.21"  // See also `gradle.properties`
+    id("org.jetbrains.intellij") version "1.11.0"
 
     // Tests/coverage
     id("jacoco")
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.20.0"  // See also `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.22.0"  // See also `gradle.properties`
 
     // Documentation
-    id("org.jetbrains.dokka") version "1.6.21"
+    id("org.jetbrains.dokka") version "1.7.20"
 }
 
 
@@ -31,8 +31,6 @@ dependencies {
     implementation("com.github.sisyphsu:dateparser:${properties("dateparserVersion")}")
     implementation("com.github.curious-odd-man:rgxgen:${properties("rgxgenVersion")}")
     implementation("com.vdurmont:emoji-java:${properties("emojiVersion")}")
-    // Use bundled Kotlin (ca. 4MB) to ensure forwards and backwards compatibility with IDE versions
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
     testImplementation("org.assertj:assertj-core:${properties("assertjVersion")}")
@@ -106,7 +104,7 @@ tasks {
     }
 
     jacocoTestReport {
-        executionData(file("$buildDir/jacoco/test.exec"))
+        executionData(layout.buildDirectory.file("jacoco/test.exec").get().asFile)
 
         sourceSets { sourceSets.main }
 
@@ -114,7 +112,7 @@ tasks {
             csv.required.set(false)
             html.required.set(true)
             xml.required.set(true)
-            xml.outputLocation.set(file("$buildDir/reports/jacoco/report.xml"))
+            xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/report.xml").get().asFile)
         }
 
         dependsOn(test)

@@ -7,6 +7,7 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.intellij.ui.JBColor
 import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
 
@@ -25,7 +26,7 @@ data class WordScheme(
     var quotation: String = DEFAULT_QUOTATION,
     var customQuotation: String = DEFAULT_CUSTOM_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var arrayDecorator: ArrayDecorator = ArrayDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
     @get:Transient
     override val name = Bundle("word.title")
@@ -80,7 +81,11 @@ data class WordScheme(
         /**
          * The base icon for words.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "cat", listOf(Color(242, 101, 34, 154)))
+        val BASE_ICON = TypeIcon(
+            RandomnessIcons.SCHEME,
+            "cat",
+            listOf(JBColor(Color(242, 101, 34, 154), Color(242, 101, 34, 154)))
+        )
 
         /**
          * The default value of the [words] field.
