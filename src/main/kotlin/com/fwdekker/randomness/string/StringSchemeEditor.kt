@@ -64,7 +64,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
         patternHelpButton = BrowserLink(
             Bundle("string.ui.pattern_help"),
-            "https://github.com/curious-odd-man/RgxGen/tree/1.3#supported-syntax"
+            "https://github.com/curious-odd-man/RgxGen/tree/1.4#supported-syntax"
         )
 
         removeLookAlikeSymbolsCheckBox = JBCheckBox(Bundle("string.ui.remove_look_alike"))
