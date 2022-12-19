@@ -159,5 +159,13 @@ In chronological order of contribution:
   [reporting a bug with custom shortcuts](https://github.com/FWDekker/intellij-randomness/issues/423)!
 * Thanks to [Rishi Maharaj](https://github.com/rshmhrj) for
   [suggesting to add prefix and postfix options to strings](https://github.com/FWDekker/intellij-randomness/issues/431)!
+* Thanks to [Christian Baune](https://github.com/programaths) for
+  [reporting recurring issues](https://github.com/FWDekker/intellij-randomness/issues/441)
+  [with load](https://github.com/FWDekker/intellij-randomness/issues/442)
+  [corrupted settings](https://github.com/FWDekker/intellij-randomness/issues/444)!
+* Thanks to [Vladislav Rassokhin](https://github.com/VladRassokhin) for
+  [reporting an issue with slow actions during indexing](https://github.com/FWDekker/intellij-randomness/issues/445)!
+* Thanks to [Luc Everse](https://github.com/cmpsb) for
+  [suggesting generating non-matching strings](https://github.com/FWDekker/intellij-randomness/issues/447)!
 
 If I should add, remove, or change anything here, just open an issue or email me!

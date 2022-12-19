@@ -1,3 +1,5 @@
+
+import org.jetbrains.changelog.Changelog
 import java.net.URL
 import java.time.Year
 
@@ -7,17 +9,18 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    id("org.jetbrains.kotlin.jvm") version "1.6.21"  // See also `gradle.properties`
+    id("org.jetbrains.kotlin.jvm") version "1.6.20"  // See also `gradle.properties`
     id("org.jetbrains.intellij") version "1.11.0"
 
     // Tests/coverage
-    id("jacoco")
+    id("jacoco")  // See also `gradle.properties
 
     // Static analysis
     id("io.gitlab.arturbosch.detekt") version "1.22.0"  // See also `gradle.properties`
 
     // Documentation
-    id("org.jetbrains.dokka") version "1.7.20"
+    id("org.jetbrains.changelog") version "2.0.0"
+    id("org.jetbrains.dokka") version "1.7.20"  // See also `gradle.properties
 }
 
 
@@ -50,30 +53,40 @@ dependencies {
 tasks {
     // Compilation
     withType<JavaCompile> {
-        sourceCompatibility = properties("jvmVersion")
-        targetCompatibility = properties("jvmVersion")
+        sourceCompatibility = properties("javaVersion")
+        targetCompatibility = properties("javaVersion")
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
-            jvmTarget = properties("jvmVersion")
+            jvmTarget = properties("javaVersion")
             apiVersion = properties("kotlinApiVersion")
             languageVersion = properties("kotlinVersion")
         }
     }
     withType<io.gitlab.arturbosch.detekt.Detekt> {
-        jvmTarget = properties("jvmVersion")
+        jvmTarget = properties("javaVersion")
     }
 
     intellij {
         version.set(properties("intellijVersion"))
         downloadSources.set(true)
-        updateSinceUntilBuild.set(false)
+        updateSinceUntilBuild.set(false)  // Set in `patchPluginXml`
     }
 
     patchPluginXml {
-        changeNotes.set(file("src/main/resources/META-INF/change-notes.html").readText())
+        changeNotes.set(provider {
+            changelog.renderItem(
+                changelog.getUnreleased(),
+                Changelog.OutputType.HTML
+            )
+        })
         pluginDescription.set(file("src/main/resources/META-INF/description.html").readText())
         sinceBuild.set(properties("pluginSinceBuild"))
+    }
+
+    changelog {
+        repositoryUrl.set("https://github.com/FWDekker/intellij-randomness")
+        itemPrefix.set("*")
     }
 
     signPlugin {
@@ -122,6 +135,7 @@ tasks {
     // Static analysis
     detekt {
         toolVersion = properties("detektVersion")
+
         allRules = true
         config = files(".config/detekt/.detekt.yml")
     }
@@ -156,7 +170,7 @@ tasks {
 
                 sourceLink {
                     localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(URL("https://github.com/FWDekker/intellij-randomness/blob/master/src/main/kotlin"))
+                    remoteUrl.set(URL("https://github.com/FWDekker/intellij-randomness/tree/v${properties("version")}/src/main/kotlin"))
                     remoteLineSuffix.set("#L")
                 }
             }
