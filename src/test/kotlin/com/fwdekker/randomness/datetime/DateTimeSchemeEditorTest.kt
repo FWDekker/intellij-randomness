@@ -20,9 +20,9 @@ import java.time.format.DateTimeFormatter
  */
 object DateTimeSchemeEditorTest : Spek({
     lateinit var ideaFixture: IdeaTestFixture
+    lateinit var frame: FrameFixture
     lateinit var scheme: DateTimeScheme
     lateinit var editor: DateTimeSchemeEditor
-    lateinit var frame: FrameFixture
 
     val format = { epoch: Long ->
         DateTimeFormatter.ofPattern(JDateTimeField.DATE_TIME_FORMAT).format(epoch.toLocalDateTime())

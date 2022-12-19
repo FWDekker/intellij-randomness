@@ -6,6 +6,7 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.intellij.ui.JBColor
 import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
 import java.text.DecimalFormat
@@ -38,7 +39,7 @@ data class DecimalScheme(
     var customDecimalSeparator: String = DEFAULT_CUSTOM_DECIMAL_SEPARATOR,
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX,
-    var arrayDecorator: ArrayDecorator = ArrayDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
     @get:Transient
     override val name = Bundle("decimal.title")
@@ -102,7 +103,11 @@ data class DecimalScheme(
         /**
          * The base icon for decimals.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "4.2", listOf(Color(98, 181, 67, 154)))
+        val BASE_ICON = TypeIcon(
+            RandomnessIcons.SCHEME,
+            "4.2",
+            listOf(JBColor(Color(98, 181, 67, 154), Color(98, 181, 67, 154)))
+        )
 
         /**
          * The maximum valid difference between the [minValue] and [maxValue] fields.

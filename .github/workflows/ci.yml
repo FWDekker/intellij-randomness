@@ -30,14 +30,15 @@ jobs:
         run: |
           chmod +x ./gradlew
           sudo apt install -y xvfb
-          xvfb-run --auto-servernum ./gradlew --no-daemon check jacocoTestReport
+          xvfb-run --auto-servernum ./gradlew --no-daemon check
           ./gradlew --stop
       - name: Run checks (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          ./gradlew --no-daemon check jacocoTestReport
+          ./gradlew --no-daemon check
           ./gradlew --stop
       - uses: codecov/codecov-action@v2
         if: success() && matrix.os == 'ubuntu-latest'
         with:
           fail_ci_if_error: true
+          files: build/reports/kover/xml/report.xml

@@ -11,6 +11,7 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.intellij.ui.JBColor
 import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
 import kotlin.random.asJavaRandom
@@ -32,7 +33,7 @@ data class UuidScheme(
     var customQuotation: String = DEFAULT_CUSTOM_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
-    var arrayDecorator: ArrayDecorator = ArrayDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
     @get:Transient
     override val name = Bundle("uuid.title")
@@ -107,7 +108,11 @@ data class UuidScheme(
         /**
          * The base icon for UUIDs.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "id", listOf(Color(185, 155, 248, 154)))
+        val BASE_ICON = TypeIcon(
+            RandomnessIcons.SCHEME,
+            "id",
+            listOf(JBColor(Color(185, 155, 248, 154), Color(185, 155, 248, 154)))
+        )
 
         /**
          * The default value of the [type] field.

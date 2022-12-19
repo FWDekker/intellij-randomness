@@ -288,7 +288,7 @@ data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList())
  */
 class RadialColorReplacementFilter(
     private val colors: List<Color>,
-    private val center: Pair<Int, Int>? = null
+    private val center: Pair<Int, Int>? = null,
 ) : RGBImageFilter() {
     init {
         require(colors.isNotEmpty()) { Bundle("icons.error.one_colour") }
@@ -305,6 +305,7 @@ class RadialColorReplacementFilter(
      * @param rgb `0` if and only if the pixel's color should be replaced
      * @return `0` if [rgb] is `0`, or one of [colors] with its alpha shifted by [rgb]'s alpha otherwise
      */
+    @Suppress("UseJBColor") // Filtering works the same in both themes
     override fun filterRGB(x: Int, y: Int, rgb: Int) =
         if (rgb == 0) 0
         else if (center == null || colors.size == 1) shiftAlpha(colors[0], Color(rgb, true)).rgb

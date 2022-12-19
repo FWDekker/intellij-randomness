@@ -10,6 +10,7 @@ import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.string.StringScheme.Companion.LOOK_ALIKE_CHARACTERS
 import com.github.curiousoddman.rgxgen.RgxGen
 import com.github.curiousoddman.rgxgen.parsing.dflt.RgxGenParseException
+import com.intellij.ui.JBColor
 import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
 import kotlin.random.asJavaRandom
@@ -29,7 +30,7 @@ data class StringScheme(
     var isRegex: Boolean = DEFAULT_IS_REGEX,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var removeLookAlikeSymbols: Boolean = DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS,
-    var arrayDecorator: ArrayDecorator = ArrayDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
     @get:Transient
     override val name = Bundle("string.title")
@@ -115,7 +116,11 @@ data class StringScheme(
         /**
          * The base icon for strings.
          */
-        val BASE_ICON = TypeIcon(RandomnessIcons.SCHEME, "abc", listOf(Color(244, 175, 61, 154)))
+        val BASE_ICON = TypeIcon(
+            RandomnessIcons.SCHEME,
+            "abc",
+            listOf(JBColor(Color(244, 175, 61, 154), Color(244, 175, 61, 154)))
+        )
 
         /**
          * The default value of the [pattern] field.

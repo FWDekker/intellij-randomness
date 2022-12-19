@@ -13,8 +13,8 @@ import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.intellij.ui.Gray
 import com.intellij.util.xmlb.annotations.Transient
-import java.awt.Color
 
 
 /**
@@ -31,7 +31,7 @@ data class TemplateReference(
     var quotation: String = DEFAULT_QUOTATION,
     var customQuotation: String = DEFAULT_CUSTOM_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var arrayDecorator: ArrayDecorator = ArrayDecorator()
+    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
     override val name: String
         get() = template?.name?.let { "[$it]" } ?: Bundle("reference.title")
@@ -136,7 +136,7 @@ data class TemplateReference(
         /**
          * The base icon for references when the reference is invalid.
          */
-        val DEFAULT_ICON = TypeIcon(RandomnessIcons.TEMPLATE, "", listOf(Color(110, 110, 110)))
+        val DEFAULT_ICON = TypeIcon(RandomnessIcons.TEMPLATE, "", listOf(Gray._110))
 
         /**
          * The default value of the [quotation] field.

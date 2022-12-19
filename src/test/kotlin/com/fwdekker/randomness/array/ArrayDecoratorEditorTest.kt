@@ -2,6 +2,8 @@ package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.matcher
 import com.fwdekker.randomness.nameMatcher
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.TitledSeparator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -17,9 +19,11 @@ import javax.swing.JCheckBox
  * GUI tests for [ArrayDecoratorEditor].
  */
 object ArrayDecoratorEditorTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
+    lateinit var frame: FrameFixture
+
     lateinit var scheme: ArrayDecorator
     lateinit var editor: ArrayDecoratorEditor
-    lateinit var frame: FrameFixture
 
 
     beforeGroup {
@@ -27,6 +31,9 @@ object ArrayDecoratorEditorTest : Spek({
     }
 
     beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         scheme = ArrayDecorator(enabled = true)
         editor = GuiActionRunner.execute<ArrayDecoratorEditor> { ArrayDecoratorEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
@@ -34,6 +41,7 @@ object ArrayDecoratorEditorTest : Spek({
 
     afterEachTest {
         frame.cleanUp()
+        ideaFixture.tearDown()
     }
 
 

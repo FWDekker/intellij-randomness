@@ -27,7 +27,7 @@ abstract class InsertAction(
     val repeat: Boolean = false,
     val text: String,
     description: String? = null,
-    icon: Icon? = null
+    icon: Icon? = null,
 ) : AnAction(text, description, icon) {
     /**
      * The configurable to open as soon as the action is performed but before the strings are inserted.

@@ -101,7 +101,6 @@ See [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.
 $ gradlew test                # Run tests
 $ gradlew test --tests X      # Run tests in class X
 $ gradlew check               # Run tests and static analysis
-$ gradlew jacocoTestReport    # Run tests and calculate coverage
 $ gradlew runPluginVerifier   # Check for compatibility issues
 ```
 
@@ -155,9 +154,17 @@ In chronological order of contribution:
   [reporting a critical UI bug in WebStorm EAP](https://github.com/FWDekker/intellij-randomness/issues/418)!
 * Thanks to [LukasAppleFan](https://github.com/LukasAppleFan) for
   [helping me find a bug in IntelliJ](https://github.com/FWDekker/intellij-randomness/issues/421)!
-* Thanks to [Xiakitl](https://github.com/Xiakitl) for
+* Thanks to [Pascal](https://github.com/theMunichDev) for
   [reporting a bug with custom shortcuts](https://github.com/FWDekker/intellij-randomness/issues/423)!
 * Thanks to [Rishi Maharaj](https://github.com/rshmhrj) for
-  [suggesting to add prefix and postfix options to strings]!
+  [suggesting to add prefix and postfix options to strings](https://github.com/FWDekker/intellij-randomness/issues/431)!
+* Thanks to [Christian Baune](https://github.com/programaths) for
+  [reporting recurring issues](https://github.com/FWDekker/intellij-randomness/issues/441)
+  [with load](https://github.com/FWDekker/intellij-randomness/issues/442)
+  [corrupted settings](https://github.com/FWDekker/intellij-randomness/issues/444)!
+* Thanks to [Vladislav Rassokhin](https://github.com/VladRassokhin) for
+  [reporting an issue with slow actions during indexing](https://github.com/FWDekker/intellij-randomness/issues/445)!
+* Thanks to [Luc Everse](https://github.com/cmpsb) for
+  [suggesting generating non-matching strings](https://github.com/FWDekker/intellij-randomness/issues/447)!
 
 If I should add, remove, or change anything here, just open an issue or email me!

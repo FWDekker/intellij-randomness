@@ -80,7 +80,7 @@ class JDoubleSpinner(
     value: Double = 0.0,
     minValue: Double? = null,
     maxValue: Double? = null,
-    stepSize: Double = 0.1
+    stepSize: Double = 0.1,
 ) : JNumberSpinner<Double>(value, minValue, maxValue, stepSize) {
     override val numberToT: (Number) -> Double
         get() = { it.toDouble() }
@@ -104,7 +104,7 @@ class JLongSpinner(
     value: Long = 0L,
     minValue: Long = Long.MIN_VALUE,
     maxValue: Long = Long.MAX_VALUE,
-    stepSize: Long = 1L
+    stepSize: Long = 1L,
 ) : JNumberSpinner<Long>(value, minValue, maxValue, stepSize) {
     override val numberToT: (Number) -> Long
         get() = { it.toLong() }
@@ -128,7 +128,7 @@ class JIntSpinner(
     value: Int = 0,
     minValue: Int = Int.MIN_VALUE,
     maxValue: Int = Int.MAX_VALUE,
-    stepSize: Int = 1
+    stepSize: Int = 1,
 ) : JNumberSpinner<Int>(value, minValue, maxValue, stepSize) {
     override val numberToT: (Number) -> Int
         get() = { it.toInt() }

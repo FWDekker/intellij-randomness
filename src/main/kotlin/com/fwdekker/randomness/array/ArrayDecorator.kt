@@ -26,7 +26,7 @@ data class ArrayDecorator(
     var customBrackets: String = DEFAULT_CUSTOM_BRACKETS,
     var separator: String = DEFAULT_SEPARATOR,
     var customSeparator: String = DEFAULT_CUSTOM_SEPARATOR,
-    var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR
+    var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR,
 ) : SchemeDecorator() {
     override val decorators: List<SchemeDecorator> = emptyList()
     override val name = Bundle("array.title")

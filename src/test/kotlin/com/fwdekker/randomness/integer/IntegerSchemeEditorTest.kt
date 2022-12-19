@@ -2,6 +2,8 @@ package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -15,9 +17,11 @@ import org.spekframework.spek2.style.specification.describe
  * GUI tests for [IntegerSchemeEditor].
  */
 object IntegerSchemeEditorTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
+    lateinit var frame: FrameFixture
+
     lateinit var scheme: IntegerScheme
     lateinit var editor: IntegerSchemeEditor
-    lateinit var frame: FrameFixture
 
 
     beforeGroup {
@@ -25,6 +29,9 @@ object IntegerSchemeEditorTest : Spek({
     }
 
     beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         scheme = IntegerScheme()
         editor = GuiActionRunner.execute<IntegerSchemeEditor> { IntegerSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
@@ -32,6 +39,7 @@ object IntegerSchemeEditorTest : Spek({
 
     afterEachTest {
         frame.cleanUp()
+        ideaFixture.tearDown()
     }
 
 

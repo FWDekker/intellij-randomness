@@ -5,6 +5,8 @@ import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.DummySchemeEditor
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.EditorFactory
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.GuiActionRunner
@@ -22,13 +24,22 @@ import javax.swing.JTextField
  * Unit tests for the extension functions in `ListenerHelperKt`.
  */
 object ListenerHelperTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
+
     var listenerInvoked = false
     lateinit var listener: () -> Unit
 
 
     beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         listenerInvoked = false
         listener = { listenerInvoked = true }
+    }
+
+    afterEachTest {
+        ideaFixture.tearDown()
     }
 
 

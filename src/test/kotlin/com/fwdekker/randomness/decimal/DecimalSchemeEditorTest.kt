@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -14,9 +16,11 @@ import org.spekframework.spek2.style.specification.describe
  * GUI tests for [DecimalSchemeEditor].
  */
 object DecimalSchemeEditorTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
+    lateinit var frame: FrameFixture
+
     lateinit var scheme: DecimalScheme
     lateinit var editor: DecimalSchemeEditor
-    lateinit var frame: FrameFixture
 
 
     beforeGroup {
@@ -24,6 +28,9 @@ object DecimalSchemeEditorTest : Spek({
     }
 
     beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         scheme = DecimalScheme()
         editor = GuiActionRunner.execute<DecimalSchemeEditor> { DecimalSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
@@ -31,6 +38,7 @@ object DecimalSchemeEditorTest : Spek({
 
     afterEachTest {
         frame.cleanUp()
+        ideaFixture.tearDown()
     }
 
 

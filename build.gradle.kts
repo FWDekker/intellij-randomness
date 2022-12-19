@@ -1,3 +1,7 @@
+
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.changelog.Changelog
 import java.net.URL
 import java.time.Year
 
@@ -8,16 +12,17 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
     // Compilation
     id("org.jetbrains.kotlin.jvm") version "1.6.20"  // See also `gradle.properties`
-    id("org.jetbrains.intellij") version "1.5.2"
+    id("org.jetbrains.intellij") version "1.11.0"
 
     // Tests/coverage
-    id("jacoco")
+    id("org.jetbrains.kotlinx.kover") version "0.6.1"
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.20.0"  // See also `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.22.0"  // See also `gradle.properties`
 
     // Documentation
-    id("org.jetbrains.dokka") version "1.6.21"
+    id("org.jetbrains.changelog") version "2.0.0"
+    id("org.jetbrains.dokka") version "1.7.20"  // See also `gradle.properties
 }
 
 
@@ -31,8 +36,6 @@ dependencies {
     implementation("com.github.sisyphsu:dateparser:${properties("dateparserVersion")}")
     implementation("com.github.curious-odd-man:rgxgen:${properties("rgxgenVersion")}")
     implementation("com.vdurmont:emoji-java:${properties("emojiVersion")}")
-    // Use bundled Kotlin (ca. 4MB) to ensure forwards and backwards compatibility with IDE versions
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
     testImplementation("org.assertj:assertj-core:${properties("assertjVersion")}")
@@ -40,7 +43,6 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-runner:${properties("junitRunnerVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${properties("junitVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${properties("junitVersion")}")
-    testImplementation("org.junit.vintage:junit-vintage-engine:${properties("junitVersion")}")
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:${properties("spekVersion")}")
     testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:${properties("spekVersion")}")
 
@@ -52,30 +54,40 @@ dependencies {
 tasks {
     // Compilation
     withType<JavaCompile> {
-        sourceCompatibility = properties("jvmVersion")
-        targetCompatibility = properties("jvmVersion")
+        sourceCompatibility = properties("javaVersion")
+        targetCompatibility = properties("javaVersion")
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
-            jvmTarget = properties("jvmVersion")
+            jvmTarget = properties("javaVersion")
             apiVersion = properties("kotlinApiVersion")
             languageVersion = properties("kotlinVersion")
         }
     }
     withType<io.gitlab.arturbosch.detekt.Detekt> {
-        jvmTarget = properties("jvmVersion")
+        jvmTarget = properties("javaVersion")
     }
 
     intellij {
         version.set(properties("intellijVersion"))
         downloadSources.set(true)
-        updateSinceUntilBuild.set(false)
+        updateSinceUntilBuild.set(false)  // Set in `patchPluginXml`
     }
 
     patchPluginXml {
-        changeNotes.set(file("src/main/resources/META-INF/change-notes.html").readText())
+        changeNotes.set(provider {
+            changelog.renderItem(
+                changelog.getUnreleased(),
+                Changelog.OutputType.HTML
+            )
+        })
         pluginDescription.set(file("src/main/resources/META-INF/description.html").readText())
         sinceBuild.set(properties("pluginSinceBuild"))
+    }
+
+    changelog {
+        repositoryUrl.set("https://github.com/FWDekker/intellij-randomness")
+        itemPrefix.set("*")
     }
 
     signPlugin {
@@ -96,34 +108,23 @@ tasks {
         }
 
         testLogging {
-            events = setOf(org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED)
-            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-        }
-    }
-
-    jacoco {
-        toolVersion = properties("jacocoVersion")
-    }
-
-    jacocoTestReport {
-        executionData(file("$buildDir/jacoco/test.exec"))
-
-        sourceSets { sourceSets.main }
-
-        reports {
-            csv.required.set(false)
-            html.required.set(true)
-            xml.required.set(true)
-            xml.outputLocation.set(file("$buildDir/reports/jacoco/report.xml"))
+            events = setOf(TestLogEvent.FAILED)
+            exceptionFormat = TestExceptionFormat.FULL
         }
 
-        dependsOn(test)
+        finalizedBy(koverReport)
+    }
+
+    kover {
+        htmlReport { onCheck.set(true) }
+        xmlReport { onCheck.set(true) }
     }
 
 
     // Static analysis
     detekt {
         toolVersion = properties("detektVersion")
+
         allRules = true
         config = files(".config/detekt/.detekt.yml")
     }
@@ -158,7 +159,7 @@ tasks {
 
                 sourceLink {
                     localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(URL("https://github.com/FWDekker/intellij-randomness/blob/master/src/main/kotlin"))
+                    remoteUrl.set(URL("https://github.com/FWDekker/intellij-randomness/tree/v${properties("version")}/src/main/kotlin"))
                     remoteLineSuffix.set("#L")
                 }
             }

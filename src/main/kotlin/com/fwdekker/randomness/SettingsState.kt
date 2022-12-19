@@ -10,7 +10,7 @@ import com.fwdekker.randomness.template.TemplateSettings
  * @property templateList The template list.
  */
 data class SettingsState(
-    var templateList: TemplateList = TemplateList()
+    var templateList: TemplateList = TemplateList(),
 ) : State() {
     override fun doValidate() = templateList.doValidate()
 

@@ -2,6 +2,8 @@ package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -15,9 +17,11 @@ import org.spekframework.spek2.style.specification.describe
  * GUI tests for [UuidSchemeEditor].
  */
 object UuidSchemeEditorTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
+    lateinit var frame: FrameFixture
+
     lateinit var scheme: UuidScheme
     lateinit var editor: UuidSchemeEditor
-    lateinit var frame: FrameFixture
 
 
     beforeGroup {
@@ -25,6 +29,9 @@ object UuidSchemeEditorTest : Spek({
     }
 
     beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         scheme = UuidScheme()
         editor = GuiActionRunner.execute<UuidSchemeEditor> { UuidSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
@@ -32,6 +39,7 @@ object UuidSchemeEditorTest : Spek({
 
     afterEachTest {
         frame.cleanUp()
+        ideaFixture.tearDown()
     }
 
 

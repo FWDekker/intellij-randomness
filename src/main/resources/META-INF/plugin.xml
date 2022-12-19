@@ -1,12 +1,9 @@
 <idea-plugin>
     <id>com.fwdekker.randomness</id>
     <name>Randomness</name>
-    <version>0.0.0</version>  <!-- Patched in from `gradle.properties` -->
     <vendor email="florine@fwdekker.com" url="https://fwdekker.com/">FWDekker</vendor>
 
     <depends>com.intellij.modules.platform</depends>
-
-    <idea-version since-build="0.0" />  <!-- Patched in from `gradle.properties` -->
 
     <extensions defaultExtensionNs="com.intellij">
         <errorHandler implementation="com.fwdekker.randomness.ErrorReporter" />

@@ -44,7 +44,7 @@ enum class CapitalizationMode(val descriptor: String, private val transformer: (
     /**
      * Unused in production code.
      */
-    DUMMY("dummy", { string, _ -> string });
+    DUMMY("dummy", { string, _ -> string }), ;
 
 
     /**

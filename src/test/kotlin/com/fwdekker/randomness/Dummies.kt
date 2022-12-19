@@ -18,7 +18,7 @@ import kotlin.random.Random
  */
 data class DummyScheme(
     var literals: List<String> = listOf(DEFAULT_OUTPUT),
-    override var decorators: List<SchemeDecorator> = listOf(ArrayDecorator())
+    override var decorators: List<SchemeDecorator> = listOf(ArrayDecorator()),
 ) : Scheme() {
     override var typeIcon: TypeIcon? = TypeIcon(RandomnessIcons.SCHEME, "dum", listOf(Color.GRAY))
     override val name: String

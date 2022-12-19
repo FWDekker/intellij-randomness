@@ -13,7 +13,7 @@ complexity:
     # Acceptable if used sparingly.
     LabeledExpression:
       active: false
-    # Solved using resources bundled. All remaining duplicates are resource identifiers.
+    # Solved using resource bundles. All remaining duplicates are resource identifiers.
     StringLiteralDuplication:
       active: false
 
@@ -21,11 +21,17 @@ formatting:
     # Experimental. Too many false positives.
     ArgumentListWrapping:
         active: false
+    # Placing expression functions on one line makes it harder to understand.
+    FunctionSignature:
+        active: false
     # That's part of my code style.
     NoConsecutiveBlankLines:
         active: false
     # Acceptable because of auto-formatting.
     MultiLineIfElse:
+        active: false
+    # Only if function takes vararg.
+    TrailingCommaOnCallSite:
         active: false
 
 naming:
@@ -34,6 +40,9 @@ naming:
         active: false
 
 style:
+    # `apply` is confusing with namespaces.
+    AlsoCouldBeApply:
+        active: false
     # Those functions are added as conscious design decisions.
     DataClassContainsFunctions:
         active: false
@@ -52,7 +61,7 @@ style:
     # No braces are easier to read.
     MandatoryBracesIfStatements:
         active: false
-    # Three is fine
+    # Three is fine.
     ReturnCount:
         max: 3
     # False positives when there are two newlines after the imports.
