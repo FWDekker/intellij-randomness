@@ -1,4 +1,4 @@
-import kotlinx.kover.api.KoverTaskExtension
+
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
@@ -113,9 +113,6 @@ tasks {
         }
 
         finalizedBy(koverReport)
-        extensions.configure(KoverTaskExtension::class) {
-            reportFile.set(file("$buildDir/jacoco/test.exec"))
-        }
     }
 
     kover {
