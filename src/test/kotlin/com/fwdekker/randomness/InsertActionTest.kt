@@ -33,10 +33,11 @@ class InsertActionTest : BasePlatformTestCase() {
         insertAction = DummyInsertAction { insertValue++.toString() }
     }
 
+    @Suppress("SwallowedException") // Intentional
     override fun tearDown() {
         try {
             super.tearDown()
-        } catch (e: Error) {
+        } catch (error: Error) {
             // Swallow errors about undisposed timers
         }
     }

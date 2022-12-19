@@ -10,7 +10,7 @@ import org.assertj.swing.fixture.FrameFixture
  *
  * @param accessibleName the name of the button to return
  */
-fun FrameFixture.getActionButton(accessibleName: String) =
+fun FrameFixture.getActionButton(accessibleName: String): ActionButton =
     robot().finder()
         .find(matcher(ActionButton::class.java) { it.isValid && it.accessibleContext.accessibleName == accessibleName })
 

@@ -1,4 +1,6 @@
-
+import kotlinx.kover.api.KoverTaskExtension
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
 import java.net.URL
 import java.time.Year
@@ -13,7 +15,7 @@ plugins {
     id("org.jetbrains.intellij") version "1.11.0"
 
     // Tests/coverage
-    id("jacoco")  // See also `gradle.properties
+    id("org.jetbrains.kotlinx.kover") version "0.6.1"
 
     // Static analysis
     id("io.gitlab.arturbosch.detekt") version "1.22.0"  // See also `gradle.properties`
@@ -41,7 +43,6 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-runner:${properties("junitRunnerVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${properties("junitVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${properties("junitVersion")}")
-    testImplementation("org.junit.vintage:junit-vintage-engine:${properties("junitVersion")}")
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:${properties("spekVersion")}")
     testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:${properties("spekVersion")}")
 
@@ -107,28 +108,19 @@ tasks {
         }
 
         testLogging {
-            events = setOf(org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED)
-            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+            events = setOf(TestLogEvent.FAILED)
+            exceptionFormat = TestExceptionFormat.FULL
+        }
+
+        finalizedBy(koverReport)
+        extensions.configure(KoverTaskExtension::class) {
+            reportFile.set(file("$buildDir/jacoco/test.exec"))
         }
     }
 
-    jacoco {
-        toolVersion = properties("jacocoVersion")
-    }
-
-    jacocoTestReport {
-        executionData(layout.buildDirectory.file("jacoco/test.exec").get().asFile)
-
-        sourceSets { sourceSets.main }
-
-        reports {
-            csv.required.set(false)
-            html.required.set(true)
-            xml.required.set(true)
-            xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/report.xml").get().asFile)
-        }
-
-        dependsOn(test)
+    kover {
+        htmlReport { onCheck.set(true) }
+        xmlReport { onCheck.set(true) }
     }
 
 

@@ -101,7 +101,6 @@ See [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.
 $ gradlew test                # Run tests
 $ gradlew test --tests X      # Run tests in class X
 $ gradlew check               # Run tests and static analysis
-$ gradlew jacocoTestReport    # Run tests and calculate coverage
 $ gradlew runPluginVerifier   # Check for compatibility issues
 ```
 
