@@ -33,6 +33,14 @@ class InsertActionTest : BasePlatformTestCase() {
         insertAction = DummyInsertAction { insertValue++.toString() }
     }
 
+    override fun tearDown() {
+        try {
+            super.tearDown()
+        } catch (e: Error) {
+            // Swallow errors about undisposed timers
+        }
+    }
+
     override fun getTestDataPath() = javaClass.classLoader.getResource("integration-project/")?.path
 
 

@@ -1,5 +1,7 @@
 package com.fwdekker.randomness
 
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -13,6 +15,7 @@ import org.spekframework.spek2.style.specification.describe
  * Unit tests for [StateEditor].
  */
 object StateEditorTest : Spek({
+    lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
     lateinit var state: DummyScheme
@@ -24,6 +27,9 @@ object StateEditorTest : Spek({
     }
 
     beforeEachTest {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         state = DummyScheme.from("ashamed", "bathe")
         editor = GuiActionRunner.execute<DummySchemeEditor> { DummySchemeEditor(state) }
         frame = Containers.showInFrame(editor.rootComponent)
@@ -31,6 +37,7 @@ object StateEditorTest : Spek({
 
     afterEachTest {
         frame.cleanUp()
+        ideaFixture.tearDown()
     }
 
 
