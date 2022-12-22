@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.array
 
+import com.fwdekker.randomness.BracketsDescriptor
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
@@ -37,24 +38,21 @@ data class ArrayDecorator(
     override fun generateUndecoratedStrings(count: Int): List<String> {
         if (!enabled) return generator(count)
 
-        val partCount = random.nextInt(minCount, maxCount + 1)
-        val generatedParts = generator(count * partCount)
         val separator = separator + if (isSpaceAfterSeparator && separator !== "\n") " " else ""
+        val bracketsDescriptor = BracketsDescriptor(brackets)
 
-        return generatedParts.chunked(partCount) { parts ->
-            parts.joinToString(
-                separator = separator,
-                prefix = brackets.takeWhile { it != '@' },
-                postfix = brackets.takeLastWhile { it != '@' }
-            )
-        }
+        val partsPerString = random.nextInt(minCount, maxCount + 1)
+        val parts = generator(count * partsPerString)
+        val stringsWithoutBrackets = parts.chunked(partsPerString) { it.joinToString(separator = separator) }
+
+        return stringsWithoutBrackets.map { bracketsDescriptor.interpolate(it) }
     }
 
 
     override fun doValidate() =
         if (minCount < MIN_MIN_COUNT) Bundle("array.error.min_count_too_low", MIN_MIN_COUNT)
         else if (maxCount < minCount) Bundle("array.error.min_count_above_max")
-        else null
+        else BracketsDescriptor(brackets).doValidate()
 
     override fun deepCopy(retainUuid: Boolean) = copy().also { if (retainUuid) it.uuid = this.uuid }
 

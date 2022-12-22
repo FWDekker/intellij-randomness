@@ -90,7 +90,7 @@ object ArrayDecoratorTest : Spek({
                 assertThat(dummyScheme.generateStrings()).containsExactly("ElvishhStridehElvishhStride")
             }
 
-            it("returns an array-like string with the brackets on both sides of the output") {
+            it("puts brackets on both sides of the output if there is no @ in the brackets") {
                 arrayDecorator.minCount = 2
                 arrayDecorator.maxCount = 2
                 arrayDecorator.brackets = "yn"
@@ -99,13 +99,13 @@ object ArrayDecoratorTest : Spek({
                 assertThat(dummyScheme.generateStrings()).containsExactly("ynFatten, Acrossyn")
             }
 
-            it("returns an array-like string with the different brackets surrounding the input") {
+            it("substitutes the @ in the brackets with the output") {
                 arrayDecorator.minCount = 2
                 arrayDecorator.maxCount = 2
-                arrayDecorator.brackets = "wl@ga"
+                arrayDecorator.brackets = "(@)"
                 dummyScheme.literals = listOf("Cloud", "Taxi")
 
-                assertThat(dummyScheme.generateStrings()).containsExactly("wlCloud, Taxiga")
+                assertThat(dummyScheme.generateStrings()).containsExactly("(Cloud, Taxi)")
             }
         }
 
@@ -188,6 +188,20 @@ object ArrayDecoratorTest : Spek({
 
                 assertThat(arrayDecorator.doValidate())
                     .isEqualTo("Minimum count should be less than or equal to maximum count.")
+            }
+        }
+
+        describe("brackets") {
+            it("passes for valid brackets") {
+                arrayDecorator.brackets = "dVN(An@)\\yk"
+
+                assertThat(arrayDecorator.doValidate()).isNull()
+            }
+
+            it("fails for invalid brackets") {
+                arrayDecorator.brackets = "zFT<pgaQH@\\"
+
+                assertThat(arrayDecorator.doValidate()).isNotNull()
             }
         }
     }
