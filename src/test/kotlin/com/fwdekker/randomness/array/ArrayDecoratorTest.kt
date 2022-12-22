@@ -102,55 +102,10 @@ object ArrayDecoratorTest : Spek({
             it("substitutes the @ in the brackets with the output") {
                 arrayDecorator.minCount = 2
                 arrayDecorator.maxCount = 2
-                arrayDecorator.brackets = "wl@ga"
+                arrayDecorator.brackets = "(@)"
                 dummyScheme.literals = listOf("Cloud", "Taxi")
 
-                assertThat(dummyScheme.generateStrings()).containsExactly("wlCloud, Taxiga")
-            }
-
-            it("substitutes the @ multiple times in the brackets with the output") {
-                arrayDecorator.minCount = 2
-                arrayDecorator.maxCount = 2
-                arrayDecorator.brackets = "th@rt@en"
-                dummyScheme.literals = listOf("Complete", "Summer")
-
-                assertThat(dummyScheme.generateStrings()).containsExactly("thComplete, SummerrtComplete, Summeren")
-            }
-
-            it("does not substitute the @ in the brackets if it is escaped by a backslash") {
-                arrayDecorator.minCount = 3
-                arrayDecorator.maxCount = 3
-                arrayDecorator.brackets = "e\\@x"
-                dummyScheme.literals = listOf("Sink", "Castle", "Until")
-
-                assertThat(dummyScheme.generateStrings()).containsExactly("e@xSink, Castle, Untile@x")
-            }
-
-            it("substitutes an escaped backslash in the brackets with a backslash") {
-                arrayDecorator.minCount = 2
-                arrayDecorator.maxCount = 2
-                arrayDecorator.brackets = "q\\\\z"
-                dummyScheme.literals = listOf("Coarse", "Noun")
-
-                assertThat(dummyScheme.generateStrings()).containsExactly("q\\zCoarse, Nounq\\z")
-            }
-
-            it("substitutes the @ in the brackets if it is preceded by an escaped backslash") {
-                arrayDecorator.minCount = 2
-                arrayDecorator.maxCount = 2
-                arrayDecorator.brackets = "dbGn\\\\@VrX"
-                dummyScheme.literals = listOf("Cry", "Ribbon")
-
-                assertThat(dummyScheme.generateStrings()).containsExactly("dbGn\\Cry, RibbonVrX")
-            }
-
-            it("substitutes the @ if it is the only symbol in the brackets") {
-                arrayDecorator.minCount = 2
-                arrayDecorator.maxCount = 2
-                arrayDecorator.brackets = "@"
-                dummyScheme.literals = listOf("Advice", "Line")
-
-                assertThat(dummyScheme.generateStrings()).containsExactly("Advance, Line")
+                assertThat(dummyScheme.generateStrings()).containsExactly("(Cloud, Taxi)")
             }
         }
 
@@ -237,67 +192,16 @@ object ArrayDecoratorTest : Spek({
         }
 
         describe("brackets") {
-            it("passes for only an escaped \\") {
-                arrayDecorator.brackets = "\\\\"
+            it("passes for valid brackets") {
+                arrayDecorator.brackets = "dVN(An@)\\yk"
 
                 assertThat(arrayDecorator.doValidate()).isNull()
             }
 
-            it("passes for only a @") {
-                arrayDecorator.brackets = "@"
+            it("fails for invalid brackets") {
+                arrayDecorator.brackets = "zFT<pgaQH@\\"
 
-                assertThat(arrayDecorator.doValidate()).isNull()
-            }
-
-            it("passes for an @ with some characters around") {
-                arrayDecorator.brackets = "vUF@Qhr"
-
-                assertThat(arrayDecorator.doValidate()).isNull()
-            }
-
-            it("passes for multiple @s") {
-                arrayDecorator.brackets = "@@"
-
-                assertThat(arrayDecorator.doValidate()).isNull()
-            }
-
-            it("passes for multiple @s with some characters around") {
-                arrayDecorator.brackets = "fl@wNZ@v"
-
-                assertThat(arrayDecorator.doValidate()).isNull()
-            }
-
-            it("passes for an escaped @") {
-                arrayDecorator.brackets = "\\@"
-
-                assertThat(arrayDecorator.doValidate()).isNull()
-            }
-
-            it("passes for an @ with an escaped \\ in front") {
-                arrayDecorator.brackets = "\\\\@"
-
-                assertThat(arrayDecorator.doValidate()).isNull()
-            }
-
-            it("fails for an unmatched \\") {
-                arrayDecorator.brackets = "\\"
-
-                assertThat(arrayDecorator.doValidate())
-                    .isEqualTo("Each \\ should be followed by an @ or by another \\.")
-            }
-
-            it("fails for an escaped \\ preceded by an unmatched \\") {
-                arrayDecorator.brackets = "\\\\\\"
-
-                assertThat(arrayDecorator.doValidate())
-                    .isEqualTo("Each \\ should be followed by an @ or by another \\.")
-            }
-
-            it("fails for an escaped @ preceded by an unmatched \\") {
-                arrayDecorator.brackets = "\\\\@"
-
-                assertThat(arrayDecorator.doValidate())
-                    .isEqualTo("Each \\ should be followed by an @ or by another \\.")
+                assertThat(arrayDecorator.doValidate()).isNotNull()
             }
         }
     }
