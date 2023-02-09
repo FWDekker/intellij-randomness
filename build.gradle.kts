@@ -144,7 +144,7 @@ tasks {
 
                 sourceLink {
                     localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(URL("https://github.com/FWDekker/intellij-randomness/blob/master/src/main/kotlin"))
+                    remoteUrl.set(URL("https://github.com/FWDekker/intellij-randomness/tree/v${properties("version")}/src/main/kotlin"))
                     remoteLineSuffix.set("#L")
                 }
             }
