@@ -1,4 +1,0 @@
-// WARNING! The plugin verifier script is deprecated. The runPluginVerifier task is built into the
-// gradle-intellij-plugin as of version 0.6.0. For more information, see
-// https://github.com/JetBrains/gradle-intellij-plugin/issues/385#issuecomment-718796665.
-// This file will be removed from the intellij-random repository on 2022-12-20.

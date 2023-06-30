@@ -8,7 +8,7 @@ import javax.swing.JComponent
 /**
  * Tells IntelliJ how to use a [StateEditor] in the settings dialog.
  */
-@Suppress("LateinitUsage") // `createComponent` is invoked before any of the other methods
+@Suppress("detekt:LateinitUsage") // `createComponent` is invoked before any of the other methods
 abstract class SettingsConfigurable : Configurable {
     /**
      * The user interface for changing the settings, displayed in IntelliJ's settings window.

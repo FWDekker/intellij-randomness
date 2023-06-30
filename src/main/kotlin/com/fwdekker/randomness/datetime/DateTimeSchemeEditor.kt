@@ -23,7 +23,6 @@ import javax.swing.SwingConstants
  *
  * @param scheme the scheme to edit in the component
  */
-@Suppress("LateinitUsage") // Initialized by scene builder
 class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEditor<DateTimeScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent
@@ -50,7 +49,6 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
      *
      * This method is called by the scene builder at the start of the constructor.
      */
-    @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         valueSeparator = SeparatorFactory.createSeparator(Bundle("datetime.ui.value_separator"), null)
 

@@ -38,7 +38,7 @@ object TemplateListEditorTest : Spek({
     beforeGroup {
         FailOnThreadViolationRepaintManager.install()
 
-        TemplateListEditor.CREATE_SPLITTER =
+        TemplateListEditor.createSplitter =
             { vertical, proportionKey, defaultProportion -> JBSplitter(vertical, proportionKey, defaultProportion) }
     }
 

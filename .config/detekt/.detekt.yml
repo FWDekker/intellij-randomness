@@ -1,69 +1,79 @@
 comments:
-    # License in each file is unnecessary.
-    AbsentOrWrongFileLicense:
-        active: false
-    # Nothing wrong with documenting private methods.
-    CommentOverPrivateFunction:
-        active: false
-    # Nothing wrong with documenting private properties.
-    CommentOverPrivateProperty:
-        active: false
+  # [Disagree] License in each file is unnecessary.
+  AbsentOrWrongFileLicense:
+    active: false
+  # [Disagree] Simple private functions should be documented too.
+  CommentOverPrivateFunction:
+    active: false
+  # [Disagree] Simple private properties should be documented too.
+  CommentOverPrivateProperty:
+    active: false
 
 complexity:
-    # Acceptable if used sparingly.
-    LabeledExpression:
-      active: false
-    # Solved using resource bundles. All remaining duplicates are resource identifiers.
-    StringLiteralDuplication:
-      active: false
+  # [Disagree] Acceptable if used sparingly.
+  LabeledExpression:
+    active: false
+  # [False Positive] Solved using resource bundles. All remaining duplicates are resource identifiers.
+  StringLiteralDuplication:
+    active: false
 
 formatting:
-    # Experimental. Too many false positives.
-    ArgumentListWrapping:
-        active: false
-    # Placing expression functions on one line makes it harder to understand.
-    FunctionSignature:
-        active: false
-    # That's part of my code style.
-    NoConsecutiveBlankLines:
-        active: false
-    # Acceptable because of auto-formatting.
-    MultiLineIfElse:
-        active: false
-    # Only if function takes vararg.
-    TrailingCommaOnCallSite:
-        active: false
+  # [Disagree] Acceptable for many short arguments.
+  ArgumentListWrapping:
+    active: false
+  # [Bug] Incorrectly detects violation if semicolon is followed by more than one newline.
+  EnumWrapping:
+    active: false
+  # [Disagree] Multi-line expressions are easier to understand if they start on the next line.
+  FunctionSignature:
+    active: false
+  # [Disagree] Short one-liners are easier to understand.
+  IfElseWrapping:
+    active: false
+  # [Bug] Causes ugly indentation when using named multiline arguments to a function.
+  MultilineExpressionWrapping:
+    active: false
+  # [Disagree] Braces use unnecessary extra space.
+  MultiLineIfElse:
+    active: false
+  # [Disagree] Consecutive blank lines are used consistently to group blocks of code.
+  NoConsecutiveBlankLines:
+    active: false
+  # [Disagree] Unnecessary, except for calls with vararg.
+  TrailingCommaOnCallSite:
+    active: false
 
-naming:
-    # Too many false positives in JUnit 4 tests.
-    FunctionMaxLength:
-        active: false
+potential-bugs:
+  # [Exception] Initialised by scene builder.
+  LateinitUsage:
+    ignoreOnClassesPattern: ".*Editor"
 
 style:
-    # `apply` is confusing with namespaces.
-    AlsoCouldBeApply:
-        active: false
-    # Those functions are added as conscious design decisions.
-    DataClassContainsFunctions:
-        active: false
-    # Not if they're settings objects.
-    DataClassShouldBeImmutable:
-        active: false
-    # Acceptable in parameterized tests.
-    DestructuringDeclarationWithTooManyEntries:
-        active: false
-    # Comments indicating TODOs are acceptable.
-    ForbiddenComment:
-        active: false
-    # One more is fine in my opinion.
-    LoopWithTooManyJumpStatements:
-        maxJumpCount: 2
-    # No braces are easier to read.
-    MandatoryBracesIfStatements:
-        active: false
-    # Three is fine.
-    ReturnCount:
-        max: 3
-    # False positives when there are two newlines after the imports.
-    SpacingBetweenPackageAndImports:
-        active: false
+  # [Disagree] `apply` is confusing to use because of namespace conflicts.
+  AlsoCouldBeApply:
+    active: false
+  # [Disagree] Braces use unnecessary extra space.
+  BracesOnIfStatements:
+    multiLine: consistent
+  # [Disagree] Functions on data classes are useful.
+  DataClassContainsFunctions:
+    active: false
+  # [Disagree] Mutable data classes are useful.
+  DataClassShouldBeImmutable:
+    active: false
+  # [Exception] Acceptable in (parameterized) tests.
+  DestructuringDeclarationWithTooManyEntries:
+    excludes:
+      - '**/test/**'
+  # [Bug] Fails when used as function expression body.
+  MultilineRawStringIndentation:
+    active: false
+  # [Bug] False positives when there are two newlines after the imports.
+  SpacingBetweenPackageAndImports:
+    active: false
+  # [Bug] Suggests using raw string in constant, but then `trimIndent` is not possible, resulting in weird indenting.
+  StringShouldBeRawString:
+    active: false
+  # [Exception] Used by scene builder.
+  UnusedPrivateMember:
+    allowedNames: "createUIComponents"

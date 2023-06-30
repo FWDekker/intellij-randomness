@@ -11,7 +11,7 @@ import org.spekframework.spek2.style.specification.describe
 /**
  * Unit tests for the extension functions in `TimelyKt`.
  */
-@Suppress("TooGenericExceptionThrown") // Acceptable for tests
+@Suppress("detekt:TooGenericExceptionThrown") // Acceptable for tests
 object TimelyTest : Spek({
     describe("timely") {
         it("returns output if generator finished within time") {

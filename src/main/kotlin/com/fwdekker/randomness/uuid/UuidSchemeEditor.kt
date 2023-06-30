@@ -28,7 +28,6 @@ import javax.swing.JPanel
  *
  * @param scheme the scheme to edit in the component
  */
-@Suppress("LateinitUsage") // Initialized by scene builder
 class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent
@@ -65,7 +64,6 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
      *
      * This method is called by the scene builder at the start of the constructor.
      */
-    @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         valueSeparator = SeparatorFactory.createSeparator(Bundle("uuid.ui.value_separator"), null)
 

@@ -103,7 +103,11 @@ class ErrorReporter : ErrorReportSubmitter() {
      * @param contents the contents of the section
      * @return a Markdown "section" with the [title] and [contents]
      */
-    private fun createMarkdownSection(title: String, contents: String) = "**${title.trim()}**\n${contents.trim()}\n\n"
+    private fun createMarkdownSection(title: String, contents: String) =
+        """
+        **${title.trim()}**
+        ${contents.trim()}
+        """.trimIndent()
 
     /**
      * Returns version information on the user's environment as a Markdown-style list.
@@ -112,10 +116,10 @@ class ErrorReporter : ErrorReportSubmitter() {
      */
     private fun getFormattedVersionInformation() =
         """
-            - Randomness version: ${pluginDescriptor?.version ?: "_Unknown_"}
-            - IDE version: ${ApplicationInfo.getInstance().apiVersion}
-            - Operating system: ${System.getProperty("os.name")}
-            - Java version: ${System.getProperty("java.version")}
+        - Randomness version: ${pluginDescriptor?.version ?: "_Unknown_"}
+        - IDE version: ${ApplicationInfo.getInstance().apiVersion}
+        - Operating system: ${System.getProperty("os.name")}
+        - Java version: ${System.getProperty("java.version")}
         """.trimIndent()
 
 

@@ -10,18 +10,18 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    id("org.jetbrains.kotlin.jvm") version "1.6.20"  // See also `gradle.properties`
-    id("org.jetbrains.intellij") version "1.11.0"
+    id("org.jetbrains.kotlin.jvm") version "1.8.22"  // See also `gradle.properties`
+    id("org.jetbrains.intellij") version "1.14.2"
 
     // Tests/coverage
-    id("org.jetbrains.kotlinx.kover") version "0.6.1"
+    id("org.jetbrains.kotlinx.kover") version "0.7.2"
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.22.0"  // See also `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.23.0"  // See also `gradle.properties`
 
     // Documentation
-    id("org.jetbrains.changelog") version "2.0.0"
-    id("org.jetbrains.dokka") version "1.7.20"  // See also `gradle.properties
+    id("org.jetbrains.changelog") version "2.1.0"
+    id("org.jetbrains.dokka") version "1.8.20"  // See also `gradle.properties
 }
 
 
@@ -111,21 +111,21 @@ tasks {
             exceptionFormat = TestExceptionFormat.FULL
         }
 
-        finalizedBy(koverReport)
+        finalizedBy(koverXmlReport)
     }
 
-    kover {
-        htmlReport { onCheck.set(true) }
-        xmlReport { onCheck.set(true) }
+    koverReport {
+        defaults {
+            html { onCheck = false }
+            xml { onCheck = false }
+        }
     }
 
 
     // Static analysis
     detekt {
-        toolVersion = properties("detektVersion")
-
         allRules = true
-        config = files(".config/detekt/.detekt.yml")
+        config.setFrom(".config/detekt/.detekt.yml")
     }
 
     runPluginVerifier {

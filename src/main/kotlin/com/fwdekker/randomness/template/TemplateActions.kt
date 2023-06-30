@@ -9,12 +9,12 @@ import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.PreviewPanel
 import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ShowSettingsUtil
 import java.awt.BorderLayout
-import java.awt.event.ActionEvent
 import javax.swing.JPanel
 
 
@@ -40,6 +40,14 @@ class TemplateGroupAction(private val template: Template) :
 
 
     /**
+     * Specifies the thread in which [update] is invoked.
+     *
+     * @return the thread in which [update] is invoked
+     */
+    override fun getActionUpdateThread() = ActionUpdateThread.EDT
+
+
+    /**
      * Update the presentation of the action.
      *
      * @param event the event to set the presentation on
@@ -58,9 +66,9 @@ class TemplateGroupAction(private val template: Template) :
      */
     override fun actionPerformed(event: AnActionEvent) =
         getActionByModifier(
-            array = event.modifiers and event.modifiers and ActionEvent.SHIFT_MASK != 0,
-            repeat = event.modifiers and event.modifiers and ActionEvent.ALT_MASK != 0,
-            settings = event.modifiers and event.modifiers and ActionEvent.CTRL_MASK != 0
+            array = event.inputEvent?.isShiftDown ?: false,
+            repeat = event.inputEvent?.isAltDown ?: false,
+            settings = event.inputEvent?.isControlDown ?: false
         ).actionPerformed(event)
 
     /**
@@ -198,7 +206,7 @@ class TemplateInsertAction(
 class TemplateSettingsAction(private val template: Template? = null) : AnAction(
     if (template == null) Bundle("template.name.settings")
     else Bundle("template.name.settings_suffix", template.name),
-    if (template == null) null else Bundle("template.description.settings", template.name),
+    template?.let { Bundle("template.description.settings", it.name) },
     template?.icon?.plusOverlay(OverlayIcon.SETTINGS) ?: RandomnessIcons.SETTINGS
 ) {
     /**

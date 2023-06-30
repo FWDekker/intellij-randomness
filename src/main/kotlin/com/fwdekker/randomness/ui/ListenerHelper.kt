@@ -27,7 +27,7 @@ import com.intellij.openapi.editor.event.DocumentListener as JBDocumentListener
  * @param components the components to add the listener to
  * @param listener the listener to invoke whenever any of the given components changes state
  */
-@Suppress("SpreadOperator") // Acceptable because this method is called rarely
+@Suppress("detekt:SpreadOperator") // Acceptable because this method is called rarely
 fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
     components.forEach { component ->
         when (component) {

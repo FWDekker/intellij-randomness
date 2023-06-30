@@ -33,7 +33,7 @@ class TemplateActionLoaderTest : Spek({
             val template = Template(name = "Snow")
             TemplateSettings.default.loadState(TemplateList(listOf(template)))
 
-            TemplateActionLoader.registerActions(actionManager)
+            TemplateActionLoader().registerActions(actionManager)
 
             assertThat(actionManager.getAction(template.actionId)).isNotNull()
         }
@@ -44,9 +44,9 @@ class TemplateActionLoaderTest : Spek({
             val template = Template(name = "Kick")
             TemplateSettings.default.loadState(TemplateList(listOf(template)))
 
-            TemplateActionLoader.registerActions(actionManager)
+            TemplateActionLoader().registerActions(actionManager)
             assertThat(actionManager.getAction(template.actionId)).isNotNull()
-            TemplateActionLoader.unregisterActions(actionManager)
+            TemplateActionLoader().unregisterActions(actionManager)
 
             assertThat(actionManager.getAction(template.actionId)).isNull()
         }
@@ -56,7 +56,7 @@ class TemplateActionLoaderTest : Spek({
         it("registers actions of initial templates") {
             val template = Template(name = "Fine")
 
-            TemplateActionLoader.updateActions(emptySet(), setOf(template))
+            TemplateActionLoader().updateActions(emptySet(), setOf(template))
 
             assertThat(actionManager.getAction(template.actionId)).isNotNull()
         }
@@ -65,8 +65,8 @@ class TemplateActionLoaderTest : Spek({
             val template1 = Template(name = "Ease")
             val template2 = Template(name = "Holy")
 
-            TemplateActionLoader.updateActions(emptySet(), setOf(template1))
-            TemplateActionLoader.updateActions(setOf(template1, template2), setOf(template2))
+            TemplateActionLoader().updateActions(emptySet(), setOf(template1))
+            TemplateActionLoader().updateActions(setOf(template1, template2), setOf(template2))
 
             assertThat(actionManager.getAction(template2.actionId)).isNotNull()
         }
@@ -74,8 +74,8 @@ class TemplateActionLoaderTest : Spek({
         it("unregisters actions of now-removed templates") {
             val template = Template(name = "Fall")
 
-            TemplateActionLoader.updateActions(emptySet(), setOf(template))
-            TemplateActionLoader.updateActions(setOf(template), emptySet())
+            TemplateActionLoader().updateActions(emptySet(), setOf(template))
+            TemplateActionLoader().updateActions(setOf(template), emptySet())
 
             assertThat(actionManager.getAction(template.actionId)).isNull()
         }
@@ -83,9 +83,9 @@ class TemplateActionLoaderTest : Spek({
         it("reregisters actions of updated templates") {
             val template = Template(name = "Pain")
 
-            TemplateActionLoader.updateActions(emptySet(), setOf(template))
+            TemplateActionLoader().updateActions(emptySet(), setOf(template))
             val action = actionManager.getAction(template.actionId)
-            TemplateActionLoader.updateActions(setOf(template), setOf(template))
+            TemplateActionLoader().updateActions(setOf(template), setOf(template))
 
             assertThat(actionManager.getAction(template.actionId)).isNotEqualTo(action)
         }

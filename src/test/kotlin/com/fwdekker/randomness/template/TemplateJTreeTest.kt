@@ -3,8 +3,9 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.clickActionButton
-import com.fwdekker.randomness.getAnActionButton
+import com.fwdekker.randomness.getActionButton
 import com.fwdekker.randomness.string.StringScheme
+import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import org.assertj.core.api.Assertions.assertThat
@@ -498,15 +499,21 @@ object TemplateJTreeTest : Spek({
         }
 
 
+        fun updateButtons() = (frame.getActionButton("Add").parent as ActionToolbar).updateActionsImmediately()
+
+
         xdescribe("AddButton") {
             // No non-popup behavior to test
         }
 
         describe("RemoveButton") {
             it("is disabled if nothing is selected") {
-                GuiActionRunner.execute { tree.clearSelection() }
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    updateButtons()
+                }
 
-                assertThat(frame.getAnActionButton("Remove").isEnabled).isFalse()
+                assertThat(frame.getActionButton("Remove").isEnabled).isFalse()
             }
 
             it("removes the selected scheme") {
@@ -520,9 +527,12 @@ object TemplateJTreeTest : Spek({
 
         describe("CopyButton") {
             it("is disabled if nothing is selected") {
-                GuiActionRunner.execute { tree.clearSelection() }
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    updateButtons()
+                }
 
-                assertThat(frame.getAnActionButton("Copy").isEnabled).isFalse()
+                assertThat(frame.getActionButton("Copy").isEnabled).isFalse()
             }
 
             it("copies the selected scheme") {
@@ -568,21 +578,30 @@ object TemplateJTreeTest : Spek({
 
         describe("UpButton") {
             it("is disabled if nothing is selected") {
-                GuiActionRunner.execute { tree.clearSelection() }
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    updateButtons()
+                }
 
-                assertThat(frame.getAnActionButton("Up").isEnabled).isFalse()
+                assertThat(frame.getActionButton("Up").isEnabled).isFalse()
             }
 
             it("is disabled if the selected scheme cannot be moved up") {
-                GuiActionRunner.execute { tree.selectedScheme = list().templates[0] }
+                GuiActionRunner.execute {
+                    tree.selectedScheme = list().templates[0]
+                    updateButtons()
+                }
 
-                assertThat(frame.getAnActionButton("Up").isEnabled).isFalse()
+                assertThat(frame.getActionButton("Up").isEnabled).isFalse()
             }
 
             it("is enabled if the selected scheme can be moved up") {
-                GuiActionRunner.execute { tree.selectedScheme = list().templates[1] }
+                GuiActionRunner.execute {
+                    tree.selectedScheme = list().templates[1]
+                    updateButtons()
+                }
 
-                assertThat(frame.getAnActionButton("Up").isEnabled).isTrue()
+                assertThat(frame.getActionButton("Up").isEnabled).isTrue()
             }
 
             it("moves the selected scheme up") {
@@ -596,21 +615,30 @@ object TemplateJTreeTest : Spek({
 
         describe("DownButton") {
             it("is disabled if nothing is selected") {
-                GuiActionRunner.execute { tree.clearSelection() }
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    updateButtons()
+                }
 
-                assertThat(frame.getAnActionButton("Down").isEnabled).isFalse()
+                assertThat(frame.getActionButton("Down").isEnabled).isFalse()
             }
 
             it("is disabled if the selected scheme cannot be moved down") {
-                GuiActionRunner.execute { tree.selectedScheme = list().templates[2] }
+                GuiActionRunner.execute {
+                    tree.selectedScheme = list().templates[2]
+                    updateButtons()
+                }
 
-                assertThat(frame.getAnActionButton("Down").isEnabled).isFalse()
+                assertThat(frame.getActionButton("Down").isEnabled).isFalse()
             }
 
             it("is enabled if the selected scheme can be moved down") {
-                GuiActionRunner.execute { tree.selectedScheme = list().templates[1] }
+                GuiActionRunner.execute {
+                    tree.selectedScheme = list().templates[1]
+                    updateButtons()
+                }
 
-                assertThat(frame.getAnActionButton("Down").isEnabled).isTrue()
+                assertThat(frame.getActionButton("Down").isEnabled).isTrue()
             }
 
             it("moves the selected scheme down") {
@@ -624,15 +652,21 @@ object TemplateJTreeTest : Spek({
 
         describe("ResetButton") {
             it("is disabled if nothing is selected") {
-                GuiActionRunner.execute { tree.clearSelection() }
+                GuiActionRunner.execute {
+                    tree.clearSelection()
+                    updateButtons()
+                }
 
-                assertThat(frame.getAnActionButton("Reset").isEnabled).isFalse()
+                assertThat(frame.getActionButton("Reset").isEnabled).isFalse()
             }
 
             it("is disabled if the selection has not been modified") {
-                GuiActionRunner.execute { tree.selectedScheme = list().templates[0] }
+                GuiActionRunner.execute {
+                    tree.selectedScheme = list().templates[0]
+                    updateButtons()
+                }
 
-                assertThat(frame.getAnActionButton("Reset").isEnabled).isFalse()
+                assertThat(frame.getActionButton("Reset").isEnabled).isFalse()
             }
 
             it("removes the scheme if it was newly added") {

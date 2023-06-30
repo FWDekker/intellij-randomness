@@ -33,7 +33,6 @@ import javax.swing.ListSelectionModel
  *
  * @param reference the reference to edit
  */
-@Suppress("LateinitUsage") // Initialized by scene builder
 class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<TemplateReference>(reference) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent
@@ -69,7 +68,6 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
      *
      * This method is called by the scene builder at the start of the constructor.
      */
-    @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         templateListSeparator = SeparatorFactory.createSeparator(Bundle("reference.ui.template_list"), null)
 

@@ -19,7 +19,7 @@ data class DefaultWordList(val name: String, val filename: String) {
      */
     @get:Throws(IOException::class)
     val words: List<String> by lazy {
-        cache.getOrPut(filename) {
+        CACHE.getOrPut(filename) {
             (javaClass.classLoader.getResource(filename) ?: throw IOException(Bundle("word_list.error.file_not_found")))
                 .openStream()
                 .bufferedReader()
@@ -37,20 +37,20 @@ data class DefaultWordList(val name: String, val filename: String) {
          * Retains word lists that have previously been looked up.
          */
         @get:Synchronized
-        private val cache = ConcurrentHashMap<String, List<String>>()
+        private val CACHE = ConcurrentHashMap<String, List<String>>()
 
         /**
          * The list of all available word lists.
          */
-        val wordLists = listOf(
+        val WORD_LISTS = listOf(
             DefaultWordList("Forenames", "word-lists/forenames.txt"),
             DefaultWordList("Lorem", "word-lists/lorem.txt"),
             DefaultWordList("Surnames", "word-lists/surnames.txt")
         )
 
         /**
-         * The available [wordLists] as indexed by [name].
+         * The available [WORD_LISTS] as indexed by [name].
          */
-        val wordListMap = wordLists.associateBy { it.name }
+        val WORD_LIST_MAP = WORD_LISTS.associateBy { it.name }
     }
 }

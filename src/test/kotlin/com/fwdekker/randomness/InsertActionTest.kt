@@ -13,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 /**
  * Integration tests for [InsertAction].
  */
+@Suppress("detekt:FunctionName", "detekt:FunctionMaxLength") // Makes JUnit tests easier to read
 class InsertActionTest : BasePlatformTestCase() {
     private lateinit var document: Document
     private lateinit var caretModel: CaretModel
@@ -33,7 +34,7 @@ class InsertActionTest : BasePlatformTestCase() {
         insertAction = DummyInsertAction { insertValue++.toString() }
     }
 
-    @Suppress("SwallowedException") // Intentional
+    @Suppress("detekt:SwallowedException") // Intentional
     override fun tearDown() {
         try {
             super.tearDown()

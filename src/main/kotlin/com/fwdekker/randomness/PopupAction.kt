@@ -4,6 +4,7 @@ import com.fwdekker.randomness.template.TemplateGroupAction
 import com.fwdekker.randomness.template.TemplateSettings
 import com.fwdekker.randomness.template.TemplateSettingsAction
 import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -26,6 +27,13 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
      */
     private var isEditable: Boolean = true
 
+
+    /**
+     * Specifies the thread in which [update] is invoked.
+     *
+     * @return the thread in which [update] is invoked
+     */
+    override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
     /**
      * Sets the icon of this action.
@@ -74,7 +82,7 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
      * @param event the event on which the title should be based
      * @return the desired title for the popup given [event]
      */
-    @Suppress("ComplexMethod") // Cannot be simplified
+    @Suppress("detekt:ComplexMethod") // Cannot be simplified
     private fun captionModifier(event: ActionEvent?): String {
         val modifiers = event?.modifiers ?: 0
         val altPressed = modifiers and ActionEvent.ALT_MASK != 0
@@ -205,7 +213,7 @@ fun ListPopupImpl.registerModifierActions(captionModifier: (ActionEvent?) -> Str
             }
         )
 
-        @Suppress("MagicNumber") // Not worth a constant
+        @Suppress("detekt:MagicNumber") // Not worth a constant
         for (key in 0..9) {
             registerAction(
                 "${a}${b}${c}invokeAction$key",

@@ -10,7 +10,7 @@ object Bundle {
     /**
      * The main bundle for Randomness.
      */
-    private val resourceBundle = ResourceBundle.getBundle("randomness")
+    private val RESOURCE_BUNDLE = ResourceBundle.getBundle("randomness")
 
 
     /**
@@ -21,7 +21,7 @@ object Bundle {
      * @param key the key of the string to return
      * @return the string at [key]
      */
-    operator fun invoke(key: String): String = resourceBundle.getString(key)
+    operator fun invoke(key: String): String = RESOURCE_BUNDLE.getString(key)
 
     /**
      * Returns the string at [key] formatted with [arguments].
@@ -32,5 +32,5 @@ object Bundle {
      * @param arguments the arguments to insert into the template
      * @return the string at [key] formatted with [arguments]
      */
-    operator fun invoke(key: String, vararg arguments: Any?): String = resourceBundle.getString(key).format(*arguments)
+    operator fun invoke(key: String, vararg arguments: Any?): String = RESOURCE_BUNDLE.getString(key).format(*arguments)
 }

@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.impl.DynamicActionConfigurationCustomiz
 /**
  * Registers and unregisters actions for the user's [Template]s so that they can be inserted using shortcuts.
  */
-object TemplateActionLoader : DynamicActionConfigurationCustomizer {
+class TemplateActionLoader : DynamicActionConfigurationCustomizer {
     /**
      * Shorthand to return all the user's stored [Template]s.
      */
