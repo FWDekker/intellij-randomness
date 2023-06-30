@@ -9,7 +9,7 @@
     <idea-version since-build="0.0" />  <!-- Patched in from `gradle.properties` -->
 
     <extensions defaultExtensionNs="com.intellij">
-        <errorHandler implementation="com.fwdekker.randomness.ErrorReporter"/>
+        <errorHandler implementation="com.fwdekker.randomness.ErrorReporter" />
 
         <!-- Persistence -->
         <applicationService serviceImplementation="com.fwdekker.randomness.integer.IntegerSettings" />
@@ -22,26 +22,32 @@
         <!-- Settings window -->
         <applicationConfigurable instance="com.fwdekker.randomness.RandomnessConfigurable"
                                  id="randomness.MainConfigurable"
-                                 groupId="tools"
-                                 bundle="randomness">
+                                 parentId="tools"
+                                 displayName="Randomness">
             <configurable instance="com.fwdekker.randomness.integer.IntegerSettingsConfigurable"
                           id="randomness.IntegerSettingsConfigurable"
-                          parentId="randomness.MainConfigurable" />
+                          parentId="randomness.MainConfigurable"
+                          displayName="Integers" />
             <configurable instance="com.fwdekker.randomness.decimal.DecimalSettingsConfigurable"
                           id="randomness.DecimalSettingsConfigurable"
-                          parentId="randomness.MainConfigurable" />
+                          parentId="randomness.MainConfigurable"
+                          displayName="Decimals" />
             <configurable instance="com.fwdekker.randomness.string.StringSettingsConfigurable"
                           id="randomness.StringSettingsConfigurable"
-                          parentId="randomness.MainConfigurable" />
+                          parentId="randomness.MainConfigurable"
+                          displayName="Strings" />
             <configurable instance="com.fwdekker.randomness.word.WordSettingsConfigurable"
                           id="randomness.WordSettingsConfigurable"
-                          parentId="randomness.MainConfigurable" />
+                          parentId="randomness.MainConfigurable"
+                          displayName="Words" />
             <configurable instance="com.fwdekker.randomness.uuid.UuidSettingsConfigurable"
                           id="randomness.UuidSettingsConfigurable"
-                          parentId="randomness.MainConfigurable" />
+                          parentId="randomness.MainConfigurable"
+                          displayName="UUIDs" />
             <configurable instance="com.fwdekker.randomness.array.ArraySettingsConfigurable"
                           id="randomness.ArraySettingsConfigurable"
-                          parentId="randomness.MainConfigurable" />
+                          parentId="randomness.MainConfigurable"
+                          displayName="Arrays" />
         </applicationConfigurable>
     </extensions>
 

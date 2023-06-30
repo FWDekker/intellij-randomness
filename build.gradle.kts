@@ -8,8 +8,8 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
     // Compilation
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.6.21"  // See also `gradle.properties`
-    id("org.jetbrains.intellij") version "1.10.1"
+    id("org.jetbrains.kotlin.jvm") version "1.8.22"  // See also `gradle.properties`
+    id("org.jetbrains.intellij") version "1.14.2"
 
     // Tests/coverage
     id("jacoco")
@@ -18,7 +18,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.20.0"  // See also `gradle.properties`
 
     // Documentation
-    id("org.jetbrains.dokka") version "1.7.20"
+    id("org.jetbrains.dokka") version "1.8.20"
 }
 
 
