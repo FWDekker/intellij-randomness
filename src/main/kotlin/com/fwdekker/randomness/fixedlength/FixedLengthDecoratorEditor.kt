@@ -20,7 +20,6 @@ import javax.swing.text.PlainDocument
  *
  * @param settings the settings to edit in the component
  */
-@Suppress("LateinitUsage") // Initialized by scene builder
 class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<FixedLengthDecorator>(settings) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent
@@ -52,7 +51,6 @@ class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<F
      *
      * This method is called by the scene builder at the start of the constructor.
      */
-    @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         separator = SeparatorFactory.createSeparator(Bundle("fixed_length.title"), null)
 

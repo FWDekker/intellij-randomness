@@ -27,7 +27,6 @@ import javax.swing.JTextField
  *
  * @param scheme the scheme to edit in the component
  */
-@Suppress("LateinitUsage") // Initialized by scene builder
 class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<StringScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent
@@ -58,7 +57,6 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
      *
      * This method is called by the scene builder at the start of the constructor.
      */
-    @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         valueSeparator = SeparatorFactory.createSeparator(Bundle("string.ui.value_separator"), null)
 

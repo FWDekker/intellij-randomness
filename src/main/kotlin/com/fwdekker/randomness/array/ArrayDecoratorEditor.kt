@@ -33,7 +33,6 @@ import javax.swing.event.ChangeEvent
  * `false`, [readState] will return a decorator which is always enabled.
  * @param showSeparator `true` if and only if a titled separator should be shown at the top
  */
-@Suppress("LateinitUsage") // Initialized by scene builder
 class ArrayDecoratorEditor(
     settings: ArrayDecorator,
     disablable: Boolean = true,
@@ -95,7 +94,6 @@ class ArrayDecoratorEditor(
      *
      * This method is called by the scene builder at the start of the constructor.
      */
-    @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         separator = SeparatorFactory.createSeparator(Bundle("array.title"), null)
 

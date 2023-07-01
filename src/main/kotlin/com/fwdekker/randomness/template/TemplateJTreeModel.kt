@@ -27,7 +27,7 @@ import javax.swing.tree.TreePath
  *
  * @param list the list to be modeled
  */
-@Suppress("TooManyFunctions") // Normal for Swing implementations
+@Suppress("detekt:TooManyFunctions") // Normal for Swing implementations
 class TemplateJTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeModel, EditableModel {
     /**
      * The listeners that are informed when the state of the tree changes.

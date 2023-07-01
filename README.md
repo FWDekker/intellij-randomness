@@ -110,12 +110,14 @@ $ gradlew dokkaHtml  # Generate documentation
 ```
 
 ### 🖼 Icons
-The icons used by the plugin are found in the [.sketch](.github/img/icons.sketch) file.
+The icons used by the plugin are found in [the file `icons.sketch`](.github/img/icons.sketch).
 You can open this file with [Sketch](https://www.sketch.com/) (macOS), [Lunacy](https://icons8.com/lunacy) (Windows), or
 [Figma](https://github.com/Figma-Linux/figma-linux) (Linux).
 
 
 ## 🙏 Acknowledgements
+I want to thank everyone who contributed something to Randomness, no matter the size of that contribution.
+
 In chronological order of contribution:
 * Thanks to [Casper Boone](https://github.com/casperboone) for
   [reporting a bug](https://github.com/FWDekker/intellij-randomness/issues/25) and for
@@ -124,7 +126,7 @@ In chronological order of contribution:
   [suggesting the array data type](https://github.com/FWDekker/intellij-randomness/issues/54)!
 * Thanks to [Georgios Andreadis](https://github.com/gandreadis) for the
   [original logo](https://github.com/FWDekker/intellij-randomness/pull/86)!
-* Thanks to [Oleksii K.](https://github.com/ok3141) for
+* Thanks to [Oleksii](https://github.com/ok3141) for
   [suggesting the UUID data type](https://github.com/FWDekker/intellij-randomness/issues/88) and for
   [suggesting the hex symbol set](https://github.com/FWDekker/intellij-randomness/issues/89)!
 * Thanks to [Meilina Reksoprodjo](https://github.com/meilinar) for help with macOS user testing!
@@ -142,7 +144,7 @@ In chronological order of contribution:
   [suggesting a configurable popup](https://github.com/FWDekker/intellij-randomness/issues/305#issuecomment-661530711)!
 * Thanks to [Alex Pernot](https://github.com/AlexPernot) for
   [participating in the data type discussion](https://github.com/FWDekker/intellij-randomness/issues/305#issuecomment-662499058)!
-* Thanks to [solonovamax](https://github.com/solonovamax) for
+* Thanks to [solo](https://github.com/solonovamax) for
   [his contributions](https://github.com/FWDekker/intellij-randomness/issues/305#issuecomment-804415489)
   [to the data type discussion](https://github.com/FWDekker/intellij-randomness/issues/363#issuecomment-804976008)
   [in several places](https://github.com/FWDekker/intellij-randomness/issues/365#issuecomment-805052007),
@@ -152,7 +154,7 @@ In chronological order of contribution:
   [reporting that symbol sets didn't get saved](https://github.com/FWDekker/intellij-randomness/issues/382)!
 * Thanks to [Aleksey Bobyr](https://github.com/Alexsey) for
   [reporting a critical UI bug in WebStorm EAP](https://github.com/FWDekker/intellij-randomness/issues/418)!
-* Thanks to [LukasAppleFan](https://github.com/LukasAppleFan) for
+* Thanks to [Lukas](https://github.com/LukasAppleFan) for
   [helping me find a bug in IntelliJ](https://github.com/FWDekker/intellij-randomness/issues/421)!
 * Thanks to [Pascal](https://github.com/theMunichDev) for
   [reporting a bug with custom shortcuts](https://github.com/FWDekker/intellij-randomness/issues/423)!
@@ -166,5 +168,9 @@ In chronological order of contribution:
   [reporting an issue with slow actions during indexing](https://github.com/FWDekker/intellij-randomness/issues/445)!
 * Thanks to [Luc Everse](https://github.com/cmpsb) for
   [suggesting generating non-matching strings](https://github.com/FWDekker/intellij-randomness/issues/447)!
+* Thanks to [ForNeVeR](https://github.com/ForNeVeR) for
+  [reporting a compatibility issue with the IntelliJ EAP](https://github.com/FWDekker/intellij-randomness/issues/459)!
+* Thanks to [Vitaly Provodin](https://github.com/vprovodin) for
+  [also reporting that compatibility issue](https://github.com/FWDekker/intellij-randomness/issues/460)!
 
 If I should add, remove, or change anything here, just open an issue or email me!

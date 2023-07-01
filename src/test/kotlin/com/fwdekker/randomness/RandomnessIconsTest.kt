@@ -1,10 +1,9 @@
 package com.fwdekker.randomness
 
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.GuiActionRunner
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import java.awt.Color
 import java.awt.Component
 import java.awt.Graphics
@@ -16,7 +15,7 @@ import javax.swing.JLabel
 /**
  * Unit tests for [TypeIcon].
  */
-object TypeIconTest : Spek({
+object TypeIconTest : DescribeSpec({
     describe("constructor") {
         it("fails if no colors are given") {
             assertThatThrownBy { TypeIcon(PlainIcon(), "relief", emptyList()) }
@@ -85,7 +84,7 @@ object TypeIconTest : Spek({
 /**
  * Unit tests for [OverlayIcon].
  */
-object OverlayIconTest : Spek({
+object OverlayIconTest : DescribeSpec({
     describe("paintIcon") {
         it("paints nothing if the component is null") {
             val i = BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB)
@@ -141,7 +140,7 @@ object OverlayIconTest : Spek({
 /**
  * Unit tests for [OverlayedIcon].
  */
-object OverlayedIconTest : Spek({
+object OverlayedIconTest : DescribeSpec({
     describe("constructor") {
         it("fails if the base image is not square") {
             assertThatThrownBy { OverlayedIcon(PlainIcon(186, 132), emptyList()) }
@@ -213,7 +212,7 @@ object OverlayedIconTest : Spek({
 /**
  * Unit tests for [RadialColorReplacementFilter].
  */
-object RadialColorReplacementFilterTest : Spek({
+object RadialColorReplacementFilterTest : DescribeSpec({
     describe("constructor") {
         it("fails if no colors are given") {
             assertThatThrownBy { RadialColorReplacementFilter(emptyList(), Pair(0, 0)) }

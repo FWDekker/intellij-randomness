@@ -4,20 +4,19 @@ import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.array.ArrayDecorator
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import javax.swing.DefaultListModel
 
 
 /**
  * GUI tests for [TemplateReferenceEditor].
  */
-object TemplateReferenceEditorTest : Spek({
+object TemplateReferenceEditorTest : DescribeSpec({
     lateinit var frame: FrameFixture
 
     lateinit var templateList: TemplateList
@@ -25,11 +24,11 @@ object TemplateReferenceEditorTest : Spek({
     lateinit var editor: TemplateReferenceEditor
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         templateList = TemplateList(
             listOf(
                 Template("cup", listOf(DummyScheme())),
@@ -46,7 +45,7 @@ object TemplateReferenceEditorTest : Spek({
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterEachTest {
+    afterEach {
         frame.cleanUp()
     }
 

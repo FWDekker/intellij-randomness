@@ -11,6 +11,7 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionToolbarPosition
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.ListSeparator
@@ -410,24 +411,11 @@ class TemplateJTree(
      */
     private inner class AddButton : AnActionButton(Bundle("shared.action.add"), AllIcons.General.Add) {
         /**
-         * Displays a popup to add a scheme, or immediately adds a template if nothing is currently selected.
+         * Specifies the thread in which [update] is invoked.
          *
-         * @param event ignored
+         * @return the thread in which [update] is invoked
          */
-        override fun actionPerformed(event: AnActionEvent) =
-            JBPopupFactory.getInstance()
-                .createListPopup(
-                    if (selectedNodeNotRoot == null) DefaultTemplatesPopupStep()
-                    else MainPopupStep()
-                )
-                .show(preferredPopupPoint)
-
-        /**
-         * Returns the shortcut for this action.
-         *
-         * @return the shortcut for this action
-         */
-        override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.ADD)
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
         /**
          * Updates the presentation of the button.
@@ -441,6 +429,26 @@ class TemplateJTree(
                 if (selectedNodeNotRoot == null) AllIcons.General.Add
                 else LayeredIcon.ADD_WITH_DROPDOWN
         }
+
+        /**
+         * Returns the shortcut for this action.
+         *
+         * @return the shortcut for this action
+         */
+        override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.ADD)
+
+        /**
+         * Displays a popup to add a scheme, or immediately adds a template if nothing is currently selected.
+         *
+         * @param event ignored
+         */
+        override fun actionPerformed(event: AnActionEvent) =
+            JBPopupFactory.getInstance()
+                .createListPopup(
+                    if (selectedNodeNotRoot == null) DefaultTemplatesPopupStep()
+                    else MainPopupStep()
+                )
+                .show(preferredPopupPoint)
 
 
         /**
@@ -478,9 +486,12 @@ class TemplateJTree(
              * @param finalChoice ignored
              * @return `null`, or the `PopupStep` that is nested under this entry
              */
-            override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? =
-                if (value == null) null
-                else addScheme(value.deepCopy().also { it.setSettingsState(currentState) }).let { null }
+            override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? {
+                if (value != null)
+                    addScheme(value.deepCopy().also { it.setSettingsState(currentState) })
+
+                return null
+            }
 
             /**
              * Returns `true`.
@@ -563,11 +574,11 @@ class TemplateJTree(
      */
     private inner class RemoveButton : AnActionButton(Bundle("shared.action.remove"), AllIcons.General.Remove) {
         /**
-         * Removes the selected scheme from the tree.
+         * Specifies the thread in which [update] is invoked.
          *
-         * @param event ignored
+         * @return the thread in which [update] is invoked
          */
-        override fun actionPerformed(event: AnActionEvent) = removeScheme(selectedScheme!!)
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
         /**
          * Returns `true` if and only if this action is enabled.
@@ -582,12 +593,33 @@ class TemplateJTree(
          * @return the shortcut for this action
          */
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.REMOVE)
+
+        /**
+         * Removes the selected scheme from the tree.
+         *
+         * @param event ignored
+         */
+        override fun actionPerformed(event: AnActionEvent) = removeScheme(selectedScheme!!)
     }
 
     /**
      * Copies the selected scheme in the tree.
      */
     private inner class CopyButton : AnActionButton(Bundle("shared.action.copy"), AllIcons.Actions.Copy) {
+        /**
+         * Specifies the thread in which [update] is invoked.
+         *
+         * @return the thread in which [update] is invoked
+         */
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
+
+        /**
+         * Returns `true` if and only if this action is enabled.
+         *
+         * @return `true` if and only if this action is enabled
+         */
+        override fun isEnabled() = selectedNodeNotRoot != null
+
         /**
          * Copies the selected scheme in the tree.
          *
@@ -599,13 +631,6 @@ class TemplateJTree(
 
             addScheme(copy)
         }
-
-        /**
-         * Returns `true` if and only if this action is enabled.
-         *
-         * @return `true` if and only if this action is enabled
-         */
-        override fun isEnabled() = selectedNodeNotRoot != null
     }
 
     /**
@@ -613,11 +638,11 @@ class TemplateJTree(
      */
     private inner class UpButton : AnActionButton(Bundle("shared.action.up"), AllIcons.Actions.MoveUp) {
         /**
-         * Moves the selected scheme up by one position in the tree.
+         * Specifies the thread in which [update] is invoked.
          *
-         * @param event ignored
+         * @return the thread in which [update] is invoked
          */
-        override fun actionPerformed(event: AnActionEvent) = moveSchemeByOnePosition(selectedScheme!!, moveDown = false)
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
         /**
          * Returns `true` if and only if this action is enabled.
@@ -632,6 +657,13 @@ class TemplateJTree(
          * @return the shortcut for this action
          */
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.UP)
+
+        /**
+         * Moves the selected scheme up by one position in the tree.
+         *
+         * @param event ignored
+         */
+        override fun actionPerformed(event: AnActionEvent) = moveSchemeByOnePosition(selectedScheme!!, moveDown = false)
     }
 
     /**
@@ -639,11 +671,11 @@ class TemplateJTree(
      */
     private inner class DownButton : AnActionButton(Bundle("shared.action.down"), AllIcons.Actions.MoveDown) {
         /**
-         * Moves the selected scheme down by one position in the tree.
+         * Specifies the thread in which [update] is invoked.
          *
-         * @param event ignored
+         * @return the thread in which [update] is invoked
          */
-        override fun actionPerformed(event: AnActionEvent) = moveSchemeByOnePosition(selectedScheme!!, moveDown = true)
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
         /**
          * Returns `true` if and only if this action is enabled.
@@ -658,12 +690,33 @@ class TemplateJTree(
          * @return the shortcut for this action
          */
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.DOWN)
+
+        /**
+         * Moves the selected scheme down by one position in the tree.
+         *
+         * @param event ignored
+         */
+        override fun actionPerformed(event: AnActionEvent) = moveSchemeByOnePosition(selectedScheme!!, moveDown = true)
     }
 
     /**
      * Resets the selected scheme to its original state, or removes it if it has no original state.
      */
     private inner class ResetButton : AnActionButton(Bundle("shared.action.reset"), AllIcons.General.Reset) {
+        /**
+         * Specifies the thread in which [update] is invoked.
+         *
+         * @return the thread in which [update] is invoked
+         */
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
+
+        /**
+         * Returns `true` if and only if this action is enabled.
+         *
+         * @return `true` if and only if this action is enabled
+         */
+        override fun isEnabled() = selectedScheme?.let { isModified(it) } ?: false
+
         /**
          * Resets the selected scheme to its original state, or removes it if it has no original state.
          *
@@ -686,13 +739,6 @@ class TemplateJTree(
             clearSelection()
             myModel.expandAndSelect(StateNode(toReset))
         }
-
-        /**
-         * Returns `true` if and only if this action is enabled.
-         *
-         * @return `true` if and only if this action is enabled
-         */
-        override fun isEnabled() = selectedScheme?.let { isModified(it) } ?: false
     }
 
 

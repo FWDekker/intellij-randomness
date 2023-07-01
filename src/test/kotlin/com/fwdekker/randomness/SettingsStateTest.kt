@@ -3,20 +3,19 @@ package com.fwdekker.randomness
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
 import com.fwdekker.randomness.template.TemplateReference
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [SettingsState].
  */
-object SettingsStateTest : Spek({
+object SettingsStateTest : DescribeSpec({
     lateinit var state: SettingsState
 
 
-    beforeEachTest {
+    beforeEach {
         state = SettingsState()
     }
 

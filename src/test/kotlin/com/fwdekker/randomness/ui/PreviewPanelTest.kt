@@ -6,19 +6,18 @@ import com.fwdekker.randomness.matcher
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.InplaceButton
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * GUI tests for [PreviewPanel].
  */
-object PreviewPanelTest : Spek({
+object PreviewPanelTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var panel: PreviewPanel
     lateinit var frame: FrameFixture
@@ -27,11 +26,11 @@ object PreviewPanelTest : Spek({
     val placeholder = Bundle("preview.placeholder")
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -41,7 +40,7 @@ object PreviewPanelTest : Spek({
         assertThat(panel.previewText).isEqualTo(placeholder)
     }
 
-    afterEachTest {
+    afterEach {
         frame.cleanUp()
         GuiActionRunner.execute { panel.dispose() }
         ideaFixture.tearDown()

@@ -3,21 +3,20 @@ package com.fwdekker.randomness.fixedlength
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator.Companion.MIN_LENGTH
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [FixedLengthDecorator].
  */
-object FixedLengthDecoratorTest : Spek({
+object FixedLengthDecoratorTest : DescribeSpec({
     lateinit var fixedLengthDecorator: FixedLengthDecorator
     lateinit var dummyScheme: DummyScheme
 
 
-    beforeEachTest {
+    beforeEach {
         fixedLengthDecorator = FixedLengthDecorator(enabled = true)
         dummyScheme = DummyScheme(decorators = listOf(fixedLengthDecorator))
     }

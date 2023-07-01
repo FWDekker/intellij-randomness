@@ -5,20 +5,19 @@ import com.fwdekker.randomness.nameMatcher
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.TitledSeparator
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import javax.swing.JCheckBox
 
 
 /**
  * GUI tests for [ArrayDecoratorEditor].
  */
-object ArrayDecoratorEditorTest : Spek({
+object ArrayDecoratorEditorTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
@@ -26,11 +25,11 @@ object ArrayDecoratorEditorTest : Spek({
     lateinit var editor: ArrayDecoratorEditor
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -39,7 +38,7 @@ object ArrayDecoratorEditorTest : Spek({
         frame = showInFrame(editor.rootComponent)
     }
 
-    afterEachTest {
+    afterEach {
         frame.cleanUp()
         ideaFixture.tearDown()
     }

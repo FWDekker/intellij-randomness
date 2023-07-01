@@ -3,20 +3,19 @@ package com.fwdekker.randomness.string
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [StringScheme].
  */
-object StringSchemeTest : Spek({
+object StringSchemeTest : DescribeSpec({
     lateinit var stringScheme: StringScheme
 
 
-    beforeEachTest {
+    beforeEach {
         stringScheme = StringScheme()
     }
 

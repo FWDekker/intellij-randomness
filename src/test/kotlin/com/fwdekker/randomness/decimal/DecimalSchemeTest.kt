@@ -1,20 +1,23 @@
 package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.DataGenerationException
+import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.data.forAll
+import io.kotest.data.headers
+import io.kotest.data.row
+import io.kotest.data.table
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [DecimalScheme].
  */
-object DecimalSchemeTest : Spek({
+object DecimalSchemeTest : DescribeSpec({
     lateinit var decimalScheme: DecimalScheme
 
 
-    beforeEachTest {
+    beforeEach {
         decimalScheme = DecimalScheme()
     }
 
@@ -27,41 +30,44 @@ object DecimalSchemeTest : Spek({
         }
 
         describe("value range") {
-            mapOf(
-                // Zero decimal places
-                Triple(5.0, 0, true) to "5",
-                Triple(5.0, 1, true) to "5.0",
-                Triple(5.0, 2, true) to "5.00",
-                Triple(5.0, 0, false) to "5",
-                Triple(5.0, 1, false) to "5",
-                Triple(5.0, 2, false) to "5",
-                // One decimal place
-                Triple(47.6, 0, true) to "48",
-                Triple(47.6, 1, true) to "47.6",
-                Triple(47.6, 2, true) to "47.60",
-                Triple(47.6, 0, false) to "48",
-                Triple(47.6, 1, false) to "47.6",
-                Triple(47.6, 2, false) to "47.6",
-                // Two decimal places
-                Triple(79.59, 0, true) to "80",
-                Triple(79.59, 1, true) to "79.6",
-                Triple(79.59, 2, true) to "79.59",
-                Triple(79.59, 3, true) to "79.590",
-                Triple(79.59, 0, false) to "80",
-                Triple(79.59, 1, false) to "79.6",
-                Triple(79.59, 2, false) to "79.59",
-                Triple(79.59, 3, false) to "79.59",
-                // Negative numbers
-                Triple(-85.71, 0, true) to "-86",
-                Triple(-85.71, 1, true) to "-85.7",
-                Triple(-85.71, 2, true) to "-85.71",
-                Triple(-85.71, 3, true) to "-85.710",
-                Triple(-85.71, 0, false) to "-86",
-                Triple(-85.71, 1, false) to "-85.7",
-                Triple(-85.71, 2, false) to "-85.71",
-                Triple(-85.71, 3, false) to "-85.71"
-            ).forEach { (value, decimalCount, showTrailingZeroes), expectedString ->
-                it("generates $expectedString") {
+            it("generates values within the specified range") {
+                forAll(
+                    table(
+                        headers("value", "decimal count", "show trailing zeroes", "expected string"),
+                        // Zero decimal places
+                        row(5.0, 0, true, "5"),
+                        row(5.0, 1, true, "5.0"),
+                        row(5.0, 2, true, "5.00"),
+                        row(5.0, 0, false, "5"),
+                        row(5.0, 1, false, "5"),
+                        row(5.0, 2, false, "5"),
+                        // One decimal place
+                        row(47.6, 0, true, "48"),
+                        row(47.6, 1, true, "47.6"),
+                        row(47.6, 2, true, "47.60"),
+                        row(47.6, 0, false, "48"),
+                        row(47.6, 1, false, "47.6"),
+                        row(47.6, 2, false, "47.6"),
+                        // Two decimal places
+                        row(79.59, 0, true, "80"),
+                        row(79.59, 1, true, "79.6"),
+                        row(79.59, 2, true, "79.59"),
+                        row(79.59, 3, true, "79.590"),
+                        row(79.59, 0, false, "80"),
+                        row(79.59, 1, false, "79.6"),
+                        row(79.59, 2, false, "79.59"),
+                        row(79.59, 3, false, "79.59"),
+                        // Negative numbers
+                        row(-85.71, 0, true, "-86"),
+                        row(-85.71, 1, true, "-85.7"),
+                        row(-85.71, 2, true, "-85.71"),
+                        row(-85.71, 3, true, "-85.710"),
+                        row(-85.71, 0, false, "-86"),
+                        row(-85.71, 1, false, "-85.7"),
+                        row(-85.71, 2, false, "-85.71"),
+                        row(-85.71, 3, false, "-85.71"),
+                    )
+                ) { value, decimalCount, showTrailingZeroes, expectedString ->
                     decimalScheme.minValue = value
                     decimalScheme.maxValue = value
                     decimalScheme.decimalCount = decimalCount
@@ -73,32 +79,28 @@ object DecimalSchemeTest : Spek({
         }
 
         describe("separator") {
-            data class Param(
-                val value: Double,
-                val decimalCount: Int,
-                val groupingSeparator: String,
-                val decimalSeparator: String,
-            )
-
-            mapOf(
-                // Decimal separator only
-                Param(4.21, 2, "", ".") to "4.21",
-                Param(4.21, 2, "", ",") to "4,21",
-                Param(4.21, 2, "", ".") to "4.21",
-                Param(4.21, 2, "", ",") to "4,21",
-                // Grouping separator only
-                Param(15_616.0, 0, ".", ".") to "15.616",
-                Param(15_616.0, 0, ".", ",") to "15.616",
-                Param(15_616.0, 0, ",", ".") to "15,616",
-                Param(15_616.0, 0, ",", ",") to "15,616",
-                // Both separators
-                Param(67_575.845, 3, "", ".") to "67575.845",
-                Param(67_575.845, 3, ".", ".") to "67.575.845",
-                Param(67_575.845, 3, ".", ",") to "67.575,845",
-                Param(67_575.845, 3, ",", ".") to "67,575.845",
-                Param(67_575.845, 3, ",", ",") to "67,575,845"
-            ).forEach { (value, decimalCount, groupingSeparator, decimalSeparator), expectedString ->
-                it("generates $expectedString") {
+            it("generates values with the specified separators") {
+                forAll(
+                    table(
+                        headers("value", "decimal count", "grouping separator", "decimal separator", "expected string"),
+                        // Decimal separator only
+                        row(4.21, 2, "", ".", "4.21"),
+                        row(4.21, 2, "", ",", "4,21"),
+                        row(4.21, 2, "", ".", "4.21"),
+                        row(4.21, 2, "", ",", "4,21"),
+                        // Grouping separator only
+                        row(15_616.0, 0, ".", ".", "15.616"),
+                        row(15_616.0, 0, ".", ",", "15.616"),
+                        row(15_616.0, 0, ",", ".", "15,616"),
+                        row(15_616.0, 0, ",", ",", "15,616"),
+                        // Both separators
+                        row(67_575.845, 3, "", ".", "67575.845"),
+                        row(67_575.845, 3, ".", ".", "67.575.845"),
+                        row(67_575.845, 3, ".", ",", "67.575,845"),
+                        row(67_575.845, 3, ",", ".", "67,575.845"),
+                        row(67_575.845, 3, ",", ",", "67,575,845"),
+                    )
+                ) { value, decimalCount, groupingSeparator, decimalSeparator, expectedString ->
                     decimalScheme.minValue = value
                     decimalScheme.maxValue = value
                     decimalScheme.decimalCount = decimalCount
@@ -112,13 +114,16 @@ object DecimalSchemeTest : Spek({
         }
 
         describe("prefix and suffix") {
-            mapOf(
-                Triple(922.86, "", "") to "922.86",
-                Triple(136.50, "before", "after") to "before136.50after",
-                Triple(941.07, "\\0", "") to "\\0941.07",
-                Triple(693.27, "", "f") to "693.27f"
-            ).forEach { (value, prefix, suffix), expectedString ->
-                it("generates $expectedString") {
+            it("generates values with the specified prefix and suffix") {
+                forAll(
+                    table(
+                        headers("value", "prefix", "suffix", "expected string"),
+                        row(922.86, "", "", "922.86"),
+                        row(136.50, "before", "after", "before136.50after"),
+                        row(941.07, "\\0", "", "\\0941.07"),
+                        row(693.27, "", "f", "693.27f"),
+                    )
+                ) { value, prefix, suffix, expectedString ->
                     decimalScheme.minValue = value
                     decimalScheme.maxValue = value
                     decimalScheme.prefix = prefix

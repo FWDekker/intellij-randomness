@@ -78,10 +78,10 @@ data class StringScheme(
         when {
             !isRegex -> arrayDecorator.doValidate()
             pattern.takeLastWhile { it == '\\' }.length.mod(2) != 0 -> Bundle("string.error.trailing_backslash")
-            pattern == "{}" || pattern.contains(Regex("[^\\\\]\\{}")) -> Bundle("string.error.empty_curly")
-            pattern == "[]" || pattern.contains(Regex("[^\\\\]\\[]")) -> Bundle("string.error.empty_square")
+            pattern == "{}" || pattern.contains(Regex("""[^\\]\{}""")) -> Bundle("string.error.empty_curly")
+            pattern == "[]" || pattern.contains(Regex("""[^\\]\[]""")) -> Bundle("string.error.empty_square")
             else ->
-                @Suppress("TooGenericExceptionCaught") // Consequence of incomplete validation in RgxGen
+                @Suppress("detekt:TooGenericExceptionCaught") // Consequence of incomplete validation in RgxGen
                 try {
                     RgxGen(pattern).generate()
                     arrayDecorator.doValidate()

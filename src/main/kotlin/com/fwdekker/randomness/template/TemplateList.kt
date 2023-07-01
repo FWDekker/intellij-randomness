@@ -126,21 +126,21 @@ data class TemplateList(
                 Template(
                     "Name",
                     listOf(
-                        WordScheme(words = DefaultWordList.wordListMap["Forenames"]!!.words),
+                        WordScheme(words = DefaultWordList.WORD_LIST_MAP["Forenames"]!!.words),
                         StringScheme(pattern = " ", isRegex = false),
-                        WordScheme(words = DefaultWordList.wordListMap["Surnames"]!!.words)
+                        WordScheme(words = DefaultWordList.WORD_LIST_MAP["Surnames"]!!.words)
                     )
                 ),
                 Template(
                     "Lorem Ipsum",
                     listOf(
                         WordScheme(
-                            words = DefaultWordList.wordListMap["Lorem"]!!.words,
+                            words = DefaultWordList.WORD_LIST_MAP["Lorem"]!!.words,
                             capitalization = CapitalizationMode.FIRST_LETTER
                         ),
                         StringScheme(pattern = " ", isRegex = false),
                         WordScheme(
-                            words = DefaultWordList.wordListMap["Lorem"]!!.words,
+                            words = DefaultWordList.WORD_LIST_MAP["Lorem"]!!.words,
                             arrayDecorator = ArrayDecorator(
                                 enabled = true,
                                 minCount = 3,

@@ -245,10 +245,10 @@
       <member id="cc46b"/>
     </group>
     <group name="separatorGroup" bound="true">
+      <member id="d45e4"/>
       <member id="6b534"/>
       <member id="61c87"/>
       <member id="66c28"/>
-      <member id="d45e4"/>
     </group>
   </buttonGroups>
 </form>

@@ -2,10 +2,9 @@ package com.fwdekker.randomness.datetime
 
 import com.fwdekker.randomness.DataGenerationException
 import com.github.sisyphsu.dateparser.DateParserUtils
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import java.time.LocalDateTime
 import java.util.regex.Pattern
 
@@ -13,11 +12,11 @@ import java.util.regex.Pattern
 /**
  * Unit tests for [DateTimeScheme].
  */
-object DateTimeSchemeTest : Spek({
+object DateTimeSchemeTest : DescribeSpec({
     lateinit var dateTimeScheme: DateTimeScheme
 
 
-    beforeEachTest {
+    beforeEach {
         dateTimeScheme = DateTimeScheme()
     }
 

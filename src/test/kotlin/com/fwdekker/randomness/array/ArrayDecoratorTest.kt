@@ -2,21 +2,20 @@ package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DummyScheme
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [ArrayDecorator].
  */
-object ArrayDecoratorTest : Spek({
+object ArrayDecoratorTest : DescribeSpec({
     lateinit var arrayDecorator: ArrayDecorator
     lateinit var dummyScheme: DummyScheme
 
 
-    beforeEachTest {
+    beforeEach {
         arrayDecorator = ArrayDecorator(enabled = true)
         dummyScheme = DummyScheme(decorators = listOf(arrayDecorator))
     }

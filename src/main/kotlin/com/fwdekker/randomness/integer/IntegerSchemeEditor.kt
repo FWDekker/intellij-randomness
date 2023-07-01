@@ -32,7 +32,6 @@ import javax.swing.event.ChangeEvent
  *
  * @param scheme the scheme to edit in the component
  */
-@Suppress("LateinitUsage") // Initialized by scene builder
 class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor<IntegerScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent
@@ -78,7 +77,6 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
      *
      * This method is called by the scene builder at the start of the constructor.
      */
-    @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         valueSeparator = SeparatorFactory.createSeparator(Bundle("integer.ui.value_separator"), null)
 

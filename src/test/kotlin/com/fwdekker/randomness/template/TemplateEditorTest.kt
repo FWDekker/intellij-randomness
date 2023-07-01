@@ -2,36 +2,35 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.integer.IntegerScheme
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * GUI tests for [TemplateEditor].
  */
-object TemplateEditorTest : Spek({
+object TemplateEditorTest : DescribeSpec({
     lateinit var frame: FrameFixture
 
     lateinit var template: Template
     lateinit var editor: TemplateEditor
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         template = Template()
         editor = GuiActionRunner.execute<TemplateEditor> { TemplateEditor(template) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterEachTest {
+    afterEach {
         frame.cleanUp()
     }
 

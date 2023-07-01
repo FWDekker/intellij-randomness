@@ -1,15 +1,14 @@
 package com.fwdekker.randomness
 
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [BracketsDescriptor].
  */
-object BracketsDescriptorTest : Spek({
+object BracketsDescriptorTest : DescribeSpec({
     data class Param(
         val description: String,
         val descriptor: String,

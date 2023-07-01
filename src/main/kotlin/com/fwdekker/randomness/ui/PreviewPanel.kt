@@ -31,7 +31,7 @@ import kotlin.random.Random
  *
  * @property getScheme Returns a scheme that generates previews. Its random source will be changed.
  */
-@Suppress("LateinitUsage") // Initialized by scene builder
+@Suppress("detekt:LateinitUsage") // Initialized by scene builder
 class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     /**
      * The root panel containing the preview elements.
@@ -61,7 +61,6 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
      *
      * This method is called by the scene builder at the start of the constructor.
      */
-    @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         separator = SeparatorFactory.createSeparator(Bundle("preview.title"), null)
         refreshButton = InplaceButton(Bundle("shared.action.refresh"), AllIcons.Actions.Refresh) {

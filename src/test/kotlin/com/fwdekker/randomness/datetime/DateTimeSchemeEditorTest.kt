@@ -5,20 +5,19 @@ import com.fwdekker.randomness.ui.JDateTimeField
 import com.github.sisyphsu.dateparser.DateParserUtils
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import java.time.format.DateTimeFormatter
 
 
 /**
  * GUI tests for [DateTimeSchemeEditor].
  */
-object DateTimeSchemeEditorTest : Spek({
+object DateTimeSchemeEditorTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
     lateinit var scheme: DateTimeScheme
@@ -37,11 +36,11 @@ object DateTimeSchemeEditorTest : Spek({
     }
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -50,7 +49,7 @@ object DateTimeSchemeEditorTest : Spek({
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterEachTest {
+    afterEach {
         frame.cleanUp()
         ideaFixture.tearDown()
     }

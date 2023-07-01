@@ -3,19 +3,18 @@ package com.fwdekker.randomness.decimal
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * GUI tests for [DecimalSchemeEditor].
  */
-object DecimalSchemeEditorTest : Spek({
+object DecimalSchemeEditorTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
@@ -23,11 +22,11 @@ object DecimalSchemeEditorTest : Spek({
     lateinit var editor: DecimalSchemeEditor
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -36,7 +35,7 @@ object DecimalSchemeEditorTest : Spek({
         frame = showInFrame(editor.rootComponent)
     }
 
-    afterEachTest {
+    afterEach {
         frame.cleanUp()
         ideaFixture.tearDown()
     }

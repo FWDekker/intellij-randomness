@@ -37,7 +37,6 @@ import javax.swing.JPanel
  *
  * @param scheme the scheme to edit in the component
  */
-@Suppress("LateinitUsage") // Initialized by scene builder
 class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordScheme>(scheme) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent
@@ -83,11 +82,10 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
      *
      * This method is called by the scene builder at the start of the constructor.
      */
-    @Suppress("UnusedPrivateMember") // Used by scene builder
     private fun createUIComponents() {
         wordListSeparator = SeparatorFactory.createSeparator(Bundle("word.ui.word_list"), null)
 
-        wordListBox = ComboBox(arrayOf(PRESET_ITEM) + DefaultWordList.wordLists)
+        wordListBox = ComboBox(arrayOf(PRESET_ITEM) + DefaultWordList.WORD_LISTS)
         wordListBox.setRenderer { _, value, _, _, _ -> JBLabel(value.name) }
         wordListBox.addItemListener {
             if (it.stateChange == ItemEvent.SELECTED) {
@@ -125,7 +123,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
     override fun loadState(state: WordScheme) {
         super.loadState(state)
 
-        wordListBox.selectedIndex = DefaultWordList.wordLists.map { it.words }.indexOf(state.words) + 1
+        wordListBox.selectedIndex = DefaultWordList.WORD_LISTS.map { it.words }.indexOf(state.words) + 1
         wordList = state.words
         customQuotation.label = state.customQuotation
         quotationGroup.setValue(state.quotation)

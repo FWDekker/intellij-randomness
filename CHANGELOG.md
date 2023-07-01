@@ -27,10 +27,20 @@ Check the plugin description for more details and animated usage examples.
 * Changelogs are now kept in [keep a changelog](https://keepachangelog.com/en/1.0.0/) style.
 
 ### Deprecated
-* Minimum IDE version has been increased to 2022.1.
+* Minimum IDE version has been increased to 2022.3.
 
 ### Fixed
 * The settings-only popup is now also shown when editing a read-only file.
+
+
+## 2.7.7 -- 2023-06-30
+### Breaking changes
+Minimum IDE version has been increased to 2022.2.
+
+### Fixes
+Resolve compatibility issues with upcoming IDE versions.
+([#459](https://github.com/FWDekker/intellij-randomness/issues/459))
+([#460](https://github.com/FWDekker/intellij-randomness/issues/460))
 
 
 ## 2.7.6 -- 2022-12-14

@@ -46,6 +46,6 @@ data class SettingsState(
         /**
          * The persistent [SettingsState] instance.
          */
-        val default: SettingsState by lazy { SettingsState(TemplateSettings.default.state) }
+        val DEFAULT: SettingsState by lazy { SettingsState(TemplateSettings.default.state) }
     }
 }

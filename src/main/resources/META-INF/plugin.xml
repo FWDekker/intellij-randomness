@@ -12,13 +12,13 @@
         <applicationService serviceImplementation="com.fwdekker.randomness.template.TemplateSettings" />
 
         <!-- Settings window -->
-        <applicationConfigurable instance="com.fwdekker.randomness.template.TemplateSettingsConfigurable"
+        <applicationConfigurable parentId="tools"
+                                 instance="com.fwdekker.randomness.template.TemplateSettingsConfigurable"
                                  id="com.fwdekker.randomness.template.TemplateSettingsConfigurable"
-                                 groupId="tools"
-                                 bundle="randomness" />
+                                 displayName="Randomness" />
 
         <!-- Dynamically loads, unloads, and updates template actions -->
-        <dynamicActionConfigurationCustomizer implementation="com.fwdekker.randomness.template.TemplateActionLoader"/>
+        <dynamicActionConfigurationCustomizer implementation="com.fwdekker.randomness.template.TemplateActionLoader" />
     </extensions>
 
     <!-- Non-dynamic actions -->

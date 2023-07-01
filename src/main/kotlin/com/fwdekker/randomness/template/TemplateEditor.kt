@@ -11,7 +11,6 @@ import javax.swing.JTextField
  *
  * @param template the template to edit
  */
-@Suppress("LateinitUsage") // Initialized by scene builder
 class TemplateEditor(template: Template) : StateEditor<Template>(template) {
     override lateinit var rootComponent: JPanel private set
     override val preferredFocusedComponent

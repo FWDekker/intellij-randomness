@@ -7,19 +7,18 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.impl.EditorComponentImpl
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * GUI tests for [WordSchemeEditor].
  */
-object WordSchemeEditorTest : Spek({
+object WordSchemeEditorTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
@@ -28,11 +27,11 @@ object WordSchemeEditorTest : Spek({
     lateinit var wordsEditor: EditorComponentImpl
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -43,7 +42,7 @@ object WordSchemeEditorTest : Spek({
         wordsEditor = frame.robot().finder().find(matcher(EditorComponentImpl::class.java) { it.isValid })
     }
 
-    afterEachTest {
+    afterEach {
         frame.cleanUp()
         GuiActionRunner.execute { editor.dispose() }
         ideaFixture.tearDown()
@@ -161,7 +160,7 @@ object WordSchemeEditorTest : Spek({
         lateinit var firstListAsString: String
 
 
-        beforeEachTest {
+        beforeEach {
             firstList = frame.comboBox("wordListBox").target().getItemAt(1) as DefaultWordList
             firstListAsString = firstList.words.joinToString(separator = "\n", postfix = "\n")
         }

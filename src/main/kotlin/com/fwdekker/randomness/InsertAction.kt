@@ -2,6 +2,7 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.Timely.generateTimely
 import com.intellij.codeInsight.hint.HintManager
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -38,6 +39,13 @@ abstract class InsertAction(
 
 
     /**
+     * Specifies the thread in which [update] is invoked.
+     *
+     * @return the thread in which [update] is invoked
+     */
+    override fun getActionUpdateThread() = ActionUpdateThread.EDT
+
+    /**
      * Sets the title of this action and disables this action if no editor is currently opened.
      *
      * @param event carries contextual information
@@ -54,7 +62,7 @@ abstract class InsertAction(
      *
      * @param event carries contextual information
      */
-    @Suppress("ReturnCount") // Result of null checks at start
+    @Suppress("detekt:ReturnCount") // Result of null checks at start
     override fun actionPerformed(event: AnActionEvent) {
         val editor = event.getData(CommonDataKeys.EDITOR) ?: return
         val project = event.getData(CommonDataKeys.PROJECT) ?: return

@@ -1,17 +1,16 @@
 package com.fwdekker.randomness.ui
 
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.GuiActionRunner
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import javax.swing.JSpinner
 
 
 /**
  * Unit tests for a sample implementation of [JNumberSpinner].
  */
-object JNumberSpinnerTest : Spek({
+object JNumberSpinnerTest : DescribeSpec({
     class JFloatSpinner(
         value: Float = 0.0f,
         minValue: Float = -Float.MAX_VALUE,
@@ -66,7 +65,7 @@ object JNumberSpinnerTest : Spek({
 /**
  * Unit tests for [JDoubleSpinner].
  */
-object JDoubleSpinnerTest : Spek({
+object JDoubleSpinnerTest : DescribeSpec({
     describe("input handling") {
         it("should return a double even if a long is set") {
             val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner() }
@@ -112,7 +111,7 @@ object JDoubleSpinnerTest : Spek({
 /**
  * Unit tests for [JLongSpinner].
  */
-object JLongSpinnerTest : Spek({
+object JLongSpinnerTest : DescribeSpec({
     describe("input handling") {
         it("truncates when storing a double") {
             val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner() }
@@ -158,7 +157,7 @@ object JLongSpinnerTest : Spek({
 /**
  * Unit tests for [JIntSpinner].
  */
-object JIntSpinnerTest : Spek({
+object JIntSpinnerTest : DescribeSpec({
     describe("input handling") {
         it("truncates when storing a double") {
             val spinner = GuiActionRunner.execute<JIntSpinner> { JIntSpinner() }

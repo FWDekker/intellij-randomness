@@ -1,10 +1,9 @@
 package com.fwdekker.randomness.ui
 
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.GuiActionRunner
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import javax.swing.text.DocumentFilter
 import javax.swing.text.PlainDocument
 
@@ -12,13 +11,13 @@ import javax.swing.text.PlainDocument
 /**
  * Unit tests for [MaxLengthDocumentFilter].
  */
-object MaxLengthDocumentFilterTest : Spek({
+object MaxLengthDocumentFilterTest : DescribeSpec({
     lateinit var document: PlainDocument
     lateinit var filter: DocumentFilter
     val getText = { document.getText(0, document.length) }
 
 
-    beforeEachTest {
+    beforeEach {
         document = PlainDocument()
         filter = MaxLengthDocumentFilter(3)
         document.documentFilter = filter
@@ -175,13 +174,13 @@ object MaxLengthDocumentFilterTest : Spek({
 /**
  * Unit tests for [MinMaxLengthDocumentFilter].
  */
-object MinMaxLengthDocumentFilterTest : Spek({
+object MinMaxLengthDocumentFilterTest : DescribeSpec({
     lateinit var document: PlainDocument
     lateinit var filter: DocumentFilter
     val getText = { document.getText(0, document.length) }
 
 
-    beforeEachTest {
+    beforeEach {
         document = PlainDocument()
         filter = MinMaxLengthDocumentFilter(2, 5)
         document.documentFilter = filter

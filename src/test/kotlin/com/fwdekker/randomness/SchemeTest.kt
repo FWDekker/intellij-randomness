@@ -1,20 +1,19 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.array.ArrayDecorator
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [Scheme].
  */
-object SchemeTest : Spek({
+object SchemeTest : DescribeSpec({
     lateinit var scheme: DummyScheme
 
 
-    beforeEachTest {
+    beforeEach {
         scheme = DummyScheme()
     }
 

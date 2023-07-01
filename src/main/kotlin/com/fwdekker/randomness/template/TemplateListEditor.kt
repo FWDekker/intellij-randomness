@@ -44,7 +44,7 @@ import javax.swing.SwingUtilities
  * @param settings the settings containing the templates to edit
  * @see TemplateSettingsConfigurable
  */
-class TemplateListEditor(settings: SettingsState = SettingsState.default) : StateEditor<SettingsState>(settings) {
+class TemplateListEditor(settings: SettingsState = SettingsState.DEFAULT) : StateEditor<SettingsState>(settings) {
     override val rootComponent = JPanel(BorderLayout())
 
     private val currentState: SettingsState = SettingsState()
@@ -62,7 +62,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
 
 
     init {
-        val splitter = CREATE_SPLITTER(false, SPLITTER_PROPORTION_KEY, DEFAULT_SPLITTER_PROPORTION)
+        val splitter = createSplitter(false, SPLITTER_PROPORTION_KEY, DEFAULT_SPLITTER_PROPORTION)
         rootComponent.add(splitter, BorderLayout.CENTER)
 
         // Left half
@@ -171,7 +171,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
         super.applyState()
         val newList = originalState.templateList.templates.toSet()
 
-        TemplateActionLoader.updateActions(oldList, newList)
+        TemplateActionLoader().updateActions(oldList, newList)
     }
 
 
@@ -223,7 +223,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.default) : Stat
          * For some reason, `OnePixelSplitter` does not work in tests. Therefore, tests overwrite this field to inject a
          * different constructor.
          */
-        var CREATE_SPLITTER: (Boolean, String, Float) -> Splitter =
+        var createSplitter: (Boolean, String, Float) -> Splitter =
             { vertical, proportionKey, defaultProportion ->
                 OnePixelSplitter(vertical, proportionKey, defaultProportion)
             }
