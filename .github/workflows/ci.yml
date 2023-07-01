@@ -41,4 +41,4 @@ jobs:
         if: success() && matrix.os == 'ubuntu-latest'
         with:
           fail_ci_if_error: true
-          files: build/reports/kover/xml/report.xml
+          files: build/reports/kover/report.xml

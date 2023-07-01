@@ -42,8 +42,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-runner:${properties("junitRunnerVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${properties("junitVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${properties("junitVersion")}")
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:${properties("spekVersion")}")
-    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:${properties("spekVersion")}")
+    testImplementation("io.kotest:kotest-runner-junit5:${properties("kotestVersion")}")
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${properties("detektVersion")}")
 }
@@ -100,10 +99,10 @@ tasks {
 
     // Tests/coverage
     test {
-        systemProperty("spek2.execution.test.timeout", 0)
+        systemProperty("java.awt.headless", "false")
 
         useJUnitPlatform {
-            includeEngines("junit-vintage", "junit-jupiter", "spek2")
+            includeEngines("junit-vintage", "junit-jupiter", "kotest")
         }
 
         testLogging {

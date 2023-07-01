@@ -3,10 +3,9 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.ui.SimpleTreeModelListener
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import javax.swing.event.TreeModelEvent
 import javax.swing.event.TreeModelListener
 
@@ -14,11 +13,11 @@ import javax.swing.event.TreeModelListener
 /**
  * Unit tests for [TemplateJTreeModel].
  */
-object TemplateJTreeModelTest : Spek({
+object TemplateJTreeModelTest : DescribeSpec({
     lateinit var model: TemplateJTreeModel
 
 
-    beforeEachTest {
+    beforeEach {
         model = TemplateJTreeModel(
             TemplateList(
                 listOf(
@@ -537,7 +536,7 @@ object TemplateJTreeModelTest : Spek({
         var lastEvent: TreeModelEvent? = null
 
 
-        beforeEachTest {
+        beforeEach {
             nodesChangedInvoked = 0
             nodesInsertedInvoked = 0
             nodesRemovedInvoked = 0
@@ -716,7 +715,7 @@ object TemplateJTreeModelTest : Spek({
 /**
  * Unit tests for [StateNode].
  */
-object StateNodeTest : Spek({
+object StateNodeTest : DescribeSpec({
     describe("canHaveChildren") {
         it("returns true if the state is a template list") {
             assertThat(StateNode(TemplateList(emptyList())).canHaveChildren).isTrue()

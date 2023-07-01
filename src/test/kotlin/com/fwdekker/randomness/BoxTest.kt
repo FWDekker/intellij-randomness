@@ -1,14 +1,13 @@
 package com.fwdekker.randomness
 
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [Box].
  */
-object BoxTest : Spek({
+object BoxTest : DescribeSpec({
     describe("box") {
         it("returns the generator's value when de-referenced") {
             assertThat(+Box({ "needle" })).isEqualTo("needle")

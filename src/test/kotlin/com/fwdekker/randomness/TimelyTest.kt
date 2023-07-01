@@ -2,17 +2,16 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.Timely.GENERATOR_TIMEOUT
 import com.fwdekker.randomness.Timely.generateTimely
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for the extension functions in `TimelyKt`.
  */
 @Suppress("detekt:TooGenericExceptionThrown") // Acceptable for tests
-object TimelyTest : Spek({
+object TimelyTest : DescribeSpec({
     describe("timely") {
         it("returns output if generator finished within time") {
             assertThat(generateTimely { "neck" }).isEqualTo("neck")

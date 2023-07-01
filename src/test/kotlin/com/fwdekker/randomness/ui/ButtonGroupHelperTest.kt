@@ -1,10 +1,9 @@
 package com.fwdekker.randomness.ui
 
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import javax.swing.ButtonGroup
 import javax.swing.JButton
 import javax.swing.JLabel
@@ -14,15 +13,15 @@ import javax.swing.JRadioButton
 /**
  * Unit tests for the extension functions in `ButtonGroupKt`.
  */
-object ButtonGroupHelperTest : Spek({
+object ButtonGroupHelperTest : DescribeSpec({
     lateinit var group: ButtonGroup
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         group = ButtonGroup()
     }
 

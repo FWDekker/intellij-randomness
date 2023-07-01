@@ -1,10 +1,9 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.Bundle
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import java.io.IOException
 import kotlin.system.measureNanoTime
 
@@ -12,7 +11,7 @@ import kotlin.system.measureNanoTime
 /**
  * Unit tests for [DefaultWordList].
  */
-object DefaultWordListTest : Spek({
+object DefaultWordListTest : DescribeSpec({
     describe("words") {
         it("throws an exception if the file does not exist") {
             val list = DefaultWordList("throw", "word-lists/does-not-exist.txt")

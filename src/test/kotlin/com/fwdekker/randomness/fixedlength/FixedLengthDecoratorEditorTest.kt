@@ -2,19 +2,18 @@ package com.fwdekker.randomness.fixedlength
 
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * GUI tests for [FixedLengthDecoratorEditor].
  */
-object FixedLengthDecoratorEditorTest : Spek({
+object FixedLengthDecoratorEditorTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
@@ -22,11 +21,11 @@ object FixedLengthDecoratorEditorTest : Spek({
     lateinit var editor: FixedLengthDecoratorEditor
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -35,7 +34,7 @@ object FixedLengthDecoratorEditorTest : Spek({
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterEachTest {
+    afterEach {
         frame.cleanUp()
         ideaFixture.tearDown()
     }

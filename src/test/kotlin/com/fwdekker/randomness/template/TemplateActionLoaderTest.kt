@@ -3,27 +3,26 @@ package com.fwdekker.randomness.template
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [TemplateActionLoader].
  */
-class TemplateActionLoaderTest : Spek({
+class TemplateActionLoaderTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var actionManager: ActionManager
 
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
         actionManager = ActionManager.getInstance()
     }
 
-    afterEachTest {
+    afterEach {
         ideaFixture.tearDown()
     }
 

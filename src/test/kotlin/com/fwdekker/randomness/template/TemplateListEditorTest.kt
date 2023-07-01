@@ -13,6 +13,7 @@ import com.fwdekker.randomness.word.WordScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.JBSplitter
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -20,14 +21,12 @@ import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.AbstractComponentFixture
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * GUI tests for [TemplateListEditor].
  */
-object TemplateListEditorTest : Spek({
+object TemplateListEditorTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
@@ -35,14 +34,14 @@ object TemplateListEditorTest : Spek({
     lateinit var editor: TemplateListEditor
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
 
         TemplateListEditor.createSplitter =
             { vertical, proportionKey, defaultProportion -> JBSplitter(vertical, proportionKey, defaultProportion) }
     }
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -60,7 +59,7 @@ object TemplateListEditorTest : Spek({
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterEachTest {
+    afterEach {
         frame.cleanUp()
         GuiActionRunner.execute { editor.dispose() }
         ideaFixture.tearDown()

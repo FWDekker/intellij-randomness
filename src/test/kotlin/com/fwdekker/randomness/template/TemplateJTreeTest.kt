@@ -8,21 +8,20 @@ import com.fwdekker.randomness.string.StringScheme
 import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import javax.swing.JPanel
 
 
 /**
  * GUI tests for [TemplateJTree].
  */
-object TemplateJTreeTest : Spek({
+object TemplateJTreeTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
 
     lateinit var originalState: SettingsState
@@ -34,11 +33,11 @@ object TemplateJTreeTest : Spek({
     fun list() = tree.myModel.list
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -58,7 +57,7 @@ object TemplateJTreeTest : Spek({
         tree = GuiActionRunner.execute<TemplateJTree> { TemplateJTree(originalState, currentState) }
     }
 
-    afterEachTest {
+    afterEach {
         ideaFixture.tearDown()
     }
 
@@ -490,11 +489,11 @@ object TemplateJTreeTest : Spek({
         lateinit var frame: FrameFixture
 
 
-        beforeEachTest {
+        beforeEach {
             frame = Containers.showInFrame(GuiActionRunner.execute<JPanel> { tree.asDecoratedPanel() })
         }
 
-        afterEachTest {
+        afterEach {
             frame.cleanUp()
         }
 

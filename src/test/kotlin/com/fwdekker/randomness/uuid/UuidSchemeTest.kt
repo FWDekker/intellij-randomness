@@ -2,21 +2,20 @@ package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import kotlin.random.Random
 
 
 /**
  * Unit tests for [UuidScheme].
  */
-object UuidSchemeTest : Spek({
+object UuidSchemeTest : DescribeSpec({
     lateinit var uuidScheme: UuidScheme
 
 
-    beforeEachTest {
+    beforeEach {
         uuidScheme = UuidScheme()
     }
 

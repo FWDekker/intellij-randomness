@@ -7,25 +7,24 @@ import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.TypeIcon
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import java.awt.Color
 
 
 /**
  * Unit tests for [TemplateGroupAction].
  */
-object TemplateGroupActionTest : Spek({
+object TemplateGroupActionTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
 
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
     }
 
-    afterEachTest {
+    afterEach {
         ideaFixture.tearDown()
     }
 
@@ -47,7 +46,7 @@ object TemplateGroupActionTest : Spek({
 /**
  * Unit tests for [TemplateInsertAction].
  */
-object TemplateInsertActionTest : Spek({
+object TemplateInsertActionTest : DescribeSpec({
     describe("init") {
         describe("text and description") {
             it("returns the template's default variant") {
@@ -125,16 +124,16 @@ object TemplateInsertActionTest : Spek({
 /**
  * Unit tests for [TemplateSettingsAction].
  */
-object TemplateSettingsActionTest : Spek({
+object TemplateSettingsActionTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
 
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
     }
 
-    afterEachTest {
+    afterEach {
         ideaFixture.tearDown()
     }
 

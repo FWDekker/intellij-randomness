@@ -3,20 +3,19 @@ package com.fwdekker.randomness.word
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DummyScheme
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [WordScheme].
  */
-object WordSchemeTest : Spek({
+object WordSchemeTest : DescribeSpec({
     lateinit var wordScheme: WordScheme
 
 
-    beforeEachTest {
+    beforeEach {
         wordScheme = WordScheme()
     }
 

@@ -7,11 +7,10 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.GuiActionRunner
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JRadioButton
@@ -23,14 +22,14 @@ import javax.swing.JTextField
 /**
  * Unit tests for the extension functions in `ListenerHelperKt`.
  */
-object ListenerHelperTest : Spek({
+object ListenerHelperTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
 
     var listenerInvoked = false
     lateinit var listener: () -> Unit
 
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -38,7 +37,7 @@ object ListenerHelperTest : Spek({
         listener = { listenerInvoked = true }
     }
 
-    afterEachTest {
+    afterEach {
         ideaFixture.tearDown()
     }
 

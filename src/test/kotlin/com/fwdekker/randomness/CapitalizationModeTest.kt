@@ -1,16 +1,15 @@
 package com.fwdekker.randomness
 
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import kotlin.random.Random
 
 
 /**
  * Unit tests for [CapitalizationMode].
  */
-object CapitalizationModeTest : Spek({
+object CapitalizationModeTest : DescribeSpec({
     describe("transform") {
         describe("retain mode") {
             it("does nothing to a string") {

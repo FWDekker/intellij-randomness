@@ -8,22 +8,21 @@ import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.integer.IntegerScheme
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [TemplateReference].
  */
-object TemplateReferenceTest : Spek({
+object TemplateReferenceTest : DescribeSpec({
     lateinit var templateList: TemplateList
     lateinit var reference: TemplateReference
     lateinit var companion: Template
 
 
-    beforeEachTest {
+    beforeEach {
         reference = TemplateReference()
         companion = Template("station", listOf(DummyScheme.from("bus")))
 

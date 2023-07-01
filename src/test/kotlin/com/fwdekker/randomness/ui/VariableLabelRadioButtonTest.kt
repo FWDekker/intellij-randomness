@@ -1,33 +1,32 @@
 package com.fwdekker.randomness.ui
 
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import javax.swing.ButtonGroup
 
 
 /**
  * GUI tests for [VariableLabelRadioButton].
  */
-object VariableLabelRadioButtonTest : Spek({
+object VariableLabelRadioButtonTest : DescribeSpec({
     lateinit var variableButton: VariableLabelRadioButton
     lateinit var frame: FrameFixture
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         variableButton = GuiActionRunner.execute<VariableLabelRadioButton> { VariableLabelRadioButton() }
         frame = Containers.showInFrame(variableButton)
     }
 
-    afterEachTest {
+    afterEach {
         frame.cleanUp()
     }
 
@@ -72,9 +71,9 @@ object VariableLabelRadioButtonTest : Spek({
         it("focuses the text box when the radio button is selected") {
             assertThat(frame.textBox().target().hasFocus()).isFalse()
 
-            GuiActionRunner.execute { frame.radioButton().target().isSelected = true }
+            frame.radioButton().click()
 
-            assertThat(frame.textBox().target().hasFocus()).isTrue()
+            frame.textBox().requireFocused()
         }
 
         it("selects the radio button when the text box is focused") {

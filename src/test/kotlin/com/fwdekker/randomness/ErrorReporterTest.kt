@@ -2,28 +2,27 @@ package com.fwdekker.randomness
 
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [ErrorReporter].
  */
-object ErrorReporterTest : Spek({
+object ErrorReporterTest : DescribeSpec({
     describe("error reporter") {
         lateinit var ideaFixture: IdeaTestFixture
         lateinit var reporter: ErrorReporter
 
 
-        beforeEachTest {
+        beforeEach {
             ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
             ideaFixture.setUp()
 
             reporter = ErrorReporter()
         }
 
-        afterEachTest {
+        afterEach {
             ideaFixture.tearDown()
         }
 

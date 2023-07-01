@@ -3,20 +3,19 @@ package com.fwdekker.randomness
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [SettingsConfigurable].
  */
-object SettingsConfigurableTest : Spek({
+object SettingsConfigurableTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var scheme: DummyScheme
     lateinit var editor: DummySchemeEditor
@@ -24,11 +23,11 @@ object SettingsConfigurableTest : Spek({
     lateinit var frame: FrameFixture
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -39,7 +38,7 @@ object SettingsConfigurableTest : Spek({
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterEachTest {
+    afterEach {
         ideaFixture.tearDown()
         frame.cleanUp()
     }

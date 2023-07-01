@@ -1,16 +1,15 @@
 package com.fwdekker.randomness
 
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import java.util.MissingResourceException
 
 
 /**
  * Unit tests for [Bundle].
  */
-object BundleTest : Spek({
+object BundleTest : DescribeSpec({
     describe("get (no arguments)") {
         it("throws an exception if the key could not be found") {
             assertThatThrownBy { Bundle("this_key_does_not_exist") }.isInstanceOf(MissingResourceException::class.java)

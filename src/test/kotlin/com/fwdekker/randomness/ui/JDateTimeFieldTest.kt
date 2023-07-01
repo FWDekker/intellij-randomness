@@ -1,12 +1,11 @@
 package com.fwdekker.randomness.ui
 
 import com.github.sisyphsu.dateparser.DateParserUtils
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import java.text.ParseException
 import java.time.LocalDateTime
 
@@ -14,15 +13,15 @@ import java.time.LocalDateTime
 /**
  * GUI tests for [JDateTimeField].
  */
-object JDateTimeFieldTest : Spek({
+object JDateTimeFieldTest : DescribeSpec({
     lateinit var field: JDateTimeField
 
 
-    beforeGroup {
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
+    beforeEach {
         field = GuiActionRunner.execute<JDateTimeField> { JDateTimeField(LocalDateTime.MIN) }
     }
 

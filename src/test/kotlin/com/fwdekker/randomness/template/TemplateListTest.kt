@@ -5,19 +5,18 @@ import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.string.StringScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 
 /**
  * Unit tests for [TemplateList].
  */
-object TemplateListTest : Spek({
+object TemplateListTest : DescribeSpec({
     lateinit var templateList: TemplateList
 
 
-    beforeEachTest {
+    beforeEach {
         templateList = TemplateList(emptyList())
     }
 
