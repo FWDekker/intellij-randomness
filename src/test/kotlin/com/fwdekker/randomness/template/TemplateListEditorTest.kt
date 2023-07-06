@@ -3,9 +3,9 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
-import com.fwdekker.randomness.clickActionButton
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
+import com.fwdekker.randomness.getActionButton
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
@@ -80,7 +80,7 @@ object TemplateListEditorTest : DescribeSpec({
         it("returns the editor's state") {
             GuiActionRunner.execute {
                 frame.tree().target().selectionRows = intArrayOf(0)
-                frame.clickActionButton("Remove")
+                frame.getActionButton("Remove").click()
             }
 
             val readScheme = editor.readState()
@@ -90,7 +90,7 @@ object TemplateListEditorTest : DescribeSpec({
         it("returns the loaded state if no editor changes are made") {
             GuiActionRunner.execute {
                 frame.tree().target().selectionRows = intArrayOf(0)
-                frame.clickActionButton("Remove")
+                frame.getActionButton("Remove").click()
             }
             assertThat(editor.isModified()).isTrue()
 
@@ -171,7 +171,7 @@ object TemplateListEditorTest : DescribeSpec({
             var invoked = 0
             GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
 
-            GuiActionRunner.execute { frame.clickActionButton("Remove") }
+            GuiActionRunner.execute { frame.getActionButton("Remove").click() }
 
             assertThat(invoked).isNotZero()
         }

@@ -2,7 +2,6 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.SettingsState
-import com.fwdekker.randomness.clickActionButton
 import com.fwdekker.randomness.getActionButton
 import com.fwdekker.randomness.string.StringScheme
 import com.intellij.openapi.actionSystem.ActionToolbar
@@ -518,7 +517,7 @@ object TemplateJTreeTest : DescribeSpec({
             it("removes the selected scheme") {
                 GuiActionRunner.execute { tree.selectedScheme = list().templates[0].schemes[1] }
 
-                GuiActionRunner.execute { frame.clickActionButton("Remove") }
+                GuiActionRunner.execute { frame.getActionButton("Remove").click() }
 
                 assertThat(list().templates[0].schemes.map { it.name }).containsExactly("window")
             }
@@ -537,7 +536,7 @@ object TemplateJTreeTest : DescribeSpec({
             it("copies the selected scheme") {
                 GuiActionRunner.execute { tree.selectedScheme = list().templates[1].schemes[0] }
 
-                GuiActionRunner.execute { frame.clickActionButton("Copy") }
+                GuiActionRunner.execute { frame.getActionButton("Copy").click() }
 
                 assertThat(list().templates[1].schemes.map { it.name }).containsExactly("republic", "republic")
             }
@@ -545,7 +544,7 @@ object TemplateJTreeTest : DescribeSpec({
             it("creates an independent copy of the selected scheme") {
                 GuiActionRunner.execute { tree.selectedScheme = list().templates[2].schemes[1] }
 
-                GuiActionRunner.execute { frame.clickActionButton("Copy") }
+                GuiActionRunner.execute { frame.getActionButton("Copy").click() }
                 (list().templates[2].schemes[2] as DummyScheme).literals = listOf("desert")
 
                 assertThat(list().templates[2].schemes.map { it.name }).containsExactly("consider", "tent", "desert")
@@ -566,7 +565,7 @@ object TemplateJTreeTest : DescribeSpec({
 
                 GuiActionRunner.execute {
                     tree.selectedScheme = list().templates[1].schemes[0]
-                    frame.clickActionButton("Copy")
+                    frame.getActionButton("Copy").click()
                 }
 
                 val selectedScheme = tree.selectedScheme!! as TemplateReference
@@ -606,7 +605,7 @@ object TemplateJTreeTest : DescribeSpec({
             it("moves the selected scheme up") {
                 GuiActionRunner.execute { tree.selectedScheme = list().templates[0].schemes[1] }
 
-                GuiActionRunner.execute { frame.clickActionButton("Up") }
+                GuiActionRunner.execute { frame.getActionButton("Up").click() }
 
                 assertThat(list().templates[0].schemes.map { it.name }).containsExactly("uncle", "window")
             }
@@ -643,7 +642,7 @@ object TemplateJTreeTest : DescribeSpec({
             it("moves the selected scheme down") {
                 GuiActionRunner.execute { tree.selectedScheme = list().templates[2].schemes[0] }
 
-                GuiActionRunner.execute { frame.clickActionButton("Down") }
+                GuiActionRunner.execute { frame.getActionButton("Down").click() }
 
                 assertThat(list().templates[2].schemes.map { it.name }).containsExactly("tent", "consider")
             }
@@ -674,7 +673,7 @@ object TemplateJTreeTest : DescribeSpec({
 
                 GuiActionRunner.execute {
                     tree.selectedScheme = list().templates[0]
-                    frame.clickActionButton("Reset")
+                    frame.getActionButton("Reset").click()
                 }
 
                 assertThat(list().templates).isEmpty()
@@ -683,7 +682,7 @@ object TemplateJTreeTest : DescribeSpec({
             it("resets changes to the initially selected scheme") {
                 (currentState.templateList.templates[0].schemes[0] as DummyScheme).literals = listOf("approve")
 
-                GuiActionRunner.execute { frame.clickActionButton("Reset") }
+                GuiActionRunner.execute { frame.getActionButton("Reset").click() }
 
                 assertThat((currentState.templateList.templates[0].schemes[0] as DummyScheme).name).isEqualTo("window")
             }
@@ -694,7 +693,7 @@ object TemplateJTreeTest : DescribeSpec({
 
                 GuiActionRunner.execute {
                     tree.selectedScheme = list().templates[0]
-                    frame.clickActionButton("Reset")
+                    frame.getActionButton("Reset").click()
                 }
 
                 assertThat(list().templates[0].name).isEqualTo("Captain")
@@ -706,7 +705,7 @@ object TemplateJTreeTest : DescribeSpec({
 
                 GuiActionRunner.execute {
                     tree.selectedScheme = list().templates[0].schemes[0]
-                    frame.clickActionButton("Reset")
+                    frame.getActionButton("Reset").click()
                 }
 
                 assertThat(list().templates[0].schemes[0].name).isEqualTo("window")
@@ -718,7 +717,7 @@ object TemplateJTreeTest : DescribeSpec({
 
                 GuiActionRunner.execute {
                     tree.selectedScheme = list().templates[0]
-                    frame.clickActionButton("Reset")
+                    frame.getActionButton("Reset").click()
                 }
 
                 assertThat(list().templates[0].schemes.map { it.name }).containsExactly("window", "uncle")
@@ -730,7 +729,7 @@ object TemplateJTreeTest : DescribeSpec({
 
                 GuiActionRunner.execute {
                     tree.selectedScheme = list().templates[2]
-                    frame.clickActionButton("Reset")
+                    frame.getActionButton("Reset").click()
                 }
 
                 assertThat(list().templates[2].schemes[0].name).isEqualTo("consider")

@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.BracketsDescriptor
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon

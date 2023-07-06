@@ -2,6 +2,7 @@ package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.DummyScheme
+import com.fwdekker.randomness.find
 import com.fwdekker.randomness.matcher
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -70,9 +71,7 @@ object PreviewPanelTest : DescribeSpec({
             GuiActionRunner.execute { panel.updatePreview() }
             val oldRandom = scheme?.random
 
-            GuiActionRunner.execute {
-                frame.robot().finder().find(matcher(InplaceButton::class.java) { it.isValid }).doClick()
-            }
+            GuiActionRunner.execute { frame.find(matcher(InplaceButton::class.java)).doClick() }
 
             GuiActionRunner.execute { panel.updatePreview() }
             val newRandom = scheme?.random

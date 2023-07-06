@@ -2,6 +2,7 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.find
 import com.fwdekker.randomness.matcher
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.impl.EditorComponentImpl
@@ -39,7 +40,7 @@ object WordSchemeEditorTest : DescribeSpec({
         editor = GuiActionRunner.execute<WordSchemeEditor> { WordSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
 
-        wordsEditor = frame.robot().finder().find(matcher(EditorComponentImpl::class.java) { it.isValid })
+        wordsEditor = frame.find(matcher(EditorComponentImpl::class.java))
     }
 
     afterEach {

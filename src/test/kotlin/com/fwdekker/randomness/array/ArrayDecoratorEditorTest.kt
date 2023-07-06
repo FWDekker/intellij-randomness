@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.array
 
+import com.fwdekker.randomness.findAll
 import com.fwdekker.randomness.matcher
-import com.fwdekker.randomness.nameMatcher
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.TitledSeparator
@@ -44,6 +44,20 @@ object ArrayDecoratorEditorTest : DescribeSpec({
     }
 
 
+    describe("separator visibility") {
+        it("adds the separator by default") {
+            frame.panel(matcher(TitledSeparator::class.java)).requireVisible()
+        }
+
+        it("does not add a separator if the editor is embedded") {
+            frame.cleanUp()
+            editor = GuiActionRunner.execute<ArrayDecoratorEditor> { ArrayDecoratorEditor(scheme, embedded = true) }
+            frame = showInFrame(editor.rootComponent)
+
+            assertThat(frame.findAll(matcher(TitledSeparator::class.java))).isEmpty()
+        }
+    }
+
     describe("event handling") {
         it("truncates decimals in the minimum count") {
             GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 983.24f }
@@ -73,16 +87,14 @@ object ArrayDecoratorEditorTest : DescribeSpec({
                 frame.spinner("arrayMinCount").requireEnabled()
             }
 
-            it("keeps components visible if the editor is not disablable") {
+            it("keeps components visible if the editor is embedded") {
                 frame.cleanUp()
                 editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
-                    ArrayDecoratorEditor(scheme, disablable = false)
+                    ArrayDecoratorEditor(scheme, embedded = true)
                 }
                 frame = showInFrame(editor.rootComponent)
 
-                GuiActionRunner.execute {
-                    frame.checkBox(nameMatcher(JCheckBox::class.java, "arrayEnabled")).target().isSelected = false
-                }
+                assertThat(frame.findAll(matcher(JCheckBox::class.java) { it.name == "arrayEnabled" })).isEmpty()
 
                 frame.spinner("arrayMinCount").requireEnabled()
             }
@@ -105,27 +117,11 @@ object ArrayDecoratorEditorTest : DescribeSpec({
             }
         }
 
-        describe("showSeparator") {
-            it("shows the separator by default") {
-                frame.panel(matcher(TitledSeparator::class.java) { true }).requireVisible()
-            }
-
-            it("hides the separator if desired") {
-                frame.cleanUp()
-                editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
-                    ArrayDecoratorEditor(scheme, showSeparator = false)
-                }
-                frame = showInFrame(editor.rootComponent)
-
-                frame.panel(matcher(TitledSeparator::class.java) { true }).requireNotVisible()
-            }
-        }
-
         describe("toggles space-after-separator depending on newline separator") {
-            it("enables space-after-separator if not disablable and newline separator is checked") {
+            it("enables space-after-separator if embedded and newline separator is checked") {
                 frame.cleanUp()
                 editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
-                    ArrayDecoratorEditor(scheme, disablable = false)
+                    ArrayDecoratorEditor(scheme, embedded = true)
                 }
                 frame = showInFrame(editor.rootComponent)
 
@@ -134,10 +130,10 @@ object ArrayDecoratorEditorTest : DescribeSpec({
                 frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
             }
 
-            it("enables space-after-separator if not disablable and newline separator is unchecked") {
+            it("enables space-after-separator if embedded and newline separator is unchecked") {
                 frame.cleanUp()
                 editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
-                    ArrayDecoratorEditor(scheme, disablable = false)
+                    ArrayDecoratorEditor(scheme, embedded = true)
                 }
                 frame = showInFrame(editor.rootComponent)
 

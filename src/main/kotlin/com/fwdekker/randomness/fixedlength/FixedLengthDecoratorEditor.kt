@@ -2,16 +2,19 @@ package com.fwdekker.randomness.fixedlength
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.ui.GridPanelBuilder
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
+import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.TitledSeparator
+import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBLabel
+import com.intellij.uiDesigner.core.GridConstraints
 import javax.swing.JCheckBox
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
-import javax.swing.event.ChangeEvent
 import javax.swing.text.PlainDocument
 
 
@@ -21,42 +24,73 @@ import javax.swing.text.PlainDocument
  * @param settings the settings to edit in the component
  */
 class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<FixedLengthDecorator>(settings) {
-    override lateinit var rootComponent: JPanel private set
+    override val rootComponent: JPanel
     override val preferredFocusedComponent
         get() = enabledCheckBox
 
-    private lateinit var separator: TitledSeparator
     private lateinit var enabledCheckBox: JCheckBox
-    private lateinit var lengthLabel: JLabel
     private lateinit var lengthInput: JIntSpinner
-    private lateinit var fillerLabel: JLabel
     private lateinit var fillerInput: JTextField
 
 
     init {
-        enabledCheckBox.addChangeListener(
-            { _: ChangeEvent? ->
-                lengthLabel.isEnabled = enabledCheckBox.isSelected
-                lengthInput.isEnabled = enabledCheckBox.isSelected
-                fillerLabel.isEnabled = enabledCheckBox.isSelected
-                fillerInput.isEnabled = enabledCheckBox.isSelected
-            }.also { it(null) }
-        )
+        rootComponent = GridPanelBuilder.panel {
+            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
+                TitledSeparator(Bundle("fixed_length.title"))
+            }
+
+            cell {
+                JBCheckBox(Bundle("fixed_length.ui.enabled"))
+                    .withName("fixedLengthEnabled")
+                    .loadMnemonic()
+                    .also { enabledCheckBox = it }
+            }
+
+            panel {
+                row {
+                    lateinit var lengthLabel: JLabel
+
+                    cell {
+                        JBLabel(Bundle("fixed_length.ui.length_option"))
+                            .toggledBy(enabledCheckBox)
+                            .also { lengthLabel = it }
+                    }
+
+                    cell {
+                        JIntSpinner(
+                            value = FixedLengthDecorator.MIN_LENGTH,
+                            minValue = FixedLengthDecorator.MIN_LENGTH
+                        )
+                            .withName("fixedLengthLength")
+                            .forceWidth(UIConstants.WIDTH_SMALL)
+                            .setLabel(lengthLabel)
+                            .toggledBy(enabledCheckBox)
+                            .also { lengthInput = it }
+                    }
+                }
+
+                row {
+                    lateinit var fillerLabel: JLabel
+
+                    cell {
+                        JBLabel(Bundle("fixed_length.ui.filler_option"))
+                            .toggledBy(enabledCheckBox)
+                            .also { fillerLabel = it }
+                    }
+
+                    cell {
+                        JTextField(PlainDocument().also { it.documentFilter = MaxLengthDocumentFilter(1) }, "", 0)
+                            .withName("fixedLengthFiller")
+                            .forceWidth(UIConstants.WIDTH_SMALL)
+                            .setLabel(fillerLabel)
+                            .toggledBy(enabledCheckBox)
+                            .also { fillerInput = it }
+                    }
+                }
+            }
+        }
 
         loadState()
-    }
-
-    /**
-     * Initializes custom UI components.
-     *
-     * This method is called by the scene builder at the start of the constructor.
-     */
-    private fun createUIComponents() {
-        separator = SeparatorFactory.createSeparator(Bundle("fixed_length.title"), null)
-
-        lengthInput = JIntSpinner(value = FixedLengthDecorator.MIN_LENGTH, minValue = FixedLengthDecorator.MIN_LENGTH)
-
-        fillerInput = JTextField(PlainDocument().also { it.documentFilter = MaxLengthDocumentFilter(1) }, "", 0)
     }
 
 
@@ -72,7 +106,7 @@ class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<F
         FixedLengthDecorator(
             enabled = enabledCheckBox.isSelected,
             length = lengthInput.value,
-            filler = fillerInput.text
+            filler = fillerInput.text,
         ).also { it.uuid = originalState.uuid }
 
 

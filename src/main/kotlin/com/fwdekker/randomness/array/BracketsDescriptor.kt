@@ -1,4 +1,7 @@
-package com.fwdekker.randomness
+package com.fwdekker.randomness.array
+
+import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.DataGenerationException
 
 
 /**
@@ -21,27 +24,27 @@ data class BracketsDescriptor(val descriptor: String) {
         else Bundle("brackets.error.trailing_escape")
 
     /**
-     * Replaces each unescaped `'@'` in [descriptor] with [insert], and interprets escaped characters.
+     * Replaces each unescaped `'@'` in [descriptor] with [value], and interprets escaped characters.
      *
-     * @param insert the string to insert into [descriptor]
-     * @return the [descriptor] with [insert] inserted and escape characters interpreted
+     * @param value the string to insert into [descriptor]
+     * @return the [descriptor] with [value] inserted and escape characters interpreted
      * @throws DataGenerationException if the [descriptor] is invalid according to [doValidate]
      * @see descriptor
      */
-    fun interpolate(insert: String): String {
+    fun interpolate(value: String): String {
         doValidate()?.also { throw DataGenerationException(it) }
 
         return descriptor
-            .fold(Triple("", false, false)) { (builtString, escaped, inserted), char ->
+            .fold(Triple("", false, false)) { (builtString, isEscaped, valueInserted), char ->
                 when (char) {
-                    '\\' -> Triple(builtString + if (escaped) char else "", !escaped, inserted)
-                    '@' -> Triple(builtString + if (escaped) "@" else insert, false, inserted || !escaped)
-                    else -> Triple(builtString + char, false, inserted)
+                    '\\' -> Triple(builtString + if (isEscaped) '\\' else "", !isEscaped, valueInserted)
+                    '@' -> Triple(builtString + if (isEscaped) "@" else value, false, valueInserted || !isEscaped)
+                    else -> Triple(builtString + char, false, valueInserted)
                 }
             }
             .let { (builtString, _, inserted) ->
                 if (inserted) builtString
-                else builtString + insert + builtString
+                else builtString + value + builtString
             }
     }
 }

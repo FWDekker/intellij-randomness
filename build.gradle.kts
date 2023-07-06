@@ -21,7 +21,7 @@ plugins {
 
     // Documentation
     id("org.jetbrains.changelog") version "2.1.0"
-    id("org.jetbrains.dokka") version "1.8.20"  // See also `gradle.properties
+    id("org.jetbrains.dokka") version "1.8.20"
 }
 
 
@@ -134,10 +134,12 @@ tasks {
 
     // Documentation
     dokkaHtml.configure {
+        notCompatibleWithConfigurationCache("Not sure why")
+
         pluginsMapConfiguration.set(
             mapOf(
                 "org.jetbrains.dokka.base.DokkaBase" to
-                    """{ "footerMessage": "© ${Year.now().value} Florine&nbsp;W.&nbsp;Dekker" }"""
+                    """{ "footerMessage": "&copy; ${Year.now().value} Florine&nbsp;W.&nbsp;Dekker" }"""
             )
         )
         moduleName.set("Randomness v${properties("version")}")

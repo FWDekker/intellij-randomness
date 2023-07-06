@@ -32,5 +32,5 @@ object Bundle {
      * @param arguments the arguments to insert into the template
      * @return the string at [key] formatted with [arguments]
      */
-    operator fun invoke(key: String, vararg arguments: Any?): String = RESOURCE_BUNDLE.getString(key).format(*arguments)
+    operator fun invoke(key: String, vararg arguments: Any?): String = this(key).format(*arguments)
 }
