@@ -5,17 +5,21 @@ import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.string.StringScheme.Companion.DEFAULT_CAPITALIZATION
+import com.fwdekker.randomness.ui.GridPanelBuilder
+import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.SeparatorFactory
-import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.BrowserLink
 import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBRadioButton
+import com.intellij.ui.components.JBTextField
+import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.util.ui.UI
 import javax.swing.ButtonGroup
-import javax.swing.JButton
 import javax.swing.JCheckBox
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -28,55 +32,139 @@ import javax.swing.JTextField
  * @param scheme the scheme to edit in the component
  */
 class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<StringScheme>(scheme) {
-    override lateinit var rootComponent: JPanel private set
+    override val rootComponent: JPanel
     override val preferredFocusedComponent
         get() = patternField
 
-    private lateinit var valueSeparator: TitledSeparator
     private lateinit var patternField: JTextField
-    private lateinit var patternHelpButton: JButton
     private lateinit var isRegexCheckBox: JCheckBox
-    private lateinit var capitalizationLabel: JLabel
     private lateinit var capitalizationGroup: ButtonGroup
-    private lateinit var removeLookAlikeSymbolsPanel: JPanel
     private lateinit var removeLookAlikeSymbolsCheckBox: JCheckBox
-    private lateinit var arrayDecoratorPanel: JPanel
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
 
     init {
-        nop() // Cannot use `lateinit` property as first statement in init
+        rootComponent = GridPanelBuilder.panel {
+            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
+                SeparatorFactory.createSeparator(Bundle("string.ui.value_separator"), null)
+            }
 
-        capitalizationGroup.setLabel(capitalizationLabel)
+            panel {
+                row {
+                    lateinit var patternLabel: JLabel
+
+                    cell {
+                        JBLabel(Bundle("string.ui.pattern_option"))
+                            .loadMnemonic()
+                            .also { patternLabel = it }
+                    }
+
+                    row {
+                        cell {
+                            JBTextField()
+                                .withName("pattern")
+                                .forceWidth(UIConstants.WIDTH_VERY_LARGE)
+                                .setLabel(patternLabel)
+                                .also { patternField = it }
+                        }
+
+                        cell {
+                            BrowserLink(
+                                Bundle("string.ui.pattern_help"),
+                                "https://github.com/curious-odd-man/RgxGen/tree/1.4#supported-syntax"
+                            )
+                        }
+                    }
+                }
+
+                row {
+                    skip()
+
+                    cell {
+                        JBCheckBox(Bundle("string.ui.is_regex_option"))
+                            .withName("isRegex")
+                            .loadMnemonic()
+                            .also { isRegexCheckBox = it }
+                    }
+                }
+
+                row {
+                    lateinit var capitalizationLabel: JLabel
+
+                    cell {
+                        JBLabel(Bundle("string.ui.capitalization_option"))
+                            .loadMnemonic()
+                            .also { capitalizationLabel = it }
+                    }
+
+                    row {
+                        run { capitalizationGroup = ButtonGroup() }
+
+                        cell {
+                            JBRadioButton(Bundle("shared.capitalization.retain"))
+                                .withActionCommand("retain")
+                                .withName("capitalizationRetain")
+                                .inGroup(capitalizationGroup)
+                        }
+
+                        cell {
+                            @Suppress("DialogTitleCapitalization") // Intentional
+                            JBRadioButton(Bundle("shared.capitalization.lower"))
+                                .withActionCommand("lower")
+                                .withName("capitalizationLower")
+                                .inGroup(capitalizationGroup)
+                        }
+
+                        cell {
+                            JBRadioButton(Bundle("shared.capitalization.upper"))
+                                .withActionCommand("upper")
+                                .withName("capitalizationUpper")
+                                .inGroup(capitalizationGroup)
+                        }
+
+                        cell {
+                            JBRadioButton(Bundle("shared.capitalization.random"))
+                                .withActionCommand("random")
+                                .withName("capitalizationRandom")
+                                .inGroup(capitalizationGroup)
+                        }
+
+                        run { capitalizationGroup.setLabel(capitalizationLabel) }
+                    }
+                }
+
+                row {
+                    skip()
+
+                    cell {
+                        removeLookAlikeSymbolsCheckBox = JBCheckBox(Bundle("string.ui.remove_look_alike"))
+                            .withName("removeLookAlikeCharacters")
+                            .loadMnemonic()
+
+                        UI.PanelFactory.panel(removeLookAlikeSymbolsCheckBox)
+                            .withTooltip(
+                                Bundle(
+                                    "string.ui.remove_look_alike_help",
+                                    StringScheme.LOOK_ALIKE_CHARACTERS
+                                )
+                            )
+                            .createPanel()
+                    }
+                }
+            }
+
+            vspacer(height = 15)
+
+            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
+                ArrayDecoratorEditor(originalState.arrayDecorator)
+                    .also { arrayDecoratorEditor = it }
+                    .rootComponent
+            }
+
+            vspacer()
+        }
 
         loadState()
-    }
-
-    /**
-     * Initializes custom UI components.
-     *
-     * This method is called by the scene builder at the start of the constructor.
-     */
-    private fun createUIComponents() {
-        valueSeparator = SeparatorFactory.createSeparator(Bundle("string.ui.value_separator"), null)
-
-        patternHelpButton = BrowserLink(
-            Bundle("string.ui.pattern_help"),
-            "https://github.com/curious-odd-man/RgxGen/tree/1.4#supported-syntax"
-        )
-
-        removeLookAlikeSymbolsCheckBox = JBCheckBox(Bundle("string.ui.remove_look_alike"))
-            .also { box ->
-                box.name = "removeLookAlikeCharacters"
-                box.setMnemonic(box.text.dropWhile { it != '&' }[1])
-                box.text = box.text.filterNot { it == '&' }
-            }
-        removeLookAlikeSymbolsPanel = UI.PanelFactory.panel(removeLookAlikeSymbolsCheckBox)
-            .withTooltip(Bundle("string.ui.remove_look_alike_help", StringScheme.LOOK_ALIKE_CHARACTERS))
-            .createPanel()
-
-        arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
-        arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
@@ -106,12 +194,4 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             patternField, isRegexCheckBox, capitalizationGroup, arrayDecoratorEditor,
             listener = listener
         )
-}
-
-
-/**
- * Null operation, does nothing.
- */
-private fun nop() {
-    // Does nothing
 }

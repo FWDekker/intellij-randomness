@@ -182,74 +182,67 @@ class ArrayDecoratorEditor(
                             .also { separatorLabel = it }
                     }
 
-                    panel {
-                        panel {
-                            row {
-                                run { separatorGroup = ButtonGroup() }
+                    row {
+                        run { separatorGroup = ButtonGroup() }
 
-                                cell {
-                                    JBRadioButton(Bundle("array.ui.separator.none"))
-                                        .withName("arraySeparatorNone")
-                                        .withActionCommand("")
-                                        .inGroup(separatorGroup)
-                                        .toggledBy(enabledCheckBox)
-                                }
-
-                                cell {
-                                    JBRadioButton(",")
-                                        .withName("arraySeparatorComma")
-                                        .inGroup(separatorGroup)
-                                        .toggledBy(enabledCheckBox)
-                                }
-
-                                cell {
-                                    JBRadioButton(";")
-                                        .withName("arraySeparatorSemicolon")
-                                        .inGroup(separatorGroup)
-                                        .toggledBy(enabledCheckBox)
-                                }
-
-                                cell {
-                                    JBRadioButton("""\n""")
-                                        .withName("arraySeparatorNewline")
-                                        .withActionCommand("\n")
-                                        .inGroup(separatorGroup)
-                                        .toggledBy(enabledCheckBox)
-                                        .also { newlineSeparatorButton = it }
-                                }
-
-                                cell {
-                                    VariableLabelRadioButton()
-                                        .withName("arraySeparatorCustom")
-                                        .also { it.addToButtonGroup(separatorGroup) }
-                                        .toggledBy(enabledCheckBox)
-                                        .also { customSeparator = it }
-                                }
-
-                                run { separatorGroup.setLabel(separatorLabel) }
-                            }
+                        cell {
+                            JBRadioButton(Bundle("array.ui.separator.none"))
+                                .withName("arraySeparatorNone")
+                                .withActionCommand("")
+                                .inGroup(separatorGroup)
+                                .toggledBy(enabledCheckBox)
                         }
 
-                        panel {
-                            row {
-                                skip(1)
-
-                                cell {
-                                    JBCheckBox(Bundle("array.ui.space_after_separator"))
-                                        .withName("arraySpaceAfterSeparator")
-                                        .toggledBy(enabledCheckBox) { !newlineSeparatorButton.isSelected }
-                                        .also {
-                                            newlineSeparatorButton.addChangeListener(
-                                                { _: ChangeEvent? ->
-                                                    it.isEnabled =
-                                                        enabledCheckBox.isSelected && !newlineSeparatorButton.isSelected
-                                                }.also { it(null) }
-                                            )
-                                        }
-                                        .also { spaceAfterSeparatorCheckBox = it }
-                                }
-                            }
+                        cell {
+                            JBRadioButton(",")
+                                .withName("arraySeparatorComma")
+                                .inGroup(separatorGroup)
+                                .toggledBy(enabledCheckBox)
                         }
+
+                        cell {
+                            JBRadioButton(";")
+                                .withName("arraySeparatorSemicolon")
+                                .inGroup(separatorGroup)
+                                .toggledBy(enabledCheckBox)
+                        }
+
+                        cell {
+                            JBRadioButton("""\n""")
+                                .withName("arraySeparatorNewline")
+                                .withActionCommand("\n")
+                                .inGroup(separatorGroup)
+                                .toggledBy(enabledCheckBox)
+                                .also { newlineSeparatorButton = it }
+                        }
+
+                        cell {
+                            VariableLabelRadioButton()
+                                .withName("arraySeparatorCustom")
+                                .also { it.addToButtonGroup(separatorGroup) }
+                                .toggledBy(enabledCheckBox)
+                                .also { customSeparator = it }
+                        }
+
+                        run { separatorGroup.setLabel(separatorLabel) }
+                    }
+                }
+
+                row {
+                    skip()
+
+                    cell {
+                        JBCheckBox(Bundle("array.ui.space_after_separator"))
+                            .withName("arraySpaceAfterSeparator")
+                            .toggledBy(enabledCheckBox) { !newlineSeparatorButton.isSelected }
+                            .also {
+                                newlineSeparatorButton.addChangeListener(
+                                    { _: ChangeEvent? ->
+                                        it.isEnabled = enabledCheckBox.isSelected && !newlineSeparatorButton.isSelected
+                                    }.also { it(null) }
+                                )
+                            }
+                            .also { spaceAfterSeparatorCheckBox = it }
                     }
                 }
             }

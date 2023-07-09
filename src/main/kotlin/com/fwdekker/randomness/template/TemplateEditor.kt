@@ -1,7 +1,13 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.ui.GridPanelBuilder
+import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBTextField
+import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 
@@ -12,7 +18,7 @@ import javax.swing.JTextField
  * @param template the template to edit
  */
 class TemplateEditor(template: Template) : StateEditor<Template>(template) {
-    override lateinit var rootComponent: JPanel private set
+    override val rootComponent: JPanel
     override val preferredFocusedComponent
         get() = nameInput
 
@@ -20,6 +26,27 @@ class TemplateEditor(template: Template) : StateEditor<Template>(template) {
 
 
     init {
+        rootComponent = GridPanelBuilder.panel {
+            row {
+                lateinit var nameLabel: JLabel
+
+                cell {
+                    JBLabel(Bundle("template.ui.name_option"))
+                        .also { nameLabel = it }
+                }
+
+                cell {
+                    JBTextField()
+                        .withName("templateName")
+                        .forceWidth(UIConstants.WIDTH_LARGE)
+                        .setLabel(nameLabel)
+                        .also { nameInput = it }
+                }
+            }
+
+            vspacer()
+        }
+
         loadState()
     }
 

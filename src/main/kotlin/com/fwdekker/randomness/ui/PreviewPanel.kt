@@ -13,7 +13,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.ui.InplaceButton
 import com.intellij.ui.SeparatorFactory
-import com.intellij.ui.TitledSeparator
+import com.intellij.uiDesigner.core.GridConstraints
 import javax.swing.JComponent
 import javax.swing.JPanel
 import kotlin.random.Random
@@ -31,17 +31,15 @@ import kotlin.random.Random
  *
  * @property getScheme Returns a scheme that generates previews. Its random source will be changed.
  */
-@Suppress("detekt:LateinitUsage") // Initialized by scene builder
+@Suppress("detekt:LateinitUsage") // Initialized in panel DSL
 class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     /**
      * The root panel containing the preview elements.
      */
-    lateinit var rootComponent: JPanel private set
-    private lateinit var separator: TitledSeparator
+    val rootComponent: JPanel
     private lateinit var refreshButton: JComponent
     private lateinit var previewDocument: Document
     private lateinit var previewEditor: Editor
-    private lateinit var previewComponent: JComponent
 
     /**
      * The current seed to generate data with.
@@ -56,23 +54,38 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
         set(value) = runWriteAction { previewDocument.setText(value) }
 
 
-    /**
-     * Initializes custom UI components.
-     *
-     * This method is called by the scene builder at the start of the constructor.
-     */
-    private fun createUIComponents() {
-        separator = SeparatorFactory.createSeparator(Bundle("preview.title"), null)
-        refreshButton = InplaceButton(Bundle("shared.action.refresh"), AllIcons.Actions.Refresh) {
-            seed = Random.nextInt()
-            updatePreview()
-        }
+    init {
+        rootComponent = GridPanelBuilder.panel {
+            row {
+                cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
+                    SeparatorFactory.createSeparator(Bundle("preview.title"), null)
+                }
 
-        val factory = EditorFactory.getInstance()
-        previewDocument = factory.createDocument(Bundle("preview.placeholder"))
-        UndoUtil.disableUndoFor(previewDocument)
-        previewEditor = factory.createViewer(previewDocument)
-        previewComponent = previewEditor.component
+                cell(constraints(hSizePolicy = 0)) {
+                    InplaceButton(Bundle("shared.action.refresh"), AllIcons.Actions.Refresh) {
+                        seed = Random.nextInt()
+                        updatePreview()
+                    }.also { refreshButton = it }
+                }
+            }
+
+            cell(
+                constraints(
+                    colSpan = 2,
+                    fill = GridConstraints.FILL_HORIZONTAL
+                ).withHeight(UIConstants.WIDTH_MEDIUM)
+            ) {
+                val factory = EditorFactory.getInstance()
+
+                factory.createDocument(Bundle("preview.placeholder"))
+                    .also { UndoUtil.disableUndoFor(it) }
+                    .also { previewDocument = it }
+
+                factory.createViewer(previewDocument)
+                    .also { previewEditor = it }
+                    .component
+            }
+        }
     }
 
     /**
@@ -86,7 +99,7 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     /**
      * Updates the preview with the current settings.
      */
-    @Suppress("SwallowedException") // Alternative is to add coupling to SettingsComponent
+    @Suppress("SwallowedException") // Alternative is to add coupling to `SettingsComponent`
     fun updatePreview() {
         try {
             previewText = generateTimely { getScheme().also { it.random = Random(seed) }.generateStrings() }.first()

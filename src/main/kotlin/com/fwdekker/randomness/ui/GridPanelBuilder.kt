@@ -2,6 +2,7 @@ package com.fwdekker.randomness.ui
 
 import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.uiDesigner.core.GridLayoutManager
+import com.intellij.uiDesigner.core.Spacer
 import com.intellij.util.ui.DialogUtil
 import java.awt.Dimension
 import javax.swing.AbstractButton
@@ -60,7 +61,7 @@ sealed class GridPanelBuilder<T : Any?> {
      * Adds a panel to the current context.
      *
      * @param spec a grid builder DSL description of a panel
-     * @return T depends on implementation
+     * @return depends on implementation
      */
     abstract fun panel(spec: PanelBuilder.() -> Unit): T
 
@@ -68,7 +69,7 @@ sealed class GridPanelBuilder<T : Any?> {
      * Adds a row to the current context.
      *
      * @param spec a grid builder DSL description of a row
-     * @return T depends on implementation
+     * @return depends on implementation
      */
     abstract fun row(spec: RowBuilder.() -> Unit): T
 
@@ -77,9 +78,31 @@ sealed class GridPanelBuilder<T : Any?> {
      *
      * @param constraints the constraints applied to the added cell
      * @param spec a grid builder DSL description of a cell, returning the component that the cell should contain
-     * @return T depends on implementation
+     * @return depends on implementation
      */
     abstract fun cell(constraints: GridConstraints = constraints(), spec: CellBuilder.() -> JComponent): T
+
+    fun vspacer(height: Int = -1): T =
+        if (height == -1)
+            cell(
+                constraints(
+                    fill = GridConstraints.FILL_VERTICAL,
+                    vSizePolicy = GridConstraints.SIZEPOLICY_CAN_GROW or GridConstraints.SIZEPOLICY_WANT_GROW,
+                )
+            ) { Spacer() }
+        else
+            cell(constraints().withHeight(height)) { Spacer() }
+
+    fun hspacer(width: Int = -1): T =
+        if (width == -1)
+            cell(
+                constraints(
+                    fill = GridConstraints.FILL_HORIZONTAL,
+                    vSizePolicy = GridConstraints.SIZEPOLICY_CAN_GROW or GridConstraints.SIZEPOLICY_WANT_GROW
+                )
+            ) { Spacer() }
+        else
+            cell(constraints().withWidth(width)) { Spacer() }
 
 
     /**
@@ -91,6 +114,9 @@ sealed class GridPanelBuilder<T : Any?> {
      * @param fill whether the component fills the cell
      * @param vSizePolicy determines the vertical size if the component's size changes
      * @param hSizePolicy determines the horizontal size if the component's size changes
+     * @param minimumSize the minimum size of the cell
+     * @param preferredSize the preferred size of the cell
+     * @param maximumSize the maximum size of the cell
      * @return the created constraints
      */
     @Suppress("detekt:LongParameterList") // Acceptable as alternative to overkill builder pattern
@@ -101,10 +127,26 @@ sealed class GridPanelBuilder<T : Any?> {
         fill: Int = GridConstraints.FILL_NONE,
         vSizePolicy: Int = GridConstraints.SIZEPOLICY_CAN_GROW or GridConstraints.SIZEPOLICY_CAN_SHRINK,
         hSizePolicy: Int = GridConstraints.SIZEPOLICY_CAN_GROW or GridConstraints.SIZEPOLICY_CAN_SHRINK,
+        minimumSize: Dimension = Dimension(-1, -1),
+        preferredSize: Dimension = Dimension(-1, -1),
+        maximumSize: Dimension = Dimension(-1, -1),
     ) = GridConstraints(
-        -1, -1, 1, colSpan, anchor, fill, hSizePolicy, vSizePolicy, Dimension(-1, -1), Dimension(-1, -1),
-        Dimension(-1, -1), indent
+        -1, -1, 1, colSpan, anchor, fill, hSizePolicy, vSizePolicy, minimumSize, preferredSize, maximumSize, indent
     )
+
+    fun GridConstraints.withWidth(width: Int): GridConstraints {
+        myMinimumSize.width = width
+        myPreferredSize.width = width
+        myMaximumSize.width = width
+        return this
+    }
+
+    fun GridConstraints.withHeight(height: Int): GridConstraints {
+        myMinimumSize.height = height
+        myPreferredSize.height = height
+        myMaximumSize.height = height
+        return this
+    }
 
 
     /**
@@ -237,7 +279,7 @@ class RowBuilder : GridPanelBuilder<Unit>() {
      *
      * @param colSpan the number of columns to span
      */
-    fun skip(colSpan: Int) {
+    fun skip(colSpan: Int = 1) {
         cells.add(Cell(constraints(colSpan = colSpan)) { null })
     }
 
@@ -268,13 +310,13 @@ class RowBuilder : GridPanelBuilder<Unit>() {
         cells.fold(0) { currentCol, (constraints, spec) ->
             val component = spec(CellBuilder)
 
-            if (component == null || constraints == null) return@fold currentCol
+            if (component != null && constraints != null) {
+                constraints.row = row
+                constraints.column = currentCol
+                panel.add(component, constraints)
+            }
 
-            constraints.row = row
-            constraints.column = currentCol
-            panel.add(component, constraints)
-
-            currentCol + constraints.colSpan
+            currentCol + (constraints?.colSpan ?: 0)
         }
     }
 
@@ -327,7 +369,7 @@ object CellBuilder : GridPanelBuilder<JComponent>() {
      *
      * @param T the type of `this`
      * @param name the name to set
-     * @return T `this`
+     * @return `this`
      */
     fun <T : JComponent> T.withName(name: String) = also { this.name = name }.let { this }
 
@@ -336,7 +378,7 @@ object CellBuilder : GridPanelBuilder<JComponent>() {
      *
      * @param T the type of `this`
      * @param label the label for `this`, optionally with a mnemonic registered
-     * @return T `this`
+     * @return `this`
      */
     fun <T : JComponent> T.setLabel(label: JLabel) = DialogUtil.registerMnemonic(label, this, '&').let { this }
 
@@ -346,7 +388,7 @@ object CellBuilder : GridPanelBuilder<JComponent>() {
      * @param T the type of `this`
      * @param button the button of which the checked state determines whether `this` is enabled
      * @param condition an optional additional condition to check when determining whether `this` should be enabled
-     * @return T `this`
+     * @return `this`
      */
     fun <T : JComponent> T.toggledBy(button: AbstractButton, condition: () -> Boolean = { true }): T {
         button.addChangeListener(
@@ -359,10 +401,18 @@ object CellBuilder : GridPanelBuilder<JComponent>() {
     }
 
     /**
+     * Applies the mnemonic to `this` based on its text, albeit without targeting any specific component.
+     *
+     * @param T the type of `this`
+     * @return `this`
+     */
+    fun <T : JLabel> T.loadMnemonic() = DialogUtil.registerMnemonic(this, null, '&').let { this }
+
+    /**
      * Applies the mnemonic to `this` based on its text.
      *
      * @param T the type of `this`
-     * @return T `this`
+     * @return `this`
      */
     fun <T : AbstractButton> T.loadMnemonic() = DialogUtil.setTextWithMnemonic(this, this.text, '&').let { this }
 
@@ -371,7 +421,7 @@ object CellBuilder : GridPanelBuilder<JComponent>() {
      *
      * @param T the type of `this`
      * @param group the group to add `this` to
-     * @return T `this`
+     * @return `this`
      */
     fun <T : AbstractButton> T.inGroup(group: ButtonGroup) = group.add(this).let { this }
 
@@ -380,7 +430,7 @@ object CellBuilder : GridPanelBuilder<JComponent>() {
      *
      * @param T the type of `this`
      * @param actionCommand the new action command of `this`
-     * @return T `this`
+     * @return `this`
      */
     fun <T : AbstractButton> T.withActionCommand(actionCommand: String) =
         also { this.actionCommand = actionCommand }.let { this }
@@ -390,8 +440,9 @@ object CellBuilder : GridPanelBuilder<JComponent>() {
      *
      * @param T the type of `this`
      * @param width the forced width of `this`
-     * @return T `this`
+     * @return `this`
      */
+    // TODO: Use this in `GridConstraints` only? So apply to cell, not to component?
     fun <T : JComponent> T.forceWidth(width: Int): T {
         minimumSize = Dimension(width, minimumSize.height)
         preferredSize = Dimension(width, preferredSize.height)

@@ -4,6 +4,7 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
+import com.fwdekker.randomness.ui.GridPanelBuilder
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.VariableLabelRadioButton
@@ -16,7 +17,10 @@ import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_QUOTATION
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_TYPE
 import com.intellij.ui.SeparatorFactory
-import com.intellij.ui.TitledSeparator
+import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBRadioButton
+import com.intellij.uiDesigner.core.GridConstraints
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JLabel
@@ -29,48 +33,154 @@ import javax.swing.JPanel
  * @param scheme the scheme to edit in the component
  */
 class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidScheme>(scheme) {
-    override lateinit var rootComponent: JPanel private set
+    override val rootComponent: JPanel
     override val preferredFocusedComponent
         get() = typeGroup.buttons().firstOrNull { it.isSelected }
 
-    private lateinit var valueSeparator: TitledSeparator
-    private lateinit var typeLabel: JLabel
     private lateinit var typeGroup: ButtonGroup
-    private lateinit var quotationLabel: JLabel
     private lateinit var quotationGroup: ButtonGroup
     private lateinit var customQuotation: VariableLabelRadioButton
-    private lateinit var capitalizationLabel: JLabel
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var addDashesCheckBox: JCheckBox
-    private lateinit var arrayDecoratorPanel: JPanel
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
 
     init {
-        nop() // Cannot use `lateinit` property as first statement in init
+        rootComponent = GridPanelBuilder.panel {
+            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
+                SeparatorFactory.createSeparator(Bundle("uuid.ui.value_separator"), null)
+            }
 
-        typeGroup.setLabel(typeLabel)
+            panel {
+                row {
+                    lateinit var typeLabel: JLabel
 
-        customQuotation.addToButtonGroup(quotationGroup)
-        quotationGroup.setLabel(quotationLabel)
+                    cell {
+                        JBLabel(Bundle("uuid.type_option"))
+                            .loadMnemonic()
+                            .also { typeLabel = it }
+                    }
 
-        capitalizationGroup.setLabel(capitalizationLabel)
+                    row {
+                        run { typeGroup = ButtonGroup() }
+
+                        cell {
+                            JBRadioButton(Bundle("uuid.type1"))
+                                .withActionCommand("1")
+                                .withName("type1")
+                                .inGroup(typeGroup)
+                        }
+
+                        cell {
+                            JBRadioButton(Bundle("uuid.type4"))
+                                .withActionCommand("4")
+                                .withName("type4")
+                                .inGroup(typeGroup)
+                        }
+
+                        run { typeGroup.setLabel(typeLabel) }
+                    }
+                }
+
+                row {
+                    lateinit var quotationLabel: JLabel
+
+                    cell {
+                        JBLabel(Bundle("uuid.ui.quotation_marks.option"))
+                            .loadMnemonic()
+                            .also { quotationLabel = it }
+                    }
+
+                    row {
+                        run { quotationGroup = ButtonGroup() }
+
+                        cell {
+                            JBRadioButton(Bundle("uuid.ui.quotation_marks.none"))
+                                .withName("quotationNone")
+                                .withActionCommand("")
+                                .inGroup(quotationGroup)
+                        }
+
+                        cell {
+                            JBRadioButton("'")
+                                .withName("quotationSingle")
+                                .inGroup(quotationGroup)
+                        }
+
+                        cell {
+                            JBRadioButton(""""""")
+                                .withName("quotationDouble")
+                                .inGroup(quotationGroup)
+                        }
+
+                        cell {
+                            JBRadioButton("`")
+                                .withName("quotationBacktick")
+                                .inGroup(quotationGroup)
+                        }
+
+                        cell {
+                            VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
+                                .withName("quotationCustom")
+                                .also { it.addToButtonGroup(quotationGroup) }
+                                .also { customQuotation = it }
+                        }
+
+                        run { quotationGroup.setLabel(quotationLabel) }
+                    }
+                }
+
+                row {
+                    lateinit var capitalizationLabel: JLabel
+
+                    cell {
+                        JBLabel(Bundle("uuid.ui.capitalization_option"))
+                            .loadMnemonic()
+                            .also { capitalizationLabel = it }
+                    }
+
+                    row {
+                        run { capitalizationGroup = ButtonGroup() }
+
+                        cell {
+                            @Suppress("DialogTitleCapitalization") // Intentional
+                            JBRadioButton(Bundle("shared.capitalization.lower"))
+                                .withActionCommand("lower")
+                                .withName("capitalizationLower")
+                                .inGroup(capitalizationGroup)
+                        }
+
+                        cell {
+                            JBRadioButton(Bundle("shared.capitalization.upper"))
+                                .withActionCommand("upper")
+                                .withName("capitalizationUpper")
+                                .inGroup(capitalizationGroup)
+                        }
+
+                        run { capitalizationGroup.setLabel(capitalizationLabel) }
+                    }
+                }
+
+                cell {
+                    JBCheckBox(Bundle("uuid.add_dashes"))
+                        .withName("addDashesCheckBox")
+                        .loadMnemonic()
+                        .also { addDashesCheckBox = it }
+                }
+            }
+
+            vspacer(height = 15)
+
+            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
+                ArrayDecoratorEditor(originalState.arrayDecorator)
+                    .also { arrayDecoratorEditor = it }
+                    .rootComponent
+            }
+
+            vspacer()
+        }
 
         loadState()
-    }
-
-    /**
-     * Initializes custom UI components.
-     *
-     * This method is called by the scene builder at the start of the constructor.
-     */
-    private fun createUIComponents() {
-        valueSeparator = SeparatorFactory.createSeparator(Bundle("uuid.ui.value_separator"), null)
-
-        customQuotation = VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
-
-        arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
-        arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
     }
 
 
@@ -101,12 +211,4 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
             typeGroup, quotationGroup, customQuotation, capitalizationGroup, addDashesCheckBox, arrayDecoratorEditor,
             listener = listener
         )
-}
-
-
-/**
- * Null operation, does nothing.
- */
-private fun nop() {
-    // Does nothing
 }
