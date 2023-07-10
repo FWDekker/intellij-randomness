@@ -16,16 +16,12 @@ import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
-import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.JBTextField
 import com.intellij.uiDesigner.core.GridConstraints
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
-import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.event.ChangeEvent
@@ -56,55 +52,37 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
 
     init {
         rootComponent = GridPanelBuilder.panel {
-            textSeparator(Bundle("decimal.ui.value_separator"))
+            textSeparatorCell(Bundle("decimal.ui.value_separator"))
 
             panel {
                 row {
-                    lateinit var minCountLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("decimal.ui.min_value_option"))
-                            .also { minCountLabel = it }
-                    }
+                    cell { label("minValueLabel", Bundle("decimal.ui.min_value_option")) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_VERY_LARGE)) {
                         JDoubleSpinner()
                             .withName("minValue")
-                            .setLabel(minCountLabel)
                             .also { minValue = it }
                     }
                 }
 
                 row {
-                    lateinit var maxCountLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("decimal.ui.max_value_option"))
-                            .also { maxCountLabel = it }
-                    }
+                    cell { label("maxValueLabel", Bundle("decimal.ui.max_value_option")) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_VERY_LARGE)) {
                         JDoubleSpinner()
                             .withName("maxValue")
-                            .setLabel(maxCountLabel)
                             .also { maxValue = it }
                     }
-
-                    run { bindSpinners(minValue, maxValue, DecimalScheme.MAX_VALUE_DIFFERENCE) }
                 }
 
-                row {
-                    lateinit var decimalCountLabel: JLabel
+                bindSpinners(minValue, maxValue, DecimalScheme.MAX_VALUE_DIFFERENCE)
 
-                    cell {
-                        JBLabel(Bundle("decimal.ui.number_of_decimals_option"))
-                            .also { decimalCountLabel = it }
-                    }
+                row {
+                    cell { label("decimalCountLabel", Bundle("decimal.ui.number_of_decimals_option")) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JIntSpinner(value = MIN_DECIMAL_COUNT, minValue = MIN_DECIMAL_COUNT)
                             .withName("decimalCount")
-                            .setLabel(decimalCountLabel)
                             .also { decimalCount = it }
                     }
                 }
@@ -115,7 +93,6 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                     cell {
                         JBCheckBox(Bundle("decimal.ui.show_trailing_zeroes"))
                             .withName("showTrailingZeroes")
-                            .loadMnemonic()
                             .also {
                                 decimalCount.addChangeListener(
                                     { _: ChangeEvent? ->
@@ -128,130 +105,69 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                 }
             }
 
-            vSeparator()
+            vSeparatorCell()
 
             panel {
                 row {
-                    lateinit var groupingSeparatorLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("decimal.ui.grouping_separator.option"))
-                            .loadMnemonic()
-                            .also { groupingSeparatorLabel = it }
-                    }
+                    cell { label("groupingSeparatorLabel", Bundle("decimal.ui.grouping_separator.option")) }
 
                     row {
-                        run { groupingSeparatorGroup = ButtonGroup() }
+                        groupingSeparatorGroup = buttonGroup("groupingSeparator")
 
-                        cell {
-                            JBRadioButton(Bundle("decimal.ui.grouping_separator.none"))
-                                .withName("groupingSeparatorNone")
-                                .withActionCommand("")
-                                .inGroup(groupingSeparatorGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(".")
-                                .withName("groupingSeparatorPeriod")
-                                .inGroup(groupingSeparatorGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(",")
-                                .withName("groupingSeparatorComma")
-                                .inGroup(groupingSeparatorGroup)
-                        }
-
-                        cell {
-                            JBRadioButton("_")
-                                .withName("groupingSeparatorUnderscore")
-                                .inGroup(groupingSeparatorGroup)
-                        }
-
+                        cell { radioButton("groupingSeparatorNone", Bundle("shared.option.none")) }
+                        cell { radioButton("groupingSeparatorPeriod", ".") }
+                        cell { radioButton("groupingSeparatorComma", ",") }
+                        cell { radioButton("groupingSeparatorUnderscore", "_") }
                         cell {
                             VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(1))
                                 .withName("groupingSeparatorCustom")
-                                .also { it.addToButtonGroup(groupingSeparatorGroup) }
                                 .also { customGroupingSeparator = it }
                         }
-
-                        run { groupingSeparatorGroup.setLabel(groupingSeparatorLabel) }
                     }
                 }
 
                 row {
-                    lateinit var decimalSeparatorLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("decimal.ui.decimal_separator_option"))
-                            .loadMnemonic()
-                            .also { decimalSeparatorLabel = it }
-                    }
+                    cell { label("decimalSeparatorLabel", Bundle("decimal.ui.decimal_separator_option")) }
 
                     row {
-                        run { decimalSeparatorGroup = ButtonGroup() }
+                        decimalSeparatorGroup = buttonGroup("decimalSeparator")
 
-                        cell {
-                            JBRadioButton(",")
-                                .withName("decimalSeparatorComma")
-                                .inGroup(decimalSeparatorGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(".")
-                                .withName("decimalSeparatorPeriod")
-                                .inGroup(decimalSeparatorGroup)
-                        }
-
+                        cell { radioButton("decimalSeparatorComma", ",") }
+                        cell { radioButton("decimalSeparatorPeriod", ".") }
                         cell {
                             VariableLabelRadioButton(UIConstants.SIZE_TINY, MinMaxLengthDocumentFilter(1, 1))
                                 .withName("decimalSeparatorCustom")
-                                .also { it.addToButtonGroup(decimalSeparatorGroup) }
                                 .also { customDecimalSeparator = it }
                         }
-
-                        run { decimalSeparatorGroup.setLabel(decimalSeparatorLabel) }
                     }
                 }
             }
 
-            vSeparator()
+            vSeparatorCell()
 
             panel {
                 row {
-                    lateinit var prefixLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("decimal.ui.prefix_option"))
-                            .also { prefixLabel = it }
-                    }
+                    cell { label("prefixLabel", Bundle("decimal.ui.prefix_option")) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JBTextField()
                             .withName("prefix")
-                            .setLabel(prefixLabel)
                             .also { prefixInput = it }
                     }
                 }
 
                 row {
-                    lateinit var suffixLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("decimal.ui.suffix_option"))
-                            .also { suffixLabel = it }
-                    }
+                    cell { label("suffixLabel", Bundle("decimal.ui.suffix_option")) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JBTextField()
                             .withName("suffix")
-                            .setLabel(suffixLabel)
                             .also { suffixInput = it }
                     }
                 }
             }
 
-            vSeparator()
+            vSeparatorCell()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -259,7 +175,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                     .rootComponent
             }
 
-            vSpacer()
+            vSpacerCell()
         }
 
         loadState()

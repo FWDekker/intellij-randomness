@@ -56,7 +56,7 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     init {
         rootComponent = GridPanelBuilder.panel {
             row {
-                textSeparator(Bundle("preview.title"))
+                textSeparatorCell(Bundle("preview.title"))
 
                 cell(constraints(hSizePolicy = 0)) {
                     InplaceButton(Bundle("shared.action.refresh"), AllIcons.Actions.Refresh) {

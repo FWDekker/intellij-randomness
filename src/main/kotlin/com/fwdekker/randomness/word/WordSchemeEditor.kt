@@ -11,7 +11,6 @@ import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
-import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_QUOTATION
@@ -24,7 +23,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBRadioButton
 import com.intellij.uiDesigner.core.GridConstraints
 import java.awt.event.ItemEvent
 import javax.swing.ButtonGroup
@@ -66,7 +64,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 panel {
                     row {
-                        textSeparator(Bundle("word.ui.word_list"))
+                        textSeparatorCell(Bundle("word.ui.word_list"))
 
                         cell(constraints(hSizePolicy = 0)) {
                             ComboBox(arrayOf(PRESET_ITEM) + DefaultWordList.WORD_LISTS)
@@ -111,119 +109,61 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
                 }
             }
 
-            vSeparator()
+            vSeparatorCell()
 
-            textSeparator(Bundle("word.ui.appearance"))
+            textSeparatorCell(Bundle("word.ui.appearance"))
 
             panel {
                 row {
-                    lateinit var quotationLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("word.ui.quotation_marks.option"))
-                            .loadMnemonic()
-                            .also { quotationLabel = it }
-                    }
+                    cell { label("quotationLabel", Bundle("word.ui.quotation_marks.option")) }
 
                     row {
-                        run { quotationGroup = ButtonGroup() }
+                        quotationGroup = buttonGroup("quotation")
 
-                        cell {
-                            JBRadioButton(Bundle("word.ui.quotation_marks.none"))
-                                .withName("quotationNone")
-                                .withActionCommand("")
-                                .inGroup(quotationGroup)
-                        }
-
-                        cell {
-                            JBRadioButton("'")
-                                .withName("quotationSingle")
-                                .inGroup(quotationGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(""""""")
-                                .withName("quotationDouble")
-                                .inGroup(quotationGroup)
-                        }
-
-                        cell {
-                            JBRadioButton("`")
-                                .withName("quotationBacktick")
-                                .inGroup(quotationGroup)
-                        }
-
+                        cell { radioButton("quotationNone", Bundle("shared.option.none"), "") }
+                        cell { radioButton("quotationSingle", "'") }
+                        cell { radioButton("quotationDouble", "\"") }
+                        cell { radioButton("quotationBacktick", "`") }
                         cell {
                             VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(2))
                                 .withName("quotationCustom")
-                                .also { it.addToButtonGroup(quotationGroup) }
                                 .also { customQuotation = it }
                         }
-
-                        run { quotationGroup.setLabel(quotationLabel) }
                     }
                 }
 
                 row {
                     cell {
-                        JBLabel(Bundle("word.ui.capitalization_option"))
-                            .loadMnemonic()
+                        label("capitalizationLabel", Bundle("word.ui.capitalization_option"))
                             .also { capitalizationLabel = it }
                     }
 
                     row {
-                        run { capitalizationGroup = ButtonGroup() }
+                        capitalizationGroup = buttonGroup("capitalization")
 
+                        cell { radioButton("capitalizationRetain", Bundle("shared.capitalization.retain"), "retain") }
+                        cell { radioButton("capitalizationLower", Bundle("shared.capitalization.lower"), "lower") }
+                        cell { radioButton("capitalizationUpper", Bundle("shared.capitalization.upper"), "upper") }
+                        cell { radioButton("capitalizationRandom", Bundle("shared.capitalization.random"), "random") }
                         cell {
-                            JBRadioButton(Bundle("shared.capitalization.retain"))
-                                .withActionCommand("retain")
-                                .withName("capitalizationRetain")
-                                .inGroup(capitalizationGroup)
+                            radioButton(
+                                "capitalizationSentence",
+                                Bundle("shared.capitalization.sentence"),
+                                "sentence"
+                            )
                         }
-
                         cell {
-                            @Suppress("DialogTitleCapitalization") // Intentional
-                            JBRadioButton(Bundle("shared.capitalization.lower"))
-                                .withActionCommand("lower")
-                                .withName("capitalizationLower")
-                                .inGroup(capitalizationGroup)
+                            radioButton(
+                                "capitalizationFirstLetter",
+                                Bundle("shared.capitalization.first_letter"),
+                                "first letter"
+                            )
                         }
-
-                        cell {
-                            JBRadioButton(Bundle("shared.capitalization.upper"))
-                                .withActionCommand("upper")
-                                .withName("capitalizationUpper")
-                                .inGroup(capitalizationGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(Bundle("shared.capitalization.random"))
-                                .withActionCommand("random")
-                                .withName("capitalizationRandom")
-                                .inGroup(capitalizationGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(Bundle("shared.capitalization.sentence"))
-                                .withActionCommand("sentence")
-                                .withName("capitalizationSentence")
-                                .inGroup(capitalizationGroup)
-                        }
-
-                        cell {
-                            @Suppress("DialogTitleCapitalization") // Intentional
-                            JBRadioButton(Bundle("shared.capitalization.first_letter"))
-                                .withActionCommand("first letter")
-                                .withName("capitalizationFirstLetter")
-                                .inGroup(capitalizationGroup)
-                        }
-
-                        run { capitalizationGroup.setLabel(capitalizationLabel) }
                     }
                 }
             }
 
-            vSeparator()
+            vSeparatorCell()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -231,7 +171,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
                     .rootComponent
             }
 
-            vSpacer()
+            vSpacerCell()
         }
 
         loadState()

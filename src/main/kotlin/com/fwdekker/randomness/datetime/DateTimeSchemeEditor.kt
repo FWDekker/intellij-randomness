@@ -13,7 +13,6 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.util.ui.JBUI
-import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.SwingConstants
@@ -37,56 +36,38 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
 
     init {
         rootComponent = GridPanelBuilder.panel {
-            textSeparator(Bundle("datetime.ui.value_separator"))
+            textSeparatorCell(Bundle("datetime.ui.value_separator"))
 
             panel {
                 row {
-                    lateinit var minCountLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("datetime.ui.min_datetime_option"))
-                            .also { minCountLabel = it }
-                    }
+                    cell { label("minDateTimeLabel", Bundle("datetime.ui.min_datetime_option")) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
                         JDateTimeField(DateTimeScheme.DEFAULT_MIN_DATE_TIME.toLocalDateTime())
                             .withName("minDateTime")
-                            .setLabel(minCountLabel)
                             .also { minDateTimeField = it }
                     }
                 }
 
                 row {
-                    lateinit var maxCountLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("datetime.ui.max_datetime_option"))
-                            .also { maxCountLabel = it }
-                    }
+                    cell { label("maxDateTimeLabel", Bundle("datetime.ui.max_datetime_option")) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
                         JDateTimeField(DateTimeScheme.DEFAULT_MAX_DATE_TIME.toLocalDateTime())
                             .withName("maxDateTime")
-                            .setLabel(maxCountLabel)
                             .also { maxDateTimeField = it }
                     }
-
-                    run { bindDateTimes(minDateTimeField, maxDateTimeField) }
                 }
 
-                row {
-                    lateinit var patternLabel: JLabel
+                bindDateTimes(minDateTimeField, maxDateTimeField)
 
-                    cell {
-                        JBLabel(Bundle("datetime.ui.pattern_option"))
-                            .also { patternLabel = it }
-                    }
+                row {
+                    cell { label("patternLabel", Bundle("datetime.ui.pattern_option")) }
 
                     row {
                         cell(constraints(fixedWidth = UIConstants.SIZE_VERY_LARGE)) {
                             JBTextField()
                                 .withName("pattern")
-                                .setLabel(patternLabel)
                                 .also { patternField = it }
                         }
 
@@ -114,7 +95,7 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
                 }
             }
 
-            vSeparator()
+            vSeparatorCell()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -122,7 +103,7 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
                     .rootComponent
             }
 
-            vSpacer()
+            vSpacerCell()
         }
 
         loadState()

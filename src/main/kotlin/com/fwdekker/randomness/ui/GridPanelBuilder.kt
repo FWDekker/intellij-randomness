@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.ui
 
 import com.intellij.ui.SeparatorFactory
+import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBRadioButton
 import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.uiDesigner.core.GridLayoutManager
 import com.intellij.uiDesigner.core.Spacer
@@ -11,7 +13,35 @@ import javax.swing.ButtonGroup
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
+import javax.swing.JRadioButton
 import javax.swing.event.ChangeEvent
+
+
+class BuilderState {
+    private val myComponents = mutableMapOf<String, JComponent>()
+
+    private val myGroups = mutableMapOf<String, ButtonGroup>()
+
+
+    fun addComponent(component: JComponent) {
+        if (component.name != null)
+            myComponents[component.name] = component
+    }
+
+    fun getLabelForOrNull(name: String) =
+        myComponents.filterKeys { it == "${name}Label" }.values.singleOrNull() as? JLabel
+
+    fun getLabelForOrNull(group: ButtonGroup) =
+        getLabelForOrNull(myGroups.filterValues { it == group }.keys.single())
+
+
+    fun addButtonGroup(name: String, group: ButtonGroup) {
+        myGroups[name] = group
+    }
+
+    fun getButtonGroupForOrNull(button: JComponent) =
+        myGroups.filterKeys { button.name.startsWith(it) }.values.singleOrNull()
+}
 
 
 /**
@@ -39,12 +69,6 @@ annotation class GridPanelBuilderMarker
  * can also be created using `panel { cell { JPanel("horse") } }`. The function `row` is implicitly invoked in between
  * `panel` and `cell`. Similarly, `panel { panel { ...` actually expands to `panel { row { cell { panel { ...`.
  *
- * Code is not necessarily executed in the order you may expect. Inside `panel`, all instances of `row` are invoked
- * immediately in order, but instances of `cell` are first collected, and are only invoked (in order of declaration)
- * once [PanelBuilder.build] is invoked. Note that only the `row`s directly inside the current `panel` are invoked; in
- * the structure `panel { row { cell { panel { row { ...`, the outer `row` is executed immediately, but the inner `row`
- * is executed only once `cell` is invoked.
- *
  * The DSL uses a grid layout in the background. The number of rows for the layout of any panel is calculated by
  * counting the number of invocations of `row` inside the panel. The number of columns is calculated by finding the row
  * with the largest number of columns; some cells may span multiple columns. Note that cells cannot span multiple rows.
@@ -57,7 +81,7 @@ annotation class GridPanelBuilderMarker
  * @param T the type of output returned to the user
  */
 @GridPanelBuilderMarker
-sealed class GridPanelBuilder<T : Any?> {
+sealed class GridPanelBuilder<T : Any?>(protected val state: BuilderState) {
     /**
      * Adds a panel to the current context.
      *
@@ -90,7 +114,7 @@ sealed class GridPanelBuilder<T : Any?> {
      * @param text the text to display in the separator
      * @return see [cell]
      */
-    fun textSeparator(text: String) =
+    fun textSeparatorCell(text: String) =
         cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) { SeparatorFactory.createSeparator(text, null) }
 
     /**
@@ -98,7 +122,7 @@ sealed class GridPanelBuilder<T : Any?> {
      *
      * @return see [cell]
      */
-    fun vSeparator() = vSpacer(height = UIConstants.SIZE_TINY)
+    fun vSeparatorCell() = vSpacerCell(height = UIConstants.SIZE_TINY)
 
     /**
      * Adds a [cell] containing a vertical spacer with the given [height].
@@ -106,7 +130,7 @@ sealed class GridPanelBuilder<T : Any?> {
      * @param height the height of the vertical spacer, or `-1` if the spacer should use all remaining vertical space
      * @return see [cell]
      */
-    fun vSpacer(height: Int = -1) =
+    fun vSpacerCell(height: Int = -1) =
         if (height == -1)
             cell(
                 constraints(
@@ -123,7 +147,7 @@ sealed class GridPanelBuilder<T : Any?> {
      * @param width the width of the horizontal spacer, or `-1` if the spacer should use all remaining horizontal space
      * @return see [cell]
      */
-    fun hSpacer(width: Int = -1) =
+    fun hSpacerCell(width: Int = -1) =
         if (width == -1)
             cell(
                 constraints(
@@ -133,6 +157,84 @@ sealed class GridPanelBuilder<T : Any?> {
             ) { Spacer() }
         else
             cell(constraints(fixedWidth = width)) { Spacer() }
+
+
+    fun label(name: String, text: String) = JBLabel(text).withName(name)
+
+    fun buttonGroup(name: String): ButtonGroup {
+        val group = ButtonGroup()
+        state.addButtonGroup(name, group)
+        return group
+    }
+
+    fun radioButton(name: String, text: String, actionCommand: String = text): JRadioButton =
+        JBRadioButton(text)
+            .withActionCommand(actionCommand)
+            .withName(name)
+
+
+    /**
+     * Sets the name of this [JComponent].
+     *
+     * If a [JLabel] was previously added with the name `"${name}Label"`, then this label is also registered as the
+     * label for `this` component.
+     *
+     * @param T the type of `this`
+     * @param name the name to set
+     * @return `this`
+     */
+    fun <T : JComponent> T.withName(name: String): T {
+        this.name = name
+
+        state.getLabelForOrNull(name)?.labelFor = this
+
+        return this
+    }
+
+    /**
+     * Sets the action command of `this` to [actionCommand].
+     *
+     * @param T the type of `this`
+     * @param actionCommand the new action command of `this`
+     * @return `this`
+     */
+    fun <T : AbstractButton> T.withActionCommand(actionCommand: String) =
+        also { this.actionCommand = actionCommand }.let { this }
+
+    /**
+     * Ensures that `this` is enabled if and only if [button] is checked and [condition] is `true`.
+     *
+     * @param T the type of `this`
+     * @param button the button of which the checked state determines whether `this` is enabled
+     * @param condition an optional additional condition to check when determining whether `this` should be enabled
+     * @return `this`
+     */
+    fun <T : JComponent> T.toggledBy(button: AbstractButton, condition: () -> Boolean = { true }): T {
+        button.addChangeListener(
+            { _: ChangeEvent? ->
+                this.isEnabled = button.isSelected && condition()
+            }.also { it(null) }
+        )
+
+        return this
+    }
+
+    /**
+     * Adds `this` to [group].
+     *
+     * @param T the type of `this`
+     * @param group the group to add `this` to
+     * @return `this`
+     */
+    fun <T : AbstractButton> T.inGroup(group: ButtonGroup) = group.add(this).let { this }
+
+    /**
+     * Applies the mnemonic to `this` based on its text, albeit without targeting any specific component.
+     *
+     * @param T the type of `this`
+     * @return `this`
+     */
+    fun <T : JLabel> T.loadMnemonic() = DialogUtil.registerMnemonic(this, null, '&').let { this }
 
 
     /**
@@ -184,7 +286,7 @@ sealed class GridPanelBuilder<T : Any?> {
          * @param spec a description written in grid panel DSL
          * @return a panel using the grid panel DSL
          */
-        fun panel(spec: PanelBuilder.() -> Unit) = PanelBuilder().apply(spec).build()
+        fun panel(spec: PanelBuilder.() -> Unit) = PanelBuilder(BuilderState()).apply(spec).build()
     }
 }
 
@@ -192,7 +294,7 @@ sealed class GridPanelBuilder<T : Any?> {
 /**
  * Grid builder DSL for a panel, which contains rows.
  */
-class PanelBuilder : GridPanelBuilder<Unit>() {
+class PanelBuilder(state: BuilderState) : GridPanelBuilder<Unit>(state) {
     /**
      * The list of rows that have been registered to this panel.
      */
@@ -208,7 +310,9 @@ class PanelBuilder : GridPanelBuilder<Unit>() {
      * @return nothing
      */
     override fun row(spec: RowBuilder.() -> Unit) {
-        rowBuilders.add(RowBuilder().apply(spec))
+        val builder = RowBuilder(state)
+        spec(builder)
+        rowBuilders.add(builder)
     }
 
     /**
@@ -240,9 +344,10 @@ class PanelBuilder : GridPanelBuilder<Unit>() {
      */
     fun build(): JPanel {
         val panel = JPanel()
-        val cols = rowBuilders.maxOfOrNull { it.cols } ?: return panel
 
+        val cols = rowBuilders.maxOfOrNull { it.cols } ?: return panel
         panel.layout = GridLayoutManager(rowBuilders.size, cols)
+
         rowBuilders.forEachIndexed { i, rowBuilder -> rowBuilder.build(panel, i) }
 
         return panel
@@ -252,7 +357,7 @@ class PanelBuilder : GridPanelBuilder<Unit>() {
 /**
  * Grid builder DSL for a row, which contains cells.
  */
-class RowBuilder : GridPanelBuilder<Unit>() {
+class RowBuilder(state: BuilderState) : GridPanelBuilder<Unit>(state) {
     /**
      * The list of cells that will be added to this row when [build] is invoked.
      */
@@ -274,7 +379,33 @@ class RowBuilder : GridPanelBuilder<Unit>() {
      * @return nothing
      */
     override fun cell(constraints: GridConstraints, spec: CellBuilder.() -> JComponent) {
-        cells.add(Cell(constraints, spec))
+        val component = spec(CellBuilder(state))
+
+        // Register mnemonics
+        if (component is AbstractButton) DialogUtil.setTextWithMnemonic(component, component.text, '&')
+        if (component is JLabel) DialogUtil.registerMnemonic(component, null, '&')
+
+        // Add group-based buttons
+        if (component is JRadioButton || component is VariableLabelRadioButton) {
+            // TODO: Clean up
+            val button =
+                if (component is JRadioButton) component
+                else if (component is VariableLabelRadioButton) component.button
+                else throw Exception("")
+
+            val group = state.getButtonGroupForOrNull(component)
+            if (group != null) {
+                group.add(button)
+
+                val label = state.getLabelForOrNull(group)
+                if (label != null)
+                    button.addItemListener { if (button.isSelected) label.labelFor = button }
+            }
+        }
+
+        // Store component
+        cells.add(Cell(constraints, component))
+        state.addComponent(component)
     }
 
     /**
@@ -305,23 +436,7 @@ class RowBuilder : GridPanelBuilder<Unit>() {
      * @param colSpan the number of columns to span
      */
     fun skip(colSpan: Int = 1) {
-        cells.add(Cell(constraints(colSpan = colSpan)) { null })
-    }
-
-    /**
-     * Registers [spec] to run when [build] is invoked.
-     *
-     * Behaves as if [cell] is invoked, except that no cell is actually added to this row.
-     *
-     * @param spec the code to run when [build] is invoked
-     */
-    fun run(spec: () -> Unit) {
-        cells.add(
-            Cell(null) {
-                spec()
-                null
-            }
-        )
+        cells.add(Cell(constraints(colSpan = colSpan), null))
     }
 
 
@@ -332,9 +447,7 @@ class RowBuilder : GridPanelBuilder<Unit>() {
      * @param row the index of the row in [panel] to add the [cell]s to
      */
     fun build(panel: JPanel, row: Int) {
-        cells.fold(0) { currentCol, (constraints, spec) ->
-            val component = spec(CellBuilder)
-
+        cells.fold(0) { currentCol, (constraints, component) ->
             if (component != null && constraints != null) {
                 constraints.row = row
                 constraints.column = currentCol
@@ -349,25 +462,27 @@ class RowBuilder : GridPanelBuilder<Unit>() {
     /**
      * A cell to be added to a row.
      *
-     * @property constraints the constraints to apply to the cell, or `null` if no cell should be added; the [spec] is
-     * invoked regardless
-     * @property spec a function that returns the component to be added, or returns `null` if no cell should be added
+     * @property constraints the constraints to apply to the cell, or `null` if no cell should be added
+     * @property component the component to be added, or `null` if no cell should be added
      */
-    private data class Cell(val constraints: GridConstraints?, val spec: CellBuilder.() -> JComponent?)
+    private data class Cell(val constraints: GridConstraints?, val component: JComponent?)
 }
 
 /**
  * Grid builder DSL for a cell, which contains a [JComponent].
  */
-object CellBuilder : GridPanelBuilder<JComponent>() {
+class CellBuilder(state: BuilderState) : GridPanelBuilder<JComponent>(state) {
     /**
      * Adds a panel as the component of this cell.
      *
      * @param spec a grid builder DSL description of a panel
      * @return the created panel
      */
-    override fun panel(spec: PanelBuilder.() -> Unit) =
-        PanelBuilder().apply(spec).build()
+    override fun panel(spec: PanelBuilder.() -> Unit): JPanel {
+        val builder = PanelBuilder(state)
+        spec(builder)
+        return builder.build()
+    }
 
     /**
      * Adds a row inside a panel as the component of this cell.
@@ -387,76 +502,4 @@ object CellBuilder : GridPanelBuilder<JComponent>() {
      */
     override fun cell(constraints: GridConstraints, spec: CellBuilder.() -> JComponent) =
         panel { row { cell(constraints, spec) } }
-
-
-    /**
-     * Sets the name of a [JComponent].
-     *
-     * @param T the type of `this`
-     * @param name the name to set
-     * @return `this`
-     */
-    fun <T : JComponent> T.withName(name: String) = also { this.name = name }.let { this }
-
-    /**
-     * Sets the label of this component to [label], and applies the mnemonic in [label] based on its current text.
-     *
-     * @param T the type of `this`
-     * @param label the label for `this`, optionally with a mnemonic registered
-     * @return `this`
-     */
-    fun <T : JComponent> T.setLabel(label: JLabel) = DialogUtil.registerMnemonic(label, this, '&').let { this }
-
-    /**
-     * Ensures that `this` is enabled if and only if [button] is checked and [condition] is `true`.
-     *
-     * @param T the type of `this`
-     * @param button the button of which the checked state determines whether `this` is enabled
-     * @param condition an optional additional condition to check when determining whether `this` should be enabled
-     * @return `this`
-     */
-    fun <T : JComponent> T.toggledBy(button: AbstractButton, condition: () -> Boolean = { true }): T {
-        button.addChangeListener(
-            { _: ChangeEvent? ->
-                this.isEnabled = button.isSelected && condition()
-            }.also { it(null) }
-        )
-
-        return this
-    }
-
-    /**
-     * Applies the mnemonic to `this` based on its text, albeit without targeting any specific component.
-     *
-     * @param T the type of `this`
-     * @return `this`
-     */
-    fun <T : JLabel> T.loadMnemonic() = DialogUtil.registerMnemonic(this, null, '&').let { this }
-
-    /**
-     * Applies the mnemonic to `this` based on its text.
-     *
-     * @param T the type of `this`
-     * @return `this`
-     */
-    fun <T : AbstractButton> T.loadMnemonic() = DialogUtil.setTextWithMnemonic(this, this.text, '&').let { this }
-
-    /**
-     * Adds `this` to [group].
-     *
-     * @param T the type of `this`
-     * @param group the group to add `this` to
-     * @return `this`
-     */
-    fun <T : AbstractButton> T.inGroup(group: ButtonGroup) = group.add(this).let { this }
-
-    /**
-     * Sets the action command of `this` to [actionCommand].
-     *
-     * @param T the type of `this`
-     * @param actionCommand the new action command of `this`
-     * @return `this`
-     */
-    fun <T : AbstractButton> T.withActionCommand(actionCommand: String) =
-        also { this.actionCommand = actionCommand }.let { this }
 }

@@ -8,9 +8,7 @@ import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBLabel
 import javax.swing.JCheckBox
-import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.text.PlainDocument
@@ -33,47 +31,38 @@ class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<F
 
     init {
         rootComponent = GridPanelBuilder.panel {
-            textSeparator(Bundle("fixed_length.title"))
+            textSeparatorCell(Bundle("fixed_length.title"))
 
             cell {
                 JBCheckBox(Bundle("fixed_length.ui.enabled"))
                     .withName("fixedLengthEnabled")
-                    .loadMnemonic()
                     .also { enabledCheckBox = it }
             }
 
             panel {
                 row {
-                    lateinit var lengthLabel: JLabel
-
                     cell {
-                        JBLabel(Bundle("fixed_length.ui.length_option"))
+                        label("fixedLengthLengthLabel", Bundle("fixed_length.ui.length_option"))
                             .toggledBy(enabledCheckBox)
-                            .also { lengthLabel = it }
                     }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JIntSpinner(value = FixedLengthDecorator.MIN_LENGTH, minValue = FixedLengthDecorator.MIN_LENGTH)
                             .withName("fixedLengthLength")
-                            .setLabel(lengthLabel)
                             .toggledBy(enabledCheckBox)
                             .also { lengthInput = it }
                     }
                 }
 
                 row {
-                    lateinit var fillerLabel: JLabel
-
                     cell {
-                        JBLabel(Bundle("fixed_length.ui.filler_option"))
+                        label("fixedLengthFillerLabel", Bundle("fixed_length.ui.filler_option"))
                             .toggledBy(enabledCheckBox)
-                            .also { fillerLabel = it }
                     }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JTextField(PlainDocument().also { it.documentFilter = MaxLengthDocumentFilter(1) }, "", 0)
                             .withName("fixedLengthFiller")
-                            .setLabel(fillerLabel)
                             .toggledBy(enabledCheckBox)
                             .also { fillerInput = it }
                     }

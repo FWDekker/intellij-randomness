@@ -17,14 +17,10 @@ import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.forEach
 import com.fwdekker.randomness.ui.getValue
-import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
-import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.JBTextField
 import com.intellij.uiDesigner.core.GridConstraints
 import javax.swing.ButtonGroup
-import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.event.ChangeEvent
@@ -54,197 +50,114 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
 
     init {
         rootComponent = GridPanelBuilder.panel {
-            textSeparator(Bundle("integer.ui.value_separator"))
+            textSeparatorCell(Bundle("integer.ui.value_separator"))
 
             panel {
                 row {
-                    lateinit var minValueLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("integer.ui.min_value_option"))
-                            .also { minValueLabel = it }
-                    }
+                    cell { label("minValueLabel", Bundle("integer.ui.min_value_option")) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
                         JLongSpinner()
                             .withName("minValue")
-                            .setLabel(minValueLabel)
                             .also { minValue = it }
                     }
                 }
 
                 row {
-                    lateinit var maxValueLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("integer.ui.max_value_option"))
-                            .also { maxValueLabel = it }
-                    }
+                    cell { label("maxValueLabel", Bundle("integer.ui.max_value_option")) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
                         JLongSpinner()
                             .withName("maxValue")
-                            .setLabel(maxValueLabel)
                             .also { maxValue = it }
                     }
-
-                    run { bindSpinners(minValue, maxValue, maxRange = null) }
                 }
+
+                bindSpinners(minValue, maxValue, maxRange = null)
             }
 
-            vSeparator()
+            vSeparatorCell()
 
             panel {
                 row {
-                    lateinit var baseLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("integer.ui.base_option"))
-                            .also { baseLabel = it }
-                    }
+                    cell { label("baseLabel", Bundle("integer.ui.base_option")) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JIntSpinner(IntegerScheme.DECIMAL_BASE, IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE)
                             .withName("base")
-                            .setLabel(baseLabel)
                             .also { base = it }
                     }
                 }
 
                 row {
-                    lateinit var groupingSeparatorLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("integer.ui.grouping_separator.option"))
-                            .loadMnemonic()
-                            .also { groupingSeparatorLabel = it }
-                    }
+                    cell { label("groupingSeparatorLabel", Bundle("integer.ui.grouping_separator.option")) }
 
                     row {
-                        run { groupingSeparatorGroup = ButtonGroup() }
+                        groupingSeparatorGroup = buttonGroup("groupingSeparator")
 
-                        cell {
-                            JBRadioButton(Bundle("integer.ui.grouping_separator.none"))
-                                .withName("groupingSeparatorNone")
-                                .withActionCommand("")
-                                .inGroup(groupingSeparatorGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(".")
-                                .withName("groupingSeparatorPeriod")
-                                .inGroup(groupingSeparatorGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(",")
-                                .withName("groupingSeparatorComma")
-                                .inGroup(groupingSeparatorGroup)
-                        }
-
-                        cell {
-                            JBRadioButton("_")
-                                .withName("groupingSeparatorUnderscore")
-                                .inGroup(groupingSeparatorGroup)
-                        }
-
+                        cell { radioButton("groupingSeparatorNone", Bundle("shared.option.none"), "") }
+                        cell { radioButton("groupingSeparatorPeriod", ".") }
+                        cell { radioButton("groupingSeparatorComma", ",") }
+                        cell { radioButton("groupingSeparatorUnderscore", "_") }
                         cell {
                             VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(1))
                                 .withName("groupingSeparatorCustom")
-                                .also { it.addToButtonGroup(groupingSeparatorGroup) }
                                 .also { customGroupingSeparator = it }
                         }
-
-                        run { groupingSeparatorGroup.setLabel(groupingSeparatorLabel) }
                     }
                 }
 
                 row {
-                    lateinit var capitalizationLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("integer.ui.capitalization_option"))
-                            .loadMnemonic()
-                            .also { capitalizationLabel = it }
-                    }
+                    cell { label("capitalizationLabel", Bundle("integer.ui.capitalization_option")) }
 
                     row {
-                        run { capitalizationGroup = ButtonGroup() }
+                        capitalizationGroup = buttonGroup("capitalization")
 
-                        cell {
-                            @Suppress("DialogTitleCapitalization") // Intentional
-                            JBRadioButton(Bundle("shared.capitalization.lower"))
-                                .withActionCommand("lower")
-                                .withName("capitalizationLower")
-                                .inGroup(capitalizationGroup)
-                        }
+                        cell { radioButton("capitalizationLower", Bundle("shared.capitalization.lower"), "lower") }
+                        cell { radioButton("capitalizationUpper", Bundle("shared.capitalization.upper"), "upper") }
 
-                        cell {
-                            JBRadioButton(Bundle("shared.capitalization.upper"))
-                                .withActionCommand("upper")
-                                .withName("capitalizationUpper")
-                                .inGroup(capitalizationGroup)
-                        }
+                        // TODO: Find a nicer place to run this code
+                        base.addChangeListener(
+                            { _: ChangeEvent? ->
+                                groupingSeparatorGroup.forEach {
+                                    it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE
+                                }
+                                customGroupingSeparator.isEnabled = base.value == IntegerScheme.DECIMAL_BASE
 
-                        run { capitalizationGroup.setLabel(capitalizationLabel) }
-
-                        // TODO: Find way to add `run` elsewhere, to make relation clearer!
-                        //  (Add listeners after creating panel?)
-                        run {
-                            base.addChangeListener(
-                                { _: ChangeEvent? ->
-                                    groupingSeparatorGroup.forEach {
-                                        it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE
-                                    }
-                                    customGroupingSeparator.isEnabled = base.value == IntegerScheme.DECIMAL_BASE
-
-                                    capitalizationGroup.forEach {
-                                        it.isEnabled = base.value > IntegerScheme.DECIMAL_BASE
-                                    }
-                                }.also { it(null) }
-                            )
-                        }
+                                capitalizationGroup.forEach {
+                                    it.isEnabled = base.value > IntegerScheme.DECIMAL_BASE
+                                }
+                            }.also { it(null) }
+                        )
                     }
                 }
             }
 
-            vSeparator()
+            vSeparatorCell()
 
             panel {
                 row {
-                    lateinit var prefixLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("integer.ui.prefix_option"))
-                            .also { prefixLabel = it }
-                    }
+                    cell { label("prefixLabel", Bundle("integer.ui.prefix_option")) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JBTextField()
                             .withName("prefix")
-                            .setLabel(prefixLabel)
                             .also { prefixInput = it }
                     }
                 }
 
                 row {
-                    lateinit var suffixLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("integer.ui.suffix_option"))
-                            .also { suffixLabel = it }
-                    }
+                    cell { label("suffixLabel", Bundle("integer.ui.suffix_option")) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JBTextField()
                             .withName("suffix")
-                            .setLabel(suffixLabel)
                             .also { suffixInput = it }
                     }
                 }
             }
 
-            vSeparator()
+            vSeparatorCell()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 FixedLengthDecoratorEditor(originalState.fixedLengthDecorator)
@@ -252,7 +165,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                     .rootComponent
             }
 
-            vSeparator()
+            vSeparatorCell()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -260,7 +173,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                     .rootComponent
             }
 
-            vSpacer()
+            vSpacerCell()
         }
 
         loadState()

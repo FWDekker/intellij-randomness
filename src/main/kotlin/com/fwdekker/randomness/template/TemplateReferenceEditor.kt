@@ -13,17 +13,13 @@ import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
-import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.ColoredListCellRenderer
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBList
-import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.uiDesigner.core.GridConstraints
 import javax.swing.ButtonGroup
 import javax.swing.DefaultListModel
-import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.JPanel
 import javax.swing.ListSelectionModel
@@ -41,7 +37,6 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
 
     private lateinit var templateListModel: DefaultListModel<Template>
     private lateinit var templateList: JBList<Template>
-    private lateinit var capitalizationLabel: JLabel
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var customQuotation: VariableLabelRadioButton
     private lateinit var quotationGroup: ButtonGroup
@@ -50,7 +45,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
 
     init {
         rootComponent = GridPanelBuilder.panel {
-            textSeparator(Bundle("reference.ui.template_list"))
+            textSeparatorCell(Bundle("reference.ui.template_list"))
 
             cell {
                 templateListModel = DefaultListModel<Template>()
@@ -73,119 +68,58 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
                 JBScrollPane(templateList)
             }
 
-            vSeparator()
+            vSeparatorCell()
 
-            textSeparator(Bundle("reference.ui.appearance"))
+            textSeparatorCell(Bundle("reference.ui.appearance"))
 
             panel {
                 row {
-                    lateinit var quotationLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("reference.ui.quotation_marks.option"))
-                            .loadMnemonic()
-                            .also { quotationLabel = it }
-                    }
+                    cell { label("quotationLabel", Bundle("reference.ui.quotation_marks.option")) }
 
                     row {
-                        run { quotationGroup = ButtonGroup() }
+                        quotationGroup = buttonGroup("quotation")
 
-                        cell {
-                            JBRadioButton(Bundle("reference.ui.quotation_marks.none"))
-                                .withName("quotationNone")
-                                .withActionCommand("")
-                                .inGroup(quotationGroup)
-                        }
-
-                        cell {
-                            JBRadioButton("'")
-                                .withName("quotationSingle")
-                                .inGroup(quotationGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(""""""")
-                                .withName("quotationDouble")
-                                .inGroup(quotationGroup)
-                        }
-
-                        cell {
-                            JBRadioButton("`")
-                                .withName("quotationBacktick")
-                                .inGroup(quotationGroup)
-                        }
-
+                        cell { radioButton("quotationNone", Bundle("shared.option.none"), "") }
+                        cell { radioButton("quotationSingle", "'") }
+                        cell { radioButton("quotationDouble", "\"") }
+                        cell { radioButton("quotationBacktick", "`") }
                         cell {
                             VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(2))
                                 .withName("quotationCustom")
-                                .also { it.addToButtonGroup(quotationGroup) }
                                 .also { customQuotation = it }
                         }
-
-                        run { quotationGroup.setLabel(quotationLabel) }
                     }
                 }
 
                 row {
-                    cell {
-                        JBLabel(Bundle("reference.ui.capitalization_option"))
-                            .loadMnemonic()
-                            .also { capitalizationLabel = it }
-                    }
+                    cell { label("capitalizationLabel", Bundle("reference.ui.capitalization_option")) }
 
                     row {
-                        run { capitalizationGroup = ButtonGroup() }
+                        capitalizationGroup = buttonGroup("capitalization")
 
+                        cell { radioButton("capitalizationRetain", Bundle("shared.capitalization.retain"), "retain") }
+                        cell { radioButton("capitalizationLower", Bundle("shared.capitalization.lower"), "lower") }
+                        cell { radioButton("capitalizationUpper", Bundle("shared.capitalization.upper"), "upper") }
+                        cell { radioButton("capitalizationRandom", Bundle("shared.capitalization.random"), "random") }
                         cell {
-                            JBRadioButton(Bundle("shared.capitalization.retain"))
-                                .withActionCommand("retain")
-                                .withName("capitalizationRetain")
-                                .inGroup(capitalizationGroup)
+                            radioButton(
+                                "capitalizationSentence",
+                                Bundle("shared.capitalization.sentence"),
+                                "sentence"
+                            )
                         }
-
                         cell {
-                            @Suppress("DialogTitleCapitalization") // Intentional
-                            JBRadioButton(Bundle("shared.capitalization.lower"))
-                                .withActionCommand("lower")
-                                .withName("capitalizationLower")
-                                .inGroup(capitalizationGroup)
+                            radioButton(
+                                "capitalizationFirstLetter",
+                                Bundle("shared.capitalization.first_letter"),
+                                "first letter"
+                            )
                         }
-
-                        cell {
-                            JBRadioButton(Bundle("shared.capitalization.upper"))
-                                .withActionCommand("upper")
-                                .withName("capitalizationUpper")
-                                .inGroup(capitalizationGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(Bundle("shared.capitalization.random"))
-                                .withActionCommand("random")
-                                .withName("capitalizationRandom")
-                                .inGroup(capitalizationGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(Bundle("shared.capitalization.sentence"))
-                                .withActionCommand("sentence")
-                                .withName("capitalizationSentence")
-                                .inGroup(capitalizationGroup)
-                        }
-
-                        cell {
-                            @Suppress("DialogTitleCapitalization") // Intentional
-                            JBRadioButton(Bundle("shared.capitalization.first_letter"))
-                                .withActionCommand("first letter")
-                                .withName("capitalizationFirstLetter")
-                                .inGroup(capitalizationGroup)
-                        }
-
-                        run { capitalizationGroup.setLabel(capitalizationLabel) }
                     }
                 }
             }
 
-            vSeparator()
+            vSeparatorCell()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -193,10 +127,8 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
                     .rootComponent
             }
 
-            vSpacer()
+            vSpacerCell()
         }
-
-        capitalizationGroup.setLabel(capitalizationLabel)
 
         loadState()
     }

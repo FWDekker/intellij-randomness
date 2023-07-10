@@ -5,9 +5,7 @@ import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.ui.GridPanelBuilder
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
-import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 
@@ -28,24 +26,18 @@ class TemplateEditor(template: Template) : StateEditor<Template>(template) {
     init {
         rootComponent = GridPanelBuilder.panel {
             row {
-                lateinit var nameLabel: JLabel
-
-                cell {
-                    JBLabel(Bundle("template.ui.name_option"))
-                        .also { nameLabel = it }
-                }
+                cell { label("templateNameLabel", Bundle("template.ui.name_option")) }
 
                 cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
                     JBTextField()
                         .withName("templateName")
-                        .setLabel(nameLabel)
                         .also { nameInput = it }
                 }
 
-                hSpacer()
+                hSpacerCell()
             }
 
-            vSpacer()
+            vSpacerCell()
         }
 
         loadState()

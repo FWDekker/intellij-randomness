@@ -12,15 +12,11 @@ import com.fwdekker.randomness.ui.VariableLabelRadioButton
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
-import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.ContextHelpLabel
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBRadioButton
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
-import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JRadioButton
 import javax.swing.event.ChangeEvent
@@ -46,7 +42,6 @@ class ArrayDecoratorEditor(
     private lateinit var maxCountSpinner: JIntSpinner
     private lateinit var bracketsGroup: ButtonGroup
     private lateinit var customBrackets: VariableLabelRadioButton
-    private lateinit var customBracketsHelpLabel: JLabel
     private lateinit var separatorGroup: ButtonGroup
     private lateinit var customSeparator: VariableLabelRadioButton
     private lateinit var newlineSeparatorButton: JRadioButton
@@ -57,168 +52,87 @@ class ArrayDecoratorEditor(
         rootComponent = GridPanelBuilder.panel {
             enabledCheckBox = JBCheckBox(Bundle("array.ui.enabled"))
             if (!embedded) {
-                textSeparator(Bundle("array.title"))
+                textSeparatorCell(Bundle("array.title"))
 
-                cell {
-                    enabledCheckBox
-                        .withName("arrayEnabled")
-                        .loadMnemonic()
-                }
+                // TODO: Make checkbox-based toggling of all components automatic
+                cell { enabledCheckBox.withName("arrayEnabled") }
             }
 
             panel {
                 row {
-                    lateinit var minCountLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("array.ui.min_count_option"))
-                            .toggledBy(enabledCheckBox)
-                            .also { minCountLabel = it }
-                    }
+                    cell { label("arrayMinCountLabel", Bundle("array.ui.min_count_option")).toggledBy(enabledCheckBox) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT)
                             .withName("arrayMinCount")
-                            .setLabel(minCountLabel)
                             .toggledBy(enabledCheckBox)
                             .also { minCountSpinner = it }
                     }
                 }
 
                 row {
-                    lateinit var maxCountLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("array.ui.max_count_option"))
-                            .toggledBy(enabledCheckBox)
-                            .also { maxCountLabel = it }
-                    }
+                    cell { label("arrayMaxCountLabel", Bundle("array.ui.max_count_option")).toggledBy(enabledCheckBox) }
 
                     cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT)
                             .withName("arrayMaxCount")
-                            .setLabel(maxCountLabel)
                             .toggledBy(enabledCheckBox)
                             .also { maxCountSpinner = it }
                     }
-
-                    run { bindSpinners(minCountSpinner, maxCountSpinner) }
                 }
 
-                row {
-                    lateinit var bracketsLabel: JLabel
+                bindSpinners(minCountSpinner, maxCountSpinner)
 
-                    cell {
-                        JBLabel(Bundle("array.ui.brackets.option"))
-                            .toggledBy(enabledCheckBox)
-                            .also { bracketsLabel = it }
-                    }
+                row {
+                    cell { label("arrayBracketsLabel", Bundle("array.ui.brackets.option")).toggledBy(enabledCheckBox) }
 
                     row {
-                        run { bracketsGroup = ButtonGroup() }
+                        bracketsGroup = buttonGroup("arrayBrackets")
 
                         cell {
-                            JBRadioButton(Bundle("array.ui.brackets.none"))
-                                .withName("arrayBracketsNone")
-                                .withActionCommand("")
-                                .inGroup(bracketsGroup)
+                            radioButton("arrayBracketsNone", Bundle("shared.option.none"), "")
                                 .toggledBy(enabledCheckBox)
                         }
-
-                        cell {
-                            JBRadioButton("[]")
-                                .withName("arrayBracketsSquare")
-                                .withActionCommand("[@]")
-                                .inGroup(bracketsGroup)
-                                .toggledBy(enabledCheckBox)
-                        }
-
-                        cell {
-                            JBRadioButton("{}")
-                                .withName("arrayBracketsCurly")
-                                .withActionCommand("{@}")
-                                .inGroup(bracketsGroup)
-                                .toggledBy(enabledCheckBox)
-                        }
-
-                        cell {
-                            JBRadioButton("()")
-                                .withName("arrayBracketsRound")
-                                .withActionCommand("(@)")
-                                .inGroup(bracketsGroup)
-                                .toggledBy(enabledCheckBox)
-                        }
-
+                        cell { radioButton("arrayBracketsSquare", "[]", "[@]").toggledBy(enabledCheckBox) }
+                        cell { radioButton("arrayBracketsCurly", "{}", "{@}").toggledBy(enabledCheckBox) }
+                        cell { radioButton("arrayBracketsRound", "()", "(@)").toggledBy(enabledCheckBox) }
                         cell {
                             VariableLabelRadioButton(UIConstants.SIZE_MEDIUM)
                                 .withName("arrayBracketsCustom")
-                                .also { it.addToButtonGroup(bracketsGroup) }
                                 .toggledBy(enabledCheckBox)
                                 .also { customBrackets = it }
                         }
 
-                        cell {
-                            ContextHelpLabel.create(Bundle("array.ui.brackets.comment"))
-                                .toggledBy(enabledCheckBox)
-                                .also { customBracketsHelpLabel = it }
-                        }
-
-                        run { bracketsGroup.setLabel(bracketsLabel) }
+                        cell { ContextHelpLabel.create(Bundle("array.ui.brackets.comment")).toggledBy(enabledCheckBox) }
                     }
                 }
 
                 row {
-                    lateinit var separatorLabel: JLabel
-
                     cell {
-                        JBLabel(Bundle("array.ui.separator.option"))
+                        label("arraySeparatorLabel", Bundle("array.ui.separator.option"))
                             .toggledBy(enabledCheckBox)
-                            .also { separatorLabel = it }
                     }
 
                     row {
-                        run { separatorGroup = ButtonGroup() }
+                        separatorGroup = buttonGroup("arraySeparator")
 
                         cell {
-                            JBRadioButton(Bundle("array.ui.separator.none"))
-                                .withName("arraySeparatorNone")
-                                .withActionCommand("")
-                                .inGroup(separatorGroup)
+                            radioButton("arraySeparatorNone", Bundle("shared.option.none"), "")
                                 .toggledBy(enabledCheckBox)
                         }
-
+                        cell { radioButton("arraySeparatorComma", ",").toggledBy(enabledCheckBox) }
+                        cell { radioButton("arraySeparatorSemicolon", ";").toggledBy(enabledCheckBox) }
                         cell {
-                            JBRadioButton(",")
-                                .withName("arraySeparatorComma")
-                                .inGroup(separatorGroup)
-                                .toggledBy(enabledCheckBox)
-                        }
-
-                        cell {
-                            JBRadioButton(";")
-                                .withName("arraySeparatorSemicolon")
-                                .inGroup(separatorGroup)
-                                .toggledBy(enabledCheckBox)
-                        }
-
-                        cell {
-                            JBRadioButton("""\n""")
-                                .withName("arraySeparatorNewline")
-                                .withActionCommand("\n")
-                                .inGroup(separatorGroup)
+                            radioButton("arraySeparatorNewLine", "\\n", "\n")
                                 .toggledBy(enabledCheckBox)
                                 .also { newlineSeparatorButton = it }
                         }
-
                         cell {
                             VariableLabelRadioButton()
                                 .withName("arraySeparatorCustom")
-                                .also { it.addToButtonGroup(separatorGroup) }
                                 .toggledBy(enabledCheckBox)
                                 .also { customSeparator = it }
                         }
-
-                        run { separatorGroup.setLabel(separatorLabel) }
                     }
                 }
 

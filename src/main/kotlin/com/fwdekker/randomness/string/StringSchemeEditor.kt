@@ -9,18 +9,14 @@ import com.fwdekker.randomness.ui.GridPanelBuilder
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
-import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.components.BrowserLink
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.JBTextField
 import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.util.ui.UI
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
-import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 
@@ -44,23 +40,16 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
     init {
         rootComponent = GridPanelBuilder.panel {
-            textSeparator(Bundle("string.ui.value_separator"))
+            textSeparatorCell(Bundle("string.ui.value_separator"))
 
             panel {
                 row {
-                    lateinit var patternLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("string.ui.pattern_option"))
-                            .loadMnemonic()
-                            .also { patternLabel = it }
-                    }
+                    cell { label("patternLabel", Bundle("string.ui.pattern_option")) }
 
                     row {
                         cell(constraints(fixedWidth = UIConstants.SIZE_VERY_LARGE)) {
                             JBTextField()
                                 .withName("pattern")
-                                .setLabel(patternLabel)
                                 .also { patternField = it }
                         }
 
@@ -79,53 +68,20 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
                     cell {
                         JBCheckBox(Bundle("string.ui.is_regex_option"))
                             .withName("isRegex")
-                            .loadMnemonic()
                             .also { isRegexCheckBox = it }
                     }
                 }
 
                 row {
-                    lateinit var capitalizationLabel: JLabel
-
-                    cell {
-                        JBLabel(Bundle("string.ui.capitalization_option"))
-                            .loadMnemonic()
-                            .also { capitalizationLabel = it }
-                    }
+                    cell { label("capitalizationLabel", Bundle("string.ui.capitalization_option")) }
 
                     row {
-                        run { capitalizationGroup = ButtonGroup() }
+                        capitalizationGroup = ButtonGroup()
 
-                        cell {
-                            JBRadioButton(Bundle("shared.capitalization.retain"))
-                                .withActionCommand("retain")
-                                .withName("capitalizationRetain")
-                                .inGroup(capitalizationGroup)
-                        }
-
-                        cell {
-                            @Suppress("DialogTitleCapitalization") // Intentional
-                            JBRadioButton(Bundle("shared.capitalization.lower"))
-                                .withActionCommand("lower")
-                                .withName("capitalizationLower")
-                                .inGroup(capitalizationGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(Bundle("shared.capitalization.upper"))
-                                .withActionCommand("upper")
-                                .withName("capitalizationUpper")
-                                .inGroup(capitalizationGroup)
-                        }
-
-                        cell {
-                            JBRadioButton(Bundle("shared.capitalization.random"))
-                                .withActionCommand("random")
-                                .withName("capitalizationRandom")
-                                .inGroup(capitalizationGroup)
-                        }
-
-                        run { capitalizationGroup.setLabel(capitalizationLabel) }
+                        cell { radioButton("capitalizationRetain", Bundle("shared.capitalization.retain"), "retain") }
+                        cell { radioButton("capitalizationLower", Bundle("shared.capitalization.lower"), "lower") }
+                        cell { radioButton("capitalizationUpper", Bundle("shared.capitalization.upper"), "upper") }
+                        cell { radioButton("capitalizationRandom", Bundle("shared.capitalization.random"), "random") }
                     }
                 }
 
@@ -133,9 +89,9 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
                     skip()
 
                     cell {
-                        removeLookAlikeSymbolsCheckBox = JBCheckBox(Bundle("string.ui.remove_look_alike"))
+                        JBCheckBox(Bundle("string.ui.remove_look_alike"))
                             .withName("removeLookAlikeCharacters")
-                            .loadMnemonic()
+                            .also { removeLookAlikeSymbolsCheckBox = it }
 
                         UI.PanelFactory.panel(removeLookAlikeSymbolsCheckBox)
                             .withTooltip(
@@ -149,7 +105,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
                 }
             }
 
-            vSeparator()
+            vSeparatorCell()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -157,7 +113,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
                     .rootComponent
             }
 
-            vSpacer()
+            vSpacerCell()
         }
 
         loadState()
