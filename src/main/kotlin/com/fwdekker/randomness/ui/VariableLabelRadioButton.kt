@@ -21,7 +21,7 @@ import javax.swing.text.DocumentFilter
  * @param filter the filter to apply to the text field
  */
 class VariableLabelRadioButton(
-    width: Int = UIConstants.WIDTH_TINY,
+    width: Int = UIConstants.SIZE_TINY,
     filter: DocumentFilter? = null,
 ) : JPanel(BorderLayout()) {
     /**

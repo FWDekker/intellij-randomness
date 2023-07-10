@@ -19,7 +19,6 @@ import com.fwdekker.randomness.ui.forEach
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
-import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.JBTextField
@@ -55,9 +54,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
 
     init {
         rootComponent = GridPanelBuilder.panel {
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                SeparatorFactory.createSeparator(Bundle("integer.ui.value_separator"), null)
-            }
+            textSeparator(Bundle("integer.ui.value_separator"))
 
             panel {
                 row {
@@ -68,10 +65,9 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                             .also { minValueLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
                         JLongSpinner()
                             .withName("minValue")
-                            .forceWidth(UIConstants.WIDTH_LARGE)
                             .setLabel(minValueLabel)
                             .also { minValue = it }
                     }
@@ -85,10 +81,9 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                             .also { maxValueLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
                         JLongSpinner()
                             .withName("maxValue")
-                            .forceWidth(UIConstants.WIDTH_LARGE)
                             .setLabel(maxValueLabel)
                             .also { maxValue = it }
                     }
@@ -97,7 +92,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                 }
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
             panel {
                 row {
@@ -108,10 +103,9 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                             .also { baseLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JIntSpinner(IntegerScheme.DECIMAL_BASE, IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE)
                             .withName("base")
-                            .forceWidth(UIConstants.WIDTH_SMALL)
                             .setLabel(baseLabel)
                             .also { base = it }
                     }
@@ -155,7 +149,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                         }
 
                         cell {
-                            VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(1))
+                            VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(1))
                                 .withName("groupingSeparatorCustom")
                                 .also { it.addToButtonGroup(groupingSeparatorGroup) }
                                 .also { customGroupingSeparator = it }
@@ -214,7 +208,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                 }
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
             panel {
                 row {
@@ -225,10 +219,9 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                             .also { prefixLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JBTextField()
                             .withName("prefix")
-                            .forceWidth(UIConstants.WIDTH_SMALL)
                             .setLabel(prefixLabel)
                             .also { prefixInput = it }
                     }
@@ -242,17 +235,16 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                             .also { suffixLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JBTextField()
                             .withName("suffix")
-                            .forceWidth(UIConstants.WIDTH_SMALL)
                             .setLabel(suffixLabel)
                             .also { suffixInput = it }
                     }
                 }
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 FixedLengthDecoratorEditor(originalState.fixedLengthDecorator)
@@ -260,7 +252,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                     .rootComponent
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -268,7 +260,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                     .rootComponent
             }
 
-            vspacer()
+            vSpacer()
         }
 
         loadState()

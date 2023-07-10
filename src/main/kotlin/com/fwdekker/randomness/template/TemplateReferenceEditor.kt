@@ -16,7 +16,6 @@ import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.ColoredListCellRenderer
-import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBRadioButton
@@ -51,9 +50,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
 
     init {
         rootComponent = GridPanelBuilder.panel {
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                SeparatorFactory.createSeparator(Bundle("reference.ui.template_list"), null)
-            }
+            textSeparator(Bundle("reference.ui.template_list"))
 
             cell {
                 templateListModel = DefaultListModel<Template>()
@@ -76,11 +73,9 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
                 JBScrollPane(templateList)
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                SeparatorFactory.createSeparator(Bundle("reference.ui.appearance"), null)
-            }
+            textSeparator(Bundle("reference.ui.appearance"))
 
             panel {
                 row {
@@ -121,7 +116,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
                         }
 
                         cell {
-                            VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
+                            VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(2))
                                 .withName("quotationCustom")
                                 .also { it.addToButtonGroup(quotationGroup) }
                                 .also { customQuotation = it }
@@ -190,7 +185,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
                 }
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -198,7 +193,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
                     .rootComponent
             }
 
-            vspacer()
+            vSpacer()
         }
 
         capitalizationGroup.setLabel(capitalizationLabel)

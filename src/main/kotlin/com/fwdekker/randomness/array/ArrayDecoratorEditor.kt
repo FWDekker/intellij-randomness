@@ -15,11 +15,9 @@ import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.intellij.ui.ContextHelpLabel
-import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBRadioButton
-import com.intellij.uiDesigner.core.GridConstraints
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JLabel
@@ -59,9 +57,7 @@ class ArrayDecoratorEditor(
         rootComponent = GridPanelBuilder.panel {
             enabledCheckBox = JBCheckBox(Bundle("array.ui.enabled"))
             if (!embedded) {
-                cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                    TitledSeparator(Bundle("array.title"))
-                }
+                textSeparator(Bundle("array.title"))
 
                 cell {
                     enabledCheckBox
@@ -80,10 +76,9 @@ class ArrayDecoratorEditor(
                             .also { minCountLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT)
                             .withName("arrayMinCount")
-                            .forceWidth(UIConstants.WIDTH_SMALL)
                             .setLabel(minCountLabel)
                             .toggledBy(enabledCheckBox)
                             .also { minCountSpinner = it }
@@ -99,10 +94,9 @@ class ArrayDecoratorEditor(
                             .also { maxCountLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT)
                             .withName("arrayMaxCount")
-                            .forceWidth(UIConstants.WIDTH_SMALL)
                             .setLabel(maxCountLabel)
                             .toggledBy(enabledCheckBox)
                             .also { maxCountSpinner = it }
@@ -156,7 +150,7 @@ class ArrayDecoratorEditor(
                         }
 
                         cell {
-                            VariableLabelRadioButton(UIConstants.WIDTH_MEDIUM)
+                            VariableLabelRadioButton(UIConstants.SIZE_MEDIUM)
                                 .withName("arrayBracketsCustom")
                                 .also { it.addToButtonGroup(bracketsGroup) }
                                 .toggledBy(enabledCheckBox)

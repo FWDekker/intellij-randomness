@@ -16,7 +16,6 @@ import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_QUOTATION
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_TYPE
-import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBRadioButton
@@ -47,9 +46,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
 
     init {
         rootComponent = GridPanelBuilder.panel {
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                SeparatorFactory.createSeparator(Bundle("uuid.ui.value_separator"), null)
-            }
+            textSeparator(Bundle("uuid.ui.value_separator"))
 
             panel {
                 row {
@@ -120,7 +117,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
                         }
 
                         cell {
-                            VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
+                            VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(2))
                                 .withName("quotationCustom")
                                 .also { it.addToButtonGroup(quotationGroup) }
                                 .also { customQuotation = it }
@@ -169,7 +166,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
                 }
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -177,7 +174,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
                     .rootComponent
             }
 
-            vspacer()
+            vSpacer()
         }
 
         loadState()

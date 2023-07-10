@@ -35,16 +35,17 @@ class TemplateEditor(template: Template) : StateEditor<Template>(template) {
                         .also { nameLabel = it }
                 }
 
-                cell {
+                cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
                     JBTextField()
                         .withName("templateName")
-                        .forceWidth(UIConstants.WIDTH_LARGE)
                         .setLabel(nameLabel)
                         .also { nameInput = it }
                 }
+
+                hSpacer()
             }
 
-            vspacer()
+            vSpacer()
         }
 
         loadState()

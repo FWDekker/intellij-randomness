@@ -23,7 +23,6 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.uiDesigner.core.GridConstraints
@@ -67,9 +66,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 panel {
                     row {
-                        cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                            SeparatorFactory.createSeparator(Bundle("word.ui.word_list"), null)
-                        }
+                        textSeparator(Bundle("word.ui.word_list"))
 
                         cell(constraints(hSizePolicy = 0)) {
                             ComboBox(arrayOf(PRESET_ITEM) + DefaultWordList.WORD_LISTS)
@@ -90,8 +87,9 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
                     cell(
                         constraints(
                             colSpan = 2,
-                            fill = GridConstraints.FILL_HORIZONTAL
-                        ).withHeight(UIConstants.WIDTH_VERY_LARGE)
+                            fill = GridConstraints.FILL_HORIZONTAL,
+                            fixedHeight = UIConstants.SIZE_VERY_LARGE
+                        )
                     ) {
                         val factory = EditorFactory.getInstance()
 
@@ -113,12 +111,9 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
                 }
             }
 
-            // TODO: Use constant instant of magic number
-            vspacer(height = 15)
+            vSeparator()
 
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                SeparatorFactory.createSeparator(Bundle("word.ui.appearance"), null)
-            }
+            textSeparator(Bundle("word.ui.appearance"))
 
             panel {
                 row {
@@ -159,7 +154,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
                         }
 
                         cell {
-                            VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
+                            VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(2))
                                 .withName("quotationCustom")
                                 .also { it.addToButtonGroup(quotationGroup) }
                                 .also { customQuotation = it }
@@ -228,7 +223,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
                 }
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -236,7 +231,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
                     .rootComponent
             }
 
-            vspacer()
+            vSpacer()
         }
 
         loadState()

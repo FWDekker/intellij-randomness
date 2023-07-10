@@ -8,7 +8,6 @@ import com.fwdekker.randomness.ui.JDateTimeField
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListener
 import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.components.BrowserLink
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
@@ -38,9 +37,7 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
 
     init {
         rootComponent = GridPanelBuilder.panel {
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                SeparatorFactory.createSeparator(Bundle("datetime.ui.value_separator"), null)
-            }
+            textSeparator(Bundle("datetime.ui.value_separator"))
 
             panel {
                 row {
@@ -51,10 +48,9 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
                             .also { minCountLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
                         JDateTimeField(DateTimeScheme.DEFAULT_MIN_DATE_TIME.toLocalDateTime())
                             .withName("minDateTime")
-                            .forceWidth(UIConstants.WIDTH_LARGE)
                             .setLabel(minCountLabel)
                             .also { minDateTimeField = it }
                     }
@@ -68,10 +64,9 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
                             .also { maxCountLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
                         JDateTimeField(DateTimeScheme.DEFAULT_MAX_DATE_TIME.toLocalDateTime())
                             .withName("maxDateTime")
-                            .forceWidth(UIConstants.WIDTH_LARGE)
                             .setLabel(maxCountLabel)
                             .also { maxDateTimeField = it }
                     }
@@ -88,10 +83,9 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
                     }
 
                     row {
-                        cell {
+                        cell(constraints(fixedWidth = UIConstants.SIZE_VERY_LARGE)) {
                             JBTextField()
                                 .withName("pattern")
-                                .forceWidth(UIConstants.WIDTH_VERY_LARGE)
                                 .setLabel(patternLabel)
                                 .also { patternField = it }
                         }
@@ -120,7 +114,7 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
                 }
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -128,7 +122,7 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
                     .rootComponent
             }
 
-            vspacer()
+            vSpacer()
         }
 
         loadState()

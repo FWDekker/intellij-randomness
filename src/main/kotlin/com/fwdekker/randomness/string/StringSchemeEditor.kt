@@ -11,7 +11,6 @@ import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
-import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.components.BrowserLink
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
@@ -45,9 +44,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
     init {
         rootComponent = GridPanelBuilder.panel {
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                SeparatorFactory.createSeparator(Bundle("string.ui.value_separator"), null)
-            }
+            textSeparator(Bundle("string.ui.value_separator"))
 
             panel {
                 row {
@@ -60,10 +57,9 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
                     }
 
                     row {
-                        cell {
+                        cell(constraints(fixedWidth = UIConstants.SIZE_VERY_LARGE)) {
                             JBTextField()
                                 .withName("pattern")
-                                .forceWidth(UIConstants.WIDTH_VERY_LARGE)
                                 .setLabel(patternLabel)
                                 .also { patternField = it }
                         }
@@ -153,7 +149,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
                 }
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -161,7 +157,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
                     .rootComponent
             }
 
-            vspacer()
+            vSpacer()
         }
 
         loadState()

@@ -12,7 +12,6 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.ui.InplaceButton
-import com.intellij.ui.SeparatorFactory
 import com.intellij.uiDesigner.core.GridConstraints
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -57,9 +56,7 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     init {
         rootComponent = GridPanelBuilder.panel {
             row {
-                cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                    SeparatorFactory.createSeparator(Bundle("preview.title"), null)
-                }
+                textSeparator(Bundle("preview.title"))
 
                 cell(constraints(hSizePolicy = 0)) {
                     InplaceButton(Bundle("shared.action.refresh"), AllIcons.Actions.Refresh) {
@@ -72,8 +69,9 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
             cell(
                 constraints(
                     colSpan = 2,
-                    fill = GridConstraints.FILL_HORIZONTAL
-                ).withHeight(UIConstants.WIDTH_MEDIUM)
+                    fill = GridConstraints.FILL_HORIZONTAL,
+                    fixedHeight = UIConstants.SIZE_MEDIUM
+                )
             ) {
                 val factory = EditorFactory.getInstance()
 

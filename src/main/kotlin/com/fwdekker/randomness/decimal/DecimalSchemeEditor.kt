@@ -18,7 +18,6 @@ import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
-import com.intellij.ui.SeparatorFactory
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBRadioButton
@@ -57,9 +56,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
 
     init {
         rootComponent = GridPanelBuilder.panel {
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                SeparatorFactory.createSeparator(Bundle("decimal.ui.value_separator"), null)
-            }
+            textSeparator(Bundle("decimal.ui.value_separator"))
 
             panel {
                 row {
@@ -70,10 +67,9 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                             .also { minCountLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_VERY_LARGE)) {
                         JDoubleSpinner()
                             .withName("minValue")
-                            .forceWidth(UIConstants.WIDTH_VERY_LARGE)
                             .setLabel(minCountLabel)
                             .also { minValue = it }
                     }
@@ -87,10 +83,9 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                             .also { maxCountLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_VERY_LARGE)) {
                         JDoubleSpinner()
                             .withName("maxValue")
-                            .forceWidth(UIConstants.WIDTH_VERY_LARGE)
                             .setLabel(maxCountLabel)
                             .also { maxValue = it }
                     }
@@ -106,10 +101,9 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                             .also { decimalCountLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JIntSpinner(value = MIN_DECIMAL_COUNT, minValue = MIN_DECIMAL_COUNT)
                             .withName("decimalCount")
-                            .forceWidth(UIConstants.WIDTH_SMALL)
                             .setLabel(decimalCountLabel)
                             .also { decimalCount = it }
                     }
@@ -134,7 +128,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                 }
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
             panel {
                 row {
@@ -175,7 +169,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                         }
 
                         cell {
-                            VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(1))
+                            VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(1))
                                 .withName("groupingSeparatorCustom")
                                 .also { it.addToButtonGroup(groupingSeparatorGroup) }
                                 .also { customGroupingSeparator = it }
@@ -210,7 +204,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                         }
 
                         cell {
-                            VariableLabelRadioButton(UIConstants.WIDTH_TINY, MinMaxLengthDocumentFilter(1, 1))
+                            VariableLabelRadioButton(UIConstants.SIZE_TINY, MinMaxLengthDocumentFilter(1, 1))
                                 .withName("decimalSeparatorCustom")
                                 .also { it.addToButtonGroup(decimalSeparatorGroup) }
                                 .also { customDecimalSeparator = it }
@@ -221,7 +215,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                 }
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
             panel {
                 row {
@@ -232,10 +226,9 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                             .also { prefixLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JBTextField()
                             .withName("prefix")
-                            .forceWidth(UIConstants.WIDTH_SMALL)
                             .setLabel(prefixLabel)
                             .also { prefixInput = it }
                     }
@@ -249,17 +242,16 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                             .also { suffixLabel = it }
                     }
 
-                    cell {
+                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
                         JBTextField()
                             .withName("suffix")
-                            .forceWidth(UIConstants.WIDTH_SMALL)
                             .setLabel(suffixLabel)
                             .also { suffixInput = it }
                     }
                 }
             }
 
-            vspacer(height = 15)
+            vSeparator()
 
             cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
                 ArrayDecoratorEditor(originalState.arrayDecorator)
@@ -267,7 +259,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                     .rootComponent
             }
 
-            vspacer()
+            vSpacer()
         }
 
         loadState()

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.intellij.ui.SeparatorFactory
 import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.uiDesigner.core.GridLayoutManager
 import com.intellij.uiDesigner.core.Spacer
@@ -82,7 +83,30 @@ sealed class GridPanelBuilder<T : Any?> {
      */
     abstract fun cell(constraints: GridConstraints = constraints(), spec: CellBuilder.() -> JComponent): T
 
-    fun vspacer(height: Int = -1): T =
+
+    /**
+     * Creates a [cell] containing a visible separator with the given [text].
+     *
+     * @param text the text to display in the separator
+     * @return see [cell]
+     */
+    fun textSeparator(text: String) =
+        cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) { SeparatorFactory.createSeparator(text, null) }
+
+    /**
+     * Adds a [cell] containing a small vertical spacer to be placed to separate distinct panels.
+     *
+     * @return see [cell]
+     */
+    fun vSeparator() = vSpacer(height = UIConstants.SIZE_TINY)
+
+    /**
+     * Adds a [cell] containing a vertical spacer with the given [height].
+     *
+     * @param height the height of the vertical spacer, or `-1` if the spacer should use all remaining vertical space
+     * @return see [cell]
+     */
+    fun vSpacer(height: Int = -1) =
         if (height == -1)
             cell(
                 constraints(
@@ -91,22 +115,28 @@ sealed class GridPanelBuilder<T : Any?> {
                 )
             ) { Spacer() }
         else
-            cell(constraints().withHeight(height)) { Spacer() }
+            cell(constraints(fixedHeight = height)) { Spacer() }
 
-    fun hspacer(width: Int = -1): T =
+    /**
+     * Adds a [cell] containing a horizontal spacer with the given [width].
+     *
+     * @param width the width of the horizontal spacer, or `-1` if the spacer should use all remaining horizontal space
+     * @return see [cell]
+     */
+    fun hSpacer(width: Int = -1) =
         if (width == -1)
             cell(
                 constraints(
                     fill = GridConstraints.FILL_HORIZONTAL,
-                    vSizePolicy = GridConstraints.SIZEPOLICY_CAN_GROW or GridConstraints.SIZEPOLICY_WANT_GROW
+                    hSizePolicy = GridConstraints.SIZEPOLICY_CAN_GROW or GridConstraints.SIZEPOLICY_WANT_GROW
                 )
             ) { Spacer() }
         else
-            cell(constraints().withWidth(width)) { Spacer() }
+            cell(constraints(fixedWidth = width)) { Spacer() }
 
 
     /**
-     * Creates constraints to be applied to a [cell].
+     * Creates [GridConstraints] to be applied to a [cell].
      *
      * @param colSpan the number of columns spanned by the cell
      * @param anchor the location of the component in the cell
@@ -114,9 +144,8 @@ sealed class GridPanelBuilder<T : Any?> {
      * @param fill whether the component fills the cell
      * @param vSizePolicy determines the vertical size if the component's size changes
      * @param hSizePolicy determines the horizontal size if the component's size changes
-     * @param minimumSize the minimum size of the cell
-     * @param preferredSize the preferred size of the cell
-     * @param maximumSize the maximum size of the cell
+     * @param fixedWidth the fixed, unchanging width of the cell
+     * @param fixedHeight the fixed, unchanging height of the cell
      * @return the created constraints
      */
     @Suppress("detekt:LongParameterList") // Acceptable as alternative to overkill builder pattern
@@ -127,26 +156,22 @@ sealed class GridPanelBuilder<T : Any?> {
         fill: Int = GridConstraints.FILL_NONE,
         vSizePolicy: Int = GridConstraints.SIZEPOLICY_CAN_GROW or GridConstraints.SIZEPOLICY_CAN_SHRINK,
         hSizePolicy: Int = GridConstraints.SIZEPOLICY_CAN_GROW or GridConstraints.SIZEPOLICY_CAN_SHRINK,
-        minimumSize: Dimension = Dimension(-1, -1),
-        preferredSize: Dimension = Dimension(-1, -1),
-        maximumSize: Dimension = Dimension(-1, -1),
+        fixedWidth: Int? = null,
+        fixedHeight: Int? = null,
     ) = GridConstraints(
-        -1, -1, 1, colSpan, anchor, fill, hSizePolicy, vSizePolicy, minimumSize, preferredSize, maximumSize, indent
+        -1,
+        -1,
+        1,
+        colSpan,
+        anchor,
+        fill,
+        hSizePolicy,
+        vSizePolicy,
+        Dimension(fixedWidth ?: -1, fixedHeight ?: -1),
+        Dimension(fixedWidth ?: -1, fixedHeight ?: -1),
+        Dimension(fixedWidth ?: -1, fixedHeight ?: -1),
+        indent
     )
-
-    fun GridConstraints.withWidth(width: Int): GridConstraints {
-        myMinimumSize.width = width
-        myPreferredSize.width = width
-        myMaximumSize.width = width
-        return this
-    }
-
-    fun GridConstraints.withHeight(height: Int): GridConstraints {
-        myMinimumSize.height = height
-        myPreferredSize.height = height
-        myMaximumSize.height = height
-        return this
-    }
 
 
     /**
@@ -434,20 +459,4 @@ object CellBuilder : GridPanelBuilder<JComponent>() {
      */
     fun <T : AbstractButton> T.withActionCommand(actionCommand: String) =
         also { this.actionCommand = actionCommand }.let { this }
-
-    /**
-     * Forces the width of `this` to [width].
-     *
-     * @param T the type of `this`
-     * @param width the forced width of `this`
-     * @return `this`
-     */
-    // TODO: Use this in `GridConstraints` only? So apply to cell, not to component?
-    fun <T : JComponent> T.forceWidth(width: Int): T {
-        minimumSize = Dimension(width, minimumSize.height)
-        preferredSize = Dimension(width, preferredSize.height)
-        maximumSize = Dimension(width, maximumSize.height)
-
-        return this
-    }
 }
