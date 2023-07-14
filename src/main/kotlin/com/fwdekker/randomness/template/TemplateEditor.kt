@@ -2,10 +2,10 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.ui.GridPanelBuilder
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.intellij.ui.components.JBTextField
+import com.fwdekker.randomness.ui.withFixedWidth
+import com.intellij.ui.dsl.builder.panel
 import javax.swing.JPanel
 import javax.swing.JTextField
 
@@ -24,20 +24,13 @@ class TemplateEditor(template: Template) : StateEditor<Template>(template) {
 
 
     init {
-        rootComponent = GridPanelBuilder.panel {
-            row {
-                cell { label("templateNameLabel", Bundle("template.ui.name_option")) }
-
-                cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
-                    JBTextField()
-                        .withName("templateName")
-                        .also { nameInput = it }
-                }
-
-                hSpacerCell()
+        rootComponent = panel {
+            row(Bundle("template.ui.name_option")) {
+                textField()
+                    .withFixedWidth(UIConstants.SIZE_LARGE)
+                    .also { it.component.name = "templateName" }
+                    .also { nameInput = it.component }
             }
-
-            vSpacerCell()
         }
 
         loadState()

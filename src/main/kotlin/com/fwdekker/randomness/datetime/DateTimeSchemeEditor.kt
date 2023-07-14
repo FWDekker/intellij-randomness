@@ -3,19 +3,16 @@ package com.fwdekker.randomness.datetime
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.ui.GridPanelBuilder
 import com.fwdekker.randomness.ui.JDateTimeField
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListener
 import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.intellij.ui.components.BrowserLink
-import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBTextField
-import com.intellij.uiDesigner.core.GridConstraints
-import com.intellij.util.ui.JBUI
+import com.fwdekker.randomness.ui.withFixedWidth
+import com.intellij.ui.dsl.builder.BottomGap
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import javax.swing.JPanel
 import javax.swing.JTextField
-import javax.swing.SwingConstants
 
 
 /**
@@ -26,7 +23,7 @@ import javax.swing.SwingConstants
 class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEditor<DateTimeScheme>(scheme) {
     override val rootComponent: JPanel
     override val preferredFocusedComponent
-        get() = rootComponent
+        get() = minDateTimeField
 
     private lateinit var minDateTimeField: JDateTimeField
     private lateinit var maxDateTimeField: JDateTimeField
@@ -35,75 +32,39 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
 
 
     init {
-        rootComponent = GridPanelBuilder.panel {
-            textSeparatorCell(Bundle("datetime.ui.value_separator"))
-
-            panel {
-                row {
-                    cell { label("minDateTimeLabel", Bundle("datetime.ui.min_datetime_option")) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
-                        JDateTimeField(DateTimeScheme.DEFAULT_MIN_DATE_TIME.toLocalDateTime())
-                            .withName("minDateTime")
-                            .also { minDateTimeField = it }
-                    }
+        rootComponent = panel {
+            group(Bundle("datetime.ui.value.header")) {
+                row(Bundle("datetime.ui.value.min_datetime_option")) {
+                    cell(JDateTimeField(DateTimeScheme.DEFAULT_MIN_DATE_TIME.toLocalDateTime()))
+                        .withFixedWidth(UIConstants.SIZE_LARGE)
+                        .also { it.component.name = "minDateTime" }
+                        .also { minDateTimeField = it.component }
                 }
 
-                row {
-                    cell { label("maxDateTimeLabel", Bundle("datetime.ui.max_datetime_option")) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
-                        JDateTimeField(DateTimeScheme.DEFAULT_MAX_DATE_TIME.toLocalDateTime())
-                            .withName("maxDateTime")
-                            .also { maxDateTimeField = it }
-                    }
-                }
+                row(Bundle("datetime.ui.value.max_datetime_option")) {
+                    cell(JDateTimeField(DateTimeScheme.DEFAULT_MAX_DATE_TIME.toLocalDateTime()))
+                        .withFixedWidth(UIConstants.SIZE_LARGE)
+                        .also { it.component.name = "maxDateTime" }
+                        .also { maxDateTimeField = it.component }
+                }.bottomGap(BottomGap.SMALL)
 
                 bindDateTimes(minDateTimeField, maxDateTimeField)
 
-                row {
-                    cell { label("patternLabel", Bundle("datetime.ui.pattern_option")) }
+                row(Bundle("datetime.ui.value.pattern_option")) {
+                    textField()
+                        .withFixedWidth(UIConstants.SIZE_VERY_LARGE)
+                        .comment(Bundle("datetime.ui.pattern_comment"))
+                        .also { it.component.name = "pattern" }
+                        .also { patternField = it.component }
 
-                    row {
-                        cell(constraints(fixedWidth = UIConstants.SIZE_VERY_LARGE)) {
-                            JBTextField()
-                                .withName("pattern")
-                                .also { patternField = it }
-                        }
-
-                        cell {
-                            BrowserLink(
-                                Bundle("datetime.ui.pattern_help"),
-                                "https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html"
-                            )
-                        }
-                    }
-                }
-
-                row {
-                    skip()
-
-                    cell {
-                        JBLabel(Bundle("datetime.ui.pattern_comment"))
-                            .also {
-                                it.foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
-                                it.isFocusable = false
-                                it.setCopyable(false)
-                                it.verticalTextPosition = SwingConstants.TOP
-                            }
-                    }
+                    browserLink(Bundle("datetime.ui.value.pattern_help"), Bundle("datetime.ui.value.pattern_help_url"))
                 }
             }
 
-            vSeparatorCell()
-
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                ArrayDecoratorEditor(originalState.arrayDecorator)
-                    .also { arrayDecoratorEditor = it }
-                    .rootComponent
+            row {
+                arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
+                cell(arrayDecoratorEditor.rootComponent).horizontalAlign(HorizontalAlign.FILL)
             }
-
-            vSpacerCell()
         }
 
         loadState()

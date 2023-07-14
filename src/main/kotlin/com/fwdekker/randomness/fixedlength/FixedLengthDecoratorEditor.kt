@@ -2,12 +2,14 @@ package com.fwdekker.randomness.fixedlength
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.ui.GridPanelBuilder
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.intellij.ui.components.JBCheckBox
+import com.fwdekker.randomness.ui.withFixedWidth
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.layout.selected
+import com.intellij.util.ui.DialogUtil
 import javax.swing.JCheckBox
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -30,43 +32,37 @@ class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<F
 
 
     init {
-        rootComponent = GridPanelBuilder.panel {
-            textSeparatorCell(Bundle("fixed_length.title"))
-
-            cell {
-                JBCheckBox(Bundle("fixed_length.ui.enabled"))
-                    .withName("fixedLengthEnabled")
-                    .also { enabledCheckBox = it }
-            }
-
-            panel {
+        rootComponent = panel {
+            group(Bundle("fixed_length.title")) {
                 row {
-                    cell {
-                        label("fixedLengthLengthLabel", Bundle("fixed_length.ui.length_option"))
-                            .toggledBy(enabledCheckBox)
-                    }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
-                        JIntSpinner(value = FixedLengthDecorator.MIN_LENGTH, minValue = FixedLengthDecorator.MIN_LENGTH)
-                            .withName("fixedLengthLength")
-                            .toggledBy(enabledCheckBox)
-                            .also { lengthInput = it }
-                    }
+                    checkBox(Bundle("fixed_length.ui.enabled"))
+                        .also { DialogUtil.registerMnemonic(it.component, '&') }
+                        .also { it.component.name = "fixedLengthEnabled" }
+                        .also { enabledCheckBox = it.component }
                 }
 
-                row {
-                    cell {
-                        label("fixedLengthFillerLabel", Bundle("fixed_length.ui.filler_option"))
-                            .toggledBy(enabledCheckBox)
+                indent {
+                    row(Bundle("fixed_length.ui.length_option")) {
+                        cell(
+                            JIntSpinner(
+                                value = FixedLengthDecorator.MIN_LENGTH,
+                                minValue = FixedLengthDecorator.MIN_LENGTH
+                            )
+                        )
+                            .withFixedWidth(UIConstants.SIZE_SMALL)
+                            .also { it.component.name = "fixedLengthLength" }
+                            .also { lengthInput = it.component }
                     }
 
-                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
-                        JTextField(PlainDocument().also { it.documentFilter = MaxLengthDocumentFilter(1) }, "", 0)
-                            .withName("fixedLengthFiller")
-                            .toggledBy(enabledCheckBox)
-                            .also { fillerInput = it }
+                    row(Bundle("fixed_length.ui.filler_option")) {
+                        val document = PlainDocument().also { it.documentFilter = MaxLengthDocumentFilter(1) }
+                        textField()
+                            .withFixedWidth(UIConstants.SIZE_SMALL)
+                            .also { it.component.document = document }
+                            .also { it.component.name = "fixedLengthFiller" }
+                            .also { fillerInput = it.component }
                     }
-                }
+                }.enabledIf(enabledCheckBox.selected)
             }
         }
 

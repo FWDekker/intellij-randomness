@@ -6,25 +6,31 @@ import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_DECIMAL_SEPARATOR
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.MIN_DECIMAL_COUNT
-import com.fwdekker.randomness.ui.GridPanelBuilder
 import com.fwdekker.randomness.ui.JDoubleSpinner
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.MinMaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.VariableLabelRadioButton
+import com.fwdekker.randomness.ui.add
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
+import com.fwdekker.randomness.ui.hasValue
+import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
-import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBTextField
-import com.intellij.uiDesigner.core.GridConstraints
+import com.fwdekker.randomness.ui.withFixedWidth
+import com.intellij.ui.components.JBRadioButton
+import com.intellij.ui.components.Label
+import com.intellij.ui.dsl.builder.BottomGap
+import com.intellij.ui.dsl.builder.EMPTY_LABEL
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
+import com.intellij.util.ui.DialogUtil
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
 import javax.swing.JTextField
-import javax.swing.event.ChangeEvent
 
 
 /**
@@ -51,131 +57,105 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
 
 
     init {
-        rootComponent = GridPanelBuilder.panel {
-            textSeparatorCell(Bundle("decimal.ui.value_separator"))
-
-            panel {
-                row {
-                    cell { label("minValueLabel", Bundle("decimal.ui.min_value_option")) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_VERY_LARGE)) {
-                        JDoubleSpinner()
-                            .withName("minValue")
-                            .also { minValue = it }
-                    }
+        rootComponent = panel {
+            group(Bundle("decimal.ui.value.header")) {
+                row(Bundle("decimal.ui.value.min_option")) {
+                    cell(JDoubleSpinner())
+                        .withFixedWidth(UIConstants.SIZE_VERY_LARGE)
+                        .also { it.component.name = "minValue" }
+                        .also { minValue = it.component }
                 }
 
-                row {
-                    cell { label("maxValueLabel", Bundle("decimal.ui.max_value_option")) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_VERY_LARGE)) {
-                        JDoubleSpinner()
-                            .withName("maxValue")
-                            .also { maxValue = it }
-                    }
+                row(Bundle("decimal.ui.value.max_option")) {
+                    cell(JDoubleSpinner())
+                        .withFixedWidth(UIConstants.SIZE_VERY_LARGE)
+                        .also { it.component.name = "maxValue" }
+                        .also { maxValue = it.component }
                 }
 
                 bindSpinners(minValue, maxValue, DecimalScheme.MAX_VALUE_DIFFERENCE)
+            }
 
-                row {
-                    cell { label("decimalCountLabel", Bundle("decimal.ui.number_of_decimals_option")) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
-                        JIntSpinner(value = MIN_DECIMAL_COUNT, minValue = MIN_DECIMAL_COUNT)
-                            .withName("decimalCount")
-                            .also { decimalCount = it }
-                    }
+            group(Bundle("decimal.ui.format.header")) {
+                row(Bundle("decimal.ui.format.number_of_decimals_option")) {
+                    cell(JIntSpinner(value = MIN_DECIMAL_COUNT, minValue = MIN_DECIMAL_COUNT))
+                        .withFixedWidth(UIConstants.SIZE_SMALL)
+                        .also { it.component.name = "decimalCount" }
+                        .also { decimalCount = it.component }
                 }
 
-                row {
-                    skip()
+                row(EMPTY_LABEL) {
+                    checkBox(Bundle("decimal.ui.format.show_trailing_zeroes"))
+                        .also { DialogUtil.registerMnemonic(it.component, '&') }
+                        .enabledIf(decimalCount.hasValue { it > 0 })
+                        .also { it.component.name = "showTrailingZeroes" }
+                        .also { showTrailingZeroesCheckBox = it.component }
+                }.bottomGap(BottomGap.SMALL)
 
-                    cell {
-                        JBCheckBox(Bundle("decimal.ui.show_trailing_zeroes"))
-                            .withName("showTrailingZeroes")
-                            .also {
-                                decimalCount.addChangeListener(
-                                    { _: ChangeEvent? ->
-                                        it.isEnabled = decimalCount.value > 0
-                                    }.also { it(null) }
-                                )
-                            }
-                            .also { showTrailingZeroesCheckBox = it }
-                    }
+                val groupingSeparatorLabel = Label(Bundle("decimal.ui.format.grouping_separator_option"))
+                row(groupingSeparatorLabel) {
+                    groupingSeparatorGroup = ButtonGroup()
+
+                    cell(JBRadioButton(Bundle("shared.option.none")))
+                        .also { it.component.actionCommand = "" }
+                        .also { it.component.name = "groupingSeparatorNone" }
+                        .also { groupingSeparatorGroup.add(it.component) }
+                    cell(JBRadioButton("."))
+                        .also { it.component.name = "groupingSeparatorPeriod" }
+                        .also { groupingSeparatorGroup.add(it.component) }
+                    cell(JBRadioButton(","))
+                        .also { it.component.name = "groupingSeparatorComma" }
+                        .also { groupingSeparatorGroup.add(it.component) }
+                    cell(JBRadioButton("_"))
+                        .also { it.component.name = "groupingSeparatorUnderscore" }
+                        .also { groupingSeparatorGroup.add(it.component) }
+                    cell(VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(1)))
+                        .also { it.component.name = "groupingSeparatorCustom" }
+                        .also { groupingSeparatorGroup.add(it.component) }
+                        .also { customGroupingSeparator = it.component }
+
+                    groupingSeparatorGroup.setLabel(groupingSeparatorLabel)
+                }
+
+                val decimalSeparatorLabel = Label(Bundle("decimal.ui.format.decimal_separator_option"))
+                row(decimalSeparatorLabel) {
+                    decimalSeparatorGroup = ButtonGroup()
+
+                    cell(JBRadioButton(","))
+                        .also { it.component.name = "decimalSeparatorComma" }
+                        .also { decimalSeparatorGroup.add(it.component) }
+                    cell(JBRadioButton("."))
+                        .also { it.component.name = "decimalSeparatorPeriod" }
+                        .also { decimalSeparatorGroup.add(it.component) }
+                    cell(VariableLabelRadioButton(UIConstants.SIZE_TINY, MinMaxLengthDocumentFilter(1, 1)))
+                        .also { it.component.name = "decimalSeparatorCustom" }
+                        .also { decimalSeparatorGroup.add(it.component) }
+                        .also { customDecimalSeparator = it.component }
+
+                    decimalSeparatorGroup.setLabel(decimalSeparatorLabel)
                 }
             }
 
-            vSeparatorCell()
-
-            panel {
-                row {
-                    cell { label("groupingSeparatorLabel", Bundle("decimal.ui.grouping_separator.option")) }
-
-                    row {
-                        groupingSeparatorGroup = buttonGroup("groupingSeparator")
-
-                        cell { radioButton("groupingSeparatorNone", Bundle("shared.option.none")) }
-                        cell { radioButton("groupingSeparatorPeriod", ".") }
-                        cell { radioButton("groupingSeparatorComma", ",") }
-                        cell { radioButton("groupingSeparatorUnderscore", "_") }
-                        cell {
-                            VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(1))
-                                .withName("groupingSeparatorCustom")
-                                .also { customGroupingSeparator = it }
-                        }
-                    }
+            group(Bundle("decimal.ui.affixes.header")) {
+                row(Bundle("decimal.ui.affixes.prefix_option")) {
+                    textField()
+                        .withFixedWidth(UIConstants.SIZE_SMALL)
+                        .also { it.component.name = "prefix" }
+                        .also { prefixInput = it.component }
                 }
 
-                row {
-                    cell { label("decimalSeparatorLabel", Bundle("decimal.ui.decimal_separator_option")) }
-
-                    row {
-                        decimalSeparatorGroup = buttonGroup("decimalSeparator")
-
-                        cell { radioButton("decimalSeparatorComma", ",") }
-                        cell { radioButton("decimalSeparatorPeriod", ".") }
-                        cell {
-                            VariableLabelRadioButton(UIConstants.SIZE_TINY, MinMaxLengthDocumentFilter(1, 1))
-                                .withName("decimalSeparatorCustom")
-                                .also { customDecimalSeparator = it }
-                        }
-                    }
+                row(Bundle("decimal.ui.affixes.suffix_option")) {
+                    textField()
+                        .withFixedWidth(UIConstants.SIZE_SMALL)
+                        .also { it.component.name = "suffix" }
+                        .also { suffixInput = it.component }
                 }
             }
 
-            vSeparatorCell()
-
-            panel {
-                row {
-                    cell { label("prefixLabel", Bundle("decimal.ui.prefix_option")) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
-                        JBTextField()
-                            .withName("prefix")
-                            .also { prefixInput = it }
-                    }
-                }
-
-                row {
-                    cell { label("suffixLabel", Bundle("decimal.ui.suffix_option")) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
-                        JBTextField()
-                            .withName("suffix")
-                            .also { suffixInput = it }
-                    }
-                }
+            row {
+                arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
+                cell(arrayDecoratorEditor.rootComponent).horizontalAlign(HorizontalAlign.FILL)
             }
-
-            vSeparatorCell()
-
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                ArrayDecoratorEditor(originalState.arrayDecorator)
-                    .also { arrayDecoratorEditor = it }
-                    .rootComponent
-            }
-
-            vSpacerCell()
         }
 
         loadState()

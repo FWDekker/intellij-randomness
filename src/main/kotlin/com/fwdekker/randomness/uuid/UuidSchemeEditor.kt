@@ -4,19 +4,23 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.ui.GridPanelBuilder
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.VariableLabelRadioButton
+import com.fwdekker.randomness.ui.add
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.buttons
 import com.fwdekker.randomness.ui.getValue
+import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_QUOTATION
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_TYPE
-import com.intellij.ui.components.JBCheckBox
-import com.intellij.uiDesigner.core.GridConstraints
+import com.intellij.ui.components.JBRadioButton
+import com.intellij.ui.components.Label
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
+import com.intellij.util.ui.DialogUtil
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
@@ -41,66 +45,80 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
 
 
     init {
-        rootComponent = GridPanelBuilder.panel {
-            textSeparatorCell(Bundle("uuid.ui.value_separator"))
+        rootComponent = panel {
+            group(Bundle("uuid.ui.value.header")) {
+                panel {
+                    val typeLabel = Label(Bundle("uuid.ui.value.type.option"))
+                    row(typeLabel) {
+                        typeGroup = ButtonGroup()
 
-            panel {
-                row {
-                    cell { label("typeLabel", Bundle("uuid.type_option")) }
+                        cell(JBRadioButton(Bundle("uuid.ui.value.type.1")))
+                            .also { it.component.actionCommand = "1" }
+                            .also { it.component.name = "type1" }
+                            .also { typeGroup.add(it.component) }
+                        cell(JBRadioButton(Bundle("uuid.ui.value.type.4")))
+                            .also { it.component.actionCommand = "4" }
+                            .also { it.component.name = "type4" }
+                            .also { typeGroup.add(it.component) }
+
+                        typeGroup.setLabel(typeLabel)
+                    }
+
+                    val quotationLabel = Label(Bundle("uuid.ui.value.quotation_marks.option"))
+                    row(quotationLabel) {
+                        quotationGroup = ButtonGroup()
+
+                        cell(JBRadioButton(Bundle("shared.option.none")))
+                            .also { it.component.actionCommand = "" }
+                            .also { it.component.name = "quotationNone" }
+                            .also { quotationGroup.add(it.component) }
+                        cell(JBRadioButton("'"))
+                            .also { it.component.name = "quotationSingle" }
+                            .also { quotationGroup.add(it.component) }
+                        cell(JBRadioButton("\""))
+                            .also { it.component.name = "quotationDouble" }
+                            .also { quotationGroup.add(it.component) }
+                        cell(JBRadioButton("`"))
+                            .also { it.component.name = "quotationBacktick" }
+                            .also { quotationGroup.add(it.component) }
+                        cell(VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(2)))
+                            .also { it.component.name = "quotationCustom" }
+                            .also { quotationGroup.add(it.component) }
+                            .also { customQuotation = it.component }
+
+                        quotationGroup.setLabel(quotationLabel)
+                    }
+
+                    val capitalizationLabel = Label(Bundle("uuid.ui.value.capitalization_option"))
+                    row(capitalizationLabel) {
+                        capitalizationGroup = ButtonGroup()
+
+                        @Suppress("DialogTitleCapitalization") // Intentional
+                        cell(JBRadioButton(Bundle("shared.capitalization.lower")))
+                            .also { it.component.actionCommand = "lower" }
+                            .also { it.component.name = "capitalizationLower" }
+                            .also { capitalizationGroup.add(it.component) }
+                        cell(JBRadioButton(Bundle("shared.capitalization.upper")))
+                            .also { it.component.actionCommand = "upper" }
+                            .also { it.component.name = "capitalizationUpper" }
+                            .also { capitalizationGroup.add(it.component) }
+
+                        capitalizationGroup.setLabel(capitalizationLabel)
+                    }
 
                     row {
-                        typeGroup = buttonGroup("type")
-
-                        cell { radioButton("type1", Bundle("uuid.type1"), "1") }
-                        cell { radioButton("type4", Bundle("uuid.type4"), "4") }
+                        checkBox(Bundle("uuid.add_dashes"))
+                            .also { DialogUtil.registerMnemonic(it.component, '&') }
+                            .also { it.component.name = "addDashesCheckBox" }
+                            .also { addDashesCheckBox = it.component }
                     }
-                }
-
-                row {
-                    cell { label("quotationLabel", Bundle("uuid.ui.quotation_marks.option")) }
-
-                    row {
-                        quotationGroup = buttonGroup("quotation")
-
-                        cell { radioButton("quotationNone", Bundle("shared.option.none"), "") }
-                        cell { radioButton("quotationSingle", "'") }
-                        cell { radioButton("quotationDouble", "\"") }
-                        cell { radioButton("quotationBacktick", "`") }
-                        cell {
-                            VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(2))
-                                .withName("quotationCustom")
-                                .also { customQuotation = it }
-                        }
-                    }
-                }
-
-                row {
-                    cell { label("capitalizationLabel", Bundle("uuid.ui.capitalization_option")) }
-
-                    row {
-                        capitalizationGroup = buttonGroup("capitalization")
-
-                        cell { radioButton("capitalizationLower", Bundle("shared.capitalization.lower"), "lower") }
-                        cell { radioButton("capitalizationUpper", Bundle("shared.capitalization.upper"), "upper") }
-                    }
-                }
-
-                cell {
-                    JBCheckBox(Bundle("uuid.add_dashes"))
-                        .withName("addDashesCheckBox")
-                        .also { addDashesCheckBox = it }
                 }
             }
 
-            vSeparatorCell()
-
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                ArrayDecoratorEditor(originalState.arrayDecorator)
-                    .also { arrayDecoratorEditor = it }
-                    .rootComponent
+            row {
+                arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
+                cell(arrayDecoratorEditor.rootComponent).horizontalAlign(HorizontalAlign.FILL)
             }
-
-            vSpacerCell()
         }
 
         loadState()

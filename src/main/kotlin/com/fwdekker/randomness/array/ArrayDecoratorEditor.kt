@@ -5,21 +5,29 @@ import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecorator.Companion.DEFAULT_BRACKETS
 import com.fwdekker.randomness.array.ArrayDecorator.Companion.DEFAULT_SEPARATOR
 import com.fwdekker.randomness.array.ArrayDecorator.Companion.MIN_MIN_COUNT
-import com.fwdekker.randomness.ui.GridPanelBuilder
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.VariableLabelRadioButton
+import com.fwdekker.randomness.ui.add
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
+import com.fwdekker.randomness.ui.indentedIf
+import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
-import com.intellij.ui.ContextHelpLabel
-import com.intellij.ui.components.JBCheckBox
+import com.fwdekker.randomness.ui.withFixedWidth
+import com.intellij.ui.components.JBRadioButton
+import com.intellij.ui.components.Label
+import com.intellij.ui.dsl.builder.EMPTY_LABEL
+import com.intellij.ui.dsl.builder.TopGap
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.layout.not
+import com.intellij.ui.layout.selected
+import com.intellij.util.ui.DialogUtil
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
 import javax.swing.JRadioButton
-import javax.swing.event.ChangeEvent
 
 
 /**
@@ -49,110 +57,99 @@ class ArrayDecoratorEditor(
 
 
     init {
-        rootComponent = GridPanelBuilder.panel {
-            enabledCheckBox = JBCheckBox(Bundle("array.ui.enabled"))
-            if (!embedded) {
-                textSeparatorCell(Bundle("array.title"))
+        rootComponent = panel {
+            separator(Bundle("array.title"))
+                .topGap(TopGap.MEDIUM)
+                .visible(!embedded)
 
-                // TODO: Make checkbox-based toggling of all components automatic
-                cell { enabledCheckBox.withName("arrayEnabled") }
-            }
-
-            panel {
+            indentedIf(!embedded) {
                 row {
-                    cell { label("arrayMinCountLabel", Bundle("array.ui.min_count_option")).toggledBy(enabledCheckBox) }
+                    checkBox(Bundle("array.ui.enabled"))
+                        .also { DialogUtil.registerMnemonic(it.component, '&') }
+                        .also { it.component.name = "arrayEnabled" }
+                        .also { enabledCheckBox = it.component }
+                }.visible(!embedded)
 
-                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
-                        JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT)
-                            .withName("arrayMinCount")
-                            .toggledBy(enabledCheckBox)
-                            .also { minCountSpinner = it }
-                    }
-                }
-
-                row {
-                    cell { label("arrayMaxCountLabel", Bundle("array.ui.max_count_option")).toggledBy(enabledCheckBox) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
-                        JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT)
-                            .withName("arrayMaxCount")
-                            .toggledBy(enabledCheckBox)
-                            .also { maxCountSpinner = it }
-                    }
-                }
-
-                bindSpinners(minCountSpinner, maxCountSpinner)
-
-                row {
-                    cell { label("arrayBracketsLabel", Bundle("array.ui.brackets.option")).toggledBy(enabledCheckBox) }
-
-                    row {
-                        bracketsGroup = buttonGroup("arrayBrackets")
-
-                        cell {
-                            radioButton("arrayBracketsNone", Bundle("shared.option.none"), "")
-                                .toggledBy(enabledCheckBox)
-                        }
-                        cell { radioButton("arrayBracketsSquare", "[]", "[@]").toggledBy(enabledCheckBox) }
-                        cell { radioButton("arrayBracketsCurly", "{}", "{@}").toggledBy(enabledCheckBox) }
-                        cell { radioButton("arrayBracketsRound", "()", "(@)").toggledBy(enabledCheckBox) }
-                        cell {
-                            VariableLabelRadioButton(UIConstants.SIZE_MEDIUM)
-                                .withName("arrayBracketsCustom")
-                                .toggledBy(enabledCheckBox)
-                                .also { customBrackets = it }
-                        }
-
-                        cell { ContextHelpLabel.create(Bundle("array.ui.brackets.comment")).toggledBy(enabledCheckBox) }
-                    }
-                }
-
-                row {
-                    cell {
-                        label("arraySeparatorLabel", Bundle("array.ui.separator.option"))
-                            .toggledBy(enabledCheckBox)
+                indentedIf(!embedded) {
+                    row(Bundle("array.ui.min_count_option")) {
+                        cell(JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT))
+                            .withFixedWidth(UIConstants.SIZE_SMALL)
+                            .also { it.component.name = "arrayMinCount" }
+                            .also { minCountSpinner = it.component }
                     }
 
-                    row {
-                        separatorGroup = buttonGroup("arraySeparator")
-
-                        cell {
-                            radioButton("arraySeparatorNone", Bundle("shared.option.none"), "")
-                                .toggledBy(enabledCheckBox)
-                        }
-                        cell { radioButton("arraySeparatorComma", ",").toggledBy(enabledCheckBox) }
-                        cell { radioButton("arraySeparatorSemicolon", ";").toggledBy(enabledCheckBox) }
-                        cell {
-                            radioButton("arraySeparatorNewLine", "\\n", "\n")
-                                .toggledBy(enabledCheckBox)
-                                .also { newlineSeparatorButton = it }
-                        }
-                        cell {
-                            VariableLabelRadioButton()
-                                .withName("arraySeparatorCustom")
-                                .toggledBy(enabledCheckBox)
-                                .also { customSeparator = it }
-                        }
+                    row(Bundle("array.ui.max_count_option")) {
+                        cell(JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT))
+                            .withFixedWidth(UIConstants.SIZE_SMALL)
+                            .also { it.component.name = "arrayMaxCount" }
+                            .also { maxCountSpinner = it.component }
                     }
-                }
 
-                row {
-                    skip()
+                    bindSpinners(minCountSpinner, maxCountSpinner)
 
-                    cell {
-                        JBCheckBox(Bundle("array.ui.space_after_separator"))
-                            .withName("arraySpaceAfterSeparator")
-                            .toggledBy(enabledCheckBox) { !newlineSeparatorButton.isSelected }
-                            .also {
-                                newlineSeparatorButton.addChangeListener(
-                                    { _: ChangeEvent? ->
-                                        it.isEnabled = enabledCheckBox.isSelected && !newlineSeparatorButton.isSelected
-                                    }.also { it(null) }
-                                )
-                            }
-                            .also { spaceAfterSeparatorCheckBox = it }
+                    val bracketsLabel = Label(Bundle("array.ui.brackets.option"))
+                    row(bracketsLabel) {
+                        bracketsGroup = ButtonGroup()
+
+                        cell(JBRadioButton(Bundle("shared.option.none")))
+                            .also { it.component.actionCommand = "" }
+                            .also { it.component.name = "arrayBracketsNone" }
+                            .also { bracketsGroup.add(it.component) }
+                        cell(JBRadioButton("[]"))
+                            .also { it.component.actionCommand = "[@]" }
+                            .also { it.component.name = "arrayBracketsSquare" }
+                            .also { bracketsGroup.add(it.component) }
+                        cell(JBRadioButton("{}"))
+                            .also { it.component.actionCommand = "{@}" }
+                            .also { it.component.name = "arrayBracketsCurly" }
+                            .also { bracketsGroup.add(it.component) }
+                        cell(JBRadioButton("()"))
+                            .also { it.component.actionCommand = "(@)" }
+                            .also { it.component.name = "arrayBracketsRound" }
+                            .also { bracketsGroup.add(it.component) }
+                        cell(VariableLabelRadioButton(UIConstants.SIZE_MEDIUM))
+                            .also { it.component.name = "arrayBracketsCustom" }
+                            .also { bracketsGroup.add(it.component) }
+                            .also { customBrackets = it.component }
+                        contextHelp(Bundle("array.ui.brackets.comment"))
+
+                        bracketsGroup.setLabel(bracketsLabel)
                     }
-                }
+
+                    val separatorLabel = Label(Bundle("array.ui.separator.option"))
+                    row(separatorLabel) {
+                        separatorGroup = ButtonGroup()
+
+                        cell(JBRadioButton(Bundle("shared.option.none")))
+                            .also { it.component.actionCommand = "" }
+                            .also { it.component.name = "arraySeparatorNone" }
+                            .also { separatorGroup.add(it.component) }
+                        cell(JBRadioButton(","))
+                            .also { it.component.name = "arraySeparatorComma" }
+                            .also { separatorGroup.add(it.component) }
+                        cell(JBRadioButton(";"))
+                            .also { it.component.name = "arraySeparatorSemicolon" }
+                            .also { separatorGroup.add(it.component) }
+                        cell(JBRadioButton("\\n"))
+                            .also { it.component.actionCommand = "\n" }
+                            .also { it.component.name = "arraySeparatorNewline" }
+                            .also { separatorGroup.add(it.component) }
+                            .also { newlineSeparatorButton = it.component }
+                        cell(VariableLabelRadioButton())
+                            .also { it.component.name = "arraySeparatorCustom" }
+                            .also { separatorGroup.add(it.component) }
+                            .also { customSeparator = it.component }
+
+                        separatorGroup.setLabel(separatorLabel)
+                    }
+
+                    row(EMPTY_LABEL) {
+                        checkBox(Bundle("array.ui.space_after_separator"))
+                            .enabledIf(newlineSeparatorButton.selected.not())
+                            .also { it.component.name = "arraySpaceAfterSeparator" }
+                            .also { spaceAfterSeparatorCheckBox = it.component }
+                    }
+                }.enabledIf(enabledCheckBox.selected)
             }
         }
 

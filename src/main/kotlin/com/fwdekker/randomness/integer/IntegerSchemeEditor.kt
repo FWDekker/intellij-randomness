@@ -7,23 +7,26 @@ import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.fixedlength.FixedLengthDecoratorEditor
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_GROUPING_SEPARATOR
-import com.fwdekker.randomness.ui.GridPanelBuilder
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JLongSpinner
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.VariableLabelRadioButton
+import com.fwdekker.randomness.ui.add
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
-import com.fwdekker.randomness.ui.forEach
 import com.fwdekker.randomness.ui.getValue
+import com.fwdekker.randomness.ui.hasValue
+import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
-import com.intellij.ui.components.JBTextField
-import com.intellij.uiDesigner.core.GridConstraints
+import com.fwdekker.randomness.ui.withFixedWidth
+import com.intellij.ui.components.JBRadioButton
+import com.intellij.ui.components.Label
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import javax.swing.ButtonGroup
 import javax.swing.JPanel
 import javax.swing.JTextField
-import javax.swing.event.ChangeEvent
 
 
 /**
@@ -49,131 +52,101 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
 
 
     init {
-        rootComponent = GridPanelBuilder.panel {
-            textSeparatorCell(Bundle("integer.ui.value_separator"))
-
-            panel {
-                row {
-                    cell { label("minValueLabel", Bundle("integer.ui.min_value_option")) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
-                        JLongSpinner()
-                            .withName("minValue")
-                            .also { minValue = it }
-                    }
+        rootComponent = panel {
+            group(Bundle("integer.ui.value.header")) {
+                row(Bundle("integer.ui.value.min_option")) {
+                    cell(JLongSpinner())
+                        .withFixedWidth(UIConstants.SIZE_LARGE)
+                        .also { it.component.name = "minValue" }
+                        .also { minValue = it.component }
                 }
 
-                row {
-                    cell { label("maxValueLabel", Bundle("integer.ui.max_value_option")) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_LARGE)) {
-                        JLongSpinner()
-                            .withName("maxValue")
-                            .also { maxValue = it }
-                    }
+                row(Bundle("integer.ui.value.max_option")) {
+                    cell(JLongSpinner())
+                        .withFixedWidth(UIConstants.SIZE_LARGE)
+                        .also { it.component.name = "maxValue" }
+                        .also { maxValue = it.component }
                 }
 
                 bindSpinners(minValue, maxValue, maxRange = null)
             }
 
-            vSeparatorCell()
-
-            panel {
-                row {
-                    cell { label("baseLabel", Bundle("integer.ui.base_option")) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
-                        JIntSpinner(IntegerScheme.DECIMAL_BASE, IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE)
-                            .withName("base")
-                            .also { base = it }
-                    }
+            group(Bundle("integer.ui.format.header")) {
+                row(Bundle("integer.ui.format.base_option")) {
+                    cell(JIntSpinner(IntegerScheme.DECIMAL_BASE, IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE))
+                        .withFixedWidth(UIConstants.SIZE_SMALL)
+                        .also { it.component.name = "base" }
+                        .also { base = it.component }
                 }
 
-                row {
-                    cell { label("groupingSeparatorLabel", Bundle("integer.ui.grouping_separator.option")) }
+                val groupingSeparatorLabel = Label(Bundle("integer.ui.format.grouping_separator_option"))
+                row(groupingSeparatorLabel) {
+                    groupingSeparatorGroup = ButtonGroup()
 
-                    row {
-                        groupingSeparatorGroup = buttonGroup("groupingSeparator")
+                    cell(JBRadioButton(Bundle("shared.option.none")))
+                        .also { it.component.actionCommand = "" }
+                        .also { it.component.name = "groupingSeparatorNone" }
+                        .also { groupingSeparatorGroup.add(it.component) }
+                    cell(JBRadioButton("."))
+                        .also { it.component.name = "groupingSeparatorPeriod" }
+                        .also { groupingSeparatorGroup.add(it.component) }
+                    cell(JBRadioButton(","))
+                        .also { it.component.name = "groupingSeparatorComma" }
+                        .also { groupingSeparatorGroup.add(it.component) }
+                    cell(JBRadioButton("_"))
+                        .also { it.component.name = "groupingSeparatorUnderscore" }
+                        .also { groupingSeparatorGroup.add(it.component) }
+                    cell(VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(1)))
+                        .also { it.component.name = "groupingSeparatorCustom" }
+                        .also { groupingSeparatorGroup.add(it.component) }
+                        .also { customGroupingSeparator = it.component }
 
-                        cell { radioButton("groupingSeparatorNone", Bundle("shared.option.none"), "") }
-                        cell { radioButton("groupingSeparatorPeriod", ".") }
-                        cell { radioButton("groupingSeparatorComma", ",") }
-                        cell { radioButton("groupingSeparatorUnderscore", "_") }
-                        cell {
-                            VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(1))
-                                .withName("groupingSeparatorCustom")
-                                .also { customGroupingSeparator = it }
-                        }
-                    }
+                    groupingSeparatorGroup.setLabel(groupingSeparatorLabel)
+                }.enabledIf(base.hasValue { it == IntegerScheme.DECIMAL_BASE })
+
+                val capitalizationLabel = Label(Bundle("integer.ui.format.capitalization_option"))
+                row(capitalizationLabel) {
+                    capitalizationGroup = ButtonGroup()
+
+                    @Suppress("DialogTitleCapitalization") // Intentional
+                    cell(JBRadioButton(Bundle("shared.capitalization.lower")))
+                        .also { it.component.actionCommand = "lower" }
+                        .also { it.component.name = "capitalizationLower" }
+                        .also { capitalizationGroup.add(it.component) }
+                    cell(JBRadioButton(Bundle("shared.capitalization.upper")))
+                        .also { it.component.actionCommand = "upper" }
+                        .also { it.component.name = "capitalizationUpper" }
+                        .also { capitalizationGroup.add(it.component) }
+
+                    capitalizationGroup.setLabel(capitalizationLabel)
+                }.enabledIf(base.hasValue { it > IntegerScheme.DECIMAL_BASE })
+            }
+
+            group(Bundle("integer.ui.affixes.header")) {
+                row(Bundle("integer.ui.affixes.prefix_option")) {
+                    textField()
+                        .withFixedWidth(UIConstants.SIZE_SMALL)
+                        .also { it.component.name = "prefix" }
+                        .also { prefixInput = it.component }
                 }
 
-                row {
-                    cell { label("capitalizationLabel", Bundle("integer.ui.capitalization_option")) }
-
-                    row {
-                        capitalizationGroup = buttonGroup("capitalization")
-
-                        cell { radioButton("capitalizationLower", Bundle("shared.capitalization.lower"), "lower") }
-                        cell { radioButton("capitalizationUpper", Bundle("shared.capitalization.upper"), "upper") }
-
-                        // TODO: Find a nicer place to run this code
-                        base.addChangeListener(
-                            { _: ChangeEvent? ->
-                                groupingSeparatorGroup.forEach {
-                                    it.isEnabled = base.value == IntegerScheme.DECIMAL_BASE
-                                }
-                                customGroupingSeparator.isEnabled = base.value == IntegerScheme.DECIMAL_BASE
-
-                                capitalizationGroup.forEach {
-                                    it.isEnabled = base.value > IntegerScheme.DECIMAL_BASE
-                                }
-                            }.also { it(null) }
-                        )
-                    }
+                row(Bundle("integer.ui.affixes.suffix_option")) {
+                    textField()
+                        .withFixedWidth(UIConstants.SIZE_SMALL)
+                        .also { it.component.name = "suffix" }
+                        .also { suffixInput = it.component }
                 }
             }
 
-            vSeparatorCell()
-
-            panel {
-                row {
-                    cell { label("prefixLabel", Bundle("integer.ui.prefix_option")) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
-                        JBTextField()
-                            .withName("prefix")
-                            .also { prefixInput = it }
-                    }
-                }
-
-                row {
-                    cell { label("suffixLabel", Bundle("integer.ui.suffix_option")) }
-
-                    cell(constraints(fixedWidth = UIConstants.SIZE_SMALL)) {
-                        JBTextField()
-                            .withName("suffix")
-                            .also { suffixInput = it }
-                    }
-                }
+            row {
+                fixedLengthDecoratorEditor = FixedLengthDecoratorEditor(originalState.fixedLengthDecorator)
+                cell(fixedLengthDecoratorEditor.rootComponent).horizontalAlign(HorizontalAlign.FILL)
             }
 
-            vSeparatorCell()
-
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                FixedLengthDecoratorEditor(originalState.fixedLengthDecorator)
-                    .also { fixedLengthDecoratorEditor = it }
-                    .rootComponent
+            row {
+                arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
+                cell(arrayDecoratorEditor.rootComponent).horizontalAlign(HorizontalAlign.FILL)
             }
-
-            vSeparatorCell()
-
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                ArrayDecoratorEditor(originalState.arrayDecorator)
-                    .also { arrayDecoratorEditor = it }
-                    .rootComponent
-            }
-
-            vSpacerCell()
         }
 
         loadState()

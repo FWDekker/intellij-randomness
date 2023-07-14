@@ -6,7 +6,6 @@ import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
-import javax.swing.ButtonGroup
 
 
 /**
@@ -97,16 +96,6 @@ object VariableLabelRadioButtonTest : DescribeSpec({
         }
     }
 
-
-    describe("addToButtonGroup") {
-        it("adds the button to the button group") {
-            val group = ButtonGroup()
-
-            variableButton.addToButtonGroup(group)
-
-            assertThat(group.buttonCount).isEqualTo(1)
-        }
-    }
 
     describe("addChangeListener") {
         it("invokes the listener when the button is selected") {

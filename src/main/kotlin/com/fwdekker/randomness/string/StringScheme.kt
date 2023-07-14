@@ -21,15 +21,15 @@ import kotlin.random.asJavaRandom
  *
  * @property pattern The regex-like pattern according to which the string is generated.
  * @property isRegex `true` if and only if [pattern] should be interpreted as a regex.
- * @property capitalization The capitalization mode of the generated string.
  * @property removeLookAlikeSymbols Whether the symbols in [LOOK_ALIKE_CHARACTERS] should be removed.
+ * @property capitalization The capitalization mode of the generated string.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class StringScheme(
     var pattern: String = DEFAULT_PATTERN,
     var isRegex: Boolean = DEFAULT_IS_REGEX,
-    var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var removeLookAlikeSymbols: Boolean = DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS,
+    var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
     @get:Transient
@@ -96,8 +96,8 @@ data class StringScheme(
         StringScheme(
             pattern = pattern,
             isRegex = isRegex,
-            capitalization = capitalization,
             removeLookAlikeSymbols = removeLookAlikeSymbols,
+            capitalization = capitalization,
             arrayDecorator = arrayDecorator.deepCopy(retainUuid)
         ).also { if (retainUuid) it.uuid = this.uuid }
 
@@ -133,13 +133,13 @@ data class StringScheme(
         const val DEFAULT_IS_REGEX = true
 
         /**
-         * The default value of the [capitalization] field.
-         */
-        val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
-
-        /**
          * The default value of the [removeLookAlikeSymbols] field.
          */
         const val DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS = false
+
+        /**
+         * The default value of the [capitalization] field.
+         */
+        val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
     }
 }

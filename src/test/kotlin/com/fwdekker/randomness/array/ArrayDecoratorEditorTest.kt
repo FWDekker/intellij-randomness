@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.findAll
 import com.fwdekker.randomness.matcher
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -45,16 +44,16 @@ object ArrayDecoratorEditorTest : DescribeSpec({
 
 
     describe("separator visibility") {
-        it("adds the separator by default") {
+        it("shows the separator by default") {
             frame.panel(matcher(TitledSeparator::class.java)).requireVisible()
         }
 
-        it("does not add a separator if the editor is embedded") {
+        it("hides the separator if the editor is embedded") {
             frame.cleanUp()
             editor = GuiActionRunner.execute<ArrayDecoratorEditor> { ArrayDecoratorEditor(scheme, embedded = true) }
             frame = showInFrame(editor.rootComponent)
 
-            assertThat(frame.findAll(matcher(TitledSeparator::class.java))).isEmpty()
+            frame.panel(matcher(TitledSeparator::class.java)).requireNotVisible()
         }
     }
 
@@ -94,7 +93,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
                 }
                 frame = showInFrame(editor.rootComponent)
 
-                assertThat(frame.findAll(matcher(JCheckBox::class.java) { it.name == "arrayEnabled" })).isEmpty()
+                frame.checkBox(matcher(JCheckBox::class.java) { it.name == "arrayEnabled" }).requireSelected()
 
                 frame.spinner("arrayMinCount").requireEnabled()
             }

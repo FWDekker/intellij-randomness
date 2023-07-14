@@ -4,14 +4,16 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.ui.GridPanelBuilder
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.SimpleJBDocumentListener
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.VariableLabelRadioButton
+import com.fwdekker.randomness.ui.add
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.getValue
+import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
+import com.fwdekker.randomness.ui.withFixedHeight
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.word.WordScheme.Companion.DEFAULT_QUOTATION
 import com.intellij.openapi.application.runWriteAction
@@ -23,7 +25,11 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBLabel
-import com.intellij.uiDesigner.core.GridConstraints
+import com.intellij.ui.components.JBRadioButton
+import com.intellij.ui.components.Label
+import com.intellij.ui.dsl.builder.BottomGap
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import java.awt.event.ItemEvent
 import javax.swing.ButtonGroup
 import javax.swing.JComponent
@@ -60,118 +66,107 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
 
 
     init {
-        rootComponent = GridPanelBuilder.panel {
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                panel {
-                    row {
-                        textSeparatorCell(Bundle("word.ui.word_list"))
-
-                        cell(constraints(hSizePolicy = 0)) {
-                            ComboBox(arrayOf(PRESET_ITEM) + DefaultWordList.WORD_LISTS)
-                                .withName("wordListBox")
-                                .also { it.setRenderer { _, value, _, _, _ -> JBLabel(value.name) } }
-                                .also {
-                                    it.addItemListener { event ->
-                                        if (event.stateChange == ItemEvent.SELECTED) {
-                                            val item = event.item as DefaultWordList
-                                            if (item != PRESET_ITEM) wordList = item.words
-                                        }
-                                    }
+        rootComponent = panel {
+            group(Bundle("word.ui.words.header")) {
+                row(Bundle("word.ui.words.insert_option")) {
+                    cell(ComboBox(arrayOf(PRESET_ITEM) + DefaultWordList.WORD_LISTS))
+                        .also { it.component.name = "wordListBox" }
+                        .also { it.component.setRenderer { _, value, _, _, _ -> JBLabel(value.name) } }
+                        .also {
+                            it.component.addItemListener { event ->
+                                if (event.stateChange == ItemEvent.SELECTED) {
+                                    val item = event.item as DefaultWordList
+                                    if (item != PRESET_ITEM) wordList = item.words
                                 }
-                                .also { wordListBox = it }
-                        }
-                    }
-
-                    cell(
-                        constraints(
-                            colSpan = 2,
-                            fill = GridConstraints.FILL_HORIZONTAL,
-                            fixedHeight = UIConstants.SIZE_VERY_LARGE
-                        )
-                    ) {
-                        val factory = EditorFactory.getInstance()
-
-                        factory.createDocument("")
-                            .also {
-                                it.addDocumentListener(
-                                    SimpleJBDocumentListener {
-                                        if (wordListBox.selectedIndex != 0 && wordList != wordListBox.item.words)
-                                            wordListBox.selectedIndex = 0
-                                    }
-                                )
                             }
-                            .also { wordListDocument = it }
-
-                        factory.createEditor(wordListDocument)
-                            .also { wordListEditor = it }
-                            .component
-                    }
-                }
-            }
-
-            vSeparatorCell()
-
-            textSeparatorCell(Bundle("word.ui.appearance"))
-
-            panel {
-                row {
-                    cell { label("quotationLabel", Bundle("word.ui.quotation_marks.option")) }
-
-                    row {
-                        quotationGroup = buttonGroup("quotation")
-
-                        cell { radioButton("quotationNone", Bundle("shared.option.none"), "") }
-                        cell { radioButton("quotationSingle", "'") }
-                        cell { radioButton("quotationDouble", "\"") }
-                        cell { radioButton("quotationBacktick", "`") }
-                        cell {
-                            VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(2))
-                                .withName("quotationCustom")
-                                .also { customQuotation = it }
                         }
-                    }
+                        .also { wordListBox = it.component }
                 }
 
                 row {
-                    cell {
-                        label("capitalizationLabel", Bundle("word.ui.capitalization_option"))
-                            .also { capitalizationLabel = it }
-                    }
-
-                    row {
-                        capitalizationGroup = buttonGroup("capitalization")
-
-                        cell { radioButton("capitalizationRetain", Bundle("shared.capitalization.retain"), "retain") }
-                        cell { radioButton("capitalizationLower", Bundle("shared.capitalization.lower"), "lower") }
-                        cell { radioButton("capitalizationUpper", Bundle("shared.capitalization.upper"), "upper") }
-                        cell { radioButton("capitalizationRandom", Bundle("shared.capitalization.random"), "random") }
-                        cell {
-                            radioButton(
-                                "capitalizationSentence",
-                                Bundle("shared.capitalization.sentence"),
-                                "sentence"
+                    val factory = EditorFactory.getInstance()
+                    wordListDocument = factory.createDocument("")
+                        .also {
+                            it.addDocumentListener(
+                                SimpleJBDocumentListener {
+                                    if (wordListBox.selectedIndex != 0 && wordList != wordListBox.item.words)
+                                        wordListBox.selectedIndex = 0
+                                }
                             )
                         }
-                        cell {
-                            radioButton(
-                                "capitalizationFirstLetter",
-                                Bundle("shared.capitalization.first_letter"),
-                                "first letter"
-                            )
-                        }
-                    }
+                    wordListEditor = factory.createEditor(wordListDocument)
+
+                    cell(wordListEditor.component)
+                        .horizontalAlign(HorizontalAlign.FILL)
+                        .withFixedHeight(UIConstants.SIZE_VERY_LARGE)
+                }.bottomGap(BottomGap.MEDIUM)
+            }
+
+            group(Bundle("word.ui.format.header")) {
+                val quotationLabel = Label(Bundle("word.ui.format.quotation_marks_option"))
+                row(quotationLabel) {
+                    quotationGroup = ButtonGroup()
+
+                    cell(JBRadioButton(Bundle("shared.option.none")))
+                        .also { it.component.actionCommand = "" }
+                        .also { it.component.name = "quotationNone" }
+                        .also { quotationGroup.add(it.component) }
+                    cell(JBRadioButton("'"))
+                        .also { it.component.name = "quotationSingle" }
+                        .also { quotationGroup.add(it.component) }
+                    cell(JBRadioButton("\""))
+                        .also { it.component.name = "quotationDouble" }
+                        .also { quotationGroup.add(it.component) }
+                    cell(JBRadioButton("`"))
+                        .also { it.component.name = "quotationBacktick" }
+                        .also { quotationGroup.add(it.component) }
+                    cell(VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(2)))
+                        .also { it.component.name = "quotationCustom" }
+                        .also { quotationGroup.add(it.component) }
+                        .also { customQuotation = it.component }
+
+                    quotationGroup.setLabel(quotationLabel)
+                }
+
+                val capitalizationLabel = Label(Bundle("word.ui.format.capitalization_option"))
+                row(capitalizationLabel) {
+                    capitalizationGroup = ButtonGroup()
+
+                    cell(JBRadioButton(Bundle("shared.capitalization.retain")))
+                        .also { it.component.actionCommand = "retain" }
+                        .also { it.component.name = "capitalizationRetain" }
+                        .also { capitalizationGroup.add(it.component) }
+                    @Suppress("DialogTitleCapitalization") // Intentional
+                    cell(JBRadioButton(Bundle("shared.capitalization.lower")))
+                        .also { it.component.actionCommand = "lower" }
+                        .also { it.component.name = "capitalizationLower" }
+                        .also { capitalizationGroup.add(it.component) }
+                    cell(JBRadioButton(Bundle("shared.capitalization.upper")))
+                        .also { it.component.actionCommand = "upper" }
+                        .also { it.component.name = "capitalizationUpper" }
+                        .also { capitalizationGroup.add(it.component) }
+                    cell(JBRadioButton(Bundle("shared.capitalization.random")))
+                        .also { it.component.actionCommand = "random" }
+                        .also { it.component.name = "capitalizationRandom" }
+                        .also { capitalizationGroup.add(it.component) }
+                    cell(JBRadioButton(Bundle("shared.capitalization.sentence")))
+                        .also { it.component.actionCommand = "sentence" }
+                        .also { it.component.name = "capitalizationSentence" }
+                        .also { capitalizationGroup.add(it.component) }
+                    @Suppress("DialogTitleCapitalization") // Intentional
+                    cell(JBRadioButton(Bundle("shared.capitalization.first_letter")))
+                        .also { it.component.actionCommand = "first letter" }
+                        .also { it.component.name = "capitalizationFirstLetter" }
+                        .also { capitalizationGroup.add(it.component) }
+
+                    capitalizationGroup.setLabel(capitalizationLabel)
                 }
             }
 
-            vSeparatorCell()
-
-            cell(constraints(fill = GridConstraints.FILL_HORIZONTAL)) {
-                ArrayDecoratorEditor(originalState.arrayDecorator)
-                    .also { arrayDecoratorEditor = it }
-                    .rootComponent
+            row {
+                arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
+                cell(arrayDecoratorEditor.rootComponent).horizontalAlign(HorizontalAlign.FILL)
             }
-
-            vSpacerCell()
         }
 
         loadState()

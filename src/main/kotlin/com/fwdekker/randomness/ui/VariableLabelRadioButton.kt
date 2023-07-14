@@ -6,6 +6,7 @@ import com.intellij.util.ui.UIUtil
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.ItemEvent
+import javax.swing.ButtonGroup
 import javax.swing.JPanel
 import javax.swing.JRadioButton
 import javax.swing.JTextField
@@ -26,15 +27,14 @@ class VariableLabelRadioButton(
     /**
      * The button that uses [textField] as its label.
      */
-    // TODO: Really make this public? Maybe make it extend `AbstractButton` instead?
-    val button = object : JBRadioButton() {
+    private val button = object : JBRadioButton() {
         override fun getActionCommand() = textField.text
     }
 
     /**
      * The editable label in the form of a [JTextField].
      */
-    val textField = JBTextField()
+    private val textField = JBTextField()
         .also { (it.document as AbstractDocument).documentFilter = filter }
 
     /**
@@ -71,6 +71,13 @@ class VariableLabelRadioButton(
 
 
     /**
+     * Adds [button] to [group].
+     *
+     * @param group the group to add [button] to
+     */
+    fun addToButtonGroup(group: ButtonGroup) = group.add(button)
+
+    /**
      * Adds [listener] as a listener to the button and the text field.
      *
      * @param listener the function to invoke whenever the button or the text field changes
@@ -90,3 +97,12 @@ class VariableLabelRadioButton(
         textField.isEnabled = enabled && button.isSelected
     }
 }
+
+
+/**
+ * Adds [button] to [this] group.
+ *
+ * @receiver the group to add [button] to
+ * @param button the button to add to [this] group
+ */
+fun ButtonGroup.add(button: VariableLabelRadioButton) = button.addToButtonGroup(this)

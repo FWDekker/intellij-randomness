@@ -12,7 +12,8 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.ui.InplaceButton
-import com.intellij.uiDesigner.core.GridConstraints
+import com.intellij.ui.SeparatorFactory
+import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
 import kotlin.random.Random
@@ -36,9 +37,9 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
      * The root panel containing the preview elements.
      */
     val rootComponent: JPanel
-    private lateinit var refreshButton: JComponent
-    private lateinit var previewDocument: Document
-    private lateinit var previewEditor: Editor
+    private val refreshButton: JComponent
+    private val previewDocument: Document
+    private val previewEditor: Editor
 
     /**
      * The current seed to generate data with.
@@ -54,36 +55,26 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
 
 
     init {
-        rootComponent = GridPanelBuilder.panel {
-            row {
-                textSeparatorCell(Bundle("preview.title"))
-
-                cell(constraints(hSizePolicy = 0)) {
-                    InplaceButton(Bundle("shared.action.refresh"), AllIcons.Actions.Refresh) {
-                        seed = Random.nextInt()
-                        updatePreview()
-                    }.also { refreshButton = it }
-                }
+        // Components
+        refreshButton =
+            InplaceButton(Bundle("shared.action.refresh"), AllIcons.Actions.Refresh) {
+                seed = Random.nextInt()
+                updatePreview()
             }
 
-            cell(
-                constraints(
-                    colSpan = 2,
-                    fill = GridConstraints.FILL_HORIZONTAL,
-                    fixedHeight = UIConstants.SIZE_MEDIUM
-                )
-            ) {
-                val factory = EditorFactory.getInstance()
+        val factory = EditorFactory.getInstance()
+        previewDocument = factory.createDocument(Bundle("preview.placeholder")).also { UndoUtil.disableUndoFor(it) }
+        previewEditor = factory.createViewer(previewDocument)
+        previewEditor.component.setFixedHeight(UIConstants.SIZE_MEDIUM)
 
-                factory.createDocument(Bundle("preview.placeholder"))
-                    .also { UndoUtil.disableUndoFor(it) }
-                    .also { previewDocument = it }
+        // Layout
+        rootComponent = JPanel(BorderLayout())
+        val header = JPanel(BorderLayout())
+        header.add(SeparatorFactory.createSeparator(Bundle("preview.title"), null), BorderLayout.CENTER)
+        header.add(refreshButton, BorderLayout.EAST)
 
-                factory.createViewer(previewDocument)
-                    .also { previewEditor = it }
-                    .component
-            }
-        }
+        rootComponent.add(header, BorderLayout.NORTH)
+        rootComponent.add(previewEditor.component, BorderLayout.CENTER)
     }
 
     /**
