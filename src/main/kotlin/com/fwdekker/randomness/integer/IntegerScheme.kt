@@ -20,8 +20,9 @@ import java.text.DecimalFormat
  * @property minValue The minimum value to be generated, inclusive.
  * @property maxValue The maximum value to be generated, inclusive.
  * @property base The base the generated value should be displayed in.
- * @property groupingSeparator The character that should separate groups.
- * @property capitalization The capitalization mode of the generated integer, applicable for bases higher than 10.
+ * @property groupingSeparatorEnabled `true` if and only if the [groupingSeparator] should be used to separate groups.
+ * @property groupingSeparator The character that should separate groups if [groupingSeparatorEnabled] is `true`.
+ * @property isUppercase `true` if and only if all letters are uppercase, applicable for bases higher than 10.
  * @property prefix The string to prepend to the generated value.
  * @property suffix The string to append to the generated value.
  * @property fixedLengthDecorator Settings that determine whether the output should be fixed to a specific length.
@@ -31,8 +32,9 @@ data class IntegerScheme(
     var minValue: Long = DEFAULT_MIN_VALUE,
     var maxValue: Long = DEFAULT_MAX_VALUE,
     var base: Int = DEFAULT_BASE,
+    var groupingSeparatorEnabled: Boolean = DEFAULT_GROUPING_SEPARATOR_ENABLED,
     var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
-    var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
+    var isUppercase: Boolean = DEFAULT_IS_UPPERCASE,
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX,
     var fixedLengthDecorator: FixedLengthDecorator = FixedLengthDecorator(),
@@ -74,15 +76,19 @@ data class IntegerScheme(
      * @return a nicely formatted representation of [value]
      */
     private fun longToString(value: Long): String {
-        if (base != DECIMAL_BASE)
+        if (base != DECIMAL_BASE) {
+            val capitalization = if (isUppercase) CapitalizationMode.UPPER else CapitalizationMode.LOWER
             return capitalization.transform(value.toString(base), random)
+        }
 
         val format = DecimalFormat()
-        format.isGroupingUsed = groupingSeparator.isNotEmpty()
+        format.isGroupingUsed = groupingSeparatorEnabled
         format.minimumFractionDigits = 0
         format.maximumFractionDigits = 0
-        format.decimalFormatSymbols = format.decimalFormatSymbols
-            .also { it.groupingSeparator = groupingSeparator.getOrElse(0) { Char.MIN_VALUE } }
+        format.decimalFormatSymbols =
+            format.decimalFormatSymbols.also {
+                it.groupingSeparator = groupingSeparator.getOrElse(0) { DEFAULT_GROUPING_SEPARATOR[0] }
+            }
 
         return format.format(value)
     }
@@ -92,7 +98,7 @@ data class IntegerScheme(
         when {
             minValue > maxValue -> Bundle("integer.error.min_value_above_max")
             base !in MIN_BASE..MAX_BASE -> Bundle("integer.error.base_range", "$MIN_BASE..$MAX_BASE")
-            groupingSeparator.length > 1 -> Bundle("integer.error.grouping_separator_length")
+            groupingSeparator.length != 1 -> Bundle("integer.error.grouping_separator_length")
             else -> fixedLengthDecorator.doValidate() ?: arrayDecorator.doValidate()
         }
 
@@ -147,14 +153,19 @@ data class IntegerScheme(
         const val DEFAULT_BASE = DECIMAL_BASE
 
         /**
-         * The default value of the [groupingSeparator] field.
+         * The default value of the [groupingSeparatorEnabled] field.
          */
-        const val DEFAULT_GROUPING_SEPARATOR = ""
+        const val DEFAULT_GROUPING_SEPARATOR_ENABLED = false
 
         /**
-         * The default value of the [capitalization] field.
+         * The default value of the [groupingSeparator] field.
          */
-        val DEFAULT_CAPITALIZATION = CapitalizationMode.LOWER
+        const val DEFAULT_GROUPING_SEPARATOR = ","
+
+        /**
+         * The default value of the [isUppercase] field.
+         */
+        const val DEFAULT_IS_UPPERCASE = false
 
         /**
          * The default value of the [prefix] field.

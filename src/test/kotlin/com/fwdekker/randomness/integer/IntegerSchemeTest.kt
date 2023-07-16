@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.integer
 
-import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.forAll
@@ -58,8 +57,8 @@ object IntegerSchemeTest : DescribeSpec({
 
                 // Passes with extremely high probability (p = 1 - (2/(2^64))
                 assertThat(integerScheme.generateStrings())
-                    .isNotEqualTo(Long.MIN_VALUE.toString())
-                    .isNotEqualTo(Long.MAX_VALUE.toString())
+                    .doesNotContain(Long.MIN_VALUE.toString())
+                    .doesNotContain(Long.MAX_VALUE.toString())
             }
         }
 
@@ -67,16 +66,15 @@ object IntegerSchemeTest : DescribeSpec({
             it("generates values in the specified base") {
                 forAll(
                     table(
-                        headers("value", "base", "grouping separator", "expected string"),
-                        row(33_360L, 10, ".", "33.360"),
-                        row(48_345L, 10, ".", "48.345"),
-                        row(48_345L, 11, ".", "33360"),
+                        headers("value", "base", "expected string"),
+                        row(33_360L, 10, "33360"),
+                        row(48_345L, 10, "48345"),
+                        row(48_345L, 11, "33360"),
                     )
-                ) { value, base, groupingSeparator, expectedString ->
+                ) { value, base, expectedString ->
                     integerScheme.minValue = value
                     integerScheme.maxValue = value
                     integerScheme.base = base
-                    integerScheme.groupingSeparator = groupingSeparator
 
                     assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
                 }
@@ -87,44 +85,52 @@ object IntegerSchemeTest : DescribeSpec({
             it("generates strings with the specified separator") {
                 forAll(
                     table(
-                        headers("value", "grouping separator", "expected string"),
-                        row(95_713L, "", "95713"),
-                        row(163_583L, ".", "163.583"),
-                        row(351_426L, ",", "351,426"),
+                        headers("value", "base", "grouping separator", "grouping separator enabled", "expected string"),
+                        row(95_713L, 10, ".", false, "95713"),
+                        row(163_583L, 10, ".", true, "163.583"),
+                        row(121_435L, 10, "q", true, "121q435"),
+                        row(351_426L, 8, "t", true, "1256302"),
+                        row(775_202L, 8, "!", false, "2752042"),
+                        row(144_741L, 12, "w", true, "6b919"),
+                        row(951_922L, 12, "(", false, "39aa6a"),
                     )
-                ) { value, groupingSeparator, expectedString ->
-                    integerScheme.minValue = value
-                    integerScheme.maxValue = value
-                    integerScheme.groupingSeparator = groupingSeparator
-
-                    assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
-                }
-            }
-        }
-
-        describe("capitalization") {
-            it("generates strings with the specified capitalization") {
-                forAll(
-                    table(
-                        headers("value", "base", "prefix", "capitalization", "expected string"),
-                        row(624L, 10, "", CapitalizationMode.UPPER, "624"),
-                        row(254L, 16, "", CapitalizationMode.UPPER, "FE"),
-                        row(254L, 16, "0x", CapitalizationMode.FIRST_LETTER, "0xFe"),
-                    )
-                ) { value, base, prefix, capitalization, expectedString ->
+                ) { value, base, groupingSeparator, groupingSeparatorEnabled, expectedString ->
                     integerScheme.minValue = value
                     integerScheme.maxValue = value
                     integerScheme.base = base
-                    integerScheme.prefix = prefix
-                    integerScheme.capitalization = capitalization
+                    integerScheme.groupingSeparator = groupingSeparator
+                    integerScheme.groupingSeparatorEnabled = groupingSeparatorEnabled
 
                     assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
                 }
             }
         }
 
-        describe("prefix and suffix") {
-            it("generates strings with the specified prefix and suffix") {
+        describe("isUppercase") {
+            it("generates strings with the specified capitalization") {
+                forAll(
+                    table(
+                        headers("value", "base", "isUppercase", "expected string"),
+                        row(525L, 8, false, "1015"),
+                        row(590L, 8, true, "1116"),
+                        row(496L, 10, false, "496"),
+                        row(829L, 10, true, "829"),
+                        row(285L, 12, false, "1b9"),
+                        row(987L, 12, true, "6A3"),
+                    )
+                ) { value, base, isUppercase, expectedString ->
+                    integerScheme.minValue = value
+                    integerScheme.maxValue = value
+                    integerScheme.base = base
+                    integerScheme.isUppercase = isUppercase
+
+                    assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
+                }
+            }
+        }
+
+        describe("affixes") {
+            it("generates strings with the specified affixes") {
                 forAll(
                     table(
                         headers("value", "prefix", "suffix", "expected string"),
@@ -189,10 +195,16 @@ object IntegerSchemeTest : DescribeSpec({
         }
 
         describe("grouping separator") {
+            it("fails if the grouping separator contains no characters") {
+                integerScheme.groupingSeparator = ""
+
+                assertThat(integerScheme.doValidate()).isEqualTo("Grouping separator must be exactly 1 character.")
+            }
+
             it("fails if the grouping separator contains multiple characters") {
                 integerScheme.groupingSeparator = "awc"
 
-                assertThat(integerScheme.doValidate()).isEqualTo("Grouping separator must be at most 1 character.")
+                assertThat(integerScheme.doValidate()).isEqualTo("Grouping separator must be exactly 1 character.")
             }
         }
     }
@@ -219,8 +231,9 @@ object IntegerSchemeTest : DescribeSpec({
             integerScheme.minValue = 742
             integerScheme.maxValue = 908
             integerScheme.base = 12
+            integerScheme.groupingSeparatorEnabled = true
             integerScheme.groupingSeparator = "B"
-            integerScheme.capitalization = CapitalizationMode.UPPER
+            integerScheme.isUppercase = true
             integerScheme.prefix = "M9d1uey"
             integerScheme.suffix = "m45tL1"
             integerScheme.fixedLengthDecorator.length = 87

@@ -1,8 +1,11 @@
 package com.fwdekker.randomness.uuid
 
-import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.data.forAll
+import io.kotest.data.headers
+import io.kotest.data.row
+import io.kotest.data.table
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import kotlin.random.Random
@@ -29,40 +32,29 @@ object UuidSchemeTest : DescribeSpec({
 
 
         describe("format") {
-            data class Param(
-                val type: Int,
-                val quotation: String,
-                val capitalization: CapitalizationMode,
-                val addDashes: Boolean,
-            )
-
-            listOf(
-                Param(1, "", CapitalizationMode.LOWER, true),
-                Param(4, "'", CapitalizationMode.LOWER, true),
-                Param(1, "E", CapitalizationMode.LOWER, true),
-                Param(4, "", CapitalizationMode.UPPER, true),
-                Param(1, "'", CapitalizationMode.UPPER, false)
-            ).forEach { (type, quotation, capitalization, addDashes) ->
-                it("generates a formatted UUID") {
+            it("generates a formatted UUID") {
+                @Suppress("BooleanLiteralArgument") // Argument labels given in line with `headers`
+                forAll(
+                    table(
+                        headers("type", "quotation", "isUppercase", "addDashes"),
+                        row(1, "", false, true),
+                        row(4, "'", false, true),
+                        row(1, "E", false, true),
+                        row(4, "", true, true),
+                        row(1, "'", true, false),
+                    )
+                ) { type, quotation, isUppercase, addDashes ->
                     uuidScheme.type = type
                     uuidScheme.quotation = quotation
-                    uuidScheme.capitalization = capitalization
+                    uuidScheme.isUppercase = isUppercase
                     uuidScheme.addDashes = addDashes
 
-                    val alphabet = capitalization.transform("0-9a-fA-F")
+                    val alphabet = if (isUppercase) "0-9A-F" else "0-9a-f"
                     val dash = if (addDashes) "-" else ""
 
                     assertThat(
-                        Regex(
-                            "" +
-                                "^$quotation" +
-                                "[$alphabet]{8}$dash" +
-                                "[$alphabet]{4}$dash" +
-                                "[$alphabet]{4}$dash" +
-                                "[$alphabet]{4}$dash" +
-                                "[$alphabet]{12}" +
-                                "$quotation$"
-                        ).matches(uuidScheme.generateStrings().single())
+                        Regex("^$quotation[$alphabet]{8}$dash([$alphabet]{4}$dash){3}[$alphabet]{12}$quotation$")
+                            .matches(uuidScheme.generateStrings().single())
                     ).isTrue()
                 }
             }
@@ -144,7 +136,7 @@ object UuidSchemeTest : DescribeSpec({
         it("copies state from another instance") {
             uuidScheme.type = 4
             uuidScheme.quotation = "nv"
-            uuidScheme.capitalization = CapitalizationMode.FIRST_LETTER
+            uuidScheme.isUppercase = true
             uuidScheme.addDashes = true
             uuidScheme.arrayDecorator.minCount = 264
 

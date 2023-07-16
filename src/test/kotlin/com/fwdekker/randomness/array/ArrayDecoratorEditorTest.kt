@@ -44,7 +44,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
 
 
     describe("separator visibility") {
-        it("shows the separator by default") {
+        it("shows the separator if the editor is not embedded") {
             frame.panel(matcher(TitledSeparator::class.java)).requireVisible()
         }
 
@@ -57,7 +57,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
         }
     }
 
-    describe("event handling") {
+    describe("input handling") {
         it("truncates decimals in the minimum count") {
             GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 983.24f }
 
@@ -70,7 +70,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
             frame.spinner("arrayMaxCount").requireValue(881)
         }
 
-        describe("enabled state") {
+        describe("panel enabled state") {
             it("disables components if enabled is deselected") {
                 GuiActionRunner.execute { frame.checkBox("arrayEnabled").target().isSelected = false }
 
@@ -106,7 +106,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
             }
         }
 
-        describe("toggles space-after-separator depending on separator") {
+        describe("space-after-separator enabled state") {
             describe("embedded") {
                 beforeEach {
                     frame.cleanUp()

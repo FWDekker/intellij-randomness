@@ -10,6 +10,7 @@ import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.hasItem
 import com.fwdekker.randomness.ui.indentedIf
+import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.EMPTY_LABEL
@@ -18,7 +19,6 @@ import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.layout.and
 import com.intellij.ui.layout.not
 import com.intellij.ui.layout.selected
-import com.intellij.util.ui.DialogUtil
 import javax.swing.JCheckBox
 import javax.swing.JPanel
 
@@ -55,7 +55,7 @@ class ArrayDecoratorEditor(
             indentedIf(!embedded) {
                 row {
                     checkBox(Bundle("array.ui.enabled"))
-                        .also { DialogUtil.registerMnemonic(it.component, '&') }
+                        .loadMnemonic()
                         .also { it.component.name = "arrayEnabled" }
                         .also { enabledCheckBox = it.component }
                 }.visible(!embedded)

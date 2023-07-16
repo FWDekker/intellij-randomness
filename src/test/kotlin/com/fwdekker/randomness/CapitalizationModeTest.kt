@@ -2,7 +2,6 @@ package com.fwdekker.randomness
 
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import kotlin.random.Random
 
 
@@ -10,44 +9,47 @@ import kotlin.random.Random
  * Unit tests for [CapitalizationMode].
  */
 object CapitalizationModeTest : DescribeSpec({
+    val random = Random.Default
+
+
     describe("transform") {
         describe("retain mode") {
             it("does nothing to a string") {
-                assertThat(CapitalizationMode.RETAIN.transform("AwfJYzzUoR")).isEqualTo("AwfJYzzUoR")
+                assertThat(CapitalizationMode.RETAIN.transform("AwfJYzzUoR", random)).isEqualTo("AwfJYzzUoR")
             }
         }
 
         describe("sentence mode") {
             it("does nothing to an empty string") {
-                assertThat(CapitalizationMode.SENTENCE.transform("")).isEqualTo("")
+                assertThat(CapitalizationMode.SENTENCE.transform("", random)).isEqualTo("")
             }
 
             it("changes a string to sentence case") {
-                assertThat(CapitalizationMode.SENTENCE.transform("cOoKiE cAN")).isEqualTo("Cookie can")
+                assertThat(CapitalizationMode.SENTENCE.transform("cOoKiE cAN", random)).isEqualTo("Cookie can")
             }
         }
 
         describe("uppercase mode") {
             it("changes all characters to uppercase") {
-                assertThat(CapitalizationMode.UPPER.transform("vAnDaLisM")).isEqualTo("VANDALISM")
+                assertThat(CapitalizationMode.UPPER.transform("vAnDaLisM", random)).isEqualTo("VANDALISM")
             }
         }
 
         describe("lowercase mode") {
             it("changes all characters to lowercase") {
-                assertThat(CapitalizationMode.LOWER.transform("ChAnnEl")).isEqualTo("channel")
+                assertThat(CapitalizationMode.LOWER.transform("ChAnnEl", random)).isEqualTo("channel")
             }
         }
 
         describe("first letter mode") {
             it("changes all first letters to uppercase") {
-                assertThat(CapitalizationMode.FIRST_LETTER.transform("bgiOP SMQpR")).isEqualTo("Bgiop Smqpr")
+                assertThat(CapitalizationMode.FIRST_LETTER.transform("bgiOP SMQpR", random)).isEqualTo("Bgiop Smqpr")
             }
         }
 
         describe("random mode") {
             it("changes the capitalization to something else") {
-                assertThat(CapitalizationMode.RANDOM.transform("GHmdukhNqua"))
+                assertThat(CapitalizationMode.RANDOM.transform("GHmdukhNqua", random))
                     .isNotEqualTo("GHmdukhNqua") // Has a chance of 0.002% of failing
                     .isEqualToIgnoringCase("GHmdukhNqua")
             }
@@ -61,35 +63,8 @@ object CapitalizationModeTest : DescribeSpec({
 
         describe("dummy mode") {
             it("does nothing to a string") {
-                assertThat(CapitalizationMode.DUMMY.transform("i4Oh51O")).isEqualTo("i4Oh51O")
+                assertThat(CapitalizationMode.DUMMY.transform("i4Oh51O", random)).isEqualTo("i4Oh51O")
             }
-        }
-    }
-
-    describe("descriptor") {
-        it("returns the name") {
-            assertThat(CapitalizationMode.LOWER.descriptor).isEqualTo("lower")
-        }
-    }
-
-
-    describe("toString") {
-        it("returns the name in the toString method") {
-            assertThat(CapitalizationMode.LOWER.toString()).isEqualTo("lower")
-        }
-    }
-
-
-    describe("getMode") {
-        it("returns the capitalization mode based on its descriptor") {
-            assertThat(CapitalizationMode.getMode("sentence")).isEqualTo(CapitalizationMode.SENTENCE)
-        }
-
-        it("throws an exception if the descriptor is not recognized") {
-            assertThatThrownBy { CapitalizationMode.getMode("river") }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("Capitalization mode 'river' does not exist.")
-                .hasNoCause()
         }
     }
 })

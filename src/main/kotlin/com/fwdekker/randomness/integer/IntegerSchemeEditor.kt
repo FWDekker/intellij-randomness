@@ -1,29 +1,25 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.fixedlength.FixedLengthDecoratorEditor
-import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JLongSpinner
-import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
+import com.fwdekker.randomness.ui.MinMaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.StringComboBox
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
-import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.hasValue
-import com.fwdekker.randomness.ui.setLabel
-import com.fwdekker.randomness.ui.setValue
+import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.ui.components.JBRadioButton
-import com.intellij.ui.components.Label
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
-import javax.swing.ButtonGroup
+import com.intellij.ui.layout.and
+import com.intellij.ui.layout.selected
+import javax.swing.JCheckBox
 import javax.swing.JPanel
 import javax.swing.JTextField
 
@@ -41,8 +37,9 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
     private lateinit var minValue: JLongSpinner
     private lateinit var maxValue: JLongSpinner
     private lateinit var base: JIntSpinner
+    private lateinit var groupingSeparatorEnabledCheckBox: JCheckBox
     private lateinit var groupingSeparatorComboBox: ComboBox<String>
-    private lateinit var capitalizationGroup: ButtonGroup
+    private lateinit var isUppercaseCheckBox: JCheckBox
     private lateinit var prefixInput: JTextField
     private lateinit var suffixInput: JTextField
     private lateinit var fixedLengthDecoratorEditor: FixedLengthDecoratorEditor
@@ -77,29 +74,28 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                         .also { base = it.component }
                 }
 
-                row(Bundle("integer.ui.format.grouping_separator_option")) {
-                    cell(StringComboBox(listOf("", ".", ",", "_"), MaxLengthDocumentFilter(1)))
+                row {
+                    checkBox(Bundle("integer.ui.format.grouping_separator_option"))
+                        .loadMnemonic()
+                        .also { it.component.name = "groupingSeparatorEnabled" }
+                        .also { groupingSeparatorEnabledCheckBox = it.component }
+
+                    cell(StringComboBox(listOf(".", ",", "_"), MinMaxLengthDocumentFilter(1, 1)))
+                        .enabledIf(
+                            base.hasValue { it == IntegerScheme.DECIMAL_BASE }
+                                .and(groupingSeparatorEnabledCheckBox.selected)
+                        )
                         .also { it.component.isEditable = true }
                         .also { it.component.name = "groupingSeparator" }
                         .also { groupingSeparatorComboBox = it.component }
                 }.enabledIf(base.hasValue { it == IntegerScheme.DECIMAL_BASE })
 
-                val capitalizationLabel = Label(Bundle("integer.ui.format.capitalization_option"))
-                row(capitalizationLabel) {
-                    capitalizationGroup = ButtonGroup()
-
-                    @Suppress("DialogTitleCapitalization") // Intentional
-                    cell(JBRadioButton(Bundle("shared.capitalization.lower")))
-                        .also { it.component.actionCommand = "lower" }
-                        .also { it.component.name = "capitalizationLower" }
-                        .also { capitalizationGroup.add(it.component) }
-                    cell(JBRadioButton(Bundle("shared.capitalization.upper")))
-                        .also { it.component.actionCommand = "upper" }
-                        .also { it.component.name = "capitalizationUpper" }
-                        .also { capitalizationGroup.add(it.component) }
-
-                    capitalizationGroup.setLabel(capitalizationLabel)
-                }.enabledIf(base.hasValue { it > IntegerScheme.DECIMAL_BASE })
+                row {
+                    checkBox(Bundle("integer.ui.format.uppercase_option"))
+                        .loadMnemonic()
+                        .also { it.component.name = "isUppercase" }
+                        .also { isUppercaseCheckBox = it.component }
+                }
             }
 
             group(Bundle("integer.ui.affixes.header")) {
@@ -139,8 +135,9 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
         minValue.value = state.minValue
         maxValue.value = state.maxValue
         base.value = state.base
+        groupingSeparatorEnabledCheckBox.isSelected = state.groupingSeparatorEnabled
         groupingSeparatorComboBox.item = state.groupingSeparator
-        capitalizationGroup.setValue(state.capitalization)
+        isUppercaseCheckBox.isSelected = state.isUppercase
         prefixInput.text = state.prefix
         suffixInput.text = state.suffix
         fixedLengthDecoratorEditor.loadState(state.fixedLengthDecorator)
@@ -152,8 +149,9 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
             minValue = minValue.value,
             maxValue = maxValue.value,
             base = base.value,
+            groupingSeparatorEnabled = groupingSeparatorEnabledCheckBox.isSelected,
             groupingSeparator = groupingSeparatorComboBox.item,
-            capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
+            isUppercase = isUppercaseCheckBox.isSelected,
             prefix = prefixInput.text,
             suffix = suffixInput.text,
             fixedLengthDecorator = fixedLengthDecoratorEditor.readState(),
@@ -162,8 +160,8 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            minValue, maxValue, base, groupingSeparatorComboBox, capitalizationGroup, prefixInput, suffixInput,
-            fixedLengthDecoratorEditor, arrayDecoratorEditor,
+            minValue, maxValue, base, groupingSeparatorEnabledCheckBox, groupingSeparatorComboBox, isUppercaseCheckBox,
+            prefixInput, suffixInput, fixedLengthDecoratorEditor, arrayDecoratorEditor,
             listener = listener
         )
 }

@@ -48,6 +48,20 @@ object DecimalSchemeEditorTest : DescribeSpec({
 
             frame.spinner("decimalCount").requireValue(693)
         }
+
+        describe("toggles the grouping separator input") {
+            it("enables the input if the checkbox is selected") {
+                GuiActionRunner.execute { frame.checkBox("groupingSeparatorEnabled").target().isSelected = true }
+
+                frame.comboBox("groupingSeparator").requireEnabled()
+            }
+
+            it("disables the input if the checkbox is not selected") {
+                GuiActionRunner.execute { frame.checkBox("groupingSeparatorEnabled").target().isSelected = false }
+
+                frame.comboBox("groupingSeparator").requireDisabled()
+            }
+        }
     }
 
 
@@ -74,6 +88,12 @@ object DecimalSchemeEditorTest : DescribeSpec({
             GuiActionRunner.execute { editor.loadState(DecimalScheme(showTrailingZeroes = false)) }
 
             frame.checkBox("showTrailingZeroes").requireSelected(false)
+        }
+
+        it("loads the scheme's grouping separator enabled state") {
+            GuiActionRunner.execute { editor.loadState(DecimalScheme(groupingSeparatorEnabled = true)) }
+
+            frame.checkBox("groupingSeparatorEnabled").requireSelected()
         }
 
         it("loads the scheme's grouping separator") {
@@ -112,6 +132,7 @@ object DecimalSchemeEditorTest : DescribeSpec({
                 frame.spinner("maxValue").target().value = 644.74
                 frame.spinner("decimalCount").target().value = 485
                 frame.checkBox("showTrailingZeroes").target().isSelected = false
+                frame.checkBox("groupingSeparatorEnabled").target().isSelected = true
                 frame.comboBox("groupingSeparator").target().selectedItem = "_"
                 frame.comboBox("decimalSeparator").target().selectedItem = ","
                 frame.textBox("prefix").target().text = "exercise"
@@ -123,6 +144,7 @@ object DecimalSchemeEditorTest : DescribeSpec({
             assertThat(readScheme.maxValue).isEqualTo(644.74)
             assertThat(readScheme.decimalCount).isEqualTo(485)
             assertThat(readScheme.showTrailingZeroes).isFalse()
+            assertThat(readScheme.groupingSeparatorEnabled).isTrue()
             assertThat(readScheme.groupingSeparator).isEqualTo("_")
             assertThat(readScheme.decimalSeparator).isEqualTo(",")
             assertThat(readScheme.prefix).isEqualTo("exercise")

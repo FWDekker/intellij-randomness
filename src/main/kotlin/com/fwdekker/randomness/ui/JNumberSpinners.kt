@@ -44,15 +44,6 @@ abstract class JNumberSpinner<T>(value: T, minValue: T?, maxValue: T?, stepSize:
      */
     override fun getValue(): T = numberToT(numberModel.number)
 
-    /**
-     * Sets the value of the spinner.
-     *
-     * @param value the new value of the spinner
-     */
-    override fun setValue(value: Any) {
-        numberModel.value = value
-    }
-
 
     /**
      * Holds constants.

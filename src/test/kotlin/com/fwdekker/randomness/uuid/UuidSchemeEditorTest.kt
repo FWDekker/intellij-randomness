@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.uuid
 
-import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -57,10 +56,9 @@ object UuidSchemeEditorTest : DescribeSpec({
         }
 
         it("loads the scheme's capitalization mode") {
-            GuiActionRunner.execute { editor.loadState(UuidScheme(capitalization = CapitalizationMode.UPPER)) }
+            GuiActionRunner.execute { editor.loadState(UuidScheme(isUppercase = true)) }
 
-            frame.radioButton("capitalizationLower").requireSelected(false)
-            frame.radioButton("capitalizationUpper").requireSelected(true)
+            frame.checkBox("isUppercase").requireSelected()
         }
 
         it("loads the scheme's add dashes option") {
@@ -77,12 +75,6 @@ object UuidSchemeEditorTest : DescribeSpec({
 
                 assertThat(editor.readState().type).isEqualTo(UuidScheme.DEFAULT_TYPE)
             }
-
-            it("returns default capitalization if no capitalization is selected") {
-                GuiActionRunner.execute { editor.loadState(UuidScheme(capitalization = CapitalizationMode.DUMMY)) }
-
-                assertThat(editor.readState().capitalization).isEqualTo(UuidScheme.DEFAULT_CAPITALIZATION)
-            }
         }
 
         it("returns the original state if no editor changes are made") {
@@ -93,14 +85,14 @@ object UuidSchemeEditorTest : DescribeSpec({
             GuiActionRunner.execute {
                 frame.radioButton("type1").target().isSelected = true
                 frame.comboBox("quotation").target().selectedItem = "`"
-                frame.radioButton("capitalizationUpper").target().isSelected = true
+                frame.checkBox("isUppercase").target().isSelected = true
                 frame.checkBox("addDashesCheckBox").target().isSelected = true
             }
 
             val readScheme = editor.readState()
             assertThat(readScheme.type).isEqualTo(1)
             assertThat(readScheme.quotation).isEqualTo("`")
-            assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
+            assertThat(readScheme.isUppercase).isTrue()
             assertThat(readScheme.addDashes).isTrue()
         }
 

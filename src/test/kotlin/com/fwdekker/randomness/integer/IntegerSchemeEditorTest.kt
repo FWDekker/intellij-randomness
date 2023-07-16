@@ -1,10 +1,13 @@
 package com.fwdekker.randomness.integer
 
-import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.data.forAll
+import io.kotest.data.headers
+import io.kotest.data.row
+import io.kotest.data.table
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
@@ -44,27 +47,46 @@ object IntegerSchemeEditorTest : DescribeSpec({
 
 
     describe("input handling") {
-        describe("base") {
-            it("truncates decimals in the base") {
-                GuiActionRunner.execute { frame.spinner("base").target().value = 22.62f }
+        it("truncates decimals in the minimum value") {
+            GuiActionRunner.execute { frame.spinner("minValue").target().value = 285.21f }
 
-                frame.spinner("base").requireValue(22)
-            }
+            frame.spinner("minValue").requireValue(285L)
         }
 
-        describe("minimum value") {
-            it("truncates decimals in the minimum value") {
-                GuiActionRunner.execute { frame.spinner("minValue").target().value = 285.21f }
+        it("truncates decimals in the maximum value") {
+            GuiActionRunner.execute { frame.spinner("maxValue").target().value = 490.34f }
 
-                frame.spinner("minValue").requireValue(285L)
-            }
+            frame.spinner("maxValue").requireValue(490L)
         }
 
-        describe("maximum value") {
-            it("truncates decimals in the maximum value") {
-                GuiActionRunner.execute { frame.spinner("maxValue").target().value = 490.34f }
+        it("truncates decimals in the base") {
+            GuiActionRunner.execute { frame.spinner("base").target().value = 22.62f }
 
-                frame.spinner("maxValue").requireValue(490L)
+            frame.spinner("base").requireValue(22)
+        }
+
+        it("toggles the grouping separator depending on base value and checkbox state") {
+            @Suppress("BooleanLiteralArgument") // Argument labels given in line with `headers`
+            forAll(
+                table(
+                    headers("base", "checkbox checked", "expected checkbox state", "expected input state"),
+                    row(8, false, false, false),
+                    row(8, true, false, false),
+                    row(10, false, true, false),
+                    row(10, true, true, true),
+                    row(12, false, false, false),
+                    row(12, true, false, false),
+                )
+            ) { base, checkBoxChecked, expectedCheckBoxEnabled, expectedInputEnabled ->
+                GuiActionRunner.execute {
+                    frame.spinner("base").target().value = base
+                    frame.checkBox("groupingSeparatorEnabled").target().isSelected = checkBoxChecked
+                }
+
+                frame.checkBox("groupingSeparatorEnabled")
+                    .let { if (expectedCheckBoxEnabled) it.requireEnabled() else it.requireDisabled() }
+                frame.comboBox("groupingSeparator")
+                    .let { if (expectedInputEnabled) it.requireEnabled() else it.requireDisabled() }
             }
         }
     }
@@ -89,17 +111,22 @@ object IntegerSchemeEditorTest : DescribeSpec({
             frame.spinner("base").requireValue(25)
         }
 
+        it("loads the scheme's grouping separator enabled state") {
+            GuiActionRunner.execute { editor.loadState(IntegerScheme(groupingSeparatorEnabled = true)) }
+
+            frame.checkBox("groupingSeparatorEnabled").requireSelected()
+        }
+
         it("loads the scheme's grouping separator") {
             GuiActionRunner.execute { editor.loadState(IntegerScheme(groupingSeparator = "_")) }
 
             frame.comboBox("groupingSeparator").requireSelection("_")
         }
 
-        it("loads the scheme's capitalization mode") {
-            GuiActionRunner.execute { editor.loadState(IntegerScheme(capitalization = CapitalizationMode.LOWER)) }
+        it("loads the scheme's uppercase state") {
+            GuiActionRunner.execute { editor.loadState(IntegerScheme(isUppercase = true)) }
 
-            frame.radioButton("capitalizationLower").requireSelected(true)
-            frame.radioButton("capitalizationUpper").requireSelected(false)
+            frame.checkBox("isUppercase").requireSelected()
         }
 
         it("loads the scheme's prefix") {
@@ -125,8 +152,9 @@ object IntegerSchemeEditorTest : DescribeSpec({
                 frame.spinner("minValue").target().value = 2_147_483_648L
                 frame.spinner("maxValue").target().value = 2_147_483_649L
                 frame.spinner("base").target().value = 14
+                frame.checkBox("groupingSeparatorEnabled").target().isSelected = true
                 frame.comboBox("groupingSeparator").target().selectedItem = "."
-                frame.radioButton("capitalizationUpper").target().isSelected = true
+                frame.checkBox("isUppercase").target().isSelected = true
                 frame.textBox("prefix").target().text = "silent"
                 frame.textBox("suffix").target().text = "pain"
             }
@@ -135,8 +163,9 @@ object IntegerSchemeEditorTest : DescribeSpec({
             assertThat(readScheme.minValue).isEqualTo(2_147_483_648L)
             assertThat(readScheme.maxValue).isEqualTo(2_147_483_649L)
             assertThat(readScheme.base).isEqualTo(14)
+            assertThat(readScheme.groupingSeparatorEnabled).isTrue()
             assertThat(readScheme.groupingSeparator).isEqualTo(".")
-            assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
+            assertThat(readScheme.isUppercase).isTrue()
             assertThat(readScheme.prefix).isEqualTo("silent")
             assertThat(readScheme.suffix).isEqualTo("pain")
         }

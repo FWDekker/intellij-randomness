@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
@@ -9,16 +8,15 @@ import com.fwdekker.randomness.ui.StringComboBox
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.buttons
 import com.fwdekker.randomness.ui.getValue
+import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
-import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_CAPITALIZATION
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_TYPE
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.Label
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
-import com.intellij.util.ui.DialogUtil
 import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
@@ -36,7 +34,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
 
     private lateinit var typeGroup: ButtonGroup
     private lateinit var quotationComboBox: ComboBox<String>
-    private lateinit var capitalizationGroup: ButtonGroup
+    private lateinit var isUppercaseCheckBox: JCheckBox
     private lateinit var addDashesCheckBox: JCheckBox
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
@@ -68,26 +66,16 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
                             .also { quotationComboBox = it.component }
                     }
 
-                    val capitalizationLabel = Label(Bundle("uuid.ui.value.capitalization_option"))
-                    row(capitalizationLabel) {
-                        capitalizationGroup = ButtonGroup()
-
-                        @Suppress("DialogTitleCapitalization") // Intentional
-                        cell(JBRadioButton(Bundle("shared.capitalization.lower")))
-                            .also { it.component.actionCommand = "lower" }
-                            .also { it.component.name = "capitalizationLower" }
-                            .also { capitalizationGroup.add(it.component) }
-                        cell(JBRadioButton(Bundle("shared.capitalization.upper")))
-                            .also { it.component.actionCommand = "upper" }
-                            .also { it.component.name = "capitalizationUpper" }
-                            .also { capitalizationGroup.add(it.component) }
-
-                        capitalizationGroup.setLabel(capitalizationLabel)
+                    row {
+                        checkBox(Bundle("uuid.ui.value.capitalization_option"))
+                            .loadMnemonic()
+                            .also { it.component.name = "isUppercase" }
+                            .also { isUppercaseCheckBox = it.component }
                     }
 
                     row {
                         checkBox(Bundle("uuid.add_dashes"))
-                            .also { DialogUtil.registerMnemonic(it.component, '&') }
+                            .loadMnemonic()
                             .also { it.component.name = "addDashesCheckBox" }
                             .also { addDashesCheckBox = it.component }
                     }
@@ -109,7 +97,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
 
         typeGroup.setValue(state.type.toString())
         quotationComboBox.item = state.quotation
-        capitalizationGroup.setValue(state.capitalization)
+        isUppercaseCheckBox.isSelected = state.isUppercase
         addDashesCheckBox.isSelected = state.addDashes
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
@@ -118,7 +106,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
         UuidScheme(
             type = typeGroup.getValue()?.toInt() ?: DEFAULT_TYPE,
             quotation = quotationComboBox.item,
-            capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
+            isUppercase = isUppercaseCheckBox.isSelected,
             addDashes = addDashesCheckBox.isSelected,
             arrayDecorator = arrayDecoratorEditor.readState()
         ).also { it.uuid = originalState.uuid }
@@ -126,7 +114,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            typeGroup, quotationComboBox, capitalizationGroup, addDashesCheckBox, arrayDecoratorEditor,
+            typeGroup, quotationComboBox, isUppercaseCheckBox, addDashesCheckBox, arrayDecoratorEditor,
             listener = listener
         )
 }

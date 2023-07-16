@@ -22,14 +22,14 @@ import kotlin.random.asJavaRandom
  *
  * @property type The type (or version) of UUIDs to generate.
  * @property quotation The string that encloses the generated UUID on both sides.
- * @property capitalization The capitalization mode of the generated UUID.
+ * @property isUppercase `true` if and only if all letters are uppercase.
  * @property addDashes `true` if and only if the UUID should have dashes in it.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class UuidScheme(
     var type: Int = DEFAULT_TYPE,
     var quotation: String = DEFAULT_QUOTATION,
-    var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
+    var isUppercase: Boolean = DEFAULT_IS_UPPERCASE,
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
     var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
@@ -60,12 +60,16 @@ data class UuidScheme(
                         }
                     )
                 )
+
             TYPE_4 -> Generators.randomBasedGenerator(random.asJavaRandom())
             else -> error(Bundle("uuid.error.unknown_type", type))
         }
 
         return List(count) { generator.generate().toString() }
-            .map { capitalization.transform(it, random) }
+            .map {
+                val capitalization = if (isUppercase) CapitalizationMode.UPPER else CapitalizationMode.LOWER
+                capitalization.transform(it, random)
+            }
             .map {
                 if (addDashes) it
                 else it.replace("-", "")
@@ -123,9 +127,9 @@ data class UuidScheme(
         const val DEFAULT_QUOTATION = "\""
 
         /**
-         * The default value of the [capitalization] field.
+         * The default value of the [isUppercase] field.
          */
-        val DEFAULT_CAPITALIZATION = CapitalizationMode.LOWER
+        const val DEFAULT_IS_UPPERCASE = false
 
         /**
          * The default value of the [addDashes] field.

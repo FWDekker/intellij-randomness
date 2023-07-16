@@ -7,13 +7,13 @@ import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.CapitalizationComboBox
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.EMPTY_LABEL
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
-import com.intellij.util.ui.DialogUtil
 import javax.swing.JCheckBox
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -50,14 +50,14 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
                 row(EMPTY_LABEL) {
                     checkBox(Bundle("string.ui.value.is_regex_option"))
-                        .also { DialogUtil.registerMnemonic(it.component, '&') }
+                        .loadMnemonic()
                         .also { it.component.name = "isRegex" }
                         .also { isRegexCheckBox = it.component }
                 }
 
                 row(EMPTY_LABEL) {
                     checkBox(Bundle("string.ui.value.remove_look_alike"))
-                        .also { DialogUtil.registerMnemonic(it.component, '&') }
+                        .loadMnemonic()
                         .also { it.component.name = "removeLookAlikeCharacters" }
                         .also { removeLookAlikeSymbolsCheckBox = it.component }
 

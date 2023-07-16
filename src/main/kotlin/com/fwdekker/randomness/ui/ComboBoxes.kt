@@ -23,20 +23,6 @@ class StringComboBox(strings: List<String>, filter: DocumentFilter? = null) :
     ComboBox<String>(DefaultComboBoxModel(strings.toTypedArray())) {
     init {
         ((editor.editorComponent as? JTextComponent)?.document as? AbstractDocument)?.documentFilter = filter
-
-        renderer = object : SimpleListCellRenderer<String>() {
-            override fun customize(
-                list: JList<out String>,
-                value: String,
-                index: Int,
-                selected: Boolean,
-                hasFocus: Boolean,
-            ) {
-                text =
-                    if (value == "") Bundle("shared.option.none")
-                    else value
-            }
-        }
     }
 
 
@@ -64,7 +50,7 @@ class CapitalizationComboBox(modes: List<CapitalizationMode>) : ComboBox<Capital
                 selected: Boolean,
                 hasFocus: Boolean,
             ) {
-                text = Bundle("shared.capitalization.${value.descriptor.replace(' ', '_')}")
+                text = Bundle("shared.capitalization.${value.toString().replace(' ', '_').lowercase()}")
             }
         }
     }

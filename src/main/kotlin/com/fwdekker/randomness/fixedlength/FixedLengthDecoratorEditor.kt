@@ -6,10 +6,10 @@ import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.layout.selected
-import com.intellij.util.ui.DialogUtil
 import javax.swing.JCheckBox
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -36,7 +36,7 @@ class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<F
             group(Bundle("fixed_length.title")) {
                 row {
                     checkBox(Bundle("fixed_length.ui.enabled"))
-                        .also { DialogUtil.registerMnemonic(it.component, '&') }
+                        .loadMnemonic()
                         .also { it.component.name = "fixedLengthEnabled" }
                         .also { enabledCheckBox = it.component }
                 }

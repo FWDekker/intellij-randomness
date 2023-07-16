@@ -5,7 +5,9 @@ import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.layout.ComponentPredicate
+import com.intellij.util.ui.DialogUtil
 import java.awt.Dimension
+import javax.swing.JCheckBox
 import javax.swing.JComponent
 import javax.swing.JTextField
 
@@ -75,6 +77,14 @@ fun <T : JComponent> Cell<T>.withFixedHeight(height: Int): Cell<T> {
     component.setFixedHeight(height)
     return this
 }
+
+/**
+ * Loads the mnemonic for the [JCheckBox] in this cell based on its text.
+ *
+ * @receiver the cell with the [JCheckBox] to load the mnemonic for
+ * @return [this]]
+ */
+fun Cell<JCheckBox>.loadMnemonic(): Cell<JCheckBox> = this.also { DialogUtil.registerMnemonic(it.component, '&') }
 
 
 /**

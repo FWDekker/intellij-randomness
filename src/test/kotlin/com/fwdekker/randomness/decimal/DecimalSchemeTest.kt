@@ -82,29 +82,37 @@ object DecimalSchemeTest : DescribeSpec({
             it("generates values with the specified separators") {
                 forAll(
                     table(
-                        headers("value", "decimal count", "grouping separator", "decimal separator", "expected string"),
+                        headers(
+                            "value",
+                            "decimal count",
+                            "grouping separator enabled",
+                            "grouping separator",
+                            "decimal separator",
+                            "expected string"
+                        ),
                         // Decimal separator only
-                        row(4.21, 2, "", ".", "4.21"),
-                        row(4.21, 2, "", ",", "4,21"),
-                        row(4.21, 2, "", ".", "4.21"),
-                        row(4.21, 2, "", ",", "4,21"),
+                        row(4.21, 2, false, "@", ".", "4.21"),
+                        row(4.21, 2, false, "%", ",", "4,21"),
+                        row(4.21, 2, false, "(", ".", "4.21"),
+                        row(4.21, 2, false, "!", ",", "4,21"),
                         // Grouping separator only
-                        row(15_616.0, 0, ".", ".", "15.616"),
-                        row(15_616.0, 0, ".", ",", "15.616"),
-                        row(15_616.0, 0, ",", ".", "15,616"),
-                        row(15_616.0, 0, ",", ",", "15,616"),
+                        row(15_616.0, 0, true, ".", ".", "15.616"),
+                        row(15_616.0, 0, true, ".", ",", "15.616"),
+                        row(15_616.0, 0, true, ",", ".", "15,616"),
+                        row(15_616.0, 0, true, ",", ",", "15,616"),
                         // Both separators
-                        row(67_575.845, 3, "", ".", "67575.845"),
-                        row(67_575.845, 3, ".", ".", "67.575.845"),
-                        row(67_575.845, 3, ".", ",", "67.575,845"),
-                        row(67_575.845, 3, ",", ".", "67,575.845"),
-                        row(67_575.845, 3, ",", ",", "67,575,845"),
+                        row(67_575.845, 3, true, ".", ".", "67.575.845"),
+                        row(67_575.845, 3, true, ".", ",", "67.575,845"),
+                        row(67_575.845, 3, true, ",", ".", "67,575.845"),
+                        row(67_575.845, 3, true, ",", ",", "67,575,845"),
                     )
-                ) { value, decimalCount, groupingSeparator, decimalSeparator, expectedString ->
+                ) { value, decimalCount, groupingSeparatorEnabled, groupingSeparator, decimalSeparator, expectedString,
+                    ->
                     decimalScheme.minValue = value
                     decimalScheme.maxValue = value
                     decimalScheme.decimalCount = decimalCount
                     decimalScheme.showTrailingZeroes = false
+                    decimalScheme.groupingSeparatorEnabled = groupingSeparatorEnabled
                     decimalScheme.groupingSeparator = groupingSeparator
                     decimalScheme.decimalSeparator = decimalSeparator
 
@@ -113,8 +121,8 @@ object DecimalSchemeTest : DescribeSpec({
             }
         }
 
-        describe("prefix and suffix") {
-            it("generates values with the specified prefix and suffix") {
+        describe("affixes") {
+            it("generates values with the specified affixes") {
                 forAll(
                     table(
                         headers("value", "prefix", "suffix", "expected string"),
@@ -180,13 +188,19 @@ object DecimalSchemeTest : DescribeSpec({
         }
 
         describe("separators") {
+            it("fails if the grouping separator has no characters") {
+                decimalScheme.groupingSeparator = ""
+
+                assertThat(decimalScheme.doValidate()).isEqualTo("Grouping separator must be exactly 1 character.")
+            }
+
             it("fails if the grouping separator has multiple characters") {
                 decimalScheme.groupingSeparator = "tce"
 
-                assertThat(decimalScheme.doValidate()).isEqualTo("Grouping separator must be at most 1 character.")
+                assertThat(decimalScheme.doValidate()).isEqualTo("Grouping separator must be exactly 1 character.")
             }
 
-            it("fails if no decimal separator was selected") {
+            it("fails if the decimal separator has no characters") {
                 decimalScheme.decimalSeparator = ""
 
                 assertThat(decimalScheme.doValidate()).isEqualTo("Decimal separator must be exactly 1 character.")
