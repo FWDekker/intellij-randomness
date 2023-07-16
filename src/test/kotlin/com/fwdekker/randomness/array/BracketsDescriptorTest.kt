@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.array
 
+import com.fwdekker.randomness.BracketsDescriptor
 import com.fwdekker.randomness.DataGenerationException
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat

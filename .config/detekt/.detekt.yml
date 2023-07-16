@@ -52,9 +52,12 @@ style:
   # [Disagree] `apply` is confusing to use because of namespace conflicts.
   AlsoCouldBeApply:
     active: false
-  # [Disagree] Braces use unnecessary extra space.
+  # [Disagree] Braces use unnecessary extra space, but consistency helps in legibility.
   BracesOnIfStatements:
     multiLine: consistent
+  # [Disagree] Legibility is possible despite consistency because it is wrapped in a multi-line `when` block.
+  BracesOnWhenStatements:
+    multiLine: necessary
   # [Disagree] Functions on data classes are useful.
   DataClassContainsFunctions:
     active: false
@@ -74,6 +77,3 @@ style:
   # [Bug] Suggests using raw string in constant, but then `trimIndent` is not possible, resulting in weird indenting.
   StringShouldBeRawString:
     active: false
-  # [Exception] Used by scene builder.
-  UnusedPrivateMember:
-    allowedNames: "createUIComponents"

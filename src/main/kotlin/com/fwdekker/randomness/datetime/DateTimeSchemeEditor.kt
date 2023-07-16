@@ -5,7 +5,6 @@ import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.JDateTimeField
 import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.addChangeListener
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.intellij.ui.dsl.builder.BottomGap
@@ -74,13 +73,13 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
      * Binds two `DateTimePicker`s together, analogous to how [com.fwdekker.randomness.ui.bindSpinners] works.
      */
     private fun bindDateTimes(minField: JDateTimeField, maxField: JDateTimeField) {
-        minField.addChangeListener {
+        addChangeListenerTo(minField) {
             val minEpoch = minField.value.toEpochMilli()
             val maxEpoch = maxField.value.toEpochMilli()
 
             if (minEpoch > maxEpoch) maxField.value = minField.value
         }
-        maxField.addChangeListener {
+        addChangeListenerTo(maxField) {
             val minEpoch = minField.value.toEpochMilli()
             val maxEpoch = maxField.value.toEpochMilli()
 

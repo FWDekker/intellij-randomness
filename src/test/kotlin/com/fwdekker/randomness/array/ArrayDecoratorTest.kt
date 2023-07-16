@@ -134,7 +134,7 @@ object ArrayDecoratorTest : DescribeSpec({
                 arrayDecorator.minCount = 2
                 arrayDecorator.maxCount = 2
                 arrayDecorator.brackets = "[@]"
-                arrayDecorator.separator = "\n"
+                arrayDecorator.separator = "\\n"
                 arrayDecorator.isSpaceAfterSeparator = true
                 dummyScheme.literals = listOf("Union", "Bell")
 
@@ -222,9 +222,7 @@ object ArrayDecoratorTest : DescribeSpec({
             arrayDecorator.minCount = 34
             arrayDecorator.maxCount = 830
             arrayDecorator.brackets = "0fWx<@i6jTJ"
-            arrayDecorator.customBrackets = "Wvtx2Lz7"
             arrayDecorator.separator = "f3hu)Rxiz1"
-            arrayDecorator.customSeparator = "pKlq0b2"
             arrayDecorator.isSpaceAfterSeparator = false
 
             val newScheme = ArrayDecorator()

@@ -144,7 +144,6 @@ object UuidSchemeTest : DescribeSpec({
         it("copies state from another instance") {
             uuidScheme.type = 4
             uuidScheme.quotation = "nv"
-            uuidScheme.customQuotation = "to"
             uuidScheme.capitalization = CapitalizationMode.FIRST_LETTER
             uuidScheme.addDashes = true
             uuidScheme.arrayDecorator.minCount = 264

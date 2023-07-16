@@ -22,7 +22,6 @@ import kotlin.random.asJavaRandom
  *
  * @property type The type (or version) of UUIDs to generate.
  * @property quotation The string that encloses the generated UUID on both sides.
- * @property customQuotation The grouping separator defined in the custom option.
  * @property capitalization The capitalization mode of the generated UUID.
  * @property addDashes `true` if and only if the UUID should have dashes in it.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
@@ -30,7 +29,6 @@ import kotlin.random.asJavaRandom
 data class UuidScheme(
     var type: Int = DEFAULT_TYPE,
     var quotation: String = DEFAULT_QUOTATION,
-    var customQuotation: String = DEFAULT_CUSTOM_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
     var arrayDecorator: ArrayDecorator = ArrayDecorator(),
@@ -123,11 +121,6 @@ data class UuidScheme(
          * The default value of the [quotation] field.
          */
         const val DEFAULT_QUOTATION = "\""
-
-        /**
-         * The default value of the [quotation] field.
-         */
-        const val DEFAULT_CUSTOM_QUOTATION = "<>"
 
         /**
          * The default value of the [capitalization] field.

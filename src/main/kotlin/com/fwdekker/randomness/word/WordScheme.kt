@@ -17,14 +17,12 @@ import java.awt.Color
  *
  * @property words The list of words to choose from.
  * @property quotation The string that encloses the generated word on both sides.
- * @property customQuotation The quotation defined in the custom option.
  * @property capitalization The way in which the generated word should be capitalized.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class WordScheme(
     var words: List<String> = DEFAULT_WORDS,
     var quotation: String = DEFAULT_QUOTATION,
-    var customQuotation: String = DEFAULT_CUSTOM_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
@@ -63,7 +61,7 @@ data class WordScheme(
 
     override fun doValidate(): String? {
         return when {
-            customQuotation.length > 2 -> Bundle("word.error.quotation_length")
+            quotation.length > 2 -> Bundle("word.error.quotation_length")
             words.isEmpty() -> Bundle("word.error.empty_word_list")
             else -> arrayDecorator.doValidate()
         }
@@ -97,11 +95,6 @@ data class WordScheme(
          * The default value of the [quotation] field.
          */
         const val DEFAULT_QUOTATION = ""
-
-        /**
-         * The default value of the [customQuotation] field.
-         */
-        const val DEFAULT_CUSTOM_QUOTATION = "<>"
 
         /**
          * The default value of the [capitalization] field.

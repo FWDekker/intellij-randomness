@@ -4,6 +4,7 @@ import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.string.StringScheme
+import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
@@ -137,14 +138,22 @@ object TemplateListTest : DescribeSpec({
 
 
     describe("doValidate") {
-        it("passes for the default settings") {
-            val ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-            ideaFixture.setUp()
+        describe("(fixture wrapper)") {
+            lateinit var ideaFixture: IdeaTestFixture
 
-            try {
-                assertThat(TemplateList().doValidate()).isNull()
-            } finally {
+
+            beforeEach {
+                ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+                ideaFixture.setUp()
+            }
+
+            afterEach {
                 ideaFixture.tearDown()
+            }
+
+
+            it("passes for the default settings") {
+                assertThat(TemplateList().doValidate()).isNull()
             }
         }
 

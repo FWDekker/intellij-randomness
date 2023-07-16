@@ -4,18 +4,16 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
-import java.beans.PropertyChangeEvent
+import javax.swing.AbstractButton
 import javax.swing.ButtonGroup
-import javax.swing.JCheckBox
-import javax.swing.JRadioButton
+import javax.swing.JComboBox
 import javax.swing.JSpinner
-import javax.swing.JTextArea
-import javax.swing.JTextField
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.event.TreeModelEvent
 import javax.swing.event.TreeModelListener
 import javax.swing.text.Document
+import javax.swing.text.JTextComponent
 import com.intellij.openapi.editor.Document as JBDocument
 import com.intellij.openapi.editor.event.DocumentEvent as JBDocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener as JBDocumentListener
@@ -31,54 +29,22 @@ import com.intellij.openapi.editor.event.DocumentListener as JBDocumentListener
 fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
     components.forEach { component ->
         when (component) {
+            is AbstractButton -> component.addItemListener { listener() }
             is ButtonGroup -> addChangeListenerTo(*component.buttons(), listener = listener)
+            is JComboBox<*> -> {
+                component.addActionListener { listener() }
+                addChangeListenerTo(component.editor.editorComponent, listener = listener)
+            }
+            is Document -> component.addDocumentListener(SimpleDocumentListener { listener() })
             is JBDocument -> component.addDocumentListener(SimpleJBDocumentListener { listener() })
-            is JCheckBox -> component.addItemListener { listener() }
-            is JRadioButton -> component.addItemListener { listener() }
             is JSpinner -> component.addChangeListener { listener() }
-            is JTextArea -> component.document.addDocumentListener(SimpleDocumentListener { listener() })
-            is JTextField -> component.addChangeListener { listener() }
+            is JTextComponent -> addChangeListenerTo(component.document, listener = listener)
             is StateEditor<*> -> component.addChangeListener { listener() }
-            is VariableLabelRadioButton -> component.addChangeListener { listener() }
             else -> throw IllegalArgumentException(
                 Bundle("helpers.error.unknown_component_type", component.javaClass.canonicalName)
             )
         }
     }
-}
-
-/**
- * Adds [listener] to a text field.
- *
- * Code taken from https://stackoverflow.com/a/27190162/3307872, but without the `invokeLater`.
- *
- * @param listener the change listener that responds to changes in the text field
- */
-fun JTextField.addChangeListener(listener: (JTextField) -> Unit) {
-    val dl = object : DocumentListener {
-        private var lastChange = 0
-        private var lastNotifiedChange = 0
-
-
-        override fun changedUpdate(e: DocumentEvent?) {
-            lastChange++
-            if (lastNotifiedChange == lastChange) return
-
-            lastNotifiedChange = lastChange
-            listener(this@addChangeListener)
-        }
-
-        override fun insertUpdate(e: DocumentEvent?) = changedUpdate(e)
-
-        override fun removeUpdate(e: DocumentEvent?) = changedUpdate(e)
-    }
-
-    this.addPropertyChangeListener("document") { e: PropertyChangeEvent ->
-        (e.oldValue as? Document)?.removeDocumentListener(dl)
-        (e.newValue as? Document)?.addDocumentListener(dl)
-        dl.changedUpdate(null)
-    }
-    this.document.addDocumentListener(dl)
 }
 
 

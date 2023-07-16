@@ -92,25 +92,7 @@ object IntegerSchemeEditorTest : DescribeSpec({
         it("loads the scheme's grouping separator") {
             GuiActionRunner.execute { editor.loadState(IntegerScheme(groupingSeparator = "_")) }
 
-            frame.radioButton("groupingSeparatorNone").requireSelected(false)
-            frame.radioButton("groupingSeparatorPeriod").requireSelected(false)
-            frame.radioButton("groupingSeparatorComma").requireSelected(false)
-            frame.radioButton("groupingSeparatorUnderscore").requireSelected(true)
-            frame.panel("groupingSeparatorCustom").radioButton().requireSelected(false)
-        }
-
-        it("loads the scheme's custom grouping separator") {
-            GuiActionRunner.execute { editor.loadState(IntegerScheme(customGroupingSeparator = "r")) }
-
-            frame.panel("groupingSeparatorCustom").textBox().requireText("r")
-        }
-
-        it("selects the scheme's custom grouping separator") {
-            GuiActionRunner.execute {
-                editor.loadState(IntegerScheme(groupingSeparator = "a", customGroupingSeparator = "a"))
-            }
-
-            frame.panel("groupingSeparatorCustom").radioButton().requireSelected()
+            frame.comboBox("groupingSeparator").requireSelection("_")
         }
 
         it("loads the scheme's capitalization mode") {
@@ -134,20 +116,6 @@ object IntegerSchemeEditorTest : DescribeSpec({
     }
 
     describe("readState") {
-        describe("defaults") {
-            it("returns default brackets if no brackets are selected") {
-                GuiActionRunner.execute { editor.loadState(IntegerScheme(groupingSeparator = "unsupported")) }
-
-                assertThat(editor.readState().groupingSeparator).isEqualTo(IntegerScheme.DEFAULT_GROUPING_SEPARATOR)
-            }
-
-            it("returns default brackets if no brackets are selected") {
-                GuiActionRunner.execute { editor.loadState(IntegerScheme(capitalization = CapitalizationMode.DUMMY)) }
-
-                assertThat(editor.readState().capitalization).isEqualTo(IntegerScheme.DEFAULT_CAPITALIZATION)
-            }
-        }
-
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
@@ -157,8 +125,7 @@ object IntegerSchemeEditorTest : DescribeSpec({
                 frame.spinner("minValue").target().value = 2_147_483_648L
                 frame.spinner("maxValue").target().value = 2_147_483_649L
                 frame.spinner("base").target().value = 14
-                frame.radioButton("groupingSeparatorPeriod").target().isSelected = true
-                frame.panel("groupingSeparatorCustom").textBox().target().text = "s"
+                frame.comboBox("groupingSeparator").target().selectedItem = "."
                 frame.radioButton("capitalizationUpper").target().isSelected = true
                 frame.textBox("prefix").target().text = "silent"
                 frame.textBox("suffix").target().text = "pain"
@@ -169,7 +136,6 @@ object IntegerSchemeEditorTest : DescribeSpec({
             assertThat(readScheme.maxValue).isEqualTo(2_147_483_649L)
             assertThat(readScheme.base).isEqualTo(14)
             assertThat(readScheme.groupingSeparator).isEqualTo(".")
-            assertThat(readScheme.customGroupingSeparator).isEqualTo("s")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
             assertThat(readScheme.prefix).isEqualTo("silent")
             assertThat(readScheme.suffix).isEqualTo("pain")

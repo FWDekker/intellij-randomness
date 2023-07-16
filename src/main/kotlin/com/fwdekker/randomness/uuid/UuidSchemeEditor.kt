@@ -5,17 +5,15 @@ import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
-import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.VariableLabelRadioButton
-import com.fwdekker.randomness.ui.add
+import com.fwdekker.randomness.ui.StringComboBox
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.buttons
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_CAPITALIZATION
-import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_QUOTATION
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_TYPE
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.Label
 import com.intellij.ui.dsl.builder.panel
@@ -37,8 +35,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
         get() = typeGroup.buttons().firstOrNull { it.isSelected }
 
     private lateinit var typeGroup: ButtonGroup
-    private lateinit var quotationGroup: ButtonGroup
-    private lateinit var customQuotation: VariableLabelRadioButton
+    private lateinit var quotationComboBox: ComboBox<String>
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var addDashesCheckBox: JCheckBox
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
@@ -64,29 +61,11 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
                         typeGroup.setLabel(typeLabel)
                     }
 
-                    val quotationLabel = Label(Bundle("uuid.ui.value.quotation_marks.option"))
-                    row(quotationLabel) {
-                        quotationGroup = ButtonGroup()
-
-                        cell(JBRadioButton(Bundle("shared.option.none")))
-                            .also { it.component.actionCommand = "" }
-                            .also { it.component.name = "quotationNone" }
-                            .also { quotationGroup.add(it.component) }
-                        cell(JBRadioButton("'"))
-                            .also { it.component.name = "quotationSingle" }
-                            .also { quotationGroup.add(it.component) }
-                        cell(JBRadioButton("\""))
-                            .also { it.component.name = "quotationDouble" }
-                            .also { quotationGroup.add(it.component) }
-                        cell(JBRadioButton("`"))
-                            .also { it.component.name = "quotationBacktick" }
-                            .also { quotationGroup.add(it.component) }
-                        cell(VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(2)))
-                            .also { it.component.name = "quotationCustom" }
-                            .also { quotationGroup.add(it.component) }
-                            .also { customQuotation = it.component }
-
-                        quotationGroup.setLabel(quotationLabel)
+                    row(Bundle("uuid.ui.value.quotation_marks.option")) {
+                        cell(StringComboBox(listOf("", "'", "\"", "`"), MaxLengthDocumentFilter(2)))
+                            .also { it.component.isEditable = true }
+                            .also { it.component.name = "quotation" }
+                            .also { quotationComboBox = it.component }
                     }
 
                     val capitalizationLabel = Label(Bundle("uuid.ui.value.capitalization_option"))
@@ -129,8 +108,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
         super.loadState(state)
 
         typeGroup.setValue(state.type.toString())
-        customQuotation.label = state.customQuotation
-        quotationGroup.setValue(state.quotation)
+        quotationComboBox.item = state.quotation
         capitalizationGroup.setValue(state.capitalization)
         addDashesCheckBox.isSelected = state.addDashes
         arrayDecoratorEditor.loadState(state.arrayDecorator)
@@ -139,8 +117,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
     override fun readState(): UuidScheme =
         UuidScheme(
             type = typeGroup.getValue()?.toInt() ?: DEFAULT_TYPE,
-            quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
-            customQuotation = customQuotation.label,
+            quotation = quotationComboBox.item,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             addDashes = addDashesCheckBox.isSelected,
             arrayDecorator = arrayDecoratorEditor.readState()
@@ -149,7 +126,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            typeGroup, quotationGroup, customQuotation, capitalizationGroup, addDashesCheckBox, arrayDecoratorEditor,
+            typeGroup, quotationComboBox, capitalizationGroup, addDashesCheckBox, arrayDecoratorEditor,
             listener = listener
         )
 }

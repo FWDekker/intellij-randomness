@@ -1,7 +1,4 @@
-package com.fwdekker.randomness.array
-
-import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.DataGenerationException
+package com.fwdekker.randomness
 
 
 /**

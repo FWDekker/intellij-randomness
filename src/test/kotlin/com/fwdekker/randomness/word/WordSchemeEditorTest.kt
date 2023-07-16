@@ -60,52 +60,17 @@ object WordSchemeEditorTest : DescribeSpec({
         it("loads the scheme's quotation") {
             GuiActionRunner.execute { editor.loadState(WordScheme(quotation = "'")) }
 
-            frame.radioButton("quotationNone").requireSelected(false)
-            frame.radioButton("quotationSingle").requireSelected(true)
-            frame.radioButton("quotationDouble").requireSelected(false)
-            frame.radioButton("quotationBacktick").requireSelected(false)
-            frame.panel("quotationCustom").radioButton().requireSelected(false)
-        }
-
-        it("loads the scheme's custom quotation") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(customQuotation = "eN")) }
-
-            frame.panel("quotationCustom").textBox().requireText("eN")
-        }
-
-        it("selects the scheme's custom quotation") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(quotation = "s", customQuotation = "s")) }
-
-            frame.panel("quotationCustom").radioButton().requireSelected()
+            frame.comboBox("quotation").requireSelection("'")
         }
 
         it("loads the scheme's capitalization") {
             GuiActionRunner.execute { editor.loadState(WordScheme(capitalization = CapitalizationMode.LOWER)) }
 
-            frame.radioButton("capitalizationRetain").requireSelected(false)
-            frame.radioButton("capitalizationLower").requireSelected(true)
-            frame.radioButton("capitalizationUpper").requireSelected(false)
-            frame.radioButton("capitalizationRandom").requireSelected(false)
-            frame.radioButton("capitalizationSentence").requireSelected(false)
-            frame.radioButton("capitalizationFirstLetter").requireSelected(false)
+            frame.comboBox("capitalization").requireSelection("lower")
         }
     }
 
     describe("readState") {
-        describe("defaults") {
-            it("returns default quotation if no quotation is selected") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(quotation = "unsupported")) }
-
-                assertThat(editor.readState().quotation).isEqualTo(WordScheme.DEFAULT_QUOTATION)
-            }
-
-            it("returns default capitalization if unknown capitalization is selected") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(capitalization = CapitalizationMode.DUMMY)) }
-
-                assertThat(editor.readState().capitalization).isEqualTo(WordScheme.DEFAULT_CAPITALIZATION)
-            }
-        }
-
         it("removes blank lines from the words input") {
             GuiActionRunner.execute { runWriteAction { wordsEditor.editor.document.setText("suppose\n  \nsand\n") } }
 
@@ -119,18 +84,18 @@ object WordSchemeEditorTest : DescribeSpec({
         it("returns the editor's state") {
             GuiActionRunner.execute {
                 runWriteAction { wordsEditor.editor.document.setText("might\nexpense") }
-                frame.radioButton("quotationSingle").target().isSelected = true
-                frame.radioButton("capitalizationLower").target().isSelected = true
+                frame.comboBox("quotation").target().selectedItem = "'"
+                frame.comboBox("capitalization").target().selectedItem = CapitalizationMode.LOWER
             }
 
             val readScheme = editor.readState()
+            assertThat(readScheme.words).isEqualTo(listOf("might", "expense"))
             assertThat(readScheme.quotation).isEqualTo("'")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.LOWER)
-            assertThat(readScheme.words).isEqualTo(listOf("might", "expense"))
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.radioButton("quotationSingle").target().isSelected = true }
+            GuiActionRunner.execute { frame.comboBox("quotation").target().selectedItem = "'" }
             assertThat(editor.isModified()).isTrue()
 
             GuiActionRunner.execute { editor.loadState(editor.readState()) }
@@ -156,13 +121,13 @@ object WordSchemeEditorTest : DescribeSpec({
     }
 
 
-    describe("word list insertion") {
+    describe("preset insertion") {
         lateinit var firstList: DefaultWordList
         lateinit var firstListAsString: String
 
 
         beforeEach {
-            firstList = frame.comboBox("wordListBox").target().getItemAt(1) as DefaultWordList
+            firstList = frame.comboBox("presets").target().getItemAt(1) as DefaultWordList
             firstListAsString = firstList.words.joinToString(separator = "\n", postfix = "\n")
         }
 
@@ -171,13 +136,13 @@ object WordSchemeEditorTest : DescribeSpec({
             it("selects the placeholder if the initial words do no match any word list") {
                 GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("ugly", "wait"))) }
 
-                assertThat(frame.comboBox("wordListBox").target().selectedIndex).isEqualTo(0)
+                assertThat(frame.comboBox("presets").target().selectedIndex).isEqualTo(0)
             }
 
             it("selects the corresponding word list if the contents match that list") {
                 GuiActionRunner.execute { editor.loadState(WordScheme(words = firstList.words)) }
 
-                assertThat(frame.comboBox("wordListBox").target().selectedIndex).isEqualTo(1)
+                assertThat(frame.comboBox("presets").target().selectedIndex).isEqualTo(1)
             }
 
             it("selects the placeholder if a word is changed") {
@@ -189,7 +154,7 @@ object WordSchemeEditorTest : DescribeSpec({
                     }
                 }
 
-                assertThat(frame.comboBox("wordListBox").target().selectedIndex).isEqualTo(0)
+                assertThat(frame.comboBox("presets").target().selectedIndex).isEqualTo(0)
             }
 
             it("retains the non-placeholder selection if a newline is appended") {
@@ -201,7 +166,7 @@ object WordSchemeEditorTest : DescribeSpec({
                     }
                 }
 
-                assertThat(frame.comboBox("wordListBox").target().selectedIndex).isEqualTo(1)
+                assertThat(frame.comboBox("presets").target().selectedIndex).isEqualTo(1)
             }
         }
 
@@ -209,15 +174,15 @@ object WordSchemeEditorTest : DescribeSpec({
             it("does nothing if the placeholder is selected") {
                 GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("street", "sell"))) }
 
-                GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 0 }
+                GuiActionRunner.execute { frame.comboBox("presets").target().selectedIndex = 0 }
 
                 assertThat(wordsEditor.text).isEqualTo("street\nsell\n")
             }
 
             it("does nothing if another entry is selected and then the placeholder is selected") {
-                GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 1 }
+                GuiActionRunner.execute { frame.comboBox("presets").target().selectedIndex = 1 }
 
-                GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 0 }
+                GuiActionRunner.execute { frame.comboBox("presets").target().selectedIndex = 0 }
 
                 assertThat(wordsEditor.text).isEqualTo(firstListAsString)
             }
@@ -225,7 +190,7 @@ object WordSchemeEditorTest : DescribeSpec({
             it("inserts the words of the selected entry") {
                 GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("grow", "trip"))) }
 
-                GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 1 }
+                GuiActionRunner.execute { frame.comboBox("presets").target().selectedIndex = 1 }
 
                 assertThat(wordsEditor.text).isEqualTo(firstListAsString)
             }
@@ -238,7 +203,7 @@ object WordSchemeEditorTest : DescribeSpec({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.radioButton("quotationBacktick").target().isSelected = true }
+            GuiActionRunner.execute { frame.comboBox("quotation").target().selectedItem = "`" }
 
             assertThat(listenerInvoked).isTrue()
         }

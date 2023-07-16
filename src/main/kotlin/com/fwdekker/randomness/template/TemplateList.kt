@@ -147,7 +147,6 @@ data class TemplateList(
                                 maxCount = 7,
                                 brackets = "",
                                 separator = "",
-                                customSeparator = "",
                                 isSpaceAfterSeparator = true
                             )
                         ),
@@ -166,7 +165,6 @@ data class TemplateList(
                                 minCount = 4,
                                 maxCount = 4,
                                 separator = ".",
-                                customSeparator = ".",
                                 isSpaceAfterSeparator = false
                             )
                         )

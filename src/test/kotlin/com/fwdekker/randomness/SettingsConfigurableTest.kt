@@ -39,8 +39,8 @@ object SettingsConfigurableTest : DescribeSpec({
     }
 
     afterEach {
-        ideaFixture.tearDown()
         frame.cleanUp()
+        ideaFixture.tearDown()
     }
 
 

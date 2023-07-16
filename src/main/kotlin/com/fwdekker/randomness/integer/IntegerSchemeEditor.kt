@@ -6,13 +6,11 @@ import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.fixedlength.FixedLengthDecoratorEditor
 import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_CAPITALIZATION
-import com.fwdekker.randomness.integer.IntegerScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JLongSpinner
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
+import com.fwdekker.randomness.ui.StringComboBox
 import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.VariableLabelRadioButton
-import com.fwdekker.randomness.ui.add
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.getValue
@@ -20,6 +18,7 @@ import com.fwdekker.randomness.ui.hasValue
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.ui.withFixedWidth
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.Label
 import com.intellij.ui.dsl.builder.panel
@@ -42,8 +41,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
     private lateinit var minValue: JLongSpinner
     private lateinit var maxValue: JLongSpinner
     private lateinit var base: JIntSpinner
-    private lateinit var groupingSeparatorGroup: ButtonGroup
-    private lateinit var customGroupingSeparator: VariableLabelRadioButton
+    private lateinit var groupingSeparatorComboBox: ComboBox<String>
     private lateinit var capitalizationGroup: ButtonGroup
     private lateinit var prefixInput: JTextField
     private lateinit var suffixInput: JTextField
@@ -79,29 +77,11 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                         .also { base = it.component }
                 }
 
-                val groupingSeparatorLabel = Label(Bundle("integer.ui.format.grouping_separator_option"))
-                row(groupingSeparatorLabel) {
-                    groupingSeparatorGroup = ButtonGroup()
-
-                    cell(JBRadioButton(Bundle("shared.option.none")))
-                        .also { it.component.actionCommand = "" }
-                        .also { it.component.name = "groupingSeparatorNone" }
-                        .also { groupingSeparatorGroup.add(it.component) }
-                    cell(JBRadioButton("."))
-                        .also { it.component.name = "groupingSeparatorPeriod" }
-                        .also { groupingSeparatorGroup.add(it.component) }
-                    cell(JBRadioButton(","))
-                        .also { it.component.name = "groupingSeparatorComma" }
-                        .also { groupingSeparatorGroup.add(it.component) }
-                    cell(JBRadioButton("_"))
-                        .also { it.component.name = "groupingSeparatorUnderscore" }
-                        .also { groupingSeparatorGroup.add(it.component) }
-                    cell(VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(1)))
-                        .also { it.component.name = "groupingSeparatorCustom" }
-                        .also { groupingSeparatorGroup.add(it.component) }
-                        .also { customGroupingSeparator = it.component }
-
-                    groupingSeparatorGroup.setLabel(groupingSeparatorLabel)
+                row(Bundle("integer.ui.format.grouping_separator_option")) {
+                    cell(StringComboBox(listOf("", ".", ",", "_"), MaxLengthDocumentFilter(1)))
+                        .also { it.component.isEditable = true }
+                        .also { it.component.name = "groupingSeparator" }
+                        .also { groupingSeparatorComboBox = it.component }
                 }.enabledIf(base.hasValue { it == IntegerScheme.DECIMAL_BASE })
 
                 val capitalizationLabel = Label(Bundle("integer.ui.format.capitalization_option"))
@@ -159,8 +139,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
         minValue.value = state.minValue
         maxValue.value = state.maxValue
         base.value = state.base
-        customGroupingSeparator.label = state.customGroupingSeparator
-        groupingSeparatorGroup.setValue(state.groupingSeparator)
+        groupingSeparatorComboBox.item = state.groupingSeparator
         capitalizationGroup.setValue(state.capitalization)
         prefixInput.text = state.prefix
         suffixInput.text = state.suffix
@@ -173,8 +152,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
             minValue = minValue.value,
             maxValue = maxValue.value,
             base = base.value,
-            groupingSeparator = groupingSeparatorGroup.getValue() ?: DEFAULT_GROUPING_SEPARATOR,
-            customGroupingSeparator = customGroupingSeparator.label,
+            groupingSeparator = groupingSeparatorComboBox.item,
             capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
             prefix = prefixInput.text,
             suffix = suffixInput.text,
@@ -184,8 +162,8 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            minValue, maxValue, base, groupingSeparatorGroup, customGroupingSeparator, capitalizationGroup, prefixInput,
-            suffixInput, fixedLengthDecoratorEditor, arrayDecoratorEditor,
+            minValue, maxValue, base, groupingSeparatorComboBox, capitalizationGroup, prefixInput, suffixInput,
+            fixedLengthDecoratorEditor, arrayDecoratorEditor,
             listener = listener
         )
 }

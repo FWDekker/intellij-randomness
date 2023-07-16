@@ -2,32 +2,25 @@ package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.array.ArrayDecorator.Companion.DEFAULT_BRACKETS
-import com.fwdekker.randomness.array.ArrayDecorator.Companion.DEFAULT_SEPARATOR
 import com.fwdekker.randomness.array.ArrayDecorator.Companion.MIN_MIN_COUNT
 import com.fwdekker.randomness.ui.JIntSpinner
+import com.fwdekker.randomness.ui.StringComboBox
 import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.VariableLabelRadioButton
-import com.fwdekker.randomness.ui.add
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
-import com.fwdekker.randomness.ui.getValue
+import com.fwdekker.randomness.ui.hasItem
 import com.fwdekker.randomness.ui.indentedIf
-import com.fwdekker.randomness.ui.setLabel
-import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.ui.withFixedWidth
-import com.intellij.ui.components.JBRadioButton
-import com.intellij.ui.components.Label
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.EMPTY_LABEL
 import com.intellij.ui.dsl.builder.TopGap
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.layout.and
 import com.intellij.ui.layout.not
 import com.intellij.ui.layout.selected
 import com.intellij.util.ui.DialogUtil
-import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
-import javax.swing.JRadioButton
 
 
 /**
@@ -48,11 +41,8 @@ class ArrayDecoratorEditor(
     private lateinit var enabledCheckBox: JCheckBox
     private lateinit var minCountSpinner: JIntSpinner
     private lateinit var maxCountSpinner: JIntSpinner
-    private lateinit var bracketsGroup: ButtonGroup
-    private lateinit var customBrackets: VariableLabelRadioButton
-    private lateinit var separatorGroup: ButtonGroup
-    private lateinit var customSeparator: VariableLabelRadioButton
-    private lateinit var newlineSeparatorButton: JRadioButton
+    private lateinit var bracketsComboBox: ComboBox<String>
+    private lateinit var separatorComboBox: ComboBox<String>
     private lateinit var spaceAfterSeparatorCheckBox: JCheckBox
 
 
@@ -87,65 +77,24 @@ class ArrayDecoratorEditor(
 
                     bindSpinners(minCountSpinner, maxCountSpinner)
 
-                    val bracketsLabel = Label(Bundle("array.ui.brackets.option"))
-                    row(bracketsLabel) {
-                        bracketsGroup = ButtonGroup()
-
-                        cell(JBRadioButton(Bundle("shared.option.none")))
-                            .also { it.component.actionCommand = "" }
-                            .also { it.component.name = "arrayBracketsNone" }
-                            .also { bracketsGroup.add(it.component) }
-                        cell(JBRadioButton("[]"))
-                            .also { it.component.actionCommand = "[@]" }
-                            .also { it.component.name = "arrayBracketsSquare" }
-                            .also { bracketsGroup.add(it.component) }
-                        cell(JBRadioButton("{}"))
-                            .also { it.component.actionCommand = "{@}" }
-                            .also { it.component.name = "arrayBracketsCurly" }
-                            .also { bracketsGroup.add(it.component) }
-                        cell(JBRadioButton("()"))
-                            .also { it.component.actionCommand = "(@)" }
-                            .also { it.component.name = "arrayBracketsRound" }
-                            .also { bracketsGroup.add(it.component) }
-                        cell(VariableLabelRadioButton(UIConstants.SIZE_MEDIUM))
-                            .also { it.component.name = "arrayBracketsCustom" }
-                            .also { bracketsGroup.add(it.component) }
-                            .also { customBrackets = it.component }
+                    row(Bundle("array.ui.brackets.option")) {
+                        cell(StringComboBox(listOf("", "[@]", "{@}", "(@)")))
+                            .also { it.component.isEditable = true }
+                            .also { it.component.name = "arrayBrackets" }
+                            .also { bracketsComboBox = it.component }
                         contextHelp(Bundle("array.ui.brackets.comment"))
-
-                        bracketsGroup.setLabel(bracketsLabel)
                     }
 
-                    val separatorLabel = Label(Bundle("array.ui.separator.option"))
-                    row(separatorLabel) {
-                        separatorGroup = ButtonGroup()
-
-                        cell(JBRadioButton(Bundle("shared.option.none")))
-                            .also { it.component.actionCommand = "" }
-                            .also { it.component.name = "arraySeparatorNone" }
-                            .also { separatorGroup.add(it.component) }
-                        cell(JBRadioButton(","))
-                            .also { it.component.name = "arraySeparatorComma" }
-                            .also { separatorGroup.add(it.component) }
-                        cell(JBRadioButton(";"))
-                            .also { it.component.name = "arraySeparatorSemicolon" }
-                            .also { separatorGroup.add(it.component) }
-                        cell(JBRadioButton("\\n"))
-                            .also { it.component.actionCommand = "\n" }
-                            .also { it.component.name = "arraySeparatorNewline" }
-                            .also { separatorGroup.add(it.component) }
-                            .also { newlineSeparatorButton = it.component }
-                        cell(VariableLabelRadioButton())
-                            .also { it.component.name = "arraySeparatorCustom" }
-                            .also { separatorGroup.add(it.component) }
-                            .also { customSeparator = it.component }
-
-                        separatorGroup.setLabel(separatorLabel)
+                    row(Bundle("array.ui.separator.option")) {
+                        cell(StringComboBox(listOf("", ",", ";", "\\n")))
+                            .also { it.component.isEditable = true }
+                            .also { it.component.name = "arraySeparator" }
+                            .also { separatorComboBox = it.component }
                     }
 
                     row(EMPTY_LABEL) {
                         checkBox(Bundle("array.ui.space_after_separator"))
-                            .enabledIf(newlineSeparatorButton.selected.not())
+                            .enabledIf(enabledCheckBox.selected.and(separatorComboBox.hasItem { it == "\\n" }.not()))
                             .also { it.component.name = "arraySpaceAfterSeparator" }
                             .also { spaceAfterSeparatorCheckBox = it.component }
                     }
@@ -163,10 +112,8 @@ class ArrayDecoratorEditor(
         enabledCheckBox.isSelected = embedded || state.enabled
         minCountSpinner.value = state.minCount
         maxCountSpinner.value = state.maxCount
-        customBrackets.label = state.customBrackets
-        bracketsGroup.setValue(state.brackets)
-        customSeparator.label = state.customSeparator
-        separatorGroup.setValue(state.separator)
+        bracketsComboBox.item = state.brackets
+        separatorComboBox.item = state.separator
         spaceAfterSeparatorCheckBox.isSelected = state.isSpaceAfterSeparator
     }
 
@@ -175,18 +122,16 @@ class ArrayDecoratorEditor(
             enabled = !embedded && enabledCheckBox.isSelected,
             minCount = minCountSpinner.value,
             maxCount = maxCountSpinner.value,
-            brackets = bracketsGroup.getValue() ?: DEFAULT_BRACKETS,
-            customBrackets = customBrackets.label,
-            separator = separatorGroup.getValue() ?: DEFAULT_SEPARATOR,
-            customSeparator = customSeparator.label,
+            brackets = bracketsComboBox.item,
+            separator = separatorComboBox.item,
             isSpaceAfterSeparator = spaceAfterSeparatorCheckBox.isSelected
         ).also { it.uuid = originalState.uuid }
 
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            enabledCheckBox, minCountSpinner, maxCountSpinner, bracketsGroup, customBrackets, separatorGroup,
-            customSeparator, spaceAfterSeparatorCheckBox,
+            enabledCheckBox, minCountSpinner, maxCountSpinner, bracketsComboBox, separatorComboBox,
+            spaceAfterSeparatorCheckBox,
             listener = listener
         )
 }

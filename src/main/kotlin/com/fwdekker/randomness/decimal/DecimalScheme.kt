@@ -21,9 +21,7 @@ import kotlin.math.nextUp
  * @property decimalCount The number of decimals to display.
  * @property showTrailingZeroes Whether to include trailing zeroes in the decimals.
  * @property groupingSeparator The character that should separate groups.
- * @property customGroupingSeparator The grouping separator defined in the custom option.
  * @property decimalSeparator The character that should separate decimals.
- * @property customDecimalSeparator The decimal separator defined in the custom option.
  * @property prefix The string to prepend to the generated value.
  * @property suffix The string to append to the generated value.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
@@ -34,9 +32,7 @@ data class DecimalScheme(
     var decimalCount: Int = DEFAULT_DECIMAL_COUNT,
     var showTrailingZeroes: Boolean = DEFAULT_SHOW_TRAILING_ZEROES,
     var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
-    var customGroupingSeparator: String = DEFAULT_CUSTOM_GROUPING_SEPARATOR,
     var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR,
-    var customDecimalSeparator: String = DEFAULT_CUSTOM_DECIMAL_SEPARATOR,
     var prefix: String = DEFAULT_PREFIX,
     var suffix: String = DEFAULT_SUFFIX,
     var arrayDecorator: ArrayDecorator = ArrayDecorator(),
@@ -145,19 +141,9 @@ data class DecimalScheme(
         const val DEFAULT_GROUPING_SEPARATOR = ""
 
         /**
-         * The default value of the [customGroupingSeparator] field.
-         */
-        const val DEFAULT_CUSTOM_GROUPING_SEPARATOR = "'"
-
-        /**
          * The default value of the [decimalSeparator] field.
          */
         const val DEFAULT_DECIMAL_SEPARATOR = "."
-
-        /**
-         * The default value of the [customDecimalSeparator] field.
-         */
-        const val DEFAULT_CUSTOM_DECIMAL_SEPARATOR = "/"
 
         /**
          * The default value of the [prefix] field.

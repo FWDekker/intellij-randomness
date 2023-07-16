@@ -2,6 +2,7 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.getComboBoxItem
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.spec.style.DescribeSpec
@@ -52,10 +53,7 @@ object StringSchemeEditorTest : DescribeSpec({
         it("loads the scheme's capitalization") {
             GuiActionRunner.execute { editor.loadState(StringScheme(capitalization = CapitalizationMode.RANDOM)) }
 
-            frame.radioButton("capitalizationRetain").requireSelected(false)
-            frame.radioButton("capitalizationLower").requireSelected(false)
-            frame.radioButton("capitalizationUpper").requireSelected(false)
-            frame.radioButton("capitalizationRandom").requireSelected(true)
+            assertThat(frame.getComboBoxItem<CapitalizationMode>("capitalization")).isEqualTo(CapitalizationMode.RANDOM)
         }
 
         it("loads the scheme's setting for removing look-alike symbols") {
@@ -81,7 +79,7 @@ object StringSchemeEditorTest : DescribeSpec({
         it("returns the editor's state") {
             GuiActionRunner.execute {
                 frame.textBox("pattern").target().text = "AqqR"
-                frame.radioButton("capitalizationUpper").target().isSelected = true
+                frame.comboBox("capitalization").target().selectedItem = CapitalizationMode.UPPER
                 frame.checkBox("removeLookAlikeCharacters").target().isSelected = false
             }
 

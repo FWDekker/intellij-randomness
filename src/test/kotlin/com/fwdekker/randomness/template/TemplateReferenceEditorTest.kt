@@ -4,19 +4,22 @@ import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.getComboBoxItem
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
-import javax.swing.DefaultListModel
 
 
 /**
  * GUI tests for [TemplateReferenceEditor].
  */
 object TemplateReferenceEditorTest : DescribeSpec({
+    lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
     lateinit var templateList: TemplateList
@@ -29,6 +32,9 @@ object TemplateReferenceEditorTest : DescribeSpec({
     }
 
     beforeEach {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
         templateList = TemplateList(
             listOf(
                 Template("cup", listOf(DummyScheme())),
@@ -47,6 +53,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
 
     afterEach {
         frame.cleanUp()
+        ideaFixture.tearDown()
     }
 
 
@@ -59,7 +66,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
                 )
             }
 
-            assertThat(frame.list().target().selectedValue).isEqualTo(templateList.templates[2])
+            frame.comboBox("template").requireSelection(templateList.templates[2].toString())
         }
 
         it("selects nothing if the reference refers to null") {
@@ -67,13 +74,14 @@ object TemplateReferenceEditorTest : DescribeSpec({
                 editor.loadState(TemplateReference().also { it.templateList = Box({ templateList }) })
             }
 
-            assertThat(frame.list().target().selectedValue).isNull()
+            assertThat(frame.getComboBoxItem<Template>("template")).isNull()
         }
 
-        @Suppress("UNCHECKED_CAST") // I checked it myself!
         it("does not load the reference's parent as a selectable option") {
-            assertThat((frame.list().target().model as DefaultListModel<Template>).elements().toList())
-                .doesNotContain(reference.parent)
+            val box = frame.comboBox("template").target()
+            val items = (0 until box.itemCount).map { box.getItemAt(it) as Template }
+
+            assertThat(items).doesNotContain(reference.parent)
         }
 
         it("loads the scheme's quotation") {
@@ -82,30 +90,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
                 editor.loadState(reference)
             }
 
-            frame.radioButton("quotationNone").requireSelected(false)
-            frame.radioButton("quotationSingle").requireSelected(true)
-            frame.radioButton("quotationDouble").requireSelected(false)
-            frame.radioButton("quotationBacktick").requireSelected(false)
-            frame.panel("quotationCustom").radioButton().requireSelected(false)
-        }
-
-        it("loads the scheme's custom quotation") {
-            GuiActionRunner.execute {
-                reference.customQuotation = "nL"
-                editor.loadState(reference)
-            }
-
-            frame.panel("quotationCustom").textBox().requireText("nL")
-        }
-
-        it("selects the scheme's custom quotation") {
-            GuiActionRunner.execute {
-                reference.quotation = "5"
-                reference.customQuotation = "5"
-                editor.loadState(reference)
-            }
-
-            frame.panel("quotationCustom").radioButton().requireSelected()
+            frame.comboBox("quotation").requireSelection("'")
         }
 
         it("loads the scheme's capitalization") {
@@ -114,26 +99,12 @@ object TemplateReferenceEditorTest : DescribeSpec({
                 editor.loadState(reference)
             }
 
-            frame.radioButton("capitalizationRetain").requireSelected(true)
-            frame.radioButton("capitalizationLower").requireSelected(false)
-            frame.radioButton("capitalizationUpper").requireSelected(false)
-            frame.radioButton("capitalizationRandom").requireSelected(false)
-            frame.radioButton("capitalizationSentence").requireSelected(false)
-            frame.radioButton("capitalizationFirstLetter").requireSelected(false)
+            assertThat(frame.getComboBoxItem<CapitalizationMode>("capitalization")).isEqualTo(CapitalizationMode.RETAIN)
         }
     }
 
     describe("readState") {
         describe("defaults") {
-            it("returns default quotation if no quotation is selected") {
-                GuiActionRunner.execute {
-                    reference.quotation = "unsupported"
-                    editor.loadState(reference)
-                }
-
-                assertThat(editor.readState().quotation).isEqualTo(TemplateReference.DEFAULT_QUOTATION)
-            }
-
             it("returns default capitalization if unknown capitalization is selected") {
                 GuiActionRunner.execute {
                     reference.capitalization = CapitalizationMode.DUMMY
@@ -150,9 +121,9 @@ object TemplateReferenceEditorTest : DescribeSpec({
 
         it("returns the editor's state") {
             GuiActionRunner.execute {
-                frame.list().target().setSelectedValue(templateList.templates[2], false)
-                frame.radioButton("quotationBacktick").target().isSelected = true
-                frame.radioButton("capitalizationRandom").target().isSelected = true
+                frame.comboBox("template").target().selectedItem = templateList.templates[2]
+                frame.comboBox("quotation").target().selectedItem = "`"
+                frame.comboBox("capitalization").target().selectedItem = CapitalizationMode.RANDOM
             }
 
             val readScheme = editor.readState()
@@ -162,7 +133,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.list().target().setSelectedValue(templateList.templates[2], false) }
+            GuiActionRunner.execute { frame.comboBox("template").target().selectedItem = templateList.templates[2] }
             assertThat(editor.isModified()).isTrue()
 
             GuiActionRunner.execute { editor.loadState(editor.readState()) }
@@ -195,7 +166,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.list().target().setSelectedValue(templateList.templates[2], false) }
+            GuiActionRunner.execute { frame.comboBox("template").target().selectedItem = templateList.templates[2] }
 
             assertThat(listenerInvoked).isTrue()
         }

@@ -53,25 +53,8 @@ object UuidSchemeEditorTest : DescribeSpec({
         it("loads the scheme's quotation") {
             GuiActionRunner.execute { editor.loadState(UuidScheme(quotation = "'")) }
 
-            frame.radioButton("quotationNone").requireSelected(false)
-            frame.radioButton("quotationSingle").requireSelected(true)
-            frame.radioButton("quotationDouble").requireSelected(false)
-            frame.radioButton("quotationBacktick").requireSelected(false)
-            frame.panel("quotationCustom").radioButton().requireSelected(false)
+            frame.comboBox("quotation").requireSelection("'")
         }
-
-        it("loads the scheme's custom separator") {
-            GuiActionRunner.execute { editor.loadState(UuidScheme(customQuotation = "bi")) }
-
-            frame.panel("quotationCustom").textBox().requireText("bi")
-        }
-
-        it("selects the scheme's custom separator") {
-            GuiActionRunner.execute { editor.loadState(UuidScheme(quotation = "pl", customQuotation = "pl")) }
-
-            frame.panel("quotationCustom").radioButton().requireSelected()
-        }
-
 
         it("loads the scheme's capitalization mode") {
             GuiActionRunner.execute { editor.loadState(UuidScheme(capitalization = CapitalizationMode.UPPER)) }
@@ -89,16 +72,10 @@ object UuidSchemeEditorTest : DescribeSpec({
 
     describe("readState") {
         describe("defaults") {
-            it("returns default typetype if no type is selected") {
+            it("returns default type if no type is selected") {
                 GuiActionRunner.execute { editor.loadState(UuidScheme(type = 967)) }
 
                 assertThat(editor.readState().type).isEqualTo(UuidScheme.DEFAULT_TYPE)
-            }
-
-            it("returns default quotation if no quotation is selected") {
-                GuiActionRunner.execute { editor.loadState(UuidScheme(quotation = "unsupported")) }
-
-                assertThat(editor.readState().quotation).isEqualTo(UuidScheme.DEFAULT_QUOTATION)
             }
 
             it("returns default capitalization if no capitalization is selected") {
@@ -115,8 +92,7 @@ object UuidSchemeEditorTest : DescribeSpec({
         it("returns the editor's state") {
             GuiActionRunner.execute {
                 frame.radioButton("type1").target().isSelected = true
-                frame.radioButton("quotationBacktick").target().isSelected = true
-                frame.panel("quotationCustom").textBox().target().text = "yl"
+                frame.comboBox("quotation").target().selectedItem = "`"
                 frame.radioButton("capitalizationUpper").target().isSelected = true
                 frame.checkBox("addDashesCheckBox").target().isSelected = true
             }
@@ -124,13 +100,12 @@ object UuidSchemeEditorTest : DescribeSpec({
             val readScheme = editor.readState()
             assertThat(readScheme.type).isEqualTo(1)
             assertThat(readScheme.quotation).isEqualTo("`")
-            assertThat(readScheme.customQuotation).isEqualTo("yl")
             assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
             assertThat(readScheme.addDashes).isTrue()
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.radioButton("quotationBacktick").target().isSelected = true }
+            GuiActionRunner.execute { frame.comboBox("quotation").target().selectedItem = "`" }
             assertThat(editor.isModified()).isTrue()
 
             GuiActionRunner.execute { editor.loadState(editor.readState()) }
@@ -161,7 +136,7 @@ object UuidSchemeEditorTest : DescribeSpec({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.radioButton("quotationBacktick").target().isSelected = true }
+            GuiActionRunner.execute { frame.comboBox("quotation").target().selectedItem = "`" }
 
             assertThat(listenerInvoked).isTrue()
         }

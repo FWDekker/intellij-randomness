@@ -79,47 +79,13 @@ object DecimalSchemeEditorTest : DescribeSpec({
         it("loads the scheme's grouping separator") {
             GuiActionRunner.execute { editor.loadState(DecimalScheme(groupingSeparator = "_")) }
 
-            frame.radioButton("groupingSeparatorNone").requireSelected(false)
-            frame.radioButton("groupingSeparatorPeriod").requireSelected(false)
-            frame.radioButton("groupingSeparatorComma").requireSelected(false)
-            frame.radioButton("groupingSeparatorUnderscore").requireSelected(true)
-            frame.panel("groupingSeparatorCustom").radioButton().requireSelected(false)
-        }
-
-        it("loads the scheme's custom grouping separator") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(customGroupingSeparator = "c")) }
-
-            frame.panel("groupingSeparatorCustom").textBox().requireText("c")
-        }
-
-        it("selects the scheme's custom grouping separator") {
-            GuiActionRunner.execute {
-                editor.loadState(DecimalScheme(groupingSeparator = "s", customGroupingSeparator = "s"))
-            }
-
-            frame.panel("groupingSeparatorCustom").radioButton().requireSelected()
+            frame.comboBox("groupingSeparator").requireSelection("_")
         }
 
         it("loads the scheme's decimal separator") {
             GuiActionRunner.execute { editor.loadState(DecimalScheme(decimalSeparator = ".")) }
 
-            frame.radioButton("decimalSeparatorComma").requireSelected(false)
-            frame.radioButton("decimalSeparatorPeriod").requireSelected(true)
-            frame.panel("decimalSeparatorCustom").radioButton().requireSelected(false)
-        }
-
-        it("loads the scheme's custom decimal separator") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(customDecimalSeparator = "j")) }
-
-            frame.panel("decimalSeparatorCustom").textBox().requireText("j")
-        }
-
-        it("selects the scheme's custom decimal separator") {
-            GuiActionRunner.execute {
-                editor.loadState(DecimalScheme(decimalSeparator = "o", customDecimalSeparator = "o"))
-            }
-
-            frame.panel("decimalSeparatorCustom").radioButton().requireSelected()
+            frame.comboBox("decimalSeparator").requireSelection(".")
         }
 
         it("loads the scheme's prefix") {
@@ -136,20 +102,6 @@ object DecimalSchemeEditorTest : DescribeSpec({
     }
 
     describe("readState") {
-        describe("defaults") {
-            it("returns default grouping separator if no grouping separator is selected") {
-                GuiActionRunner.execute { editor.loadState(DecimalScheme(groupingSeparator = "unsupported")) }
-
-                assertThat(editor.readState().groupingSeparator).isEqualTo(DecimalScheme.DEFAULT_GROUPING_SEPARATOR)
-            }
-
-            it("returns default decimal separator if no decimal separator is selected") {
-                GuiActionRunner.execute { editor.loadState(DecimalScheme(decimalSeparator = "unsupported")) }
-
-                assertThat(editor.readState().decimalSeparator).isEqualTo(DecimalScheme.DEFAULT_DECIMAL_SEPARATOR)
-            }
-        }
-
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
@@ -160,10 +112,8 @@ object DecimalSchemeEditorTest : DescribeSpec({
                 frame.spinner("maxValue").target().value = 644.74
                 frame.spinner("decimalCount").target().value = 485
                 frame.checkBox("showTrailingZeroes").target().isSelected = false
-                frame.radioButton("groupingSeparatorUnderscore").target().isSelected = true
-                frame.panel("groupingSeparatorCustom").textBox().target().text = "u"
-                frame.radioButton("decimalSeparatorComma").target().isSelected = true
-                frame.panel("decimalSeparatorCustom").textBox().target().text = "p"
+                frame.comboBox("groupingSeparator").target().selectedItem = "_"
+                frame.comboBox("decimalSeparator").target().selectedItem = ","
                 frame.textBox("prefix").target().text = "exercise"
                 frame.textBox("suffix").target().text = "court"
             }
@@ -174,9 +124,7 @@ object DecimalSchemeEditorTest : DescribeSpec({
             assertThat(readScheme.decimalCount).isEqualTo(485)
             assertThat(readScheme.showTrailingZeroes).isFalse()
             assertThat(readScheme.groupingSeparator).isEqualTo("_")
-            assertThat(readScheme.customGroupingSeparator).isEqualTo("u")
             assertThat(readScheme.decimalSeparator).isEqualTo(",")
-            assertThat(readScheme.customDecimalSeparator).isEqualTo("p")
             assertThat(readScheme.prefix).isEqualTo("exercise")
             assertThat(readScheme.suffix).isEqualTo("court")
         }

@@ -1,31 +1,21 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
+import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.template.TemplateReference.Companion.DEFAULT_CAPITALIZATION
-import com.fwdekker.randomness.template.TemplateReference.Companion.DEFAULT_QUOTATION
+import com.fwdekker.randomness.ui.CapitalizationComboBox
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
-import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.VariableLabelRadioButton
-import com.fwdekker.randomness.ui.add
+import com.fwdekker.randomness.ui.StringComboBox
 import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.fwdekker.randomness.ui.getValue
-import com.fwdekker.randomness.ui.setLabel
-import com.fwdekker.randomness.ui.setValue
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.ColoredListCellRenderer
-import com.intellij.ui.components.JBList
-import com.intellij.ui.components.JBRadioButton
-import com.intellij.ui.components.Label
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
-import javax.swing.ButtonGroup
-import javax.swing.DefaultListModel
+import javax.swing.ComboBoxModel
 import javax.swing.JList
 import javax.swing.JPanel
-import javax.swing.ListSelectionModel
 
 
 /**
@@ -36,99 +26,61 @@ import javax.swing.ListSelectionModel
 class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<TemplateReference>(reference) {
     override val rootComponent: JPanel
     override val preferredFocusedComponent
-        get() = templateList
+        get() = templateComboBox
 
-    private lateinit var templateListModel: DefaultListModel<Template>
-    private lateinit var templateList: JBList<Template>
-    private lateinit var capitalizationGroup: ButtonGroup
-    private lateinit var customQuotation: VariableLabelRadioButton
-    private lateinit var quotationGroup: ButtonGroup
+    private lateinit var templateComboBoxModel: ComboBoxModel<Template>
+    private lateinit var templateComboBox: ComboBox<Template>
+    private lateinit var capitalizationComboBox: ComboBox<CapitalizationMode>
+    private lateinit var quotationComboBox: ComboBox<String>
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
 
     init {
         rootComponent = panel {
-            group(Bundle("reference.ui.templates.header")) {
-                row {
-                    templateListModel = DefaultListModel<Template>()
-                    templateList = JBList(templateListModel)
-                    templateList.cellRenderer = object : ColoredListCellRenderer<Template>() {
-                        override fun customizeCellRenderer(
-                            list: JList<out Template>,
-                            value: Template?,
-                            index: Int,
-                            selected: Boolean,
-                            hasFocus: Boolean,
-                        ) {
-                            icon = value?.icon ?: Template.DEFAULT_ICON
-                            append(value?.name ?: Bundle("template.name.unknown"))
+            group(Bundle("reference.ui.value.header")) {
+                row(Bundle("reference.ui.value.template_option")) {
+                    comboBox(
+                        emptyList(),
+                        object : ColoredListCellRenderer<Template>() {
+                            override fun customizeCellRenderer(
+                                list: JList<out Template>,
+                                value: Template?,
+                                index: Int,
+                                selected: Boolean,
+                                hasFocus: Boolean,
+                            ) {
+                                icon = value?.icon ?: Template.DEFAULT_ICON
+                                append(value?.name ?: Bundle("template.name.unknown"))
+                            }
                         }
-                    }
-                    templateList.selectionMode = ListSelectionModel.SINGLE_SELECTION
-                    templateList.setEmptyText(Bundle("reference.ui.templates.empty"))
-
-                    scrollCell(templateList)
-                }
-            }
-
-            group(Bundle("reference.ui.format.header")) {
-                val quotationLabel = Label(Bundle("reference.ui.format.quotation_marks_option"))
-                row(quotationLabel) {
-                    quotationGroup = ButtonGroup()
-
-                    cell(JBRadioButton(Bundle("shared.option.none")))
-                        .also { it.component.actionCommand = "" }
-                        .also { it.component.name = "quotationNone" }
-                        .also { quotationGroup.add(it.component) }
-                    cell(JBRadioButton("'"))
-                        .also { it.component.name = "quotationSingle" }
-                        .also { quotationGroup.add(it.component) }
-                    cell(JBRadioButton("\""))
-                        .also { it.component.name = "quotationDouble" }
-                        .also { quotationGroup.add(it.component) }
-                    cell(JBRadioButton("`"))
-                        .also { it.component.name = "quotationBacktick" }
-                        .also { quotationGroup.add(it.component) }
-                    cell(VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(2)))
-                        .also { it.component.name = "quotationCustom" }
-                        .also { quotationGroup.add(it.component) }
-                        .also { customQuotation = it.component }
-
-                    quotationGroup.setLabel(quotationLabel)
+                    )
+                        .also { it.component.name = "template" }
+                        .also { templateComboBoxModel = it.component.model }
+                        .also { templateComboBox = it.component }
                 }
 
-                val capitalizationLabel = Label(Bundle("reference.ui.format.capitalization_option"))
-                row(capitalizationLabel) {
-                    capitalizationGroup = ButtonGroup()
+                row(Bundle("reference.ui.value.quotation_marks_option")) {
+                    cell(StringComboBox(listOf("", "'", "\"", "`"), MaxLengthDocumentFilter(2)))
+                        .also { it.component.isEditable = true }
+                        .also { it.component.name = "quotation" }
+                        .also { quotationComboBox = it.component }
+                }
 
-                    cell(JBRadioButton(Bundle("shared.capitalization.retain")))
-                        .also { it.component.actionCommand = "retain" }
-                        .also { it.component.name = "capitalizationRetain" }
-                        .also { capitalizationGroup.add(it.component) }
-                    @Suppress("DialogTitleCapitalization") // Intentional
-                    cell(JBRadioButton(Bundle("shared.capitalization.lower")))
-                        .also { it.component.actionCommand = "lower" }
-                        .also { it.component.name = "capitalizationLower" }
-                        .also { capitalizationGroup.add(it.component) }
-                    cell(JBRadioButton(Bundle("shared.capitalization.upper")))
-                        .also { it.component.actionCommand = "upper" }
-                        .also { it.component.name = "capitalizationUpper" }
-                        .also { capitalizationGroup.add(it.component) }
-                    cell(JBRadioButton(Bundle("shared.capitalization.random")))
-                        .also { it.component.actionCommand = "random" }
-                        .also { it.component.name = "capitalizationRandom" }
-                        .also { capitalizationGroup.add(it.component) }
-                    cell(JBRadioButton(Bundle("shared.capitalization.sentence")))
-                        .also { it.component.actionCommand = "sentence" }
-                        .also { it.component.name = "capitalizationSentence" }
-                        .also { capitalizationGroup.add(it.component) }
-                    @Suppress("DialogTitleCapitalization") // Intentional
-                    cell(JBRadioButton(Bundle("shared.capitalization.first_letter")))
-                        .also { it.component.actionCommand = "first letter" }
-                        .also { it.component.name = "capitalizationFirstLetter" }
-                        .also { capitalizationGroup.add(it.component) }
-
-                    capitalizationGroup.setLabel(capitalizationLabel)
+                row(Bundle("reference.ui.value.capitalization_option")) {
+                    cell(
+                        CapitalizationComboBox(
+                            listOf(
+                                CapitalizationMode.RETAIN,
+                                CapitalizationMode.LOWER,
+                                CapitalizationMode.UPPER,
+                                CapitalizationMode.RANDOM,
+                                CapitalizationMode.SENTENCE,
+                                CapitalizationMode.FIRST_LETTER,
+                            )
+                        )
+                    )
+                        .also { it.component.name = "capitalization" }
+                        .also { capitalizationComboBox = it.component }
                 }
             }
 
@@ -157,23 +109,21 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
                     listCopy.findRecursionFrom(referenceCopy) == null
                 }
 
-        templateListModel.removeAllElements()
-        templateListModel.addAll(validTemplates)
-        templateList.setSelectedValue(state.template, true)
+        templateComboBox.removeAllItems()
+        validTemplates.forEach { templateComboBox.addItem(it) }
+        templateComboBox.selectedItem = state.template
 
-        customQuotation.label = state.customQuotation
-        quotationGroup.setValue(state.quotation)
-        capitalizationGroup.setValue(state.capitalization)
+        quotationComboBox.item = state.quotation
+        capitalizationComboBox.item = state.capitalization
 
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
         TemplateReference(
-            templateUuid = templateList.selectedValue?.uuid,
-            quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
-            customQuotation = customQuotation.label,
-            capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
+            templateUuid = (templateComboBox.selectedItem as? Template)?.uuid,
+            quotation = quotationComboBox.item,
+            capitalization = capitalizationComboBox.item,
             arrayDecorator = arrayDecoratorEditor.readState()
         ).also {
             it.uuid = originalState.uuid
@@ -182,9 +132,8 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
 
 
     override fun addChangeListener(listener: () -> Unit) {
-        templateList.addListSelectionListener { listener() }
         addChangeListenerTo(
-            capitalizationGroup, quotationGroup, customQuotation, arrayDecoratorEditor,
+            templateComboBox, capitalizationComboBox, quotationComboBox, arrayDecoratorEditor,
             listener = listener
         )
     }

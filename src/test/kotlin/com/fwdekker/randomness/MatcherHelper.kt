@@ -2,6 +2,7 @@ package com.fwdekker.randomness
 
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import org.assertj.swing.core.GenericTypeMatcher
+import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.FrameFixture
 import java.awt.Component
 
@@ -32,16 +33,6 @@ fun <T : Component> FrameFixture.find(matcher: GenericTypeMatcher<T>): T =
     robot().finder().find(matcher)
 
 /**
- * Finds all components that match [matcher].
- *
- * @param T the type of components to find
- * @param matcher the matcher to compare components against
- * @return the components that match [matcher]
- */
-fun <T : Component> FrameFixture.findAll(matcher: GenericTypeMatcher<T>): MutableCollection<T> =
-    robot().finder().findAll(matcher)
-
-/**
  * Returns the [ActionButton] that has [accessibleName].
  *
  * @param accessibleName the name of the button to return
@@ -50,3 +41,15 @@ fun <T : Component> FrameFixture.findAll(matcher: GenericTypeMatcher<T>): Mutabl
  */
 fun FrameFixture.getActionButton(accessibleName: String): ActionButton =
     find(matcher(ActionButton::class.java) { it.accessibleContext.accessibleName == accessibleName })
+
+/**
+ * Returns the selected item of a [javax.swing.JComboBox] in [this] with name [name].
+ *
+ * @param T the type of item contained in the [javax.swing.JComboBox]
+ * @receiver the fixture to find the [javax.swing.JComboBox] in
+ * @param name the name of the [javax.swing.JComboBox] to return the value of
+ * @return the selected item of the [javax.swing.JComboBox] in [this] with name [name]
+ */
+@Suppress("UNCHECKED_CAST") // Responsibility of caller
+fun <T> FrameFixture.getComboBoxItem(name: String): T =
+    GuiActionRunner.execute<T> { this.comboBox(name).target().selectedItem as T }

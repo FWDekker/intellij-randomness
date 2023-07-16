@@ -88,75 +88,68 @@ object ArrayDecoratorEditorTest : DescribeSpec({
 
             it("keeps components visible if the editor is embedded") {
                 frame.cleanUp()
-                editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
-                    ArrayDecoratorEditor(scheme, embedded = true)
-                }
+                editor = GuiActionRunner.execute<ArrayDecoratorEditor> { ArrayDecoratorEditor(scheme, embedded = true) }
                 frame = showInFrame(editor.rootComponent)
 
+                // This special matcher does not require the component to be visible
                 frame.checkBox(matcher(JCheckBox::class.java) { it.name == "arrayEnabled" }).requireSelected()
 
                 frame.spinner("arrayMinCount").requireEnabled()
             }
 
-            it("disables space after separator if the decorator is enabled but the newline separator is checked") {
+            it("disables space-after-separator if decorator is enabled but separator is a newline") {
                 scheme.enabled = false
-                scheme.separator = "\n"
+                scheme.separator = "\\n"
                 GuiActionRunner.execute { editor.reset() }
 
                 frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
-            }
-
-            it("does not enable the text box of `customBrackets` if the radio button is not selected") {
-                GuiActionRunner.execute {
-                    frame.checkBox("arrayEnabled").target().isSelected = false
-                    frame.checkBox("arrayEnabled").target().isSelected = true
-                }
-
-                frame.panel("arrayBracketsCustom").textBox().requireDisabled()
             }
         }
 
-        describe("toggles space-after-separator depending on newline separator") {
-            it("enables space-after-separator if embedded and newline separator is checked") {
-                frame.cleanUp()
-                editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
-                    ArrayDecoratorEditor(scheme, embedded = true)
+        describe("toggles space-after-separator depending on separator") {
+            describe("embedded") {
+                beforeEach {
+                    frame.cleanUp()
+                    editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
+                        ArrayDecoratorEditor(scheme, embedded = true)
+                    }
+                    frame = showInFrame(editor.rootComponent)
                 }
-                frame = showInFrame(editor.rootComponent)
 
-                GuiActionRunner.execute { frame.radioButton("arraySeparatorNewline").target().isSelected = true }
 
-                frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
-            }
+                it("disables space-after-separator if separator is a newline") {
+                    GuiActionRunner.execute { frame.comboBox("arraySeparator").target().selectedItem = "\\n" }
 
-            it("enables space-after-separator if embedded and newline separator is unchecked") {
-                frame.cleanUp()
-                editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
-                    ArrayDecoratorEditor(scheme, embedded = true)
+                    frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
                 }
-                frame = showInFrame(editor.rootComponent)
 
-                frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
+                it("enables space-after-separator if separator is not a newline") {
+                    GuiActionRunner.execute { frame.comboBox("arraySeparator").target().selectedItem = "," }
+
+                    frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
+                }
             }
 
-            it("disables space-after-separator if newline separator is checked") {
-                GuiActionRunner.execute { frame.radioButton("arraySeparatorNewline").target().isSelected = true }
+            describe("not embedded") {
+                it("disables space-after-separator if separator is a newline") {
+                    GuiActionRunner.execute { frame.comboBox("arraySeparator").target().selectedItem = "\\n" }
 
-                frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
-            }
+                    frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
+                }
 
-            it("enables space-after-separator if newline separator is unchecked") {
-                GuiActionRunner.execute { frame.radioButton("arraySeparatorNewline").target().isSelected = false }
+                it("enables space-after-separator if separator is not a newline") {
+                    GuiActionRunner.execute { frame.comboBox("arraySeparator").target().selectedItem = "," }
 
-                frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
-            }
+                    frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
+                }
 
-            it("disables space-after-separator if the newline separator is unchecked but the decorator is disabled") {
-                scheme.enabled = false
-                scheme.separator = ","
-                GuiActionRunner.execute { editor.reset() }
+                it("disables space-after-separator if separator is not a newline, but decorator is disabled") {
+                    scheme.enabled = false
+                    scheme.separator = ","
+                    GuiActionRunner.execute { editor.reset() }
 
-                frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
+                    frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
+                }
             }
         }
     }
@@ -184,48 +177,13 @@ object ArrayDecoratorEditorTest : DescribeSpec({
         it("loads the scheme's brackets") {
             GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, brackets = "{@}")) }
 
-            frame.radioButton("arrayBracketsNone").requireSelected(false)
-            frame.radioButton("arrayBracketsSquare").requireSelected(false)
-            frame.radioButton("arrayBracketsCurly").requireSelected(true)
-            frame.radioButton("arrayBracketsRound").requireSelected(false)
-            frame.panel("arrayBracketsCustom").radioButton().requireSelected(false)
-        }
-
-        it("loads the scheme's custom brackets") {
-            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, customBrackets = "a@b")) }
-
-            frame.panel("arrayBracketsCustom").textBox().requireText("a@b")
-        }
-
-        it("selects the scheme's custom brackets") {
-            GuiActionRunner.execute {
-                editor.loadState(ArrayDecorator(enabled = true, brackets = "a@b", customBrackets = "a@b"))
-            }
-
-            frame.panel("arrayBracketsCustom").radioButton().requireSelected()
+            frame.comboBox("arrayBrackets").requireSelection("{@}")
         }
 
         it("loads the scheme's separator") {
             GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, separator = ";")) }
 
-            frame.radioButton("arraySeparatorComma").requireSelected(false)
-            frame.radioButton("arraySeparatorSemicolon").requireSelected(true)
-            frame.radioButton("arraySeparatorNewline").requireSelected(false)
-            frame.panel("arraySeparatorCustom").radioButton().requireSelected(false)
-        }
-
-        it("loads the scheme's custom separator") {
-            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, customSeparator = "fashion")) }
-
-            frame.panel("arraySeparatorCustom").textBox().requireText("fashion")
-        }
-
-        it("selects the scheme's custom separator") {
-            GuiActionRunner.execute {
-                editor.loadState(ArrayDecorator(enabled = true, separator = "steady", customSeparator = "steady"))
-            }
-
-            frame.panel("arraySeparatorCustom").radioButton().requireSelected()
+            frame.comboBox("arraySeparator").requireSelection(";")
         }
 
         it("loads the scheme's settings for using a space after separator") {
@@ -236,24 +194,6 @@ object ArrayDecoratorEditorTest : DescribeSpec({
     }
 
     describe("readState") {
-        describe("defaults") {
-            it("returns default brackets if no brackets are selected") {
-                GuiActionRunner.execute {
-                    editor.loadState(ArrayDecorator(enabled = true, brackets = "unsupported"))
-                }
-
-                assertThat(editor.readState().brackets).isEqualTo(ArrayDecorator.DEFAULT_BRACKETS)
-            }
-
-            it("returns default separator if no separator is selected") {
-                GuiActionRunner.execute {
-                    editor.loadState(ArrayDecorator(enabled = true, separator = "unsupported"))
-                }
-
-                assertThat(editor.readState().separator).isEqualTo(ArrayDecorator.DEFAULT_SEPARATOR)
-            }
-        }
-
         it("returns the original state if no editor changes are made") {
             assertThat(editor.readState()).isEqualTo(editor.originalState)
         }
@@ -263,10 +203,8 @@ object ArrayDecoratorEditorTest : DescribeSpec({
                 frame.checkBox("arrayEnabled").target().isSelected = true
                 frame.spinner("arrayMinCount").target().value = 642
                 frame.spinner("arrayMaxCount").target().value = 876
-                frame.radioButton("arrayBracketsCurly").target().isSelected = true
-                frame.panel("arrayBracketsCustom").textBox().target().text = "y@v"
-                frame.radioButton("arraySeparatorSemicolon").target().isSelected = true
-                frame.panel("arraySeparatorCustom").textBox().target().text = "prb"
+                frame.comboBox("arrayBrackets").target().selectedItem = "{@}"
+                frame.comboBox("arraySeparator").target().selectedItem = ";"
                 frame.checkBox("arraySpaceAfterSeparator").target().isSelected = false
             }
 
@@ -275,9 +213,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
             assertThat(readScheme.minCount).isEqualTo(642)
             assertThat(readScheme.maxCount).isEqualTo(876)
             assertThat(readScheme.brackets).isEqualTo("{@}")
-            assertThat(readScheme.customBrackets).isEqualTo("y@v")
             assertThat(readScheme.separator).isEqualTo(";")
-            assertThat(readScheme.customSeparator).isEqualTo("prb")
             assertThat(readScheme.isSpaceAfterSeparator).isFalse()
         }
 

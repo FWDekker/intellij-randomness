@@ -220,7 +220,6 @@ object IntegerSchemeTest : DescribeSpec({
             integerScheme.maxValue = 908
             integerScheme.base = 12
             integerScheme.groupingSeparator = "B"
-            integerScheme.customGroupingSeparator = "3"
             integerScheme.capitalization = CapitalizationMode.UPPER
             integerScheme.prefix = "M9d1uey"
             integerScheme.suffix = "m45tL1"

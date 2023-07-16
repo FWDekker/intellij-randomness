@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
-import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
@@ -14,6 +13,10 @@ import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.JBSplitter
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.data.forAll
+import io.kotest.data.headers
+import io.kotest.data.row
+import io.kotest.data.table
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -211,22 +214,19 @@ object TemplateListEditorTest : DescribeSpec({
 
 
         describe("editor creation") {
-            data class Param(
-                val name: String,
-                val scheme: Scheme,
-                val matcher: (FrameFixture) -> AbstractComponentFixture<*, *, *>,
-            )
-
-            listOf(
-                Param("integer", IntegerScheme()) { it.spinner("minValue") },
-                Param("decimal", DecimalScheme()) { it.spinner("minValue") },
-                Param("string", StringScheme()) { it.textBox("pattern") },
-                Param("UUID", UuidScheme()) { it.radioButton("type1") },
-                Param("word", WordScheme()) { it.radioButton("capitalizationRetain") },
-                Param("date-time", DateTimeScheme()) { it.textBox("minDateTime") },
-                Param("template reference", TemplateReference()) { it.list() }
-            ).forEach { (name, scheme, matcher) ->
-                it("loads an editor for ${name}s") {
+            it("loads the appropriate editor") {
+                forAll(
+                    table(
+                        headers("name", "scheme", "matcher"),
+                        row("integer", IntegerScheme()) { it.spinner("minValue") },
+                        row("decimal", DecimalScheme()) { it.spinner("minValue") },
+                        row("string", StringScheme()) { it.textBox("pattern") },
+                        row("uuid", UuidScheme()) { it.radioButton("type1") },
+                        row("word", WordScheme()) { it.comboBox("presets") },
+                        row("date-time", DateTimeScheme()) { it.textBox("minDateTime") },
+                        row("template reference", TemplateReference()) { it.comboBox("template") },
+                    )
+                ) { _, scheme, matcher: (FrameFixture) -> AbstractComponentFixture<*, *, *> ->
                     state.templateList.templates = listOf(Template(schemes = listOf(scheme)))
                     state.templateList.applySettingsState(state)
 

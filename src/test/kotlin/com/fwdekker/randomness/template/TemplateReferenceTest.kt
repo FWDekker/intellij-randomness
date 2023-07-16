@@ -248,8 +248,8 @@ object TemplateReferenceTest : DescribeSpec({
             assertThat(reference.doValidate()).isEqualTo("Found recursion: (Various → Ray → Various)")
         }
 
-        it("fails if the custom quotation has more than two characters") {
-            reference.customQuotation = "week"
+        it("fails if the quotation has more than two characters") {
+            reference.quotation = "week"
 
             assertThat(reference.doValidate()).isEqualTo(Bundle("reference.error.quotation_length"))
         }
@@ -299,7 +299,6 @@ object TemplateReferenceTest : DescribeSpec({
         it("copies state from another instance") {
             reference.templateUuid = "1e97e778-8698-4c29-ad1a-2bd892be6292"
             reference.quotation = "fe"
-            reference.customQuotation = "fe"
             reference.capitalization = CapitalizationMode.RANDOM
             reference.arrayDecorator.minCount = 249
 

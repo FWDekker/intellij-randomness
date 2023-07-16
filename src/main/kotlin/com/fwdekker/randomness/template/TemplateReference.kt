@@ -22,14 +22,12 @@ import com.intellij.util.xmlb.annotations.Transient
  *
  * @property templateUuid The UUID of the referenced template; defaults to the first template in [TemplateList].
  * @property quotation The string that encloses the generated word on both sides.
- * @property customQuotation The quotation defined in the custom option.
  * @property capitalization The way in which the generated word should be capitalized.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class TemplateReference(
     var templateUuid: String? = null,
     var quotation: String = DEFAULT_QUOTATION,
-    var customQuotation: String = DEFAULT_CUSTOM_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
@@ -106,7 +104,7 @@ data class TemplateReference(
                 Bundle("reference.error.not_found")
             recursion != null ->
                 Bundle("reference.error.recursion", "(${recursion.joinToString(separator = " → ") { it.name }})")
-            customQuotation.length > 2 ->
+            quotation.length > 2 ->
                 Bundle("reference.error.quotation_length")
             else ->
                 arrayDecorator.doValidate()
@@ -142,11 +140,6 @@ data class TemplateReference(
          * The default value of the [quotation] field.
          */
         const val DEFAULT_QUOTATION = ""
-
-        /**
-         * The default value of the [customQuotation] field.
-         */
-        const val DEFAULT_CUSTOM_QUOTATION = "<>"
 
         /**
          * The default value of the [capitalization] field.

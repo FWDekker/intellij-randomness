@@ -3,31 +3,23 @@ package com.fwdekker.randomness.decimal
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_DECIMAL_SEPARATOR
-import com.fwdekker.randomness.decimal.DecimalScheme.Companion.DEFAULT_GROUPING_SEPARATOR
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.MIN_DECIMAL_COUNT
 import com.fwdekker.randomness.ui.JDoubleSpinner
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.MinMaxLengthDocumentFilter
+import com.fwdekker.randomness.ui.StringComboBox
 import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.VariableLabelRadioButton
-import com.fwdekker.randomness.ui.add
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
-import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.hasValue
-import com.fwdekker.randomness.ui.setLabel
-import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.ui.withFixedWidth
-import com.intellij.ui.components.JBRadioButton
-import com.intellij.ui.components.Label
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.EMPTY_LABEL
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.util.ui.DialogUtil
-import javax.swing.ButtonGroup
 import javax.swing.JCheckBox
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -47,10 +39,8 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
     private lateinit var maxValue: JDoubleSpinner
     private lateinit var decimalCount: JIntSpinner
     private lateinit var showTrailingZeroesCheckBox: JCheckBox
-    private lateinit var groupingSeparatorGroup: ButtonGroup
-    private lateinit var customGroupingSeparator: VariableLabelRadioButton
-    private lateinit var decimalSeparatorGroup: ButtonGroup
-    private lateinit var customDecimalSeparator: VariableLabelRadioButton
+    private lateinit var groupingSeparatorComboBox: ComboBox<String>
+    private lateinit var decimalSeparatorComboBox: ComboBox<String>
     private lateinit var prefixInput: JTextField
     private lateinit var suffixInput: JTextField
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
@@ -92,47 +82,18 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                         .also { showTrailingZeroesCheckBox = it.component }
                 }.bottomGap(BottomGap.SMALL)
 
-                val groupingSeparatorLabel = Label(Bundle("decimal.ui.format.grouping_separator_option"))
-                row(groupingSeparatorLabel) {
-                    groupingSeparatorGroup = ButtonGroup()
-
-                    cell(JBRadioButton(Bundle("shared.option.none")))
-                        .also { it.component.actionCommand = "" }
-                        .also { it.component.name = "groupingSeparatorNone" }
-                        .also { groupingSeparatorGroup.add(it.component) }
-                    cell(JBRadioButton("."))
-                        .also { it.component.name = "groupingSeparatorPeriod" }
-                        .also { groupingSeparatorGroup.add(it.component) }
-                    cell(JBRadioButton(","))
-                        .also { it.component.name = "groupingSeparatorComma" }
-                        .also { groupingSeparatorGroup.add(it.component) }
-                    cell(JBRadioButton("_"))
-                        .also { it.component.name = "groupingSeparatorUnderscore" }
-                        .also { groupingSeparatorGroup.add(it.component) }
-                    cell(VariableLabelRadioButton(UIConstants.SIZE_TINY, MaxLengthDocumentFilter(1)))
-                        .also { it.component.name = "groupingSeparatorCustom" }
-                        .also { groupingSeparatorGroup.add(it.component) }
-                        .also { customGroupingSeparator = it.component }
-
-                    groupingSeparatorGroup.setLabel(groupingSeparatorLabel)
+                row(Bundle("decimal.ui.format.grouping_separator_option")) {
+                    cell(StringComboBox(listOf("", ".", ",", "_"), MaxLengthDocumentFilter(1)))
+                        .also { it.component.isEditable = true }
+                        .also { it.component.name = "groupingSeparator" }
+                        .also { groupingSeparatorComboBox = it.component }
                 }
 
-                val decimalSeparatorLabel = Label(Bundle("decimal.ui.format.decimal_separator_option"))
-                row(decimalSeparatorLabel) {
-                    decimalSeparatorGroup = ButtonGroup()
-
-                    cell(JBRadioButton(","))
-                        .also { it.component.name = "decimalSeparatorComma" }
-                        .also { decimalSeparatorGroup.add(it.component) }
-                    cell(JBRadioButton("."))
-                        .also { it.component.name = "decimalSeparatorPeriod" }
-                        .also { decimalSeparatorGroup.add(it.component) }
-                    cell(VariableLabelRadioButton(UIConstants.SIZE_TINY, MinMaxLengthDocumentFilter(1, 1)))
-                        .also { it.component.name = "decimalSeparatorCustom" }
-                        .also { decimalSeparatorGroup.add(it.component) }
-                        .also { customDecimalSeparator = it.component }
-
-                    decimalSeparatorGroup.setLabel(decimalSeparatorLabel)
+                row(Bundle("decimal.ui.format.decimal_separator_option")) {
+                    cell(StringComboBox(listOf(",", "."), MinMaxLengthDocumentFilter(1, 1)))
+                        .also { it.component.isEditable = true }
+                        .also { it.component.name = "decimalSeparator" }
+                        .also { decimalSeparatorComboBox = it.component }
                 }
             }
 
@@ -169,10 +130,8 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
         maxValue.value = state.maxValue
         decimalCount.value = state.decimalCount
         showTrailingZeroesCheckBox.isSelected = state.showTrailingZeroes
-        customGroupingSeparator.label = state.customGroupingSeparator
-        groupingSeparatorGroup.setValue(state.groupingSeparator)
-        customDecimalSeparator.label = state.customDecimalSeparator
-        decimalSeparatorGroup.setValue(state.decimalSeparator)
+        groupingSeparatorComboBox.item = state.groupingSeparator
+        decimalSeparatorComboBox.item = state.decimalSeparator
         prefixInput.text = state.prefix
         suffixInput.text = state.suffix
         arrayDecoratorEditor.loadState(state.arrayDecorator)
@@ -184,10 +143,8 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
             maxValue = maxValue.value,
             decimalCount = decimalCount.value,
             showTrailingZeroes = showTrailingZeroesCheckBox.isSelected,
-            groupingSeparator = groupingSeparatorGroup.getValue() ?: DEFAULT_GROUPING_SEPARATOR,
-            customGroupingSeparator = customGroupingSeparator.label,
-            decimalSeparator = decimalSeparatorGroup.getValue() ?: DEFAULT_DECIMAL_SEPARATOR,
-            customDecimalSeparator = customDecimalSeparator.label,
+            groupingSeparator = groupingSeparatorComboBox.item,
+            decimalSeparator = decimalSeparatorComboBox.item,
             prefix = prefixInput.text,
             suffix = suffixInput.text,
             arrayDecorator = arrayDecoratorEditor.readState()
@@ -196,9 +153,8 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
 
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
-            minValue, maxValue, decimalCount, showTrailingZeroesCheckBox, groupingSeparatorGroup,
-            customGroupingSeparator, decimalSeparatorGroup, customDecimalSeparator, prefixInput, suffixInput,
-            arrayDecoratorEditor,
+            minValue, maxValue, decimalCount, showTrailingZeroesCheckBox, groupingSeparatorComboBox,
+            decimalSeparatorComboBox, prefixInput, suffixInput, arrayDecoratorEditor,
             listener = listener
         )
 }

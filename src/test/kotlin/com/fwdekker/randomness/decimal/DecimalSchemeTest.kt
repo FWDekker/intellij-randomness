@@ -221,9 +221,7 @@ object DecimalSchemeTest : DescribeSpec({
             decimalScheme.decimalCount = 205
             decimalScheme.showTrailingZeroes = false
             decimalScheme.groupingSeparator = "a"
-            decimalScheme.customGroupingSeparator = "2"
             decimalScheme.decimalSeparator = "D"
-            decimalScheme.customDecimalSeparator = "P"
             decimalScheme.prefix = "baby"
             decimalScheme.suffix = "many"
             decimalScheme.arrayDecorator.minCount = 19

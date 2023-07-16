@@ -83,8 +83,8 @@ object WordSchemeTest : DescribeSpec({
             assertThat(wordScheme.doValidate()).isNotNull()
         }
 
-        it("fails if the custom quotation has more than two characters") {
-            wordScheme.customQuotation = "3D7F"
+        it("fails if the quotation has more than two characters") {
+            wordScheme.quotation = "3D7F"
 
             assertThat(wordScheme.doValidate()).isEqualTo(Bundle("word.error.quotation_length"))
         }
@@ -128,7 +128,6 @@ object WordSchemeTest : DescribeSpec({
         it("copies state from another instance") {
             wordScheme.words = listOf("strap", "tip", "tray")
             wordScheme.quotation = "'"
-            wordScheme.customQuotation = "Ae"
             wordScheme.capitalization = CapitalizationMode.LOWER
             wordScheme.arrayDecorator.minCount = 513
 

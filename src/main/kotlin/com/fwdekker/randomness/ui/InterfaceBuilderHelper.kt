@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.columns
@@ -20,6 +21,7 @@ import javax.swing.JTextField
 fun Panel.indentedIf(indented: Boolean, spec: Panel.() -> Unit) =
     if (indented) indent(spec)
     else rowsRange(spec)
+
 
 /**
  * Enforces a fixed width for this [JComponent].
@@ -74,6 +76,7 @@ fun <T : JComponent> Cell<T>.withFixedHeight(height: Int): Cell<T> {
     return this
 }
 
+
 /**
  * Creates a [ComponentPredicate] that evaluates a [lambda] on the value of this [JIntSpinner].
  *
@@ -87,5 +90,22 @@ fun JIntSpinner.hasValue(lambda: (Int) -> Boolean) =
 
         override fun addListener(listener: (Boolean) -> Unit) {
             this@hasValue.addChangeListener { listener(invoke()) }
+        }
+    }
+
+/**
+ * Creates a [ComponentPredicate] that evaluates a [lambda] on the value of this [ComboBox].
+ *
+ * @param E the type of value contained in the [ComboBox]
+ * @receiver the combo box to check the value of
+ * @param lambda the function to evaluate on the value of this combo box
+ * @return the created predicate
+ */
+fun <E> ComboBox<E>.hasItem(lambda: (E) -> Boolean) =
+    object : ComponentPredicate() {
+        override fun invoke() = lambda(this@hasItem.item)
+
+        override fun addListener(listener: (Boolean) -> Unit) {
+            addChangeListenerTo(this@hasItem) { listener(invoke()) }
         }
     }

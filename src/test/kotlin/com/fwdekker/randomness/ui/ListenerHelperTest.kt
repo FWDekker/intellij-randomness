@@ -150,19 +150,6 @@ object ListenerHelperTest : DescribeSpec({
             assertThat(listenerInvoked).isTrue()
         }
 
-        it("invokes the listener when a VariableLabelRadioButton is changed") {
-            GuiActionRunner.execute {
-                val button = VariableLabelRadioButton()
-
-                addChangeListenerTo(button, listener = listener)
-                listenerInvoked = false
-
-                button.label = "supply"
-            }
-
-            assertThat(listenerInvoked).isTrue()
-        }
-
         it("fails if the given component is not recognized") {
             assertThatThrownBy { addChangeListenerTo("rock") {} }
                 .isInstanceOf(IllegalArgumentException::class.java)
