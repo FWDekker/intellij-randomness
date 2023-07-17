@@ -2,6 +2,7 @@ package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecorator.Companion.MIN_MIN_COUNT
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.StringComboBox
@@ -41,7 +42,7 @@ class ArrayDecoratorEditor(
     private lateinit var enabledCheckBox: JCheckBox
     private lateinit var minCountSpinner: JIntSpinner
     private lateinit var maxCountSpinner: JIntSpinner
-    private lateinit var bracketsComboBox: ComboBox<String>
+    private lateinit var affixDecoratorEditor: AffixDecoratorEditor
     private lateinit var separatorComboBox: ComboBox<String>
     private lateinit var spaceAfterSeparatorCheckBox: JCheckBox
 
@@ -77,12 +78,14 @@ class ArrayDecoratorEditor(
 
                     bindSpinners(minCountSpinner, maxCountSpinner)
 
-                    row(Bundle("array.ui.brackets.option")) {
-                        cell(StringComboBox(listOf("", "[@]", "{@}", "(@)")))
-                            .also { it.component.isEditable = true }
-                            .also { it.component.name = "arrayBrackets" }
-                            .also { bracketsComboBox = it.component }
-                        contextHelp(Bundle("array.ui.brackets.comment"))
+                    row {
+                        affixDecoratorEditor =
+                            AffixDecoratorEditor(
+                                originalState.affixDecorator,
+                                enabledIf = enabledCheckBox.selected,
+                                namePrefix = "array"
+                            )
+                        cell(affixDecoratorEditor.rootComponent)
                     }
 
                     row(Bundle("array.ui.separator.option")) {
@@ -112,7 +115,7 @@ class ArrayDecoratorEditor(
         enabledCheckBox.isSelected = embedded || state.enabled
         minCountSpinner.value = state.minCount
         maxCountSpinner.value = state.maxCount
-        bracketsComboBox.item = state.brackets
+        affixDecoratorEditor.loadState(state.affixDecorator)
         separatorComboBox.item = state.separator
         spaceAfterSeparatorCheckBox.isSelected = state.isSpaceAfterSeparator
     }
@@ -122,15 +125,16 @@ class ArrayDecoratorEditor(
             enabled = !embedded && enabledCheckBox.isSelected,
             minCount = minCountSpinner.value,
             maxCount = maxCountSpinner.value,
-            brackets = bracketsComboBox.item,
+            affixDecorator = affixDecoratorEditor.readState(),
             separator = separatorComboBox.item,
             isSpaceAfterSeparator = spaceAfterSeparatorCheckBox.isSelected
         ).also { it.uuid = originalState.uuid }
 
 
     override fun addChangeListener(listener: () -> Unit) =
+        // TODO: Use `DialogPanel.components` (*IF* this is sufficient, *AND ALSO* adds custom components)
         addChangeListenerTo(
-            enabledCheckBox, minCountSpinner, maxCountSpinner, bracketsComboBox, separatorComboBox,
+            enabledCheckBox, minCountSpinner, maxCountSpinner, affixDecoratorEditor, separatorComboBox,
             spaceAfterSeparatorCheckBox,
             listener = listener
         )

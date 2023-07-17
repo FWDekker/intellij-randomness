@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.BracketsDescriptor
+import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.DataGenerationException
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
@@ -8,8 +8,9 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 
 
 /**
- * Unit tests for [BracketsDescriptor].
+ * Unit tests for [AffixDecorator].
  */
+// TODO: Rename to `AffixDecoratorTest`, and move to a different package
 object BracketsDescriptorTest : DescribeSpec({
     data class Param(
         val description: String,
@@ -43,9 +44,9 @@ object BracketsDescriptorTest : DescribeSpec({
         tests.forEach { (description, descriptor, isValid, _) ->
             it("returns ${if (isValid) "null" else "non-null"} for $description") {
                 if (isValid)
-                    assertThat(BracketsDescriptor(descriptor).doValidate()).isNull()
+                    assertThat(AffixDecorator(descriptor).doValidate()).isNull()
                 else
-                    assertThat(BracketsDescriptor(descriptor).doValidate()).isNotNull
+                    assertThat(AffixDecorator(descriptor).doValidate()).isNotNull
             }
         }
     }
@@ -54,11 +55,11 @@ object BracketsDescriptorTest : DescribeSpec({
         tests.forEach { (description, descriptor, isValid, output) ->
             if (isValid)
                 it("generates the given string for $description") {
-                    assertThat(BracketsDescriptor(descriptor).interpolate(data)).isEqualTo(output)
+                    assertThat(AffixDecorator(descriptor).applyTo(data)).isEqualTo(output)
                 }
             else
                 it("throws an exception for $description") {
-                    assertThatThrownBy { BracketsDescriptor(descriptor).interpolate(data) }
+                    assertThatThrownBy { AffixDecorator(descriptor).applyTo(data) }
                         .isInstanceOf(DataGenerationException::class.java)
                 }
         }

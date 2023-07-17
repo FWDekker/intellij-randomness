@@ -7,7 +7,7 @@ import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.layout.ComponentPredicate
 import com.intellij.util.ui.DialogUtil
 import java.awt.Dimension
-import javax.swing.JCheckBox
+import javax.swing.AbstractButton
 import javax.swing.JComponent
 import javax.swing.JTextField
 
@@ -79,12 +79,26 @@ fun <T : JComponent> Cell<T>.withFixedHeight(height: Int): Cell<T> {
 }
 
 /**
- * Loads the mnemonic for the [JCheckBox] in this cell based on its text.
+ * Loads the mnemonic for the [AbstractButton] in this cell based on its text.
  *
- * @receiver the cell with the [JCheckBox] to load the mnemonic for
- * @return [this]]
+ * @receiver the cell with the [AbstractButton] to load the mnemonic of
+ * @return [this]
  */
-fun Cell<JCheckBox>.loadMnemonic(): Cell<JCheckBox> = this.also { DialogUtil.registerMnemonic(it.component, '&') }
+fun <B : AbstractButton> Cell<B>.loadMnemonic(): Cell<B> {
+    DialogUtil.registerMnemonic(component, '&')
+    return this
+}
+
+/**
+ * Removes the mnemonic from the label of this [AbstractButton].
+ *
+ * @receiver the cell with the [AbstractButton] to disable the mnemonic of
+ * @return [this]
+ */
+fun <B : AbstractButton> Cell<B>.disableMnemonic(): Cell<B> {
+    component.text = component.text.filterNot { it == '&' }
+    return this
+}
 
 
 /**
@@ -106,7 +120,7 @@ fun JIntSpinner.hasValue(lambda: (Int) -> Boolean) =
 /**
  * Creates a [ComponentPredicate] that evaluates a [lambda] on the value of this [ComboBox].
  *
- * @param E the type of value contained in the [ComboBox]
+ * @param E the type of item contained in the [ComboBox]
  * @receiver the combo box to check the value of
  * @param lambda the function to evaluate on the value of this combo box
  * @return the created predicate

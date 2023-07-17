@@ -5,6 +5,7 @@ import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
@@ -145,14 +146,14 @@ data class TemplateList(
                                 enabled = true,
                                 minCount = 3,
                                 maxCount = 7,
-                                brackets = "",
+                                affixDecorator = AffixDecorator(enabled = false, descriptor = ""),
                                 separator = "",
                                 isSpaceAfterSeparator = true
                             )
                         ),
                         StringScheme(pattern = ".", isRegex = false)
                     ),
-                    ArrayDecorator(brackets = "", separator = "")
+                    ArrayDecorator(affixDecorator = AffixDecorator(enabled = false, descriptor = ""), separator = "")
                 ),
                 Template(
                     "IP address",

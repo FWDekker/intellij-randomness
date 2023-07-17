@@ -2,6 +2,10 @@
 
 Entry point of the plugin. Contains main classes, shared classes, and helper classes.
 
+# Package com.fwdekker.randomness.affix
+
+Decorator for surrounding a value with constant strings such as quotation marks and braces.
+
 # Package com.fwdekker.randomness.array
 
 Decorator for generating multiple values each time.

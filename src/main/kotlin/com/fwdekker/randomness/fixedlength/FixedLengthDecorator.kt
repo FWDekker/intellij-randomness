@@ -20,9 +20,12 @@ data class FixedLengthDecorator(
     override val name = Bundle("fixed_length.title")
 
 
-    override fun generateUndecoratedStrings(count: Int): List<String> =
-        if (enabled) generator(count).map { it.take(length).padStart(length, filler[0]) }
+    override fun generateStrings(count: Int) =
+        if (enabled) super.generateStrings(count)
         else generator(count)
+
+    override fun generateUndecoratedStrings(count: Int): List<String> =
+        generator(count).map { it.take(length).padStart(length, filler[0]) }
 
 
     override fun doValidate() =

@@ -4,12 +4,15 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.SimpleListCellRenderer
+import java.util.Locale
 import javax.swing.DefaultComboBoxModel
 import javax.swing.JList
 import javax.swing.text.AbstractDocument
 import javax.swing.text.DocumentFilter
 import javax.swing.text.JTextComponent
 
+
+// TODO: Clean up these classes
 
 /**
  * A [ComboBox] to choose a string.
@@ -50,7 +53,8 @@ class CapitalizationComboBox(modes: List<CapitalizationMode>) : ComboBox<Capital
                 selected: Boolean,
                 hasFocus: Boolean,
             ) {
-                text = Bundle("shared.capitalization.${value.toString().replace(' ', '_').lowercase()}")
+                text =
+                    Bundle("shared.capitalization.${value.toString().replace(' ', '_').lowercase(Locale.getDefault())}")
             }
         }
     }

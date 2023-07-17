@@ -2,6 +2,7 @@ package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.fixedlength.FixedLengthDecoratorEditor
 import com.fwdekker.randomness.ui.JIntSpinner
@@ -21,7 +22,6 @@ import com.intellij.ui.layout.and
 import com.intellij.ui.layout.selected
 import javax.swing.JCheckBox
 import javax.swing.JPanel
-import javax.swing.JTextField
 
 
 /**
@@ -40,8 +40,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
     private lateinit var groupingSeparatorEnabledCheckBox: JCheckBox
     private lateinit var groupingSeparatorComboBox: ComboBox<String>
     private lateinit var isUppercaseCheckBox: JCheckBox
-    private lateinit var prefixInput: JTextField
-    private lateinit var suffixInput: JTextField
+    private lateinit var affixDecoratorEditor: AffixDecoratorEditor
     private lateinit var fixedLengthDecoratorEditor: FixedLengthDecoratorEditor
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
@@ -96,21 +95,11 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
                         .also { it.component.name = "isUppercase" }
                         .also { isUppercaseCheckBox = it.component }
                 }
-            }
 
-            group(Bundle("integer.ui.affixes.header")) {
-                row(Bundle("integer.ui.affixes.prefix_option")) {
-                    textField()
-                        .withFixedWidth(UIConstants.SIZE_SMALL)
-                        .also { it.component.name = "prefix" }
-                        .also { prefixInput = it.component }
-                }
-
-                row(Bundle("integer.ui.affixes.suffix_option")) {
-                    textField()
-                        .withFixedWidth(UIConstants.SIZE_SMALL)
-                        .also { it.component.name = "suffix" }
-                        .also { suffixInput = it.component }
+                row {
+                    // TODO: Check how alignment works
+                    affixDecoratorEditor = AffixDecoratorEditor(originalState.affixDecorator, enableMnemonic = true)
+                    cell(affixDecoratorEditor.rootComponent)
                 }
             }
 
@@ -138,8 +127,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
         groupingSeparatorEnabledCheckBox.isSelected = state.groupingSeparatorEnabled
         groupingSeparatorComboBox.item = state.groupingSeparator
         isUppercaseCheckBox.isSelected = state.isUppercase
-        prefixInput.text = state.prefix
-        suffixInput.text = state.suffix
+        affixDecoratorEditor.loadState(state.affixDecorator)
         fixedLengthDecoratorEditor.loadState(state.fixedLengthDecorator)
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
@@ -152,8 +140,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
             groupingSeparatorEnabled = groupingSeparatorEnabledCheckBox.isSelected,
             groupingSeparator = groupingSeparatorComboBox.item,
             isUppercase = isUppercaseCheckBox.isSelected,
-            prefix = prefixInput.text,
-            suffix = suffixInput.text,
+            affixDecorator = affixDecoratorEditor.readState(),
             fixedLengthDecorator = fixedLengthDecoratorEditor.readState(),
             arrayDecorator = arrayDecoratorEditor.readState()
         ).also { it.uuid = originalState.uuid }
@@ -161,7 +148,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
     override fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(
             minValue, maxValue, base, groupingSeparatorEnabledCheckBox, groupingSeparatorComboBox, isUppercaseCheckBox,
-            prefixInput, suffixInput, fixedLengthDecoratorEditor, arrayDecoratorEditor,
+            affixDecoratorEditor, fixedLengthDecoratorEditor, arrayDecoratorEditor,
             listener = listener
         )
 }

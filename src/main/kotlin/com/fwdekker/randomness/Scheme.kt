@@ -54,23 +54,26 @@ abstract class Scheme : State() {
 
 
     /**
-     * Generates random data according to the settings in this scheme, including settings from decorators.
+     * Generates random decorated data according to the settings in this scheme and its decorators.
+     *
+     * By default, this method applies the decorators on the output of [generateUndecoratedStrings]. Override this
+     * method if the scheme should interact with its decorators in a different way.
      *
      * @param count the number of data to generate
      * @return random data
      * @throws DataGenerationException if data could not be generated
      */
     @Throws(DataGenerationException::class)
-    fun generateStrings(count: Int = 1): List<String> {
+    open fun generateStrings(count: Int = 1): List<String> {
         doValidate()?.also { throw DataGenerationException(it) }
 
-        val generators = listOf(this) + decorators
-        decorators.forEachIndexed { i, decorator ->
-            decorator.random = random
-            decorator.generator = generators[i]::generateUndecoratedStrings
-        }
-
-        return generators.last().generateUndecoratedStrings(count)
+        return decorators
+            .fold(this::generateUndecoratedStrings) { previousGenerator, currentScheme ->
+                currentScheme.random = random
+                currentScheme.generator = previousGenerator
+                currentScheme::generateStrings
+            }
+            .invoke(count)
     }
 
     /**
@@ -100,9 +103,12 @@ abstract class Scheme : State() {
 /**
  * Transparently extends or alters the functionality of a [Scheme] with a decorating function.
  */
+// TODO: Do not inherit from `Scheme` but from `State`, because essentially a decorator is not a scheme because it
+// TODO: cannot function without a generator. Therefore, allowing invocation of `generateStrings` without setting a
+// TODO: `generator` causes an error, which is in fact a violation of the contract of the superclass!
 abstract class SchemeDecorator : Scheme() {
     /**
-     * The generating function that should be decorated.
+     * The generating function whose output should be decorated.
      */
     @get:Transient
     var generator: (Int) -> List<String> = { emptyList() }

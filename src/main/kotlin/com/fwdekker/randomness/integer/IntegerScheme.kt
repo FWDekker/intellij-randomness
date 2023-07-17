@@ -6,6 +6,7 @@ import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.TypeIcon
+import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
 import com.intellij.ui.JBColor
@@ -20,11 +21,10 @@ import java.text.DecimalFormat
  * @property minValue The minimum value to be generated, inclusive.
  * @property maxValue The maximum value to be generated, inclusive.
  * @property base The base the generated value should be displayed in.
- * @property groupingSeparatorEnabled `true` if and only if the [groupingSeparator] should be used to separate groups.
+ * @property groupingSeparatorEnabled `true` if and only if the [groupingSeparator] should be applied.
  * @property groupingSeparator The character that should separate groups if [groupingSeparatorEnabled] is `true`.
  * @property isUppercase `true` if and only if all letters are uppercase, applicable for bases higher than 10.
- * @property prefix The string to prepend to the generated value.
- * @property suffix The string to append to the generated value.
+ * @property affixDecorator The affixation to apply to the generated values.
  * @property fixedLengthDecorator Settings that determine whether the output should be fixed to a specific length.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
@@ -35,8 +35,7 @@ data class IntegerScheme(
     var groupingSeparatorEnabled: Boolean = DEFAULT_GROUPING_SEPARATOR_ENABLED,
     var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
     var isUppercase: Boolean = DEFAULT_IS_UPPERCASE,
-    var prefix: String = DEFAULT_PREFIX,
-    var suffix: String = DEFAULT_SUFFIX,
+    var affixDecorator: AffixDecorator = AffixDecorator(enabled = false, descriptor = "0x@"),
     var fixedLengthDecorator: FixedLengthDecorator = FixedLengthDecorator(),
     var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
@@ -45,7 +44,7 @@ data class IntegerScheme(
     override val typeIcon = BASE_ICON
 
     override val decorators: List<SchemeDecorator>
-        get() = listOf(fixedLengthDecorator, arrayDecorator)
+        get() = listOf(fixedLengthDecorator, affixDecorator, arrayDecorator)
 
 
     /**
@@ -55,7 +54,7 @@ data class IntegerScheme(
      * @return random formatted integers from [minValue] until [maxValue], inclusive
      */
     override fun generateUndecoratedStrings(count: Int) =
-        List(count) { prefix + longToString(randomLong(minValue, maxValue)) + suffix }
+        List(count) { longToString(randomLong(minValue, maxValue)) }
 
     /**
      * Returns a random long in the range from [from] until [until], inclusive, without causing overflow.
@@ -99,7 +98,7 @@ data class IntegerScheme(
             minValue > maxValue -> Bundle("integer.error.min_value_above_max")
             base !in MIN_BASE..MAX_BASE -> Bundle("integer.error.base_range", "$MIN_BASE..$MAX_BASE")
             groupingSeparator.length != 1 -> Bundle("integer.error.grouping_separator_length")
-            else -> fixedLengthDecorator.doValidate() ?: arrayDecorator.doValidate()
+            else -> affixDecorator.doValidate() ?: fixedLengthDecorator.doValidate() ?: arrayDecorator.doValidate()
         }
 
     override fun deepCopy(retainUuid: Boolean) =
@@ -166,15 +165,5 @@ data class IntegerScheme(
          * The default value of the [isUppercase] field.
          */
         const val DEFAULT_IS_UPPERCASE = false
-
-        /**
-         * The default value of the [prefix] field.
-         */
-        const val DEFAULT_PREFIX = ""
-
-        /**
-         * The default value of the [suffix] field.
-         */
-        const val DEFAULT_SUFFIX = ""
     }
 }
