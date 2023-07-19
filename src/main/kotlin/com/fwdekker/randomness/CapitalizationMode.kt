@@ -44,6 +44,16 @@ enum class CapitalizationMode(val transform: (String, Random) -> String) {
      * Unused in production code.
      */
     DUMMY({ string, _ -> string }),
+    ;
+
+
+    /**
+     * Returns the localized string name of this mode.
+     *
+     * @return the localized string name of this mode
+     */
+    fun toLocalizedString() =
+        Bundle("shared.capitalization.${toString().replace(' ', '_').lowercase(Locale.getDefault())}")
 }
 
 

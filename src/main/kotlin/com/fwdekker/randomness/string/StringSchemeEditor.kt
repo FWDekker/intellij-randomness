@@ -4,10 +4,9 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.ui.CapitalizationComboBox
 import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.loadMnemonic
+import com.fwdekker.randomness.ui.setSimpleRenderer
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.BottomGap
@@ -26,6 +25,8 @@ import javax.swing.JTextField
  */
 class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<StringScheme>(scheme) {
     override val rootComponent: JPanel
+    override val stateComponents
+        get() = super.stateComponents + arrayDecoratorEditor
     override val preferredFocusedComponent
         get() = patternField
 
@@ -66,17 +67,19 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
 
                 row(Bundle("string.ui.value.capitalization_option")) {
                     cell(
-                        CapitalizationComboBox(
-                            listOf(
+                        ComboBox(
+                            arrayOf(
                                 CapitalizationMode.RETAIN,
                                 CapitalizationMode.LOWER,
                                 CapitalizationMode.UPPER,
-                                CapitalizationMode.RANDOM,
+                                CapitalizationMode.RANDOM
                             )
                         )
-                    )
-                        .also { it.component.name = "capitalization" }
-                        .also { capitalizationComboBox = it.component }
+                    ).also {
+                        it.component.setSimpleRenderer(CapitalizationMode::toLocalizedString)
+                        it.component.name = "capitalization"
+                        capitalizationComboBox = it.component
+                    }
                 }
             }
 
@@ -109,11 +112,4 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             capitalization = capitalizationComboBox.item,
             arrayDecorator = arrayDecoratorEditor.readState()
         ).also { it.uuid = originalState.uuid }
-
-
-    override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(
-            patternField, isRegexCheckBox, removeLookAlikeSymbolsCheckBox, capitalizationComboBox, arrayDecoratorEditor,
-            listener = listener
-        )
 }

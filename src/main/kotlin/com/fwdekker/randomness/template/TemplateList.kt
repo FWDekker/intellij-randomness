@@ -127,9 +127,11 @@ data class TemplateList(
                 Template(
                     "Name",
                     listOf(
-                        WordScheme(words = DefaultWordList.WORD_LIST_MAP["Forenames"]!!.words),
-                        StringScheme(pattern = " ", isRegex = false),
-                        WordScheme(words = DefaultWordList.WORD_LIST_MAP["Surnames"]!!.words)
+                        WordScheme(
+                            words = DefaultWordList.WORD_LIST_MAP["Forenames"]!!.words,
+                            affixDecorator = AffixDecorator(enabled = true, descriptor = "@ "),
+                        ),
+                        WordScheme(words = DefaultWordList.WORD_LIST_MAP["Surnames"]!!.words),
                     )
                 ),
                 Template(
@@ -137,23 +139,21 @@ data class TemplateList(
                     listOf(
                         WordScheme(
                             words = DefaultWordList.WORD_LIST_MAP["Lorem"]!!.words,
-                            capitalization = CapitalizationMode.FIRST_LETTER
+                            capitalization = CapitalizationMode.FIRST_LETTER,
+                            affixDecorator = AffixDecorator(enabled = true, descriptor = "@ "),
                         ),
-                        StringScheme(pattern = " ", isRegex = false),
                         WordScheme(
                             words = DefaultWordList.WORD_LIST_MAP["Lorem"]!!.words,
+                            capitalization = CapitalizationMode.LOWER,
                             arrayDecorator = ArrayDecorator(
                                 enabled = true,
                                 minCount = 3,
                                 maxCount = 7,
-                                affixDecorator = AffixDecorator(enabled = false, descriptor = ""),
-                                separator = "",
-                                isSpaceAfterSeparator = true
+                                separator = " ",
+                                affixDecorator = AffixDecorator(enabled = true, descriptor = "@."),
                             )
                         ),
-                        StringScheme(pattern = ".", isRegex = false)
-                    ),
-                    ArrayDecorator(affixDecorator = AffixDecorator(enabled = false, descriptor = ""), separator = "")
+                    )
                 ),
                 Template(
                     "IP address",
@@ -165,10 +165,9 @@ data class TemplateList(
                                 enabled = true,
                                 minCount = 4,
                                 maxCount = 4,
-                                separator = ".",
-                                isSpaceAfterSeparator = false
-                            )
-                        )
+                                separator = "."
+                            ),
+                        ),
                     )
                 )
             )

@@ -2,19 +2,17 @@ package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
-import com.fwdekker.randomness.ui.StringComboBox
-import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.buttons
 import com.fwdekker.randomness.ui.getValue
 import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.setLabel
 import com.fwdekker.randomness.ui.setValue
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_TYPE
-import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.Label
+import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import javax.swing.ButtonGroup
@@ -29,13 +27,15 @@ import javax.swing.JPanel
  */
 class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidScheme>(scheme) {
     override val rootComponent: JPanel
+    override val stateComponents
+        get() = super.stateComponents + affixDecoratorEditor + arrayDecoratorEditor
     override val preferredFocusedComponent
         get() = typeGroup.buttons().firstOrNull { it.isSelected }
 
     private lateinit var typeGroup: ButtonGroup
-    private lateinit var quotationComboBox: ComboBox<String>
     private lateinit var isUppercaseCheckBox: JCheckBox
     private lateinit var addDashesCheckBox: JCheckBox
+    private lateinit var affixDecoratorEditor: AffixDecoratorEditor
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
 
@@ -57,14 +57,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
                             .also { typeGroup.add(it.component) }
 
                         typeGroup.setLabel(typeLabel)
-                    }
-
-                    row(Bundle("uuid.ui.value.quotation_marks.option")) {
-                        cell(StringComboBox(listOf("", "'", "\"", "`"), MaxLengthDocumentFilter(2)))
-                            .also { it.component.isEditable = true }
-                            .also { it.component.name = "quotation" }
-                            .also { quotationComboBox = it.component }
-                    }
+                    }.bottomGap(BottomGap.SMALL)
 
                     row {
                         checkBox(Bundle("uuid.ui.value.capitalization_option"))
@@ -78,6 +71,15 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
                             .loadMnemonic()
                             .also { it.component.name = "addDashesCheckBox" }
                             .also { addDashesCheckBox = it.component }
+                    }
+
+                    row {
+                        affixDecoratorEditor = AffixDecoratorEditor(
+                            originalState.affixDecorator,
+                            listOf("'", "\"", "`"),
+                            enableMnemonic = true
+                        )
+                        cell(affixDecoratorEditor.rootComponent)
                     }
                 }
             }
@@ -96,25 +98,18 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
         super.loadState(state)
 
         typeGroup.setValue(state.type.toString())
-        quotationComboBox.item = state.quotation
         isUppercaseCheckBox.isSelected = state.isUppercase
         addDashesCheckBox.isSelected = state.addDashes
+        affixDecoratorEditor.loadState(state.affixDecorator)
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState(): UuidScheme =
         UuidScheme(
             type = typeGroup.getValue()?.toInt() ?: DEFAULT_TYPE,
-            quotation = quotationComboBox.item,
             isUppercase = isUppercaseCheckBox.isSelected,
             addDashes = addDashesCheckBox.isSelected,
+            affixDecorator = affixDecoratorEditor.readState(),
             arrayDecorator = arrayDecoratorEditor.readState()
         ).also { it.uuid = originalState.uuid }
-
-
-    override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(
-            typeGroup, quotationComboBox, isUppercaseCheckBox, addDashesCheckBox, arrayDecoratorEditor,
-            listener = listener
-        )
 }

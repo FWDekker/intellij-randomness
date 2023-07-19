@@ -3,13 +3,11 @@ package com.fwdekker.randomness.word
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.ui.CapitalizationComboBox
-import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
-import com.fwdekker.randomness.ui.SimpleJBDocumentListener
-import com.fwdekker.randomness.ui.StringComboBox
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.fwdekker.randomness.ui.setSimpleRenderer
 import com.fwdekker.randomness.ui.withFixedHeight
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.impl.UndoManagerImpl
@@ -20,7 +18,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBLabel
-import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import java.awt.event.ItemEvent
@@ -35,6 +32,8 @@ import javax.swing.JPanel
  */
 class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordScheme>(scheme) {
     override val rootComponent: JPanel
+    override val stateComponents
+        get() = super.stateComponents + wordListDocument + affixDecoratorEditor + arrayDecoratorEditor
     override val preferredFocusedComponent
         get() = capitalizationComboBox as JComponent
 
@@ -42,7 +41,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
     private lateinit var wordListDocument: Document
     private lateinit var wordListEditor: Editor
     private lateinit var capitalizationComboBox: ComboBox<CapitalizationMode>
-    private lateinit var quotationComboBox: ComboBox<String>
+    private lateinit var affixDecoratorEditor: AffixDecoratorEditor
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
     /**
@@ -74,34 +73,23 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
                 row {
                     val factory = EditorFactory.getInstance()
                     wordListDocument = factory.createDocument("")
-                        .also {
-                            it.addDocumentListener(
-                                SimpleJBDocumentListener {
-                                    if (presetComboBox.selectedIndex != 0 && wordList != presetComboBox.item.words)
-                                        presetComboBox.selectedIndex = 0
-                                }
-                            )
-                        }
+                    addChangeListenerTo(wordListDocument) {
+                        if (presetComboBox.selectedIndex != 0 && wordList != presetComboBox.item.words)
+                            presetComboBox.selectedIndex = 0
+                    }
                     wordListEditor = factory.createEditor(wordListDocument)
 
                     cell(wordListEditor.component)
                         .horizontalAlign(HorizontalAlign.FILL)
                         .withFixedHeight(UIConstants.SIZE_VERY_LARGE)
-                }.bottomGap(BottomGap.MEDIUM)
+                }
             }
 
             group(Bundle("word.ui.format.header")) {
-                row(Bundle("word.ui.format.quotation_marks_option")) {
-                    cell(StringComboBox(listOf("", "'", "\"", "`"), MaxLengthDocumentFilter(2)))
-                        .also { it.component.isEditable = true }
-                        .also { it.component.name = "quotation" }
-                        .also { quotationComboBox = it.component }
-                }
-
                 row(Bundle("word.ui.format.capitalization_option")) {
                     cell(
-                        CapitalizationComboBox(
-                            listOf(
+                        ComboBox(
+                            arrayOf(
                                 CapitalizationMode.RETAIN,
                                 CapitalizationMode.LOWER,
                                 CapitalizationMode.UPPER,
@@ -110,9 +98,20 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
                                 CapitalizationMode.FIRST_LETTER,
                             )
                         )
+                    ).also {
+                        it.component.setSimpleRenderer(CapitalizationMode::toLocalizedString)
+                        it.component.name = "capitalization"
+                        capitalizationComboBox = it.component
+                    }
+                }
+
+                row {
+                    affixDecoratorEditor = AffixDecoratorEditor(
+                        originalState.affixDecorator,
+                        listOf("'", "\"", "`"),
+                        enableMnemonic = true
                     )
-                        .also { it.component.name = "capitalization" }
-                        .also { capitalizationComboBox = it.component }
+                    cell(affixDecoratorEditor.rootComponent)
                 }
             }
 
@@ -129,38 +128,29 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
             .invalidateActionsFor(DocumentReferenceManager.getInstance().create(wordListDocument))
     }
 
-    /**
-     * Disposes of this panel's resources, to be used when this panel is no longer used.
-     */
-    override fun dispose() {
-        EditorFactory.getInstance().releaseEditor(wordListEditor)
-    }
-
 
     override fun loadState(state: WordScheme) {
         super.loadState(state)
 
         presetComboBox.selectedIndex = DefaultWordList.WORD_LISTS.map { it.words }.indexOf(state.words) + 1
         wordList = state.words
-        quotationComboBox.item = state.quotation
         capitalizationComboBox.item = state.capitalization
+        affixDecoratorEditor.loadState(state.affixDecorator)
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
         WordScheme(
             words = wordList,
-            quotation = quotationComboBox.item,
             capitalization = capitalizationComboBox.item,
+            affixDecorator = affixDecoratorEditor.readState(),
             arrayDecorator = arrayDecoratorEditor.readState(),
         ).also { it.uuid = originalState.uuid }
 
 
-    override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(
-            wordListDocument, capitalizationComboBox, quotationComboBox, arrayDecoratorEditor,
-            listener = listener
-        )
+    override fun dispose() {
+        EditorFactory.getInstance().releaseEditor(wordListEditor)
+    }
 
 
     /**

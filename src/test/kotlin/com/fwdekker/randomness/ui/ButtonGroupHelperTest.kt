@@ -11,7 +11,7 @@ import javax.swing.JRadioButton
 
 
 /**
- * Unit tests for the extension functions in `ButtonGroupKt`.
+ * Unit tests for the extension functions in `ButtonGroupHelper`.
  */
 object ButtonGroupHelperTest : DescribeSpec({
     lateinit var group: ButtonGroup
@@ -25,26 +25,6 @@ object ButtonGroupHelperTest : DescribeSpec({
         group = ButtonGroup()
     }
 
-
-    describe("forEach") {
-        it("iterates 0 times over an empty group") {
-            var sum = 0
-            group.forEach { sum++ }
-
-            assertThat(sum).isEqualTo(0)
-        }
-
-        it("iterates once for each button in a group") {
-            group.add(createJButton())
-            group.add(createJButton())
-            group.add(createJButton())
-
-            var sum = 0
-            group.forEach { sum++ }
-
-            assertThat(sum).isEqualTo(3)
-        }
-    }
 
     describe("getValue") {
         it("returns null if the group is empty") {

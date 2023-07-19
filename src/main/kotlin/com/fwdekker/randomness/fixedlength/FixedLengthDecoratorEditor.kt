@@ -5,7 +5,6 @@ import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.intellij.ui.dsl.builder.panel
@@ -84,8 +83,4 @@ class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<F
             length = lengthInput.value,
             filler = fillerInput.text,
         ).also { it.uuid = originalState.uuid }
-
-
-    override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(enabledCheckBox, lengthInput, fillerInput, listener = listener)
 }

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
 import javax.swing.JComponent
@@ -20,6 +21,12 @@ abstract class StateEditor<S : State>(val originalState: S) : Disposable {
      * The root component of the editor.
      */
     abstract val rootComponent: JPanel
+
+    /**
+     * The components contained within this editor that determine the editor's current state.
+     */
+    open val stateComponents: Collection<Any>
+        get() = rootComponent.components.filterNot { it.name == null }
 
     /**
      * The component that this editor prefers to be focused when the editor is focused.
@@ -79,7 +86,9 @@ abstract class StateEditor<S : State>(val originalState: S) : Disposable {
      *
      * @param listener the listener that is invoked
      */
-    abstract fun addChangeListener(listener: () -> Unit)
+    @Suppress("detekt:SpreadOperator") // Acceptable because this method is called rarely
+    open fun addChangeListener(listener: () -> Unit) =
+        addChangeListenerTo(*stateComponents.toTypedArray(), listener = listener)
 
     /**
      * Disposes of this editor's resources.

@@ -2,17 +2,18 @@ package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.decimal.DecimalScheme.Companion.MIN_DECIMAL_COUNT
 import com.fwdekker.randomness.ui.JDoubleSpinner
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.MinMaxLengthDocumentFilter
-import com.fwdekker.randomness.ui.StringComboBox
 import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindSpinners
+import com.fwdekker.randomness.ui.getCurrentText
 import com.fwdekker.randomness.ui.hasValue
 import com.fwdekker.randomness.ui.loadMnemonic
+import com.fwdekker.randomness.ui.setFilter
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.panel
@@ -20,7 +21,6 @@ import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.ui.layout.selected
 import javax.swing.JCheckBox
 import javax.swing.JPanel
-import javax.swing.JTextField
 
 
 /**
@@ -30,6 +30,8 @@ import javax.swing.JTextField
  */
 class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor<DecimalScheme>(scheme) {
     override val rootComponent: JPanel
+    override val stateComponents
+        get() = super.stateComponents + affixDecoratorEditor + arrayDecoratorEditor
     override val preferredFocusedComponent
         get() = minValue.editorComponent
 
@@ -37,11 +39,10 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
     private lateinit var maxValue: JDoubleSpinner
     private lateinit var decimalCount: JIntSpinner
     private lateinit var showTrailingZeroesCheckBox: JCheckBox
+    private lateinit var decimalSeparatorComboBox: ComboBox<String>
     private lateinit var groupingSeparatorEnabledCheckBox: JCheckBox
     private lateinit var groupingSeparatorComboBox: ComboBox<String>
-    private lateinit var decimalSeparatorComboBox: ComboBox<String>
-    private lateinit var prefixInput: JTextField
-    private lateinit var suffixInput: JTextField
+    private lateinit var affixDecoratorEditor: AffixDecoratorEditor
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
 
@@ -79,40 +80,35 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
                         .also { showTrailingZeroesCheckBox = it.component }
                 }
 
+                row(Bundle("decimal.ui.format.decimal_separator_option")) {
+                    cell(ComboBox(arrayOf(",", ".")))
+                        .also { it.component.setFilter(MinMaxLengthDocumentFilter(1, 1)) }
+                        .also { it.component.isEditable = true }
+                        .also { it.component.name = "decimalSeparator" }
+                        .also { decimalSeparatorComboBox = it.component }
+                }
+
                 row {
                     checkBox(Bundle("decimal.ui.format.grouping_separator_option"))
                         .loadMnemonic()
                         .also { it.component.name = "groupingSeparatorEnabled" }
                         .also { groupingSeparatorEnabledCheckBox = it.component }
 
-                    cell(StringComboBox(listOf(".", ",", "_"), MinMaxLengthDocumentFilter(1, 1)))
+                    cell(ComboBox(arrayOf(".", ",", "_")))
                         .enabledIf(groupingSeparatorEnabledCheckBox.selected)
+                        .also { it.component.setFilter(MinMaxLengthDocumentFilter(1, 1)) }
                         .also { it.component.isEditable = true }
                         .also { it.component.name = "groupingSeparator" }
                         .also { groupingSeparatorComboBox = it.component }
                 }
 
-                row(Bundle("decimal.ui.format.decimal_separator_option")) {
-                    cell(StringComboBox(listOf(",", "."), MinMaxLengthDocumentFilter(1, 1)))
-                        .also { it.component.isEditable = true }
-                        .also { it.component.name = "decimalSeparator" }
-                        .also { decimalSeparatorComboBox = it.component }
-                }
-            }
-
-            group(Bundle("decimal.ui.affixes.header")) {
-                row(Bundle("decimal.ui.affixes.prefix_option")) {
-                    textField()
-                        .withFixedWidth(UIConstants.SIZE_SMALL)
-                        .also { it.component.name = "prefix" }
-                        .also { prefixInput = it.component }
-                }
-
-                row(Bundle("decimal.ui.affixes.suffix_option")) {
-                    textField()
-                        .withFixedWidth(UIConstants.SIZE_SMALL)
-                        .also { it.component.name = "suffix" }
-                        .also { suffixInput = it.component }
+                row {
+                    affixDecoratorEditor = AffixDecoratorEditor(
+                        originalState.affixDecorator,
+                        listOf("@f", "@d"),
+                        enableMnemonic = true,
+                    )
+                    cell(affixDecoratorEditor.rootComponent)
                 }
             }
 
@@ -127,17 +123,17 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
 
 
     override fun loadState(state: DecimalScheme) {
+        // TODO: Replace this function with bindings to `originalState`?
         super.loadState(state)
 
         minValue.value = state.minValue
         maxValue.value = state.maxValue
         decimalCount.value = state.decimalCount
         showTrailingZeroesCheckBox.isSelected = state.showTrailingZeroes
+        decimalSeparatorComboBox.item = state.decimalSeparator
         groupingSeparatorEnabledCheckBox.isSelected = state.groupingSeparatorEnabled
         groupingSeparatorComboBox.item = state.groupingSeparator
-        decimalSeparatorComboBox.item = state.decimalSeparator
-        prefixInput.text = state.prefix
-        suffixInput.text = state.suffix
+        affixDecoratorEditor.loadState(state.affixDecorator)
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
@@ -147,19 +143,10 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
             maxValue = maxValue.value,
             decimalCount = decimalCount.value,
             showTrailingZeroes = showTrailingZeroesCheckBox.isSelected,
+            decimalSeparator = decimalSeparatorComboBox.getCurrentText(),
             groupingSeparatorEnabled = groupingSeparatorEnabledCheckBox.isSelected,
-            groupingSeparator = groupingSeparatorComboBox.item,
-            decimalSeparator = decimalSeparatorComboBox.item,
-            prefix = prefixInput.text,
-            suffix = suffixInput.text,
-            arrayDecorator = arrayDecoratorEditor.readState()
+            groupingSeparator = groupingSeparatorComboBox.getCurrentText(),
+            affixDecorator = affixDecoratorEditor.readState(),
+            arrayDecorator = arrayDecoratorEditor.readState(),
         ).also { it.uuid = originalState.uuid }
-
-
-    override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(
-            minValue, maxValue, decimalCount, showTrailingZeroesCheckBox, groupingSeparatorEnabledCheckBox,
-            groupingSeparatorComboBox, decimalSeparatorComboBox, prefixInput, suffixInput, arrayDecoratorEditor,
-            listener = listener
-        )
 }

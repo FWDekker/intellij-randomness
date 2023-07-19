@@ -1,6 +1,5 @@
-package com.fwdekker.randomness.array
+package com.fwdekker.randomness.affix
 
-import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.DataGenerationException
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
@@ -10,8 +9,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 /**
  * Unit tests for [AffixDecorator].
  */
-// TODO: Rename to `AffixDecoratorTest`, and move to a different package
-object BracketsDescriptorTest : DescribeSpec({
+object AffixDecoratorTest : DescribeSpec({
     data class Param(
         val description: String,
         val descriptor: String,
@@ -46,7 +44,7 @@ object BracketsDescriptorTest : DescribeSpec({
                 if (isValid)
                     assertThat(AffixDecorator(descriptor).doValidate()).isNull()
                 else
-                    assertThat(AffixDecorator(descriptor).doValidate()).isNotNull
+                    assertThat(AffixDecorator(descriptor).doValidate()).isNotNull()
             }
         }
     }

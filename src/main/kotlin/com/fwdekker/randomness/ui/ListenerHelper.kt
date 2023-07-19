@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
@@ -8,6 +7,7 @@ import javax.swing.AbstractButton
 import javax.swing.ButtonGroup
 import javax.swing.JComboBox
 import javax.swing.JSpinner
+import javax.swing.JTree
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.event.TreeModelEvent
@@ -31,18 +31,20 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
         when (component) {
             is AbstractButton -> component.addItemListener { listener() }
             is ButtonGroup -> addChangeListenerTo(*component.buttons(), listener = listener)
+            is Document -> component.addDocumentListener(SimpleDocumentListener { listener() })
+            is JBDocument -> component.addDocumentListener(SimpleJBDocumentListener { listener() })
             is JComboBox<*> -> {
                 component.addActionListener { listener() }
                 addChangeListenerTo(component.editor.editorComponent, listener = listener)
             }
-            is Document -> component.addDocumentListener(SimpleDocumentListener { listener() })
-            is JBDocument -> component.addDocumentListener(SimpleJBDocumentListener { listener() })
             is JSpinner -> component.addChangeListener { listener() }
             is JTextComponent -> addChangeListenerTo(component.document, listener = listener)
+            is JTree -> {
+                component.model.addTreeModelListener(SimpleTreeModelListener { listener() })
+                component.addTreeSelectionListener { listener() }
+            }
             is StateEditor<*> -> component.addChangeListener { listener() }
-            else -> throw IllegalArgumentException(
-                Bundle("helpers.error.unknown_component_type", component.javaClass.canonicalName)
-            )
+            else -> Unit
         }
     }
 }

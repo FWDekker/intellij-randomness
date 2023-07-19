@@ -1,5 +1,6 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
 import com.intellij.util.xmlb.annotations.Transient
@@ -42,7 +43,7 @@ abstract class Scheme : State() {
      * on.
      */
     @get:Transient
-    @get:XCollection(elementTypes = [ArrayDecorator::class, FixedLengthDecorator::class])
+    @get:XCollection(elementTypes = [AffixDecorator::class, ArrayDecorator::class, FixedLengthDecorator::class])
     abstract val decorators: List<SchemeDecorator>
 
 

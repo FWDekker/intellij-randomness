@@ -17,33 +17,33 @@ data class AffixDecorator(
     var enabled: Boolean = DEFAULT_ENABLED,
     var descriptor: String = DEFAULT_DESCRIPTOR,
 ) : SchemeDecorator() {
-    override val decorators: List<SchemeDecorator> = emptyList()
     override val name = Bundle("affix.title")
+    override val decorators: List<SchemeDecorator> = emptyList()
 
 
     override fun generateStrings(count: Int) =
         if (enabled) super.generateStrings(count)
         else generator(count)
 
-    override fun generateUndecoratedStrings(count: Int) =
-        generator(count).map { undecorated ->
-            descriptor
-                .fold(Triple("", false, false)) { (output, isEscaped, hasInserted), char ->
-                    when (char) {
-                        '\\' -> Triple(output + if (isEscaped) '\\' else "", !isEscaped, hasInserted)
-                        '@' -> {
-                            if (isEscaped) Triple("$output@", false, hasInserted)
-                            else Triple("$output$undecorated", false, true)
-                        }
-                        else -> Triple("$output$char", false, hasInserted)
-                    }
+    override fun generateUndecoratedStrings(count: Int): List<String> {
+        val affixes = descriptor
+            .fold(Pair(listOf(""), false)) { (parts, isEscaped), char ->
+                when (char) {
+                    '\\' -> Pair(parts.dropLast(1) + listOf(parts.last() + if (isEscaped) '\\' else ""), !isEscaped)
+                    '@' ->
+                        if (isEscaped) Pair(parts.dropLast(1) + listOf("${parts.last()}@"), false)
+                        else Pair(parts + listOf(""), false)
+                    else -> Pair(parts.dropLast(1) + listOf("${parts.last()}$char"), false)
                 }
-                .let { (output, _, hasInserted) ->
-                    if (hasInserted) output
-                    else "$output$undecorated$output"
-                }
-        }
+            }
+            .first
+            .let {
+                if (it.size == 1) listOf(it.single(), it.single())
+                else it
+            }
 
+        return generator(count).map { affixes.joinToString(it) }
+    }
 
     override fun doValidate(): String? =
         if (!descriptor.fold(false) { escaped, char -> if (char == '\\') !escaped else false }) null

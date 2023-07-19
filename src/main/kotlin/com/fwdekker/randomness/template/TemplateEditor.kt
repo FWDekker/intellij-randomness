@@ -3,7 +3,6 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.intellij.ui.dsl.builder.panel
 import javax.swing.JPanel
@@ -47,7 +46,4 @@ class TemplateEditor(template: Template) : StateEditor<Template>(template) {
         originalState.deepCopy(retainUuid = true)
             .also { it.name = nameInput.text.trim() }
             .also { it.arrayDecorator.enabled = false }
-
-
-    override fun addChangeListener(listener: () -> Unit) = addChangeListenerTo(nameInput, listener = listener)
 }

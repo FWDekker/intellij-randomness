@@ -5,9 +5,9 @@ import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.TypeIcon
+import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.ui.JBColor
-import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.nextUp
@@ -20,11 +20,10 @@ import kotlin.math.nextUp
  * @property maxValue The maximum value to be generated, inclusive.
  * @property decimalCount The number of decimals to display.
  * @property showTrailingZeroes Whether to include trailing zeroes in the decimals.
+ * @property decimalSeparator The character that should separate decimals.
  * @property groupingSeparatorEnabled `true` if and only if the [groupingSeparator] should be used to separate groups.
  * @property groupingSeparator The character that should separate groups if [groupingSeparatorEnabled] is `true`.
- * @property decimalSeparator The character that should separate decimals.
- * @property prefix The string to prepend to the generated value.
- * @property suffix The string to append to the generated value.
+ * @property affixDecorator The affixation to apply to the generated values.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class DecimalScheme(
@@ -32,19 +31,16 @@ data class DecimalScheme(
     var maxValue: Double = DEFAULT_MAX_VALUE,
     var decimalCount: Int = DEFAULT_DECIMAL_COUNT,
     var showTrailingZeroes: Boolean = DEFAULT_SHOW_TRAILING_ZEROES,
+    var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR,
     var groupingSeparatorEnabled: Boolean = DEFAULT_GROUPING_SEPARATOR_ENABLED,
     var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
-    var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR,
-    var prefix: String = DEFAULT_PREFIX,
-    var suffix: String = DEFAULT_SUFFIX,
-    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
+    var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    var arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
-    @get:Transient
     override val name = Bundle("decimal.title")
     override val typeIcon = BASE_ICON
-
     override val decorators: List<SchemeDecorator>
-        get() = listOf(arrayDecorator)
+        get() = listOf(affixDecorator, arrayDecorator)
 
 
     /**
@@ -74,7 +70,7 @@ data class DecimalScheme(
                 it.decimalSeparator = decimalSeparator[0]
             }
 
-        return prefix + format.format(decimal) + suffix
+        return format.format(decimal)
     }
 
 
@@ -83,13 +79,13 @@ data class DecimalScheme(
             minValue > maxValue -> Bundle("decimal.error.min_value_above_max")
             maxValue - minValue > MAX_VALUE_DIFFERENCE -> Bundle("decimal.error.value_range", MAX_VALUE_DIFFERENCE)
             decimalCount < MIN_DECIMAL_COUNT -> Bundle("decimal.error.decimal_count_too_low", MIN_DECIMAL_COUNT)
-            groupingSeparator.length != 1 -> Bundle("decimal.error.grouping_separator_length")
             decimalSeparator.length != 1 -> Bundle("decimal.error.decimal_separator_length")
+            groupingSeparator.length != 1 -> Bundle("decimal.error.grouping_separator_length")
             else -> arrayDecorator.doValidate()
         }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid))
+        copy(affixDecorator = affixDecorator.deepCopy(retainUuid), arrayDecorator = arrayDecorator.deepCopy(retainUuid))
             .also { if (retainUuid) it.uuid = this.uuid }
 
 
@@ -137,6 +133,11 @@ data class DecimalScheme(
         const val DEFAULT_SHOW_TRAILING_ZEROES = true
 
         /**
+         * The default value of the [decimalSeparator] field.
+         */
+        const val DEFAULT_DECIMAL_SEPARATOR = "."
+
+        /**
          * The default value of the [groupingSeparatorEnabled] field.
          */
         const val DEFAULT_GROUPING_SEPARATOR_ENABLED = false
@@ -147,18 +148,13 @@ data class DecimalScheme(
         const val DEFAULT_GROUPING_SEPARATOR = ","
 
         /**
-         * The default value of the [decimalSeparator] field.
+         * The default value of the [affixDecorator] field.
          */
-        const val DEFAULT_DECIMAL_SEPARATOR = "."
+        val DEFAULT_AFFIX_DECORATOR = AffixDecorator(enabled = false, descriptor = "f@")
 
         /**
-         * The default value of the [prefix] field.
+         * The default value of the [arrayDecorator] field.
          */
-        const val DEFAULT_PREFIX = ""
-
-        /**
-         * The default value of the [suffix] field.
-         */
-        const val DEFAULT_SUFFIX = ""
+        val DEFAULT_ARRAY_DECORATOR = ArrayDecorator()
     }
 }

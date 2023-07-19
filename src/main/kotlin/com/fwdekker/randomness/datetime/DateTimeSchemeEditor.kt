@@ -21,6 +21,8 @@ import javax.swing.JTextField
  */
 class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEditor<DateTimeScheme>(scheme) {
     override val rootComponent: JPanel
+    override val stateComponents
+        get() = super.stateComponents + arrayDecoratorEditor
     override val preferredFocusedComponent
         get() = minDateTimeField
 
@@ -104,11 +106,4 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEdi
             pattern = patternField.text,
             arrayDecorator = arrayDecoratorEditor.readState()
         ).also { it.uuid = originalState.uuid }
-
-
-    override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(
-            minDateTimeField, maxDateTimeField, patternField, arrayDecoratorEditor,
-            listener = listener
-        )
 }

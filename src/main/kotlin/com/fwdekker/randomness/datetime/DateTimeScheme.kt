@@ -7,7 +7,6 @@ import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.ui.JBColor
-import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
 import java.time.Instant
 import java.time.LocalDateTime
@@ -29,10 +28,8 @@ data class DateTimeScheme(
     var pattern: String = DEFAULT_PATTERN,
     var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
-    @get:Transient
     override val name = Bundle("datetime.title")
     override val typeIcon = BASE_ICON
-
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
 

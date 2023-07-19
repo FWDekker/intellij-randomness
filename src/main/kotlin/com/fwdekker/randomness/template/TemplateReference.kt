@@ -12,6 +12,7 @@ import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
 import com.fwdekker.randomness.TypeIcon
+import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.ui.Gray
 import com.intellij.util.xmlb.annotations.Transient
@@ -21,25 +22,22 @@ import com.intellij.util.xmlb.annotations.Transient
  * A reference to an existing template, to allow using a template as if it were a scheme.
  *
  * @property templateUuid The UUID of the referenced template; defaults to the first template in [TemplateList].
- * @property quotation The string that encloses the generated word on both sides.
  * @property capitalization The way in which the generated word should be capitalized.
+ * @property affixDecorator The affixation to apply to the generated values.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class TemplateReference(
     var templateUuid: String? = null,
-    var quotation: String = DEFAULT_QUOTATION,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
+    var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    var arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name: String
         get() = template?.name?.let { "[$it]" } ?: Bundle("reference.title")
-
     override val typeIcon: TypeIcon
         get() = template?.typeIcon ?: DEFAULT_ICON
-
     override val icon: OverlayedIcon
         get() = OverlayedIcon(typeIcon, decorators.mapNotNull { it.icon } + OverlayIcon.REFERENCE)
-
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
 
@@ -73,20 +71,6 @@ data class TemplateReference(
             .also { it.random = random }
             .generateStrings(count)
             .map { capitalization.transform(it, random) }
-            .map { inQuotes(it) }
-
-    /**
-     * Encapsulates [string] in the quotes defined by [quotation].
-     *
-     * @param string the string to encapsulate
-     * @return [string] encapsulated in the quotes defined by [quotation]
-     */
-    private fun inQuotes(string: String): String {
-        val startQuote = quotation.getOrNull(0) ?: ""
-        val endQuote = quotation.getOrNull(1) ?: startQuote
-
-        return "$startQuote$string$endQuote"
-    }
 
     override fun setSettingsState(settingsState: SettingsState) {
         super.setSettingsState(settingsState)
@@ -98,16 +82,10 @@ data class TemplateReference(
         val recursion = (+templateList).findRecursionFrom(this)
 
         return when {
-            templateUuid == null ->
-                Bundle("reference.error.no_selection")
-            template == null ->
-                Bundle("reference.error.not_found")
-            recursion != null ->
-                Bundle("reference.error.recursion", "(${recursion.joinToString(separator = " → ") { it.name }})")
-            quotation.length > 2 ->
-                Bundle("reference.error.quotation_length")
-            else ->
-                arrayDecorator.doValidate()
+            templateUuid == null -> Bundle("reference.error.no_selection")
+            template == null -> Bundle("reference.error.not_found")
+            recursion != null -> Bundle("reference.error.recursion", "(${recursion.joinToString(" → ") { it.name }})")
+            else -> arrayDecorator.doValidate()
         }
     }
 
@@ -137,13 +115,18 @@ data class TemplateReference(
         val DEFAULT_ICON = TypeIcon(RandomnessIcons.TEMPLATE, "", listOf(Gray._110))
 
         /**
-         * The default value of the [quotation] field.
-         */
-        const val DEFAULT_QUOTATION = ""
-
-        /**
          * The default value of the [capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
+
+        /**
+         * The default value of the [affixDecorator] field.
+         */
+        val DEFAULT_AFFIX_DECORATOR = AffixDecorator(enabled = false, descriptor = "\"")
+
+        /**
+         * The default value of the [arrayDecorator] field.
+         */
+        val DEFAULT_ARRAY_DECORATOR = ArrayDecorator()
     }
 }

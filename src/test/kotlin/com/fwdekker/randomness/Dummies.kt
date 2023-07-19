@@ -81,6 +81,7 @@ data class DummyScheme(
  * @param scheme the scheme to edit in the component
  */
 class DummySchemeEditor(scheme: DummyScheme = DummyScheme()) : StateEditor<DummyScheme>(scheme) {
+    // TODO: Modernize this dummy implementation
     override val rootComponent = JPanel(BorderLayout())
 
     private val literalsInput = JTextField()
@@ -98,7 +99,7 @@ class DummySchemeEditor(scheme: DummyScheme = DummyScheme()) : StateEditor<Dummy
     override fun loadState(state: DummyScheme) {
         super.loadState(state)
 
-        literalsInput.text = state.literals.joinToString(separator = ",")
+        literalsInput.text = state.literals.joinToString(",")
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 

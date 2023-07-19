@@ -10,9 +10,9 @@ import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.TypeIcon
+import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.ui.JBColor
-import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
 import kotlin.random.asJavaRandom
 
@@ -21,24 +21,22 @@ import kotlin.random.asJavaRandom
  * Contains settings for generating random UUIDs.
  *
  * @property type The type (or version) of UUIDs to generate.
- * @property quotation The string that encloses the generated UUID on both sides.
  * @property isUppercase `true` if and only if all letters are uppercase.
  * @property addDashes `true` if and only if the UUID should have dashes in it.
+ * @property affixDecorator The affixation to apply to the generated values.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class UuidScheme(
     var type: Int = DEFAULT_TYPE,
-    var quotation: String = DEFAULT_QUOTATION,
     var isUppercase: Boolean = DEFAULT_IS_UPPERCASE,
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
-    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
+    var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    var arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
-    @get:Transient
     override val name = Bundle("uuid.title")
     override val typeIcon = BASE_ICON
-
     override val decorators: List<SchemeDecorator>
-        get() = listOf(arrayDecorator)
+        get() = listOf(affixDecorator, arrayDecorator)
 
 
     /**
@@ -74,32 +72,15 @@ data class UuidScheme(
                 if (addDashes) it
                 else it.replace("-", "")
             }
-            .map { inQuotes(it) }
-    }
-
-    /**
-     * Encapsulates [string] in the quotes defined by [quotation].
-     *
-     * @param string the string to encapsulate
-     * @return [string] encapsulated in the quotes defined by [quotation]
-     */
-    private fun inQuotes(string: String): String {
-        val startQuote = quotation.getOrNull(0) ?: ""
-        val endQuote = quotation.getOrNull(1) ?: startQuote
-
-        return "$startQuote$string$endQuote"
     }
 
 
     override fun doValidate() =
-        when {
-            type !in listOf(TYPE_1, TYPE_4) -> Bundle("uuid.error.unknown_type", type)
-            quotation.length > 2 -> Bundle("uuid.error.quotation_length")
-            else -> arrayDecorator.doValidate()
-        }
+        if (type !in listOf(TYPE_1, TYPE_4)) Bundle("uuid.error.unknown_type", type)
+        else arrayDecorator.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid))
+        copy(affixDecorator = affixDecorator.deepCopy(retainUuid), arrayDecorator = arrayDecorator.deepCopy(retainUuid))
             .also { if (retainUuid) it.uuid = this.uuid }
 
 
@@ -122,11 +103,6 @@ data class UuidScheme(
         const val DEFAULT_TYPE = 4
 
         /**
-         * The default value of the [quotation] field.
-         */
-        const val DEFAULT_QUOTATION = "\""
-
-        /**
          * The default value of the [isUppercase] field.
          */
         const val DEFAULT_IS_UPPERCASE = false
@@ -145,5 +121,15 @@ data class UuidScheme(
          * Integer representing a type-4 UUID.
          */
         const val TYPE_4 = 4
+
+        /**
+         * The default value of the [affixDecorator] field.
+         */
+        val DEFAULT_AFFIX_DECORATOR = AffixDecorator(enabled = false, descriptor = "\"")
+
+        /**
+         * The default value of the [arrayDecorator] field.
+         */
+        val DEFAULT_ARRAY_DECORATOR = ArrayDecorator()
     }
 }

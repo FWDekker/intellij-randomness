@@ -13,7 +13,6 @@ import com.fwdekker.randomness.integer.IntegerSchemeEditor
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.StringSchemeEditor
 import com.fwdekker.randomness.ui.PreviewPanel
-import com.fwdekker.randomness.ui.SimpleTreeModelListener
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
@@ -46,6 +45,8 @@ import javax.swing.SwingUtilities
  */
 class TemplateListEditor(settings: SettingsState = SettingsState.DEFAULT) : StateEditor<SettingsState>(settings) {
     override val rootComponent = JPanel(BorderLayout())
+    override val stateComponents
+        get() = listOf(templateTree)
 
     private val currentState: SettingsState = SettingsState()
     private val templateTree = TemplateJTree(originalState, currentState)
@@ -186,11 +187,6 @@ class TemplateListEditor(settings: SettingsState = SettingsState.DEFAULT) : Stat
         }
     }
 
-
-    override fun addChangeListener(listener: () -> Unit) {
-        templateTree.model.addTreeModelListener(SimpleTreeModelListener { listener() })
-        templateTree.addTreeSelectionListener { listener() }
-    }
 
     override fun dispose() {
         schemeEditor?.dispose()

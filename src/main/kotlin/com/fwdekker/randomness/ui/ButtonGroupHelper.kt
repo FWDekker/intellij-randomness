@@ -6,13 +6,6 @@ import javax.swing.JLabel
 
 
 /**
- * Executes a consumer for each button in a group.
- *
- * @param consumer the function to apply to each button
- */
-fun ButtonGroup.forEach(consumer: (AbstractButton) -> Unit) = buttons().forEach(consumer)
-
-/**
  * Returns the action command of the currently selected button, or `null` if no button is selected.
  *
  * @return the action command of the currently selected button, or `null` if no button is selected

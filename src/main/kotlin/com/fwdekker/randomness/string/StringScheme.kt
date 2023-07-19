@@ -11,7 +11,6 @@ import com.fwdekker.randomness.string.StringScheme.Companion.LOOK_ALIKE_CHARACTE
 import com.github.curiousoddman.rgxgen.RgxGen
 import com.github.curiousoddman.rgxgen.parsing.dflt.RgxGenParseException
 import com.intellij.ui.JBColor
-import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
 import kotlin.random.asJavaRandom
 
@@ -32,10 +31,8 @@ data class StringScheme(
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
-    @get:Transient
     override val name = Bundle("string.title")
     override val typeIcon = BASE_ICON
-
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
 

@@ -42,7 +42,6 @@ data class Template(
 ) : Scheme() {
     override val typeIcon: TypeIcon
         get() = schemes.mapNotNull { it.typeIcon }.reduceOrNull { acc, icon -> acc.combineWith(icon) } ?: DEFAULT_ICON
-
     override val decorators: List<SchemeDecorator>
         get() = listOf(arrayDecorator)
 
@@ -64,7 +63,7 @@ data class Template(
      */
     override fun generateUndecoratedStrings(count: Int) =
         schemes.onEach { it.random = random }.map { it.generateStrings(count) }
-            .let { data -> (0 until count).map { i -> data.joinToString(separator = "") { it[i] } } }
+            .let { data -> (0 until count).map { i -> data.joinToString("") { it[i] } } }
 
     override fun setSettingsState(settingsState: SettingsState) {
         super.setSettingsState(settingsState)

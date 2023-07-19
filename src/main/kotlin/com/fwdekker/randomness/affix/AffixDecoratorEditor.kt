@@ -2,9 +2,8 @@ package com.fwdekker.randomness.affix
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.ui.StringComboBox
-import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.disableMnemonic
+import com.fwdekker.randomness.ui.getCurrentText
 import com.fwdekker.randomness.ui.loadMnemonic
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.panel
@@ -20,12 +19,14 @@ import javax.swing.JPanel
  * Component for settings of affixation decoration.
  *
  * @param settings the settings to edit in the component
+ * @param presets the default affixation settings available to the user in the editor
  * @param enabledIf the predicate that determines whether the components in this editor are enabled
  * @param enableMnemonic whether to enable mnemonics
  * @param namePrefix the string to prepend to all component names
  */
 class AffixDecoratorEditor(
     settings: AffixDecorator,
+    presets: Collection<String>,
     enabledIf: ComponentPredicate? = null,
     enableMnemonic: Boolean = false,
     namePrefix: String = "",
@@ -46,7 +47,7 @@ class AffixDecoratorEditor(
                     .also { it.component.name = camelConcat(namePrefix, "affixEnabled") }
                     .also { enabledCheckBox = it.component }
 
-                cell(StringComboBox(listOf("@b", "$@", "0x@")))
+                cell(ComboBox(presets.toTypedArray()))
                     .enabledIf(enabledIf?.and(enabledCheckBox.selected) ?: enabledCheckBox.selected)
                     .also { it.component.isEditable = true }
                     .also { it.component.name = camelConcat(namePrefix, "affixDescriptor") }
@@ -81,10 +82,6 @@ class AffixDecoratorEditor(
     override fun readState() =
         AffixDecorator(
             enabled = enabledCheckBox.isSelected,
-            descriptor = descriptorInput.item,
+            descriptor = descriptorInput.getCurrentText(),
         ).also { it.uuid = originalState.uuid }
-
-
-    override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(enabledCheckBox, descriptorInput, listener = listener)
 }

@@ -4,11 +4,9 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.ui.CapitalizationComboBox
-import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
-import com.fwdekker.randomness.ui.StringComboBox
-import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.fwdekker.randomness.ui.setSimpleRenderer
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.dsl.builder.panel
@@ -25,13 +23,15 @@ import javax.swing.JPanel
  */
 class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<TemplateReference>(reference) {
     override val rootComponent: JPanel
+    override val stateComponents
+        get() = super.stateComponents + affixDecoratorEditor + arrayDecoratorEditor
     override val preferredFocusedComponent
         get() = templateComboBox
 
     private lateinit var templateComboBoxModel: ComboBoxModel<Template>
     private lateinit var templateComboBox: ComboBox<Template>
     private lateinit var capitalizationComboBox: ComboBox<CapitalizationMode>
-    private lateinit var quotationComboBox: ComboBox<String>
+    private lateinit var affixDecoratorEditor: AffixDecoratorEditor
     private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
 
 
@@ -59,17 +59,10 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
                         .also { templateComboBox = it.component }
                 }
 
-                row(Bundle("reference.ui.value.quotation_marks_option")) {
-                    cell(StringComboBox(listOf("", "'", "\"", "`"), MaxLengthDocumentFilter(2)))
-                        .also { it.component.isEditable = true }
-                        .also { it.component.name = "quotation" }
-                        .also { quotationComboBox = it.component }
-                }
-
                 row(Bundle("reference.ui.value.capitalization_option")) {
                     cell(
-                        CapitalizationComboBox(
-                            listOf(
+                        ComboBox(
+                            arrayOf(
                                 CapitalizationMode.RETAIN,
                                 CapitalizationMode.LOWER,
                                 CapitalizationMode.UPPER,
@@ -78,9 +71,20 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
                                 CapitalizationMode.FIRST_LETTER,
                             )
                         )
+                    ).also {
+                        it.component.setSimpleRenderer(CapitalizationMode::toLocalizedString)
+                        it.component.name = "capitalization"
+                        capitalizationComboBox = it.component
+                    }
+                }
+
+                row {
+                    affixDecoratorEditor = AffixDecoratorEditor(
+                        originalState.affixDecorator,
+                        listOf("'", "\"", "`"),
+                        enableMnemonic = true
                     )
-                        .also { it.component.name = "capitalization" }
-                        .also { capitalizationComboBox = it.component }
+                    cell(affixDecoratorEditor.rootComponent)
                 }
             }
 
@@ -113,28 +117,19 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
         validTemplates.forEach { templateComboBox.addItem(it) }
         templateComboBox.selectedItem = state.template
 
-        quotationComboBox.item = state.quotation
         capitalizationComboBox.item = state.capitalization
-
+        affixDecoratorEditor.loadState(state.affixDecorator)
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
     override fun readState() =
         TemplateReference(
             templateUuid = (templateComboBox.selectedItem as? Template)?.uuid,
-            quotation = quotationComboBox.item,
             capitalization = capitalizationComboBox.item,
-            arrayDecorator = arrayDecoratorEditor.readState()
+            affixDecorator = affixDecoratorEditor.readState(),
+            arrayDecorator = arrayDecoratorEditor.readState(),
         ).also {
             it.uuid = originalState.uuid
             it.templateList = originalState.templateList.copy()
         }
-
-
-    override fun addChangeListener(listener: () -> Unit) {
-        addChangeListenerTo(
-            templateComboBox, capitalizationComboBox, quotationComboBox, arrayDecoratorEditor,
-            listener = listener
-        )
-    }
 }

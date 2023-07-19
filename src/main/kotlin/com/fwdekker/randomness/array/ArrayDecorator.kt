@@ -13,22 +13,22 @@ import com.fwdekker.randomness.affix.AffixDecorator
  * @property enabled `true` if and only if arrays should be generated instead of singular values.
  * @property minCount The minimum number of elements to generate, inclusive.
  * @property maxCount The maximum number of elements to generate, inclusive.
- * @property affixDecorator The affixation to apply to the generated values.
+ * @property separatorEnabled Whether to separate elements using [separator].
  * @property separator The string to place between generated elements.
- * @property isSpaceAfterSeparator `true` if and only if a space should be placed after each separator.
+ * @property affixDecorator The affixation to apply to the generated values.
  */
 data class ArrayDecorator(
     var enabled: Boolean = DEFAULT_ENABLED,
     var minCount: Int = DEFAULT_MIN_COUNT,
     var maxCount: Int = DEFAULT_MAX_COUNT,
-    var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    var separatorEnabled: Boolean = DEFAULT_SEPARATOR_ENABLED,
     var separator: String = DEFAULT_SEPARATOR,
-    var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR,
+    var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
 ) : SchemeDecorator() {
-    override val decorators: List<SchemeDecorator> = listOf(affixDecorator)
     override val name = Bundle("array.title")
     override val icon: OverlayedIcon?
         get() = if (enabled) OverlayedIcon(OverlayIcon.ARRAY) else null
+    override val decorators: List<SchemeDecorator> = listOf(affixDecorator)
 
 
     override fun generateStrings(count: Int) =
@@ -36,10 +36,9 @@ data class ArrayDecorator(
         else generator(count)
 
     override fun generateUndecoratedStrings(count: Int): List<String> {
-        val separator = separator.replace("\\n", "\n") + if (isSpaceAfterSeparator && separator != "\\n") " " else ""
         val partsPerString = random.nextInt(minCount, maxCount + 1)
-        val parts = generator(count * partsPerString)
-        return parts.chunked(partsPerString) { it.joinToString(separator = separator) }
+        return generator(count * partsPerString)
+            .chunked(partsPerString) { it.joinToString(if (separatorEnabled) separator.replace("\\n", "\n") else "") }
     }
 
 
@@ -76,18 +75,18 @@ data class ArrayDecorator(
         const val DEFAULT_MAX_COUNT = 3
 
         /**
-         * The default value of the [affixDecorator] field.
+         * The default value of the [separatorEnabled] field.
          */
-        val DEFAULT_AFFIX_DECORATOR = AffixDecorator(enabled = true, descriptor = "[@]")
+        const val DEFAULT_SEPARATOR_ENABLED = true
 
         /**
          * The default value of the [separator] field.
          */
-        const val DEFAULT_SEPARATOR = ","
+        const val DEFAULT_SEPARATOR = ", "
 
         /**
-         * The default value of the [isSpaceAfterSeparator] field.
+         * The default value of the [affixDecorator] field.
          */
-        const val DEFAULT_SPACE_AFTER_SEPARATOR = true
+        val DEFAULT_AFFIX_DECORATOR = AffixDecorator(enabled = true, descriptor = "[@]")
     }
 }

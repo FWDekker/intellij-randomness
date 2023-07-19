@@ -21,9 +21,9 @@ import java.text.DecimalFormat
  * @property minValue The minimum value to be generated, inclusive.
  * @property maxValue The maximum value to be generated, inclusive.
  * @property base The base the generated value should be displayed in.
+ * @property isUppercase `true` if and only if all letters are uppercase.
  * @property groupingSeparatorEnabled `true` if and only if the [groupingSeparator] should be applied.
  * @property groupingSeparator The character that should separate groups if [groupingSeparatorEnabled] is `true`.
- * @property isUppercase `true` if and only if all letters are uppercase, applicable for bases higher than 10.
  * @property affixDecorator The affixation to apply to the generated values.
  * @property fixedLengthDecorator Settings that determine whether the output should be fixed to a specific length.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
@@ -32,17 +32,16 @@ data class IntegerScheme(
     var minValue: Long = DEFAULT_MIN_VALUE,
     var maxValue: Long = DEFAULT_MAX_VALUE,
     var base: Int = DEFAULT_BASE,
+    var isUppercase: Boolean = DEFAULT_IS_UPPERCASE,
     var groupingSeparatorEnabled: Boolean = DEFAULT_GROUPING_SEPARATOR_ENABLED,
     var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
-    var isUppercase: Boolean = DEFAULT_IS_UPPERCASE,
-    var affixDecorator: AffixDecorator = AffixDecorator(enabled = false, descriptor = "0x@"),
-    var fixedLengthDecorator: FixedLengthDecorator = FixedLengthDecorator(),
-    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
+    var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    var fixedLengthDecorator: FixedLengthDecorator = DEFAULT_FIXED_LENGTH_DECORATOR,
+    var arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     @get:Transient
     override val name = Bundle("integer.title")
     override val typeIcon = BASE_ICON
-
     override val decorators: List<SchemeDecorator>
         get() = listOf(fixedLengthDecorator, affixDecorator, arrayDecorator)
 
@@ -103,8 +102,9 @@ data class IntegerScheme(
 
     override fun deepCopy(retainUuid: Boolean) =
         copy(
+            affixDecorator = affixDecorator.deepCopy(retainUuid),
             fixedLengthDecorator = fixedLengthDecorator.deepCopy(retainUuid),
-            arrayDecorator = arrayDecorator.deepCopy(retainUuid)
+            arrayDecorator = arrayDecorator.deepCopy(retainUuid),
         ).also { if (retainUuid) it.uuid = this.uuid }
 
 
@@ -152,6 +152,11 @@ data class IntegerScheme(
         const val DEFAULT_BASE = DECIMAL_BASE
 
         /**
+         * The default value of the [isUppercase] field.
+         */
+        const val DEFAULT_IS_UPPERCASE = false
+
+        /**
          * The default value of the [groupingSeparatorEnabled] field.
          */
         const val DEFAULT_GROUPING_SEPARATOR_ENABLED = false
@@ -162,8 +167,18 @@ data class IntegerScheme(
         const val DEFAULT_GROUPING_SEPARATOR = ","
 
         /**
-         * The default value of the [isUppercase] field.
+         * The default value of the [affixDecorator] field.
          */
-        const val DEFAULT_IS_UPPERCASE = false
+        val DEFAULT_AFFIX_DECORATOR = AffixDecorator(enabled = false, descriptor = "0x@")
+
+        /**
+         * The default value of the [fixedLengthDecorator] field.
+         */
+        val DEFAULT_FIXED_LENGTH_DECORATOR = FixedLengthDecorator()
+
+        /**
+         * The default value of the [arrayDecorator] field.
+         */
+        val DEFAULT_ARRAY_DECORATOR = ArrayDecorator()
     }
 }
