@@ -3,7 +3,6 @@ package com.fwdekker.randomness.datetime
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.ui.JBColor
@@ -30,7 +29,7 @@ data class DateTimeScheme(
 ) : Scheme() {
     override val name = Bundle("datetime.title")
     override val typeIcon = BASE_ICON
-    override val decorators: List<SchemeDecorator>
+    override val decorators
         get() = listOf(arrayDecorator)
 
 
@@ -54,11 +53,11 @@ data class DateTimeScheme(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        DateTimeScheme(
+        copy(
             minDateTime = minDateTime,
             maxDateTime = maxDateTime,
             pattern = pattern,
-            arrayDecorator = arrayDecorator.deepCopy(retainUuid)
+            arrayDecorator = arrayDecorator.deepCopy(retainUuid),
         ).also { if (retainUuid) it.uuid = this.uuid }
 
 

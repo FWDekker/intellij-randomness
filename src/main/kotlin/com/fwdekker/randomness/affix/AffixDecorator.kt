@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.affix
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.SchemeDecorator
+import com.fwdekker.randomness.DecoratorScheme
 
 
 /**
@@ -16,9 +16,9 @@ import com.fwdekker.randomness.SchemeDecorator
 data class AffixDecorator(
     var enabled: Boolean = DEFAULT_ENABLED,
     var descriptor: String = DEFAULT_DESCRIPTOR,
-) : SchemeDecorator() {
+) : DecoratorScheme() {
     override val name = Bundle("affix.title")
-    override val decorators: List<SchemeDecorator> = emptyList()
+    override val decorators = emptyList<DecoratorScheme>()
 
 
     override fun generateStrings(count: Int) =

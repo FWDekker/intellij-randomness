@@ -4,7 +4,6 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.string.StringScheme.Companion.LOOK_ALIKE_CHARACTERS
@@ -33,8 +32,7 @@ data class StringScheme(
 ) : Scheme() {
     override val name = Bundle("string.title")
     override val typeIcon = BASE_ICON
-    override val decorators: List<SchemeDecorator>
-        get() = listOf(arrayDecorator)
+    override val decorators get() = listOf(arrayDecorator)
 
 
     /**
@@ -90,12 +88,12 @@ data class StringScheme(
         }
 
     override fun deepCopy(retainUuid: Boolean) =
-        StringScheme(
+        copy(
             pattern = pattern,
             isRegex = isRegex,
             removeLookAlikeSymbols = removeLookAlikeSymbols,
             capitalization = capitalization,
-            arrayDecorator = arrayDecorator.deepCopy(retainUuid)
+            arrayDecorator = arrayDecorator.deepCopy(retainUuid),
         ).also { if (retainUuid) it.uuid = this.uuid }
 
 

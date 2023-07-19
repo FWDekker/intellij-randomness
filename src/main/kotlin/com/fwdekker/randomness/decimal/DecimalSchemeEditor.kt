@@ -123,7 +123,6 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor
 
 
     override fun loadState(state: DecimalScheme) {
-        // TODO: Replace this function with bindings to `originalState`?
         super.loadState(state)
 
         minValue.value = state.minValue

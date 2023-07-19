@@ -69,7 +69,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
                     row {
                         checkBox(Bundle("uuid.add_dashes"))
                             .loadMnemonic()
-                            .also { it.component.name = "addDashesCheckBox" }
+                            .also { it.component.name = "addDashes" }
                             .also { addDashesCheckBox = it.component }
                     }
 

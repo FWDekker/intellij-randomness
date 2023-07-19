@@ -4,7 +4,6 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
@@ -42,8 +41,7 @@ data class IntegerScheme(
     @get:Transient
     override val name = Bundle("integer.title")
     override val typeIcon = BASE_ICON
-    override val decorators: List<SchemeDecorator>
-        get() = listOf(fixedLengthDecorator, affixDecorator, arrayDecorator)
+    override val decorators get() = listOf(fixedLengthDecorator, affixDecorator, arrayDecorator)
 
 
     /**

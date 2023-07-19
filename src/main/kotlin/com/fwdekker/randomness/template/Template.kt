@@ -3,7 +3,6 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
@@ -40,10 +39,9 @@ data class Template(
     var schemes: List<Scheme> = DEFAULT_SCHEMES.toMutableList(),
     var arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
-    override val typeIcon: TypeIcon
+    override val typeIcon
         get() = schemes.mapNotNull { it.typeIcon }.reduceOrNull { acc, icon -> acc.combineWith(icon) } ?: DEFAULT_ICON
-    override val decorators: List<SchemeDecorator>
-        get() = listOf(arrayDecorator)
+    override val decorators get() = listOf(arrayDecorator)
 
     /**
      * The identifier of the action that inserts this [Template].
@@ -79,7 +77,7 @@ data class Template(
     override fun deepCopy(retainUuid: Boolean) =
         copy(
             schemes = schemes.map { it.deepCopy(retainUuid) },
-            arrayDecorator = arrayDecorator.deepCopy(retainUuid)
+            arrayDecorator = arrayDecorator.deepCopy(retainUuid),
         ).also { if (retainUuid) it.uuid = this.uuid }
 
 

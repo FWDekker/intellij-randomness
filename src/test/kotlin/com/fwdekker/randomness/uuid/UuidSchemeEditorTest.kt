@@ -64,7 +64,7 @@ object UuidSchemeEditorTest : DescribeSpec({
         it("loads the scheme's add dashes option") {
             GuiActionRunner.execute { editor.loadState(UuidScheme(addDashes = false)) }
 
-            frame.checkBox("addDashesCheckBox").requireSelected(false)
+            frame.checkBox("addDashes").requireSelected(false)
         }
     }
 
@@ -86,7 +86,7 @@ object UuidSchemeEditorTest : DescribeSpec({
                 frame.radioButton("type1").target().isSelected = true
                 frame.comboBox("quotation").target().selectedItem = "`"
                 frame.checkBox("isUppercase").target().isSelected = true
-                frame.checkBox("addDashesCheckBox").target().isSelected = true
+                frame.checkBox("addDashes").target().isSelected = true
             }
 
             val readScheme = editor.readState()

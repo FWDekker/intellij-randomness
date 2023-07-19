@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.DecoratorScheme
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
-import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.affix.AffixDecorator
 
 
@@ -24,11 +24,10 @@ data class ArrayDecorator(
     var separatorEnabled: Boolean = DEFAULT_SEPARATOR_ENABLED,
     var separator: String = DEFAULT_SEPARATOR,
     var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
-) : SchemeDecorator() {
+) : DecoratorScheme() {
     override val name = Bundle("array.title")
-    override val icon: OverlayedIcon?
-        get() = if (enabled) OverlayedIcon(OverlayIcon.ARRAY) else null
-    override val decorators: List<SchemeDecorator> = listOf(affixDecorator)
+    override val icon get() = if (enabled) OverlayedIcon(OverlayIcon.ARRAY) else null
+    override val decorators = listOf(affixDecorator)
 
 
     override fun generateStrings(count: Int) =

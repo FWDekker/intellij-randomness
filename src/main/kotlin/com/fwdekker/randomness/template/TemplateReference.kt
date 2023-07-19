@@ -8,7 +8,6 @@ import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
 import com.fwdekker.randomness.TypeIcon
@@ -32,14 +31,10 @@ data class TemplateReference(
     var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
     var arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
-    override val name: String
-        get() = template?.name?.let { "[$it]" } ?: Bundle("reference.title")
-    override val typeIcon: TypeIcon
-        get() = template?.typeIcon ?: DEFAULT_ICON
-    override val icon: OverlayedIcon
-        get() = OverlayedIcon(typeIcon, decorators.mapNotNull { it.icon } + OverlayIcon.REFERENCE)
-    override val decorators: List<SchemeDecorator>
-        get() = listOf(arrayDecorator)
+    override val name get() = template?.name?.let { "[$it]" } ?: Bundle("reference.title")
+    override val typeIcon get() = template?.typeIcon ?: DEFAULT_ICON
+    override val icon get() = OverlayedIcon(typeIcon, decorators.mapNotNull { it.icon } + OverlayIcon.REFERENCE)
+    override val decorators get() = listOf(arrayDecorator)
 
     /**
      * The list in which this reference _must_ reside, and in which the referenced template _might_ reside.

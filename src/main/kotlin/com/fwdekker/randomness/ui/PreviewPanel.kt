@@ -92,9 +92,9 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     fun updatePreview() {
         try {
             previewText = generateTimely { getScheme().also { it.random = Random(seed) }.generateStrings() }.first()
-        } catch (e: DataGenerationException) {
-            previewText = Bundle("preview.invalid", e.message)
-        } catch (e: IllegalArgumentException) {
+        } catch (exception: DataGenerationException) {
+            previewText = Bundle("preview.invalid", exception.message)
+        } catch (exception: IllegalArgumentException) {
             // Ignore exception; invalid settings are handled by form validation
         }
     }

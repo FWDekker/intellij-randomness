@@ -9,9 +9,7 @@ import com.fwdekker.randomness.template.TemplateSettings
  *
  * @property templateList The template list.
  */
-data class SettingsState(
-    var templateList: TemplateList = TemplateList(),
-) : State() {
+data class SettingsState(var templateList: TemplateList = TemplateList()) : State() {
     override fun doValidate() = templateList.doValidate()
 
     override fun copyFrom(other: State) {
@@ -32,11 +30,12 @@ data class SettingsState(
      * @return a deep copy of this scheme
      */
     override fun deepCopy(retainUuid: Boolean) =
-        copy(templateList = templateList.deepCopy(retainUuid = retainUuid)).also {
-            if (retainUuid) it.uuid = uuid
+        copy(templateList = templateList.deepCopy(retainUuid = retainUuid))
+            .also {
+                if (retainUuid) it.uuid = uuid
 
-            it.templateList.applySettingsState(it)
-        }
+                it.templateList.applySettingsState(it)
+            }
 
 
     /**

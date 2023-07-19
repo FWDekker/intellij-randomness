@@ -40,11 +40,11 @@ data class TemplateList(
 
 
     /**
-     * Find a recursive path of templates including each other, starting at [reference].
+     * Find a recursive path of templates that include each other, starting at [reference].
      *
      * @param reference the reference to start searching at
-     * @return a recursive path of templates including each other starting at [reference], or `null` if there is no such
-     * path
+     * @return a recursive path of templates that include each other starting at [reference], or `null` if there is no
+     * such path
      */
     fun findRecursionFrom(reference: TemplateReference) = findRecursionFrom(reference, mutableListOf())
 
@@ -105,7 +105,7 @@ data class TemplateList(
      * @return a deep copy of this list
      */
     override fun deepCopy(retainUuid: Boolean) =
-        TemplateList(templates.map { it.deepCopy(retainUuid) })
+        copy(templates = templates.map { it.deepCopy(retainUuid) })
             .also { if (retainUuid) it.uuid = this.uuid }
 
 
