@@ -1,19 +1,19 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.template.TemplateList
-import com.fwdekker.randomness.template.TemplateSettings
+import com.fwdekker.randomness.template.TemplateListSettingsComponent
 
 
 /**
- * Contains references to various [Settings] objects.
+ * Contains references to various [State] objects.
  *
  * @property templateList The template list.
  */
-data class SettingsState(var templateList: TemplateList = TemplateList()) : State() {
+data class StateContext(var templateList: TemplateList = TemplateList()) : State() {
     override fun doValidate() = templateList.doValidate()
 
     override fun copyFrom(other: State) {
-        require(other is SettingsState) { Bundle("shared.error.cannot_copy_from_different_type") }
+        require(other is StateContext) { Bundle("shared.error.cannot_copy_from_different_type") }
 
         uuid = other.uuid
         templateList.copyFrom(other.templateList)
@@ -21,9 +21,9 @@ data class SettingsState(var templateList: TemplateList = TemplateList()) : Stat
     }
 
     /**
-     * Returns a deep copy of this state and the contained [Settings] instances.
+     * Returns a deep copy of this state and the contained [State] instances.
      *
-     * Additionally invokes [TemplateList.applySettingsState] to ensure that all copied templates and schemes use the
+     * Additionally, invokes [TemplateList.applySettingsState] to ensure that all copied templates and schemes use the
      * new instances.
      *
      * @param retainUuid `false` if and only if the copy should have a different, new [uuid]
@@ -43,8 +43,8 @@ data class SettingsState(var templateList: TemplateList = TemplateList()) : Stat
      */
     companion object {
         /**
-         * The persistent [SettingsState] instance.
+         * The persistent [StateContext] instance.
          */
-        val DEFAULT: SettingsState by lazy { SettingsState(TemplateSettings.default.state) }
+        val DEFAULT: StateContext by lazy { StateContext(TemplateListSettingsComponent.default.state) }
     }
 }

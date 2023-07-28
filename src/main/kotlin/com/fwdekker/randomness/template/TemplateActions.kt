@@ -3,7 +3,7 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.InsertAction
 import com.fwdekker.randomness.OverlayIcon
-import com.fwdekker.randomness.RandomnessIcons
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Timely.generateTimely
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
@@ -201,13 +201,13 @@ class TemplateInsertAction(
  *
  * @property template The template to select after opening the settings dialog.
  * @see TemplateGroupAction
- * @see TemplateSettingsConfigurable
+ * @see TemplateStateConfigurable
  */
 class TemplateSettingsAction(private val template: Template? = null) : AnAction(
     if (template == null) Bundle("template.name.settings")
     else Bundle("template.name.settings_suffix", template.name),
     template?.let { Bundle("template.description.settings", it.name) },
-    template?.icon?.plusOverlay(OverlayIcon.SETTINGS) ?: RandomnessIcons.SETTINGS
+    template?.icon?.plusOverlay(OverlayIcon.SETTINGS) ?: Icons.SETTINGS
 ) {
     /**
      * Opens the IntelliJ settings menu at the right location to adjust the template configurable.
@@ -216,7 +216,7 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
      */
     override fun actionPerformed(event: AnActionEvent) =
         ShowSettingsUtil.getInstance()
-            .showSettingsDialog(event.project, TemplateSettingsConfigurable::class.java) { configurable ->
+            .showSettingsDialog(event.project, TemplateStateConfigurable::class.java) { configurable ->
                 configurable?.also { it.templateToSelect = template?.uuid }
             }
 }

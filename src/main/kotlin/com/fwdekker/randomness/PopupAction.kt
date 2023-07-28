@@ -1,7 +1,7 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.template.TemplateGroupAction
-import com.fwdekker.randomness.template.TemplateSettings
+import com.fwdekker.randomness.template.TemplateListSettingsComponent
 import com.fwdekker.randomness.template.TemplateSettingsAction
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -21,7 +21,7 @@ import javax.swing.KeyStroke
 /**
  * Shows a popup for all available Randomness actions.
  */
-class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
+class PopupAction : AnAction(Icons.RANDOMNESS) {
     /**
      * `true` if and only if the user focused a non-viewer editor when opening this popup.
      */
@@ -41,7 +41,7 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
      * @param event carries contextual information
      */
     override fun update(event: AnActionEvent) {
-        event.presentation.icon = RandomnessIcons.RANDOMNESS
+        event.presentation.icon = Icons.RANDOMNESS
 
         // Running this in `actionPerformed` always sets it to `true`
         isEditable = event.getData(CommonDataKeys.EDITOR)?.isViewer == false
@@ -112,7 +112,7 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
          * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
-            TemplateSettings.default.state.templates.map { TemplateGroupAction(it) }.toTypedArray<AnAction>() +
+            TemplateListSettingsComponent.default.state.templates.map { TemplateGroupAction(it) }.toTypedArray<AnAction>() +
                 Separator() +
                 TemplateSettingsAction()
     }
@@ -127,7 +127,7 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
          * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
-            TemplateSettings.default.state.templates.map { TemplateSettingsAction(it) }.toTypedArray<AnAction>() +
+            TemplateListSettingsComponent.default.state.templates.map { TemplateSettingsAction(it) }.toTypedArray<AnAction>() +
                 Separator() +
                 TemplateSettingsAction()
     }

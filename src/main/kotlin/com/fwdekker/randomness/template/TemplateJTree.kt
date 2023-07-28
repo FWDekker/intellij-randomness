@@ -2,7 +2,7 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.StateContext
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -48,8 +48,8 @@ import kotlin.math.min
  * @property currentState The current settings which include modifications.
  */
 class TemplateJTree(
-    private val originalState: SettingsState,
-    private var currentState: SettingsState,
+    private val originalState: StateContext,
+    private var currentState: StateContext,
 ) : Tree(TemplateJTreeModel(currentState.templateList)) {
     /**
      * The tree's model.
@@ -488,7 +488,7 @@ class TemplateJTree(
              */
             override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? {
                 if (value != null)
-                    addScheme(value.deepCopy().also { it.setSettingsState(currentState) })
+                    addScheme(value.deepCopy().also { it.setStateContext(currentState) })
 
                 return null
             }
@@ -553,7 +553,7 @@ class TemplateJTree(
         private inner class ReferencesPopupStep : AddSchemePopupStep(
             run {
                 val listCopy = currentState.templateList.deepCopy(retainUuid = true)
-                    .also { it.applySettingsState(SettingsState(it)) }
+                    .also { it.applySettingsState(StateContext(it)) }
                 val reference = TemplateReference().also { it.templateList += listCopy }
 
                 val templateCopy = listCopy.templates.single { it.uuid == selectedTemplate!!.uuid }
@@ -627,7 +627,7 @@ class TemplateJTree(
          */
         override fun actionPerformed(event: AnActionEvent) {
             val copy = selectedScheme!!.deepCopy()
-            copy.setSettingsState(currentState)
+            copy.setStateContext(currentState)
 
             addScheme(copy)
         }
@@ -731,7 +731,7 @@ class TemplateJTree(
             }
 
             toReset.copyFrom(toResetFrom)
-            toReset.setSettingsState(currentState)
+            toReset.setStateContext(currentState)
 
             myModel.fireNodeChanged(StateNode(toReset))
             myModel.fireNodeStructureChanged(StateNode(toReset))

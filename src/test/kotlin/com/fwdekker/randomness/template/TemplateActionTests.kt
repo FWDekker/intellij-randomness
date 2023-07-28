@@ -3,7 +3,7 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
-import com.fwdekker.randomness.RandomnessIcons
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.TypeIcon
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -31,7 +31,7 @@ object TemplateGroupActionTest : DescribeSpec({
 
     describe("init") {
         it("uses the template's text, description, and icon") {
-            val icon = TypeIcon(RandomnessIcons.SCHEME, "t2Y", listOf(Color.BLUE))
+            val icon = TypeIcon(Icons.SCHEME, "t2Y", listOf(Color.BLUE))
             val template = Template("Match", listOf(DummyScheme().also { it.typeIcon = icon }))
             val action = TemplateGroupAction(template)
 
@@ -171,11 +171,11 @@ object TemplateSettingsActionTest : DescribeSpec({
             it("uses a default icon if the template is null") {
                 val action = TemplateSettingsAction(template = null)
 
-                assertThat(action.templatePresentation.icon).isEqualTo(RandomnessIcons.SETTINGS)
+                assertThat(action.templatePresentation.icon).isEqualTo(Icons.SETTINGS)
             }
 
             it("uses the template's icon if the template is not null") {
-                val icon = TypeIcon(RandomnessIcons.SCHEME, "war", listOf(Color.GREEN))
+                val icon = TypeIcon(Icons.SCHEME, "war", listOf(Color.GREEN))
                 val template = Template("subject", listOf(DummyScheme().also { it.typeIcon = icon }))
                 val action = TemplateSettingsAction(template)
 

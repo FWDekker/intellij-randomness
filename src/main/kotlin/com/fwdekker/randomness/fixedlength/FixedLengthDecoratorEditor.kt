@@ -22,8 +22,7 @@ import javax.swing.text.PlainDocument
  */
 class FixedLengthDecoratorEditor(settings: FixedLengthDecorator) : StateEditor<FixedLengthDecorator>(settings) {
     override val rootComponent: JPanel
-    override val preferredFocusedComponent
-        get() = enabledCheckBox
+    override val preferredFocusedComponent get() = enabledCheckBox
 
     private lateinit var enabledCheckBox: JCheckBox
     private lateinit var lengthInput: JIntSpinner

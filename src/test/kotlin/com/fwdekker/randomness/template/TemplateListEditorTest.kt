@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
-import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.StateContext
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.getActionButton
@@ -33,7 +33,7 @@ object TemplateListEditorTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
-    lateinit var state: SettingsState
+    lateinit var state: StateContext
     lateinit var editor: TemplateListEditor
 
 
@@ -48,7 +48,7 @@ object TemplateListEditorTest : DescribeSpec({
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        state = SettingsState(
+        state = StateContext(
             TemplateList(
                 listOf(
                     Template("Whip", listOf(IntegerScheme(), StringScheme())),

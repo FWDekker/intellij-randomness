@@ -27,10 +27,8 @@ import javax.swing.JPanel
  */
 class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidScheme>(scheme) {
     override val rootComponent: JPanel
-    override val stateComponents
-        get() = super.stateComponents + affixDecoratorEditor + arrayDecoratorEditor
-    override val preferredFocusedComponent
-        get() = typeGroup.buttons().firstOrNull { it.isSelected }
+    override val stateComponents get() = super.stateComponents + affixDecoratorEditor + arrayDecoratorEditor
+    override val preferredFocusedComponent get() = typeGroup.buttons().firstOrNull { it.isSelected }
 
     private lateinit var typeGroup: ButtonGroup
     private lateinit var isUppercaseCheckBox: JCheckBox
@@ -110,6 +108,6 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidSche
             isUppercase = isUppercaseCheckBox.isSelected,
             addDashes = addDashesCheckBox.isSelected,
             affixDecorator = affixDecoratorEditor.readState(),
-            arrayDecorator = arrayDecoratorEditor.readState()
+            arrayDecorator = arrayDecoratorEditor.readState(),
         ).also { it.uuid = originalState.uuid }
 }

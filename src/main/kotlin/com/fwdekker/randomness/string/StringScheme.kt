@@ -2,7 +2,7 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.RandomnessIcons
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
@@ -88,13 +88,7 @@ data class StringScheme(
         }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(
-            pattern = pattern,
-            isRegex = isRegex,
-            removeLookAlikeSymbols = removeLookAlikeSymbols,
-            capitalization = capitalization,
-            arrayDecorator = arrayDecorator.deepCopy(retainUuid),
-        ).also { if (retainUuid) it.uuid = this.uuid }
+        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid)).also { if (retainUuid) it.uuid = this.uuid }
 
 
     /**
@@ -112,7 +106,7 @@ data class StringScheme(
          * The base icon for strings.
          */
         val BASE_ICON = TypeIcon(
-            RandomnessIcons.SCHEME,
+            Icons.SCHEME,
             "abc",
             listOf(JBColor(Color(244, 175, 61, 154), Color(244, 175, 61, 154)))
         )

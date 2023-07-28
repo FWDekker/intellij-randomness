@@ -32,8 +32,7 @@ class AffixDecoratorEditor(
     namePrefix: String = "",
 ) : StateEditor<AffixDecorator>(settings) {
     override val rootComponent: JPanel
-    override val preferredFocusedComponent
-        get() = enabledCheckBox
+    override val preferredFocusedComponent get() = enabledCheckBox
 
     private lateinit var enabledCheckBox: JCheckBox
     private lateinit var descriptorInput: ComboBox<String>

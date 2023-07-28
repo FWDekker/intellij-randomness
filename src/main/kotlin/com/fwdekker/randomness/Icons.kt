@@ -14,7 +14,7 @@ import kotlin.math.atan2
 /**
  * Basic Randomness icons.
  */
-object RandomnessIcons {
+object Icons {
     /**
      * The main icon of Randomness.
      */
@@ -93,7 +93,7 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
      */
     fun combineWith(other: TypeIcon) =
         TypeIcon(
-            RandomnessIcons.TEMPLATE,
+            Icons.TEMPLATE,
             if (this.text == other.text) this.text else "",
             this.colors + other.colors
         )
@@ -194,22 +194,22 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
         /**
          * Overlay icon for arrays.
          */
-        val ARRAY by lazy { OverlayIcon(RandomnessIcons.ARRAY, RandomnessIcons.ARRAY_FILLED) }
+        val ARRAY by lazy { OverlayIcon(Icons.ARRAY, Icons.ARRAY_FILLED) }
 
         /**
          * Overlay icon for template references.
          */
-        val REFERENCE by lazy { OverlayIcon(RandomnessIcons.REFERENCE, RandomnessIcons.REFERENCE_FILLED) }
+        val REFERENCE by lazy { OverlayIcon(Icons.REFERENCE, Icons.REFERENCE_FILLED) }
 
         /**
          * Overlay icon for repeated insertion.
          */
-        val REPEAT by lazy { OverlayIcon(RandomnessIcons.REPEAT, RandomnessIcons.REPEAT_FILLED) }
+        val REPEAT by lazy { OverlayIcon(Icons.REPEAT, Icons.REPEAT_FILLED) }
 
         /**
          * Overlay icon for settings.
          */
-        val SETTINGS by lazy { OverlayIcon(RandomnessIcons.SETTINGS, RandomnessIcons.SETTINGS_FILLED) }
+        val SETTINGS by lazy { OverlayIcon(Icons.SETTINGS, Icons.SETTINGS_FILLED) }
     }
 }
 

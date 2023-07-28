@@ -6,7 +6,7 @@ import com.fasterxml.uuid.UUIDClock
 import com.fasterxml.uuid.UUIDTimer
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.RandomnessIcons
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
@@ -90,7 +90,7 @@ data class UuidScheme(
          * The base icon for UUIDs.
          */
         val BASE_ICON = TypeIcon(
-            RandomnessIcons.SCHEME,
+            Icons.SCHEME,
             "id",
             listOf(JBColor(Color(185, 155, 248, 154), Color(185, 155, 248, 154)))
         )

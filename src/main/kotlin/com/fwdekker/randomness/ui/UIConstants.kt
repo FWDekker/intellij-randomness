@@ -6,11 +6,6 @@ package com.fwdekker.randomness.ui
  */
 object UIConstants {
     /**
-     * Width of a very-small-size input field.
-     */
-    const val SIZE_TINY = 16
-
-    /**
      * Width of a small-size input field.
      */
     const val SIZE_SMALL = 65

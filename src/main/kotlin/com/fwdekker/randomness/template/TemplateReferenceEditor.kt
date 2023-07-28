@@ -2,7 +2,7 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.StateContext
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
@@ -103,7 +103,7 @@ class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<Templa
 
         // Find templates that would not cause recursion if selected
         val listCopy = (+state.templateList).deepCopy(retainUuid = true)
-            .also { it.applySettingsState(SettingsState(it)) }
+            .also { it.applySettingsState(StateContext(it)) }
         val referenceCopy =
             listCopy.templates.flatMap { it.schemes }.single { it.uuid == originalState.uuid } as TemplateReference
         val validTemplates =

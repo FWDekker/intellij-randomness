@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.datetime
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.RandomnessIcons
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
@@ -29,8 +29,7 @@ data class DateTimeScheme(
 ) : Scheme() {
     override val name = Bundle("datetime.title")
     override val typeIcon = BASE_ICON
-    override val decorators
-        get() = listOf(arrayDecorator)
+    override val decorators get() = listOf(arrayDecorator)
 
 
     override fun generateUndecoratedStrings(count: Int): List<String> {
@@ -53,12 +52,7 @@ data class DateTimeScheme(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(
-            minDateTime = minDateTime,
-            maxDateTime = maxDateTime,
-            pattern = pattern,
-            arrayDecorator = arrayDecorator.deepCopy(retainUuid),
-        ).also { if (retainUuid) it.uuid = this.uuid }
+        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid)).also { if (retainUuid) it.uuid = this.uuid }
 
 
     /**
@@ -69,7 +63,7 @@ data class DateTimeScheme(
          * The base icon for date-times.
          */
         val BASE_ICON = TypeIcon(
-            RandomnessIcons.SCHEME,
+            Icons.SCHEME,
             "2:3",
             listOf(JBColor(Color(249, 139, 158, 154), Color(249, 139, 158, 154)))
         )

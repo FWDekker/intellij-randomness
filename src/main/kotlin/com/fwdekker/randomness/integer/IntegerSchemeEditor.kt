@@ -33,8 +33,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor
     override val rootComponent: JPanel
     override val stateComponents
         get() = super.stateComponents + affixDecoratorEditor + fixedLengthDecoratorEditor + arrayDecoratorEditor
-    override val preferredFocusedComponent
-        get() = minValue.editorComponent
+    override val preferredFocusedComponent get() = minValue.editorComponent
 
     private lateinit var minValue: JLongSpinner
     private lateinit var maxValue: JLongSpinner

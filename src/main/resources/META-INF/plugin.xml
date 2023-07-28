@@ -9,12 +9,12 @@
         <errorHandler implementation="com.fwdekker.randomness.ErrorReporter" />
 
         <!-- Persistence -->
-        <applicationService serviceImplementation="com.fwdekker.randomness.template.TemplateSettings" />
+        <applicationService serviceImplementation="com.fwdekker.randomness.template.TemplateListSettingsComponent" />
 
         <!-- Settings window -->
         <applicationConfigurable parentId="tools"
-                                 instance="com.fwdekker.randomness.template.TemplateSettingsConfigurable"
-                                 id="com.fwdekker.randomness.template.TemplateSettingsConfigurable"
+                                 instance="com.fwdekker.randomness.template.TemplateStateConfigurable"
+                                 id="com.fwdekker.randomness.template.TemplateStateConfigurable"
                                  displayName="Randomness" />
 
         <!-- Dynamically loads, unloads, and updates template actions -->

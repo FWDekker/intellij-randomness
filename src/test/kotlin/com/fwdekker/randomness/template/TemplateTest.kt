@@ -2,7 +2,7 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DummyScheme
-import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.StateContext
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.string.StringScheme
 import io.kotest.core.spec.style.DescribeSpec
@@ -107,7 +107,7 @@ object TemplateTest : DescribeSpec({
             val reference = TemplateReference()
             template.schemes = listOf(reference)
 
-            template.setSettingsState(SettingsState(templateList = newSettings))
+            template.setStateContext(StateContext(templateList = newSettings))
 
             assertThat(+reference.templateList).isSameAs(newSettings)
         }

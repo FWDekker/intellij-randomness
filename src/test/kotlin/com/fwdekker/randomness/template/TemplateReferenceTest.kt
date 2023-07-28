@@ -6,7 +6,7 @@ import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.OverlayIcon
-import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.StateContext
 import com.fwdekker.randomness.integer.IntegerScheme
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
@@ -209,9 +209,9 @@ object TemplateReferenceTest : DescribeSpec({
 
     describe("setSettingsState") {
         it("overwrites the known list of templates") {
-            val newSettings = SettingsState(templateList = TemplateList(emptyList()))
+            val newSettings = StateContext(templateList = TemplateList(emptyList()))
 
-            reference.setSettingsState(newSettings)
+            reference.setStateContext(newSettings)
 
             assertThat(+reference.templateList).isSameAs(newSettings.templateList)
         }

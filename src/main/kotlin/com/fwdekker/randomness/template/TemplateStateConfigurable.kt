@@ -1,19 +1,35 @@
-package com.fwdekker.randomness
+package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.StateEditor
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurationException
 import javax.swing.JComponent
 
 
 /**
- * Tells IntelliJ how to use a [StateEditor] in the settings dialog.
+ * Tells IntelliJ how to use a [TemplateListEditor] to edit a [TemplateListSettingsComponent] in the settings dialog.
+ *
+ * Set [templateToSelect] before [createComponent] is invoked to determine which template should be selected when the
+ * configurable opens.
+ *
+ * This class is separate from [TemplateListEditor] because that class creates UI components in the constructor. But
+ * configurables may be created at any time in the background, so using [TemplateListEditor] as a configurable would
+ * cause unnecessary lag.
+ *
+ * @see TemplateSettingsAction
  */
-@Suppress("detekt:LateinitUsage") // `createComponent` is invoked before any of the other methods
-abstract class SettingsConfigurable : Configurable {
+class TemplateStateConfigurable : Configurable {
     /**
      * The user interface for changing the settings, displayed in IntelliJ's settings window.
      */
     lateinit var editor: StateEditor<*> private set
+
+    /**
+     * The UUID of the template to select after calling [createComponent].
+     */
+    var templateToSelect: String? = null
+
 
 
     /**
@@ -55,16 +71,16 @@ abstract class SettingsConfigurable : Configurable {
      *
      * @return the root pane of the created editor
      */
-    override fun createComponent(): JComponent =
-        createEditor().let {
-            editor = it
-            it.rootComponent
-        }
+    override fun createComponent(): JComponent {
+        editor = TemplateListEditor().also { it.queueSelection = templateToSelect }
+        return editor.rootComponent
+    }
+
 
     /**
-     * Creates a new editor.
+     * Returns the name of the configurable as displayed in the settings window.
      *
-     * @return a new editor
+     * @return the name of the configurable as displayed in the settings window
      */
-    abstract fun createEditor(): StateEditor<*>
+    override fun getDisplayName() = "Randomness"
 }

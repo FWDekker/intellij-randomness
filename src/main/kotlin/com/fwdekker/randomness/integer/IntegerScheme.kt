@@ -2,7 +2,7 @@ package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.RandomnessIcons
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
@@ -114,7 +114,7 @@ data class IntegerScheme(
          * The base icon for integers.
          */
         val BASE_ICON = TypeIcon(
-            RandomnessIcons.SCHEME,
+            Icons.SCHEME,
             "123",
             listOf(JBColor(Color(64, 182, 224, 154), Color(64, 182, 224, 154)))
         )

@@ -30,7 +30,7 @@ object TypeIconTest : DescribeSpec({
             val icon1 = TypeIcon(PlainIcon(), "event", listOf(Color.GREEN))
             val icon2 = TypeIcon(PlainIcon(), "month", listOf(Color.RED))
 
-            assertThat(icon1.combineWith(icon2).base).isEqualTo(RandomnessIcons.TEMPLATE)
+            assertThat(icon1.combineWith(icon2).base).isEqualTo(Icons.TEMPLATE)
         }
 
         it("retains the text if it is the same for both icons") {

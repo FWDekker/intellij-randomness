@@ -2,7 +2,7 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.StateContext
 import com.fwdekker.randomness.StateEditor
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.datetime.DateTimeSchemeEditor
@@ -30,7 +30,7 @@ import javax.swing.SwingUtilities
 
 
 /**
- * Component for editing [TemplateList]s while keeping in mind the overall [SettingsState].
+ * Component for editing [TemplateList]s while keeping in mind the overall [StateContext].
  *
  * The editor consists of a left side and a right side. The left side contains a tree with the templates as roots and
  * their schemes as the leaves. When the user selects a scheme, the appropriate [StateEditor] for that scheme is loaded
@@ -41,14 +41,14 @@ import javax.swing.SwingUtilities
  * copies are written into the given template list only when [applyState] is invoked.
  *
  * @param settings the settings containing the templates to edit
- * @see TemplateSettingsConfigurable
+ * @see TemplateStateConfigurable
  */
-class TemplateListEditor(settings: SettingsState = SettingsState.DEFAULT) : StateEditor<SettingsState>(settings) {
+class TemplateListEditor(settings: StateContext = StateContext.DEFAULT) : StateEditor<StateContext>(settings) {
     override val rootComponent = JPanel(BorderLayout())
     override val stateComponents
         get() = listOf(templateTree)
 
-    private val currentState: SettingsState = SettingsState()
+    private val currentState: StateContext = StateContext()
     private val templateTree = TemplateJTree(originalState, currentState)
     private val schemeEditorPanel = JPanel(BorderLayout())
     private var schemeEditor: StateEditor<*>? = null
@@ -57,7 +57,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.DEFAULT) : Stat
     /**
      * The UUID of the scheme to select after the next invocation of [reset].
      *
-     * @see TemplateSettingsConfigurable
+     * @see TemplateStateConfigurable
      */
     var queueSelection: String? = null
 
@@ -158,7 +158,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.DEFAULT) : Stat
         }
 
 
-    override fun loadState(state: SettingsState) {
+    override fun loadState(state: StateContext) {
         super.loadState(state)
 
         currentState.copyFrom(state)

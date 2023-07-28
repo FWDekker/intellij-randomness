@@ -30,10 +30,8 @@ import javax.swing.JPanel
  */
 class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : StateEditor<DecimalScheme>(scheme) {
     override val rootComponent: JPanel
-    override val stateComponents
-        get() = super.stateComponents + affixDecoratorEditor + arrayDecoratorEditor
-    override val preferredFocusedComponent
-        get() = minValue.editorComponent
+    override val stateComponents get() = super.stateComponents + affixDecoratorEditor + arrayDecoratorEditor
+    override val preferredFocusedComponent get() = minValue.editorComponent
 
     private lateinit var minValue: JDoubleSpinner
     private lateinit var maxValue: JDoubleSpinner

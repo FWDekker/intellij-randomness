@@ -2,7 +2,7 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.RandomnessIcons
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
@@ -60,7 +60,7 @@ data class WordScheme(
          * The base icon for words.
          */
         val BASE_ICON = TypeIcon(
-            RandomnessIcons.SCHEME,
+            Icons.SCHEME,
             "cat",
             listOf(JBColor(Color(242, 101, 34, 154), Color(242, 101, 34, 154)))
         )

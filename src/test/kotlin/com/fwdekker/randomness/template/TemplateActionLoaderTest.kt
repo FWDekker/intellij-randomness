@@ -30,7 +30,7 @@ class TemplateActionLoaderTest : DescribeSpec({
     describe("registerActions") {
         it("registers actions for each template") {
             val template = Template(name = "Snow")
-            TemplateSettings.default.loadState(TemplateList(listOf(template)))
+            TemplateListSettingsComponent.default.loadState(TemplateList(listOf(template)))
 
             TemplateActionLoader().registerActions(actionManager)
 
@@ -41,7 +41,7 @@ class TemplateActionLoaderTest : DescribeSpec({
     describe("unregisterActions") {
         it("unregisters actions for each template") {
             val template = Template(name = "Kick")
-            TemplateSettings.default.loadState(TemplateList(listOf(template)))
+            TemplateListSettingsComponent.default.loadState(TemplateList(listOf(template)))
 
             TemplateActionLoader().registerActions(actionManager)
             assertThat(actionManager.getAction(template.actionId)).isNotNull()

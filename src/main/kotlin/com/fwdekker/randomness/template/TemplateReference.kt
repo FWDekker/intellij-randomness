@@ -4,12 +4,12 @@ import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
-import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SettingsState
 import com.fwdekker.randomness.State
+import com.fwdekker.randomness.StateContext
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
@@ -42,7 +42,7 @@ data class TemplateReference(
      * Using a [Box] to prevent recursive initialization.
      */
     @get:Transient
-    var templateList: Box<TemplateList> = Box({ TemplateSettings.default.state })
+    var templateList: Box<TemplateList> = Box({ TemplateListSettingsComponent.default.state })
 
     /**
      * The template in [templateList] that contains this reference.
@@ -67,9 +67,9 @@ data class TemplateReference(
             .generateStrings(count)
             .map { capitalization.transform(it, random) }
 
-    override fun setSettingsState(settingsState: SettingsState) {
-        super.setSettingsState(settingsState)
-        templateList += settingsState.templateList
+    override fun setStateContext(stateContext: StateContext) {
+        super.setStateContext(stateContext)
+        templateList += stateContext.templateList
     }
 
 
@@ -92,7 +92,7 @@ data class TemplateReference(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(templateUuid = templateUuid, arrayDecorator = arrayDecorator.deepCopy(retainUuid))
+        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid))
             .also {
                 if (retainUuid) it.uuid = uuid
 
@@ -107,7 +107,7 @@ data class TemplateReference(
         /**
          * The base icon for references when the reference is invalid.
          */
-        val DEFAULT_ICON = TypeIcon(RandomnessIcons.TEMPLATE, "", listOf(Gray._110))
+        val DEFAULT_ICON = TypeIcon(Icons.TEMPLATE, "", listOf(Gray._110))
 
         /**
          * The default value of the [capitalization] field.

@@ -16,8 +16,7 @@ import javax.swing.JTextField
  */
 class TemplateEditor(template: Template) : StateEditor<Template>(template) {
     override val rootComponent: JPanel
-    override val preferredFocusedComponent
-        get() = nameInput
+    override val preferredFocusedComponent get() = nameInput
 
     private lateinit var nameInput: JTextField
 

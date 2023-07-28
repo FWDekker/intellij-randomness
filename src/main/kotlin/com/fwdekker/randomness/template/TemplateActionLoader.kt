@@ -12,11 +12,11 @@ class TemplateActionLoader : DynamicActionConfigurationCustomizer {
      * Shorthand to return all the user's stored [Template]s.
      */
     private val templates: List<Template>
-        get() = TemplateSettings.default.state.templates
+        get() = TemplateListSettingsComponent.default.state.templates
 
 
     /**
-     * Registers the actions for all [Template]s in the user's [TemplateSettings].
+     * Registers the actions for all [Template]s in the user's [TemplateListSettingsComponent].
      *
      * @param actionManager the manager to register actions through
      */
@@ -25,7 +25,7 @@ class TemplateActionLoader : DynamicActionConfigurationCustomizer {
     }
 
     /**
-     * Unregisters the actions of all [Template]s in the user's [TemplateSettings].
+     * Unregisters the actions of all [Template]s in the user's [TemplateListSettingsComponent].
      *
      * @param actionManager the manager to unregister actions through
      */

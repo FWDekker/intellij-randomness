@@ -34,8 +34,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
     override val rootComponent: JPanel
     override val stateComponents
         get() = super.stateComponents + wordListDocument + affixDecoratorEditor + arrayDecoratorEditor
-    override val preferredFocusedComponent
-        get() = capitalizationComboBox as JComponent
+    override val preferredFocusedComponent get() = capitalizationComboBox as JComponent
 
     private lateinit var presetComboBox: ComboBox<DefaultWordList>
     private lateinit var wordListDocument: Document

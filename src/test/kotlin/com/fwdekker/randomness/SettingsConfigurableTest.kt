@@ -13,13 +13,13 @@ import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * Unit tests for [SettingsConfigurable].
+ * Unit tests for [StateConfigurable].
  */
 object SettingsConfigurableTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var scheme: DummyScheme
     lateinit var editor: DummySchemeEditor
-    lateinit var configurable: DummySettingsConfigurable
+    lateinit var configurable: DummyStateConfigurable
     lateinit var frame: FrameFixture
 
 
@@ -31,7 +31,7 @@ object SettingsConfigurableTest : DescribeSpec({
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        configurable = DummySettingsConfigurable()
+        configurable = DummyStateConfigurable()
         GuiActionRunner.execute { configurable.createComponent() }
         editor = configurable.editor as DummySchemeEditor
         scheme = editor.originalState

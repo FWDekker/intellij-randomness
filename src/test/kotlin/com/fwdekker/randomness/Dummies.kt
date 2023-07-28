@@ -20,7 +20,7 @@ data class DummyScheme(
     var literals: List<String> = listOf(DEFAULT_OUTPUT),
     override var decorators: List<DecoratorScheme> = listOf(ArrayDecorator()),
 ) : Scheme() {
-    override var typeIcon = TypeIcon(RandomnessIcons.SCHEME, "dum", listOf(Color.GRAY))
+    override var typeIcon = TypeIcon(Icons.SCHEME, "dum", listOf(Color.GRAY))
     override val name get() = literals.joinToString()
 
     /**
@@ -117,9 +117,9 @@ class DummySchemeEditor(scheme: DummyScheme = DummyScheme()) : StateEditor<Dummy
 
 
 /**
- * Dummy implementation of [SettingsConfigurable].
+ * Dummy implementation of [StateConfigurable].
  */
-class DummySettingsConfigurable : SettingsConfigurable() {
+class DummyStateConfigurable : StateConfigurable() {
     override fun getDisplayName() = "Dummy"
 
     override fun createEditor() = DummySchemeEditor()

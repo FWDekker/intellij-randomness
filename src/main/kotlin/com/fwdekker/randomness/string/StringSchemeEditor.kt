@@ -25,10 +25,8 @@ import javax.swing.JTextField
  */
 class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<StringScheme>(scheme) {
     override val rootComponent: JPanel
-    override val stateComponents
-        get() = super.stateComponents + arrayDecoratorEditor
-    override val preferredFocusedComponent
-        get() = patternField
+    override val stateComponents get() = super.stateComponents + arrayDecoratorEditor
+    override val preferredFocusedComponent get() = patternField
 
     private lateinit var patternField: JTextField
     private lateinit var isRegexCheckBox: JCheckBox
@@ -100,7 +98,6 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
         isRegexCheckBox.isSelected = state.isRegex
         removeLookAlikeSymbolsCheckBox.isSelected = state.removeLookAlikeSymbols
         capitalizationComboBox.item = state.capitalization
-
         arrayDecoratorEditor.loadState(state.arrayDecorator)
     }
 
@@ -110,6 +107,6 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : StateEditor<St
             isRegex = isRegexCheckBox.isSelected,
             removeLookAlikeSymbols = removeLookAlikeSymbolsCheckBox.isSelected,
             capitalization = capitalizationComboBox.item,
-            arrayDecorator = arrayDecoratorEditor.readState()
+            arrayDecorator = arrayDecoratorEditor.readState(),
         ).also { it.uuid = originalState.uuid }
 }

@@ -1,8 +1,6 @@
 package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.StateEditor
-import java.awt.event.FocusEvent
-import java.awt.event.FocusListener
 import javax.swing.AbstractButton
 import javax.swing.ButtonGroup
 import javax.swing.JComboBox
@@ -127,30 +125,4 @@ class SimpleTreeModelListener(private val listener: (TreeModelEvent) -> Unit) : 
      * @param event the event that triggered the listener
      */
     override fun treeStructureChanged(event: TreeModelEvent) = listener(event)
-}
-
-
-/**
- * A [FocusListener] that invokes [listener] when focus is gained only.
- *
- * @property listener The listener to invoke when focus is gained.
- */
-class FocusGainListener(private val listener: (FocusEvent) -> Unit) : FocusListener {
-    /**
-     * Invokes [listener].
-     *
-     * @param event the event passed to [listener]
-     */
-    override fun focusGained(event: FocusEvent) {
-        listener(event)
-    }
-
-    /**
-     * Does nothing.
-     *
-     * @param event ignored
-     */
-    override fun focusLost(event: FocusEvent) {
-        // Do nothing
-    }
 }

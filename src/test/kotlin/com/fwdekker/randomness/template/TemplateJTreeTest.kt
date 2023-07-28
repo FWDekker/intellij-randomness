@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
-import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.StateContext
 import com.fwdekker.randomness.getActionButton
 import com.fwdekker.randomness.string.StringScheme
 import com.intellij.openapi.actionSystem.ActionToolbar
@@ -23,8 +23,8 @@ import javax.swing.JPanel
 object TemplateJTreeTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
 
-    lateinit var originalState: SettingsState
-    lateinit var currentState: SettingsState
+    lateinit var originalState: StateContext
+    lateinit var currentState: StateContext
     lateinit var tree: TemplateJTree
 
     fun model() = tree.myModel
@@ -41,7 +41,7 @@ object TemplateJTreeTest : DescribeSpec({
         ideaFixture.setUp()
 
         originalState =
-            SettingsState(
+            StateContext(
                 TemplateList(
                     listOf(
                         Template("Captain", listOf(DummyScheme.from("window"), DummyScheme.from("uncle"))),
@@ -556,7 +556,7 @@ object TemplateJTreeTest : DescribeSpec({
 
                 val referenceScheme = TemplateReference(referredTemplate.uuid)
                 val referenceTemplate = Template("airplane", listOf(referenceScheme))
-                referenceTemplate.setSettingsState(currentState)
+                referenceTemplate.setStateContext(currentState)
 
                 GuiActionRunner.execute {
                     list().templates = listOf(referredTemplate, referenceTemplate)

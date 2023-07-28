@@ -3,8 +3,8 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.Settings
-import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.State
+import com.fwdekker.randomness.StateContext
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.datetime.DateTimeScheme
@@ -26,15 +26,15 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
 data class TemplateList(
     @MapAnnotation(sortBeforeSave = false)
     var templates: List<Template> = DEFAULT_TEMPLATES.toMutableList(),
-) : Settings() {
+) : State() {
     /**
-     * Sets the [SettingsState] for each template in this list and returns this instance.
+     * Sets the [StateContext] for each template in this list and returns this instance.
      *
-     * @param settingsState the settings state for each template in this list
+     * @param stateContext the settings state for each template in this list
      * @return this instance
      */
-    fun applySettingsState(settingsState: SettingsState): TemplateList {
-        templates.forEach { it.setSettingsState(settingsState) }
+    fun applySettingsState(stateContext: StateContext): TemplateList {
+        templates.forEach { it.setStateContext(stateContext) }
         return this
     }
 
@@ -98,7 +98,7 @@ data class TemplateList(
     /**
      * Returns a deep copy of this list.
      *
-     * Note that the schemes in the returned list do not necessarily use the [SettingsState] in which this list resides.
+     * Note that the schemes in the returned list do not necessarily use the [StateContext] in which this list resides.
      * It may be necessary to use [applySettingsState] afterwards.
      *
      * @param retainUuid `false` if and only if the copy should have a different, new [uuid]

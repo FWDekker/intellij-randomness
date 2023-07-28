@@ -11,7 +11,7 @@ import kotlin.random.Random
 /**
  * A scheme is a [State] that is also a configurable random number generator.
  *
- * Schemes can additionally be given [DecoratorScheme]s that extend their functionality.
+ * Schemes can additionally use [DecoratorScheme]s to extend their functionality.
  */
 abstract class Scheme : State() {
     /**
@@ -85,13 +85,14 @@ abstract class Scheme : State() {
     @Throws(DataGenerationException::class)
     protected abstract fun generateUndecoratedStrings(count: Int = 1): List<String>
 
+
     /**
-     * Sets the [SettingsState] that may be used by this scheme.
+     * Sets the [StateContext] that may be used by this scheme.
      *
-     * Useful in case the scheme's behavior depends not only on its own internal state, but also that of other settings.
+     * Useful in case the scheme's behavior depends not only on its own internal state, but also that of other schemes.
      */
-    open fun setSettingsState(settingsState: SettingsState) {
-        decorators.forEach { it.setSettingsState(settingsState) }
+    open fun setStateContext(stateContext: StateContext) {
+        decorators.forEach { it.setStateContext(stateContext) }
     }
 
 
@@ -114,6 +115,7 @@ abstract class DecoratorScheme : Scheme() {
 
     abstract override fun deepCopy(retainUuid: Boolean): DecoratorScheme
 }
+
 
 /**
  * Thrown if a random datum could not be generated.

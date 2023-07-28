@@ -2,7 +2,7 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.DummyScheme
-import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.StateContext
 import com.fwdekker.randomness.string.StringScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -24,7 +24,7 @@ object TemplateListTest : DescribeSpec({
 
     describe("applySettingsState") {
         it("returns itself") {
-            assertThat(templateList.applySettingsState(SettingsState())).isSameAs(templateList)
+            assertThat(templateList.applySettingsState(StateContext())).isSameAs(templateList)
         }
 
         it("overwrites the settings of contained schemes") {
@@ -32,7 +32,7 @@ object TemplateListTest : DescribeSpec({
             val reference = TemplateReference()
             templateList.templates = listOf(Template(schemes = listOf(reference)))
 
-            templateList.applySettingsState(SettingsState(templateList = newSettings))
+            templateList.applySettingsState(StateContext(templateList = newSettings))
 
             assertThat(+reference.templateList).isSameAs(newSettings)
         }
