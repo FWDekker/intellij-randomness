@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
@@ -8,8 +7,6 @@ import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.State
-import com.fwdekker.randomness.StateContext
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
@@ -37,25 +34,17 @@ data class TemplateReference(
     override val decorators get() = listOf(arrayDecorator)
 
     /**
-     * The list in which this reference _must_ reside, and in which the referenced template _might_ reside.
-     *
-     * Using a [Box] to prevent recursive initialization.
-     */
-    @get:Transient
-    var templateList: Box<TemplateList> = Box({ TemplateListSettingsComponent.default.state })
-
-    /**
-     * The template in [templateList] that contains this reference.
+     * The [Template] in the [context]'s [TemplateList] that contains this [TemplateReference].
      */
     val parent: Template
-        get() = (+templateList).templates.single { template -> template.schemes.any { it.uuid == uuid } }
+        get() = (+context).templates.single { template -> template.schemes.any { it.uuid == uuid } }
 
     /**
-     * The template that is being referenced, or `null` if it could not be found in [templateList].
+     * The [Template] that is being referenced, or `null` if it could not be found in the [context]'s [TemplateList].
      */
     @get:Transient
     var template: Template?
-        get() = (+templateList).templates.singleOrNull { it.uuid == templateUuid }
+        get() = (+context).templates.singleOrNull { it.uuid == templateUuid }
         set(value) {
             templateUuid = value?.uuid
         }
@@ -67,14 +56,9 @@ data class TemplateReference(
             .generateStrings(count)
             .map { capitalization.transform(it, random) }
 
-    override fun setStateContext(stateContext: StateContext) {
-        super.setStateContext(stateContext)
-        templateList += stateContext.templateList
-    }
-
 
     override fun doValidate(): String? {
-        val recursion = (+templateList).findRecursionFrom(this)
+        val recursion = (+context).templateList.findRecursionFrom(this)
 
         return when {
             templateUuid == null -> Bundle("reference.error.no_selection")
@@ -84,20 +68,8 @@ data class TemplateReference(
         }
     }
 
-    override fun copyFrom(other: State) {
-        require(other is TemplateReference) { Bundle("shared.error.cannot_copy_from_different_type") }
-
-        super.copyFrom(other)
-        templateList = other.templateList.copy()
-    }
-
     override fun deepCopy(retainUuid: Boolean) =
-        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid))
-            .also {
-                if (retainUuid) it.uuid = uuid
-
-                it.templateList = templateList.copy()
-            }
+        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid)).deepCopyTransient(retainUuid)
 
 
     /**
@@ -110,9 +82,26 @@ data class TemplateReference(
         val DEFAULT_ICON = TypeIcon(Icons.TEMPLATE, "", listOf(Gray._110))
 
         /**
+         * The preset values for the [capitalization] field.
+         */
+        val PRESET_CAPITALIZATION = arrayOf(
+            CapitalizationMode.RETAIN,
+            CapitalizationMode.LOWER,
+            CapitalizationMode.UPPER,
+            CapitalizationMode.RANDOM,
+            CapitalizationMode.SENTENCE,
+            CapitalizationMode.FIRST_LETTER,
+        )
+
+        /**
          * The default value of the [capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
+
+        /**
+         * The preset values for the [affixDecorator] descriptor.
+         */
+        val PRESET_AFFIX_DECORATOR_DESCRIPTORS = listOf("'", "\"", "`")
 
         /**
          * The default value of the [affixDecorator] field.

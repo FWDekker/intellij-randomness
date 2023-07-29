@@ -51,6 +51,12 @@ abstract class Scheme : State() {
     var random: Random = Random.Default
 
 
+    override fun applyContext(context: Box<Settings>) {
+        super.applyContext(context)
+        decorators.forEach { it.applyContext(context) }
+    }
+
+
     /**
      * Generates random decorated data according to the settings in this scheme and its decorators.
      *
@@ -84,16 +90,6 @@ abstract class Scheme : State() {
      */
     @Throws(DataGenerationException::class)
     protected abstract fun generateUndecoratedStrings(count: Int = 1): List<String>
-
-
-    /**
-     * Sets the [StateContext] that may be used by this scheme.
-     *
-     * Useful in case the scheme's behavior depends not only on its own internal state, but also that of other schemes.
-     */
-    open fun setStateContext(stateContext: StateContext) {
-        decorators.forEach { it.setStateContext(stateContext) }
-    }
 
 
     abstract override fun deepCopy(retainUuid: Boolean): Scheme

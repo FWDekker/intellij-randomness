@@ -78,8 +78,10 @@ data class UuidScheme(
         else arrayDecorator.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(affixDecorator = affixDecorator.deepCopy(retainUuid), arrayDecorator = arrayDecorator.deepCopy(retainUuid))
-            .also { if (retainUuid) it.uuid = this.uuid }
+        copy(
+            affixDecorator = affixDecorator.deepCopy(retainUuid),
+            arrayDecorator = arrayDecorator.deepCopy(retainUuid),
+        ).deepCopyTransient(retainUuid)
 
 
     /**
@@ -119,6 +121,11 @@ data class UuidScheme(
          * Integer representing a type-4 UUID.
          */
         const val TYPE_4 = 4
+
+        /**
+         * The preset values for the [affixDecorator] field.
+         */
+        val PRESET_AFFIX_DECORATOR_DESCRIPTORS = listOf("'", "\"", "`")
 
         /**
          * The default value of the [affixDecorator] field.

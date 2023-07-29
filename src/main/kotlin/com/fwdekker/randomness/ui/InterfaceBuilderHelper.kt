@@ -1,14 +1,20 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.datetime.toEpochMilli
+import com.fwdekker.randomness.datetime.toLocalDateTime
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.columns
+import com.intellij.ui.dsl.builder.toMutableProperty
 import com.intellij.ui.layout.ComponentPredicate
 import com.intellij.util.ui.DialogUtil
 import java.awt.Dimension
 import javax.swing.AbstractButton
 import javax.swing.JComponent
 import javax.swing.JTextField
+import javax.swing.text.Document
+import kotlin.reflect.KMutableProperty0
 
 
 /**
@@ -22,6 +28,15 @@ import javax.swing.JTextField
 fun Panel.indentedIf(indented: Boolean, spec: Panel.() -> Unit) =
     if (indented) indent(spec)
     else rowsRange(spec)
+
+
+fun <T : JComponent> Cell<T>.onResetThis(callback: (Cell<T>) -> Unit) = onReset { callback(this) }
+
+fun <T : JComponent> Cell<T>.withName(name: String) =
+    this.also { it.component.name = name }
+
+fun <T : JTextField> Cell<T>.withDocument(document: Document) =
+    this.also { component.document = document }
 
 
 /**
@@ -116,3 +131,32 @@ fun JIntSpinner.hasValue(lambda: (Int) -> Boolean) =
             this@hasValue.addChangeListener { listener(invoke()) }
         }
     }
+
+
+fun Cell<ComboBox<String>>.bindCurrentText(property: KMutableProperty0<String>) =
+    bind(
+        { comboBox -> comboBox.getCurrentText() },
+        { comboBox, value -> comboBox.item = value },
+        property.toMutableProperty()
+    )
+
+fun Cell<JIntSpinner>.bindIntValue(property: KMutableProperty0<Int>) =
+    bind(
+        { spinner -> spinner.value },
+        { spinner, value -> spinner.value = value },
+        property.toMutableProperty()
+    )
+
+fun Cell<JLongSpinner>.bindLongValue(property: KMutableProperty0<Long>) =
+    bind(
+        { spinner -> spinner.value },
+        { spinner, value -> spinner.value = value },
+        property.toMutableProperty()
+    )
+
+fun Cell<JDateTimeField>.bindDateTimeLongValue(property: KMutableProperty0<Long>) =
+    bind(
+        { field -> field.value.toEpochMilli() },
+        { field, value -> field.value = value.toLocalDateTime() },
+        property.toMutableProperty()
+    )

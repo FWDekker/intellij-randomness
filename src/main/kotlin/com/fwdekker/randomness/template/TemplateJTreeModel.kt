@@ -78,8 +78,8 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeM
      *
      * @param newList the new list, or `null` to use the current root list
      */
-    fun reload(newList: TemplateList? = null) {
-        list = newList ?: list
+    fun reload(newList: TemplateList = list) {
+        list = newList
 
         fireNodeStructureChanged(root)
     }

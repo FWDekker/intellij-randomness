@@ -49,7 +49,7 @@ data class WordScheme(
             words = words.toList(),
             affixDecorator = affixDecorator.deepCopy(retainUuid),
             arrayDecorator = arrayDecorator.deepCopy(retainUuid),
-        ).also { if (retainUuid) it.uuid = this.uuid }
+        ).deepCopyTransient(retainUuid)
 
 
     /**
@@ -72,9 +72,26 @@ data class WordScheme(
             get() = listOf("lorem", "ipsum", "dolor", "sit", "amet")
 
         /**
+         * The preset values for the [capitalization] field.
+         */
+        val PRESET_CAPITALIZATION = arrayOf(
+            CapitalizationMode.RETAIN,
+            CapitalizationMode.LOWER,
+            CapitalizationMode.UPPER,
+            CapitalizationMode.RANDOM,
+            CapitalizationMode.SENTENCE,
+            CapitalizationMode.FIRST_LETTER,
+        )
+
+        /**
          * The default value of the [capitalization] field.
          */
         val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
+
+        /**
+         * The preset values for the [affixDecorator] descriptor.
+         */
+        val PRESET_AFFIX_DECORATOR_DESCRIPTORS = listOf("'", "\"", "`")
 
         /**
          * The default value of the [affixDecorator] field.

@@ -1,0 +1,85 @@
+package com.fwdekker.randomness
+
+import com.fwdekker.randomness.template.Template
+import com.fwdekker.randomness.template.TemplateList
+import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.service
+import com.intellij.util.xmlb.annotations.Transient
+
+
+/**
+ * Contains references to various [State] objects.
+ *
+ * @property templateList The template list.
+ */
+data class Settings(
+    var templateList: TemplateList = TemplateList(),
+) : State() {
+    /**
+     * @see TemplateList.templates
+     */
+    @get:Transient
+    val templates: List<Template> get() = templateList.templates
+
+
+    override fun doValidate() = templateList.doValidate()
+
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(templateList = templateList.deepCopy(retainUuid = retainUuid)).deepCopyTransient(retainUuid)
+
+    override fun copyFrom(other: State) {
+        require(other is Settings) { Bundle("shared.error.cannot_copy_from_different_type") }
+
+        this.templateList.copyFrom(other.templateList)
+        copyFromTransient(other)
+    }
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The persistent [Settings] instance.
+         */
+        val DEFAULT: Settings by lazy { PersistentSettings.default.state }
+    }
+}
+
+/**
+ * The actual user's actual stored actually-serialized settings (actually).
+ */
+@com.intellij.openapi.components.State(
+    name = "com.fwdekker.randomness.PersistentSettings",
+    storages = [Storage("\$APP_CONFIG\$/randomness-beta.xml")],
+)
+class PersistentSettings : PersistentStateComponent<Settings> {
+    private val settings = Settings()
+
+
+    /**
+     * Returns the template list.
+     *
+     * @return the template list
+     */
+    override fun getState() = settings
+
+    /**
+     * Invokes [TemplateList.copyFrom].
+     *
+     * @param settings the state to invoke [TemplateList.copyFrom] on
+     */
+    override fun loadState(settings: Settings) = this.settings.copyFrom(settings)
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The persistent instance.
+         */
+        val default: PersistentSettings get() = service()
+    }
+}

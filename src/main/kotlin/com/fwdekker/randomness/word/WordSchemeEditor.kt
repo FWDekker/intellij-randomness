@@ -2,153 +2,113 @@ package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.fwdekker.randomness.ui.setSimpleRenderer
+import com.fwdekker.randomness.ui.onResetThis
 import com.fwdekker.randomness.ui.withFixedHeight
+import com.fwdekker.randomness.ui.withName
+import com.fwdekker.randomness.ui.withSimpleRenderer
+import com.fwdekker.randomness.word.WordScheme.Companion.PRESET_AFFIX_DECORATOR_DESCRIPTORS
+import com.fwdekker.randomness.word.WordScheme.Companion.PRESET_CAPITALIZATION
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
 import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBLabel
+import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.toMutableProperty
+import com.intellij.ui.dsl.builder.toNullableProperty
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import java.awt.event.ItemEvent
-import javax.swing.JComponent
-import javax.swing.JPanel
 
 
 /**
- * Component for editing random word settings.
+ * Component for editing a [WordScheme].
  *
- * @param scheme the scheme to edit in the component
+ * @param scheme the scheme to edit
  */
-class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordScheme>(scheme) {
-    override val rootComponent: JPanel
-    override val stateComponents
-        get() = super.stateComponents + wordListDocument + affixDecoratorEditor + arrayDecoratorEditor
-    override val preferredFocusedComponent get() = capitalizationComboBox as JComponent
+class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordScheme>(scheme) {
+    override val rootComponent = panel {
+        group(Bundle("word.ui.words.header")) {
+            lateinit var preset: ComboBox<DefaultWordList>
+            lateinit var document: Document
 
-    private lateinit var presetComboBox: ComboBox<DefaultWordList>
-    private lateinit var wordListDocument: Document
-    private lateinit var wordListEditor: Editor
-    private lateinit var capitalizationComboBox: ComboBox<CapitalizationMode>
-    private lateinit var affixDecoratorEditor: AffixDecoratorEditor
-    private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
-
-    /**
-     * The words currently displayed in [wordListDocument].
-     */
-    private var wordList: List<String>
-        get() = wordListDocument.text.split('\n').filterNot { it.isBlank() }
-        set(value) = runWriteAction { wordListDocument.setText(value.joinToString(separator = "\n", postfix = "\n")) }
-
-
-    init {
-        rootComponent = panel {
-            group(Bundle("word.ui.words.header")) {
-                row(Bundle("word.ui.words.insert_option")) {
-                    cell(ComboBox(arrayOf(PRESET_ITEM) + DefaultWordList.WORD_LISTS))
-                        .also { it.component.name = "presets" }
-                        .also { it.component.setRenderer { _, value, _, _, _ -> JBLabel(value.name) } }
-                        .also {
-                            it.component.addItemListener { event ->
-                                if (event.stateChange == ItemEvent.SELECTED) {
-                                    val item = event.item as DefaultWordList
-                                    if (item != PRESET_ITEM) wordList = item.words
-                                }
+            row(Bundle("word.ui.words.insert_option")) {
+                cell(ComboBox(arrayOf(PRESET_ITEM) + DefaultWordList.WORD_LISTS))
+                    .withName("presets")
+                    .also { it.component.setRenderer { _, value, _, _, _ -> JBLabel(value.name) } }
+                    .also {
+                        it.component.addItemListener { event ->
+                            if (event.stateChange == ItemEvent.SELECTED) {
+                                val item = event.item as DefaultWordList
+                                if (item != PRESET_ITEM) document.setWordList(item.words)
                             }
                         }
-                        .also { presetComboBox = it.component }
-                }
-
-                row {
-                    val factory = EditorFactory.getInstance()
-                    wordListDocument = factory.createDocument("")
-                    addChangeListenerTo(wordListDocument) {
-                        if (presetComboBox.selectedIndex != 0 && wordList != presetComboBox.item.words)
-                            presetComboBox.selectedIndex = 0
                     }
-                    wordListEditor = factory.createEditor(wordListDocument)
-
-                    cell(wordListEditor.component)
-                        .horizontalAlign(HorizontalAlign.FILL)
-                        .withFixedHeight(UIConstants.SIZE_VERY_LARGE)
-                }
-            }
-
-            group(Bundle("word.ui.format.header")) {
-                row(Bundle("word.ui.format.capitalization_option")) {
-                    cell(
-                        ComboBox(
-                            arrayOf(
-                                CapitalizationMode.RETAIN,
-                                CapitalizationMode.LOWER,
-                                CapitalizationMode.UPPER,
-                                CapitalizationMode.RANDOM,
-                                CapitalizationMode.SENTENCE,
-                                CapitalizationMode.FIRST_LETTER,
-                            )
-                        )
-                    ).also {
-                        it.component.setSimpleRenderer(CapitalizationMode::toLocalizedString)
-                        it.component.name = "capitalization"
-                        capitalizationComboBox = it.component
+                    .onResetThis {
+                        it.component.selectedIndex =
+                            DefaultWordList.WORD_LISTS.map(DefaultWordList::words).indexOf(scheme.words) + 1
                     }
-                }
-
-                row {
-                    affixDecoratorEditor = AffixDecoratorEditor(
-                        originalState.affixDecorator,
-                        listOf("'", "\"", "`"),
-                        enableMnemonic = true
-                    )
-                    cell(affixDecoratorEditor.rootComponent)
-                }
+                    .also { preset = it.component }
             }
 
             row {
-                arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
-                cell(arrayDecoratorEditor.rootComponent).horizontalAlign(HorizontalAlign.FILL)
+                val factory = EditorFactory.getInstance()
+
+                document = factory.createDocument("")
+                addChangeListenerTo(document) {
+                    if (preset.selectedIndex != 0 && document.getWordList() != preset.item.words)
+                        preset.selectedIndex = 0
+                }
+                extraComponents += document
+
+                val wordListEditor = factory.createEditor(document)
+                Disposer.register(this@WordSchemeEditor) { EditorFactory.getInstance().releaseEditor(wordListEditor) }
+                cell(wordListEditor.component)
+                    .onReset { document.resetUndoHistory() }
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .withFixedHeight(UIConstants.SIZE_VERY_LARGE)
+                    .bind(
+                        { document.getWordList() },
+                        { _, it: List<String> -> document.setWordList(it) },
+                        scheme::words.toMutableProperty()
+                    )
             }
         }
 
-        loadState()
+        group(Bundle("word.ui.format.header")) {
+            row(Bundle("word.ui.format.capitalization_option")) {
+                cell(ComboBox(PRESET_CAPITALIZATION))
+                    .withSimpleRenderer(CapitalizationMode::toLocalizedString)
+                    .withName("capitalization")
+                    .bindItem(scheme::capitalization.toNullableProperty())
+            }
 
-        // Reset undo history
-        (UndoManager.getGlobalInstance() as UndoManagerImpl)
-            .invalidateActionsFor(DocumentReferenceManager.getInstance().create(wordListDocument))
+            row {
+                AffixDecoratorEditor(scheme.affixDecorator, PRESET_AFFIX_DECORATOR_DESCRIPTORS)
+                    .also { decoratorEditors += it }
+                    .let { cell(it.rootComponent) }
+            }
+        }
+
+        row {
+            ArrayDecoratorEditor(scheme.arrayDecorator)
+                .also { decoratorEditors += it }
+                .let { cell(it.rootComponent).horizontalAlign(HorizontalAlign.FILL) }
+        }
     }
 
 
-    override fun loadState(state: WordScheme) {
-        super.loadState(state)
-
-        presetComboBox.selectedIndex = DefaultWordList.WORD_LISTS.map { it.words }.indexOf(state.words) + 1
-        wordList = state.words
-        capitalizationComboBox.item = state.capitalization
-        affixDecoratorEditor.loadState(state.affixDecorator)
-        arrayDecoratorEditor.loadState(state.arrayDecorator)
-    }
-
-    override fun readState() =
-        WordScheme(
-            words = wordList,
-            capitalization = capitalizationComboBox.item,
-            affixDecorator = affixDecoratorEditor.readState(),
-            arrayDecorator = arrayDecoratorEditor.readState(),
-        ).also { it.uuid = originalState.uuid }
-
-
-    override fun dispose() {
-        EditorFactory.getInstance().releaseEditor(wordListEditor)
+    init {
+        reset()
     }
 
 
@@ -157,9 +117,22 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : StateEditor<WordSche
      */
     companion object {
         /**
-         * The "header" item inserted at the top of the [presetComboBox].
+         * The "header" item inserted at the top of the preset combobox.
          */
-        val PRESET_ITEM
-            get() = DefaultWordList("<html><i>${Bundle("word_list.ui.select_preset")}</i>", "")
+        val PRESET_ITEM get() = DefaultWordList("<html><i>${Bundle("word_list.ui.select_preset")}</i>", "")
     }
 }
+
+
+// TODO: Document
+private fun Document.resetUndoHistory() {
+    (UndoManager.getGlobalInstance() as UndoManagerImpl)
+        .invalidateActionsFor(DocumentReferenceManager.getInstance().create(this))
+}
+
+// TODO: Document
+private fun Document.getWordList() = this.text.split('\n').filterNot { it.isBlank() }
+
+// TODO: Document
+private fun Document.setWordList(wordList: List<String>) =
+    runWriteAction { setText(wordList.joinToString(separator = "\n", postfix = "\n")) }

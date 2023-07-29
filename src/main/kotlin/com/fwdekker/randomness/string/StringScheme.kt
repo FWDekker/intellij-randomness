@@ -88,7 +88,7 @@ data class StringScheme(
         }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid)).also { if (retainUuid) it.uuid = this.uuid }
+        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid)).deepCopyTransient(retainUuid)
 
 
     /**
@@ -125,6 +125,16 @@ data class StringScheme(
          * The default value of the [removeLookAlikeSymbols] field.
          */
         const val DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS = false
+
+        /**
+         * The preset values for the [capitalization] field.
+         */
+        val PRESET_CAPITALIZATION = arrayOf(
+            CapitalizationMode.RETAIN,
+            CapitalizationMode.LOWER,
+            CapitalizationMode.UPPER,
+            CapitalizationMode.RANDOM,
+        )
 
         /**
          * The default value of the [capitalization] field.

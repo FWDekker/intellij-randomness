@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.PersistentSettings
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.impl.DynamicActionConfigurationCustomizer
 
@@ -11,12 +12,11 @@ class TemplateActionLoader : DynamicActionConfigurationCustomizer {
     /**
      * Shorthand to return all the user's stored [Template]s.
      */
-    private val templates: List<Template>
-        get() = TemplateListSettingsComponent.default.state.templates
+    private val templates: List<Template> get() = PersistentSettings.default.state.templates
 
 
     /**
-     * Registers the actions for all [Template]s in the user's [TemplateListSettingsComponent].
+     * Registers the actions for all [Template]s in the user's [PersistentSettings].
      *
      * @param actionManager the manager to register actions through
      */
@@ -25,7 +25,7 @@ class TemplateActionLoader : DynamicActionConfigurationCustomizer {
     }
 
     /**
-     * Unregisters the actions of all [Template]s in the user's [TemplateListSettingsComponent].
+     * Unregisters the actions of all [Template]s in the user's [PersistentSettings].
      *
      * @param actionManager the manager to unregister actions through
      */

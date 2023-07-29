@@ -1,14 +1,13 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.StateEditor
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurationException
 import javax.swing.JComponent
 
 
 /**
- * Tells IntelliJ how to use a [TemplateListEditor] to edit a [TemplateListSettingsComponent] in the settings dialog.
+ * Tells IntelliJ how to use a [TemplateListEditor] to edit a [TemplateList] in the settings dialog.
  *
  * Set [templateToSelect] before [createComponent] is invoked to determine which template should be selected when the
  * configurable opens.
@@ -19,17 +18,16 @@ import javax.swing.JComponent
  *
  * @see TemplateSettingsAction
  */
-class TemplateStateConfigurable : Configurable {
+class TemplateListConfigurable : Configurable {
     /**
      * The user interface for changing the settings, displayed in IntelliJ's settings window.
      */
-    lateinit var editor: StateEditor<*> private set
+    lateinit var editor: TemplateListEditor private set
 
     /**
      * The UUID of the template to select after calling [createComponent].
      */
     var templateToSelect: String? = null
-
 
 
     /**
@@ -72,7 +70,8 @@ class TemplateStateConfigurable : Configurable {
      * @return the root pane of the created editor
      */
     override fun createComponent(): JComponent {
-        editor = TemplateListEditor().also { it.queueSelection = templateToSelect }
+        editor = TemplateListEditor()
+        editor.queueSelection = templateToSelect
         return editor.rootComponent
     }
 

@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.Box
+import com.fwdekker.randomness.MutableBox
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.array.ArrayDecorator
@@ -44,7 +44,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
         )
 
         reference = templateList.templates[1].schemes[0] as TemplateReference
-        reference.templateList = Box({ templateList })
+        reference.templateList = MutableBox({ templateList })
         reference.templateUuid = templateList.templates[0].uuid
 
         editor = GuiActionRunner.execute<TemplateReferenceEditor> { TemplateReferenceEditor(reference) }
@@ -62,7 +62,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
             GuiActionRunner.execute {
                 editor.loadState(
                     TemplateReference(templateList.templates[2].uuid)
-                        .also { it.templateList = Box({ templateList }) }
+                        .also { it.templateList = MutableBox({ templateList }) }
                 )
             }
 
@@ -71,7 +71,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
 
         it("selects nothing if the reference refers to null") {
             GuiActionRunner.execute {
-                editor.loadState(TemplateReference().also { it.templateList = Box({ templateList }) })
+                editor.loadState(TemplateReference().also { it.templateList = MutableBox({ templateList }) })
             }
 
             assertThat(frame.getComboBoxItem<Template>("template")).isNull()
@@ -175,7 +175,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
             GuiActionRunner.execute {
                 editor.loadState(
                     TemplateReference(arrayDecorator = ArrayDecorator(enabled = true))
-                        .also { it.templateList = Box({ templateList }) }
+                        .also { it.templateList = MutableBox({ templateList }) }
                 )
             }
 

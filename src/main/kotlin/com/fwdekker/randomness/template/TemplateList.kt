@@ -1,10 +1,11 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.State
-import com.fwdekker.randomness.StateContext
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.datetime.DateTimeScheme
@@ -21,21 +22,14 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
  * A collection of different templates.
  *
  * @property templates The collection of templates, each with a unique name.
- * @see TemplateSettings
  */
 data class TemplateList(
     @MapAnnotation(sortBeforeSave = false)
     var templates: List<Template> = DEFAULT_TEMPLATES.toMutableList(),
 ) : State() {
-    /**
-     * Sets the [StateContext] for each template in this list and returns this instance.
-     *
-     * @param stateContext the settings state for each template in this list
-     * @return this instance
-     */
-    fun applySettingsState(stateContext: StateContext): TemplateList {
-        templates.forEach { it.setStateContext(stateContext) }
-        return this
+    override fun applyContext(context: Box<Settings>) {
+        super.applyContext(context)
+        templates.forEach { it.applyContext(context) }
     }
 
 
@@ -95,18 +89,8 @@ data class TemplateList(
         }
     }
 
-    /**
-     * Returns a deep copy of this list.
-     *
-     * Note that the schemes in the returned list do not necessarily use the [StateContext] in which this list resides.
-     * It may be necessary to use [applySettingsState] afterwards.
-     *
-     * @param retainUuid `false` if and only if the copy should have a different, new [uuid]
-     * @return a deep copy of this list
-     */
     override fun deepCopy(retainUuid: Boolean) =
-        copy(templates = templates.map { it.deepCopy(retainUuid) })
-            .also { if (retainUuid) it.uuid = this.uuid }
+        copy(templates = templates.map { it.deepCopy(retainUuid) }).deepCopyTransient(retainUuid)
 
 
     /**

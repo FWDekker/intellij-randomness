@@ -1,6 +1,6 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
 import javax.swing.AbstractButton
 import javax.swing.ButtonGroup
 import javax.swing.JComboBox
@@ -41,7 +41,7 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
                 component.model.addTreeModelListener(SimpleTreeModelListener { listener() })
                 component.addTreeSelectionListener { listener() }
             }
-            is StateEditor<*> -> component.addChangeListener { listener() }
+            is SchemeEditor<*> -> component.addChangeListener(listener)
             else -> Unit
         }
     }

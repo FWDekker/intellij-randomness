@@ -103,7 +103,7 @@ data class IntegerScheme(
             affixDecorator = affixDecorator.deepCopy(retainUuid),
             fixedLengthDecorator = fixedLengthDecorator.deepCopy(retainUuid),
             arrayDecorator = arrayDecorator.deepCopy(retainUuid),
-        ).also { if (retainUuid) it.uuid = this.uuid }
+        ).deepCopyTransient(retainUuid)
 
 
     /**
@@ -118,6 +118,16 @@ data class IntegerScheme(
             "123",
             listOf(JBColor(Color(64, 182, 224, 154), Color(64, 182, 224, 154)))
         )
+
+        /**
+         * The default value of the [minValue] field.
+         */
+        const val DEFAULT_MIN_VALUE = 0L
+
+        /**
+         * The default value of the [maxValue] field.
+         */
+        const val DEFAULT_MAX_VALUE = 1000L
 
         /**
          * The minimum value of the [base] field.
@@ -135,16 +145,6 @@ data class IntegerScheme(
         const val DECIMAL_BASE = 10
 
         /**
-         * The default value of the [minValue] field.
-         */
-        const val DEFAULT_MIN_VALUE = 0L
-
-        /**
-         * The default value of the [maxValue] field.
-         */
-        const val DEFAULT_MAX_VALUE = 1000L
-
-        /**
          * The default value of the [base] field.
          */
         const val DEFAULT_BASE = DECIMAL_BASE
@@ -160,9 +160,19 @@ data class IntegerScheme(
         const val DEFAULT_GROUPING_SEPARATOR_ENABLED = false
 
         /**
+         * The preset values for the [groupingSeparator] descriptor.
+         */
+        val PRESET_GROUPING_SEPARATORS = arrayOf(".", ",", "_")
+
+        /**
          * The default value of the [groupingSeparator] field.
          */
         const val DEFAULT_GROUPING_SEPARATOR = ","
+
+        /**
+         * The preset values for the [affixDecorator] descriptor.
+         */
+        val PRESET_AFFIX_DECORATOR_DESCRIPTORS = listOf("@b", "$@", "0x@")
 
         /**
          * The default value of the [affixDecorator] field.

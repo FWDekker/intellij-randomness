@@ -83,8 +83,10 @@ data class DecimalScheme(
         }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(affixDecorator = affixDecorator.deepCopy(retainUuid), arrayDecorator = arrayDecorator.deepCopy(retainUuid))
-            .also { if (retainUuid) it.uuid = this.uuid }
+        copy(
+            affixDecorator = affixDecorator.deepCopy(retainUuid),
+            arrayDecorator = arrayDecorator.deepCopy(retainUuid),
+        ).deepCopyTransient(retainUuid)
 
 
     /**
@@ -131,6 +133,11 @@ data class DecimalScheme(
         const val DEFAULT_SHOW_TRAILING_ZEROES = true
 
         /**
+         * The preset values for the [decimalSeparator] field.
+         */
+        val PRESET_DECIMAL_SEPARATORS = arrayOf(",", ".")
+
+        /**
          * The default value of the [decimalSeparator] field.
          */
         const val DEFAULT_DECIMAL_SEPARATOR = "."
@@ -141,9 +148,19 @@ data class DecimalScheme(
         const val DEFAULT_GROUPING_SEPARATOR_ENABLED = false
 
         /**
+         * The preset values for the [groupingSeparator] field.
+         */
+        val PRESET_GROUPING_SEPARATORS = arrayOf(".", ",", "_")
+
+        /**
          * The default value of the [groupingSeparator] field.
          */
         const val DEFAULT_GROUPING_SEPARATOR = ","
+
+        /**
+         * The preset values for the [affixDecorator] descriptor.
+         */
+        val PRESET_AFFIX_DECORATOR_DESCRIPTORS = listOf("@f", "@d")
 
         /**
          * The default value of the [affixDecorator] field.

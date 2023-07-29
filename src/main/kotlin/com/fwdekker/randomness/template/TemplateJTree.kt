@@ -2,7 +2,7 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.StateContext
+import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -37,20 +37,20 @@ import kotlin.math.min
 /**
  * A tree containing [Template]s and [Scheme]s.
  *
- * The tree contains the templates and schemes defined in the [TemplateList] of [currentState] by loading that list into
+ * The tree contains the templates and schemes defined in the [TemplateList] of [currentSettings] by loading that list into
  * this tree's [TemplateJTreeModel]. Furthermore, when a new [Scheme] is added or copied, it will use the
- * [currentState].
+ * [currentSettings].
  *
- * This tree reads from [originalState] to determine whether particular [Scheme]s have been modified. Modified [Scheme]s
- * can be reset, in which case the original state is copied into that scheme in the [currentState].
+ * This tree reads from [originalSettings] to determine whether particular [Scheme]s have been modified. Modified [Scheme]s
+ * can be reset, in which case the original state is copied into that scheme in the [currentSettings].
  *
- * @property originalState The original settings before any modifications were made.
- * @property currentState The current settings which include modifications.
+ * @property originalSettings The original settings before any modifications were made.
+ * @property currentSettings The current settings which include modifications.
  */
 class TemplateJTree(
-    private val originalState: StateContext,
-    private var currentState: StateContext,
-) : Tree(TemplateJTreeModel(currentState.templateList)) {
+    private val originalSettings: Settings,
+    private var currentSettings: Settings,
+) : Tree(TemplateJTreeModel(currentSettings.templateList)) {
     /**
      * The tree's model.
      *
@@ -319,12 +319,12 @@ class TemplateJTree(
     }
 
     /**
-     * Returns `true` if and only if [scheme] has been modified with respect to [originalState].
+     * Returns `true` if and only if [scheme] has been modified with respect to [originalSettings].
      *
      * @param scheme the scheme to check for modification
-     * @return `true` if and only if [scheme] has been modified with respect to [originalState]
+     * @return `true` if and only if [scheme] has been modified with respect to [originalSettings]
      */
-    private fun isModified(scheme: Scheme) = originalState.templateList.getSchemeByUuid(scheme.uuid) != scheme
+    private fun isModified(scheme: Scheme) = originalSettings.templateList.getSchemeByUuid(scheme.uuid) != scheme
 
     /**
      * Finds a good, unique name for [template] so that it can be inserted into this list without conflict.
@@ -488,7 +488,7 @@ class TemplateJTree(
              */
             override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? {
                 if (value != null)
-                    addScheme(value.deepCopy().also { it.setStateContext(currentState) })
+                    addScheme(value.deepCopy().also { it.applyContext(currentSettings) })
 
                 return null
             }
@@ -539,25 +539,25 @@ class TemplateJTree(
         }
 
         /**
-         * A `PopupStep` that shows only the default templates.
+         * A [PopupStep] that shows only the default templates.
          */
         private inner class DefaultTemplatesPopupStep :
             AddSchemePopupStep(listOf(Template("Empty")) + TemplateList.DEFAULT_TEMPLATES)
 
         /**
-         * A `PopupStep` that contains a [TemplateReference] for each [Template] that can currently be referenced from
+         * A [PopupStep] that contains a [TemplateReference] for each [Template] that can currently be referenced from
          * [selectedTemplate].
          *
-         * Ineligible `Template`s are automatically filtered out.
+         * Ineligible [Template]s are automatically filtered out.
          */
         private inner class ReferencesPopupStep : AddSchemePopupStep(
             run {
-                val listCopy = currentState.templateList.deepCopy(retainUuid = true)
-                    .also { it.applySettingsState(StateContext(it)) }
-                val reference = TemplateReference().also { it.templateList += listCopy }
+                val contextCopy = currentSettings.deepCopy(retainUuid = true)
+                val listCopy = contextCopy.templateList
+                val reference = TemplateReference().also { it.applyContext(contextCopy) }
 
                 val templateCopy = listCopy.templates.single { it.uuid == selectedTemplate!!.uuid }
-                templateCopy.schemes = templateCopy.schemes.toMutableList().also { it.add(reference) }
+                templateCopy.schemes += reference
 
                 listCopy.templates
                     .filter {
@@ -627,7 +627,7 @@ class TemplateJTree(
          */
         override fun actionPerformed(event: AnActionEvent) {
             val copy = selectedScheme!!.deepCopy()
-            copy.setStateContext(currentState)
+            copy.applyContext(currentSettings)
 
             addScheme(copy)
         }
@@ -724,14 +724,14 @@ class TemplateJTree(
          */
         override fun actionPerformed(event: AnActionEvent) {
             val toReset = selectedScheme!!
-            val toResetFrom = originalState.templateList.getSchemeByUuid(toReset.uuid)
+            val toResetFrom = originalSettings.templateList.getSchemeByUuid(toReset.uuid)
             if (toResetFrom == null) {
                 removeScheme(toReset)
                 return
             }
 
             toReset.copyFrom(toResetFrom)
-            toReset.setStateContext(currentState)
+            toReset.applyContext(currentSettings)
 
             myModel.fireNodeChanged(StateNode(toReset))
             myModel.fireNodeStructureChanged(StateNode(toReset))
@@ -758,7 +758,7 @@ class TemplateJTree(
                 WordScheme(),
                 UuidScheme(),
                 DateTimeScheme(),
-                TemplateReference()
+                TemplateReference(),
             )
 
         /**

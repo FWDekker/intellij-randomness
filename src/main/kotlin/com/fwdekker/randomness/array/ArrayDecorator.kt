@@ -46,7 +46,7 @@ data class ArrayDecorator(
         else if (maxCount < minCount) Bundle("array.error.min_count_above_max")
         else affixDecorator.doValidate()
 
-    override fun deepCopy(retainUuid: Boolean) = copy().also { if (retainUuid) it.uuid = this.uuid }
+    override fun deepCopy(retainUuid: Boolean) = copy().deepCopyTransient(retainUuid)
 
 
     /**
@@ -79,9 +79,19 @@ data class ArrayDecorator(
         const val DEFAULT_SEPARATOR_ENABLED = true
 
         /**
+         * The preset values for the [separator] field.
+         */
+        val PRESET_SEPARATORS = arrayOf(", ", "; ", "\\n")
+
+        /**
          * The default value of the [separator] field.
          */
         const val DEFAULT_SEPARATOR = ", "
+
+        /**
+         * The preset values for the [affixDecorator] descriptor.
+         */
+        val PRESET_AFFIX_DECORATOR_DESCRIPTORS = listOf("[@]", "{@}", "(@)")
 
         /**
          * The default value of the [affixDecorator] field.

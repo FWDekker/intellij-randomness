@@ -5,16 +5,16 @@ import org.assertj.core.api.Assertions.assertThat
 
 
 /**
- * Unit tests for [Box].
+ * Unit tests for [MutableBox].
  */
 object BoxTest : DescribeSpec({
     describe("box") {
         it("returns the generator's value when de-referenced") {
-            assertThat(+Box({ "needle" })).isEqualTo("needle")
+            assertThat(+MutableBox({ "needle" })).isEqualTo("needle")
         }
 
         it("returns the generator's value when de-referenced again") {
-            val box = Box({ "urgent" })
+            val box = MutableBox({ "urgent" })
 
             +box
 
@@ -22,7 +22,7 @@ object BoxTest : DescribeSpec({
         }
 
         it("returns the assigned value when de-referenced") {
-            val box = Box({ "official" })
+            val box = MutableBox({ "official" })
 
             box += "anyhow"
 
@@ -30,7 +30,7 @@ object BoxTest : DescribeSpec({
         }
 
         it("returns the assigned value when de-referenced after the generator has been invoked") {
-            val box = Box({ "regard" })
+            val box = MutableBox({ "regard" })
 
             +box
             box += "path"
@@ -39,7 +39,7 @@ object BoxTest : DescribeSpec({
         }
 
         it("returns the last value that was assigned") {
-            val box = Box({ "house" })
+            val box = MutableBox({ "house" })
 
             box += "move"
             box += "distance"
@@ -48,7 +48,7 @@ object BoxTest : DescribeSpec({
         }
 
         it("retains the assigned state when copied") {
-            val box = Box({ "breath" })
+            val box = MutableBox({ "breath" })
 
             box += "harden"
 
@@ -58,7 +58,7 @@ object BoxTest : DescribeSpec({
         it("creates an independent reference when copied") {
             data class StringHolder(var value: String)
 
-            val box = Box({ StringHolder("story") })
+            val box = MutableBox({ StringHolder("story") })
 
             val copy = box.copy()
             copy += StringHolder("hunt")
@@ -71,7 +71,7 @@ object BoxTest : DescribeSpec({
             data class StringHolder(var value: String)
 
             val holder = StringHolder("correct")
-            val box = Box({ holder })
+            val box = MutableBox({ holder })
 
             val copy = box.copy()
             (+copy).value = "maybe"
@@ -82,7 +82,7 @@ object BoxTest : DescribeSpec({
 
         it("does not deep-copy the generator") {
             var isInvoked = 0
-            val box = Box({
+            val box = MutableBox({
                 isInvoked++
                 "treasury"
             })

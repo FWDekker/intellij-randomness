@@ -33,7 +33,7 @@ data class FixedLengthDecorator(
         else if (filler.length != 1) Bundle("fixed_length.error.filler_length")
         else null
 
-    override fun deepCopy(retainUuid: Boolean) = copy().also { if (retainUuid) it.uuid = this.uuid }
+    override fun deepCopy(retainUuid: Boolean) = copy().deepCopyTransient(retainUuid)
 
 
     /**

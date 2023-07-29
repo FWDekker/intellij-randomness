@@ -1,8 +1,8 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.Box
+import com.fwdekker.randomness.MutableBox
 import com.fwdekker.randomness.DummyScheme
-import com.fwdekker.randomness.StateContext
+import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.string.StringScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -24,7 +24,7 @@ object TemplateListTest : DescribeSpec({
 
     describe("applySettingsState") {
         it("returns itself") {
-            assertThat(templateList.applySettingsState(StateContext())).isSameAs(templateList)
+            assertThat(templateList.applyContext(Settings())).isSameAs(templateList)
         }
 
         it("overwrites the settings of contained schemes") {
@@ -32,7 +32,7 @@ object TemplateListTest : DescribeSpec({
             val reference = TemplateReference()
             templateList.templates = listOf(Template(schemes = listOf(reference)))
 
-            templateList.applySettingsState(StateContext(templateList = newSettings))
+            templateList.applyContext(Settings(templateList = newSettings))
 
             assertThat(+reference.templateList).isSameAs(newSettings)
         }
@@ -41,14 +41,14 @@ object TemplateListTest : DescribeSpec({
 
     describe("findRecursionFrom") {
         it("returns null if the reference refers to `null`") {
-            val reference = TemplateReference().also { it.templateList = Box({ TemplateList(emptyList()) }) }
+            val reference = TemplateReference().also { it.templateList = MutableBox({ TemplateList(emptyList()) }) }
 
             assertThat(TemplateList(emptyList()).findRecursionFrom(reference)).isNull()
         }
 
         it("returns null if the reference refers to a template not in this list") {
             val otherList = TemplateList.from(DummyScheme())
-            val reference = TemplateReference(otherList.templates[0].uuid).also { it.templateList = Box({ otherList }) }
+            val reference = TemplateReference(otherList.templates[0].uuid).also { it.templateList = MutableBox({ otherList }) }
 
             assertThat(TemplateList(emptyList()).findRecursionFrom(reference)).isNull()
         }
@@ -56,10 +56,10 @@ object TemplateListTest : DescribeSpec({
         it("returns null if the recursion occurs only in another part of the list") {
             val otherTemplate = Template(name = "roast")
 
-            val goodReference = TemplateReference(otherTemplate.uuid).also { it.templateList = Box({ templateList }) }
+            val goodReference = TemplateReference(otherTemplate.uuid).also { it.templateList = MutableBox({ templateList }) }
             val goodTemplate = Template("act", listOf(goodReference))
 
-            val badReference = TemplateReference().also { it.templateList = Box({ templateList }) }
+            val badReference = TemplateReference().also { it.templateList = MutableBox({ templateList }) }
             val badTemplate = Template("sour", listOf(badReference))
             badReference.templateUuid = badTemplate.uuid
 
@@ -72,19 +72,19 @@ object TemplateListTest : DescribeSpec({
             val reference = TemplateReference()
             val list = TemplateList.from(reference)
             reference.templateUuid = list.templates[0].uuid
-            reference.templateList = Box({ list })
+            reference.templateList = MutableBox({ list })
 
             assertThat(list.findRecursionFrom(reference)).containsExactly(list.templates[0], list.templates[0])
         }
 
         it("returns a longer path if the reference consists of a chain") {
-            val reference1 = TemplateReference().also { it.templateList = Box({ templateList }) }
+            val reference1 = TemplateReference().also { it.templateList = MutableBox({ templateList }) }
             val template1 = Template("drop", listOf(reference1))
 
-            val reference2 = TemplateReference(template1.uuid).also { it.templateList = Box({ templateList }) }
+            val reference2 = TemplateReference(template1.uuid).also { it.templateList = MutableBox({ templateList }) }
             val template2 = Template("salesman", listOf(reference2))
 
-            val reference3 = TemplateReference(template2.uuid).also { it.templateList = Box({ templateList }) }
+            val reference3 = TemplateReference(template2.uuid).also { it.templateList = MutableBox({ templateList }) }
             val template3 = Template("almost", listOf(reference3))
 
             reference1.templateUuid = template3.uuid

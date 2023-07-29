@@ -1,12 +1,12 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.Box
+import com.fwdekker.randomness.MutableBox
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.OverlayIcon
-import com.fwdekker.randomness.StateContext
+import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.integer.IntegerScheme
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
@@ -27,7 +27,7 @@ object TemplateReferenceTest : DescribeSpec({
         companion = Template("station", listOf(DummyScheme.from("bus")))
 
         templateList = TemplateList(listOf(companion, Template("reference", listOf(reference))))
-        reference.templateList = Box({ templateList })
+        reference.templateList = MutableBox({ templateList })
         reference.templateUuid = companion.uuid
     }
 
@@ -209,9 +209,9 @@ object TemplateReferenceTest : DescribeSpec({
 
     describe("setSettingsState") {
         it("overwrites the known list of templates") {
-            val newSettings = StateContext(templateList = TemplateList(emptyList()))
+            val newSettings = Settings(templateList = TemplateList(emptyList()))
 
-            reference.setStateContext(newSettings)
+            reference.applyContext(newSettings)
 
             assertThat(+reference.templateList).isSameAs(newSettings.templateList)
         }

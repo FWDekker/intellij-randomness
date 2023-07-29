@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.InsertAction
 import com.fwdekker.randomness.OverlayIcon
-import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Timely.generateTimely
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
@@ -134,12 +134,7 @@ class TemplateInsertAction(
      */
     inner class ArrayDecoratorConfigurable(arrayDecorator: ArrayDecorator) : Configurable {
         private val editor = ArrayDecoratorEditor(arrayDecorator, embedded = true)
-        private val previewPanel = PreviewPanel {
-            template.deepCopy().also {
-                it.arrayDecorator = editor.readState()
-                it.arrayDecorator.enabled = true
-            }
-        }
+        private val previewPanel = PreviewPanel { template.deepCopy().also { it.arrayDecorator.enabled = true } }
 
 
         init {
@@ -168,16 +163,16 @@ class TemplateInsertAction(
                 }
 
         /**
-         * Returns `true` if and only if the [editor] contains modifications relative to the last saved state.
+         * Returns `true`
          *
-         * @return `true` if and only if the [editor] contains modifications relative to the last saved state
+         * @return `true`
          */
-        override fun isModified() = editor.isModified()
+        override fun isModified() = true
 
         /**
          * Saves the [editor]'s state.
          */
-        override fun apply() = editor.applyState()
+        override fun apply() = Unit
 
         /**
          * Returns [text].
@@ -201,8 +196,9 @@ class TemplateInsertAction(
  *
  * @property template The template to select after opening the settings dialog.
  * @see TemplateGroupAction
- * @see TemplateStateConfigurable
+ * @see TemplateListConfigurable
  */
+@Suppress("DialogTitleCapitalization") // False positive
 class TemplateSettingsAction(private val template: Template? = null) : AnAction(
     if (template == null) Bundle("template.name.settings")
     else Bundle("template.name.settings_suffix", template.name),
@@ -216,7 +212,7 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
      */
     override fun actionPerformed(event: AnActionEvent) =
         ShowSettingsUtil.getInstance()
-            .showSettingsDialog(event.project, TemplateStateConfigurable::class.java) { configurable ->
+            .showSettingsDialog(event.project, TemplateListConfigurable::class.java) { configurable ->
                 configurable?.also { it.templateToSelect = template?.uuid }
             }
 }

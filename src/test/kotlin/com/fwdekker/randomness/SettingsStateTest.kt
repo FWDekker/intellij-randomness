@@ -9,14 +9,14 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 
 
 /**
- * Unit tests for [StateContext].
+ * Unit tests for [Settings].
  */
 object SettingsStateTest : DescribeSpec({
-    lateinit var state: StateContext
+    lateinit var state: Settings
 
 
     beforeEach {
-        state = StateContext()
+        state = Settings()
     }
 
 
@@ -38,7 +38,7 @@ object SettingsStateTest : DescribeSpec({
         }
 
         it("copies the other's UUIDs") {
-            val other = StateContext()
+            val other = Settings()
 
             state.copyFrom(other)
 
@@ -47,7 +47,7 @@ object SettingsStateTest : DescribeSpec({
         }
 
         it("writes deep copies into the target's settings fields") {
-            val otherState = StateContext()
+            val otherState = Settings()
 
             state.copyFrom(otherState)
 
@@ -57,7 +57,7 @@ object SettingsStateTest : DescribeSpec({
         }
 
         it("writes itself into the template list's templates") {
-            val otherState = StateContext(TemplateList.from(TemplateReference()))
+            val otherState = Settings(TemplateList.from(TemplateReference()))
 
             state.copyFrom(otherState)
 

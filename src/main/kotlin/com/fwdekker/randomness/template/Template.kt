@@ -1,9 +1,10 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.StateContext
+import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.datetime.DateTimeScheme
@@ -49,6 +50,12 @@ data class Template(
     val actionId get() = "com.fwdekker.randomness.insert.${uuid.replace("-", "")}"
 
 
+    override fun applyContext(context: Box<Settings>) {
+        super.applyContext(context)
+        schemes.forEach { it.applyContext(context) }
+    }
+
+
     /**
      * Generates random strings by concatenating the outputs of the [schemes].
      *
@@ -72,13 +79,7 @@ data class Template(
         copy(
             schemes = schemes.map { it.deepCopy(retainUuid) },
             arrayDecorator = arrayDecorator.deepCopy(retainUuid),
-        ).also { if (retainUuid) it.uuid = this.uuid }
-
-
-    override fun setStateContext(stateContext: StateContext) {
-        super.setStateContext(stateContext)
-        schemes.forEach { it.setStateContext(stateContext) }
-    }
+        ).deepCopyTransient(retainUuid)
 
 
     /**

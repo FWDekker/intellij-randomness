@@ -9,8 +9,8 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.undo.UndoUtil
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
+import com.intellij.openapi.util.Disposer
 import com.intellij.ui.InplaceButton
 import com.intellij.ui.SeparatorFactory
 import java.awt.BorderLayout
@@ -39,7 +39,6 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     val rootComponent: JPanel
     private val refreshButton: JComponent
     private val previewDocument: Document
-    private val previewEditor: Editor
 
     /**
      * The current seed to generate data with.
@@ -64,8 +63,9 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
 
         val factory = EditorFactory.getInstance()
         previewDocument = factory.createDocument(Bundle("preview.placeholder")).also { UndoUtil.disableUndoFor(it) }
-        previewEditor = factory.createViewer(previewDocument)
+        val previewEditor = factory.createViewer(previewDocument)
         previewEditor.component.setFixedHeight(UIConstants.SIZE_MEDIUM)
+        Disposer.register(this) { EditorFactory.getInstance().releaseEditor(previewEditor) }
 
         // Layout
         rootComponent = JPanel(BorderLayout())
@@ -80,9 +80,7 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     /**
      * Disposes of this panel's resources, to be used when this panel is no longer used.
      */
-    override fun dispose() {
-        EditorFactory.getInstance().releaseEditor(previewEditor)
-    }
+    override fun dispose() = Disposer.dispose(this)
 
 
     /**

@@ -67,55 +67,55 @@ object DecimalSchemeEditorTest : DescribeSpec({
 
     describe("loadState") {
         it("loads the scheme's minimum value") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(minValue = 157.61, maxValue = 637.03)) }
+            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(minValue = 157.61, maxValue = 637.03)) }
 
             frame.spinner("minValue").requireValue(157.61)
         }
 
         it("loads the scheme's maximum value") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(minValue = 212.79, maxValue = 408.68)) }
+            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(minValue = 212.79, maxValue = 408.68)) }
 
             frame.spinner("maxValue").requireValue(408.68)
         }
 
         it("loads the scheme's decimal count") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(decimalCount = 18)) }
+            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(decimalCount = 18)) }
 
             frame.spinner("decimalCount").requireValue(18)
         }
 
         it("loads the scheme's value for showing trailing zeroes") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(showTrailingZeroes = false)) }
+            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(showTrailingZeroes = false)) }
 
             frame.checkBox("showTrailingZeroes").requireSelected(false)
         }
 
         it("loads the scheme's grouping separator enabled state") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(groupingSeparatorEnabled = true)) }
+            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(groupingSeparatorEnabled = true)) }
 
             frame.checkBox("groupingSeparatorEnabled").requireSelected()
         }
 
         it("loads the scheme's grouping separator") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(groupingSeparator = "_")) }
+            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(groupingSeparator = "_")) }
 
             frame.comboBox("groupingSeparator").requireSelection("_")
         }
 
         it("loads the scheme's decimal separator") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(decimalSeparator = ".")) }
+            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(decimalSeparator = ".")) }
 
             frame.comboBox("decimalSeparator").requireSelection(".")
         }
 
         it("loads the scheme's prefix") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(prefix = "x")) }
+            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(prefix = "x")) }
 
             frame.textBox("prefix").requireText("x")
         }
 
         it("loads the scheme's suffix") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(suffix = "rough")) }
+            GuiActionRunner.execute { editor.loadScheme(DecimalScheme(suffix = "rough")) }
 
             frame.textBox("suffix").requireText("rough")
         }
@@ -123,7 +123,7 @@ object DecimalSchemeEditorTest : DescribeSpec({
 
     describe("readState") {
         it("returns the original state if no editor changes are made") {
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
+            assertThat(editor.readScheme()).isEqualTo(editor.originalState)
         }
 
         it("returns the editor's state") {
@@ -139,7 +139,7 @@ object DecimalSchemeEditorTest : DescribeSpec({
                 frame.textBox("suffix").target().text = "court"
             }
 
-            val readScheme = editor.readState()
+            val readScheme = editor.readScheme()
             assertThat(readScheme.minValue).isEqualTo(112.54)
             assertThat(readScheme.maxValue).isEqualTo(644.74)
             assertThat(readScheme.decimalCount).isEqualTo(485)
@@ -155,14 +155,14 @@ object DecimalSchemeEditorTest : DescribeSpec({
             GuiActionRunner.execute { frame.spinner("minValue").target().value = 112.54 }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
+            GuiActionRunner.execute { editor.loadScheme(editor.readScheme()) }
             assertThat(editor.isModified()).isFalse()
 
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
+            assertThat(editor.readScheme()).isEqualTo(editor.originalState)
         }
 
         it("returns a different instance from the loaded scheme") {
-            val readState = editor.readState()
+            val readState = editor.readScheme()
 
             assertThat(readState)
                 .isEqualTo(editor.originalState)
@@ -173,7 +173,7 @@ object DecimalSchemeEditorTest : DescribeSpec({
         }
 
         it("retains the scheme's UUID") {
-            assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
+            assertThat(editor.readScheme().uuid).isEqualTo(editor.originalState.uuid)
         }
     }
 
@@ -190,7 +190,7 @@ object DecimalSchemeEditorTest : DescribeSpec({
 
         it("invokes the listener if the array decorator changes") {
             GuiActionRunner.execute {
-                editor.loadState(DecimalScheme(arrayDecorator = ArrayDecorator(enabled = true)))
+                editor.loadScheme(DecimalScheme(arrayDecorator = ArrayDecorator(enabled = true)))
             }
 
             var listenerInvoked = false

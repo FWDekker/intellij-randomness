@@ -49,7 +49,7 @@ data class AffixDecorator(
         if (!descriptor.fold(false) { escaped, char -> if (char == '\\') !escaped else false }) null
         else Bundle("affix.error.trailing_escape")
 
-    override fun deepCopy(retainUuid: Boolean) = copy().also { if (retainUuid) it.uuid = this.uuid }
+    override fun deepCopy(retainUuid: Boolean) = copy().deepCopyTransient(retainUuid)
 
 
     /**

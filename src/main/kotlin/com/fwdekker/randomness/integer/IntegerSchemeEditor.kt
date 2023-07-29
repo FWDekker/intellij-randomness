@@ -1,152 +1,124 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.fixedlength.FixedLengthDecoratorEditor
+import com.fwdekker.randomness.integer.IntegerScheme.Companion.DECIMAL_BASE
+import com.fwdekker.randomness.integer.IntegerScheme.Companion.MAX_BASE
+import com.fwdekker.randomness.integer.IntegerScheme.Companion.MIN_BASE
+import com.fwdekker.randomness.integer.IntegerScheme.Companion.PRESET_AFFIX_DECORATOR_DESCRIPTORS
+import com.fwdekker.randomness.integer.IntegerScheme.Companion.PRESET_GROUPING_SEPARATORS
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.JLongSpinner
 import com.fwdekker.randomness.ui.MinMaxLengthDocumentFilter
 import com.fwdekker.randomness.ui.UIConstants
+import com.fwdekker.randomness.ui.bindCurrentText
+import com.fwdekker.randomness.ui.bindIntValue
+import com.fwdekker.randomness.ui.bindLongValue
 import com.fwdekker.randomness.ui.bindSpinners
-import com.fwdekker.randomness.ui.getCurrentText
 import com.fwdekker.randomness.ui.hasValue
+import com.fwdekker.randomness.ui.isEditable
 import com.fwdekker.randomness.ui.loadMnemonic
-import com.fwdekker.randomness.ui.setFilter
+import com.fwdekker.randomness.ui.withFilter
 import com.fwdekker.randomness.ui.withFixedWidth
+import com.fwdekker.randomness.ui.withName
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.ui.layout.and
 import com.intellij.ui.layout.selected
 import javax.swing.JCheckBox
-import javax.swing.JPanel
 
 
 /**
- * Component for editing random integer settings.
+ * Component for editing an [IntegerScheme].
  *
- * @param scheme the scheme to edit in the component
+ * @param scheme the scheme to edit
  */
-class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : StateEditor<IntegerScheme>(scheme) {
-    override val rootComponent: JPanel
-    override val stateComponents
-        get() = super.stateComponents + affixDecoratorEditor + fixedLengthDecoratorEditor + arrayDecoratorEditor
-    override val preferredFocusedComponent get() = minValue.editorComponent
+class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEditor<IntegerScheme>(scheme) {
+    override val rootComponent = panel {
+        group(Bundle("integer.ui.value.header")) {
+            lateinit var minValue: JLongSpinner
+            lateinit var maxValue: JLongSpinner
 
-    private lateinit var minValue: JLongSpinner
-    private lateinit var maxValue: JLongSpinner
-    private lateinit var base: JIntSpinner
-    private lateinit var isUppercaseCheckBox: JCheckBox
-    private lateinit var groupingSeparatorEnabledCheckBox: JCheckBox
-    private lateinit var groupingSeparatorComboBox: ComboBox<String>
-    private lateinit var affixDecoratorEditor: AffixDecoratorEditor
-    private lateinit var fixedLengthDecoratorEditor: FixedLengthDecoratorEditor
-    private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
-
-
-    init {
-        rootComponent = panel {
-            group(Bundle("integer.ui.value.header")) {
-                row(Bundle("integer.ui.value.min_option")) {
-                    cell(JLongSpinner())
-                        .withFixedWidth(UIConstants.SIZE_LARGE)
-                        .also { it.component.name = "minValue" }
-                        .also { minValue = it.component }
-                }
-
-                row(Bundle("integer.ui.value.max_option")) {
-                    cell(JLongSpinner())
-                        .withFixedWidth(UIConstants.SIZE_LARGE)
-                        .also { it.component.name = "maxValue" }
-                        .also { maxValue = it.component }
-                }
-
-                bindSpinners(minValue, maxValue, maxRange = null)
+            row(Bundle("integer.ui.value.min_option")) {
+                cell(JLongSpinner())
+                    .withFixedWidth(UIConstants.SIZE_LARGE)
+                    .withName("minValue")
+                    .bindLongValue(scheme::minValue)
+                    .also { minValue = it.component }
             }
 
-            group(Bundle("integer.ui.format.header")) {
-                row(Bundle("integer.ui.format.base_option")) {
-                    cell(JIntSpinner(IntegerScheme.DECIMAL_BASE, IntegerScheme.MIN_BASE, IntegerScheme.MAX_BASE))
-                        .withFixedWidth(UIConstants.SIZE_SMALL)
-                        .also { it.component.name = "base" }
-                        .also { base = it.component }
-                }
+            row(Bundle("integer.ui.value.max_option")) {
+                cell(JLongSpinner())
+                    .withFixedWidth(UIConstants.SIZE_LARGE)
+                    .withName("maxValue")
+                    .bindLongValue(scheme::maxValue)
+                    .also { maxValue = it.component }
+            }
 
-                row {
-                    checkBox(Bundle("integer.ui.format.uppercase_option"))
-                        .loadMnemonic()
-                        .also { it.component.name = "isUppercase" }
-                        .also { isUppercaseCheckBox = it.component }
-                }
+            bindSpinners(minValue, maxValue, maxRange = null)
+        }
 
-                row {
-                    checkBox(Bundle("integer.ui.format.grouping_separator_option"))
-                        .loadMnemonic()
-                        .also { it.component.name = "groupingSeparatorEnabled" }
-                        .also { groupingSeparatorEnabledCheckBox = it.component }
+        group(Bundle("integer.ui.format.header")) {
+            lateinit var base: JIntSpinner
+            lateinit var groupingSeparatorEnabled: JCheckBox
 
-                    cell(ComboBox(arrayOf(".", ",", "_")))
-                        .enabledIf(
-                            base.hasValue { it == IntegerScheme.DECIMAL_BASE }
-                                .and(groupingSeparatorEnabledCheckBox.selected)
-                        )
-                        .also { it.component.setFilter(MinMaxLengthDocumentFilter(1, 1)) }
-                        .also { it.component.isEditable = true }
-                        .also { it.component.name = "groupingSeparator" }
-                        .also { groupingSeparatorComboBox = it.component }
-                }.enabledIf(base.hasValue { it == IntegerScheme.DECIMAL_BASE })
-
-                row {
-                    affixDecoratorEditor = AffixDecoratorEditor(
-                        originalState.affixDecorator,
-                        listOf("@b", "$@", "0x@"),
-                        enableMnemonic = true
-                    )
-                    cell(affixDecoratorEditor.rootComponent)
-                }
+            row(Bundle("integer.ui.format.base_option")) {
+                cell(JIntSpinner(DECIMAL_BASE, MIN_BASE, MAX_BASE))
+                    .withFixedWidth(UIConstants.SIZE_SMALL)
+                    .withName("base")
+                    .bindIntValue(scheme::base)
+                    .also { base = it.component }
             }
 
             row {
-                fixedLengthDecoratorEditor = FixedLengthDecoratorEditor(originalState.fixedLengthDecorator)
-                cell(fixedLengthDecoratorEditor.rootComponent).horizontalAlign(HorizontalAlign.FILL)
+                checkBox(Bundle("integer.ui.format.uppercase_option"))
+                    .loadMnemonic()
+                    .withName("isUppercase")
+                    .bindSelected(scheme::isUppercase)
             }
 
             row {
-                arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
-                cell(arrayDecoratorEditor.rootComponent).horizontalAlign(HorizontalAlign.FILL)
+                checkBox(Bundle("integer.ui.format.grouping_separator_option"))
+                    .loadMnemonic()
+                    .withName("groupingSeparatorEnabled")
+                    .bindSelected(scheme::groupingSeparatorEnabled)
+                    .also { groupingSeparatorEnabled = it.component }
+
+                cell(ComboBox(PRESET_GROUPING_SEPARATORS))
+                    .enabledIf(base.hasValue { it == DECIMAL_BASE }.and(groupingSeparatorEnabled.selected))
+                    .withName("groupingSeparator")
+                    .isEditable(true)
+                    .withFilter(MinMaxLengthDocumentFilter(1, 1))
+                    .bindCurrentText(scheme::groupingSeparator)
+            }.enabledIf(base.hasValue { it == DECIMAL_BASE })
+
+            row {
+                AffixDecoratorEditor(scheme.affixDecorator, PRESET_AFFIX_DECORATOR_DESCRIPTORS)
+                    .also { decoratorEditors += it }
+                    .let { cell(it.rootComponent) }
             }
         }
 
-        loadState()
+        row {
+            FixedLengthDecoratorEditor(scheme.fixedLengthDecorator)
+                .also { decoratorEditors += it }
+                .let { cell(it.rootComponent).horizontalAlign(HorizontalAlign.FILL) }
+        }
+
+        row {
+            ArrayDecoratorEditor(scheme.arrayDecorator)
+                .also { decoratorEditors += it }
+                .let { cell(it.rootComponent).horizontalAlign(HorizontalAlign.FILL) }
+        }
     }
 
 
-    override fun loadState(state: IntegerScheme) {
-        super.loadState(state)
-
-        minValue.value = state.minValue
-        maxValue.value = state.maxValue
-        base.value = state.base
-        isUppercaseCheckBox.isSelected = state.isUppercase
-        groupingSeparatorEnabledCheckBox.isSelected = state.groupingSeparatorEnabled
-        groupingSeparatorComboBox.item = state.groupingSeparator
-        affixDecoratorEditor.loadState(state.affixDecorator)
-        fixedLengthDecoratorEditor.loadState(state.fixedLengthDecorator)
-        arrayDecoratorEditor.loadState(state.arrayDecorator)
+    init {
+        reset()
     }
-
-    override fun readState() =
-        IntegerScheme(
-            minValue = minValue.value,
-            maxValue = maxValue.value,
-            base = base.value,
-            isUppercase = isUppercaseCheckBox.isSelected,
-            groupingSeparatorEnabled = groupingSeparatorEnabledCheckBox.isSelected,
-            groupingSeparator = groupingSeparatorComboBox.getCurrentText(),
-            affixDecorator = affixDecoratorEditor.readState(),
-            fixedLengthDecorator = fixedLengthDecoratorEditor.readState(),
-            arrayDecorator = arrayDecoratorEditor.readState(),
-        ).also { it.uuid = originalState.uuid }
 }

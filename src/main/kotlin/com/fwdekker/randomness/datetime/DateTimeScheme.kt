@@ -52,7 +52,7 @@ data class DateTimeScheme(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid)).also { if (retainUuid) it.uuid = this.uuid }
+        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid)).deepCopyTransient(retainUuid)
 
 
     /**

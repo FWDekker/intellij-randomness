@@ -1,7 +1,6 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.template.TemplateGroupAction
-import com.fwdekker.randomness.template.TemplateListSettingsComponent
 import com.fwdekker.randomness.template.TemplateSettingsAction
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -112,7 +111,7 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
          * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
-            TemplateListSettingsComponent.default.state.templates.map { TemplateGroupAction(it) }.toTypedArray<AnAction>() +
+            PersistentSettings.default.state.templates.map { TemplateGroupAction(it) }.toTypedArray<AnAction>() +
                 Separator() +
                 TemplateSettingsAction()
     }
@@ -127,7 +126,7 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
          * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
-            TemplateListSettingsComponent.default.state.templates.map { TemplateSettingsAction(it) }.toTypedArray<AnAction>() +
+            PersistentSettings.default.state.templates.map { TemplateSettingsAction(it) }.toTypedArray<AnAction>() +
                 Separator() +
                 TemplateSettingsAction()
     }

@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
-import com.fwdekker.randomness.StateContext
+import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.getActionButton
@@ -33,7 +33,7 @@ object TemplateListEditorTest : DescribeSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
-    lateinit var state: StateContext
+    lateinit var state: Settings
     lateinit var editor: TemplateListEditor
 
 
@@ -48,7 +48,7 @@ object TemplateListEditorTest : DescribeSpec({
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        state = StateContext(
+        state = Settings(
             TemplateList(
                 listOf(
                     Template("Whip", listOf(IntegerScheme(), StringScheme())),
@@ -56,7 +56,7 @@ object TemplateListEditorTest : DescribeSpec({
                 )
             )
         )
-        state.templateList.applySettingsState(state)
+        state.templateList.applyContext(state)
 
         editor = GuiActionRunner.execute<TemplateListEditor> { TemplateListEditor(state) }
         frame = Containers.showInFrame(editor.rootComponent)
@@ -228,7 +228,7 @@ object TemplateListEditorTest : DescribeSpec({
                     )
                 ) { _, scheme, matcher: (FrameFixture) -> AbstractComponentFixture<*, *, *> ->
                     state.templateList.templates = listOf(Template(schemes = listOf(scheme)))
-                    state.templateList.applySettingsState(state)
+                    state.templateList.applyContext(state)
 
                     GuiActionRunner.execute {
                         editor.reset()
@@ -241,7 +241,7 @@ object TemplateListEditorTest : DescribeSpec({
 
             it("loads an editor for templates") {
                 state.templateList.templates = listOf(Template(schemes = emptyList()))
-                state.templateList.applySettingsState(state)
+                state.templateList.applyContext(state)
 
                 GuiActionRunner.execute { editor.reset() }
 
@@ -250,7 +250,7 @@ object TemplateListEditorTest : DescribeSpec({
 
             it("throws an error for unknown scheme types") {
                 state.templateList.templates = listOf(Template(schemes = listOf(DummyScheme.from("grain"))))
-                state.templateList.applySettingsState(state)
+                state.templateList.applyContext(state)
 
                 assertThatThrownBy {
                     GuiActionRunner.execute {
