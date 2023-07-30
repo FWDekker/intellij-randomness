@@ -3,6 +3,7 @@ package com.fwdekker.randomness.ui
 import com.fwdekker.randomness.datetime.toEpochMilli
 import com.fwdekker.randomness.datetime.toLocalDateTime
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.columns
@@ -13,7 +14,10 @@ import java.awt.Dimension
 import javax.swing.AbstractButton
 import javax.swing.JComponent
 import javax.swing.JTextField
+import javax.swing.text.AbstractDocument
 import javax.swing.text.Document
+import javax.swing.text.DocumentFilter
+import javax.swing.text.JTextComponent
 import kotlin.reflect.KMutableProperty0
 
 
@@ -30,13 +34,51 @@ fun Panel.indentedIf(indented: Boolean, spec: Panel.() -> Unit) =
     else rowsRange(spec)
 
 
+// TODO: Document
 fun <T : JComponent> Cell<T>.onResetThis(callback: (Cell<T>) -> Unit) = onReset { callback(this) }
 
+// TODO: Document
 fun <T : JComponent> Cell<T>.withName(name: String) =
     this.also { it.component.name = name }
 
+// TODO: Document
 fun <T : JTextField> Cell<T>.withDocument(document: Document) =
     this.also { component.document = document }
+
+
+/**
+ * Returns the current text in the [ComboBox], even if the user is still typing.
+ *
+ * @receiver the combo box to return the current text of
+ * @return the current text in the [ComboBox], even if the user is still typing
+ */
+fun ComboBox<*>.getCurrentText(): String =
+    (editor.editorComponent as? JTextComponent)?.text ?: item.toString()
+
+// TODO: Document
+fun <T : ComboBox<*>> Cell<T>.isEditable(editable: Boolean) =
+    this.also { it.component.isEditable = editable }
+
+/**
+ * Sets a [DocumentFilter] on this [ComboBox]'s document.
+ *
+ * @receiver the combo box to set a filter on
+ * @param filter the filter to set
+ */
+fun <E> Cell<ComboBox<E>>.withFilter(filter: DocumentFilter) =
+    this.also {
+        ((component.editor.editorComponent as? JTextComponent)?.document as? AbstractDocument)?.documentFilter = filter
+    }
+
+/**
+ * Renders items in the [ComboBox] in this [Cell] as a [JBLabel] containing the output of [toString].
+ *
+ * @param E the type of value contained in the combo box
+ * @receiver the combo box to set the renderer on
+ * @param toString given the item to render, returns the string to put in the [JBLabel]
+ */
+fun <E> Cell<ComboBox<E>>.withSimpleRenderer(toString: (E) -> String = { it.toString() }) =
+    this.also { component.setRenderer { _, value, _, _, _ -> JBLabel(toString(value)) } }
 
 
 /**

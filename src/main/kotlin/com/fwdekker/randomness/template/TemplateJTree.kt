@@ -551,21 +551,9 @@ class TemplateJTree(
          * Ineligible [Template]s are automatically filtered out.
          */
         private inner class ReferencesPopupStep : AddSchemePopupStep(
-            run {
-                val contextCopy = currentSettings.deepCopy(retainUuid = true)
-                val listCopy = contextCopy.templateList
-                val reference = TemplateReference().also { it.applyContext(contextCopy) }
-
-                val templateCopy = listCopy.templates.single { it.uuid == selectedTemplate!!.uuid }
-                templateCopy.schemes += reference
-
-                listCopy.templates
-                    .filter {
-                        reference.template = it
-                        listCopy.findRecursionFrom(reference) == null
-                    }
-                    .map { TemplateReference(it.uuid) }
-            }
+            currentSettings.templateList
+                .listValidReferenceTargets(selectedTemplate!!)
+                .map { TemplateReference(it.uuid) }
         )
     }
 

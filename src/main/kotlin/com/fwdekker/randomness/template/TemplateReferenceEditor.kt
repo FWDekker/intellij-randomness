@@ -29,7 +29,13 @@ class TemplateReferenceEditor(scheme: TemplateReference) : SchemeEditor<Template
         group(Bundle("reference.ui.value.header")) {
             row(Bundle("reference.ui.value.template_option")) {
                 comboBox(emptyList(), TemplateCellRenderer())
-                    .onResetThis { repopulateTemplateComboBox(it.component) }
+                    .onResetThis { cell ->
+                        cell.component.removeAllItems()
+
+                        (+scheme.context).templateList
+                            .listValidReferenceTargets(scheme)
+                            .forEach { cell.component.addItem(it) }
+                    }
                     .withName("template")
                     .bindItem(scheme::template.toNullableProperty())
             }
@@ -60,26 +66,6 @@ class TemplateReferenceEditor(scheme: TemplateReference) : SchemeEditor<Template
         reset()
     }
 
-
-    // TODO: Document this
-    private fun repopulateTemplateComboBox(templateComboBox: ComboBox<Template>) {
-        // TODO: Move this logic into `TemplateList`?
-        val contextCopy = (+scheme.context).deepCopy(retainUuid = true)
-        val referenceCopy =
-            contextCopy.templates
-                .flatMap { it.schemes }
-                .filterIsInstance<TemplateReference>()
-                .single { it.uuid == scheme.uuid }
-        val validTemplates =
-            contextCopy.templates
-                .filter { template ->
-                    referenceCopy.template = template
-                    contextCopy.templateList.findRecursionFrom(referenceCopy) == null
-                }
-
-        templateComboBox.removeAllItems()
-        validTemplates.forEach { templateComboBox.addItem(it) }
-    }
 
     // TODO: Document this
     private class TemplateCellRenderer : ColoredListCellRenderer<Template>() {

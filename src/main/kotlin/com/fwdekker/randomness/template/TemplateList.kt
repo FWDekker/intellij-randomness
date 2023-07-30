@@ -33,6 +33,41 @@ data class TemplateList(
     }
 
 
+    // TODO: Document this
+    // Returns all templates that [reference] could reference if its target were changed.
+    fun listValidReferenceTargets(reference: TemplateReference): List<Template> {
+        val listCopy = this.deepCopy(retainUuid = true)
+        listCopy.applyContext(Settings(listCopy))
+
+        val referenceCopy = listCopy.getSchemeByUuid(reference.uuid) as? TemplateReference
+            ?: error("TODO")
+
+        return listCopy.templates
+            .filter {
+                referenceCopy.template = it
+                listCopy.findRecursionFrom(referenceCopy) == null
+            }
+            .map { listCopy.getTemplateByUuid(it.uuid)!! }
+    }
+
+    // TODO: Document this
+    // Returns all templates that [template] could reference given a new reference added to [template].
+    fun listValidReferenceTargets(template: Template): List<Template> {
+        val listCopy = this.deepCopy(retainUuid = true)
+        listCopy.applyContext(Settings(listCopy))
+
+        val templateCopy = listCopy.getTemplateByUuid(template.uuid) ?: error("TODO")
+        val testReference = TemplateReference().also { it.applyContext(templateCopy.context) }
+        templateCopy.schemes += testReference
+
+        return listCopy.templates
+            .filter {
+                testReference.template = it
+                listCopy.findRecursionFrom(testReference) == null
+            }
+            .map { listCopy.getTemplateByUuid(it.uuid)!! }
+    }
+
     /**
      * Find a recursive path of templates that include each other, starting at [reference].
      *

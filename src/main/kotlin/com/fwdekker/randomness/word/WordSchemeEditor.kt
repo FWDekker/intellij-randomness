@@ -21,7 +21,6 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.util.Disposer
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.toMutableProperty
@@ -44,7 +43,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
             row(Bundle("word.ui.words.insert_option")) {
                 cell(ComboBox(arrayOf(PRESET_ITEM) + DefaultWordList.WORD_LISTS))
                     .withName("presets")
-                    .also { it.component.setRenderer { _, value, _, _, _ -> JBLabel(value.name) } }
+                    .withSimpleRenderer(DefaultWordList::name)
                     .also {
                         it.component.addItemListener { event ->
                             if (event.stateChange == ItemEvent.SELECTED) {
@@ -54,6 +53,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
                         }
                     }
                     .onResetThis {
+                        // TODO: Do we want to retain this?
                         it.component.selectedIndex =
                             DefaultWordList.WORD_LISTS.map(DefaultWordList::words).indexOf(scheme.words) + 1
                     }
