@@ -1,256 +1,123 @@
 package com.fwdekker.randomness.integer
 
-import com.fwdekker.randomness.DataGenerationException
-import io.kotest.core.spec.style.DescribeSpec
+import com.fwdekker.randomness.affix.AffixDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
+import com.fwdekker.randomness.shouldValidateAsBundle
+import io.kotest.assertions.withClue
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.forAll
 import io.kotest.data.headers
 import io.kotest.data.row
 import io.kotest.data.table
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 
 
 /**
  * Unit tests for [IntegerScheme].
  */
-object IntegerSchemeTest : DescribeSpec({
-    lateinit var integerScheme: IntegerScheme
+object IntegerSchemeTest : FunSpec({
+    tags(NamedTag("Scheme"))
 
 
-    beforeEach {
-        integerScheme = IntegerScheme()
-    }
-
-
-    describe("generateStrings") {
-        it("throws an exception if the scheme is invalid") {
-            integerScheme.minValue = 65L
-            integerScheme.maxValue = 24L
-
-            assertThatThrownBy { integerScheme.generateStrings() }.isInstanceOf(DataGenerationException::class.java)
+    test("generateStrings") {
+        test("parameterized") {
+            forAll(
+                table(
+                    //@formatter:off
+                    headers("description", "scheme", "output"),
+                    row("returns zero", IntegerScheme().withValue(0L), "0"),
+                    row("returns one", IntegerScheme().withValue(1L), "1"),
+                    row("returns a negative value", IntegerScheme().withValue(-660L), "-660"),
+                    row("returns a positive value", IntegerScheme().withValue(708L), "708"),
+                    row("returns Long.MIN_VALUE", IntegerScheme().withValue(Long.MIN_VALUE), "-9223372036854775808"),
+                    row("returns Long.MAX_VALUE", IntegerScheme().withValue(Long.MAX_VALUE), "9223372036854775807"),
+                    row("converts to base <10", IntegerScheme(base = 2).withValue(141L), "10001101"),
+                    row("converts to base >10", IntegerScheme(base = 12).withValue(248L), "188"),
+                    row("uses separator", IntegerScheme(groupingSeparator = "#").withValue(949_442L), "949#442"),
+                    row("uses no separator if disabled", IntegerScheme(groupingSeparatorEnabled = false, groupingSeparator = "#").withValue(179_644L), "179644"),
+                    row("uses no separator in base <10", IntegerScheme(groupingSeparatorEnabled = true, base = 8, groupingSeparator = "#").withValue(731_942L), "2625446"),
+                    row("uses no separator in base >10", IntegerScheme(groupingSeparatorEnabled = true, base = 12, groupingSeparator = "#").withValue(586_394L), "243422"),
+                    row("retains lowercase in base >10 if disabled", IntegerScheme(base = 14, isUppercase = false).withValue(829_960L), "17866c"),
+                    row("converts to uppercase in base >10 if enabled", IntegerScheme(base = 13, isUppercase = true).withValue(451_922L), "12A913"),
+                    row("applies decorators in order affix, fixed length, array", IntegerScheme(affixDecorator = AffixDecorator(enabled = true, descriptor = "@L"), fixedLengthDecorator = FixedLengthDecorator(enabled = true), arrayDecorator = ArrayDecorator(enabled = true)).withValue(53L), "[530L, 530L, 530L]"),
+                    //@formatter:on
+                )
+            ) { _, scheme, output -> scheme.generateStrings()[0] shouldBe output }
         }
 
-        describe("value range") {
-            it("generates values within the specified range") {
-                forAll(
-                    table(
-                        headers("min value", "max value", "expected string"),
-                        row(0L, 0L, "0"),
-                        row(1L, 1L, "1"),
-                        row(-5L, -5L, "-5"),
-                        row(488L, 488L, "488"),
-                        row(-876L, -876L, "-876"),
-                        row(Long.MIN_VALUE, Long.MIN_VALUE, Long.MIN_VALUE.toString()),
-                        row(Long.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE.toString()),
-                    )
-                ) { minValue, maxValue, expectedString ->
-                    integerScheme.minValue = minValue
-                    integerScheme.maxValue = maxValue
+        test("correctly generates distinct values at maximum range size") {
+            val scheme = IntegerScheme(minValue = Long.MIN_VALUE, maxValue = Long.MAX_VALUE)
 
-                    assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
-                }
-            }
-
-            it("generates a random value at maximum range size") {
-                integerScheme.minValue = Long.MIN_VALUE
-                integerScheme.maxValue = Long.MAX_VALUE
-
-                // Passes with extremely high probability (p = 1 - (2/(2^64))
-                assertThat(integerScheme.generateStrings())
-                    .doesNotContain(Long.MIN_VALUE.toString())
-                    .doesNotContain(Long.MAX_VALUE.toString())
-            }
-        }
-
-        describe("base") {
-            it("generates values in the specified base") {
-                forAll(
-                    table(
-                        headers("value", "base", "expected string"),
-                        row(33_360L, 10, "33360"),
-                        row(48_345L, 10, "48345"),
-                        row(48_345L, 11, "33360"),
-                    )
-                ) { value, base, expectedString ->
-                    integerScheme.minValue = value
-                    integerScheme.maxValue = value
-                    integerScheme.base = base
-
-                    assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
-                }
-            }
-        }
-
-        describe("separator") {
-            it("generates strings with the specified separator") {
-                forAll(
-                    table(
-                        headers("value", "base", "grouping separator", "grouping separator enabled", "expected string"),
-                        row(95_713L, 10, ".", false, "95713"),
-                        row(163_583L, 10, ".", true, "163.583"),
-                        row(121_435L, 10, "q", true, "121q435"),
-                        row(351_426L, 8, "t", true, "1256302"),
-                        row(775_202L, 8, "!", false, "2752042"),
-                        row(144_741L, 12, "w", true, "6b919"),
-                        row(951_922L, 12, "(", false, "39aa6a"),
-                    )
-                ) { value, base, groupingSeparator, groupingSeparatorEnabled, expectedString ->
-                    integerScheme.minValue = value
-                    integerScheme.maxValue = value
-                    integerScheme.base = base
-                    integerScheme.groupingSeparator = groupingSeparator
-                    integerScheme.groupingSeparatorEnabled = groupingSeparatorEnabled
-
-                    assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
-                }
-            }
-        }
-
-        describe("isUppercase") {
-            it("generates strings with the specified capitalization") {
-                forAll(
-                    table(
-                        headers("value", "base", "isUppercase", "expected string"),
-                        row(525L, 8, false, "1015"),
-                        row(590L, 8, true, "1116"),
-                        row(496L, 10, false, "496"),
-                        row(829L, 10, true, "829"),
-                        row(285L, 12, false, "1b9"),
-                        row(987L, 12, true, "6A3"),
-                    )
-                ) { value, base, isUppercase, expectedString ->
-                    integerScheme.minValue = value
-                    integerScheme.maxValue = value
-                    integerScheme.base = base
-                    integerScheme.isUppercase = isUppercase
-
-                    assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
-                }
-            }
-        }
-
-        describe("affixes") {
-            it("generates strings with the specified affixes") {
-                forAll(
-                    table(
-                        headers("value", "prefix", "suffix", "expected string"),
-                        row(920L, "", "", "920"),
-                        row(553L, "before", "after", "before553after"),
-                        row(948L, "0x", "", "0x948"),
-                        row(502L, "", "L", "502L"),
-                    )
-                ) { value, prefix, suffix, expectedString ->
-                    integerScheme.minValue = value
-                    integerScheme.maxValue = value
-                    integerScheme.prefix = prefix
-                    integerScheme.suffix = suffix
-                    assertThat(integerScheme.generateStrings()).containsExactly(expectedString)
-                }
-            }
+            withClue("Should have distinct elements") { scheme.generateStrings(count = 50).toSet() shouldHaveSize 50 }
         }
     }
 
-
-    describe("doValidate") {
-        it("passes for the default settings") {
-            assertThat(IntegerScheme().doValidate()).isNull()
-        }
-
-        it("fails if the fixed-length decorator is invalid") {
-            integerScheme.fixedLengthDecorator.length = -45
-
-            assertThat(integerScheme.doValidate()).isNotNull()
-        }
-
-        it("fails if the array decorator is invalid") {
-            integerScheme.arrayDecorator.minCount = -584
-
-            assertThat(integerScheme.doValidate()).isNotNull()
-        }
-
-        describe("base") {
-            it("fails if the base is negative") {
-                integerScheme.base = -189
-
-                assertThat(integerScheme.doValidate()).isEqualTo("Base should be in range 2..36.")
-            }
-
-            it("fails if the base is 0") {
-                integerScheme.base = 0
-
-                assertThat(integerScheme.doValidate()).isEqualTo("Base should be in range 2..36.")
-            }
-
-            it("fails if the base is 1") {
-                integerScheme.base = 1
-
-                assertThat(integerScheme.doValidate()).isEqualTo("Base should be in range 2..36.")
-            }
-
-            it("fails if the base is greater than 36") {
-                integerScheme.base = 68
-
-                assertThat(integerScheme.doValidate()).isEqualTo("Base should be in range 2..36.")
-            }
-        }
-
-        describe("grouping separator") {
-            it("fails if the grouping separator contains no characters") {
-                integerScheme.groupingSeparator = ""
-
-                assertThat(integerScheme.doValidate()).isEqualTo("Grouping separator must be exactly 1 character.")
-            }
-
-            it("fails if the grouping separator contains multiple characters") {
-                integerScheme.groupingSeparator = "awc"
-
-                assertThat(integerScheme.doValidate()).isEqualTo("Grouping separator must be exactly 1 character.")
-            }
-        }
+    test("doValidate") {
+        forAll(
+            table(
+                //@formatter:off
+                headers("description", "scheme", "validation"),
+                row("succeeds for default state", IntegerScheme(), null),
+                row("fails if min value is above max value", IntegerScheme(minValue = 671L, maxValue = 93L), "integer.error.min_value_above_max"),
+                row("fails if base is negative", IntegerScheme(base = -48), "integer.error.base_range"),
+                row("fails if base is zero", IntegerScheme(base = -0), "integer.error.base_range"),
+                row("fails if base is one", IntegerScheme(base = 1), "integer.error.base_range"),
+                row("fails if base is greater than 30", IntegerScheme(base = 704), "integer.error.base_range"),
+                row("fails if grouping separator is empty", IntegerScheme(groupingSeparator = ""), "integer.error.grouping_separator_length"),
+                row("fails if grouping separator is non-char", IntegerScheme(groupingSeparator = "long"), "integer.error.grouping_separator_length"),
+                row("fails if fixed-length decorator is invalid", IntegerScheme(fixedLengthDecorator = FixedLengthDecorator(length = -3)), ""),
+                row("fails if affix decorator is invalid", IntegerScheme(affixDecorator = AffixDecorator(descriptor = """\""")), ""),
+                row("fails if array decorator is invalid", IntegerScheme(arrayDecorator = ArrayDecorator(minCount = -24)), ""),
+                //@formatter:on
+            )
+        ) { _, scheme, validation -> scheme shouldValidateAsBundle validation }
     }
 
-    describe("deepCopy") {
-        it("creates an independent copy") {
-            integerScheme.minValue = 159
-            integerScheme.fixedLengthDecorator.length = 67
-            integerScheme.arrayDecorator.minCount = 757
+    test("deepCopy") {
+        lateinit var scheme: IntegerScheme
 
-            val copy = integerScheme.deepCopy()
-            copy.minValue = 48
-            copy.fixedLengthDecorator.length = 61
-            copy.arrayDecorator.minCount = 554
 
-            assertThat(integerScheme.minValue).isEqualTo(159)
-            assertThat(integerScheme.fixedLengthDecorator.length).isEqualTo(67)
-            assertThat(integerScheme.arrayDecorator.minCount).isEqualTo(757)
+        beforeEach {
+            scheme = IntegerScheme()
         }
-    }
 
-    describe("copyFrom") {
-        it("copies state from another instance") {
-            integerScheme.minValue = 742
-            integerScheme.maxValue = 908
-            integerScheme.base = 12
-            integerScheme.groupingSeparatorEnabled = true
-            integerScheme.groupingSeparator = "B"
-            integerScheme.isUppercase = true
-            integerScheme.prefix = "M9d1uey"
-            integerScheme.suffix = "m45tL1"
-            integerScheme.fixedLengthDecorator.length = 87
-            integerScheme.arrayDecorator.minCount = 963
 
-            val newScheme = IntegerScheme()
-            newScheme.copyFrom(integerScheme)
+        test("equals old instance") {
+            scheme.deepCopy() shouldBe scheme
+        }
 
-            assertThat(newScheme)
-                .isEqualTo(integerScheme)
-                .isNotSameAs(integerScheme)
-            assertThat(newScheme.fixedLengthDecorator)
-                .isEqualTo(integerScheme.fixedLengthDecorator)
-                .isNotSameAs(integerScheme.fixedLengthDecorator)
-            assertThat(newScheme.arrayDecorator)
-                .isEqualTo(integerScheme.arrayDecorator)
-                .isNotSameAs(integerScheme.arrayDecorator)
+        test("is independent of old instance") {
+            val copy = scheme.deepCopy()
+
+            scheme.groupingSeparator = "other"
+
+            copy.groupingSeparator shouldNotBe scheme.groupingSeparator
+        }
+
+        test("retains uuid if chosen") {
+            scheme.deepCopy(true).uuid shouldBe scheme.uuid
+        }
+
+        test("replaces uuid if chosen") {
+            scheme.deepCopy(false).uuid shouldNotBe scheme.uuid
         }
     }
 })
+
+
+/**
+ * Sets the [IntegerScheme.minValue] and [IntegerScheme.maxValue] to [value].
+ *
+ * @receiver the scheme to set the minimum and maximum value on
+ * @param value the value to set
+ * @return `this`
+ */
+private fun IntegerScheme.withValue(value: Long): IntegerScheme {
+    minValue = value
+    maxValue = value
+    return this
+}

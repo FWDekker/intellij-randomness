@@ -80,13 +80,13 @@ abstract class InsertAction(
                     else
                         generateStrings(editor.caretModel.caretCount)
                 }
-            } catch (e: DataGenerationException) {
+            } catch (exception: DataGenerationException) {
                 HintManager.getInstance().showErrorHint(
                     editor,
-                    if (e.message.isNullOrBlank())
+                    if (exception.message.isNullOrBlank())
                         Bundle("shared.error.could_not_generate")
                     else
-                        Bundle("shared.error.could_not_generate.no_message", e.message)
+                        Bundle("shared.error.could_not_generate.no_message", exception.message)
                 )
                 return
             }

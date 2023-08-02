@@ -9,6 +9,7 @@ import com.fwdekker.randomness.ui.JDateTimeField
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.ui.bindDateTimeLongValue
+import com.fwdekker.randomness.ui.toLocalDateTime
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.fwdekker.randomness.ui.withName
 import com.intellij.ui.dsl.builder.BottomGap
@@ -76,14 +77,14 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : SchemeEd
  */
 private fun bindDateTimes(minField: JDateTimeField, maxField: JDateTimeField) {
     addChangeListenerTo(minField) {
-        val minEpoch = minField.value.toEpochMilli()
-        val maxEpoch = maxField.value.toEpochMilli()
+        val minEpoch = minField.longValue
+        val maxEpoch = maxField.longValue
 
         if (minEpoch > maxEpoch) maxField.value = minField.value
     }
     addChangeListenerTo(maxField) {
-        val minEpoch = minField.value.toEpochMilli()
-        val maxEpoch = maxField.value.toEpochMilli()
+        val minEpoch = minField.longValue
+        val maxEpoch = maxField.longValue
 
         if (maxEpoch < minEpoch) minField.value = maxField.value
     }

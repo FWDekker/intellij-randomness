@@ -30,10 +30,10 @@ object Timely {
         val executor = Executors.newSingleThreadExecutor()
         try {
             return executor.submit<T> { generator() }.get(GENERATOR_TIMEOUT, TimeUnit.MILLISECONDS)
-        } catch (e: TimeoutException) {
-            throw DataGenerationException(Bundle("helpers.error.timed_out"), e)
-        } catch (e: ExecutionException) {
-            throw DataGenerationException(e.cause?.message ?: e.message, e)
+        } catch (exception: TimeoutException) {
+            throw DataGenerationException(Bundle("helpers.error.timed_out"), exception)
+        } catch (exception: ExecutionException) {
+            throw DataGenerationException(exception.cause?.message ?: exception.message, exception)
         } finally {
             executor.shutdown()
         }

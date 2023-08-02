@@ -33,8 +33,8 @@ data class DecimalScheme(
     var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR,
     var groupingSeparatorEnabled: Boolean = DEFAULT_GROUPING_SEPARATOR_ENABLED,
     var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
-    var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
-    var arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
+    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name = Bundle("decimal.title")
     override val typeIcon = BASE_ICON
@@ -79,7 +79,7 @@ data class DecimalScheme(
             decimalCount < MIN_DECIMAL_COUNT -> Bundle("decimal.error.decimal_count_too_low", MIN_DECIMAL_COUNT)
             decimalSeparator.length != 1 -> Bundle("decimal.error.decimal_separator_length")
             groupingSeparator.length != 1 -> Bundle("decimal.error.grouping_separator_length")
-            else -> arrayDecorator.doValidate()
+            else -> affixDecorator.doValidate() ?: arrayDecorator.doValidate()
         }
 
     override fun deepCopy(retainUuid: Boolean) =
@@ -165,11 +165,11 @@ data class DecimalScheme(
         /**
          * The default value of the [affixDecorator] field.
          */
-        val DEFAULT_AFFIX_DECORATOR = AffixDecorator(enabled = false, descriptor = "f@")
+        val DEFAULT_AFFIX_DECORATOR get() = AffixDecorator(enabled = false, descriptor = "f@")
 
         /**
          * The default value of the [arrayDecorator] field.
          */
-        val DEFAULT_ARRAY_DECORATOR = ArrayDecorator()
+        val DEFAULT_ARRAY_DECORATOR get() = ArrayDecorator()
     }
 }

@@ -1,219 +1,154 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.MutableBox
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.Settings
-import com.fwdekker.randomness.string.StringScheme
-import com.intellij.testFramework.fixtures.IdeaTestFixture
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
+import com.fwdekker.randomness.shouldValidateAsBundle
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.forAll
+import io.kotest.data.headers
+import io.kotest.data.row
+import io.kotest.data.table
+import io.kotest.matchers.nulls.beNull
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.types.shouldBeSameInstanceAs
 
 
 /**
  * Unit tests for [TemplateList].
  */
-object TemplateListTest : DescribeSpec({
-    lateinit var templateList: TemplateList
+object TemplateListTest : FunSpec({
+    test("applyContext") {
+        test("applies the context to itself") {
+            val newContext = Settings()
+            val list = TemplateList()
 
+            list.applyContext(newContext)
 
-    beforeEach {
-        templateList = TemplateList(emptyList())
-    }
-
-
-    describe("applySettingsState") {
-        it("returns itself") {
-            assertThat(templateList.applyContext(Settings())).isSameAs(templateList)
+            +list.context shouldBeSameInstanceAs newContext
         }
 
-        it("overwrites the settings of contained schemes") {
-            val newSettings = TemplateList()
-            val reference = TemplateReference()
-            templateList.templates = listOf(Template(schemes = listOf(reference)))
+        test("applies the context to each template") {
+            val newContext = Settings()
+            val template = Template()
+            val list = TemplateList(mutableListOf(template))
 
-            templateList.applyContext(Settings(templateList = newSettings))
+            list.applyContext(newContext)
 
-            assertThat(+reference.templateList).isSameAs(newSettings)
+            +template.context shouldBeSameInstanceAs newContext
         }
     }
 
 
-    describe("findRecursionFrom") {
-        it("returns null if the reference refers to `null`") {
-            val reference = TemplateReference().also { it.templateList = MutableBox({ TemplateList(emptyList()) }) }
-
-            assertThat(TemplateList(emptyList()).findRecursionFrom(reference)).isNull()
-        }
-
-        it("returns null if the reference refers to a template not in this list") {
-            val otherList = TemplateList.from(DummyScheme())
-            val reference = TemplateReference(otherList.templates[0].uuid).also { it.templateList = MutableBox({ otherList }) }
-
-            assertThat(TemplateList(emptyList()).findRecursionFrom(reference)).isNull()
-        }
-
-        it("returns null if the recursion occurs only in another part of the list") {
-            val otherTemplate = Template(name = "roast")
-
-            val goodReference = TemplateReference(otherTemplate.uuid).also { it.templateList = MutableBox({ templateList }) }
-            val goodTemplate = Template("act", listOf(goodReference))
-
-            val badReference = TemplateReference().also { it.templateList = MutableBox({ templateList }) }
-            val badTemplate = Template("sour", listOf(badReference))
-            badReference.templateUuid = badTemplate.uuid
-
-            templateList.templates = listOf(otherTemplate, goodTemplate, badTemplate)
-
-            assertThat(templateList.findRecursionFrom(goodReference)).isNull()
-        }
-
-        it("returns a short path if the reference refers to its parent") {
-            val reference = TemplateReference()
-            val list = TemplateList.from(reference)
-            reference.templateUuid = list.templates[0].uuid
-            reference.templateList = MutableBox({ list })
-
-            assertThat(list.findRecursionFrom(reference)).containsExactly(list.templates[0], list.templates[0])
-        }
-
-        it("returns a longer path if the reference consists of a chain") {
-            val reference1 = TemplateReference().also { it.templateList = MutableBox({ templateList }) }
-            val template1 = Template("drop", listOf(reference1))
-
-            val reference2 = TemplateReference(template1.uuid).also { it.templateList = MutableBox({ templateList }) }
-            val template2 = Template("salesman", listOf(reference2))
-
-            val reference3 = TemplateReference(template2.uuid).also { it.templateList = MutableBox({ templateList }) }
-            val template3 = Template("almost", listOf(reference3))
-
-            reference1.templateUuid = template3.uuid
-
-            templateList.templates = listOf(template1, template2, template3)
-
-            assertThat(templateList.findRecursionFrom(reference2))
-                .containsExactly(template2, template1, template3, template2)
-        }
-    }
-
-    describe("getTemplateByUuid") {
-        it("returns null if no such scheme can be found") {
-            assertThat(templateList.getTemplateByUuid("46840969-0b31-4fef-92b0-42f34dbc9f8b")).isNull()
-        }
-
-        it("returns the template with the given UUID") {
-            val template = Template("Rank", listOf(DummyScheme()))
-            templateList.templates = listOf(template)
-
-            assertThat(templateList.getTemplateByUuid(template.uuid)).isEqualTo(template)
-        }
-
-        it("returns null if there is a scheme with the given UUID") {
-            val scheme = DummyScheme()
-            templateList.templates = listOf(Template("Skirt", listOf(scheme)))
-
-            assertThat(templateList.getTemplateByUuid(scheme.uuid)).isNull()
-        }
-    }
-
-    describe("getSchemeByUuid") {
-        it("returns null if no such scheme can be found") {
-            assertThat(templateList.getSchemeByUuid("cdfbed17-8df7-47eb-b96c-41e94cfc838b")).isNull()
-        }
-
-        it("returns the template with the given UUID") {
-            val template = Template("Narrow", listOf(DummyScheme()))
-            templateList.templates = listOf(template)
-
-            assertThat(templateList.getSchemeByUuid(template.uuid)).isEqualTo(template)
-        }
-
-        it("returns the scheme with the given UUID") {
-            val scheme = DummyScheme()
-            templateList.templates = listOf(Template("Sometime", listOf(scheme)))
-
-            assertThat(templateList.getSchemeByUuid(scheme.uuid)).isEqualTo(scheme)
-        }
-    }
-
-
-    describe("doValidate") {
-        describe("(fixture wrapper)") {
-            lateinit var ideaFixture: IdeaTestFixture
-
-
-            beforeEach {
-                ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-                ideaFixture.setUp()
+    test("listValidReferenceTargets") {
+        test("for reference") {
+            test("returns an error if the given reference is not in this list") {
+                //
             }
 
-            afterEach {
-                ideaFixture.tearDown()
-            }
-
-
-            it("passes for the default settings") {
-                assertThat(TemplateList().doValidate()).isNull()
+            test("returns copies") {
+                //
             }
         }
 
-        it("passes for a template list without templates") {
-            assertThat(TemplateList(templates = emptyList()).doValidate()).isNull()
+        test("for template") {
+            //
+        }
+    }
+
+
+    test("getTemplateByUuid") {
+        test("returns null if no such template can be found") {
+            val list = TemplateList()
+
+            list.getTemplateByUuid("46840969-0b31-4fef-92b0-42f34dbc9f8b") should beNull()
         }
 
-        it("fails if the single template is invalid") {
-            templateList.templates = listOf(Template("Gold", listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))))
+        test("returns the template with the given UUID") {
+            val list = TemplateList()
 
-            assertThat(templateList.doValidate()).startsWith("Gold > ${DummyScheme.INVALID_OUTPUT} > ")
+            val template = list.templates[0]
+
+            list.getTemplateByUuid(template.uuid) shouldBeSameInstanceAs template
         }
 
-        it("fails if multiple templates have the same name") {
-            templateList.templates = listOf(
-                Template("Solution", listOf(DummyScheme.from("mild"))),
-                Template("Leg", listOf(DummyScheme.from("body"))),
-                Template("Solution", listOf(DummyScheme.from("arise")))
+        test("returns null even if the UUID corresponds to a scheme") {
+            val list = TemplateList()
+
+            val scheme = list.templates[0].schemes[0]
+
+            list.getTemplateByUuid(scheme.uuid) should beNull()
+        }
+    }
+
+    test("getSchemeByUuid") {
+        test("returns null if no such scheme can be found") {
+            val list = TemplateList()
+
+            list.getSchemeByUuid("46840969-0b31-4fef-92b0-42f34dbc9f8b") should beNull()
+        }
+
+        test("returns the scheme with the given UUID") {
+            val list = TemplateList()
+
+            val scheme = list.templates[0].schemes[0]
+
+            list.getSchemeByUuid(scheme.uuid) shouldBeSameInstanceAs scheme
+        }
+
+        test("returns the template with the given UUID") {
+            val list = TemplateList()
+
+            val template = list.templates[0]
+
+            list.getSchemeByUuid(template.uuid) shouldBeSameInstanceAs template
+        }
+    }
+
+
+    test("doValidate") {
+        forAll(
+            table(
+                //@formatter:off
+                headers("description", "scheme", "validation"),
+                row("succeeds for default state", TemplateList(), null),
+                row("succeeds with no templates", TemplateList(mutableListOf()), null),
+                row("fails if multiple templates have the same name", TemplateList(mutableListOf(Template("same"), Template("same"))), "template_list.error.duplicate_name"),
+                row("fails if the single template is invalid", TemplateList(mutableListOf(Template(schemes = mutableListOf(DummyScheme(valid = false))))), ""),
+                row("fails if one of multiple templates is invalid", TemplateList(mutableListOf(Template("Valid"), Template("Invalid", mutableListOf(DummyScheme(valid = false))))), ""),
+                //@formatter:on
             )
-
-            assertThat(templateList.doValidate())
-                .isEqualTo("Template names should be unique. Rename template 'Solution'.")
-        }
-
-        it("fails if one of multiple templates is invalid") {
-            templateList.templates = listOf(
-                Template(name = "Moment"),
-                Template(name = "View", schemes = listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))),
-                Template(name = "Ahead"),
-                Template(name = "Honesty")
-            )
-
-            assertThat(templateList.doValidate()).startsWith("View > ${DummyScheme.INVALID_OUTPUT} > ")
-        }
+        ) { _, scheme, validation -> scheme shouldValidateAsBundle validation }
     }
 
-    describe("deepCopy") {
-        it("creates an independent copy") {
-            templateList.templates = listOf(Template(schemes = listOf(StringScheme("refuse"))))
+    test("deepCopy") {
+        lateinit var list: TemplateList
 
-            val copy = templateList.deepCopy()
-            (copy.templates.first().schemes.first() as StringScheme).pattern = "cheer"
 
-            assertThat((templateList.templates.first().schemes.first() as StringScheme).pattern).isEqualTo("refuse")
+        beforeEach {
+            list = TemplateList()
         }
-    }
 
-    describe("copyFrom") {
-        it("copies state from another instance") {
-            templateList.templates = listOf(Template(name = "Desert"), Template(name = "Care"))
 
-            val newTemplateList = TemplateList(emptyList())
-            newTemplateList.copyFrom(templateList)
+        test("equals old instance") {
+            list.deepCopy() shouldBe list
+        }
 
-            assertThat(newTemplateList)
-                .isEqualTo(templateList)
-                .isNotSameAs(templateList)
-            assertThat(newTemplateList.templates.single { it.name == "Desert" })
-                .isEqualTo(templateList.templates.single { it.name == "Desert" })
-                .isNotSameAs(templateList.templates.single { it.name == "Desert" })
+        test("is independent of old instance") {
+            val copy = list.deepCopy()
+
+            list.templates[0].name = "other"
+
+            copy.templates[0].name shouldNotBe list.templates[0].name
+        }
+
+        test("retains uuid if chosen") {
+            list.deepCopy(true).uuid shouldBe list.uuid
+        }
+
+        test("replaces uuid if chosen") {
+            list.deepCopy(false).uuid shouldNotBe list.uuid
         }
     }
 })

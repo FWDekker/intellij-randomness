@@ -1,70 +1,78 @@
 package com.fwdekker.randomness
 
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.assertions.retry
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldBeEqualIgnoringCase
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.minutes
 
 
 /**
  * Unit tests for [CapitalizationMode].
  */
-object CapitalizationModeTest : DescribeSpec({
+object CapitalizationModeTest : FunSpec({
     val random = Random.Default
 
 
-    describe("transform") {
-        describe("retain mode") {
-            it("does nothing to a string") {
-                assertThat(CapitalizationMode.RETAIN.transform("AwfJYzzUoR", random)).isEqualTo("AwfJYzzUoR")
+    test("transform") {
+        test("retain mode") {
+            test("does nothing to a string") {
+                CapitalizationMode.RETAIN.transform("LOREm IpSuM", random) shouldBe "LOREm IpSuM"
             }
         }
 
-        describe("sentence mode") {
-            it("does nothing to an empty string") {
-                assertThat(CapitalizationMode.SENTENCE.transform("", random)).isEqualTo("")
+        test("sentence mode") {
+            test("does nothing to an empty string") {
+                CapitalizationMode.SENTENCE.transform("", random) shouldBe ""
             }
 
-            it("changes a string to sentence case") {
-                assertThat(CapitalizationMode.SENTENCE.transform("cOoKiE cAN", random)).isEqualTo("Cookie can")
-            }
-        }
-
-        describe("uppercase mode") {
-            it("changes all characters to uppercase") {
-                assertThat(CapitalizationMode.UPPER.transform("vAnDaLisM", random)).isEqualTo("VANDALISM")
+            test("changes a string to sentence case") {
+                CapitalizationMode.SENTENCE.transform("LOrEM ipsUm", random) shouldBe "Lorem ipsum"
             }
         }
 
-        describe("lowercase mode") {
-            it("changes all characters to lowercase") {
-                assertThat(CapitalizationMode.LOWER.transform("ChAnnEl", random)).isEqualTo("channel")
+        test("uppercase mode") {
+            test("changes all characters to uppercase") {
+                CapitalizationMode.UPPER.transform("LoREm iPSUM", random) shouldBe "LOREM IPSUM"
             }
         }
 
-        describe("first letter mode") {
-            it("changes all first letters to uppercase") {
-                assertThat(CapitalizationMode.FIRST_LETTER.transform("bgiOP SMQpR", random)).isEqualTo("Bgiop Smqpr")
+        test("lowercase mode") {
+            test("changes all characters to lowercase") {
+                CapitalizationMode.LOWER.transform("lorEm IpSUM", random) shouldBe "lorem ipsum"
             }
         }
 
-        describe("random mode") {
-            it("changes the capitalization to something else") {
-                assertThat(CapitalizationMode.RANDOM.transform("GHmdukhNqua", random))
-                    .isNotEqualTo("GHmdukhNqua") // Has a chance of 0.002% of failing
-                    .isEqualToIgnoringCase("GHmdukhNqua")
-            }
-
-            it("produces reproducibly random strings") {
-                val transform = { CapitalizationMode.RANDOM.transform("several", Random(15)) }
-
-                assertThat(transform()).isEqualTo(transform())
+        test("first letter mode") {
+            test("changes all first letters to uppercase") {
+                CapitalizationMode.FIRST_LETTER.transform("lOReM IPSum", random) shouldBe "Lorem Ipsum"
             }
         }
 
-        describe("dummy mode") {
-            it("does nothing to a string") {
-                assertThat(CapitalizationMode.DUMMY.transform("i4Oh51O", random)).isEqualTo("i4Oh51O")
+        test("random mode") {
+            test("changes the capitalization to something else") {
+                retry(100, 1.minutes) {
+                    val input = "lOReM ipsUm"
+                    val output = CapitalizationMode.RANDOM.transform(input, random)
+
+                    output shouldNotBe input // Has a chance of 0.002% of failing
+                    output shouldBeEqualIgnoringCase input
+                }
             }
+
+            test("produces reproducibly random strings") {
+                val transform = { CapitalizationMode.RANDOM.transform("lorem ipsum", Random(0)) }
+
+                transform() shouldBe transform()
+            }
+        }
+    }
+
+    test("toLocalizedString") {
+        test("returns the associated localized string") {
+            CapitalizationMode.FIRST_LETTER.toLocalizedString() shouldBe Bundle("shared.capitalization.first_letter")
         }
     }
 })

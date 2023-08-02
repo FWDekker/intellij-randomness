@@ -1,16 +1,26 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.PersistentSettings
+import com.fwdekker.randomness.Settings
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.collections.beEmpty
+import io.kotest.matchers.collections.shouldHaveAtLeastSize
+import io.kotest.matchers.collections.shouldNotContainAnyOf
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldNot
 
 
 /**
  * Unit tests for [TemplateActionLoader].
  */
-class TemplateActionLoaderTest : DescribeSpec({
+object TemplateActionLoaderTest : FunSpec({
+    tags(NamedTag("IdeaFixture"))
+
+
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var actionManager: ActionManager
 
@@ -27,66 +37,90 @@ class TemplateActionLoaderTest : DescribeSpec({
     }
 
 
-    describe("registerActions") {
-        it("registers actions for each template") {
-            val template = Template(name = "Snow")
-            PersistentSettings.default.loadState(TemplateList(listOf(template)))
+    test("registerActions") {
+        test("registers multiple insert action variants and a settings action") {
+            val template = Template()
+            PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template))))
 
             TemplateActionLoader().registerActions(actionManager)
 
-            assertThat(actionManager.getAction(template.actionId)).isNotNull()
+            val actions = actionManager.getActionsWithPrefix(template.actionId)
+            actions.filterIsInstance<TemplateInsertAction>() shouldHaveAtLeastSize 2
+            actions.filterIsInstance<TemplateSettingsAction>() shouldNot beEmpty()
+        }
+
+        test("registers actions for each template") {
+            val template1 = Template()
+            val template2 = Template()
+            PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template1, template2))))
+
+            TemplateActionLoader().registerActions(actionManager)
+
+            actionManager.getActionsWithPrefix(template1.actionId) shouldNot beEmpty()
+            actionManager.getActionsWithPrefix(template2.actionId) shouldNot beEmpty()
         }
     }
 
-    describe("unregisterActions") {
-        it("unregisters actions for each template") {
-            val template = Template(name = "Kick")
-            PersistentSettings.default.loadState(TemplateList(listOf(template)))
-
+    test("unregisterActions") {
+        test("unregisters actions for each template") {
+            val template = Template()
+            PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template))))
             TemplateActionLoader().registerActions(actionManager)
-            assertThat(actionManager.getAction(template.actionId)).isNotNull()
+
             TemplateActionLoader().unregisterActions(actionManager)
 
-            assertThat(actionManager.getAction(template.actionId)).isNull()
+            actionManager.getActionsWithPrefix(template.actionId) should beEmpty()
         }
     }
 
-    describe("updateActions") {
-        it("registers actions of initial templates") {
-            val template = Template(name = "Fine")
+    test("updateActions") {
+        test("registers actions of initial templates") {
+            val template = Template()
 
             TemplateActionLoader().updateActions(emptySet(), setOf(template))
 
-            assertThat(actionManager.getAction(template.actionId)).isNotNull()
+            actionManager.getActionsWithPrefix(template.actionId) shouldNot beEmpty()
         }
 
-        it("registers actions of new templates") {
-            val template1 = Template(name = "Ease")
-            val template2 = Template(name = "Holy")
+        test("registers actions of new templates") {
+            val template1 = Template()
+            PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template1))))
+            TemplateActionLoader().registerActions(actionManager)
 
-            TemplateActionLoader().updateActions(emptySet(), setOf(template1))
-            TemplateActionLoader().updateActions(setOf(template1, template2), setOf(template2))
+            val template2 = Template()
+            TemplateActionLoader().updateActions(setOf(template1), setOf(template1, template2))
 
-            assertThat(actionManager.getAction(template2.actionId)).isNotNull()
+            actionManager.getActionsWithPrefix(template1.actionId) shouldNot beEmpty()
+            actionManager.getActionsWithPrefix(template2.actionId) shouldNot beEmpty()
         }
 
-        it("unregisters actions of now-removed templates") {
-            val template = Template(name = "Fall")
+        test("unregisters actions of now-removed templates") {
+            val template1 = Template()
+            val template2 = Template()
+            PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template1, template2))))
+            TemplateActionLoader().registerActions(actionManager)
 
-            TemplateActionLoader().updateActions(emptySet(), setOf(template))
+            TemplateActionLoader().updateActions(setOf(template1, template2), emptySet())
+
+            actionManager.getActionsWithPrefix(template1.actionId) should beEmpty()
+            actionManager.getActionsWithPrefix(template2.actionId) should beEmpty()
+        }
+
+        test("re-registers actions of updated templates") {
+            val template = Template()
+            PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template))))
+            TemplateActionLoader().registerActions(actionManager)
+            val oldActions = actionManager.getActionsWithPrefix(template.actionId)
+
             TemplateActionLoader().updateActions(setOf(template), emptySet())
 
-            assertThat(actionManager.getAction(template.actionId)).isNull()
-        }
-
-        it("reregisters actions of updated templates") {
-            val template = Template(name = "Pain")
-
-            TemplateActionLoader().updateActions(emptySet(), setOf(template))
-            val action = actionManager.getAction(template.actionId)
-            TemplateActionLoader().updateActions(setOf(template), setOf(template))
-
-            assertThat(actionManager.getAction(template.actionId)).isNotEqualTo(action)
+            actionManager.getActionsWithPrefix(template.actionId) shouldNotContainAnyOf oldActions
         }
     }
 })
+
+
+/**
+ * Returns all actions with an id that starts with [prefix].
+ */
+private fun ActionManager.getActionsWithPrefix(prefix: String) = getActionIdList(prefix).map { getAction(it) }

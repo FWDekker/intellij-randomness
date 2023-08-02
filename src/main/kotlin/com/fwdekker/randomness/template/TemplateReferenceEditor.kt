@@ -32,8 +32,8 @@ class TemplateReferenceEditor(scheme: TemplateReference) : SchemeEditor<Template
                     .onResetThis { cell ->
                         cell.component.removeAllItems()
 
-                        (+scheme.context).templateList
-                            .listValidReferenceTargets(scheme)
+                        (+scheme.context).templateList.templates
+                            .filter { scheme.canReference(it) }
                             .forEach { cell.component.addItem(it) }
                     }
                     .withName("template")

@@ -3,6 +3,8 @@ package com.fwdekker.randomness.word
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.find
+import com.fwdekker.randomness.guiGet
+import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.matcher
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.impl.EditorComponentImpl
@@ -11,7 +13,6 @@ import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 
@@ -37,7 +38,7 @@ object WordSchemeEditorTest : DescribeSpec({
         ideaFixture.setUp()
 
         scheme = WordScheme()
-        editor = GuiActionRunner.execute<WordSchemeEditor> { WordSchemeEditor(scheme) }
+        editor = guiGet { WordSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
 
         wordsEditor = frame.find(matcher(EditorComponentImpl::class.java))
@@ -45,26 +46,26 @@ object WordSchemeEditorTest : DescribeSpec({
 
     afterEach {
         frame.cleanUp()
-        GuiActionRunner.execute { editor.dispose() }
+        guiRun { editor.dispose() }
         ideaFixture.tearDown()
     }
 
 
     describe("loadState") {
         it("loads the scheme's words") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("summer", "another"))) }
+            guiRun { editor.loadState(WordScheme(words = listOf("summer", "another"))) }
 
             assertThat(wordsEditor.text).isEqualTo("summer\nanother\n")
         }
 
         it("loads the scheme's quotation") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(quotation = "'")) }
+            guiRun { editor.loadState(WordScheme(quotation = "'")) }
 
             frame.comboBox("quotation").requireSelection("'")
         }
 
         it("loads the scheme's capitalization") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(capitalization = CapitalizationMode.LOWER)) }
+            guiRun { editor.loadState(WordScheme(capitalization = CapitalizationMode.LOWER)) }
 
             frame.comboBox("capitalization").requireSelection("lower")
         }
@@ -72,7 +73,7 @@ object WordSchemeEditorTest : DescribeSpec({
 
     describe("readState") {
         it("removes blank lines from the words input") {
-            GuiActionRunner.execute { runWriteAction { wordsEditor.editor.document.setText("suppose\n  \nsand\n") } }
+            guiRun { runWriteAction { wordsEditor.editor.document.setText("suppose\n  \nsand\n") } }
 
             assertThat(editor.readState().words).isEqualTo(listOf("suppose", "sand"))
         }
@@ -82,7 +83,7 @@ object WordSchemeEditorTest : DescribeSpec({
         }
 
         it("returns the editor's state") {
-            GuiActionRunner.execute {
+            guiRun {
                 runWriteAction { wordsEditor.editor.document.setText("might\nexpense") }
                 frame.comboBox("quotation").target().selectedItem = "'"
                 frame.comboBox("capitalization").target().selectedItem = CapitalizationMode.LOWER
@@ -95,10 +96,10 @@ object WordSchemeEditorTest : DescribeSpec({
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.comboBox("quotation").target().selectedItem = "'" }
+            guiRun { frame.comboBox("quotation").target().selectedItem = "'" }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
+            guiRun { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readState()).isEqualTo(editor.originalState)
@@ -134,37 +135,29 @@ object WordSchemeEditorTest : DescribeSpec({
 
         describe("pre-selection") {
             it("selects the placeholder if the initial words do no match any word list") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("ugly", "wait"))) }
+                guiRun { editor.loadState(WordScheme(words = listOf("ugly", "wait"))) }
 
                 assertThat(frame.comboBox("presets").target().selectedIndex).isEqualTo(0)
             }
 
             it("selects the corresponding word list if the contents match that list") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(words = firstList.words)) }
+                guiRun { editor.loadState(WordScheme(words = firstList.words)) }
 
                 assertThat(frame.comboBox("presets").target().selectedIndex).isEqualTo(1)
             }
 
             it("selects the placeholder if a word is changed") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(words = firstList.words)) }
+                guiRun { editor.loadState(WordScheme(words = firstList.words)) }
 
-                GuiActionRunner.execute {
-                    runWriteAction {
-                        wordsEditor.editor.document.setText("${firstListAsString}jealous")
-                    }
-                }
+                guiRun { runWriteAction { wordsEditor.editor.document.setText("${firstListAsString}jealous") } }
 
                 assertThat(frame.comboBox("presets").target().selectedIndex).isEqualTo(0)
             }
 
             it("retains the non-placeholder selection if a newline is appended") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(words = firstList.words)) }
+                guiRun { editor.loadState(WordScheme(words = firstList.words)) }
 
-                GuiActionRunner.execute {
-                    runWriteAction {
-                        wordsEditor.editor.document.setText("$firstListAsString\n \n")
-                    }
-                }
+                guiRun { runWriteAction { wordsEditor.editor.document.setText("$firstListAsString\n \n") } }
 
                 assertThat(frame.comboBox("presets").target().selectedIndex).isEqualTo(1)
             }
@@ -172,25 +165,25 @@ object WordSchemeEditorTest : DescribeSpec({
 
         describe("insertion") {
             it("does nothing if the placeholder is selected") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("street", "sell"))) }
+                guiRun { editor.loadState(WordScheme(words = listOf("street", "sell"))) }
 
-                GuiActionRunner.execute { frame.comboBox("presets").target().selectedIndex = 0 }
+                guiRun { frame.comboBox("presets").target().selectedIndex = 0 }
 
                 assertThat(wordsEditor.text).isEqualTo("street\nsell\n")
             }
 
             it("does nothing if another entry is selected and then the placeholder is selected") {
-                GuiActionRunner.execute { frame.comboBox("presets").target().selectedIndex = 1 }
+                guiRun { frame.comboBox("presets").target().selectedIndex = 1 }
 
-                GuiActionRunner.execute { frame.comboBox("presets").target().selectedIndex = 0 }
+                guiRun { frame.comboBox("presets").target().selectedIndex = 0 }
 
                 assertThat(wordsEditor.text).isEqualTo(firstListAsString)
             }
 
             it("inserts the words of the selected entry") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("grow", "trip"))) }
+                guiRun { editor.loadState(WordScheme(words = listOf("grow", "trip"))) }
 
-                GuiActionRunner.execute { frame.comboBox("presets").target().selectedIndex = 1 }
+                guiRun { frame.comboBox("presets").target().selectedIndex = 1 }
 
                 assertThat(wordsEditor.text).isEqualTo(firstListAsString)
             }
@@ -203,20 +196,18 @@ object WordSchemeEditorTest : DescribeSpec({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.comboBox("quotation").target().selectedItem = "`" }
+            guiRun { frame.comboBox("quotation").target().selectedItem = "`" }
 
             assertThat(listenerInvoked).isTrue()
         }
 
         it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute {
-                editor.loadState(WordScheme(arrayDecorator = ArrayDecorator(enabled = true)))
-            }
+            guiRun { editor.loadState(WordScheme(arrayDecorator = ArrayDecorator(enabled = true))) }
 
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 528 }
+            guiRun { frame.spinner("arrayMinCount").target().value = 528 }
 
             assertThat(listenerInvoked).isTrue()
         }

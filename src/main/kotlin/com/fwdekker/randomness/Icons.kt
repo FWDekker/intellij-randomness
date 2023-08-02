@@ -216,14 +216,14 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
 /**
  * An icon with various icons displayed on top of it as overlays.
  *
- * @property base
- * @property overlays
+ * @property base TODO
+ * @property overlays TODO
  */
 data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList()) : Icon {
     init {
-        require(base.iconWidth == base.iconHeight) { Bundle("icons.error.base_square") }
-        require(overlays.all { it.iconWidth == it.iconHeight }) { Bundle("icons.error.overlay_square") }
-        require(overlays.map { it.iconWidth }.toSet().size <= 1) { Bundle("icons.error.overlay_same_size") }
+        require(base.iconWidth == base.iconHeight) { "Base must be square." }
+        require(overlays.all { it.iconWidth == it.iconHeight }) { "Overlays must be square." }
+        require(overlays.map { it.iconWidth }.toSet().size <= 1) { "All overlays must have same size." }
     }
 
 
@@ -291,8 +291,8 @@ class RadialColorReplacementFilter(
     private val center: Pair<Int, Int>? = null,
 ) : RGBImageFilter() {
     init {
-        require(colors.isNotEmpty()) { Bundle("icons.error.one_colour") }
-        require(colors.size == 1 || center != null) { Bundle("icons.error.center_undefined") }
+        require(colors.isNotEmpty()) { "At least one color must be defined." }
+        require(colors.size == 1 || center != null) { "Center must be defined if more than one color is given." }
     }
 
 

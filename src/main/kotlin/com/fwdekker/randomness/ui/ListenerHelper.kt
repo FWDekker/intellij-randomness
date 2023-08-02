@@ -2,7 +2,6 @@ package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.SchemeEditor
 import javax.swing.AbstractButton
-import javax.swing.ButtonGroup
 import javax.swing.JComboBox
 import javax.swing.JSpinner
 import javax.swing.JTree
@@ -28,7 +27,6 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
     components.forEach { component ->
         when (component) {
             is AbstractButton -> component.addItemListener { listener() }
-            is ButtonGroup -> addChangeListenerTo(*component.buttons(), listener = listener)
             is Document -> component.addDocumentListener(SimpleDocumentListener { listener() })
             is JBDocument -> component.addDocumentListener(SimpleJBDocumentListener { listener() })
             is JComboBox<*> -> {

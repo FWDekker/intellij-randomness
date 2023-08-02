@@ -22,8 +22,8 @@ import java.awt.Color
 data class WordScheme(
     var words: List<String> = DEFAULT_WORDS,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
-    var arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
+    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name = Bundle("word.title")
     override val typeIcon = BASE_ICON
@@ -68,8 +68,7 @@ data class WordScheme(
         /**
          * The default value of the [words] field.
          */
-        val DEFAULT_WORDS: List<String>
-            get() = listOf("lorem", "ipsum", "dolor", "sit", "amet")
+        val DEFAULT_WORDS get() = listOf("lorem", "ipsum", "dolor", "sit", "amet")
 
         /**
          * The preset values for the [capitalization] field.
@@ -96,11 +95,11 @@ data class WordScheme(
         /**
          * The default value of the [affixDecorator] field.
          */
-        val DEFAULT_AFFIX_DECORATOR = AffixDecorator(enabled = false, descriptor = "\"")
+        val DEFAULT_AFFIX_DECORATOR get() = AffixDecorator(enabled = false, descriptor = "\"")
 
         /**
          * The default value of the [arrayDecorator] field.
          */
-        val DEFAULT_ARRAY_DECORATOR = ArrayDecorator()
+        val DEFAULT_ARRAY_DECORATOR get() = ArrayDecorator()
     }
 }

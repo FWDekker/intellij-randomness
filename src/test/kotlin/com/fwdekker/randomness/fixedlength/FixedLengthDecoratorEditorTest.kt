@@ -1,11 +1,12 @@
 package com.fwdekker.randomness.fixedlength
 
+import com.fwdekker.randomness.guiGet
+import com.fwdekker.randomness.guiRun
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
 
@@ -30,7 +31,7 @@ object FixedLengthDecoratorEditorTest : DescribeSpec({
         ideaFixture.setUp()
 
         scheme = FixedLengthDecorator(enabled = true)
-        editor = GuiActionRunner.execute<FixedLengthDecoratorEditor> { FixedLengthDecoratorEditor(scheme) }
+        editor = guiGet { FixedLengthDecoratorEditor(scheme) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
@@ -42,20 +43,20 @@ object FixedLengthDecoratorEditorTest : DescribeSpec({
 
     describe("event handling") {
         it("keeps only the last input to the filler") {
-            GuiActionRunner.execute { frame.textBox("fixedLengthFiller").target().text = "zAt" }
+            guiRun { frame.textBox("fixedLengthFiller").target().text = "zAt" }
 
             frame.textBox("fixedLengthFiller").requireText("t")
         }
 
         it("disables inputs when the scheme is disabled") {
-            GuiActionRunner.execute { frame.checkBox("fixedLengthEnabled").target().isSelected = false }
+            guiRun { frame.checkBox("fixedLengthEnabled").target().isSelected = false }
 
             frame.spinner("fixedLengthLength").requireDisabled()
             frame.textBox("fixedLengthFiller").requireDisabled()
         }
 
         it("enables inputs when the scheme is re-enabled") {
-            GuiActionRunner.execute {
+            guiRun {
                 frame.checkBox("fixedLengthEnabled").target().isSelected = false
                 frame.checkBox("fixedLengthEnabled").target().isSelected = true
             }
@@ -68,19 +69,19 @@ object FixedLengthDecoratorEditorTest : DescribeSpec({
 
     describe("loadState") {
         it("loads the scheme's enabled state") {
-            GuiActionRunner.execute { editor.loadState(FixedLengthDecorator(enabled = true)) }
+            guiRun { editor.loadState(FixedLengthDecorator(enabled = true)) }
 
             frame.checkBox("fixedLengthEnabled").requireEnabled()
         }
 
         it("loads the scheme's length") {
-            GuiActionRunner.execute { editor.loadState(FixedLengthDecorator(enabled = true, length = 808)) }
+            guiRun { editor.loadState(FixedLengthDecorator(enabled = true, length = 808)) }
 
             frame.spinner("fixedLengthLength").requireValue(808)
         }
 
         it("loads the scheme's filler") {
-            GuiActionRunner.execute { editor.loadState(FixedLengthDecorator(enabled = true, filler = "k")) }
+            guiRun { editor.loadState(FixedLengthDecorator(enabled = true, filler = "k")) }
 
             frame.textBox("fixedLengthFiller").requireText("k")
         }
@@ -92,7 +93,7 @@ object FixedLengthDecoratorEditorTest : DescribeSpec({
         }
 
         it("returns the editor's state") {
-            GuiActionRunner.execute {
+            guiRun {
                 frame.checkBox("fixedLengthEnabled").target().isSelected = true
                 frame.spinner("fixedLengthLength").target().value = 410
                 frame.textBox("fixedLengthFiller").target().text = "h"
@@ -105,10 +106,10 @@ object FixedLengthDecoratorEditorTest : DescribeSpec({
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.checkBox("fixedLengthEnabled").target().isSelected = false }
+            guiRun { frame.checkBox("fixedLengthEnabled").target().isSelected = false }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
+            guiRun { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readState()).isEqualTo(editor.originalState)
@@ -131,7 +132,7 @@ object FixedLengthDecoratorEditorTest : DescribeSpec({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("fixedLengthLength").target().value = 274 }
+            guiRun { frame.spinner("fixedLengthLength").target().value = 274 }
 
             assertThat(listenerInvoked).isTrue()
         }

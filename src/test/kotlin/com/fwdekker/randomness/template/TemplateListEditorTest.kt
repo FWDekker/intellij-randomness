@@ -5,6 +5,8 @@ import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.getActionButton
+import com.fwdekker.randomness.guiGet
+import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
@@ -20,7 +22,6 @@ import io.kotest.data.table
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.AbstractComponentFixture
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
@@ -58,20 +59,20 @@ object TemplateListEditorTest : DescribeSpec({
         )
         state.templateList.applyContext(state)
 
-        editor = GuiActionRunner.execute<TemplateListEditor> { TemplateListEditor(state) }
+        editor = guiGet { TemplateListEditor(state) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
     afterEach {
         frame.cleanUp()
-        GuiActionRunner.execute { editor.dispose() }
+        guiRun { editor.dispose() }
         ideaFixture.tearDown()
     }
 
 
     describe("loadState") {
         it("loads the list's schemes") {
-            assertThat(GuiActionRunner.execute<Int> { frame.tree().target().rowCount }).isEqualTo(6)
+            assertThat(guiRun { frame.tree().target().rowCount }).isEqualTo(6)
         }
     }
 
@@ -81,7 +82,7 @@ object TemplateListEditorTest : DescribeSpec({
         }
 
         it("returns the editor's state") {
-            GuiActionRunner.execute {
+            guiRun {
                 frame.tree().target().selectionRows = intArrayOf(0)
                 frame.getActionButton("Remove").click()
             }
@@ -91,13 +92,13 @@ object TemplateListEditorTest : DescribeSpec({
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute {
+            guiRun {
                 frame.tree().target().selectionRows = intArrayOf(0)
                 frame.getActionButton("Remove").click()
             }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
+            guiRun { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readState()).isEqualTo(editor.originalState)
@@ -123,12 +124,12 @@ object TemplateListEditorTest : DescribeSpec({
 
     describe("reset") {
         it("undoes changes to the initial selection") {
-            GuiActionRunner.execute {
+            guiRun {
                 frame.tree().target().setSelectionRow(1)
                 frame.spinner("minValue").target().value = 7
             }
 
-            GuiActionRunner.execute { editor.reset() }
+            guiRun { editor.reset() }
 
             assertThat(frame.spinner("minValue").target().value).isEqualTo(0L)
         }
@@ -136,7 +137,7 @@ object TemplateListEditorTest : DescribeSpec({
         it("retains the selection if `queueSelection` is null") {
             editor.queueSelection = null
 
-            GuiActionRunner.execute { editor.reset() }
+            guiRun { editor.reset() }
 
             assertThat(frame.tree().target().selectionRows).containsExactly(0)
         }
@@ -144,7 +145,7 @@ object TemplateListEditorTest : DescribeSpec({
         it("selects the indicated template after reset") {
             editor.queueSelection = state.templateList.templates[1].uuid
 
-            GuiActionRunner.execute { editor.reset() }
+            guiRun { editor.reset() }
 
             assertThat(frame.tree().target().selectionRows).containsExactly(3)
         }
@@ -152,7 +153,7 @@ object TemplateListEditorTest : DescribeSpec({
         it("does nothing if the indicated template could not be found") {
             editor.queueSelection = "231ee9da-8f72-4535-b770-0119fdf68f70"
 
-            GuiActionRunner.execute { editor.reset() }
+            guiRun { editor.reset() }
 
             assertThat(frame.tree().target().selectionRows).containsExactly(0)
         }
@@ -160,31 +161,31 @@ object TemplateListEditorTest : DescribeSpec({
 
     describe("addChangeListener") {
         it("invokes the listener if the model is changed") {
-            GuiActionRunner.execute { frame.tree().target().setSelectionRow(1) }
+            guiRun { frame.tree().target().setSelectionRow(1) }
             var invoked = 0
-            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
+            guiRun { editor.addChangeListener { invoked++ } }
 
-            GuiActionRunner.execute { frame.spinner("minValue").target().value = 321 }
+            guiRun { frame.spinner("minValue").target().value = 321 }
 
             assertThat(invoked).isNotZero()
         }
 
         it("invokes the listener if a scheme is removed") {
-            GuiActionRunner.execute { frame.tree().target().selectionRows = intArrayOf(0) }
+            guiRun { frame.tree().target().selectionRows = intArrayOf(0) }
             var invoked = 0
-            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
+            guiRun { editor.addChangeListener { invoked++ } }
 
-            GuiActionRunner.execute { frame.getActionButton("Remove").click() }
+            guiRun { frame.getActionButton("Remove").click() }
 
             assertThat(invoked).isNotZero()
         }
 
         it("invokes the listener if the selection is changed") {
-            GuiActionRunner.execute { frame.tree().target().clearSelection() }
+            guiRun { frame.tree().target().clearSelection() }
             var invoked = 0
-            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
+            guiRun { editor.addChangeListener { invoked++ } }
 
-            GuiActionRunner.execute { frame.tree().target().setSelectionRow(2) }
+            guiRun { frame.tree().target().setSelectionRow(2) }
 
             assertThat(invoked).isNotZero()
         }
@@ -193,18 +194,18 @@ object TemplateListEditorTest : DescribeSpec({
 
     describe("scheme editor") {
         it("loads the selected scheme's editor") {
-            GuiActionRunner.execute { frame.tree().target().setSelectionRow(2) }
+            guiRun { frame.tree().target().setSelectionRow(2) }
 
             frame.textBox("pattern").requireVisible()
         }
 
         it("retains changes made in a scheme editor") {
-            GuiActionRunner.execute {
+            guiRun {
                 frame.tree().target().setSelectionRow(2)
                 frame.textBox("pattern").target().text = "strange"
             }
 
-            GuiActionRunner.execute {
+            guiRun {
                 frame.tree().target().setSelectionRow(1)
                 frame.tree().target().setSelectionRow(2)
             }
@@ -230,7 +231,7 @@ object TemplateListEditorTest : DescribeSpec({
                     state.templateList.templates = listOf(Template(schemes = listOf(scheme)))
                     state.templateList.applyContext(state)
 
-                    GuiActionRunner.execute {
+                    guiRun {
                         editor.reset()
                         frame.tree().target().setSelectionRow(1)
                     }
@@ -243,7 +244,7 @@ object TemplateListEditorTest : DescribeSpec({
                 state.templateList.templates = listOf(Template(schemes = emptyList()))
                 state.templateList.applyContext(state)
 
-                GuiActionRunner.execute { editor.reset() }
+                guiRun { editor.reset() }
 
                 frame.textBox("templateName").requireVisible()
             }
@@ -253,7 +254,7 @@ object TemplateListEditorTest : DescribeSpec({
                 state.templateList.applyContext(state)
 
                 assertThatThrownBy {
-                    GuiActionRunner.execute {
+                    guiRun {
                         editor.reset()
                         frame.tree().target().setSelectionRow(1)
                     }

@@ -23,16 +23,13 @@ data class ArrayDecorator(
     var maxCount: Int = DEFAULT_MAX_COUNT,
     var separatorEnabled: Boolean = DEFAULT_SEPARATOR_ENABLED,
     var separator: String = DEFAULT_SEPARATOR,
-    var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
 ) : DecoratorScheme() {
     override val name = Bundle("array.title")
     override val icon get() = if (enabled) OverlayedIcon(OverlayIcon.ARRAY) else null
     override val decorators = listOf(affixDecorator)
+    override val isEnabled get() = enabled
 
-
-    override fun generateStrings(count: Int) =
-        if (enabled) super.generateStrings(count)
-        else generator(count)
 
     override fun generateUndecoratedStrings(count: Int): List<String> {
         val partsPerString = random.nextInt(minCount, maxCount + 1)
@@ -96,6 +93,6 @@ data class ArrayDecorator(
         /**
          * The default value of the [affixDecorator] field.
          */
-        val DEFAULT_AFFIX_DECORATOR = AffixDecorator(enabled = true, descriptor = "[@]")
+        val DEFAULT_AFFIX_DECORATOR get() = AffixDecorator(enabled = true, descriptor = "[@]")
     }
 }

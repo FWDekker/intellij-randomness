@@ -19,11 +19,8 @@ data class AffixDecorator(
 ) : DecoratorScheme() {
     override val name = Bundle("affix.title")
     override val decorators = emptyList<DecoratorScheme>()
+    override val isEnabled get() = enabled
 
-
-    override fun generateStrings(count: Int) =
-        if (enabled) super.generateStrings(count)
-        else generator(count)
 
     override fun generateUndecoratedStrings(count: Int): List<String> {
         val affixes = descriptor

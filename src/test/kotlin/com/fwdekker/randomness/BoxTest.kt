@@ -1,96 +1,65 @@
 package com.fwdekker.randomness
 
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.assertions.withClue
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 
 
 /**
- * Unit tests for [MutableBox].
+ * Unit tests for [Box].
  */
-object BoxTest : DescribeSpec({
-    describe("box") {
-        it("returns the generator's value when de-referenced") {
-            assertThat(+MutableBox({ "needle" })).isEqualTo("needle")
+object BoxTest : FunSpec({
+    test("unaryPlus") {
+        test("returns the generator's value when de-referenced") {
+            val box = Box({ "contents" })
+
+            +box shouldBe "contents"
         }
 
-        it("returns the generator's value when de-referenced again") {
-            val box = MutableBox({ "urgent" })
+        test("returns the same value when de-referenced again") {
+            val box = Box({ "contents" })
 
             +box
 
-            assertThat(+box).isEqualTo("urgent")
+            +box shouldBe "contents"
         }
 
-        it("returns the assigned value when de-referenced") {
-            val box = MutableBox({ "official" })
-
-            box += "anyhow"
-
-            assertThat(+box).isEqualTo("anyhow")
-        }
-
-        it("returns the assigned value when de-referenced after the generator has been invoked") {
-            val box = MutableBox({ "regard" })
-
-            +box
-            box += "path"
-
-            assertThat(+box).isEqualTo("path")
-        }
-
-        it("returns the last value that was assigned") {
-            val box = MutableBox({ "house" })
-
-            box += "move"
-            box += "distance"
-
-            assertThat(+box).isEqualTo("distance")
-        }
-
-        it("retains the assigned state when copied") {
-            val box = MutableBox({ "breath" })
-
-            box += "harden"
-
-            assertThat(+box.copy()).isEqualTo("harden")
-        }
-
-        it("creates an independent reference when copied") {
-            data class StringHolder(var value: String)
-
-            val box = MutableBox({ StringHolder("story") })
-
-            val copy = box.copy()
-            copy += StringHolder("hunt")
-
-            assertThat((+box).value).isEqualTo("story")
-            assertThat((+copy).value).isEqualTo("hunt")
-        }
-
-        it("retains the reference to the same value when copied") {
-            data class StringHolder(var value: String)
-
-            val holder = StringHolder("correct")
-            val box = MutableBox({ holder })
-
-            val copy = box.copy()
-            (+copy).value = "maybe"
-
-            assertThat((+box).value).isEqualTo("maybe")
-            assertThat((+copy).value).isEqualTo("maybe")
-        }
-
-        it("does not deep-copy the generator") {
-            var isInvoked = 0
-            val box = MutableBox({
-                isInvoked++
-                "treasury"
+        test("does not invoke the generator when de-referenced again") {
+            var generatorInvokeCount = 0
+            val box = Box({
+                generatorInvokeCount++
+                "contents"
             })
+            withClue("Generator should not be invoked during construction") { generatorInvokeCount shouldBe 0 }
+
+            +box
+            +box
+
+            generatorInvokeCount shouldBe 1
+        }
+    }
+
+
+    test("copy") {
+        test("creates an independent copy if copied before first de-reference") {
+            val box = Box({ mutableListOf("old") })
 
             val copy = box.copy()
-            +copy
+            (+copy)[0] = "new"
 
-            assertThat(isInvoked).isEqualTo(1)
+            (+box)[0] shouldBe "old"
+            (+copy)[0] shouldBe "new"
+        }
+
+        test("copies the generated value if copied after first de-reference") {
+            val box = Box({ mutableListOf("old") })
+            +box
+
+            val copy = box.copy()
+            (+copy)[0] = "new"
+
+            (+box)[0] shouldBe "new"
+            (+copy)[0] shouldBe "new"
         }
     }
 })

@@ -146,7 +146,7 @@ class JIntSpinner(
  */
 fun bindSpinners(min: JSpinner, max: JSpinner, maxRange: Double? = null) {
     if (maxRange != null)
-        require(maxRange >= 0) { Bundle("helpers.error.max_range_must_be_positive") }
+        require(maxRange >= 0) { "maxRange must be a positive number." }
 
     min.addChangeListener {
         val minValue = (min.value as Number).toDouble()

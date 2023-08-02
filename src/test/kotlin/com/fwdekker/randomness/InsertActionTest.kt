@@ -3,17 +3,18 @@ package com.fwdekker.randomness
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.Presentation
-import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.command.WriteCommandAction.runWriteCommandAction
 import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Document
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.shouldBe
 
 
 /**
  * Integration tests for [InsertAction].
  */
 @Suppress("detekt:FunctionName", "detekt:FunctionMaxLength") // Makes JUnit tests easier to read
+// TODO: Convert to Kotest format
 class InsertActionTest : BasePlatformTestCase() {
     private lateinit var document: Document
     private lateinit var caretModel: CaretModel
@@ -31,7 +32,7 @@ class InsertActionTest : BasePlatformTestCase() {
         caretModel = myFixture.editor.caretModel
 
         var insertValue = 0
-        insertAction = DummyInsertAction { insertValue++.toString() }
+        insertAction = DummyInsertAction { "${insertValue++}" }
     }
 
     @Suppress("detekt:SwallowedException") // Intentional
@@ -49,116 +50,110 @@ class InsertActionTest : BasePlatformTestCase() {
     fun `test that it inserts text into an empty document`() {
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("0")
+        document.text shouldBe "0"
     }
 
     fun `test that it inserts text in front of existing text`() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("RkpjkS9Itb") }
+        runWriteCommandAction(myFixture.project) { document.setText("contents") }
 
-        caretModel.moveToOffset(0)
+        setCaret(0)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("0RkpjkS9Itb")
+        document.text shouldBe "0contents"
     }
 
     fun `test that it inserts text behind existing text`() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("0aiMbK5hK5") }
+        runWriteCommandAction(myFixture.project) { document.setText("contents") }
 
-        caretModel.moveToOffset(10)
+        setCaret(8)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("0aiMbK5hK50")
+        document.text shouldBe "contents0"
     }
 
     fun `test that it inserts text in the middle of existing text`() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("U6jBDMh8Nq") }
+        runWriteCommandAction(myFixture.project) { document.setText("contents") }
 
-        caretModel.moveToOffset(5)
+        setCaret(3)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("U6jBD0Mh8Nq")
+        document.text shouldBe "con0tents"
     }
 
     fun `test that it replaces the entire document if selected`() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("fMhAajjDw6") }
+        runWriteCommandAction(myFixture.project) { document.setText("contents") }
 
-        setSelection(0, 10)
+        setSelection(0, 8)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("0")
+        document.text shouldBe "0"
     }
 
-    fun `test that it replaces an incomplete selection of text`() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("qZPGZDEcPS") }
+    fun `test that it replaces a partial selection of text`() {
+        runWriteCommandAction(myFixture.project) { document.setText("contents") }
 
-        setSelection(3, 7)
+        setSelection(2, 4)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("qZP0cPS")
+        document.text shouldBe "co0ents"
     }
 
     fun `test that it inserts text at multiple carets`() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) {
-            document.setText("DCtD41lFOk\nOCnrdYk9gE\nn1HAPKotDq")
-        }
+        runWriteCommandAction(myFixture.project) { document.setText("line1\nline2\nline3") }
 
-        addCaret(11)
-        addCaret(22)
+        setCaret(2)
+        addCaret(7)
+        addCaret(16)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("0DCtD41lFOk\n1OCnrdYk9gE\n2n1HAPKotDq")
+        document.text shouldBe "li0ne1\nl1ine2\nline23"
     }
 
     fun `test that it replaces text at multiple carets`() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) {
-            document.setText("YXSncq4FC9\nG31Ybbn1c4\nTNCqAhqPnh")
-        }
+        runWriteCommandAction(myFixture.project) { document.setText("line1\nline2\nline3") }
 
-        setSelection(2, 4)
-        addSelection(18, 23)
-        addSelection(29, 29)
+        setSelection(2, 7)
+        addSelection(10, 15)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("YX0cq4FC9\nG31Ybbn1NCqAhq2Pnh")
+        document.text shouldBe "li0ine1e3"
     }
 
     fun `test that it simultaneously inserts at carets and replaces at selections`() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) {
-            document.setText("XOppzVdZTj\nZhAaVfQynW\nk3kWemkdAg")
-        }
+        runWriteCommandAction(myFixture.project) { document.setText("line1\nline2\nline3") }
 
-        caretModel.moveToOffset(5)
-        addSelection(6, 9)
-        addCaret(15)
-        addSelection(24, 28)
+        setCaret(2)
+        addSelection(4, 6)
+        addCaret(8)
+        addSelection(12, 15)
         myFixture.testAction(insertAction)
 
-        assertThat(document.text).isEqualTo("XOppz0V1j\nZhAa2VfQynW\nk33kdAg")
+        document.text shouldBe "li0ne1li2ne2\n3e3"
     }
 
     fun `test that it inserts the same value at multiple carets`() {
-        WriteCommandAction.runWriteCommandAction(myFixture.project) { document.setText("evening\nplease\nfew") }
+        runWriteCommandAction(myFixture.project) { document.setText("line1\nline2\nline3") }
 
-        caretModel.moveToOffset(5)
+        setCaret(5)
         addCaret(10)
         addCaret(12)
 
         var insertValue = 0
-        myFixture.testAction(DummyInsertAction(repeat = true) { insertValue++.toString() })
+        myFixture.testAction(DummyInsertAction(repeat = true) { "${insertValue++}" })
 
-        assertThat(document.text).isEqualTo("eveni0ng\npl0ea0se\nfew")
+        document.text shouldBe "line10\nline02\n0line3"
     }
 
     fun `test that it inserts nothing if the scheme is invalid`() {
         myFixture.testAction(DummyInsertAction { throw DataGenerationException("Invalid input!") })
 
-        assertThat(document.text).isEqualTo("")
+        document.text shouldBe ""
     }
 
     fun `test that it inserts nothing if the scheme is invalid with an empty message`() {
         myFixture.testAction(DummyInsertAction { throw DataGenerationException() })
 
-        assertThat(document.text).isEqualTo("")
+        document.text shouldBe ""
     }
 
 
@@ -170,7 +165,7 @@ class InsertActionTest : BasePlatformTestCase() {
 
         insertAction.actionPerformed(event)
 
-        assertThat(document.text).isEqualTo("")
+        document.text shouldBe ""
     }
 
     fun `test that it inserts nothing if the editor is null`() {
@@ -181,7 +176,7 @@ class InsertActionTest : BasePlatformTestCase() {
 
         insertAction.actionPerformed(event)
 
-        assertThat(document.text).isEqualTo("")
+        document.text shouldBe ""
     }
 
     fun `test that it disables the presentation if the editor is null`() {
@@ -190,7 +185,7 @@ class InsertActionTest : BasePlatformTestCase() {
 
         insertAction.update(event)
 
-        assertThat(presentation.isEnabled).isFalse()
+        presentation.isEnabled shouldBe false
     }
 
     fun `test that it enables the presentation if the editor is not null`() {
@@ -199,27 +194,36 @@ class InsertActionTest : BasePlatformTestCase() {
 
         insertAction.update(event)
 
-        assertThat(presentation.isEnabled).isTrue()
+        presentation.isEnabled shouldBe true
     }
 
 
     /**
-     * Causes the first caret to select the given interval.
+     * Moves the primary caret to [offset].
      *
-     * @param fromOffset the start of the selected interval
-     * @param toOffset the end of the selected interval
+     * @param offset the offset to move the primary caret to
+     * @return the primary caret
      */
-    private fun setSelection(fromOffset: Int, toOffset: Int) =
-        caretModel.allCarets[0].setSelection(fromOffset, toOffset)
+    private fun setCaret(offset: Int) =
+        caretModel.primaryCaret.also { it.moveToOffset(offset) }
 
     /**
      * Adds a caret at [offset].
      *
      * @param offset the offset to add a caret at
+     * @return the added caret
      */
-    private fun addCaret(offset: Int) {
-        caretModel.addCaret(myFixture.editor.offsetToVisualPosition(offset))
-    }
+    private fun addCaret(offset: Int) =
+        caretModel.addCaret(myFixture.editor.offsetToVisualPosition(offset))!!
+
+    /**
+     * Selects the given interval with the primary caret.
+     *
+     * @param fromOffset the start of the selected interval
+     * @param toOffset the end of the selected interval
+     */
+    private fun setSelection(fromOffset: Int, toOffset: Int) =
+        caretModel.primaryCaret.setSelection(fromOffset, toOffset)
 
     /**
      * Adds a caret that selects the given interval.
@@ -227,8 +231,6 @@ class InsertActionTest : BasePlatformTestCase() {
      * @param fromOffset the start of the selected interval
      * @param toOffset the end of the selected interval
      */
-    private fun addSelection(fromOffset: Int, toOffset: Int) {
-        caretModel.addCaret(myFixture.editor.offsetToVisualPosition(fromOffset))
-        caretModel.allCarets[caretModel.caretCount - 1].setSelection(fromOffset, toOffset)
-    }
+    private fun addSelection(fromOffset: Int, toOffset: Int) =
+        addCaret(fromOffset).setSelection(fromOffset, toOffset)
 }

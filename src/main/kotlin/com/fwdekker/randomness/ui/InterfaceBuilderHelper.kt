@@ -1,7 +1,5 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.datetime.toEpochMilli
-import com.fwdekker.randomness.datetime.toLocalDateTime
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.dsl.builder.Cell
@@ -22,70 +20,26 @@ import kotlin.reflect.KMutableProperty0
 
 
 /**
- * Evaluates [spec] inside a range of rows, indenting only if [indented] is `true`.
- *
- * @receiver Panel the panel on which to apply [spec]
- * @param indented `true` if and only if the range of rows should be indented
- * @param spec the specification of the range of rows
- * @return the created range of rows
+ * Creates and returns a range of rows from [spec], which is indented if and only if [indented] is `true`.
  */
-fun Panel.indentedIf(indented: Boolean, spec: Panel.() -> Unit) =
+fun Panel.indentedRowRange(indented: Boolean, spec: Panel.() -> Unit) =
     if (indented) indent(spec)
     else rowsRange(spec)
 
 
-// TODO: Document
+/**
+ * Registers the [callback] to be invoked on the [JComponent] in this [Cell] when the dialog is reset, and returns
+ * `this`.
+ */
 fun <T : JComponent> Cell<T>.onResetThis(callback: (Cell<T>) -> Unit) = onReset { callback(this) }
 
-// TODO: Document
-fun <T : JComponent> Cell<T>.withName(name: String) =
-    this.also { it.component.name = name }
-
-// TODO: Document
-fun <T : JTextField> Cell<T>.withDocument(document: Document) =
-    this.also { component.document = document }
-
-
 /**
- * Returns the current text in the [ComboBox], even if the user is still typing.
- *
- * @receiver the combo box to return the current text of
- * @return the current text in the [ComboBox], even if the user is still typing
+ * Sets the [name] of the [JComponent] in this [Cell] and returns `this`.
  */
-fun ComboBox<*>.getCurrentText(): String =
-    (editor.editorComponent as? JTextComponent)?.text ?: item.toString()
-
-// TODO: Document
-fun <T : ComboBox<*>> Cell<T>.isEditable(editable: Boolean) =
-    this.also { it.component.isEditable = editable }
+fun <T : JComponent> Cell<T>.withName(name: String) = this.also { it.component.name = name }
 
 /**
- * Sets a [DocumentFilter] on this [ComboBox]'s document.
- *
- * @receiver the combo box to set a filter on
- * @param filter the filter to set
- */
-fun <E> Cell<ComboBox<E>>.withFilter(filter: DocumentFilter) =
-    this.also {
-        ((component.editor.editorComponent as? JTextComponent)?.document as? AbstractDocument)?.documentFilter = filter
-    }
-
-/**
- * Renders items in the [ComboBox] in this [Cell] as a [JBLabel] containing the output of [toString].
- *
- * @param E the type of value contained in the combo box
- * @receiver the combo box to set the renderer on
- * @param toString given the item to render, returns the string to put in the [JBLabel]
- */
-fun <E> Cell<ComboBox<E>>.withSimpleRenderer(toString: (E) -> String = { it.toString() }) =
-    this.also { component.setRenderer { _, value, _, _, _ -> JBLabel(toString(value)) } }
-
-
-/**
- * Enforces a fixed width for this [JComponent].
- *
- * @receiver the component to enforce a fixed [width] onto
- * @param width the fixed width to enforce onto [this]
+ * Forces this [JComponent] to be [width] pixels wide.
  */
 fun JComponent.setFixedWidth(width: Int) {
     if (this is JTextField)
@@ -97,23 +51,12 @@ fun JComponent.setFixedWidth(width: Int) {
 }
 
 /**
- * Enforces a fixed width for the [JComponent] in this [Cell].
- *
- * @param T the type of component
- * @receiver the cell to enforce a fixed [width] onto
- * @param width the fixed width to enforce onto [this]
- * @return [this]
+ * Forces the [JComponent] in this [Cell] to be [width] pixels wide, and returns `this`.
  */
-fun <T : JComponent> Cell<T>.withFixedWidth(width: Int): Cell<T> {
-    component.setFixedWidth(width)
-    return this
-}
+fun <T : JComponent> Cell<T>.withFixedWidth(width: Int) = this.also { it.component.setFixedWidth(width) }
 
 /**
- * Enforces a fixed height for this [JComponent].
- *
- * @receiver the component to enforce a fixed [height] onto
- * @param height the fixed height to enforce onto [this]
+ * Forces this [JComponent] to be [height] pixels high.
  */
 fun JComponent.setFixedHeight(height: Int) {
     minimumSize = Dimension(minimumSize.width, height)
@@ -122,12 +65,7 @@ fun JComponent.setFixedHeight(height: Int) {
 }
 
 /**
- * Enforces a fixed height for the [JComponent] in this [Cell].
- *
- * @param T the type of component
- * @receiver the cell to enforce a fixed [height] onto
- * @param height the fixed height to enforce onto [this]
- * @return [this]
+ * Forces the [JComponent] in this [Cell] to be [height] pixels high, and returns `this`.
  */
 fun <T : JComponent> Cell<T>.withFixedHeight(height: Int): Cell<T> {
     component.setFixedHeight(height)
@@ -136,34 +74,51 @@ fun <T : JComponent> Cell<T>.withFixedHeight(height: Int): Cell<T> {
 
 
 /**
- * Loads the mnemonic for the [AbstractButton] in this cell based on its text.
- *
- * @receiver the cell with the [AbstractButton] to load the mnemonic of
- * @return [this]
+ * Loads the mnemonic for the [AbstractButton] in this [Cell] based on its [AbstractButton.text].
  */
-fun <B : AbstractButton> Cell<B>.loadMnemonic(): Cell<B> {
+fun <T : AbstractButton> Cell<T>.loadMnemonic(): Cell<T> {
     DialogUtil.registerMnemonic(component, '&')
     return this
 }
 
 /**
- * Removes the mnemonic from the label of this [AbstractButton].
- *
- * @receiver the cell with the [AbstractButton] to disable the mnemonic of
- * @return [this]
+ * Removes the mnemonic from the [AbstractButton.text] of the [AbstractButton] in this [Cell].
  */
-fun <B : AbstractButton> Cell<B>.disableMnemonic(): Cell<B> {
+fun <T : AbstractButton> Cell<T>.disableMnemonic(): Cell<T> {
     component.text = component.text.filterNot { it == '&' }
     return this
 }
 
 
 /**
- * Creates a [ComponentPredicate] that evaluates a [lambda] on the value of this [JIntSpinner].
- *
- * @receiver the spinner to check the value of
- * @param lambda the function to evaluate on the value of this spinner
- * @return the created predicate
+ * Sets the [document] of the [JTextField] in this [Cell] and returns `this`.
+ */
+fun <T : JTextField> Cell<T>.withDocument(document: Document) = this.also { component.document = document }
+
+
+/**
+ * Sets whether the editor of the [ComboBox] in this [Cell] [isEditable], and returns `this`.
+ */
+fun <E> Cell<ComboBox<E>>.isEditable(editable: Boolean) = this.also { it.component.isEditable = editable }
+
+/**
+ * Sets the [filter] on the document of the [ComboBox] in this [Cell], and returns `this`.
+ */
+fun <E> Cell<ComboBox<E>>.withFilter(filter: DocumentFilter) =
+    this.also {
+        ((component.editor.editorComponent as? JTextComponent)?.document as? AbstractDocument)?.documentFilter = filter
+    }
+
+/**
+ * Sets an item renderer on the [ComboBox] in this [Cell] that renders a label displaying the mapping of an item using
+ * [toString], and returns `this`.
+ */
+fun <E> Cell<ComboBox<E>>.withSimpleRenderer(toString: (E) -> String = { it.toString() }) =
+    this.also { component.setRenderer { _, value, _, _, _ -> JBLabel(toString(value)) } }
+
+
+/**
+ * Returns a [ComponentPredicate] that evaluates [lambda] on the value of this [JIntSpinner].
  */
 fun JIntSpinner.hasValue(lambda: (Int) -> Boolean) =
     object : ComponentPredicate() {
@@ -175,13 +130,19 @@ fun JIntSpinner.hasValue(lambda: (Int) -> Boolean) =
     }
 
 
+/**
+ * Binds the current possibly-non-committed value of the [ComboBox] in this [Cell] to [property].
+ */
 fun Cell<ComboBox<String>>.bindCurrentText(property: KMutableProperty0<String>) =
     bind(
-        { comboBox -> comboBox.getCurrentText() },
+        { comboBox -> (comboBox.editor.editorComponent as? JTextComponent)?.text ?: comboBox.item.toString() },
         { comboBox, value -> comboBox.item = value },
         property.toMutableProperty()
     )
 
+/**
+ * Binds the value of the [JIntSpinner] in this [Cell] to [property].
+ */
 fun Cell<JIntSpinner>.bindIntValue(property: KMutableProperty0<Int>) =
     bind(
         { spinner -> spinner.value },
@@ -189,6 +150,9 @@ fun Cell<JIntSpinner>.bindIntValue(property: KMutableProperty0<Int>) =
         property.toMutableProperty()
     )
 
+/**
+ * Binds the value of the [JLongSpinner] in this [Cell] to [property].
+ */
 fun Cell<JLongSpinner>.bindLongValue(property: KMutableProperty0<Long>) =
     bind(
         { spinner -> spinner.value },
@@ -196,9 +160,12 @@ fun Cell<JLongSpinner>.bindLongValue(property: KMutableProperty0<Long>) =
         property.toMutableProperty()
     )
 
+/**
+ * Binds the [Long] representation of the value of the [JDateTimeField] in this [Cell] to [property].
+ */
 fun Cell<JDateTimeField>.bindDateTimeLongValue(property: KMutableProperty0<Long>) =
     bind(
-        { field -> field.value.toEpochMilli() },
-        { field, value -> field.value = value.toLocalDateTime() },
+        { field -> field.longValue },
+        { field, value -> field.longValue = value },
         property.toMutableProperty()
     )

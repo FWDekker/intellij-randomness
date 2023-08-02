@@ -23,8 +23,8 @@ import java.text.DecimalFormat
  * @property isUppercase `true` if and only if all letters are uppercase.
  * @property groupingSeparatorEnabled `true` if and only if the [groupingSeparator] should be applied.
  * @property groupingSeparator The character that should separate groups if [groupingSeparatorEnabled] is `true`.
- * @property affixDecorator The affixation to apply to the generated values.
  * @property fixedLengthDecorator Settings that determine whether the output should be fixed to a specific length.
+ * @property affixDecorator The affixation to apply to the generated values.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class IntegerScheme(
@@ -34,9 +34,9 @@ data class IntegerScheme(
     var isUppercase: Boolean = DEFAULT_IS_UPPERCASE,
     var groupingSeparatorEnabled: Boolean = DEFAULT_GROUPING_SEPARATOR_ENABLED,
     var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
-    var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
-    var fixedLengthDecorator: FixedLengthDecorator = DEFAULT_FIXED_LENGTH_DECORATOR,
-    var arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
+    val fixedLengthDecorator: FixedLengthDecorator = DEFAULT_FIXED_LENGTH_DECORATOR,
+    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     @get:Transient
     override val name = Bundle("integer.title")
@@ -95,13 +95,13 @@ data class IntegerScheme(
             minValue > maxValue -> Bundle("integer.error.min_value_above_max")
             base !in MIN_BASE..MAX_BASE -> Bundle("integer.error.base_range", "$MIN_BASE..$MAX_BASE")
             groupingSeparator.length != 1 -> Bundle("integer.error.grouping_separator_length")
-            else -> affixDecorator.doValidate() ?: fixedLengthDecorator.doValidate() ?: arrayDecorator.doValidate()
+            else -> fixedLengthDecorator.doValidate() ?: affixDecorator.doValidate() ?: arrayDecorator.doValidate()
         }
 
     override fun deepCopy(retainUuid: Boolean) =
         copy(
-            affixDecorator = affixDecorator.deepCopy(retainUuid),
             fixedLengthDecorator = fixedLengthDecorator.deepCopy(retainUuid),
+            affixDecorator = affixDecorator.deepCopy(retainUuid),
             arrayDecorator = arrayDecorator.deepCopy(retainUuid),
         ).deepCopyTransient(retainUuid)
 
@@ -175,18 +175,18 @@ data class IntegerScheme(
         val PRESET_AFFIX_DECORATOR_DESCRIPTORS = listOf("@b", "$@", "0x@")
 
         /**
-         * The default value of the [affixDecorator] field.
-         */
-        val DEFAULT_AFFIX_DECORATOR = AffixDecorator(enabled = false, descriptor = "0x@")
-
-        /**
          * The default value of the [fixedLengthDecorator] field.
          */
-        val DEFAULT_FIXED_LENGTH_DECORATOR = FixedLengthDecorator()
+        val DEFAULT_FIXED_LENGTH_DECORATOR get() = FixedLengthDecorator()
+
+        /**
+         * The default value of the [affixDecorator] field.
+         */
+        val DEFAULT_AFFIX_DECORATOR get() = AffixDecorator(enabled = false, descriptor = "0x@")
 
         /**
          * The default value of the [arrayDecorator] field.
          */
-        val DEFAULT_ARRAY_DECORATOR = ArrayDecorator()
+        val DEFAULT_ARRAY_DECORATOR get() = ArrayDecorator()
     }
 }

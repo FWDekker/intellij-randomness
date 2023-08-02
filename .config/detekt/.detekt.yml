@@ -39,9 +39,6 @@ formatting:
   # [Disagree] Consecutive blank lines are used consistently to group blocks of code.
   NoConsecutiveBlankLines:
     active: false
-  # [Disagree] Unnecessary, except for calls with vararg.
-  TrailingCommaOnCallSite:
-    active: false
 
 potential-bugs:
   # [Exception] Initialised by scene builder.

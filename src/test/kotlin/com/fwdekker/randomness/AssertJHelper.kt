@@ -8,6 +8,23 @@ import java.awt.Component
 
 
 /**
+ * Runs [lambda] in the GUI thread.
+ *
+ * @param lambda the function to run in the GUI thread
+ */
+fun guiRun(lambda: () -> Unit) = GuiActionRunner.execute(lambda)
+
+/**
+ * Runs [lambda] in the GUI thread and returns the result.
+ *
+ * @param T the type of value to return
+ * @param lambda the function to run in the GUI thread
+ * @return the output of [lambda]
+ */
+fun <T> guiGet(lambda: () -> T): T = GuiActionRunner.execute(lambda)
+
+
+/**
  * Creates a [GenericTypeMatcher] with a lambda.
  *
  * @param T the type of matcher to return
@@ -52,4 +69,4 @@ fun FrameFixture.getActionButton(accessibleName: String): ActionButton =
  */
 @Suppress("UNCHECKED_CAST") // Responsibility of caller
 fun <T> FrameFixture.getComboBoxItem(name: String): T =
-    GuiActionRunner.execute<T> { this.comboBox(name).target().selectedItem as T }
+    guiGet { this.comboBox(name).target().selectedItem as T }

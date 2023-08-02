@@ -18,15 +18,11 @@ data class FixedLengthDecorator(
 ) : DecoratorScheme() {
     override val name = Bundle("fixed_length.title")
     override val decorators = emptyList<DecoratorScheme>()
+    override val isEnabled get() = enabled
 
-
-    override fun generateStrings(count: Int) =
-        if (enabled) super.generateStrings(count)
-        else generator(count)
 
     override fun generateUndecoratedStrings(count: Int): List<String> =
         generator(count).map { it.take(length).padStart(length, filler[0]) }
-
 
     override fun doValidate() =
         if (length < MIN_LENGTH) Bundle("fixed_length.error.length_too_low", MIN_LENGTH)

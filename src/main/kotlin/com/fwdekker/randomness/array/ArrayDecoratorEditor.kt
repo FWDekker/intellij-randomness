@@ -11,7 +11,7 @@ import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.bindCurrentText
 import com.fwdekker.randomness.ui.bindIntValue
 import com.fwdekker.randomness.ui.bindSpinners
-import com.fwdekker.randomness.ui.indentedIf
+import com.fwdekker.randomness.ui.indentedRowRange
 import com.fwdekker.randomness.ui.isEditable
 import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.withFixedWidth
@@ -44,7 +44,7 @@ class ArrayDecoratorEditor(
             .topGap(TopGap.MEDIUM)
             .visible(!embedded)
 
-        indentedIf(!embedded) {
+        indentedRowRange(indented = !embedded) {
             lateinit var enabledCheckBox: Cell<JCheckBox>
 
             row {
@@ -55,7 +55,7 @@ class ArrayDecoratorEditor(
                     .also { enabledCheckBox = it }
             }.visible(!embedded)
 
-            indentedIf(!embedded) {
+            indentedRowRange(indented = !embedded) {
                 lateinit var minCountSpinner: JIntSpinner
                 lateinit var maxCountSpinner: JIntSpinner
 

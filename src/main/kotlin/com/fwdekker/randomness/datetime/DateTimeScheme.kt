@@ -5,11 +5,10 @@ import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.ui.toLocalDateTime
 import com.intellij.ui.JBColor
 import java.awt.Color
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 
@@ -25,7 +24,7 @@ data class DateTimeScheme(
     var minDateTime: Long = DEFAULT_MIN_DATE_TIME,
     var maxDateTime: Long = DEFAULT_MAX_DATE_TIME,
     var pattern: String = DEFAULT_PATTERN,
-    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
+    val arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
     override val name = Bundle("datetime.title")
     override val typeIcon = BASE_ICON
@@ -43,8 +42,8 @@ data class DateTimeScheme(
             try {
                 DateTimeFormatter.ofPattern(pattern)
                 null
-            } catch (e: IllegalArgumentException) {
-                e.message
+            } catch (exception: IllegalArgumentException) {
+                exception.message
             }
 
         return if (minDateTime > maxDateTime) Bundle("datetime.error.min_datetime_above_max")
@@ -84,18 +83,3 @@ data class DateTimeScheme(
         const val DEFAULT_PATTERN: String = "yyyy-MM-dd HH:mm:ss"
     }
 }
-
-
-/**
- * Converts an epoch millisecond timestamp to a [LocalDateTime] object.
- *
- * @return the [LocalDateTime] corresponding to this epoch millisecond timestamp
- */
-fun Long.toLocalDateTime(): LocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneOffset.UTC)
-
-/**
- * Converts this [LocalDateTime] to an epoch millisecond timestamp.
- *
- * @return the epoch millisecond timestamp corresponding to this [LocalDateTime]
- */
-fun LocalDateTime.toEpochMilli() = toInstant(ZoneOffset.UTC).toEpochMilli()

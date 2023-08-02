@@ -29,8 +29,8 @@ data class UuidScheme(
     var type: Int = DEFAULT_TYPE,
     var isUppercase: Boolean = DEFAULT_IS_UPPERCASE,
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
-    var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
-    var arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
+    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name = Bundle("uuid.title")
     override val typeIcon = BASE_ICON
@@ -130,11 +130,11 @@ data class UuidScheme(
         /**
          * The default value of the [affixDecorator] field.
          */
-        val DEFAULT_AFFIX_DECORATOR = AffixDecorator(enabled = false, descriptor = "\"")
+        val DEFAULT_AFFIX_DECORATOR get() = AffixDecorator(enabled = false, descriptor = "\"")
 
         /**
          * The default value of the [arrayDecorator] field.
          */
-        val DEFAULT_ARRAY_DECORATOR = ArrayDecorator()
+        val DEFAULT_ARRAY_DECORATOR get() = ArrayDecorator()
     }
 }

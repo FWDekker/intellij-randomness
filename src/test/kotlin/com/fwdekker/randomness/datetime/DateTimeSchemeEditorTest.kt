@@ -1,14 +1,16 @@
 package com.fwdekker.randomness.datetime
 
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.guiGet
+import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.ui.JDateTimeField
+import com.fwdekker.randomness.ui.toLocalDateTime
 import com.github.sisyphsu.dateparser.DateParserUtils
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
 import java.time.format.DateTimeFormatter
@@ -45,7 +47,7 @@ object DateTimeSchemeEditorTest : DescribeSpec({
         ideaFixture.setUp()
 
         scheme = DateTimeScheme()
-        editor = GuiActionRunner.execute<DateTimeSchemeEditor> { DateTimeSchemeEditor(scheme) }
+        editor = guiGet { DateTimeSchemeEditor(scheme) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
@@ -57,7 +59,7 @@ object DateTimeSchemeEditorTest : DescribeSpec({
 
     describe("input handling") {
         it("sets the maximum to the minimum if the minimum is greater than the maximum") {
-            GuiActionRunner.execute {
+            guiRun {
                 editor.loadState(DateTimeScheme(minDateTime = 286_267, maxDateTime = 319_740))
                 setMinDateTime(format(856_028))
             }
@@ -66,7 +68,7 @@ object DateTimeSchemeEditorTest : DescribeSpec({
         }
 
         it("sets the minimum to the maximum if the maximum is less than the minimum") {
-            GuiActionRunner.execute {
+            guiRun {
                 editor.loadState(DateTimeScheme(minDateTime = 728_982, maxDateTime = 778_579))
                 setMaxDateTime(format(506_729))
             }
@@ -78,19 +80,19 @@ object DateTimeSchemeEditorTest : DescribeSpec({
 
     describe("loadState") {
         it("loads the scheme's minimum value") {
-            GuiActionRunner.execute { editor.loadState(DateTimeScheme(minDateTime = 176_662, maxDateTime = 935_199)) }
+            guiRun { editor.loadState(DateTimeScheme(minDateTime = 176_662, maxDateTime = 935_199)) }
 
             frame.textBox("minDateTime").requireText(format(176_662))
         }
 
         it("loads the scheme's maximum value") {
-            GuiActionRunner.execute { editor.loadState(DateTimeScheme(minDateTime = 621_417, maxDateTime = 641_799)) }
+            guiRun { editor.loadState(DateTimeScheme(minDateTime = 621_417, maxDateTime = 641_799)) }
 
             frame.textBox("maxDateTime").requireText(format(641_799))
         }
 
         it("loads the scheme's pattern") {
-            GuiActionRunner.execute { editor.loadState(DateTimeScheme(pattern = "YY-mM")) }
+            guiRun { editor.loadState(DateTimeScheme(pattern = "YY-mM")) }
 
             frame.textBox("pattern").requireText("YY-mM")
         }
@@ -102,7 +104,7 @@ object DateTimeSchemeEditorTest : DescribeSpec({
         }
 
         it("returns the editor's state") {
-            GuiActionRunner.execute {
+            guiRun {
                 setMinDateTime("6678-01-20")
                 setMaxDateTime("7310-06-27")
                 frame.textBox("pattern").target().text = "YY Y M h"
@@ -115,10 +117,10 @@ object DateTimeSchemeEditorTest : DescribeSpec({
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { setMinDateTime("2369-04-15") }
+            guiRun { setMinDateTime("2369-04-15") }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
+            guiRun { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readState()).isEqualTo(editor.originalState)
@@ -146,20 +148,18 @@ object DateTimeSchemeEditorTest : DescribeSpec({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.textBox("minDateTime").target().text = "4704" }
+            guiRun { frame.textBox("minDateTime").target().text = "4704" }
 
             assertThat(listenerInvoked).isTrue()
         }
 
         it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute {
-                editor.loadState(DateTimeScheme(arrayDecorator = ArrayDecorator(enabled = true)))
-            }
+            guiRun { editor.loadState(DateTimeScheme(arrayDecorator = ArrayDecorator(enabled = true))) }
 
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 940 }
+            guiRun { frame.spinner("arrayMinCount").target().value = 940 }
 
             assertThat(listenerInvoked).isTrue()
         }

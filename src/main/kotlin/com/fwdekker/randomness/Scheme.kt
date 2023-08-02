@@ -103,10 +103,24 @@ abstract class Scheme : State() {
 @Suppress("detekt:LateinitUsage") // Alternatives not feasible
 abstract class DecoratorScheme : Scheme() {
     /**
+     * Whether this decorator is enabled, or whether any invocation of [generateStrings] should be passed directly to
+     * the [generator].
+     */
+    protected open val isEnabled: Boolean = true
+
+    /**
      * The generating function whose output should be decorated.
      */
     @get:Transient
     lateinit var generator: (Int) -> List<String>
+
+
+    override fun generateStrings(count: Int): List<String> {
+        doValidate()?.also { throw DataGenerationException(it) }
+
+        return if (isEnabled) super.generateStrings(count)
+        else generator(count)
+    }
 
 
     abstract override fun deepCopy(retainUuid: Boolean): DecoratorScheme

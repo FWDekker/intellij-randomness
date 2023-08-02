@@ -3,6 +3,7 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.State
+import com.fwdekker.randomness.setAll
 import com.intellij.util.ui.EditableModel
 import javax.swing.JTree
 import javax.swing.event.TreeModelEvent
@@ -28,7 +29,7 @@ import javax.swing.tree.TreePath
  * @param list the list to be modeled
  */
 @Suppress("detekt:TooManyFunctions") // Normal for Swing implementations
-class TemplateJTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeModel, EditableModel {
+class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : TreeModel, EditableModel {
     /**
      * The listeners that are informed when the state of the tree changes.
      */
@@ -71,12 +72,10 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeM
     override fun getRoot() = StateNode(list)
 
     /**
-     * Reloads the entire model's structure to synchronize it with the changes in [newList].
+     * Reloads the entire model's structure to synchronize it with the state of [newList].
      *
      * Use this method if the entire model should be reloaded from the list because major changes have been made. If
-     * small changes have been made, consider using one of the `fire` methods such as [fireNodeChanged].
-     *
-     * @param newList the new list, or `null` to use the current root list
+     * small changes have been made, consider using one of the `fire` methods such as [fireNodeChanged] instead.
      */
     fun reload(newList: TemplateList = list) {
         list = newList
@@ -87,15 +86,19 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeM
 
     /**
      * Not implemented because this method is used only if this is a model for a table.
+     *
+     * @throws NotImplementedError always
      */
-    override fun addRow() = error(Bundle("template_list.error.add_empty_row"))
+    @Throws(NotImplementedError::class)
+    override fun addRow() = throw NotImplementedError(Bundle("template_list.error.add_empty_row"))
 
     /**
      * Not implemented because this method is used only if this is a model for a table.
      *
-     * @param index ignored
+     * @throws NotImplementedError always
      */
-    override fun removeRow(index: Int) = error(Bundle("template_list.error.remove_row_by_index"))
+    @Throws(NotImplementedError::class)
+    override fun removeRow(index: Int) = throw NotImplementedError(Bundle("template_list.error.remove_row_by_index"))
 
     /**
      * Moves the node at row [oldIndex] to row [newIndex], and expands and selects the moved node.
@@ -393,16 +396,14 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeM
     /**
      * Not implemented because this model does not contain an editor component.
      *
-     * @param path ignored
-     * @param newValue ignored
+     * @throws NotImplementedError always
      */
+    @Throws(NotImplementedError::class)
     override fun valueForPathChanged(path: TreePath, newValue: Any) =
-        error(Bundle("template_list.error.change_value_by_path"))
+        throw NotImplementedError(Bundle("template_list.error.change_value_by_path"))
 
     /**
      * Adds [listener] as a listener.
-     *
-     * @param listener the listener to add
      */
     override fun addTreeModelListener(listener: TreeModelListener) {
         treeModelListeners.add(listener)
@@ -410,8 +411,6 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(emptyList())) : TreeM
 
     /**
      * Removes [listener] as a listener.
-     *
-     * @param listener the listener to remove
      */
     override fun removeTreeModelListener(listener: TreeModelListener) {
         treeModelListeners.remove(listener)
@@ -447,13 +446,13 @@ class StateNode(val state: State) {
             when (state) {
                 is TemplateList -> state.templates.map { StateNode(it) }
                 is Template -> state.schemes.map { StateNode(it) }
-                else -> error(Bundle("template_list.error.unknown_parent_type", state.javaClass.canonicalName))
+                else -> error(Bundle("template_list.error.unknown_state_type", "parent", state.javaClass.canonicalName))
             }
         set(value) {
             when (state) {
-                is TemplateList -> state.templates = value.map { it.state as Template }
-                is Template -> state.schemes = value.map { it.state as Scheme }
-                else -> error(Bundle("template_list.error.unknown_parent_type", state.javaClass.canonicalName))
+                is TemplateList -> state.templates.setAll(value.map { it.state as Template })
+                is Template -> state.schemes.setAll(value.map { it.state as Scheme })
+                else -> error(Bundle("template_list.error.unknown_state_type", "parent", state.javaClass.canonicalName))
             }
         }
 

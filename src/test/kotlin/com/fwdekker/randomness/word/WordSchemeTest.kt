@@ -1,145 +1,81 @@
 package com.fwdekker.randomness.word
 
-import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.DummyScheme
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import com.fwdekker.randomness.affix.AffixDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.shouldValidateAsBundle
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.forAll
+import io.kotest.data.headers
+import io.kotest.data.row
+import io.kotest.data.table
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 
 
 /**
  * Unit tests for [WordScheme].
  */
-object WordSchemeTest : DescribeSpec({
-    lateinit var wordScheme: WordScheme
+object WordSchemeTest : FunSpec({
+    tags(NamedTag("Scheme"))
 
 
-    beforeEach {
-        wordScheme = WordScheme()
+    test("generateStrings") {
+        forAll(
+            table(
+                //@formatter:off
+                headers("description", "scheme", "output"),
+                row("returns a word", WordScheme(words = listOf("word")), "word"),
+                row("returns a word with whitespace", WordScheme(words = listOf("x y")), "x y"),
+                row("capitalizes the word", WordScheme(words = listOf("word"), capitalization = CapitalizationMode.UPPER), "WORD"),
+                row("applies decorators in order affix, array", WordScheme(words = listOf("word"), affixDecorator = AffixDecorator(enabled = true, descriptor = "'"), arrayDecorator = ArrayDecorator(enabled = true)), "['word', 'word', 'word']"),
+                //@formatter:on
+            )
+        ) { _, scheme, output -> scheme.generateStrings()[0] shouldBe output }
     }
 
-
-    describe("generateStrings") {
-        describe("words") {
-            it("returns one of the selected words") {
-                wordScheme.words = listOf("pad", "obedient", "faint", "desert", "church")
-                wordScheme.quotation = ""
-
-                assertThat(wordScheme.words).contains(wordScheme.generateStrings().single())
-            }
-
-            it("returns different words") {
-                wordScheme.words = List(10_000) { it.toString() }
-                wordScheme.quotation = ""
-
-                assertThat(wordScheme.generateStrings(2).toSet()).hasSize(2) // Chance of 1/10000 = 0.01% to fail
-            }
-        }
-
-        describe("quotation") {
-            it("adds no quotations if the quotations are an empty string") {
-                wordScheme.words = listOf("show")
-                wordScheme.quotation = ""
-
-                assertThat(wordScheme.generateStrings().single()).isEqualTo("show")
-            }
-
-            it("repeats the first character of the quotations on both ends") {
-                wordScheme.words = listOf("country")
-                wordScheme.quotation = "L"
-
-                assertThat(wordScheme.generateStrings().single()).isEqualTo("LcountryL")
-            }
-
-            it("surrounds the output with the respective characters of the quotation string") {
-                wordScheme.words = listOf("argue")
-                wordScheme.quotation = "pn"
-
-                assertThat(wordScheme.generateStrings().single()).isEqualTo("parguen")
-            }
-        }
-
-        describe("capitalization") {
-            it("applies the given capitalization") {
-                wordScheme.words = listOf("hold")
-                wordScheme.quotation = ""
-                wordScheme.capitalization = CapitalizationMode.UPPER
-
-                assertThat(wordScheme.generateStrings().single()).isEqualTo("HOLD")
-            }
-        }
+    test("doValidate") {
+        forAll(
+            table(
+                //@formatter:off
+                headers("description", "scheme", "validation"),
+                row("succeeds for default state", WordScheme(), null),
+                row("fails if word list is empty", WordScheme(words = emptyList()), "word.error.empty_word_list"),
+                row("fails if affix decorator is invalid", WordScheme(affixDecorator = AffixDecorator(descriptor = """\""")), ""),
+                row("fails if array decorator is invalid", WordScheme(arrayDecorator = ArrayDecorator(minCount = -24)), ""),
+                //@formatter:on
+            )
+        ) { _, scheme, validation -> scheme shouldValidateAsBundle validation }
     }
 
+    test("deepCopy") {
+        lateinit var scheme: WordScheme
 
-    describe("doValidate") {
-        it("passes for the default settings") {
-            assertThat(wordScheme.doValidate()).isNull()
+
+        beforeEach {
+            scheme = WordScheme()
         }
 
-        it("fails if the decorator is invalid") {
-            wordScheme.arrayDecorator.minCount = -88
 
-            assertThat(wordScheme.doValidate()).isNotNull()
+        test("equals old instance") {
+            scheme.deepCopy() shouldBe scheme
         }
 
-        it("fails if the quotation has more than two characters") {
-            wordScheme.quotation = "3D7F"
+        test("is independent of old instance") {
+            val copy = scheme.deepCopy()
 
-            assertThat(wordScheme.doValidate()).isEqualTo(Bundle("word.error.quotation_length"))
+            scheme.words += "old-word"
+
+            copy.words shouldNotBe scheme.words
         }
 
-        it("fails if the list of words is empty") {
-            wordScheme.words = emptyList()
-
-            assertThat(wordScheme.doValidate()).isEqualTo(Bundle("word.error.empty_word_list"))
-        }
-    }
-
-    describe("deepCopy") {
-        it("creates an independent copy") {
-            wordScheme.words = listOf("soul", "suspect", "due")
-            wordScheme.arrayDecorator.minCount = 333
-
-            val copy = wordScheme.deepCopy()
-            copy.words = listOf("lonely", "travel", "alive")
-            copy.arrayDecorator.minCount = 531
-
-            assertThat(wordScheme.words).containsExactly("soul", "suspect", "due")
-            assertThat(wordScheme.arrayDecorator.minCount).isEqualTo(333)
+        test("retains uuid if chosen") {
+            scheme.deepCopy(true).uuid shouldBe scheme.uuid
         }
 
-        it("creates an independent list of words") {
-            val list = mutableListOf("habit", "new")
-            wordScheme.words = list
-            val copy = wordScheme.deepCopy()
-
-            list += "citizen"
-
-            assertThat(copy.words).doesNotContain("citizen")
-        }
-    }
-
-    describe("copyFrom") {
-        it("cannot copy from a different type") {
-            assertThatThrownBy { wordScheme.copyFrom(DummyScheme()) }.isNotNull()
-        }
-
-        it("copies state from another instance") {
-            wordScheme.words = listOf("strap", "tip", "tray")
-            wordScheme.quotation = "'"
-            wordScheme.capitalization = CapitalizationMode.LOWER
-            wordScheme.arrayDecorator.minCount = 513
-
-            val newScheme = WordScheme()
-            newScheme.copyFrom(wordScheme)
-
-            assertThat(newScheme)
-                .isEqualTo(wordScheme)
-                .isNotSameAs(wordScheme)
-            assertThat(newScheme.arrayDecorator)
-                .isEqualTo(wordScheme.arrayDecorator)
-                .isNotSameAs(wordScheme.arrayDecorator)
+        test("replaces uuid if chosen") {
+            scheme.deepCopy(false).uuid shouldNotBe scheme.uuid
         }
     }
 })

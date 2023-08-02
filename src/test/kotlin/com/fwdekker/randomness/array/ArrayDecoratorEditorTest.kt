@@ -1,5 +1,7 @@
 package com.fwdekker.randomness.array
 
+import com.fwdekker.randomness.guiGet
+import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.matcher
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -7,7 +9,6 @@ import com.intellij.ui.TitledSeparator
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 import javax.swing.JCheckBox
@@ -33,7 +34,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
         ideaFixture.setUp()
 
         scheme = ArrayDecorator(enabled = true)
-        editor = GuiActionRunner.execute<ArrayDecoratorEditor> { ArrayDecoratorEditor(scheme) }
+        editor = guiGet { ArrayDecoratorEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
     }
 
@@ -50,7 +51,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
 
         it("hides the separator if the editor is embedded") {
             frame.cleanUp()
-            editor = GuiActionRunner.execute<ArrayDecoratorEditor> { ArrayDecoratorEditor(scheme, embedded = true) }
+            editor = guiGet { ArrayDecoratorEditor(scheme, embedded = true) }
             frame = showInFrame(editor.rootComponent)
 
             frame.panel(matcher(TitledSeparator::class.java)).requireNotVisible()
@@ -59,26 +60,26 @@ object ArrayDecoratorEditorTest : DescribeSpec({
 
     describe("input handling") {
         it("truncates decimals in the minimum count") {
-            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 983.24f }
+            guiRun { frame.spinner("arrayMinCount").target().value = 983.24f }
 
             frame.spinner("arrayMinCount").requireValue(983)
         }
 
         it("truncates decimals in the maximum count") {
-            GuiActionRunner.execute { frame.spinner("arrayMaxCount").target().value = 881.78f }
+            guiRun { frame.spinner("arrayMaxCount").target().value = 881.78f }
 
             frame.spinner("arrayMaxCount").requireValue(881)
         }
 
         describe("panel enabled state") {
             it("disables components if enabled is deselected") {
-                GuiActionRunner.execute { frame.checkBox("arrayEnabled").target().isSelected = false }
+                guiRun { frame.checkBox("arrayEnabled").target().isSelected = false }
 
                 frame.spinner("arrayMinCount").requireDisabled()
             }
 
             it("enables components if enabled is reselected") {
-                GuiActionRunner.execute {
+                guiRun {
                     frame.checkBox("arrayEnabled").target().isSelected = false
                     frame.checkBox("arrayEnabled").target().isSelected = true
                 }
@@ -88,7 +89,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
 
             it("keeps components visible if the editor is embedded") {
                 frame.cleanUp()
-                editor = GuiActionRunner.execute<ArrayDecoratorEditor> { ArrayDecoratorEditor(scheme, embedded = true) }
+                editor = guiGet { ArrayDecoratorEditor(scheme, embedded = true) }
                 frame = showInFrame(editor.rootComponent)
 
                 // This special matcher does not require the component to be visible
@@ -100,7 +101,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
             it("disables space-after-separator if decorator is enabled but separator is a newline") {
                 scheme.enabled = false
                 scheme.separator = "\\n"
-                GuiActionRunner.execute { editor.reset() }
+                guiRun { editor.reset() }
 
                 frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
             }
@@ -110,21 +111,19 @@ object ArrayDecoratorEditorTest : DescribeSpec({
             describe("embedded") {
                 beforeEach {
                     frame.cleanUp()
-                    editor = GuiActionRunner.execute<ArrayDecoratorEditor> {
-                        ArrayDecoratorEditor(scheme, embedded = true)
-                    }
+                    editor = guiGet { ArrayDecoratorEditor(scheme, embedded = true) }
                     frame = showInFrame(editor.rootComponent)
                 }
 
 
                 it("disables space-after-separator if separator is a newline") {
-                    GuiActionRunner.execute { frame.comboBox("arraySeparator").target().selectedItem = "\\n" }
+                    guiRun { frame.comboBox("arraySeparator").target().selectedItem = "\\n" }
 
                     frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
                 }
 
                 it("enables space-after-separator if separator is not a newline") {
-                    GuiActionRunner.execute { frame.comboBox("arraySeparator").target().selectedItem = "," }
+                    guiRun { frame.comboBox("arraySeparator").target().selectedItem = "," }
 
                     frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
                 }
@@ -132,13 +131,13 @@ object ArrayDecoratorEditorTest : DescribeSpec({
 
             describe("not embedded") {
                 it("disables space-after-separator if separator is a newline") {
-                    GuiActionRunner.execute { frame.comboBox("arraySeparator").target().selectedItem = "\\n" }
+                    guiRun { frame.comboBox("arraySeparator").target().selectedItem = "\\n" }
 
                     frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
                 }
 
                 it("enables space-after-separator if separator is not a newline") {
-                    GuiActionRunner.execute { frame.comboBox("arraySeparator").target().selectedItem = "," }
+                    guiRun { frame.comboBox("arraySeparator").target().selectedItem = "," }
 
                     frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
                 }
@@ -146,7 +145,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
                 it("disables space-after-separator if separator is not a newline, but decorator is disabled") {
                     scheme.enabled = false
                     scheme.separator = ","
-                    GuiActionRunner.execute { editor.reset() }
+                    guiRun { editor.reset() }
 
                     frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
                 }
@@ -157,37 +156,37 @@ object ArrayDecoratorEditorTest : DescribeSpec({
 
     describe("loadState") {
         it("loads the scheme's enabled state") {
-            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true)) }
+            guiRun { editor.loadState(ArrayDecorator(enabled = true)) }
 
             frame.checkBox("arrayEnabled").requireEnabled()
         }
 
         it("loads the scheme's minimum count") {
-            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, minCount = 2)) }
+            guiRun { editor.loadState(ArrayDecorator(enabled = true, minCount = 2)) }
 
             frame.spinner("arrayMinCount").requireValue(2)
         }
 
         it("loads the scheme's maximum count") {
-            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, maxCount = 14)) }
+            guiRun { editor.loadState(ArrayDecorator(enabled = true, maxCount = 14)) }
 
             frame.spinner("arrayMaxCount").requireValue(14)
         }
 
         it("loads the scheme's brackets") {
-            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, brackets = "{@}")) }
+            guiRun { editor.loadState(ArrayDecorator(enabled = true, brackets = "{@}")) }
 
             frame.comboBox("arrayBrackets").requireSelection("{@}")
         }
 
         it("loads the scheme's separator") {
-            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, separator = ";")) }
+            guiRun { editor.loadState(ArrayDecorator(enabled = true, separator = ";")) }
 
             frame.comboBox("arraySeparator").requireSelection(";")
         }
 
         it("loads the scheme's settings for using a space after separator") {
-            GuiActionRunner.execute { editor.loadState(ArrayDecorator(enabled = true, isSpaceAfterSeparator = false)) }
+            guiRun { editor.loadState(ArrayDecorator(enabled = true, isSpaceAfterSeparator = false)) }
 
             frame.checkBox("arraySpaceAfterSeparator").requireSelected(false)
         }
@@ -199,7 +198,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
         }
 
         it("returns the editor's state") {
-            GuiActionRunner.execute {
+            guiRun {
                 frame.checkBox("arrayEnabled").target().isSelected = true
                 frame.spinner("arrayMinCount").target().value = 642
                 frame.spinner("arrayMaxCount").target().value = 876
@@ -218,10 +217,10 @@ object ArrayDecoratorEditorTest : DescribeSpec({
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.checkBox("arrayEnabled").target().isSelected = false }
+            guiRun { frame.checkBox("arrayEnabled").target().isSelected = false }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
+            guiRun { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readState()).isEqualTo(editor.originalState)
@@ -244,7 +243,7 @@ object ArrayDecoratorEditorTest : DescribeSpec({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 433 }
+            guiRun { frame.spinner("arrayMinCount").target().value = 433 }
 
             assertThat(listenerInvoked).isTrue()
         }

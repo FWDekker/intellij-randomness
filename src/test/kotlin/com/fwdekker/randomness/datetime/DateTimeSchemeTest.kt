@@ -1,121 +1,89 @@
 package com.fwdekker.randomness.datetime
 
-import com.fwdekker.randomness.DataGenerationException
-import com.github.sisyphsu.dateparser.DateParserUtils
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import java.time.LocalDateTime
-import java.util.regex.Pattern
+import com.fwdekker.randomness.integer.IntegerScheme
+import com.fwdekker.randomness.shouldValidateAsBundle
+import io.kotest.assertions.withClue
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.forAll
+import io.kotest.data.headers
+import io.kotest.data.row
+import io.kotest.data.table
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 
 
 /**
  * Unit tests for [DateTimeScheme].
  */
-object DateTimeSchemeTest : DescribeSpec({
-    lateinit var dateTimeScheme: DateTimeScheme
+object DateTimeSchemeTest : FunSpec({
+    tags(NamedTag("Scheme"))
 
 
-    beforeEach {
-        dateTimeScheme = DateTimeScheme()
-    }
-
-
-    describe("generateStrings") {
-        it("throws an exception if the scheme is invalid") {
-            dateTimeScheme.pattern = "ff"
-
-            assertThatThrownBy { dateTimeScheme.generateStrings() }.isInstanceOf(DataGenerationException::class.java)
+    test("generateStrings") {
+        test("parameterized") {
+            forAll(
+                table(
+                    //@formatter:off
+                    headers("description", "scheme", "output"),
+                    // TODO
+                    row("returns date at given timestamp", DateTimeScheme(minDateTime = 45_582L, maxDateTime = 45_582L), "TODO"),
+                    // TODO
+                    row("returns date with given format", DateTimeScheme(minDateTime = 242_966_670L, maxDateTime = 242_966_670L, pattern = "yyyy.MM"), "TODO"),
+                    //@formatter:on
+                )
+            ) { _, scheme, output -> scheme.generateStrings()[0] shouldBe output }
         }
 
-        it("generates a date in the given range") {
-            dateTimeScheme.minDateTime = 45_582
-            dateTimeScheme.maxDateTime = 1_289_568_956
+        test("correctly generates distinct values at maximum range size") {
+            val scheme = IntegerScheme(minValue = Long.MIN_VALUE, maxValue = Long.MAX_VALUE)
 
-            repeat(256) {
-                val generatedString = dateTimeScheme.generateStrings().single()
-
-                assertThat(DateParserUtils.parseDateTime(generatedString).toEpochMilli())
-                    .isGreaterThanOrEqualTo(dateTimeScheme.minDateTime)
-                    .isLessThanOrEqualTo(dateTimeScheme.maxDateTime)
-            }
-        }
-
-        it("generates a date according to the given format") {
-            dateTimeScheme.pattern = "yyyy.MM"
-
-            val generatedStrings = dateTimeScheme.generateStrings(1000)
-
-            generatedStrings.forEach { assertThat(it).matches(Pattern.compile("[0-9]{4}\\.[0-9]{2}")) }
+            withClue("Should have distinct elements") { scheme.generateStrings(count = 50).toSet() shouldHaveSize 50 }
         }
     }
 
-
-    describe("doValidate") {
-        it("passes for the default settings") {
-            assertThat(DateTimeScheme().doValidate()).isNull()
-        }
-
-        it("fails if the minimum date-time is larger than the maximum date-time") {
-            dateTimeScheme.minDateTime = 819_876
-            dateTimeScheme.maxDateTime = 447_861
-
-            assertThat(dateTimeScheme.doValidate())
-                .isEqualTo("Minimum date-time should be less than or equal to maximum date-time.")
-        }
-
-        it("fails if the date-time pattern is invalid") {
-            dateTimeScheme.pattern = "yyyy-ffff"
-
-            assertThat(dateTimeScheme.doValidate()).isEqualTo("Unknown pattern letter: f")
-        }
+    test("doValidate") {
+        forAll(
+            table(
+                //@formatter:off
+                headers("description", "scheme", "validation"),
+                row("succeeds for default state", DateTimeScheme(), null),
+                row("fails if min date-time is above max date-time", DateTimeScheme(minDateTime = 541L, maxDateTime = 318L), "datetime.error.min_datetime_above_max"),
+                row("fails if pattern is invalid", DateTimeScheme(pattern = "yyyy-ffff"), "Unknown pattern letter: f"),
+                row("succeeds if invalid pattern is escaped", DateTimeScheme(pattern = "yyyy-'ffff'"), null),
+                //@formatter:on
+            )
+        ) { _, scheme, validation -> scheme shouldValidateAsBundle validation }
     }
 
-    describe("deepCopy") {
-        it("creates an independent copy") {
-            dateTimeScheme.minDateTime = 952_549
-            dateTimeScheme.arrayDecorator.minCount = 567
-
-            val copy = dateTimeScheme.deepCopy()
-            copy.minDateTime = 356_934
-            copy.arrayDecorator.minCount = 30
-
-            assertThat(dateTimeScheme.minDateTime).isEqualTo(952_549)
-            assertThat(dateTimeScheme.arrayDecorator.minCount).isEqualTo(567)
-        }
-    }
-
-    describe("copyFrom") {
-        it("copies state from another instance") {
-            dateTimeScheme.minDateTime = 445
-            dateTimeScheme.maxDateTime = 478
-            dateTimeScheme.pattern = "mm-Y"
-            dateTimeScheme.arrayDecorator.minCount = 904
-
-            val newScheme = DateTimeScheme()
-            newScheme.copyFrom(dateTimeScheme)
-
-            assertThat(newScheme)
-                .isEqualTo(dateTimeScheme)
-                .isNotSameAs(dateTimeScheme)
-            assertThat(newScheme.arrayDecorator)
-                .isEqualTo(dateTimeScheme.arrayDecorator)
-                .isNotSameAs(dateTimeScheme.arrayDecorator)
-        }
-    }
+    test("deepCopy") {
+        lateinit var scheme: DateTimeScheme
 
 
-    describe("toLocalDateTime and fromLocalDateTime") {
-        it("converts to a date-time and back") {
-            val epoch = 8_485_011_871
-
-            assertThat(epoch.toLocalDateTime().toEpochMilli()).isEqualTo(epoch)
+        beforeEach {
+            scheme = DateTimeScheme()
         }
 
-        it("converts to an epoch and back") {
-            val instant = LocalDateTime.now().withNano(0)
 
-            assertThat(instant.toEpochMilli().toLocalDateTime()).isEqualTo(instant)
+        test("equals old instance") {
+            scheme.deepCopy() shouldBe scheme
+        }
+
+        test("is independent of old instance") {
+            val copy = scheme.deepCopy()
+
+            scheme.pattern = "other"
+
+            copy.pattern shouldNotBe scheme.pattern
+        }
+
+        test("retains uuid if chosen") {
+            scheme.deepCopy(true).uuid shouldBe scheme.uuid
+        }
+
+        test("replaces uuid if chosen") {
+            scheme.deepCopy(false).uuid shouldNotBe scheme.uuid
         }
     }
 })

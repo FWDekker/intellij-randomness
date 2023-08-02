@@ -1,139 +1,97 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.ui.addChangeListenerTo
-import java.awt.BorderLayout
+import com.intellij.openapi.ui.DialogPanel
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.panel
 import java.awt.Color
-import javax.swing.JPanel
-import javax.swing.JTextField
 import kotlin.random.Random
 
 
 /**
- * Dummy implementation of [Scheme].
- *
- * @property literals The outputs to cyclically produce.
- * @property decorators Settings that determine whether the output should be decorated.
+ * A simple [State] with a single mutable [list].
+ */
+data class DummyState(var list: MutableList<Int> = mutableListOf()) : State() {
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(list = list.toMutableList()).deepCopyTransient(retainUuid)
+}
+
+/**
+ * A simple [Scheme] named [name] that outputs according to [generator] (which by default outputs [prefix] followed by
+ * the number of the generated value), is valid if and only if [valid] is `true`, and uses customizable [decorators].
  */
 data class DummyScheme(
-    var literals: List<String> = listOf(DEFAULT_OUTPUT),
-    override var decorators: List<DecoratorScheme> = listOf(ArrayDecorator()),
+    override var name: String = "DummyScheme",
+    var valid: Boolean = true,
+    var prefix: String = "text",
+    var generator: (Int) -> List<String> = { count -> List(count) { "$prefix$it" } },
+    override val decorators: List<DecoratorScheme> = emptyList(),
 ) : Scheme() {
-    override var typeIcon = TypeIcon(Icons.SCHEME, "dum", listOf(Color.GRAY))
-    override val name get() = literals.joinToString()
-
-    /**
-     * Returns the single [ArrayDecorator] in [decorators].
-     *
-     * Use this field only if the test assumes that this scheme has a single decorator the entire time.
-     */
-    var arrayDecorator: ArrayDecorator
-        get() = decorators.single() as ArrayDecorator
-        set(value) {
-            decorators = listOf(value)
-        }
+    override var typeIcon: TypeIcon? = TypeIcon(Icons.SCHEME, "dum", listOf(Color.GRAY))
 
 
-    override fun generateUndecoratedStrings(count: Int) = List(count) { literals[it % literals.size] }
+    override fun generateUndecoratedStrings(count: Int) = generator(count)
 
-
-    override fun doValidate() =
-        if (literals[0] == INVALID_OUTPUT) "Invalid input!"
-        else decorators.firstNotNullOfOrNull { it.doValidate() }
+    override fun doValidate() = if (valid) null else "DummyScheme is invalid"
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(decorators = decorators.map { it.deepCopy(retainUuid) })
-            .also { if (retainUuid) it.uuid = this.uuid }
-
-
-    /**
-     * Holds constants.
-     */
-    companion object {
-        /**
-         * The default singular value contained in [literals].
-         */
-        const val DEFAULT_OUTPUT = "literal"
-
-        /**
-         * The magic string contained in [literals] to make the scheme invalid according to [doValidate].
-         */
-        const val INVALID_OUTPUT = "invalid"
-
-
-        /**
-         * Convenience method for creating a [DummyScheme] using vararg notation.
-         *
-         * @param literals the literals for the dummy scheme
-         * @return a [DummyScheme] with [literals]
-         */
-        fun from(vararg literals: String) = DummyScheme(literals = literals.toList())
-    }
+        copy(decorators = decorators.map { it.deepCopy(retainUuid) }).deepCopyTransient(retainUuid)
 }
 
 /**
- * Dummy implementation of [StateEditor] for a [DummyScheme].
- *
- * Dummy schemes have a producer, but this editor only supports returning a producer of a single string.
- *
- * @param scheme the scheme to edit in the component
+ * A simple [DecoratorScheme] that appends [append] if [enabled] is `true`, is valid if and only if [valid] is `true`,
+ * and uses customizable [decorators].
  */
-class DummySchemeEditor(scheme: DummyScheme = DummyScheme()) : StateEditor<DummyScheme>(scheme) {
-    // TODO: Modernize this dummy implementation
-    override val rootComponent = JPanel(BorderLayout())
-
-    private val literalsInput = JTextField()
-        .also { it.name = "literals" }
-        .also { rootComponent.add(it, BorderLayout.NORTH) }
-    private val arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
-        .also { rootComponent.add(it.rootComponent, BorderLayout.SOUTH) }
-
-
-    init {
-        loadState()
-    }
+data class DummyDecoratorScheme(
+    var enabled: Boolean = false,
+    var valid: Boolean = true,
+    var append: String = ":decorated",
+    override val decorators: List<DecoratorScheme> = emptyList(),
+) : DecoratorScheme() {
+    override val name = "DummyDecoratorScheme"
+    override var typeIcon: TypeIcon? = null
+    override val isEnabled get() = enabled
 
 
-    override fun loadState(state: DummyScheme) {
-        super.loadState(state)
+    override fun generateUndecoratedStrings(count: Int) =
+        generator(count).map { "$it$append" }
 
-        literalsInput.text = state.literals.joinToString(",")
-        arrayDecoratorEditor.loadState(state.arrayDecorator)
-    }
+    override fun doValidate() = if (valid) null else "DummyDecoratorScheme is invalid"
 
-    override fun readState() =
-        DummyScheme(
-            literals = literalsInput.text.split(','),
-            decorators = listOf(arrayDecoratorEditor.readState())
-        )
-
-
-    override fun addChangeListener(listener: () -> Unit) {
-        addChangeListenerTo(literalsInput, listener = listener)
-        arrayDecoratorEditor.addChangeListener(listener)
-    }
-}
-
-
-/**
- * Dummy implementation of [StateConfigurable].
- */
-class DummyStateConfigurable : StateConfigurable() {
-    override fun getDisplayName() = "Dummy"
-
-    override fun createEditor() = DummySchemeEditor()
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(decorators = decorators.map { it.deepCopy(retainUuid) }).deepCopyTransient(retainUuid)
 }
 
 /**
- * Inserts a dummy value.
- *
- * Mostly for testing and demonstration purposes.
- *
- * @param repeat `true` if and only if the same value should be inserted at each caret
- * @property dummySupplier Generates dummy values to insert.
+ * A simple [SchemeEditor] that edits [scheme] using the panel constructed by [panel] (instead of having to create a new
+ * subclass à la `object : SchemeEditor` each time) and exposes a few methods that are normally protected.
  */
-class DummyInsertAction(repeat: Boolean = false, private val dummySupplier: (Random) -> String) :
-    InsertAction(repeat, "Random Dummy", null, null) {
-    override fun generateStrings(count: Int) = List(count) { dummySupplier(Random.Default) }
+class DummySchemeEditor(
+    scheme: DummyScheme = DummyScheme(),
+    panel: DummySchemeEditor.() -> DialogPanel = { panel {} },
+) : SchemeEditor<DummyScheme>(scheme) {
+    override val rootComponent = panel(this)
+
+
+    fun addExtraComponent(component: Any) = extraComponents.add(component)
+
+    fun addDecoratorEditor(editor: SchemeEditor<*>) = decoratorEditors.add(editor)
+}
+
+/**
+ * A simple [SchemeEditor] for a [DummyDecoratorScheme] that edits only the [DummyDecoratorScheme.append] field.
+ */
+class DummyDecoratorSchemeEditor(
+    scheme: DummyDecoratorScheme = DummyDecoratorScheme(),
+) : SchemeEditor<DummyDecoratorScheme>(scheme) {
+    override val rootComponent = panel { row { textField().bindText(scheme::append) } }
+}
+
+/**
+ * A simple [InsertAction] that outputs the strings generated by [generator].
+ */
+class DummyInsertAction(
+    repeat: Boolean = false,
+    private val generator: (Random) -> String,
+) : InsertAction(repeat, "Dummy", null, null) {
+    override fun generateStrings(count: Int) = List(count) { generator(Random.Default) }
 }

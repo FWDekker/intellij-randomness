@@ -25,8 +25,8 @@ import com.intellij.util.xmlb.annotations.Transient
 data class TemplateReference(
     var templateUuid: String? = null,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
-    var arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
+    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name get() = template?.name?.let { "[$it]" } ?: Bundle("reference.title")
     override val typeIcon get() = template?.typeIcon ?: DEFAULT_ICON
@@ -50,6 +50,34 @@ data class TemplateReference(
         }
 
 
+    /**
+     * Tries to find a recursive cycle of references within the current [context].
+     *
+     * @return a recursive path of [Template]s that reference each other starting at `this` reference's [parent], or
+     * `null` if there is no such path.
+     */
+    private fun getRecursiveLoopOrNull(): List<Template>? {
+        fun helper(source: TemplateReference, history: List<TemplateReference>): List<Template>? =
+            if (source in history) listOf(source.parent)
+            else source.template?.schemes
+                ?.filterIsInstance<TemplateReference>()
+                ?.firstNotNullOfOrNull { helper(it, history + source) }
+                ?.let { listOf(source.parent) + it }
+
+        return helper(this, emptyList())
+    }
+
+    /**
+     * Returns `true` if `this` reference can refer to [target] without causing recursion within the current [context].
+     */
+    fun canReference(target: Template) =
+        templateUuid.let { originalUuid ->
+            templateUuid = target.uuid
+            (getRecursiveLoopOrNull() == null)
+                .also { templateUuid = originalUuid }
+        }
+
+
     override fun generateUndecoratedStrings(count: Int) =
         (this.template ?: throw DataGenerationException(Bundle("reference.error.generate_null")))
             .also { it.random = random }
@@ -58,7 +86,7 @@ data class TemplateReference(
 
 
     override fun doValidate(): String? {
-        val recursion = (+context).templateList.findRecursionFrom(this)
+        val recursion = getRecursiveLoopOrNull()
 
         return when {
             templateUuid == null -> Bundle("reference.error.no_selection")
@@ -106,11 +134,11 @@ data class TemplateReference(
         /**
          * The default value of the [affixDecorator] field.
          */
-        val DEFAULT_AFFIX_DECORATOR = AffixDecorator(enabled = false, descriptor = "\"")
+        val DEFAULT_AFFIX_DECORATOR get() = AffixDecorator(enabled = false, descriptor = "\"")
 
         /**
          * The default value of the [arrayDecorator] field.
          */
-        val DEFAULT_ARRAY_DECORATOR = ArrayDecorator()
+        val DEFAULT_ARRAY_DECORATOR get() = ArrayDecorator()
     }
 }

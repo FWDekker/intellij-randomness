@@ -1,35 +1,49 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
+import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.getActionButton
-import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.guiGet
+import com.fwdekker.randomness.guiRun
+import com.fwdekker.randomness.matchBundle
+import com.fwdekker.randomness.setAll
 import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.forAll
+import io.kotest.data.headers
+import io.kotest.data.row
+import io.kotest.data.table
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldNotContain
+import io.kotest.matchers.nulls.beNull
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
-import org.assertj.swing.fixture.Containers
+import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
-import javax.swing.JPanel
 
 
 /**
  * GUI tests for [TemplateJTree].
  */
-object TemplateJTreeTest : DescribeSpec({
+object TemplateJTreeTest : FunSpec({
+    tags(NamedTag("IdeaFixture"), NamedTag("Swing"))
+
+
     lateinit var ideaFixture: IdeaTestFixture
 
     lateinit var originalState: Settings
     lateinit var currentState: Settings
     lateinit var tree: TemplateJTree
 
-    fun model() = tree.myModel
-    fun root() = tree.myModel.root
-    fun list() = tree.myModel.list
+    fun List<Scheme>.names() = this.map { it.name }
 
 
     beforeContainer {
@@ -43,17 +57,17 @@ object TemplateJTreeTest : DescribeSpec({
         originalState =
             Settings(
                 TemplateList(
-                    listOf(
-                        Template("Captain", listOf(DummyScheme.from("window"), DummyScheme.from("uncle"))),
-                        Template("Particle", listOf(DummyScheme.from("republic"))),
-                        Template("Village", listOf(DummyScheme.from("consider"), DummyScheme.from("tent")))
+                    mutableListOf(
+                        Template("Template0", mutableListOf(DummyScheme("Scheme0"), DummyScheme("Scheme1"))),
+                        Template("Template1", mutableListOf(DummyScheme("Scheme2"))),
+                        Template("Template2", mutableListOf(DummyScheme("Scheme3"), DummyScheme("Scheme4")))
                     )
                 )
             )
-        originalState.templateList.applyContext(originalState)
+        originalState.applyContext(originalState)
         currentState = originalState.deepCopy(retainUuid = true)
 
-        tree = GuiActionRunner.execute<TemplateJTree> { TemplateJTree(originalState, currentState) }
+        tree = guiGet { TemplateJTree(originalState, currentState) }
     }
 
     afterEach {
@@ -61,435 +75,408 @@ object TemplateJTreeTest : DescribeSpec({
     }
 
 
-    describe("selectedNodeNotRoot") {
-        it("returns null if nothing is selected") {
-            GuiActionRunner.execute { tree.clearSelection() }
+    test("selectedNodeNotRoot") {
+        test("returns null if nothing is selected") {
+            guiRun { tree.clearSelection() }
 
-            assertThat(tree.selectedNodeNotRoot).isNull()
+            tree.selectedNodeNotRoot should beNull()
         }
 
-        it("returns null if the root is selected") {
-            GuiActionRunner.execute { tree.selectionPath = model().getPathToRoot(root()) }
+        test("returns null if the root is selected") {
+            guiRun { tree.selectionPath = tree.myModel.getPathToRoot(tree.myModel.root) }
 
-            assertThat(tree.selectedNodeNotRoot).isNull()
+            tree.selectedNodeNotRoot should beNull()
         }
 
-        it("returns the selected node otherwise") {
-            GuiActionRunner.execute {
-                tree.selectionPath = model().getPathToRoot(StateNode(list().templates[0]))
-            }
+        test("returns the selected node otherwise") {
+            val node = StateNode(tree.myModel.list.templates[0])
 
-            assertThat(tree.selectedNodeNotRoot).isEqualTo(StateNode(list().templates[0]))
+            guiRun { tree.selectionPath = tree.myModel.getPathToRoot(node) }
+
+            tree.selectedNodeNotRoot shouldBe node
         }
     }
 
-    describe("selectedScheme") {
-        describe("get") {
-            it("returns null if nothing is selected") {
-                GuiActionRunner.execute { tree.clearSelection() }
+    test("selectedScheme") {
+        test("get") {
+            test("returns null if nothing is selected") {
+                guiRun { tree.clearSelection() }
 
-                assertThat(tree.selectedScheme).isNull()
+                tree.selectedScheme should beNull()
             }
 
-            it("returns null if the root is selected") {
-                GuiActionRunner.execute { tree.selectionPath = model().getPathToRoot(root()) }
+            test("returns null if the root is selected") {
+                guiRun { tree.selectionPath = tree.myModel.getPathToRoot(tree.myModel.root) }
 
-                assertThat(tree.selectedScheme).isNull()
+                tree.selectedScheme should beNull()
             }
 
-            it("returns the selected scheme otherwise") {
-                GuiActionRunner.execute {
-                    tree.selectionPath = model().getPathToRoot(StateNode(list().templates[0]))
-                }
+            test("returns the selected scheme otherwise") {
+                val template = tree.myModel.list.templates[0]
 
-                assertThat(tree.selectedScheme).isEqualTo(list().templates[0])
+                guiRun { tree.selectionPath = tree.myModel.getPathToRoot(StateNode(template)) }
+
+                tree.selectedScheme shouldBe template
             }
         }
 
-        describe("set") {
-            it("selects the first template if null is set") {
-                GuiActionRunner.execute { tree.selectedScheme = null }
+        test("set") {
+            test("selects the first template if null is set") {
+                guiRun { tree.selectedScheme = null }
 
-                assertThat(tree.selectedScheme).isEqualTo(list().templates[0])
+                tree.selectedScheme shouldBe tree.myModel.list.templates[0]
             }
 
-            it("selects the root if null is set and there are no templates") {
-                GuiActionRunner.execute {
-                    list().templates = emptyList()
+            test("selects the root if null is set and there are no templates") {
+                guiRun {
+                    tree.myModel.list.templates.clear()
                     tree.reload()
                     tree.selectedScheme = null
                 }
 
-                assertThat(tree.selectedScheme).isNull()
+                tree.selectedScheme should beNull()
             }
 
-            it("selects the first template if the scheme cannot be found") {
-                GuiActionRunner.execute { tree.selectedScheme = DummyScheme.from("inside") }
+            test("selects the first template if the scheme cannot be found") {
+                guiRun { tree.selectedScheme = DummyScheme("Not In Tree") }
 
-                assertThat(tree.selectedScheme).isEqualTo(list().templates[0])
+                tree.selectedScheme shouldBe tree.myModel.list.templates[0]
             }
 
-            it("selects the root if the scheme cannot be found and there are not templates") {
-                GuiActionRunner.execute {
-                    list().templates = emptyList()
+            test("selects the root if the scheme cannot be found and there are no templates") {
+                guiRun {
+                    tree.myModel.list.templates.clear()
                     tree.reload()
-                    tree.selectedScheme = DummyScheme.from("inside")
+                    tree.selectedScheme = DummyScheme("Not In Tree")
                 }
 
-                assertThat(tree.selectedScheme).isNull()
+                tree.selectedScheme should beNull()
             }
 
-            it("selects the given scheme if it exists") {
-                GuiActionRunner.execute { tree.selectedScheme = list().templates[1].schemes[0] }
+            test("selects the given scheme if it exists") {
+                val scheme = tree.myModel.list.templates[1].schemes[0]
 
-                assertThat(tree.selectedScheme).isEqualTo(list().templates[1].schemes[0])
+                guiRun { tree.selectedScheme = scheme }
+
+                tree.selectedScheme shouldBe scheme
             }
         }
     }
 
-    describe("selectedTemplate") {
-        describe("get") {
-            it("returns null if nothing is selected") {
-                GuiActionRunner.execute { tree.clearSelection() }
+    test("selectedTemplate") {
+        test("get") {
+            test("returns null if nothing is selected") {
+                guiRun { tree.clearSelection() }
 
-                assertThat(tree.selectedTemplate).isNull()
+                tree.selectedTemplate should beNull()
             }
 
-            it("returns null if the root is selected") {
-                GuiActionRunner.execute { tree.selectionPath = model().getPathToRoot(root()) }
+            test("returns null if the root is selected") {
+                guiRun { tree.selectionPath = tree.myModel.getPathToRoot(tree.myModel.root) }
 
-                assertThat(tree.selectedTemplate).isNull()
+                tree.selectedTemplate should beNull()
             }
 
-            it("returns null if a non-template scheme is selected") {
-                GuiActionRunner.execute {
-                    tree.selectionPath = model().getPathToRoot(StateNode(list().templates[1]))
-                }
+            test("returns null if a non-template scheme is selected") {
+                val scheme = tree.myModel.list.templates[1].schemes[0]
 
-                assertThat(tree.selectedTemplate).isEqualTo(list().templates[1])
+                guiRun { tree.selectionPath = tree.myModel.getPathToRoot(StateNode(scheme)) }
+
+                tree.selectedTemplate shouldBe scheme
             }
 
-            it("returns the selected template otherwise") {
-                GuiActionRunner.execute {
-                    tree.selectionPath = model().getPathToRoot(StateNode(list().templates[0]))
-                }
+            test("returns the selected template otherwise") {
+                val template = tree.myModel.list.templates[0]
 
-                assertThat(tree.selectedTemplate).isEqualTo(list().templates[0])
+                guiRun { tree.selectionPath = tree.myModel.getPathToRoot(StateNode(template)) }
+
+                tree.selectedTemplate shouldBe template
             }
         }
 
-        describe("set") {
-            it("selects the first template if null is set") {
-                GuiActionRunner.execute { tree.selectedTemplate = null }
+        test("set") {
+            test("selects the first template if null is set") {
+                guiRun { tree.selectedTemplate = null }
 
-                assertThat(tree.selectedTemplate).isEqualTo(list().templates[0])
+                tree.selectedTemplate shouldBe tree.myModel.list.templates[0]
             }
 
-            it("selects the root if null is set and there are no templates") {
-                GuiActionRunner.execute {
-                    list().templates = emptyList()
+            test("selects the root if null is set and there are no templates") {
+                guiRun {
+                    tree.myModel.list.templates.clear()
                     tree.reload()
                     tree.selectedTemplate = null
                 }
 
-                assertThat(tree.selectedTemplate).isNull()
+                tree.selectedTemplate should beNull()
             }
 
-            it("selects the given template if it exists") {
-                GuiActionRunner.execute { tree.selectedTemplate = list().templates[1] }
+            test("selects the given template if it exists") {
+                val template = tree.myModel.list.templates[1]
 
-                assertThat(tree.selectedTemplate).isEqualTo(list().templates[1])
+                guiRun { tree.selectedTemplate = template }
+
+                tree.selectedTemplate shouldBe template
             }
         }
     }
 
 
-    describe("reload") {
-        it("synchronizes removed nodes") {
-            GuiActionRunner.execute { list().templates = list().templates.take(2) }
+    test("reload") {
+        test("synchronizes removed nodes") {
+            guiRun { tree.myModel.list.templates.removeAll(tree.myModel.list.templates.take(2)) }
+            guiGet { tree.rowCount } shouldBe 8
 
-            assertThat(GuiActionRunner.execute<Int> { tree.rowCount }).isEqualTo(8)
-            GuiActionRunner.execute { tree.reload() }
+            guiRun { tree.reload() }
 
-            assertThat(GuiActionRunner.execute<Int> { tree.rowCount }).isEqualTo(5)
+            guiGet { tree.rowCount } shouldBe 5
         }
 
-        it("synchronizes added nodes") {
-            GuiActionRunner.execute {
-                list().templates = list().templates + Template("Battle", listOf(DummyScheme.from("white")))
-            }
+        test("synchronizes added nodes") {
+            guiRun { tree.myModel.list.templates += Template("New Template", mutableListOf(DummyScheme("New Scheme"))) }
+            guiGet { tree.rowCount } shouldBe 8
 
-            assertThat(GuiActionRunner.execute<Int> { tree.rowCount }).isEqualTo(8)
-            GuiActionRunner.execute { tree.reload() }
+            guiRun { tree.reload() }
 
-            assertThat(GuiActionRunner.execute<Int> { tree.rowCount }).isEqualTo(10)
+            guiGet { tree.rowCount } shouldBe 10
         }
 
-        it("retains the selected scheme") {
-            GuiActionRunner.execute { tree.selectedScheme = list().templates[1].schemes[0] }
+        test("retains the scheme selection") {
+            guiRun { tree.selectedScheme = tree.myModel.list.templates[1].schemes[0] }
 
-            GuiActionRunner.execute { tree.reload() }
+            guiRun { tree.reload() }
 
-            assertThat(tree.selectedScheme).isEqualTo(list().templates[1].schemes[0])
+            tree.selectedScheme shouldBe tree.myModel.list.templates[1].schemes[0]
         }
 
-        it("selects the first template if the selected node was removed") {
-            GuiActionRunner.execute { tree.selectedScheme = list().templates[1].schemes[0] }
+        test("selects the first template if the selected node was removed") {
+            guiRun { tree.selectedScheme = tree.myModel.list.templates[1].schemes[0] }
 
-            GuiActionRunner.execute {
-                list().templates[1].schemes = emptyList()
+            guiRun {
+                tree.myModel.list.templates[1].schemes.clear()
                 tree.reload()
             }
 
-            assertThat(tree.selectedScheme).isEqualTo(list().templates[0])
+            tree.selectedScheme shouldBe tree.myModel.list.templates[0]
         }
 
-        it("selects the first template if no node was selected before") {
-            GuiActionRunner.execute { tree.clearSelection() }
+        test("selects the first template if no node was selected before") {
+            guiRun { tree.clearSelection() }
 
-            GuiActionRunner.execute { tree.reload() }
+            guiRun { tree.reload() }
 
-            assertThat(tree.selectedScheme).isEqualTo(list().templates[0])
+            tree.selectedScheme shouldBe tree.myModel.list.templates[0]
         }
 
-        it("keeps collapsed nodes collapsed") {
-            GuiActionRunner.execute { tree.collapseRow(3) }
+        test("keeps collapsed nodes collapsed") {
+            guiRun { tree.collapseRow(3) }
+            guiGet { tree.isCollapsed(3) } shouldBe true
 
-            GuiActionRunner.execute { tree.reload() }
+            guiRun { tree.reload() }
 
-            assertThat(GuiActionRunner.execute<Boolean> { tree.isCollapsed(3) }).isTrue()
+            guiGet { tree.isCollapsed(3) } shouldBe true
         }
 
-        it("keeps expanded nodes expanded") {
-            GuiActionRunner.execute { tree.expandRow(0) }
-            assertThat(GuiActionRunner.execute<Boolean> { tree.isExpanded(0) }).isTrue()
+        test("keeps expanded nodes expanded") {
+            guiRun { tree.expandRow(0) }
+            guiGet { tree.isExpanded(0) } shouldBe true
 
-            GuiActionRunner.execute { tree.reload() }
+            guiRun { tree.reload() }
 
-            assertThat(GuiActionRunner.execute<Boolean> { tree.isExpanded(0) }).isTrue()
+            guiGet { tree.isExpanded(0) } shouldBe true
         }
 
-        it("expands new nodes") {
-            GuiActionRunner.execute {
-                list().templates = list().templates + Template("Battle", listOf(DummyScheme.from("white")))
-            }
+        test("expands new nodes") {
+            val template = Template("New Template", mutableListOf(DummyScheme("New Scheme")))
+            guiRun { tree.myModel.list.templates += template }
 
-            GuiActionRunner.execute { tree.reload() }
+            guiRun { tree.reload() }
 
-            assertThat(GuiActionRunner.execute<Boolean> { tree.isExpanded(5) }).isTrue()
-        }
-    }
-
-
-    describe("addScheme") {
-        describe("unique name") {
-            it("appends (1) if a scheme with the given name already exists") {
-                GuiActionRunner.execute { tree.addScheme(Template(name = "Captain")) }
-
-                assertThat(list().templates[1].name).isEqualTo("Captain (1)")
-            }
-
-            it("appends (2) if two schemes with the given name already exist") {
-                GuiActionRunner.execute {
-                    tree.addScheme(Template(name = "Captain"))
-                    tree.addScheme(Template(name = "Captain"))
-                }
-
-                assertThat(list().templates[2].name).isEqualTo("Captain (2)")
-            }
-
-            it("appends (2) if a scheme ending with (1) already exists") {
-                GuiActionRunner.execute {
-                    tree.addScheme(Template(name = "Captain (1)"))
-                    tree.addScheme(Template(name = "Captain"))
-                }
-
-                assertThat(list().templates[2].name).isEqualTo("Captain (2)")
-            }
-
-            it("replaces (1) with (2) if a scheme ending with (1) already exists") {
-                GuiActionRunner.execute {
-                    tree.addScheme(Template(name = "Captain (1)"))
-                    tree.addScheme(Template(name = "Captain (1)"))
-                }
-
-                assertThat(list().templates[2].name).isEqualTo("Captain (2)")
-            }
-
-            it("replaces (13) with (14) if a scheme ending with (13) already exists") {
-                GuiActionRunner.execute {
-                    tree.addScheme(Template(name = "Captain (13)"))
-                    tree.addScheme(Template(name = "Captain (13)"))
-                }
-
-                assertThat(list().templates[2].name).isEqualTo("Captain (14)")
-            }
-        }
-
-
-        it("inserts the template at the bottom if nothing is selected") {
-            GuiActionRunner.execute { tree.clearSelection() }
-
-            GuiActionRunner.execute { tree.addScheme(Template(name = "Yet")) }
-
-            assertThat(list().templates.last().name).isEqualTo("Yet")
-        }
-
-        it("fails if a scheme is inserted while nothing is selected") {
-            GuiActionRunner.execute { tree.clearSelection() }
-
-            assertThatThrownBy { tree.addScheme(DummyScheme.from("arrow")) }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("Cannot add non-template to root.")
-        }
-
-        it("inserts the template below the selected template") {
-            GuiActionRunner.execute { tree.selectedScheme = list().templates[1] }
-
-            GuiActionRunner.execute { tree.addScheme(Template(name = "Future")) }
-
-            assertThat(list().templates[2].name).isEqualTo("Future")
-        }
-
-        it("inserts the scheme at the bottom of the selected template") {
-            GuiActionRunner.execute { tree.selectedScheme = list().templates[1] }
-
-            GuiActionRunner.execute { tree.addScheme(DummyScheme.from("content")) }
-
-            assertThat(list().templates[1].schemes.last().name).isEqualTo("content")
-        }
-
-        it("inserts the template after the selected scheme") {
-            GuiActionRunner.execute { tree.selectedScheme = list().templates[0].schemes[1] }
-
-            GuiActionRunner.execute { tree.addScheme(Template(name = "Inch")) }
-
-            assertThat(list().templates[1].name).isEqualTo("Inch")
-        }
-
-        it("inserts the scheme below the selected scheme") {
-            GuiActionRunner.execute { tree.selectedScheme = list().templates[2].schemes[0] }
-
-            GuiActionRunner.execute { tree.addScheme(DummyScheme.from("have")) }
-
-            assertThat(list().templates[2].schemes[1].name).isEqualTo("have")
-        }
-
-        it("selects the inserted node") {
-            GuiActionRunner.execute { tree.selectedScheme = list().templates[1].schemes[0] }
-
-            GuiActionRunner.execute { tree.addScheme(DummyScheme.from("staff")) }
-
-            assertThat(tree.selectedScheme).isEqualTo(list().templates[1].schemes[1])
-        }
-    }
-
-    describe("removeScheme") {
-        it("removes the given node from the tree") {
-            GuiActionRunner.execute { tree.removeScheme(list().templates[1]) }
-
-            assertThat(list().templates.map { it.name }).containsExactly("Captain", "Village")
-        }
-
-        it("removes the selection if there is nothing to select") {
-            GuiActionRunner.execute {
-                repeat(3) {
-                    tree.removeScheme(list().templates[0])
-                }
-            }
-
-            assertThat(tree.selectedScheme).isNull()
-        }
-
-        it("selects the parent if the removed node had no siblings left") {
-            GuiActionRunner.execute { tree.removeScheme(list().templates[1].schemes[0]) }
-
-            assertThat(tree.selectedScheme?.name).isEqualTo("Particle")
-        }
-
-        it("selects the next sibling if the removed node has siblings") {
-            GuiActionRunner.execute { tree.removeScheme(list().templates[0].schemes[0]) }
-
-            assertThat(tree.selectedScheme?.name).isEqualTo("uncle")
-        }
-    }
-
-    describe("moveSchemeByOnePosition") {
-        it("moves a template") {
-            GuiActionRunner.execute { tree.moveSchemeByOnePosition(list().templates[1], moveDown = true) }
-
-            assertThat(list().templates.map { it.name }).containsExactly("Captain", "Village", "Particle")
-        }
-
-        it("moves a scheme") {
-            GuiActionRunner.execute { tree.moveSchemeByOnePosition(list().templates[0].schemes[1], moveDown = false) }
-
-            assertThat(list().templates[0].schemes.map { it.name }).containsExactly("uncle", "window")
-        }
-
-        it("expands and selects the moved template") {
-            GuiActionRunner.execute { tree.moveSchemeByOnePosition(list().templates[2], moveDown = false) }
-
-            assertThat(tree.selectedScheme?.name).isEqualTo("Village")
-            assertThat(tree.isExpanded(model().getPathToRoot(StateNode(list().templates[1]))))
-        }
-
-        it("selects the moved scheme") {
-            GuiActionRunner.execute { tree.moveSchemeByOnePosition(list().templates[2].schemes[0], moveDown = true) }
-
-            assertThat(tree.selectedScheme?.name).isEqualTo("consider")
-        }
-    }
-
-    describe("canMoveSchemeByOnePosition") {
-        describe("nodeToRow") {
-            it("returns 0 for the first template") {
-                assertThat(model().nodeToRow(StateNode(list().templates[0]))).isEqualTo(0)
-            }
-
-            it("returns 1 for the first scheme") {
-                assertThat(model().nodeToRow(StateNode(list().templates[0].schemes[0]))).isEqualTo(1)
-            }
-
-            it("returns the index considering non-collapsed nodes") {
-                assertThat(model().nodeToRow(StateNode(list().templates[1]))).isEqualTo(3)
-            }
-
-            it("returns the index considering collapsed nodes") {
-                GuiActionRunner.execute { tree.collapseRow(0) }
-
-                assertThat(model().nodeToRow(StateNode(list().templates[1]))).isEqualTo(1)
-            }
-        }
-
-        describe("rowToNode") {
-            it("returns the first template for 0") {
-                assertThat(model().rowToNode(0)).isEqualTo(StateNode(list().templates[0]))
-            }
-
-            it("returns the first scheme for 1") {
-                assertThat(model().rowToNode(1)).isEqualTo(StateNode(list().templates[0].schemes[0]))
-            }
-
-            it("returns the scheme considering non-collapsed nodes") {
-                assertThat(model().rowToNode(3)).isEqualTo(StateNode(list().templates[1]))
-            }
-
-            it("returns the scheme considering collapsed nodes") {
-                GuiActionRunner.execute { tree.collapseRow(0) }
-
-                assertThat(model().rowToNode(1)).isEqualTo(StateNode(list().templates[1]))
-            }
+            guiGet { tree.myModel.rowToNode(5)!!.state } shouldBe template
+            guiGet { tree.isExpanded(5) } shouldBe true
         }
     }
 
 
-    describe("buttons") {
+    test("addScheme") {
+        test("unique name") {
+            test("appends (1) if a scheme with the given name already exists") {
+                guiRun { tree.addScheme(Template("Template0")) }
+
+                tree.myModel.list.templates[1].name shouldBe "Template0 (1)"
+            }
+
+            test("appends (2) if two schemes with the given name already exist") {
+                guiRun {
+                    tree.addScheme(Template("Template0"))
+                    tree.addScheme(Template("Template0"))
+                }
+
+                tree.myModel.list.templates[2].name shouldBe "Template0 (2)"
+            }
+
+            test("appends (2) if a scheme ending with (1) already exists") {
+                guiRun {
+                    tree.addScheme(Template("Template0 (1)"))
+                    tree.addScheme(Template("Template0"))
+                }
+
+                tree.myModel.list.templates[2].name shouldBe "Template0 (2)"
+            }
+
+            test("replaces (1) with (2) if a scheme ending with (1) already exists") {
+                guiRun {
+                    tree.addScheme(Template("Template0 (1)"))
+                    tree.addScheme(Template("Template0 (1)"))
+                }
+
+                tree.myModel.list.templates[2].name shouldBe "Template0 (2)"
+            }
+
+            test("replaces (13) with (14) if a scheme ending with (13) already exists") {
+                guiRun {
+                    tree.addScheme(Template("Template0 (13)"))
+                    tree.addScheme(Template("Template0 (13)"))
+                }
+
+                tree.myModel.list.templates[2].name shouldBe "Template0 (14)"
+            }
+        }
+
+        test("inserts the template at the bottom if nothing is selected") {
+            guiRun { tree.clearSelection() }
+
+            guiRun { tree.addScheme(Template("New Template")) }
+
+            tree.myModel.list.templates.last().name shouldBe "New Template"
+        }
+
+        test("fails if a scheme is inserted while nothing is selected") {
+            guiRun { tree.clearSelection() }
+
+            shouldThrow<IllegalArgumentException> { tree.addScheme(DummyScheme()) }
+                .message should matchBundle("template_list.error.add_template_to_non_root")
+        }
+
+        test("inserts the template below the selected template") {
+            guiRun { tree.selectedScheme = tree.myModel.list.templates[1] }
+
+            guiRun { tree.addScheme(Template("New Template")) }
+
+            tree.myModel.list.templates[2].name shouldBe "New Template"
+        }
+
+        test("inserts the scheme at the bottom of the selected template") {
+            guiRun { tree.selectedScheme = tree.myModel.list.templates[1] }
+
+            guiRun { tree.addScheme(DummyScheme("New Scheme")) }
+
+            tree.myModel.list.templates[1].schemes.last().name shouldBe "New Scheme"
+        }
+
+        test("inserts the template after the selected scheme") {
+            guiRun { tree.selectedScheme = tree.myModel.list.templates[0].schemes[1] }
+
+            guiRun { tree.addScheme(Template("New Template")) }
+
+            tree.myModel.list.templates[1].name shouldBe "New Template"
+        }
+
+        test("inserts the scheme below the selected scheme") {
+            guiRun { tree.selectedScheme = tree.myModel.list.templates[2].schemes[0] }
+
+            guiRun { tree.addScheme(DummyScheme("New Scheme")) }
+
+            tree.myModel.list.templates[2].schemes[1].name shouldBe "New Scheme"
+        }
+
+        test("selects the inserted node") {
+            guiRun { tree.selectedScheme = tree.myModel.list.templates[1].schemes[0] }
+
+            guiRun { tree.addScheme(DummyScheme()) }
+
+            tree.selectedScheme shouldBe tree.myModel.list.templates[1].schemes[1]
+        }
+    }
+
+    test("removeScheme") {
+        test("removes the given node from the tree") {
+            guiRun { tree.removeScheme(tree.myModel.list.templates[1]) }
+
+            tree.myModel.list.templates.names() shouldContainExactly listOf("Template0", "Template1")
+        }
+
+        test("removes the selection if there is nothing to select") {
+            guiRun { repeat(3) { tree.removeScheme(tree.myModel.list.templates[0]) } }
+
+            tree.selectedScheme should beNull()
+        }
+
+        test("selects the parent if the removed node had no siblings left") {
+            guiRun { tree.removeScheme(tree.myModel.list.templates[1].schemes[0]) }
+
+            tree.selectedScheme?.name shouldBe "Template1"
+        }
+
+        test("selects the next sibling if the removed node has siblings") {
+            guiRun { tree.removeScheme(tree.myModel.list.templates[0].schemes[0]) }
+
+            tree.selectedScheme?.name shouldBe "Scheme1"
+        }
+    }
+
+    test("moveSchemeByOnePosition") {
+        test("moves a template") {
+            guiRun { tree.moveSchemeByOnePosition(tree.myModel.list.templates[1], moveDown = true) }
+
+            tree.myModel.list.templates.names() shouldContainExactly listOf("Template0", "Template2", "Template1")
+        }
+
+        test("moves a scheme") {
+            guiRun { tree.moveSchemeByOnePosition(tree.myModel.list.templates[0].schemes[1], moveDown = false) }
+
+            tree.myModel.list.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
+        }
+
+        test("expands and selects the moved template") {
+            val template = tree.myModel.list.templates[2]
+
+            guiRun { tree.moveSchemeByOnePosition(template, moveDown = false) }
+
+            tree.isExpanded(tree.myModel.nodeToRow(StateNode(template))) shouldBe true
+        }
+
+        test("selects the moved scheme") {
+            val scheme = tree.myModel.list.templates[2].schemes[0]
+
+            guiRun { tree.moveSchemeByOnePosition(scheme, moveDown = true) }
+
+            tree.selectedScheme?.name shouldBe scheme.name
+        }
+    }
+
+    test("canMoveSchemeByOnePosition") {
+        forAll(
+            table(
+                headers("description", "scheme", "moveDown", "expected"),
+                row("first template", tree.myModel.list.templates[0], c = false, d = false),
+                row("first scheme", tree.myModel.list.templates[0].schemes[0], c = false, d = false),
+                row("last template", tree.myModel.list.templates[2], c = true, d = false),
+                row("last scheme", tree.myModel.list.templates[2].schemes[1], c = true, d = false),
+                row("move scheme within template", tree.myModel.list.templates[0].schemes[1], c = false, d = true),
+                row("move templates within list", tree.myModel.list.templates[1], c = true, d = true),
+                row("move scheme between templates", tree.myModel.list.templates[1].schemes[0], c = true, d = true),
+            )
+        ) { _, scheme, moveDown, expected -> tree.canMoveSchemeByOnePosition(scheme, moveDown) shouldBe expected }
+    }
+
+
+    test("buttons") {
         lateinit var frame: FrameFixture
 
 
         beforeEach {
-            frame = Containers.showInFrame(GuiActionRunner.execute<JPanel> { tree.asDecoratedPanel() })
+            frame = showInFrame(guiGet { tree.asDecoratedPanel() })
         }
 
         afterEach {
@@ -500,239 +487,240 @@ object TemplateJTreeTest : DescribeSpec({
         fun updateButtons() = (frame.getActionButton("Add").parent as ActionToolbar).updateActionsImmediately()
 
 
-        xdescribe("AddButton") {
+        xtest("AddButton") {
             // No non-popup behavior to test
         }
 
-        describe("RemoveButton") {
-            it("is disabled if nothing is selected") {
-                GuiActionRunner.execute {
+        test("RemoveButton") {
+            test("is disabled if nothing is selected") {
+                guiRun {
                     tree.clearSelection()
                     updateButtons()
                 }
 
-                assertThat(frame.getActionButton("Remove").isEnabled).isFalse()
+                frame.getActionButton("Remove").isEnabled shouldBe false
             }
 
-            it("removes the selected scheme") {
-                GuiActionRunner.execute { tree.selectedScheme = list().templates[0].schemes[1] }
+            test("removes the selected scheme") {
+                guiRun { tree.selectedScheme = tree.myModel.list.templates[0].schemes[1] }
 
-                GuiActionRunner.execute { frame.getActionButton("Remove").click() }
+                guiRun { frame.getActionButton("Remove").click() }
 
-                assertThat(list().templates[0].schemes.map { it.name }).containsExactly("window")
+                tree.myModel.list.templates[0].schemes.names() shouldContainExactly listOf("Scheme0")
             }
         }
 
-        describe("CopyButton") {
-            it("is disabled if nothing is selected") {
-                GuiActionRunner.execute {
+        test("CopyButton") {
+            test("is disabled if nothing is selected") {
+                guiRun {
                     tree.clearSelection()
                     updateButtons()
                 }
 
-                assertThat(frame.getActionButton("Copy").isEnabled).isFalse()
+                frame.getActionButton("Copy").isEnabled shouldBe false
             }
 
-            it("copies the selected scheme") {
-                GuiActionRunner.execute { tree.selectedScheme = list().templates[1].schemes[0] }
+            test("copies the selected scheme") {
+                guiRun { tree.selectedScheme = tree.myModel.list.templates[1].schemes[0] }
 
-                GuiActionRunner.execute { frame.getActionButton("Copy").click() }
+                guiRun { frame.getActionButton("Copy").click() }
 
-                assertThat(list().templates[1].schemes.map { it.name }).containsExactly("republic", "republic")
+                tree.myModel.list.templates[1].schemes.names() shouldContainExactly listOf("Scheme2", "Scheme2")
             }
 
-            it("creates an independent copy of the selected scheme") {
-                GuiActionRunner.execute { tree.selectedScheme = list().templates[2].schemes[1] }
+            test("creates an independent copy of the selected scheme") {
+                guiRun { tree.selectedScheme = tree.myModel.list.templates[2].schemes[1] }
 
-                GuiActionRunner.execute { frame.getActionButton("Copy").click() }
-                (list().templates[2].schemes[2] as DummyScheme).literals = listOf("desert")
+                guiRun { frame.getActionButton("Copy").click() }
+                (tree.myModel.list.templates[2].schemes[2] as DummyScheme).name = "New Name"
 
-                assertThat(list().templates[2].schemes.map { it.name }).containsExactly("consider", "tent", "desert")
+                tree.myModel.list.templates[2].schemes[1].name shouldNotBe "New Name"
             }
 
-            it("ensures the copy uses the same settings state") {
-                val referredScheme = StringScheme()
-                val referredTemplate = Template("break", listOf(referredScheme))
-
+            test("ensures the copy uses the same settings state") {
+                // Arrange
+                val referredTemplate = tree.myModel.list.templates[0]
                 val referenceScheme = TemplateReference(referredTemplate.uuid)
-                val referenceTemplate = Template("airplane", listOf(referenceScheme))
-                referenceTemplate.applyContext(currentState)
+                val referenceTemplate = Template(schemes = mutableListOf(referenceScheme))
+                    .also { it.applyContext(originalState) }
 
-                GuiActionRunner.execute {
-                    list().templates = listOf(referredTemplate, referenceTemplate)
-                    tree.reload()
-                }
+                originalState.templates += referenceTemplate
+                originalState.applyContext(originalState)
 
-                GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[1].schemes[0]
+                guiRun { tree.reload() }
+                tree.myModel.list.templates.last() shouldBe referenceTemplate
+
+                // Act
+                guiRun {
+                    tree.selectedScheme = tree.myModel.list.templates[1].schemes[0]
                     frame.getActionButton("Copy").click()
                 }
 
+                // Assert
                 val selectedScheme = tree.selectedScheme!! as TemplateReference
-                assertThat(selectedScheme).isNotSameAs(referenceScheme)
-                assertThat(selectedScheme.template).isSameAs(referredTemplate)
+                selectedScheme shouldBe referenceScheme
+                selectedScheme shouldNotBeSameInstanceAs referenceScheme
+                selectedScheme.template!! shouldBe referredTemplate
+                selectedScheme.template shouldNotBeSameInstanceAs referredTemplate
             }
         }
 
-        describe("UpButton") {
-            it("is disabled if nothing is selected") {
-                GuiActionRunner.execute {
+        test("UpButton") {
+            test("is disabled if nothing is selected") {
+                guiRun {
                     tree.clearSelection()
                     updateButtons()
                 }
 
-                assertThat(frame.getActionButton("Up").isEnabled).isFalse()
+                frame.getActionButton("Up").isEnabled shouldBe false
             }
 
-            it("is disabled if the selected scheme cannot be moved up") {
-                GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[0]
+            test("is disabled if the selected scheme cannot be moved up") {
+                guiRun {
+                    tree.selectedScheme = tree.myModel.list.templates[0]
                     updateButtons()
                 }
 
-                assertThat(frame.getActionButton("Up").isEnabled).isFalse()
+                frame.getActionButton("Up").isEnabled shouldBe false
             }
 
-            it("is enabled if the selected scheme can be moved up") {
-                GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[1]
+            test("is enabled if the selected scheme can be moved up") {
+                guiRun {
+                    tree.selectedScheme = tree.myModel.list.templates[1]
                     updateButtons()
                 }
 
-                assertThat(frame.getActionButton("Up").isEnabled).isTrue()
+                frame.getActionButton("Up").isEnabled shouldBe true
             }
 
-            it("moves the selected scheme up") {
-                GuiActionRunner.execute { tree.selectedScheme = list().templates[0].schemes[1] }
+            test("moves the selected scheme up") {
+                guiRun { tree.selectedScheme = tree.myModel.list.templates[0].schemes[1] }
 
-                GuiActionRunner.execute { frame.getActionButton("Up").click() }
+                guiRun { frame.getActionButton("Up").click() }
 
-                assertThat(list().templates[0].schemes.map { it.name }).containsExactly("uncle", "window")
+                tree.myModel.list.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
             }
         }
 
-        describe("DownButton") {
-            it("is disabled if nothing is selected") {
-                GuiActionRunner.execute {
+        test("DownButton") {
+            test("is disabled if nothing is selected") {
+                guiRun {
                     tree.clearSelection()
                     updateButtons()
                 }
 
-                assertThat(frame.getActionButton("Down").isEnabled).isFalse()
+                frame.getActionButton("Down").isEnabled shouldBe false
             }
 
-            it("is disabled if the selected scheme cannot be moved down") {
-                GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[2]
+            test("is disabled if the selected scheme cannot be moved down") {
+                guiRun {
+                    tree.selectedScheme = tree.myModel.list.templates[2]
                     updateButtons()
                 }
 
-                assertThat(frame.getActionButton("Down").isEnabled).isFalse()
+                frame.getActionButton("Down").isEnabled shouldBe false
             }
 
-            it("is enabled if the selected scheme can be moved down") {
-                GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[1]
+            test("is enabled if the selected scheme can be moved down") {
+                guiRun {
+                    tree.selectedScheme = tree.myModel.list.templates[1]
                     updateButtons()
                 }
 
-                assertThat(frame.getActionButton("Down").isEnabled).isTrue()
+                frame.getActionButton("Down").isEnabled shouldBe true
             }
 
-            it("moves the selected scheme down") {
-                GuiActionRunner.execute { tree.selectedScheme = list().templates[2].schemes[0] }
+            test("moves the selected scheme down") {
+                guiRun { tree.selectedScheme = tree.myModel.list.templates[2].schemes[0] }
 
-                GuiActionRunner.execute { frame.getActionButton("Down").click() }
+                guiRun { frame.getActionButton("Down").click() }
 
-                assertThat(list().templates[2].schemes.map { it.name }).containsExactly("tent", "consider")
+                tree.myModel.list.templates[2].schemes.names() shouldContainExactly listOf("Scheme4", "Scheme3")
             }
         }
 
-        describe("ResetButton") {
-            it("is disabled if nothing is selected") {
-                GuiActionRunner.execute {
+        test("ResetButton") {
+            test("is disabled if nothing is selected") {
+                guiRun {
                     tree.clearSelection()
                     updateButtons()
                 }
 
-                assertThat(frame.getActionButton("Reset").isEnabled).isFalse()
+                frame.getActionButton("Reset").isEnabled shouldBe false
             }
 
-            it("is disabled if the selection has not been modified") {
-                GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[0]
+            test("is disabled if the selection has not been modified") {
+                guiRun {
+                    tree.selectedScheme = tree.myModel.list.templates[0]
                     updateButtons()
                 }
 
-                assertThat(frame.getActionButton("Reset").isEnabled).isFalse()
+                frame.getActionButton("Reset").isEnabled shouldBe false
             }
 
-            it("removes the scheme if it was newly added") {
-                list().templates = listOf(Template("Headache"))
-                GuiActionRunner.execute { tree.reload() }
+            test("removes the scheme if it was newly added") {
+                val template = Template("New Template")
+                tree.myModel.list.templates += template
 
-                GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[0]
+                guiRun {
+                    tree.selectedScheme = template
                     frame.getActionButton("Reset").click()
                 }
 
-                assertThat(list().templates).isEmpty()
+                tree.myModel.list.templates.names() shouldNotContain "New Template"
             }
 
-            it("resets changes to the initially selected scheme") {
-                (currentState.templateList.templates[0].schemes[0] as DummyScheme).literals = listOf("approve")
+            test("resets changes to the initially selected scheme") {
+                (tree.myModel.list.templates[0].schemes[0] as DummyScheme).name = "New Name"
 
-                GuiActionRunner.execute { frame.getActionButton("Reset").click() }
+                guiRun { frame.getActionButton("Reset").click() }
 
-                assertThat((currentState.templateList.templates[0].schemes[0] as DummyScheme).name).isEqualTo("window")
+                (tree.myModel.list.templates[0].schemes[0] as DummyScheme).name shouldBe "Scheme0"
             }
 
-            it("resets changes to a template") {
-                list().templates[0].name = "Know"
-                GuiActionRunner.execute { tree.reload() }
+            test("resets changes to a template") {
+                tree.myModel.list.templates[0].name = "New Name"
 
-                GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[0]
+                guiRun {
+                    tree.selectedScheme = tree.myModel.list.templates[0]
                     frame.getActionButton("Reset").click()
                 }
 
-                assertThat(list().templates[0].name).isEqualTo("Captain")
+                tree.myModel.list.templates[0].name shouldBe "Template0"
             }
 
-            it("resets changes to a scheme") {
-                (list().templates[0].schemes[0] as DummyScheme).literals = listOf("fly")
-                GuiActionRunner.execute { tree.reload() }
+            test("resets changes to a scheme") {
+                (tree.myModel.list.templates[1].schemes[0] as DummyScheme).name = "New Name"
 
-                GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[0].schemes[0]
+                guiRun {
+                    tree.selectedScheme = tree.myModel.list.templates[0].schemes[0]
                     frame.getActionButton("Reset").click()
                 }
 
-                assertThat(list().templates[0].schemes[0].name).isEqualTo("window")
+                tree.myModel.list.templates[1].schemes[0].name shouldBe "Scheme2"
             }
 
-            it("resets a template's scheme order") {
-                list().templates[0].schemes = list().templates[0].schemes.reversed()
-                GuiActionRunner.execute { tree.reload() }
+            test("resets a template's scheme order") {
+                tree.myModel.list.templates[0].schemes.setAll(tree.myModel.list.templates[0].schemes.reversed())
+                // TODO: Add `tree.reload()`s back in?
 
-                GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[0]
+                guiRun {
+                    tree.selectedScheme = tree.myModel.list.templates[0]
                     frame.getActionButton("Reset").click()
                 }
 
-                assertThat(list().templates[0].schemes.map { it.name }).containsExactly("window", "uncle")
+                tree.myModel.list.templates[0].schemes.names() shouldContainExactly listOf("Scheme0", "Scheme1")
             }
 
-            it("resets a template's schemes") {
-                (list().templates[2].schemes[0] as DummyScheme).literals = listOf("stir")
-                GuiActionRunner.execute { tree.reload() }
+            test("resets a template's schemes") {
+                (tree.myModel.list.templates[2].schemes[0] as DummyScheme).name = "New Name"
 
-                GuiActionRunner.execute {
-                    tree.selectedScheme = list().templates[2]
+                guiRun {
+                    tree.selectedScheme = tree.myModel.list.templates[2]
                     frame.getActionButton("Reset").click()
                 }
 
-                assertThat(list().templates[2].schemes[0].name).isEqualTo("consider")
+                tree.myModel.list.templates[2].schemes[0].name shouldBe "Scheme3"
             }
         }
     }

@@ -154,7 +154,7 @@ class TemplateListEditor(private val originalSettings: Settings = Settings.DEFAU
             is DateTimeScheme -> DateTimeSchemeEditor(scheme)
             is TemplateReference -> TemplateReferenceEditor(scheme)
             is Template -> TemplateEditor(scheme)
-            else -> error(Bundle("template_list.error.unknown_scheme_type", scheme.javaClass.canonicalName))
+            else -> error(Bundle("template_list.error.unknown_state_type", "scheme", scheme.javaClass.canonicalName))
         }
 
 

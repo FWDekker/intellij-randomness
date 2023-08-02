@@ -1,12 +1,13 @@
 package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.guiGet
+import com.fwdekker.randomness.guiRun
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 
@@ -31,7 +32,7 @@ object UuidSchemeEditorTest : DescribeSpec({
         ideaFixture.setUp()
 
         scheme = UuidScheme()
-        editor = GuiActionRunner.execute<UuidSchemeEditor> { UuidSchemeEditor(scheme) }
+        editor = guiGet { UuidSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
     }
 
@@ -43,26 +44,26 @@ object UuidSchemeEditorTest : DescribeSpec({
 
     describe("loadState") {
         it("loads the scheme's type") {
-            GuiActionRunner.execute { editor.loadState(UuidScheme(type = 4)) }
+            guiRun { editor.loadState(UuidScheme(type = 4)) }
 
             frame.radioButton("type1").requireSelected(false)
             frame.radioButton("type4").requireSelected(true)
         }
 
         it("loads the scheme's quotation") {
-            GuiActionRunner.execute { editor.loadState(UuidScheme(quotation = "'")) }
+            guiRun { editor.loadState(UuidScheme(quotation = "'")) }
 
             frame.comboBox("quotation").requireSelection("'")
         }
 
         it("loads the scheme's capitalization mode") {
-            GuiActionRunner.execute { editor.loadState(UuidScheme(isUppercase = true)) }
+            guiRun { editor.loadState(UuidScheme(isUppercase = true)) }
 
             frame.checkBox("isUppercase").requireSelected()
         }
 
         it("loads the scheme's add dashes option") {
-            GuiActionRunner.execute { editor.loadState(UuidScheme(addDashes = false)) }
+            guiRun { editor.loadState(UuidScheme(addDashes = false)) }
 
             frame.checkBox("addDashes").requireSelected(false)
         }
@@ -71,7 +72,7 @@ object UuidSchemeEditorTest : DescribeSpec({
     describe("readState") {
         describe("defaults") {
             it("returns default type if no type is selected") {
-                GuiActionRunner.execute { editor.loadState(UuidScheme(type = 967)) }
+                guiRun { editor.loadState(UuidScheme(type = 967)) }
 
                 assertThat(editor.readState().type).isEqualTo(UuidScheme.DEFAULT_TYPE)
             }
@@ -82,7 +83,7 @@ object UuidSchemeEditorTest : DescribeSpec({
         }
 
         it("returns the editor's state") {
-            GuiActionRunner.execute {
+            guiRun {
                 frame.radioButton("type1").target().isSelected = true
                 frame.comboBox("quotation").target().selectedItem = "`"
                 frame.checkBox("isUppercase").target().isSelected = true
@@ -97,10 +98,10 @@ object UuidSchemeEditorTest : DescribeSpec({
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.comboBox("quotation").target().selectedItem = "`" }
+            guiRun { frame.comboBox("quotation").target().selectedItem = "`" }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
+            guiRun { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readState()).isEqualTo(editor.originalState)
@@ -128,20 +129,18 @@ object UuidSchemeEditorTest : DescribeSpec({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.comboBox("quotation").target().selectedItem = "`" }
+            guiRun { frame.comboBox("quotation").target().selectedItem = "`" }
 
             assertThat(listenerInvoked).isTrue()
         }
 
         it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute {
-                editor.loadState(UuidScheme(arrayDecorator = ArrayDecorator(enabled = true)))
-            }
+            guiRun { editor.loadState(UuidScheme(arrayDecorator = ArrayDecorator(enabled = true))) }
 
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 528 }
+            guiRun { frame.spinner("arrayMinCount").target().value = 528 }
 
             assertThat(listenerInvoked).isTrue()
         }

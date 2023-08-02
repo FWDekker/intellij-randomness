@@ -7,7 +7,12 @@ import com.intellij.openapi.util.Disposer
 import javax.swing.JComponent
 
 
-// TODO: Document this
+/**
+ * An editor for a [Scheme].
+ *
+ * @param S the type of scheme edited in this editor
+ * @param scheme the scheme edited in this editor
+ */
 abstract class SchemeEditor<S : Scheme>(val scheme: S) : Disposable {
     /**
      * The root component of the editor.
@@ -20,10 +25,18 @@ abstract class SchemeEditor<S : Scheme>(val scheme: S) : Disposable {
     val components: Collection<Any>
         get() = rootComponent.components.filterNot { it.name == null } + extraComponents
 
-    // TODO: Document this
+    /**
+     * The additional [components] that determine the editor's current state but do not have a name.
+     *
+     * Do not register [SchemeEditor]s here; use the [decoratorEditors] field for that.
+     */
     protected val extraComponents = mutableListOf<Any>()
 
-    // TODO: Document this
+    /**
+     * The [SchemeEditor]s of [scheme]'s [DecoratorScheme]s.
+     *
+     * The editors registered in this list are automatically reset and applied in [reset] and [apply], respectively.
+     */
     protected val decoratorEditors = mutableListOf<SchemeEditor<*>>()
 
     /**
@@ -52,7 +65,11 @@ abstract class SchemeEditor<S : Scheme>(val scheme: S) : Disposable {
     }
 
 
-    // TODO: Document this
+    /**
+     * Ensures [listener] is invoked on every change in this editor.
+     *
+     * @param listener the function to invoke on every change in this editor
+     */
     fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(*(components + decoratorEditors).toTypedArray(), listener = listener)
 

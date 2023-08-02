@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.Bundle
 import javax.swing.text.AttributeSet
 import javax.swing.text.DocumentFilter
 import kotlin.math.min
@@ -13,7 +12,7 @@ import kotlin.math.min
  */
 open class MaxLengthDocumentFilter(private val maxLength: Int) : DocumentFilter() {
     init {
-        require(maxLength >= 1) { Bundle("helpers.error.invalid_max_length", maxLength) }
+        require(maxLength >= 1) { "Maximum length must be a positive number, but was '$maxLength'." }
     }
 
 
@@ -71,7 +70,7 @@ open class MaxLengthDocumentFilter(private val maxLength: Int) : DocumentFilter(
  */
 class MinMaxLengthDocumentFilter(private val minLength: Int, maxLength: Int) : MaxLengthDocumentFilter(maxLength) {
     init {
-        require(minLength <= maxLength) { Bundle("helpers.error.min_length_greater_max") }
+        require(minLength <= maxLength) { "Minimum length must be less than or equal to maximum length." }
     }
 
 

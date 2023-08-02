@@ -6,6 +6,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
 import com.intellij.util.xmlb.annotations.Transient
+import com.intellij.openapi.components.State as JBState
 
 
 /**
@@ -13,14 +14,12 @@ import com.intellij.util.xmlb.annotations.Transient
  *
  * @property templateList The template list.
  */
-data class Settings(
-    var templateList: TemplateList = TemplateList(),
-) : State() {
+data class Settings(var templateList: TemplateList = TemplateList()) : State() {
     /**
      * @see TemplateList.templates
      */
     @get:Transient
-    val templates: List<Template> get() = templateList.templates
+    val templates: MutableList<Template> get() = templateList.templates
 
 
     override fun doValidate() = templateList.doValidate()
@@ -29,7 +28,7 @@ data class Settings(
         copy(templateList = templateList.deepCopy(retainUuid = retainUuid)).deepCopyTransient(retainUuid)
 
     override fun copyFrom(other: State) {
-        require(other is Settings) { Bundle("shared.error.cannot_copy_from_different_type") }
+        require(other is Settings) { "Cannot copy from different type." }
 
         this.templateList.copyFrom(other.templateList)
         copyFromTransient(other)
@@ -50,7 +49,7 @@ data class Settings(
 /**
  * The actual user's actual stored actually-serialized settings (actually).
  */
-@com.intellij.openapi.components.State(
+@JBState(
     name = "com.fwdekker.randomness.PersistentSettings",
     storages = [Storage("\$APP_CONFIG\$/randomness-beta.xml")],
 )

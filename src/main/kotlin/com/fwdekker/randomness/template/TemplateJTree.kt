@@ -551,8 +551,8 @@ class TemplateJTree(
          * Ineligible [Template]s are automatically filtered out.
          */
         private inner class ReferencesPopupStep : AddSchemePopupStep(
-            currentSettings.templateList
-                .listValidReferenceTargets(selectedTemplate!!)
+            currentSettings.templateList.templates
+                .filter { selectedTemplate!!.canReference(it) }
                 .map { TemplateReference(it.uuid) }
         )
     }
@@ -739,7 +739,7 @@ class TemplateJTree(
          */
         val POPUP_STEP_SCHEMES: List<Scheme>
             get() = listOf(
-                Template(Bundle("template.title"), emptyList()),
+                Template(Bundle("template.title"), mutableListOf()),
                 IntegerScheme(),
                 DecimalScheme(),
                 StringScheme(),

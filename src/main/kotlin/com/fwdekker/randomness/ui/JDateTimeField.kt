@@ -3,7 +3,9 @@ package com.fwdekker.randomness.ui
 import com.fwdekker.randomness.Bundle
 import com.github.sisyphsu.dateparser.DateParserUtils
 import java.text.ParseException
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeParseException
 import javax.swing.JFormattedTextField
 
@@ -13,7 +15,18 @@ import javax.swing.JFormattedTextField
  *
  * @property default The default [LocalDateTime] that is returned in case no [value] has ever been set.
  */
-class JDateTimeField(private val default: LocalDateTime) : JFormattedTextField(DateTimeFormatter()) {
+class JDateTimeField(
+    private val default: LocalDateTime = LocalDateTime.now(),
+) : JFormattedTextField(DateTimeFormatter()) {
+    /**
+     * The current [value] represented as a [Long].
+     */
+    var longValue: Long
+        get() = value.toEpochMilli()
+        set(value) {
+            this.value = value.toLocalDateTime()
+        }
+
     /**
      * Returns the [LocalDateTime] contained in this field, or [default] otherwise.
      *
@@ -50,8 +63,8 @@ class JDateTimeField(private val default: LocalDateTime) : JFormattedTextField(D
             else
                 try {
                     DateParserUtils.parseDateTime(text)
-                } catch (e: DateTimeParseException) {
-                    throw ParseException(e.message, e.errorIndex)
+                } catch (exception: DateTimeParseException) {
+                    throw ParseException(exception.message, exception.errorIndex)
                 }
 
         /**
@@ -76,3 +89,18 @@ class JDateTimeField(private val default: LocalDateTime) : JFormattedTextField(D
         const val DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS"
     }
 }
+
+
+/**
+ * Converts an epoch millisecond timestamp to a [LocalDateTime] object.
+ *
+ * @return the [LocalDateTime] corresponding to this epoch millisecond timestamp
+ */
+fun Long.toLocalDateTime(): LocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneOffset.UTC)
+
+/**
+ * Converts this [LocalDateTime] to an epoch millisecond timestamp.
+ *
+ * @return the epoch millisecond timestamp corresponding to this [LocalDateTime]
+ */
+fun LocalDateTime.toEpochMilli() = toInstant(ZoneOffset.UTC).toEpochMilli()

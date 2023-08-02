@@ -1,16 +1,17 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.MutableBox
+import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.getComboBoxItem
+import com.fwdekker.randomness.guiGet
+import com.fwdekker.randomness.guiRun
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
 
@@ -44,10 +45,10 @@ object TemplateReferenceEditorTest : DescribeSpec({
         )
 
         reference = templateList.templates[1].schemes[0] as TemplateReference
-        reference.templateList = MutableBox({ templateList })
+        reference.templateList = Box({ templateList })
         reference.templateUuid = templateList.templates[0].uuid
 
-        editor = GuiActionRunner.execute<TemplateReferenceEditor> { TemplateReferenceEditor(reference) }
+        editor = guiGet { TemplateReferenceEditor(reference) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
@@ -59,10 +60,9 @@ object TemplateReferenceEditorTest : DescribeSpec({
 
     describe("loadState") {
         it("selects the referenced template") {
-            GuiActionRunner.execute {
+            guiRun {
                 editor.loadState(
-                    TemplateReference(templateList.templates[2].uuid)
-                        .also { it.templateList = MutableBox({ templateList }) }
+                    TemplateReference(templateList.templates[2].uuid).also { it.templateList = Box({ templateList }) }
                 )
             }
 
@@ -70,9 +70,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
         }
 
         it("selects nothing if the reference refers to null") {
-            GuiActionRunner.execute {
-                editor.loadState(TemplateReference().also { it.templateList = MutableBox({ templateList }) })
-            }
+            guiRun { editor.loadState(TemplateReference().also { it.templateList = Box({ templateList }) }) }
 
             assertThat(frame.getComboBoxItem<Template>("template")).isNull()
         }
@@ -85,7 +83,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
         }
 
         it("loads the scheme's quotation") {
-            GuiActionRunner.execute {
+            guiRun {
                 reference.quotation = "'"
                 editor.loadState(reference)
             }
@@ -94,7 +92,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
         }
 
         it("loads the scheme's capitalization") {
-            GuiActionRunner.execute {
+            guiRun {
                 reference.capitalization = CapitalizationMode.RETAIN
                 editor.loadState(reference)
             }
@@ -106,7 +104,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
     describe("readState") {
         describe("defaults") {
             it("returns default capitalization if unknown capitalization is selected") {
-                GuiActionRunner.execute {
+                guiRun {
                     reference.capitalization = CapitalizationMode.DUMMY
                     editor.loadState(reference)
                 }
@@ -120,7 +118,7 @@ object TemplateReferenceEditorTest : DescribeSpec({
         }
 
         it("returns the editor's state") {
-            GuiActionRunner.execute {
+            guiRun {
                 frame.comboBox("template").target().selectedItem = templateList.templates[2]
                 frame.comboBox("quotation").target().selectedItem = "`"
                 frame.comboBox("capitalization").target().selectedItem = CapitalizationMode.RANDOM
@@ -133,10 +131,10 @@ object TemplateReferenceEditorTest : DescribeSpec({
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.comboBox("template").target().selectedItem = templateList.templates[2] }
+            guiRun { frame.comboBox("template").target().selectedItem = templateList.templates[2] }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
+            guiRun { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readState()).isEqualTo(editor.originalState)
@@ -166,23 +164,23 @@ object TemplateReferenceEditorTest : DescribeSpec({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.comboBox("template").target().selectedItem = templateList.templates[2] }
+            guiRun { frame.comboBox("template").target().selectedItem = templateList.templates[2] }
 
             assertThat(listenerInvoked).isTrue()
         }
 
         it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute {
+            guiRun {
                 editor.loadState(
                     TemplateReference(arrayDecorator = ArrayDecorator(enabled = true))
-                        .also { it.templateList = MutableBox({ templateList }) }
+                        .also { it.templateList = Box({ templateList }) }
                 )
             }
 
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 59 }
+            guiRun { frame.spinner("arrayMinCount").target().value = 59 }
 
             assertThat(listenerInvoked).isTrue()
         }

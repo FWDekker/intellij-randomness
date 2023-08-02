@@ -45,6 +45,7 @@ class TemplateActionLoader : DynamicActionConfigurationCustomizer {
 
         val newUuids = newList.map { it.uuid }
         oldList.filterNot { it.uuid in newUuids }.forEach {
+            // TODO: Remove ALL actions, not just the one with `actionId`?
             if (actionManager.getAction(it.actionId) != null)
                 actionManager.unregisterAction(it.actionId)
         }

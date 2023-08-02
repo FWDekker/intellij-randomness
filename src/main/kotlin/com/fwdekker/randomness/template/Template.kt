@@ -25,7 +25,7 @@ import com.intellij.util.xmlb.annotations.XCollection
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class Template(
-    override var name: String = Bundle("template.name.default"),
+    override var name: String = DEFAULT_NAME,
     @get:XCollection(
         elementTypes = [
             DateTimeScheme::class,
@@ -37,8 +37,8 @@ data class Template(
             WordScheme::class,
         ]
     )
-    var schemes: List<Scheme> = DEFAULT_SCHEMES.toMutableList(),
-    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
+    val schemes: MutableList<Scheme> = DEFAULT_SCHEMES,
+    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val typeIcon
         get() = schemes.mapNotNull { it.typeIcon }.reduceOrNull { acc, icon -> acc.combineWith(icon) } ?: DEFAULT_ICON
@@ -53,6 +53,20 @@ data class Template(
     override fun applyContext(context: Box<Settings>) {
         super.applyContext(context)
         schemes.forEach { it.applyContext(context) }
+    }
+
+
+    /**
+     * Returns `true` if `this` template can add a [TemplateReference] that refers to [target] without causing recursion
+     * within the current [context].
+     */
+    fun canReference(target: Template): Boolean {
+        val tempRef = TemplateReference().also { it.applyContext(context) }
+
+        return 0
+            .also { schemes += tempRef }
+            .let { tempRef.canReference(target) }
+            .also { schemes -= tempRef }
     }
 
 
@@ -77,7 +91,7 @@ data class Template(
 
     override fun deepCopy(retainUuid: Boolean) =
         copy(
-            schemes = schemes.map { it.deepCopy(retainUuid) },
+            schemes = schemes.map { it.deepCopy(retainUuid) }.toMutableList(),
             arrayDecorator = arrayDecorator.deepCopy(retainUuid),
         ).deepCopyTransient(retainUuid)
 
@@ -92,9 +106,18 @@ data class Template(
         val DEFAULT_ICON = TypeIcon(Icons.TEMPLATE, "", listOf(Gray._110))
 
         /**
+         * The default value of the [name] field.
+         */
+        val DEFAULT_NAME = Bundle("template.name.default")
+
+        /**
          * The default value of the [schemes] field.
          */
-        val DEFAULT_SCHEMES: List<Scheme>
-            get() = emptyList()
+        val DEFAULT_SCHEMES get() = mutableListOf<Scheme>()
+
+        /**
+         * The default value of the [arrayDecorator] field.
+         */
+        val DEFAULT_ARRAY_DECORATOR get() = ArrayDecorator()
     }
 }

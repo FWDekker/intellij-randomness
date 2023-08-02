@@ -3,22 +3,28 @@ package com.fwdekker.randomness.ui
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.find
+import com.fwdekker.randomness.guiGet
+import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.matcher
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.InplaceButton
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [PreviewPanel].
+ * Unit tests for [PreviewPanel].
  */
-object PreviewPanelTest : DescribeSpec({
+object PreviewPanelTest : FunSpec({
+    tags(NamedTag("IdeaFixture"), NamedTag("Swing"))
+
+
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var panel: PreviewPanel
     lateinit var frame: FrameFixture
@@ -35,48 +41,48 @@ object PreviewPanelTest : DescribeSpec({
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        panel = GuiActionRunner.execute<PreviewPanel> { PreviewPanel { DummyScheme().also { scheme = it } } }
+        panel = guiGet { PreviewPanel { DummyScheme().also { scheme = it } } }
         frame = Containers.showInFrame(panel.rootComponent)
 
-        assertThat(panel.previewText).isEqualTo(placeholder)
+        panel.previewText shouldBe placeholder
     }
 
     afterEach {
         frame.cleanUp()
-        GuiActionRunner.execute { panel.dispose() }
+        guiRun { panel.dispose() }
         ideaFixture.tearDown()
     }
 
 
-    describe("updatePreview") {
-        it("updates the label's contents") {
-            GuiActionRunner.execute { panel.updatePreview() }
+    test("updatePreview") {
+        test("updates the label's contents") {
+            guiRun { panel.updatePreview() }
 
-            assertThat(panel.previewText).isEqualTo(DummyScheme.DEFAULT_OUTPUT)
+            panel.previewText shouldBe "dummy0"
         }
     }
 
-    describe("seed") {
-        it("reuses the old seed if the button is not pressed") {
-            GuiActionRunner.execute { panel.updatePreview() }
+    test("seed") {
+        test("reuses the old seed if the button is not pressed") {
+            guiRun { panel.updatePreview() }
             val oldRandom = scheme?.random
 
-            GuiActionRunner.execute { panel.updatePreview() }
+            guiRun { panel.updatePreview() }
             val newRandom = scheme?.random
 
-            assertThat(newRandom?.nextInt()).isEqualTo(oldRandom?.nextInt())
+            newRandom?.nextInt() shouldBe oldRandom?.nextInt()
         }
 
-        it("uses a new seed when the button is pressed") {
-            GuiActionRunner.execute { panel.updatePreview() }
+        test("uses a new seed when the button is pressed") {
+            guiRun { panel.updatePreview() }
             val oldRandom = scheme?.random
 
-            GuiActionRunner.execute { frame.find(matcher(InplaceButton::class.java)).doClick() }
+            guiRun { frame.find(matcher(InplaceButton::class.java)).doClick() }
 
-            GuiActionRunner.execute { panel.updatePreview() }
+            guiRun { panel.updatePreview() }
             val newRandom = scheme?.random
 
-            assertThat(newRandom?.nextInt()).isNotEqualTo(oldRandom?.nextInt())
+            newRandom?.nextInt() shouldNotBe oldRandom?.nextInt()
         }
     }
 })

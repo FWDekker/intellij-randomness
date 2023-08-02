@@ -28,11 +28,21 @@ data class StringScheme(
     var isRegex: Boolean = DEFAULT_IS_REGEX,
     var removeLookAlikeSymbols: Boolean = DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
+    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name = Bundle("string.title")
     override val typeIcon = BASE_ICON
     override val decorators get() = listOf(arrayDecorator)
+
+
+    /**
+     * Returns `true` if and only if this scheme does not use any regex functionality beyond escape characters.
+     *
+     * @return `true` if and only if this scheme does not use any regex functionality beyond escape characters
+     */
+    fun isSimple() =
+        doValidate() == null &&
+            generateStrings()[0] == if (isRegex) pattern.replace(Regex("\\\\(.)"), "$1") else pattern
 
 
     /**
@@ -59,16 +69,6 @@ data class StringScheme(
     }
 
 
-    /**
-     * Returns `true` if and only if this scheme does not use any regex functionality beyond escape characters.
-     *
-     * @return `true` if and only if this scheme does not use any regex functionality beyond escape characters
-     */
-    fun isSimple() =
-        doValidate() == null &&
-            generateStrings()[0] == if (isRegex) pattern.replace(Regex("\\\\(.)"), "$1") else pattern
-
-
     override fun doValidate() =
         when {
             !isRegex -> arrayDecorator.doValidate()
@@ -80,10 +80,10 @@ data class StringScheme(
                 try {
                     RgxGen(pattern).generate()
                     arrayDecorator.doValidate()
-                } catch (e: RgxGenParseException) {
-                    e.message
-                } catch (e: Exception) {
-                    "Uncaught RgxGen exception: ${e.message}"
+                } catch (exception: RgxGenParseException) {
+                    exception.message
+                } catch (exception: Exception) {
+                    "Uncaught RgxGen exception: ${exception.message}"
                 }
         }
 
@@ -139,6 +139,11 @@ data class StringScheme(
         /**
          * The default value of the [capitalization] field.
          */
-        val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
+        val DEFAULT_CAPITALIZATION get() = CapitalizationMode.RETAIN
+
+        /**
+         * The default value of the [arrayDecorator] field.
+         */
+        val DEFAULT_ARRAY_DECORATOR get() = ArrayDecorator()
     }
 }

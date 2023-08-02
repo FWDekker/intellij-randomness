@@ -1,11 +1,12 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.guiGet
+import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.integer.IntegerScheme
 import io.kotest.core.spec.style.DescribeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
 
@@ -26,7 +27,7 @@ object TemplateEditorTest : DescribeSpec({
 
     beforeEach {
         template = Template()
-        editor = GuiActionRunner.execute<TemplateEditor> { TemplateEditor(template) }
+        editor = guiGet { TemplateEditor(template) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
@@ -37,13 +38,13 @@ object TemplateEditorTest : DescribeSpec({
 
     describe("input handling") {
         it("trims the name when loading") {
-            GuiActionRunner.execute { editor.loadState(Template(name = "  Homework ")) }
+            guiRun { editor.loadState(Template("  Homework ")) }
 
             frame.textBox("templateName").requireText("Homework")
         }
 
         it("trims the name when saving") {
-            GuiActionRunner.execute { frame.textBox("templateName").target().text = " Tooth  " }
+            guiRun { frame.textBox("templateName").target().text = " Tooth  " }
 
             assertThat(editor.readState().name).isEqualTo("Tooth")
         }
@@ -52,7 +53,7 @@ object TemplateEditorTest : DescribeSpec({
 
     describe("loadState") {
         it("loads the template's name") {
-            GuiActionRunner.execute { editor.loadState(Template(name = "Tin")) }
+            guiRun { editor.loadState(Template("Tin")) }
 
             frame.textBox("templateName").requireText("Tin")
         }
@@ -60,7 +61,7 @@ object TemplateEditorTest : DescribeSpec({
 
     describe("readState") {
         it("returns a template with a disabled array decorator") {
-            GuiActionRunner.execute { editor.loadState(Template(arrayDecorator = ArrayDecorator(enabled = true))) }
+            guiRun { editor.loadState(Template(arrayDecorator = ArrayDecorator(enabled = true))) }
 
             assertThat(editor.readState().arrayDecorator.enabled).isFalse()
         }
@@ -70,16 +71,16 @@ object TemplateEditorTest : DescribeSpec({
         }
 
         it("returns the editor's state") {
-            GuiActionRunner.execute { frame.textBox("templateName").target().text = "Say" }
+            guiRun { frame.textBox("templateName").target().text = "Say" }
 
             assertThat(editor.readState().name).isEqualTo("Say")
         }
 
         it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.textBox("templateName").target().text = "Alive" }
+            guiRun { frame.textBox("templateName").target().text = "Alive" }
             assertThat(editor.isModified()).isTrue()
 
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
+            guiRun { editor.loadState(editor.readState()) }
             assertThat(editor.isModified()).isFalse()
 
             assertThat(editor.readState()).isEqualTo(editor.originalState)
@@ -96,7 +97,7 @@ object TemplateEditorTest : DescribeSpec({
         }
 
         it("retains the template's schemes") {
-            GuiActionRunner.execute { editor.loadState(Template(schemes = listOf(IntegerScheme()))) }
+            guiRun { editor.loadState(Template(schemes = listOf(IntegerScheme()))) }
 
             assertThat(editor.readState().schemes).containsExactlyElementsOf(editor.originalState.schemes)
         }
@@ -108,7 +109,7 @@ object TemplateEditorTest : DescribeSpec({
             var listenerInvoked = false
             editor.addChangeListener { listenerInvoked = true }
 
-            GuiActionRunner.execute { frame.textBox("templateName").target().text = "Human" }
+            guiRun { frame.textBox("templateName").target().text = "Human" }
 
             assertThat(listenerInvoked).isTrue()
         }

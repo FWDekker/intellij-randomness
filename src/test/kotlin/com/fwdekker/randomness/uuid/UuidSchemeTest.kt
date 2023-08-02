@@ -1,154 +1,106 @@
 package com.fwdekker.randomness.uuid
 
-import com.fwdekker.randomness.DataGenerationException
-import io.kotest.core.spec.style.DescribeSpec
+import com.fwdekker.randomness.affix.AffixDecorator
+import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.shouldValidateAsBundle
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.forAll
 import io.kotest.data.headers
 import io.kotest.data.row
 import io.kotest.data.table
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import kotlin.random.Random
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.UUIDVersion
+import io.kotest.matchers.string.beLowerCase
+import io.kotest.matchers.string.beUUID
+import io.kotest.matchers.string.beUpperCase
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 
 
 /**
  * Unit tests for [UuidScheme].
  */
-object UuidSchemeTest : DescribeSpec({
-    lateinit var uuidScheme: UuidScheme
+object UuidSchemeTest : FunSpec({
+    tags(NamedTag("Scheme"))
 
 
-    beforeEach {
-        uuidScheme = UuidScheme()
-    }
-
-
-    describe("generateStrings") {
-        it("throws an exception if the scheme is invalid") {
-            uuidScheme.type = 9
-
-            assertThatThrownBy { uuidScheme.generateStrings() }.isInstanceOf(DataGenerationException::class.java)
+    test("generateStrings") {
+        test("returns type-1 uuid") {
+            UuidScheme(type = 1).generateStrings()[0] should beUUID(version = UUIDVersion.V1, considerNilValid = false)
         }
 
-
-        describe("format") {
-            it("generates a formatted UUID") {
-                @Suppress("BooleanLiteralArgument") // Argument labels given in line with `headers`
-                forAll(
-                    table(
-                        headers("type", "quotation", "isUppercase", "addDashes"),
-                        row(1, "", false, true),
-                        row(4, "'", false, true),
-                        row(1, "E", false, true),
-                        row(4, "", true, true),
-                        row(1, "'", true, false),
-                    )
-                ) { type, quotation, isUppercase, addDashes ->
-                    uuidScheme.type = type
-                    uuidScheme.quotation = quotation
-                    uuidScheme.isUppercase = isUppercase
-                    uuidScheme.addDashes = addDashes
-
-                    val alphabet = if (isUppercase) "0-9A-F" else "0-9a-f"
-                    val dash = if (addDashes) "-" else ""
-
-                    assertThat(
-                        Regex("^$quotation[$alphabet]{8}$dash([$alphabet]{4}$dash){3}[$alphabet]{12}$quotation$")
-                            .matches(uuidScheme.generateStrings().single())
-                    ).isTrue()
-                }
-            }
+        test("returns type-4 uuid") {
+            UuidScheme(type = 4).generateStrings()[0] should beUUID(version = UUIDVersion.V4, considerNilValid = false)
         }
 
-        describe("quotation") {
-            it("adds no quotations if the quotations are an empty string") {
-                uuidScheme.quotation = ""
-                uuidScheme.random = Random(512_615)
-                val uuid = uuidScheme.generateStrings().single()
+        test("returns uppercase string") {
+            UuidScheme(isUppercase = true).generateStrings()[0] should beUpperCase()
+        }
 
-                uuidScheme.quotation = ""
-                uuidScheme.random = Random(512_615)
-                assertThat(uuidScheme.generateStrings().single()).isEqualTo(uuid)
-            }
+        test("returns lowercase string") {
+            UuidScheme(isUppercase = false).generateStrings()[0] should beLowerCase()
+        }
 
-            it("repeats the first character of the quotations on both ends") {
-                uuidScheme.quotation = ""
-                uuidScheme.random = Random(47_334)
-                val uuid = uuidScheme.generateStrings().single()
+        test("returns string with dashes") {
+            UuidScheme(isUppercase = true).generateStrings()[0] shouldContain "-"
+        }
 
-                uuidScheme.quotation = "r"
-                uuidScheme.random = Random(47_334)
-                assertThat(uuidScheme.generateStrings().single()).isEqualTo("r${uuid}r")
-            }
+        test("returns string without dashes") {
+            UuidScheme(isUppercase = true).generateStrings()[0] shouldNotContain "-"
+        }
 
-            it("surrounds the output with the respective characters of the quotation string") {
-                uuidScheme.quotation = ""
-                uuidScheme.random = Random(908_309)
-                val uuid = uuidScheme.generateStrings().single()
-
-                uuidScheme.quotation = "bv"
-                uuidScheme.random = Random(908_309)
-                assertThat(uuidScheme.generateStrings().single()).isEqualTo("b${uuid}v")
-            }
+        test("applies decorators in order affix, array") {
+            UuidScheme(
+                affixDecorator = AffixDecorator(enabled = true, descriptor = "#@"),
+                arrayDecorator = ArrayDecorator(enabled = true, minCount = 3, maxCount = 3),
+            ).generateStrings()[0].count { it == '#' } shouldBe 3
         }
     }
 
-
-    describe("doValidate") {
-        it("passes for the default settings") {
-            assertThat(UuidScheme().doValidate()).isNull()
-        }
-
-        it("fails if the decorator is invalid") {
-            uuidScheme.arrayDecorator.minCount = -671
-
-            assertThat(uuidScheme.doValidate()).isNotNull()
-        }
-
-        it("fails for an unsupported UUID type") {
-            uuidScheme.type = 2
-
-            assertThat(uuidScheme.doValidate()).isEqualTo("Unknown UUID type '2'.")
-        }
-
-        it("fails for a quotation string that has more than two characters") {
-            uuidScheme.quotation = "police"
-
-            assertThat(uuidScheme.doValidate()).isEqualTo("Quotation must be at most 2 characters.")
-        }
+    test("doValidate") {
+        forAll(
+            table(
+                //@formatter:off
+                headers("description", "scheme", "validation"),
+                row("succeeds for default state", UuidScheme(), null),
+                row("fails for unsupported type", UuidScheme(type = 14), "uuid.error.unknown_type"),
+                row("fails if affix decorator is invalid", UuidScheme(affixDecorator = AffixDecorator(descriptor = """\""")), ""),
+                row("fails if array decorator is invalid", UuidScheme(arrayDecorator = ArrayDecorator(minCount = -539)), ""),
+                //@formatter:on
+            )
+        ) { _, scheme, validation -> scheme shouldValidateAsBundle validation }
     }
 
-    describe("deepCopy") {
-        it("creates an independent copy") {
-            uuidScheme.type = 4
-            uuidScheme.arrayDecorator.minCount = 754
+    test("deepCopy") {
+        lateinit var scheme: UuidScheme
 
-            val copy = uuidScheme.deepCopy()
-            copy.type = 1
-            copy.arrayDecorator.minCount = 640
 
-            assertThat(uuidScheme.type).isEqualTo(4)
-            assertThat(uuidScheme.arrayDecorator.minCount).isEqualTo(754)
+        beforeEach {
+            scheme = UuidScheme()
         }
-    }
 
-    describe("copyFrom") {
-        it("copies state from another instance") {
-            uuidScheme.type = 4
-            uuidScheme.quotation = "nv"
-            uuidScheme.isUppercase = true
-            uuidScheme.addDashes = true
-            uuidScheme.arrayDecorator.minCount = 264
 
-            val newScheme = UuidScheme()
-            newScheme.copyFrom(uuidScheme)
+        test("equals old instance") {
+            scheme.deepCopy() shouldBe scheme
+        }
 
-            assertThat(newScheme)
-                .isEqualTo(uuidScheme)
-                .isNotSameAs(uuidScheme)
-            assertThat(newScheme.arrayDecorator)
-                .isEqualTo(uuidScheme.arrayDecorator)
-                .isNotSameAs(uuidScheme.arrayDecorator)
+        test("is independent of old instance") {
+            val copy = scheme.deepCopy()
+
+            scheme.type = 503
+
+            copy.type shouldNotBe scheme.type
+        }
+
+        test("retains uuid if chosen") {
+            scheme.deepCopy(true).uuid shouldBe scheme.uuid
+        }
+
+        test("replaces uuid if chosen") {
+            scheme.deepCopy(false).uuid shouldNotBe scheme.uuid
         }
     }
 })
