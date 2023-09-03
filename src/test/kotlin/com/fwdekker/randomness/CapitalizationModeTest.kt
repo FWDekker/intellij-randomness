@@ -16,14 +16,14 @@ object CapitalizationModeTest : FunSpec({
     val random = Random.Default
 
 
-    test("transform") {
-        test("retain mode") {
+    context("transform") {
+        context("retain mode") {
             test("does nothing to a string") {
                 CapitalizationMode.RETAIN.transform("LOREm IpSuM", random) shouldBe "LOREm IpSuM"
             }
         }
 
-        test("sentence mode") {
+        context("sentence mode") {
             test("does nothing to an empty string") {
                 CapitalizationMode.SENTENCE.transform("", random) shouldBe ""
             }
@@ -33,25 +33,25 @@ object CapitalizationModeTest : FunSpec({
             }
         }
 
-        test("uppercase mode") {
+        context("uppercase mode") {
             test("changes all characters to uppercase") {
                 CapitalizationMode.UPPER.transform("LoREm iPSUM", random) shouldBe "LOREM IPSUM"
             }
         }
 
-        test("lowercase mode") {
+        context("lowercase mode") {
             test("changes all characters to lowercase") {
                 CapitalizationMode.LOWER.transform("lorEm IpSUM", random) shouldBe "lorem ipsum"
             }
         }
 
-        test("first letter mode") {
+        context("first letter mode") {
             test("changes all first letters to uppercase") {
                 CapitalizationMode.FIRST_LETTER.transform("lOReM IPSum", random) shouldBe "Lorem Ipsum"
             }
         }
 
-        test("random mode") {
+        context("random mode") {
             test("changes the capitalization to something else") {
                 retry(100, 1.minutes) {
                     val input = "lOReM ipsUm"
@@ -70,7 +70,7 @@ object CapitalizationModeTest : FunSpec({
         }
     }
 
-    test("toLocalizedString") {
+    context("toLocalizedString") {
         test("returns the associated localized string") {
             CapitalizationMode.FIRST_LETTER.toLocalizedString() shouldBe Bundle("shared.capitalization.first_letter")
         }

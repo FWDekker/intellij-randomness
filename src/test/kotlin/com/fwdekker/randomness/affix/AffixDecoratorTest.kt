@@ -59,7 +59,7 @@ object AffixDecoratorTest : FunSpec({
         }
     }
 
-    test("deepCopy") {
+    context("deepCopy") {
         lateinit var scheme: AffixDecorator
 
 

@@ -14,7 +14,7 @@ import java.util.MissingResourceException
  * Unit tests for [Bundle].
  */
 object BundleTest : FunSpec({
-    test("get (no arguments)") {
+    context("get (no arguments)") {
         test("throws an exception if the key could not be found") {
             shouldThrow<MissingResourceException> { Bundle("this_key_does_not_exist") }
         }
@@ -24,7 +24,7 @@ object BundleTest : FunSpec({
         }
     }
 
-    test("get (vararg)") {
+    context("get (vararg)") {
         test("ignores unnecessary arguments") {
             Bundle("string.title", "unnecessary", "unnecessary") shouldBe "String"
         }
@@ -35,7 +35,7 @@ object BundleTest : FunSpec({
     }
 
 
-    test("matchesFormat") {
+    context("matchesFormat") {
         test("match without args in input") {
             forAll(
                 table(

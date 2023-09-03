@@ -16,13 +16,13 @@ object StateTest : FunSpec({
     tags(NamedTag("Scheme"))
 
 
-    test("uuid") {
+    context("uuid") {
         test("generates a different UUID for each instance") {
             DummyState().uuid shouldNotBe DummyState().uuid
         }
     }
 
-    test("context") {
+    context("context") {
         test("uses the applied context") {
             val context = Settings()
             val original = DummyState()
@@ -34,7 +34,7 @@ object StateTest : FunSpec({
     }
 
 
-    test("deepCopy") {
+    context("deepCopy") {
         test("retains UUID if indicated") {
             val original = DummyState()
 
@@ -72,7 +72,7 @@ object StateTest : FunSpec({
         }
     }
 
-    test("copyFrom") {
+    context("copyFrom") {
         test("copies the UUID") {
             val original = DummyState()
             val other = DummyState()

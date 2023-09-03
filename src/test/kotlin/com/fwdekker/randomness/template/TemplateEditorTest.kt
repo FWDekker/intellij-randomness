@@ -1,11 +1,15 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
-import com.fwdekker.randomness.integer.IntegerScheme
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
+import com.fwdekker.randomness.prop
+import com.fwdekker.randomness.textProp
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.forAll
+import io.kotest.data.row
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
@@ -14,7 +18,10 @@ import org.assertj.swing.fixture.FrameFixture
 /**
  * GUI tests for [TemplateEditor].
  */
-object TemplateEditorTest : DescribeSpec({
+object TemplateEditorTest : FunSpec({
+    tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
+
+
     lateinit var frame: FrameFixture
 
     lateinit var template: Template
@@ -36,82 +43,49 @@ object TemplateEditorTest : DescribeSpec({
     }
 
 
-    describe("input handling") {
-        it("trims the name when loading") {
-            guiRun { editor.loadState(Template("  Homework ")) }
+    test("'apply' makes no changes by default") {
+        val before = editor.scheme.deepCopy(retainUuid = true)
 
-            frame.textBox("templateName").requireText("Homework")
-        }
+        guiRun { editor.apply() }
 
-        it("trims the name when saving") {
-            guiRun { frame.textBox("templateName").target().text = " Tooth  " }
-
-            assertThat(editor.readState().name).isEqualTo("Tooth")
-        }
+        before shouldBe editor.scheme
     }
 
+    test("fields") {
+        forAll(
+            //@formatter:off
+            // TODO: Test text trimming
+            row("name", frame.textBox("name").textProp(), editor.scheme::name.prop(), "New Name"),
+            //@formatter:on
+        ) { description, editorProperty, schemeProperty, value ->
+            test(description) {
+                test("`reset` loads the scheme into the editor") {
+                    guiGet { editorProperty.get() } shouldNotBe value
 
-    describe("loadState") {
-        it("loads the template's name") {
-            guiRun { editor.loadState(Template("Tin")) }
+                    schemeProperty.set(value)
+                    guiRun { editor.reset() }
 
-            frame.textBox("templateName").requireText("Tin")
-        }
-    }
+                    guiGet { editorProperty.get() } shouldBe value
+                }
 
-    describe("readState") {
-        it("returns a template with a disabled array decorator") {
-            guiRun { editor.loadState(Template(arrayDecorator = ArrayDecorator(enabled = true))) }
+                test("`apply` saves the editor into the scheme") {
+                    schemeProperty.get() shouldNotBe value
 
-            assertThat(editor.readState().arrayDecorator.enabled).isFalse()
-        }
+                    guiRun { editorProperty.set(value) }
+                    guiRun { editor.apply() }
 
-        it("returns the original state if no editor changes are made") {
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
-        }
+                    schemeProperty.get() shouldBe value
+                }
 
-        it("returns the editor's state") {
-            guiRun { frame.textBox("templateName").target().text = "Say" }
+                test("`addChangeListener` invokes the change listener") {
+                    var invoked = 0
+                    editor.addChangeListener { invoked++ }
 
-            assertThat(editor.readState().name).isEqualTo("Say")
-        }
+                    guiRun { editorProperty.set(value) }
 
-        it("returns the loaded state if no editor changes are made") {
-            guiRun { frame.textBox("templateName").target().text = "Alive" }
-            assertThat(editor.isModified()).isTrue()
-
-            guiRun { editor.loadState(editor.readState()) }
-            assertThat(editor.isModified()).isFalse()
-
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
-        }
-
-        it("returns a different instance from the loaded template") {
-            assertThat(editor.readState())
-                .isEqualTo(editor.originalState)
-                .isNotSameAs(editor.originalState)
-        }
-
-        it("retains the template's UUID") {
-            assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
-        }
-
-        it("retains the template's schemes") {
-            guiRun { editor.loadState(Template(schemes = listOf(IntegerScheme()))) }
-
-            assertThat(editor.readState().schemes).containsExactlyElementsOf(editor.originalState.schemes)
-        }
-    }
-
-
-    describe("addChangeListener") {
-        it("invokes the listener if a field changes") {
-            var listenerInvoked = false
-            editor.addChangeListener { listenerInvoked = true }
-
-            guiRun { frame.textBox("templateName").target().text = "Human" }
-
-            assertThat(listenerInvoked).isTrue()
+                    invoked shouldBe 1
+                }
+            }
         }
     }
 })

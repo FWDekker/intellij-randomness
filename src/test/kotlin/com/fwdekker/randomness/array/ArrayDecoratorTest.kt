@@ -20,7 +20,7 @@ object ArrayDecoratorTest : FunSpec({
     tags(NamedTag("Scheme"))
 
 
-    test("generateStrings") {
+    context("generateStrings") {
         test("parameterized") {
             forAll(
                 table(
@@ -79,7 +79,7 @@ object ArrayDecoratorTest : FunSpec({
         }
     }
 
-    test("deepCopy") {
+    context("deepCopy") {
         lateinit var scheme: ArrayDecorator
 
 

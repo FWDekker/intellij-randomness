@@ -19,7 +19,7 @@ object SchemeTest : FunSpec({
     tags(NamedTag("Scheme"))
 
 
-    test("icon") {
+    context("icon") {
         test("returns null if the type icon is null") {
             val scheme = DummyScheme()
 
@@ -56,7 +56,7 @@ object SchemeTest : FunSpec({
         }
     }
 
-    test("applyContext") {
+    context("applyContext") {
         test("applies the context to itself") {
             val context = Settings()
             val scheme = DummyScheme()
@@ -77,7 +77,7 @@ object SchemeTest : FunSpec({
         }
     }
 
-    test("generateStrings") {
+    context("generateStrings") {
         test("throws an exception if the scheme is invalid") {
             val scheme = DummyScheme(valid = false)
 
@@ -144,7 +144,7 @@ object SchemeTest : FunSpec({
  * Unit tests for [DecoratorScheme].
  */
 object DecoratorSchemeTest : FunSpec({
-    test("generateStrings") {
+    context("generateStrings") {
         test("throws an exception if the decorator is invalid") {
             val decorator = DummyDecoratorScheme(enabled = true, valid = false)
 

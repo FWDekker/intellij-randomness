@@ -20,7 +20,7 @@ import javax.swing.JLabel
  * Unit tests for [TypeIcon].
  */
 object TypeIconTest : FunSpec({
-    test("constructor") {
+    context("constructor") {
         test("fails if no colors are given") {
             shouldThrow<IllegalArgumentException> { TypeIcon(PlainIcon(), "text", emptyList()) }
                 .message shouldBe "At least one color must be defined."
@@ -28,7 +28,7 @@ object TypeIconTest : FunSpec({
     }
 
 
-    test("combineWith") {
+    context("combineWith") {
         test("returns a template TypeIcon") {
             val icon1 = TypeIcon(PlainIcon(), "text1", listOf(Color.GREEN))
             val icon2 = TypeIcon(PlainIcon(), "text2", listOf(Color.RED))
@@ -59,7 +59,7 @@ object TypeIconTest : FunSpec({
     }
 
 
-    test("paintIcon") {
+    context("paintIcon") {
         tags(NamedTag("Swing"))
 
 
@@ -101,7 +101,7 @@ object TypeIconTest : FunSpec({
  * Unit tests for [OverlayIcon].
  */
 object OverlayIconTest : FunSpec({
-    test("paintIcon") {
+    context("paintIcon") {
         tags(NamedTag("Swing"))
 
 
@@ -175,7 +175,7 @@ object OverlayIconTest : FunSpec({
  * Unit tests for [OverlayedIcon].
  */
 object OverlayedIconTest : FunSpec({
-    test("constructor") {
+    context("constructor") {
         test("fails if the base image is not square") {
             shouldThrow<IllegalArgumentException> {
                 OverlayedIcon(PlainIcon(186, 132), emptyList())
@@ -194,7 +194,7 @@ object OverlayedIconTest : FunSpec({
     }
 
 
-    test("plusOverlay") {
+    context("plusOverlay") {
         test("returns a copy with the given overlay added") {
             val newOverlay = PlainIcon()
             val icon = OverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon()))
@@ -204,7 +204,7 @@ object OverlayedIconTest : FunSpec({
     }
 
 
-    test("paintIcon") {
+    context("paintIcon") {
         tags(NamedTag("Swing"))
 
 
@@ -259,7 +259,7 @@ object OverlayedIconTest : FunSpec({
  * Unit tests for [RadialColorReplacementFilter].
  */
 object RadialColorReplacementFilterTest : FunSpec({
-    test("constructor") {
+    context("constructor") {
         test("fails if no colors are given") {
             shouldThrow<IllegalArgumentException> { RadialColorReplacementFilter(emptyList(), Pair(0, 0)) }
                 .message shouldBe "At least one color must be defined."
@@ -272,7 +272,7 @@ object RadialColorReplacementFilterTest : FunSpec({
     }
 
 
-    test("filterRGB") {
+    context("filterRGB") {
         test("returns 0 if the given pixel is 0") {
             val filter = RadialColorReplacementFilter(listOf(Color.RED), Pair(0, 0))
 

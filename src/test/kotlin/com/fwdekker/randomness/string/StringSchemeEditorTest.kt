@@ -1,14 +1,21 @@
 package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.getComboBoxItem
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
+import com.fwdekker.randomness.isSelectedProp
+import com.fwdekker.randomness.itemProp
+import com.fwdekker.randomness.prop
+import com.fwdekker.randomness.textProp
+import com.fwdekker.randomness.valueProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.forAll
+import io.kotest.data.row
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
@@ -17,7 +24,10 @@ import org.assertj.swing.fixture.FrameFixture
 /**
  * GUI tests for [StringSchemeEditor].
  */
-object StringSchemeEditorTest : DescribeSpec({
+object StringSchemeEditorTest : FunSpec({
+    tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
+
+
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
@@ -44,98 +54,52 @@ object StringSchemeEditorTest : DescribeSpec({
     }
 
 
-    describe("loadState") {
-        it("loads the scheme's pattern") {
-            guiRun { editor.loadState(StringScheme(pattern = "[0-9]{3}")) }
+    test("'apply' makes no changes by default") {
+        val before = editor.scheme.deepCopy(retainUuid = true)
 
-            frame.textBox("pattern").requireText("[0-9]{3}")
-        }
+        guiRun { editor.apply() }
 
-        it("loads the scheme's capitalization") {
-            guiRun { editor.loadState(StringScheme(capitalization = CapitalizationMode.RANDOM)) }
-
-            assertThat(frame.getComboBoxItem<CapitalizationMode>("capitalization")).isEqualTo(CapitalizationMode.RANDOM)
-        }
-
-        it("loads the scheme's setting for removing look-alike symbols") {
-            guiRun { editor.loadState(StringScheme(removeLookAlikeSymbols = true)) }
-
-            frame.checkBox("removeLookAlikeCharacters").requireSelected()
-        }
+        before shouldBe editor.scheme
     }
 
-    describe("readState") {
-        describe("defaults") {
-            it("returns default brackets if no capitalization is selected") {
-                guiRun { editor.loadState(StringScheme(capitalization = CapitalizationMode.DUMMY)) }
+    test("fields") {
+        forAll(
+            //@formatter:off
+            row("pattern", frame.textBox("pattern").textProp(), editor.scheme::pattern.prop(), "[a-z]{3,4}"),
+            row("isRegex", frame.checkBox("isRegex").isSelectedProp(), editor.scheme::isRegex.prop(), false),
+            row("removeLookAlikeCharacters", frame.checkBox("removeLookAlikeCharacters").isSelectedProp(), editor.scheme::removeLookAlikeSymbols.prop(), true),
+            row("capitalization", frame.comboBox("capitalization").itemProp(), editor.scheme::capitalization.prop(), CapitalizationMode.RANDOM),
+            row("arrayDecorator", frame.spinner("arrayMinCount").valueProp(), editor.scheme.arrayDecorator::minCount.prop(), 7),
+            //@formatter:on
+        ) { description, editorProperty, schemeProperty, value ->
+            test(description) {
+                test("`reset` loads the scheme into the editor") {
+                    guiGet { editorProperty.get() } shouldNotBe value
 
-                assertThat(editor.readState().capitalization).isEqualTo(StringScheme.DEFAULT_CAPITALIZATION)
+                    schemeProperty.set(value)
+                    guiRun { editor.reset() }
+
+                    guiGet { editorProperty.get() } shouldBe value
+                }
+
+                test("`apply` saves the editor into the scheme") {
+                    schemeProperty.get() shouldNotBe value
+
+                    guiRun { editorProperty.set(value) }
+                    guiRun { editor.apply() }
+
+                    schemeProperty.get() shouldBe value
+                }
+
+                test("`addChangeListener` invokes the change listener") {
+                    var invoked = 0
+                    editor.addChangeListener { invoked++ }
+
+                    guiRun { editorProperty.set(value) }
+
+                    invoked shouldBe 1
+                }
             }
-        }
-
-        it("returns the original state if no editor changes are made") {
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
-        }
-
-        it("returns the editor's state") {
-            guiRun {
-                frame.textBox("pattern").target().text = "AqqR"
-                frame.comboBox("capitalization").target().selectedItem = CapitalizationMode.UPPER
-                frame.checkBox("removeLookAlikeCharacters").target().isSelected = false
-            }
-
-            val readScheme = editor.readState()
-            assertThat(readScheme.pattern).isEqualTo("AqqR")
-            assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.UPPER)
-            assertThat(readScheme.removeLookAlikeSymbols).isFalse()
-        }
-
-        it("returns the loaded state if no editor changes are made") {
-            guiRun { frame.textBox("pattern").target().text = "loyal" }
-            assertThat(editor.isModified()).isTrue()
-
-            guiRun { editor.loadState(editor.readState()) }
-            assertThat(editor.isModified()).isFalse()
-
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
-        }
-
-        it("returns a different instance from the loaded scheme") {
-            val readState = editor.readState()
-
-            assertThat(readState)
-                .isEqualTo(editor.originalState)
-                .isNotSameAs(editor.originalState)
-            assertThat(readState.arrayDecorator)
-                .isEqualTo(editor.originalState.arrayDecorator)
-                .isNotSameAs(editor.originalState.arrayDecorator)
-        }
-
-        it("retains the scheme's UUID") {
-            assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
-        }
-    }
-
-
-    describe("addChangeListener") {
-        it("invokes the listener if a field changes") {
-            var listenerInvoked = false
-            editor.addChangeListener { listenerInvoked = true }
-
-            guiRun { frame.textBox("pattern").target().text = "[ho]spital" }
-
-            assertThat(listenerInvoked).isTrue()
-        }
-
-        it("invokes the listener if the array decorator changes") {
-            guiRun { editor.loadState(StringScheme(arrayDecorator = ArrayDecorator(enabled = true))) }
-
-            var listenerInvoked = false
-            editor.addChangeListener { listenerInvoked = true }
-
-            guiRun { frame.spinner("arrayMinCount").target().value = 528 }
-
-            assertThat(listenerInvoked).isTrue()
         }
     }
 })

@@ -9,7 +9,7 @@ import io.kotest.matchers.shouldBe
  * Unit tests for [Box].
  */
 object BoxTest : FunSpec({
-    test("unaryPlus") {
+    context("unaryPlus") {
         test("returns the generator's value when de-referenced") {
             val box = Box({ "contents" })
 
@@ -40,7 +40,7 @@ object BoxTest : FunSpec({
     }
 
 
-    test("copy") {
+    context("copy") {
         test("creates an independent copy if copied before first de-reference") {
             val box = Box({ mutableListOf("old") })
 

@@ -1,10 +1,17 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.ui.JDateTimeField
 import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.ui.dsl.builder.MutableProperty
 import org.assertj.swing.core.GenericTypeMatcher
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.FrameFixture
+import org.assertj.swing.fixture.JCheckBoxFixture
+import org.assertj.swing.fixture.JComboBoxFixture
+import org.assertj.swing.fixture.JSpinnerFixture
+import org.assertj.swing.fixture.JTextComponentFixture
 import java.awt.Component
+import kotlin.reflect.KMutableProperty0
 
 
 /**
@@ -59,14 +66,21 @@ fun <T : Component> FrameFixture.find(matcher: GenericTypeMatcher<T>): T =
 fun FrameFixture.getActionButton(accessibleName: String): ActionButton =
     find(matcher(ActionButton::class.java) { it.accessibleContext.accessibleName == accessibleName })
 
-/**
- * Returns the selected item of a [javax.swing.JComboBox] in [this] with name [name].
- *
- * @param T the type of item contained in the [javax.swing.JComboBox]
- * @receiver the fixture to find the [javax.swing.JComboBox] in
- * @param name the name of the [javax.swing.JComboBox] to return the value of
- * @return the selected item of the [javax.swing.JComboBox] in [this] with name [name]
- */
-@Suppress("UNCHECKED_CAST") // Responsibility of caller
-fun <T> FrameFixture.getComboBoxItem(name: String): T =
-    guiGet { this.comboBox(name).target().selectedItem as T }
+
+// TODO: Document these functions!
+@Suppress("UNCHECKED_CAST")
+fun <T> KMutableProperty0<T>.prop(): MutableProperty<Any?> = MutableProperty({ get() }, { set(it as T) })
+
+@Suppress("UNCHECKED_CAST")
+fun <SELF, FIELD> SELF.prop(get: (SELF) -> (() -> FIELD), set: (SELF) -> ((FIELD) -> Unit)): MutableProperty<Any?> =
+    MutableProperty(get(this)) { set(this)(it as FIELD) }
+
+fun JCheckBoxFixture.isSelectedProp() = this.prop({ this.target()::isSelected }, { this.target()::setSelected })
+
+fun JComboBoxFixture.itemProp() = this.prop({ this.target().editor::getItem }, { this.target().editor::setItem })
+
+fun JSpinnerFixture.valueProp() = this.prop({ this.target()::getValue }, { this.target()::setValue })
+
+fun JTextComponentFixture.dateTimeProp() = (this.target() as JDateTimeField)::longValue.prop()
+
+fun JTextComponentFixture.textProp() = this.prop({ this.target()::getText }, { this.target()::setText })

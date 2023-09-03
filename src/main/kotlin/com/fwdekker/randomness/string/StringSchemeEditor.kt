@@ -13,9 +13,11 @@ import com.fwdekker.randomness.ui.withSimpleRenderer
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.EMPTY_LABEL
+import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.toNullableProperty
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 
 
@@ -56,6 +58,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : SchemeEditor<S
                 cell(ComboBox(PRESET_CAPITALIZATION))
                     .withSimpleRenderer(CapitalizationMode::toLocalizedString)
                     .withName("capitalization")
+                    .bindItem(scheme::capitalization.toNullableProperty())
             }
         }
 

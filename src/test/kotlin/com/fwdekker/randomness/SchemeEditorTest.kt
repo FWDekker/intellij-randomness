@@ -53,7 +53,7 @@ object SchemeEditorTest : FunSpec({
     }
 
 
-    test("components") {
+    context("components") {
         test("returns named components in order") {
             registerTestEditor {
                 DummySchemeEditor {
@@ -77,7 +77,7 @@ object SchemeEditorTest : FunSpec({
         }
     }
 
-    test("preferredFocusComponent") {
+    context("preferredFocusComponent") {
         test("returns the first visible named component") {
             registerTestEditor {
                 DummySchemeEditor {
@@ -111,7 +111,7 @@ object SchemeEditorTest : FunSpec({
     }
 
 
-    test("reset") {
+    context("reset") {
         test("resets the editor to its original state") {
             registerTestEditor {
                 val scheme = DummyScheme(prefix = "old")
@@ -152,7 +152,7 @@ object SchemeEditorTest : FunSpec({
         }
     }
 
-    test("apply") {
+    context("apply") {
         test("applies changes from the editor") {
             val scheme = DummyScheme(prefix = "old")
             registerTestEditor { DummySchemeEditor(scheme) { panel { row { textField().bindText(scheme::prefix) } } } }
@@ -187,7 +187,7 @@ object SchemeEditorTest : FunSpec({
     }
 
 
-    test("addChangeListener") {
+    context("addChangeListener") {
         test("invokes the listener when a visible named component is edited") {
             registerTestEditor { DummySchemeEditor { panel { row { textField().withName("name") } } } }
 
