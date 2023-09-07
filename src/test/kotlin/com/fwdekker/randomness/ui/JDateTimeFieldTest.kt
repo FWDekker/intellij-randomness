@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
 import com.github.sisyphsu.dateparser.DateParserUtils
@@ -28,13 +29,13 @@ object JDateTimeFieldTest : FunSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         field = guiGet { JDateTimeField(LocalDateTime.MIN) }
     }
 
 
-    test("value") {
-        test("get") {
+    context("value") {
+        context("get") {
             test("returns the default if no value has been set") {
                 val default = LocalDateTime.now()
                 val myField = guiGet { JDateTimeField(default) }
@@ -43,7 +44,7 @@ object JDateTimeFieldTest : FunSpec({
             }
         }
 
-        test("set") {
+        context("set") {
             test("throws an error if a non-date-time is set") {
                 shouldThrow<IllegalArgumentException> { guiRun { field.setValue("invalid") } }
                     .message shouldBe Bundle("datetime_field.error.invalid_type")
@@ -59,22 +60,22 @@ object JDateTimeFieldTest : FunSpec({
         }
     }
 
-    test("longValue") {
+    context("longValue") {
         test("get") {
             field.longValue = 2_625_932_560L
 
-            field.value shouldBe TODO()
+            field.value shouldBe TODO() // TODO: Add this assertion
         }
 
         test("set") {
             field.value = TODO()
 
-            field.longValue shouldBe TODO()
+            field.longValue shouldBe TODO() // TODO: Add this assertion
         }
     }
 
 
-    test("formatter") {
+    context("formatter") {
         test("formats the value as the intended date") {
             val dateTime = LocalDateTime.now().withNano(0)
 

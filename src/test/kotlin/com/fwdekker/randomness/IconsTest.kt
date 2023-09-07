@@ -70,7 +70,7 @@ object TypeIconTest : FunSpec({
             FailOnThreadViolationRepaintManager.install()
         }
 
-        beforeEach {
+        beforeNonContainer {
             image = BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB)
         }
 
@@ -112,7 +112,7 @@ object OverlayIconTest : FunSpec({
             FailOnThreadViolationRepaintManager.install()
         }
 
-        beforeEach {
+        beforeNonContainer {
             image = BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB)
         }
 
@@ -177,9 +177,8 @@ object OverlayIconTest : FunSpec({
 object OverlayedIconTest : FunSpec({
     context("constructor") {
         test("fails if the base image is not square") {
-            shouldThrow<IllegalArgumentException> {
-                OverlayedIcon(PlainIcon(186, 132), emptyList())
-            }.message shouldBe "Base must be square."
+            shouldThrow<IllegalArgumentException> { OverlayedIcon(PlainIcon(186, 132), emptyList()) }
+                .message shouldBe "Base must be square."
         }
 
         test("fails if an overlay is not square") {
@@ -188,7 +187,7 @@ object OverlayedIconTest : FunSpec({
         }
 
         test("fails if overlays have different sizes") {
-            shouldThrow<IllegalArgumentException> { OverlayedIcon(PlainIcon(), listOf(PlainIcon(32, 32), PlainIcon(34, 34))) }
+            shouldThrow<IllegalArgumentException> { OverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon(34, 34))) }
                 .message shouldBe "All overlays must have same size."
         }
     }
@@ -215,7 +214,7 @@ object OverlayedIconTest : FunSpec({
             FailOnThreadViolationRepaintManager.install()
         }
 
-        beforeEach {
+        beforeNonContainer {
             image = BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB)
         }
 

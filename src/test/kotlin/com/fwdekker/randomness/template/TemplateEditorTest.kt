@@ -1,5 +1,7 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.afterNonContainer
+import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.prop
@@ -32,13 +34,13 @@ object TemplateEditorTest : FunSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         template = Template()
         editor = guiGet { TemplateEditor(template) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterEach {
+    afterNonContainer {
         frame.cleanUp()
     }
 
@@ -51,14 +53,14 @@ object TemplateEditorTest : FunSpec({
         before shouldBe editor.scheme
     }
 
-    test("fields") {
+    context("fields") {
         forAll(
             //@formatter:off
             // TODO: Test text trimming
             row("name", frame.textBox("name").textProp(), editor.scheme::name.prop(), "New Name"),
             //@formatter:on
         ) { description, editorProperty, schemeProperty, value ->
-            test(description) {
+            context(description) {
                 test("`reset` loads the scheme into the editor") {
                     guiGet { editorProperty.get() } shouldNotBe value
 

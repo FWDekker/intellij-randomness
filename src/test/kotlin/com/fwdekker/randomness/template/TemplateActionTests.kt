@@ -6,14 +6,14 @@ import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.TypeIcon
+import com.fwdekker.randomness.afterNonContainer
+import com.fwdekker.randomness.beforeNonContainer
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
-import io.kotest.data.headers
 import io.kotest.data.row
-import io.kotest.data.table
+import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldNotContain
@@ -33,17 +33,17 @@ object TemplateGroupActionTest : FunSpec({
     lateinit var ideaFixture: IdeaTestFixture
 
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
     }
 
-    afterEach {
+    afterNonContainer {
         ideaFixture.tearDown()
     }
 
 
-    test("init") {
+    context("init") {
         test("uses the template's text, description, and icon") {
             val icon = TypeIcon(Icons.SCHEME, "txt", listOf(Color.BLUE))
             val template = Template("Name", mutableListOf(DummyScheme().also { it.typeIcon = icon }))
@@ -61,13 +61,18 @@ object TemplateGroupActionTest : FunSpec({
  * Unit tests for [TemplateInsertAction].
  */
 object TemplateInsertActionTest : FunSpec({
-    test("init") {
-        test("text and description") {
-            val template = Template("Name")
+    context("init") {
+        context("text and description") {
+            lateinit var template: Template
 
-            forAll(
-                table(
-                    headers("action", "name", "description"),
+
+            beforeNonContainer {
+                template = Template("Name")
+            }
+
+
+            withData(
+                listOf(
                     row(
                         TemplateInsertAction(template),
                         "Name",
@@ -89,13 +94,13 @@ object TemplateInsertActionTest : FunSpec({
                         "Inserts the same array of Name at each caret.",
                     ),
                 )
-            ) { action, name, description ->
+            ) { (action, name, description) ->
                 action.text shouldBe name
                 action.templatePresentation.description shouldBe description
             }
         }
 
-        test("icon") {
+        context("icon") {
             test("does not add a repeat overlay for a non-repeat variant") {
                 val template = Template()
                 val action = TemplateInsertAction(template, repeat = false)
@@ -113,13 +118,13 @@ object TemplateInsertActionTest : FunSpec({
     }
 
 
-    test("generateStrings") {
+    context("generateStrings") {
         test("returns the generated strings") {
             val template = Template(schemes = mutableListOf(DummyScheme()))
 
             val strings = TemplateInsertAction(template).generateStrings(2)
 
-            strings shouldContainExactly listOf("dummy0", "dummy1")
+            strings shouldContainExactly listOf("text0", "text1")
         }
 
         test("repeats the generated strings") {
@@ -127,7 +132,7 @@ object TemplateInsertActionTest : FunSpec({
 
             val strings = TemplateInsertAction(template, repeat = true).generateStrings(2)
 
-            strings shouldContainExactly listOf("dummy0", "dummy0")
+            strings shouldContainExactly listOf("text0", "text0")
         }
     }
 })
@@ -142,18 +147,18 @@ object TemplateSettingsActionTest : FunSpec({
     lateinit var ideaFixture: IdeaTestFixture
 
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
     }
 
-    afterEach {
+    afterNonContainer {
         ideaFixture.tearDown()
     }
 
 
-    test("init") {
-        test("text") {
+    context("init") {
+        context("text") {
             test("uses a default text if the template is null") {
                 val action = TemplateSettingsAction(template = null)
 
@@ -167,7 +172,7 @@ object TemplateSettingsActionTest : FunSpec({
             }
         }
 
-        test("description") {
+        context("description") {
             test("has no description of the template is null") {
                 val action = TemplateSettingsAction(template = null)
 
@@ -181,7 +186,7 @@ object TemplateSettingsActionTest : FunSpec({
             }
         }
 
-        test("icon") {
+        context("icon") {
             test("uses a default icon if the template is null") {
                 val action = TemplateSettingsAction(template = null)
 

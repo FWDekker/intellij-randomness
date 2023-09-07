@@ -1,7 +1,10 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DummyScheme
+import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.afterNonContainer
+import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.guiGet
@@ -18,10 +21,9 @@ import com.intellij.ui.JBSplitter
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
-import io.kotest.data.headers
+import io.kotest.data.Row2
 import io.kotest.data.row
-import io.kotest.data.table
+import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.AbstractComponentFixture
@@ -50,7 +52,7 @@ object TemplateListEditorTest : FunSpec({
             { vertical, proportionKey, defaultProportion -> JBSplitter(vertical, proportionKey, defaultProportion) }
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -68,14 +70,14 @@ object TemplateListEditorTest : FunSpec({
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterEach {
+    afterNonContainer {
         frame.cleanUp()
         guiRun { editor.dispose() }
         ideaFixture.tearDown()
     }
 
 
-    test("reset") {
+    context("reset") {
         // TODO: Rewrite this maybe?
 
         test("undoes changes to the initial selection") {
@@ -115,20 +117,19 @@ object TemplateListEditorTest : FunSpec({
     }
 
 
-    test("editor creation") {
-        test("loads the appropriate editor") {
-            forAll(
-                table(
-                    headers("name", "scheme", "matcher"),
-                    row("integer", IntegerScheme()) { it.spinner("minValue") },
-                    row("decimal", DecimalScheme()) { it.spinner("minValue") },
-                    row("string", StringScheme()) { it.textBox("pattern") },
-                    row("uuid", UuidScheme()) { it.radioButton("type1") },
-                    row("word", WordScheme()) { it.comboBox("presets") },
-                    row("date-time", DateTimeScheme()) { it.textBox("minDateTime") },
-                    row("template reference", TemplateReference()) { it.comboBox("template") },
+    context("editor creation") {
+        context("loads the appropriate editor") {
+            withData(
+                mapOf(
+                    "integer" to row(IntegerScheme()) { it.spinner("minValue") },
+                    "decimal" to row(DecimalScheme()) { it.spinner("minValue") },
+                    "string" to row(StringScheme()) { it.textBox("pattern") },
+                    "uuid" to row(UuidScheme()) { it.radioButton("type1") },
+                    "word" to row(WordScheme()) { it.comboBox("presets") },
+                    "date-time" to row(DateTimeScheme()) { it.textBox("minDateTime") },
+                    "template reference" to row(TemplateReference()) { it.comboBox("template") },
                 )
-            ) { _, scheme, matcher: (FrameFixture) -> AbstractComponentFixture<*, *, *> ->
+            ) { (scheme, matcher): Row2<Scheme, (FrameFixture) -> AbstractComponentFixture<*, *, *>> ->
                 context.templates.setAll(listOf(Template(schemes = mutableListOf(scheme))))
                 context.templateList.applyContext(context)
 

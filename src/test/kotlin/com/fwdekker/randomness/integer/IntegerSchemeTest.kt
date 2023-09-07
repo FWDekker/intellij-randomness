@@ -4,16 +4,14 @@ import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
 import com.fwdekker.randomness.shouldValidateAsBundle
+import com.fwdekker.randomness.stateDeepCopyTestFactory
 import io.kotest.assertions.withClue
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
-import io.kotest.data.headers
 import io.kotest.data.row
-import io.kotest.data.table
+import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 
 
 /**
@@ -23,31 +21,65 @@ object IntegerSchemeTest : FunSpec({
     tags(NamedTag("Scheme"))
 
 
-    test("generateStrings") {
-        test("parameterized") {
-            forAll(
-                table(
-                    //@formatter:off
-                    headers("description", "scheme", "output"),
-                    row("returns zero", IntegerScheme().withValue(0L), "0"),
-                    row("returns one", IntegerScheme().withValue(1L), "1"),
-                    row("returns a negative value", IntegerScheme().withValue(-660L), "-660"),
-                    row("returns a positive value", IntegerScheme().withValue(708L), "708"),
-                    row("returns Long.MIN_VALUE", IntegerScheme().withValue(Long.MIN_VALUE), "-9223372036854775808"),
-                    row("returns Long.MAX_VALUE", IntegerScheme().withValue(Long.MAX_VALUE), "9223372036854775807"),
-                    row("converts to base <10", IntegerScheme(base = 2).withValue(141L), "10001101"),
-                    row("converts to base >10", IntegerScheme(base = 12).withValue(248L), "188"),
-                    row("uses separator", IntegerScheme(groupingSeparator = "#").withValue(949_442L), "949#442"),
-                    row("uses no separator if disabled", IntegerScheme(groupingSeparatorEnabled = false, groupingSeparator = "#").withValue(179_644L), "179644"),
-                    row("uses no separator in base <10", IntegerScheme(groupingSeparatorEnabled = true, base = 8, groupingSeparator = "#").withValue(731_942L), "2625446"),
-                    row("uses no separator in base >10", IntegerScheme(groupingSeparatorEnabled = true, base = 12, groupingSeparator = "#").withValue(586_394L), "243422"),
-                    row("retains lowercase in base >10 if disabled", IntegerScheme(base = 14, isUppercase = false).withValue(829_960L), "17866c"),
-                    row("converts to uppercase in base >10 if enabled", IntegerScheme(base = 13, isUppercase = true).withValue(451_922L), "12A913"),
-                    row("applies decorators in order affix, fixed length, array", IntegerScheme(affixDecorator = AffixDecorator(enabled = true, descriptor = "@L"), fixedLengthDecorator = FixedLengthDecorator(enabled = true), arrayDecorator = ArrayDecorator(enabled = true)).withValue(53L), "[530L, 530L, 530L]"),
-                    //@formatter:on
-                )
-            ) { _, scheme, output -> scheme.generateStrings()[0] shouldBe output }
-        }
+    context("generateStrings") {
+        withData(
+            mapOf(
+                "returns zero" to
+                    row(IntegerScheme().withValue(0L), "0"),
+                "returns one" to
+                    row(IntegerScheme().withValue(1L), "1"),
+                "returns a negative value" to
+                    row(IntegerScheme().withValue(-660L), "-660"),
+                "returns a positive value" to
+                    row(IntegerScheme().withValue(708L), "708"),
+                "returns Long.MIN_VALUE" to
+                    row(IntegerScheme().withValue(Long.MIN_VALUE), "-9223372036854775808"),
+                "returns Long.MAX_VALUE" to
+                    row(IntegerScheme().withValue(Long.MAX_VALUE), "9223372036854775807"),
+                "converts to base <10" to
+                    row(IntegerScheme(base = 2).withValue(141L), "10001101"),
+                "converts to base >10" to
+                    row(IntegerScheme(base = 12).withValue(248L), "188"),
+                "uses separator" to
+                    row(IntegerScheme(groupingSeparator = "#").withValue(949_442L), "949#442"),
+                "uses no separator if disabled" to
+                    row(
+                        IntegerScheme(groupingSeparatorEnabled = false, groupingSeparator = "#").withValue(179_644L),
+                        "179644",
+                    ),
+                "uses no separator in base <10" to
+                    row(
+                        IntegerScheme(
+                            groupingSeparatorEnabled = true,
+                            base = 8,
+                            groupingSeparator = "#"
+                        ).withValue(731_942L),
+                        "2625446"
+                    ),
+                "uses no separator in base >10" to
+                    row(
+                        IntegerScheme(
+                            groupingSeparatorEnabled = true,
+                            base = 12,
+                            groupingSeparator = "#"
+                        ).withValue(586_394L),
+                        "243422",
+                    ),
+                "retains lowercase in base >10 if disabled" to
+                    row(IntegerScheme(base = 14, isUppercase = false).withValue(829_960L), "17866c"),
+                "converts to uppercase in base >10 if enabled" to
+                    row(IntegerScheme(base = 13, isUppercase = true).withValue(451_922L), "12A913"),
+                "applies decorators in order affix, fixed length, array" to
+                    row(
+                        IntegerScheme(
+                            affixDecorator = AffixDecorator(enabled = true, descriptor = "@L"),
+                            fixedLengthDecorator = FixedLengthDecorator(enabled = true),
+                            arrayDecorator = ArrayDecorator(enabled = true),
+                        ).withValue(53L),
+                        "[530L, 530L, 530L]",
+                    ),
+            )
+        ) { (scheme, output) -> scheme.generateStrings()[0] shouldBe output }
 
         test("correctly generates distinct values at maximum range size") {
             val scheme = IntegerScheme(minValue = Long.MIN_VALUE, maxValue = Long.MAX_VALUE)
@@ -56,56 +88,36 @@ object IntegerSchemeTest : FunSpec({
         }
     }
 
-    test("doValidate") {
-        forAll(
-            table(
-                //@formatter:off
-                headers("description", "scheme", "validation"),
-                row("succeeds for default state", IntegerScheme(), null),
-                row("fails if min value is above max value", IntegerScheme(minValue = 671L, maxValue = 93L), "integer.error.min_value_above_max"),
-                row("fails if base is negative", IntegerScheme(base = -48), "integer.error.base_range"),
-                row("fails if base is zero", IntegerScheme(base = -0), "integer.error.base_range"),
-                row("fails if base is one", IntegerScheme(base = 1), "integer.error.base_range"),
-                row("fails if base is greater than 30", IntegerScheme(base = 704), "integer.error.base_range"),
-                row("fails if grouping separator is empty", IntegerScheme(groupingSeparator = ""), "integer.error.grouping_separator_length"),
-                row("fails if grouping separator is non-char", IntegerScheme(groupingSeparator = "long"), "integer.error.grouping_separator_length"),
-                row("fails if fixed-length decorator is invalid", IntegerScheme(fixedLengthDecorator = FixedLengthDecorator(length = -3)), ""),
-                row("fails if affix decorator is invalid", IntegerScheme(affixDecorator = AffixDecorator(descriptor = """\""")), ""),
-                row("fails if array decorator is invalid", IntegerScheme(arrayDecorator = ArrayDecorator(minCount = -24)), ""),
-                //@formatter:on
+    context("doValidate") {
+        withData(
+            mapOf(
+                "succeeds for default state" to
+                    row(IntegerScheme(), null),
+                "fails if min value is above max value" to
+                    row(IntegerScheme(minValue = 671L, maxValue = 93L), "integer.error.min_value_above_max"),
+                "fails if base is negative" to
+                    row(IntegerScheme(base = -48), "integer.error.base_range"),
+                "fails if base is zero" to
+                    row(IntegerScheme(base = -0), "integer.error.base_range"),
+                "fails if base is one" to
+                    row(IntegerScheme(base = 1), "integer.error.base_range"),
+                "fails if base is greater than 30" to
+                    row(IntegerScheme(base = 704), "integer.error.base_range"),
+                "fails if grouping separator is empty" to
+                    row(IntegerScheme(groupingSeparator = ""), "integer.error.grouping_separator_length"),
+                "fails if grouping separator is non-char" to
+                    row(IntegerScheme(groupingSeparator = "long"), "integer.error.grouping_separator_length"),
+                "fails if fixed-length decorator is invalid" to
+                    row(IntegerScheme(fixedLengthDecorator = FixedLengthDecorator(length = -3)), ""),
+                "fails if affix decorator is invalid" to
+                    row(IntegerScheme(affixDecorator = AffixDecorator(descriptor = """\""")), ""),
+                "fails if array decorator is invalid" to
+                    row(IntegerScheme(arrayDecorator = ArrayDecorator(minCount = -24)), ""),
             )
-        ) { _, scheme, validation -> scheme shouldValidateAsBundle validation }
+        ) { (scheme, validation) -> scheme shouldValidateAsBundle validation }
     }
 
-    test("deepCopy") {
-        lateinit var scheme: IntegerScheme
-
-
-        beforeEach {
-            scheme = IntegerScheme()
-        }
-
-
-        test("equals old instance") {
-            scheme.deepCopy() shouldBe scheme
-        }
-
-        test("is independent of old instance") {
-            val copy = scheme.deepCopy()
-
-            scheme.groupingSeparator = "other"
-
-            copy.groupingSeparator shouldNotBe scheme.groupingSeparator
-        }
-
-        test("retains uuid if chosen") {
-            scheme.deepCopy(true).uuid shouldBe scheme.uuid
-        }
-
-        test("replaces uuid if chosen") {
-            scheme.deepCopy(false).uuid shouldNotBe scheme.uuid
-        }
-    }
+    include(stateDeepCopyTestFactory { IntegerScheme() })
 })
 
 

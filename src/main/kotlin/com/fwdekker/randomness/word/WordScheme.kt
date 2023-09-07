@@ -42,7 +42,7 @@ data class WordScheme(
 
     override fun doValidate() =
         if (words.isEmpty()) Bundle("word.error.empty_word_list")
-        else arrayDecorator.doValidate()
+        else affixDecorator.doValidate() ?: arrayDecorator.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =
         copy(

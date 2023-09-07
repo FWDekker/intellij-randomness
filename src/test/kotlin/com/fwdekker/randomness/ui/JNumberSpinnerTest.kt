@@ -24,7 +24,7 @@ object JNumberSpinnerTest : FunSpec({
     }
 
 
-    test("constructor failures") {
+    context("constructor failures") {
         test("should fail if the minimum value is greater than the maximum value") {
             shouldThrow<IllegalArgumentException> { JIntSpinner(value = -725, minValue = -602, maxValue = -929) }
                 .message shouldBe "(minimum <= value <= maximum) is false"
@@ -36,9 +36,9 @@ object JNumberSpinnerTest : FunSpec({
         }
     }
 
-    test("input handling") {
+    context("input handling") {
         test("should get and set the value") {
-            val spinner = JIntSpinner()
+            val spinner = guiGet { JIntSpinner() }
 
             guiRun { spinner.value = 179 }
 
@@ -46,7 +46,7 @@ object JNumberSpinnerTest : FunSpec({
         }
 
         test("should return an int even if a long is set") {
-            val spinner = JIntSpinner()
+            val spinner = guiGet { JIntSpinner() }
 
             guiRun { (spinner as JSpinner).value = 638L }
 
@@ -67,7 +67,7 @@ object BindSpinnersTest : FunSpec({
     }
 
 
-    test("binding") {
+    context("binding") {
         test("throws an exception if the range is negative") {
             val min = guiGet { JSpinner() }
             val max = guiGet { JSpinner() }
@@ -77,7 +77,7 @@ object BindSpinnersTest : FunSpec({
         }
     }
 
-    test("updating") {
+    context("updating") {
         test("updates the minimum spinner if the maximum goes below its value") {
             val min = guiGet { JSpinner() }
             val max = guiGet { JSpinner() }
@@ -112,7 +112,7 @@ object JDoubleSpinnerTest : FunSpec({
     }
 
 
-    test("input handling") {
+    context("input handling") {
         test("should return a double even if a long is set") {
             val spinner = guiGet { JDoubleSpinner() }
 
@@ -122,8 +122,8 @@ object JDoubleSpinnerTest : FunSpec({
         }
     }
 
-    test("getting surrounding values") {
-        test("previous value") {
+    context("getting surrounding values") {
+        context("previous value") {
             test("returns the previous value") {
                 val spinner = guiGet { JDoubleSpinner(741.4) }
 
@@ -137,7 +137,7 @@ object JDoubleSpinnerTest : FunSpec({
             }
         }
 
-        test("next value") {
+        context("next value") {
             test("returns the next value") {
                 val spinner = guiGet { JDoubleSpinner(629.9) }
 
@@ -165,7 +165,7 @@ object JLongSpinnerTest : FunSpec({
     }
 
 
-    test("input handling") {
+    context("input handling") {
         test("truncates when storing a double") {
             val spinner = guiGet { JLongSpinner() }
 
@@ -175,8 +175,8 @@ object JLongSpinnerTest : FunSpec({
         }
     }
 
-    test("getting surrounding values") {
-        test("previous value") {
+    context("getting surrounding values") {
+        context("previous value") {
             test("returns the previous value") {
                 val spinner = guiGet { JLongSpinner(56L) }
 
@@ -190,7 +190,7 @@ object JLongSpinnerTest : FunSpec({
             }
         }
 
-        test("next value") {
+        context("next value") {
             test("returns the next value") {
                 val spinner = guiGet { JLongSpinner(112L) }
 
@@ -218,7 +218,7 @@ object JIntSpinnerTest : FunSpec({
     }
 
 
-    test("input handling") {
+    context("input handling") {
         test("truncates when storing a double") {
             val spinner = guiGet { JIntSpinner() }
 
@@ -236,8 +236,8 @@ object JIntSpinnerTest : FunSpec({
         }
     }
 
-    test("getting surrounding values") {
-        test("previous value") {
+    context("getting surrounding values") {
+        context("previous value") {
             test("returns the previous value") {
                 val spinner = guiGet { JIntSpinner(205) }
 
@@ -251,7 +251,7 @@ object JIntSpinnerTest : FunSpec({
             }
         }
 
-        test("next value") {
+        context("next value") {
             test("returns the next value") {
                 val spinner = guiGet { JIntSpinner(96) }
 

@@ -6,17 +6,15 @@ import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.shouldValidateAsBundle
+import com.fwdekker.randomness.stateDeepCopyTestFactory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
-import io.kotest.data.headers
 import io.kotest.data.row
-import io.kotest.data.table
+import io.kotest.datatest.withData
+import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
-import org.assertj.core.api.Assertions.assertThat
 
 
 /**
@@ -26,7 +24,7 @@ object TemplateTest : FunSpec({
     tags(NamedTag("Scheme"))
 
 
-    test("typeIcon") {
+    context("typeIcon") {
         test("returns the single scheme's icon if that scheme has an icon") {
             val scheme = IntegerScheme()
             val template = Template(schemes = mutableListOf(scheme))
@@ -50,11 +48,11 @@ object TemplateTest : FunSpec({
         test("returns the scheme's combined icon if multiple are present") {
             val template = Template(schemes = mutableListOf(DummyScheme(), DummyScheme()))
 
-            assertThat(template.typeIcon.colors.size).isGreaterThan(1)
+            template.typeIcon.colors.size shouldBeGreaterThan 1
         }
     }
 
-    test("applyContext") {
+    context("applyContext") {
         test("applies the context to itself") {
             val newContext = Settings()
             val template = Template()
@@ -76,23 +74,24 @@ object TemplateTest : FunSpec({
 
 
     test("canReference") {
-        TODO()
+        TODO() // TODO: Add these tests
     }
 
 
-    test("generateStrings") {
-        test("parameterized") {
-            forAll(
-                table(
-                    //@formatter:off
-                    headers("description", "scheme", "output"),
-                    row("returns an empty string if it contains no schemes", Template(), ""),
-                    row("returns the single scheme's output", Template(schemes = mutableListOf(DummyScheme())), "dummy0"),
-                    row("returns the concatenation of the schemes' outputs", Template(schemes = mutableListOf(DummyScheme(prefix = "a"), DummyScheme(prefix = "b"), DummyScheme(prefix = "c"))), "a0b0c0"),
-                    //@formatter:on
-                )
-            ) { _, scheme, output -> scheme.generateStrings()[0] shouldBe output }
-        }
+    context("generateStrings") {
+        withData(
+            mapOf(
+                "returns an empty string if it contains no schemes" to
+                    row(Template(), ""),
+                "returns the single scheme's output" to
+                    row(Template(schemes = mutableListOf(DummyScheme())), "text0"),
+                "returns the concatenation of the schemes' outputs" to
+                    row(
+                        Template(schemes = mutableListOf(DummyScheme("a"), DummyScheme("b"), DummyScheme("c"))),
+                        "a0b0c0",
+                    ),
+            )
+        ) { (scheme, output) -> scheme.generateStrings()[0] shouldBe output }
 
         test("throws an exception if the template is invalid") {
             val template = Template(schemes = mutableListOf(DummyScheme(valid = false)))
@@ -101,48 +100,31 @@ object TemplateTest : FunSpec({
         }
     }
 
-    test("doValidate") {
-        forAll(
-            table(
-                //@formatter:off
-                headers("description", "scheme", "validation"),
-                row("succeeds for default state", Template(), null),
-                row("fails if name is blank", Template("  "), "template.error.no_name"),
-                row("fails if only scheme is invalid", Template("Template", mutableListOf(DummyScheme(valid = false))), "Template > DummyScheme is invalid"),
-                row("fails on the first invalid scheme", Template("Template", mutableListOf(DummyScheme(), DummyScheme(valid = false), DummyScheme(valid = false))), "Template > DummyScheme is invalid"),
-                row("fails if array decorator is invalid", Template(arrayDecorator = ArrayDecorator(minCount = -24)), ""),
-                //@formatter:on
+    context("doValidate") {
+        withData(
+            mapOf(
+                "succeeds for default state" to
+                    row(Template(), null),
+                "fails if name is blank" to
+                    row(Template("  "), "template.error.no_name"),
+                "fails if only scheme is invalid" to
+                    row(
+                        Template("Template", mutableListOf(DummyScheme(valid = false))),
+                        "Template > DummyScheme is invalid",
+                    ),
+                "fails on the first invalid scheme" to
+                    row(
+                        Template(
+                            "Template",
+                            mutableListOf(DummyScheme(), DummyScheme(valid = false), DummyScheme(valid = false)),
+                        ),
+                        "Template > DummyScheme is invalid",
+                    ),
+                "fails if array decorator is invalid" to
+                    row(Template(arrayDecorator = ArrayDecorator(minCount = -24)), ""),
             )
-        ) { _, scheme, validation -> scheme shouldValidateAsBundle validation }
+        ) { (scheme, validation) -> scheme shouldValidateAsBundle validation }
     }
 
-    test("deepCopy") {
-        lateinit var scheme: Template
-
-
-        beforeEach {
-            scheme = Template()
-        }
-
-
-        test("equals old instance") {
-            scheme.deepCopy() shouldBe scheme
-        }
-
-        test("is independent of old instance") {
-            val copy = scheme.deepCopy()
-
-            scheme.name = "other"
-
-            copy.name shouldNotBe scheme.name
-        }
-
-        test("retains uuid if chosen") {
-            scheme.deepCopy(true).uuid shouldBe scheme.uuid
-        }
-
-        test("replaces uuid if chosen") {
-            scheme.deepCopy(false).uuid shouldNotBe scheme.uuid
-        }
-    }
+    include(stateDeepCopyTestFactory { Template() })
 })

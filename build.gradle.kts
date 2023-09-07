@@ -37,12 +37,12 @@ dependencies {
     implementation("com.vdurmont:emoji-java:${properties("emojiVersion")}")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
-    testImplementation("org.assertj:assertj-core:${properties("assertjVersion")}")
     testImplementation("org.assertj:assertj-swing-junit:${properties("assertjSwingVersion")}")
     testRuntimeOnly("org.junit.platform:junit-platform-runner:${properties("junitRunnerVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${properties("junitVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${properties("junitVersion")}")
     testImplementation("io.kotest:kotest-assertions-core:${properties("kotestVersion")}")
+    testImplementation("io.kotest:kotest-framework-datatest:${properties("kotestVersion")}")
     testImplementation("io.kotest:kotest-runner-junit5:${properties("kotestVersion")}")
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${properties("detektVersion")}")

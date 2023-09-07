@@ -1,5 +1,9 @@
 package com.fwdekker.randomness.array
 
+import com.fwdekker.randomness.afterNonContainer
+import com.fwdekker.randomness.beforeNonContainer
+import com.fwdekker.randomness.editorApplyTestFactory
+import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.isSelectedProp
@@ -12,10 +16,7 @@ import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.TitledSeparator
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
 import io.kotest.data.row
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
@@ -40,7 +41,7 @@ object ArrayDecoratorEditorTest : FunSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -49,18 +50,18 @@ object ArrayDecoratorEditorTest : FunSpec({
         frame = showInFrame(editor.rootComponent)
     }
 
-    afterEach {
+    afterNonContainer {
         frame.cleanUp()
         ideaFixture.tearDown()
     }
 
 
-    context("separator visibility") {
-        test("shows the separator if the editor is not embedded") {
+    context("embedded") {
+        test("shows the titled separator if the editor is not embedded") {
             frame.panel(matcher(TitledSeparator::class.java)).requireVisible()
         }
 
-        test("hides the separator if the editor is embedded") {
+        test("hides the titled separator if the editor is embedded") {
             frame.cleanUp()
             editor = guiGet { ArrayDecoratorEditor(scheme, embedded = true) }
             frame = showInFrame(editor.rootComponent)
@@ -69,38 +70,18 @@ object ArrayDecoratorEditorTest : FunSpec({
         }
     }
 
+
     context("input handling") {
-        test("truncates decimals in the minimum count") {
-            guiRun { frame.spinner("arrayMinCount").target().value = 983.24f }
-
-            frame.spinner("arrayMinCount").requireValue(983)
-        }
-
-        test("truncates decimals in the maximum count") {
-            guiRun { frame.spinner("arrayMaxCount").target().value = 881.78f }
-
-            frame.spinner("arrayMaxCount").requireValue(881)
-        }
-
-        test("binds the minimum and maximum counts") {
-            guiRun { frame.spinner("arrayMinCount").target().value = 188L }
-
-            frame.spinner("arrayMinCount").requireValue(188L)
-            frame.spinner("arrayMaxCount").requireValue(188L)
-        }
-
-        context("panel enabled state") {
-            test("disables components if enabled is deselected") {
+        context("arrayEnabled") {
+            test("disables inputs if deselected") {
                 guiRun { frame.checkBox("arrayEnabled").target().isSelected = false }
 
                 frame.spinner("arrayMinCount").requireDisabled()
             }
 
-            test("enables components if enabled is reselected") {
-                guiRun {
-                    frame.checkBox("arrayEnabled").target().isSelected = false
-                    frame.checkBox("arrayEnabled").target().isSelected = true
-                }
+            test("enables inputs if (re)selected") {
+                guiRun { frame.checkBox("arrayEnabled").target().isSelected = false }
+                guiRun { frame.checkBox("arrayEnabled").target().isSelected = true }
 
                 frame.spinner("arrayMinCount").requireEnabled()
             }
@@ -115,108 +96,120 @@ object ArrayDecoratorEditorTest : FunSpec({
 
                 frame.spinner("arrayMinCount").requireEnabled()
             }
+        }
 
-            test("disables space-after-separator if decorator is enabled but separator is a newline") {
-                scheme.enabled = false
-                scheme.separator = "\\n"
-                guiRun { editor.reset() }
+        context("*Count") {
+            test("truncates decimals in the minimum count") {
+                guiRun { frame.spinner("arrayMinCount").target().value = 983.24f }
 
-                frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
+                frame.spinner("arrayMinCount").requireValue(983)
+            }
+
+            test("truncates decimals in the maximum count") {
+                guiRun { frame.spinner("arrayMaxCount").target().value = 881.78f }
+
+                frame.spinner("arrayMaxCount").requireValue(881)
+            }
+
+            test("binds the minimum and maximum counts") {
+                guiRun { frame.spinner("arrayMinCount").target().value = 188 }
+
+                frame.spinner("arrayMinCount").requireValue(188)
+                frame.spinner("arrayMaxCount").requireValue(188)
             }
         }
 
-        context("space-after-separator enabled state") {
+        context("separator") {
             context("embedded") {
-                beforeEach {
+                beforeNonContainer {
                     frame.cleanUp()
                     editor = guiGet { ArrayDecoratorEditor(scheme, embedded = true) }
                     frame = showInFrame(editor.rootComponent)
                 }
 
 
-                test("disables space-after-separator if separator is a newline") {
-                    guiRun { frame.comboBox("arraySeparator").target().selectedItem = "\\n" }
+                test("disables separator if checkbox is disabled") {
+                    guiRun { frame.checkBox("arraySeparatorEnabled").target().isSelected = false }
 
-                    frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
+                    frame.comboBox("arraySeparator").requireDisabled()
                 }
 
-                test("enables space-after-separator if separator is not a newline") {
-                    guiRun { frame.comboBox("arraySeparator").target().selectedItem = "," }
+                test("enables separator if checkbox is enabled") {
+                    guiRun { frame.checkBox("arraySeparatorEnabled").target().isSelected = true }
 
-                    frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
+                    frame.comboBox("arraySeparator").requireEnabled()
                 }
             }
 
             context("not embedded") {
-                test("disables space-after-separator if separator is a newline") {
-                    guiRun { frame.comboBox("arraySeparator").target().selectedItem = "\\n" }
+                test("disables separator if panel is disabled and checkbox is disabled") {
+                    guiRun { frame.checkBox("arraySeparatorEnabled").target().isSelected = false }
 
-                    frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
+                    frame.comboBox("arraySeparator").requireDisabled()
                 }
 
-                test("enables space-after-separator if separator is not a newline") {
-                    guiRun { frame.comboBox("arraySeparator").target().selectedItem = "," }
+                test("disables separator if panel is disabled and checkbox is enabled") {
+                    guiRun { frame.checkBox("arrayEnabled").target().isSelected = false }
+                    guiRun { frame.checkBox("arraySeparatorEnabled").target().isSelected = true }
 
-                    frame.checkBox("arraySpaceAfterSeparator").requireEnabled()
+                    frame.comboBox("arraySeparator").requireDisabled()
                 }
 
-                test("disables space-after-separator if separator is not a newline, but decorator is disabled") {
-                    scheme.enabled = false
-                    scheme.separator = ","
-                    guiRun { editor.reset() }
+                test("disables separator if panel is enabled and checkbox is disabled") {
+                    guiRun { frame.checkBox("arrayEnabled").target().isSelected = true }
+                    guiRun { frame.checkBox("arraySeparatorEnabled").target().isSelected = false }
 
-                    frame.checkBox("arraySpaceAfterSeparator").requireDisabled()
-                }
-            }
-        }
-    }
-
-    context("'apply' makes no changes by default") {
-        val before = editor.scheme.deepCopy(retainUuid = true)
-
-        guiRun { editor.apply() }
-
-        before shouldBe editor.scheme
-    }
-
-    context("fields") {
-        forAll(
-            //@formatter:off
-            row("minCount", frame.spinner("minCount").valueProp(), editor.scheme::minCount.prop(), 275L),
-            row("maxCount", frame.spinner("maxCount").valueProp(), editor.scheme::maxCount.prop(), 483L),
-            row("separatorEnabled", frame.checkBox("arraySeparatorEnabled").isSelectedProp(), editor.scheme::separatorEnabled.prop(), false),
-            row("separator", frame.comboBox("arraySeparator").itemProp(), editor.scheme::separator.prop(), " - "),
-            row("affixDecorator", frame.comboBox("affixDescriptor").itemProp(), editor.scheme.affixDecorator::descriptor.prop(), "{@}"),
-            //@formatter:on
-        ) { description, editorProperty, schemeProperty, value ->
-            context(description) {
-                test("`reset` loads the scheme into the editor") {
-                    guiGet { editorProperty.get() } shouldNotBe value
-
-                    schemeProperty.set(value)
-                    guiRun { editor.reset() }
-
-                    guiGet { editorProperty.get() } shouldBe value
+                    frame.comboBox("arraySeparator").requireDisabled()
                 }
 
-                test("`apply` saves the editor into the scheme") {
-                    schemeProperty.get() shouldNotBe value
+                test("enables separator if panel is enabled and checkbox is enabled") {
+                    guiRun { frame.checkBox("arrayEnabled").target().isSelected = true }
+                    guiRun { frame.checkBox("arraySeparatorEnabled").target().isSelected = true }
 
-                    guiRun { editorProperty.set(value) }
-                    guiRun { editor.apply() }
-
-                    schemeProperty.get() shouldBe value
-                }
-
-                test("`addChangeListener` invokes the change listener") {
-                    var invoked = 0
-                    editor.addChangeListener { invoked++ }
-
-                    guiRun { editorProperty.set(value) }
-
-                    invoked shouldBe 1
+                    frame.comboBox("arraySeparator").requireEnabled()
                 }
             }
         }
     }
+
+
+    include(editorApplyTestFactory { editor })
+
+    include(
+        editorFieldsTestFactory(
+            { editor },
+            mapOf(
+                "minCount" to
+                    row(
+                        { frame.spinner("arrayMaxCount").valueProp() },
+                        { editor.scheme::minCount.prop() },
+                        1,
+                    ),
+                "maxCount" to
+                    row(
+                        { frame.spinner("arrayMaxCount").valueProp() },
+                        { editor.scheme::maxCount.prop() },
+                        483,
+                    ),
+                "separatorEnabled" to
+                    row(
+                        { frame.checkBox("arraySeparatorEnabled").isSelectedProp() },
+                        { editor.scheme::separatorEnabled.prop() },
+                        false,
+                    ),
+                "separator" to
+                    row(
+                        { frame.comboBox("arraySeparator").itemProp() },
+                        { editor.scheme::separator.prop() },
+                        " - ",
+                    ),
+                "affixDecorator" to
+                    row(
+                        { frame.comboBox("arrayAffixDescriptor").itemProp() },
+                        { editor.scheme.affixDecorator::descriptor.prop() },
+                        "{@}",
+                    ),
+            )
+        )
+    )
 })

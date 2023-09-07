@@ -39,6 +39,9 @@ object Bundle {
 
 /**
  * Returns `true` if [format] is a format string for `this` string, optionally after inserting [args] into [format].
+ *
+ * @throws java.util.MissingFormatArgumentException if [args] has fewer arguments than required for [format]
  */
+// TODO: Simplify documentation everywhere throughout the project to remove redundant `@param` specifications
 fun String.matchesFormat(format: String, vararg args: String) =
     Regex(format.format(*args).replace(Regex("%[0-9]+\\\$[Ss]"), ".*")).matches(this)

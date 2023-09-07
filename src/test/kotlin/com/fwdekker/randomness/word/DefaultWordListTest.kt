@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.beforeNonContainer
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.beEmpty
@@ -16,12 +17,12 @@ import kotlin.system.measureNanoTime
  * Unit tests for [DefaultWordList].
  */
 object DefaultWordListTest : FunSpec({
-    beforeEach {
+    beforeNonContainer {
         DefaultWordList.clearCache()
     }
 
 
-    test("words") {
+    context("words") {
         test("throws an exception if the file does not exist") {
             val list = DefaultWordList("name", "word-lists/does-not-exist.txt")
 
@@ -46,7 +47,7 @@ object DefaultWordListTest : FunSpec({
             list.words shouldContainExactly listOf("lorem", "ipsum", "dolor", "sit")
         }
 
-        test("caching") {
+        context("caching") {
             test("throws an exception again if the words are read again") {
                 val list = DefaultWordList("name", "word-lists/does-not-exist.txt")
 

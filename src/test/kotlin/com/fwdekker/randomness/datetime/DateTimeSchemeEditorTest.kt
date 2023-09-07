@@ -1,6 +1,10 @@
 package com.fwdekker.randomness.datetime
 
+import com.fwdekker.randomness.afterNonContainer
+import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.dateTimeProp
+import com.fwdekker.randomness.editorApplyTestFactory
+import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.prop
@@ -10,10 +14,8 @@ import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
@@ -36,7 +38,7 @@ object DateTimeSchemeEditorTest : FunSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -45,7 +47,7 @@ object DateTimeSchemeEditorTest : FunSpec({
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterEach {
+    afterNonContainer {
         frame.cleanUp()
         ideaFixture.tearDown()
     }
@@ -60,53 +62,38 @@ object DateTimeSchemeEditorTest : FunSpec({
         }
     }
 
-    context("apply") {
-        test("makes no changes by default") {
-            val before = editor.scheme.deepCopy(retainUuid = true)
 
-            guiRun { editor.apply() }
+    include(editorApplyTestFactory { editor })
 
-            before shouldBe editor.scheme
-        }
-    }
-
-    context("fields") {
-        forAll(
-            //@formatter:off
-            row("minDateTime", frame.textBox("minDateTime").dateTimeProp(), editor.scheme::minDateTime.prop(), 369L),
-            row("maxDateTime", frame.textBox("maxDateTime").dateTimeProp(), editor.scheme::maxDateTime.prop(), 822L),
-            row("pattern", frame.textBox("pattern").textProp(), editor.scheme::pattern.prop(), "dd/MM/yyyy"),
-            row("arrayDecorator", frame.spinner("arrayMinCount").valueProp(), editor.scheme.arrayDecorator::minCount.prop(), 7),
-            //@formatter:on
-        ) { description, editorProperty, schemeProperty, value ->
-            context(description) {
-                test("`reset` loads the scheme into the editor") {
-                    guiGet { editorProperty.get() } shouldNotBe value
-
-                    schemeProperty.set(value)
-                    guiRun { editor.reset() }
-
-                    guiGet { editorProperty.get() } shouldBe value
-                }
-
-                test("`apply` saves the editor into the scheme") {
-                    schemeProperty.get() shouldNotBe value
-
-                    guiRun { editorProperty.set(value) }
-                    guiRun { editor.apply() }
-
-                    schemeProperty.get() shouldBe value
-                }
-
-                test("`addChangeListener` invokes the change listener") {
-                    var invoked = 0
-                    editor.addChangeListener { invoked++ }
-
-                    guiRun { editorProperty.set(value) }
-
-                    invoked shouldBe 1
-                }
-            }
-        }
-    }
+    include(
+        editorFieldsTestFactory(
+            { editor },
+            mapOf(
+                "minDateTime" to
+                    row(
+                        { frame.textBox("minDateTime").dateTimeProp() },
+                        { editor.scheme::minDateTime.prop() },
+                        369L,
+                    ),
+                "maxDateTime" to
+                    row(
+                        { frame.textBox("maxDateTime").dateTimeProp() },
+                        { editor.scheme::maxDateTime.prop() },
+                        822L,
+                    ),
+                "pattern" to
+                    row(
+                        { frame.textBox("pattern").textProp() },
+                        { editor.scheme::pattern.prop() },
+                        "dd/MM/yyyy",
+                    ),
+                "arrayDecorator" to
+                    row(
+                        { frame.spinner("arrayMaxCount").valueProp() },
+                        { editor.scheme.arrayDecorator::maxCount.prop() },
+                        7,
+                    ),
+            )
+        )
+    )
 })

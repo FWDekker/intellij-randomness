@@ -3,15 +3,13 @@ package com.fwdekker.randomness.uuid
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.shouldValidateAsBundle
+import com.fwdekker.randomness.stateDeepCopyTestFactory
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
-import io.kotest.data.headers
 import io.kotest.data.row
-import io.kotest.data.table
+import io.kotest.datatest.withData
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.UUIDVersion
 import io.kotest.matchers.string.beLowerCase
 import io.kotest.matchers.string.beUUID
@@ -27,7 +25,7 @@ object UuidSchemeTest : FunSpec({
     tags(NamedTag("Scheme"))
 
 
-    test("generateStrings") {
+    context("generateStrings") {
         test("returns type-1 uuid") {
             UuidScheme(type = 1).generateStrings()[0] should beUUID(version = UUIDVersion.V1, considerNilValid = false)
         }
@@ -45,11 +43,11 @@ object UuidSchemeTest : FunSpec({
         }
 
         test("returns string with dashes") {
-            UuidScheme(isUppercase = true).generateStrings()[0] shouldContain "-"
+            UuidScheme(addDashes = true).generateStrings()[0] shouldContain "-"
         }
 
         test("returns string without dashes") {
-            UuidScheme(isUppercase = true).generateStrings()[0] shouldNotContain "-"
+            UuidScheme(addDashes = false).generateStrings()[0] shouldNotContain "-"
         }
 
         test("applies decorators in order affix, array") {
@@ -60,47 +58,20 @@ object UuidSchemeTest : FunSpec({
         }
     }
 
-    test("doValidate") {
-        forAll(
-            table(
-                //@formatter:off
-                headers("description", "scheme", "validation"),
-                row("succeeds for default state", UuidScheme(), null),
-                row("fails for unsupported type", UuidScheme(type = 14), "uuid.error.unknown_type"),
-                row("fails if affix decorator is invalid", UuidScheme(affixDecorator = AffixDecorator(descriptor = """\""")), ""),
-                row("fails if array decorator is invalid", UuidScheme(arrayDecorator = ArrayDecorator(minCount = -539)), ""),
-                //@formatter:on
+    context("doValidate") {
+        withData(
+            mapOf(
+                "succeeds for default state" to
+                    row(UuidScheme(), null),
+                "fails for unsupported type" to
+                    row(UuidScheme(type = 14), "uuid.error.unknown_type"),
+                "fails if affix decorator is invalid" to
+                    row(UuidScheme(affixDecorator = AffixDecorator(descriptor = """\""")), ""),
+                "fails if array decorator is invalid" to
+                    row(UuidScheme(arrayDecorator = ArrayDecorator(minCount = -539)), ""),
             )
-        ) { _, scheme, validation -> scheme shouldValidateAsBundle validation }
+        ) { (scheme, validation) -> scheme shouldValidateAsBundle validation }
     }
 
-    test("deepCopy") {
-        lateinit var scheme: UuidScheme
-
-
-        beforeEach {
-            scheme = UuidScheme()
-        }
-
-
-        test("equals old instance") {
-            scheme.deepCopy() shouldBe scheme
-        }
-
-        test("is independent of old instance") {
-            val copy = scheme.deepCopy()
-
-            scheme.type = 503
-
-            copy.type shouldNotBe scheme.type
-        }
-
-        test("retains uuid if chosen") {
-            scheme.deepCopy(true).uuid shouldBe scheme.uuid
-        }
-
-        test("replaces uuid if chosen") {
-            scheme.deepCopy(false).uuid shouldNotBe scheme.uuid
-        }
-    }
+    include(stateDeepCopyTestFactory { UuidScheme() })
 })

@@ -75,7 +75,7 @@ data class UuidScheme(
 
     override fun doValidate() =
         if (type !in listOf(TYPE_1, TYPE_4)) Bundle("uuid.error.unknown_type", type)
-        else arrayDecorator.doValidate()
+        else affixDecorator.doValidate() ?: arrayDecorator.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =
         copy(

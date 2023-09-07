@@ -1,6 +1,10 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.afterNonContainer
+import com.fwdekker.randomness.beforeNonContainer
+import com.fwdekker.randomness.editorApplyTestFactory
+import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.find
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
@@ -14,11 +18,9 @@ import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
 import io.kotest.data.row
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
@@ -43,7 +45,7 @@ object WordSchemeEditorTest : FunSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -54,141 +56,126 @@ object WordSchemeEditorTest : FunSpec({
         wordsEditor = frame.find(matcher(EditorComponentImpl::class.java))
     }
 
-    afterEach {
+    afterNonContainer {
         frame.cleanUp()
         guiRun { editor.dispose() }
         ideaFixture.tearDown()
     }
 
 
-    test("preset insertion") {
-        lateinit var firstList: DefaultWordList
-        lateinit var firstListAsString: String
+    context("input handling") {
+        context("presets") {
+            lateinit var firstList: DefaultWordList
+            lateinit var firstListAsString: String
 
 
-        beforeEach {
-            firstList = frame.comboBox("presets").target().getItemAt(1) as DefaultWordList
-            firstListAsString = firstList.words.joinToString(separator = "\n", postfix = "\n")
-        }
-
-
-        test("pre-selection") {
-            test("selects the placeholder if the initial words do no match any word list") {
-                scheme.words = listOf("word1", "word2")
-                guiRun { editor.reset() }
-
-                frame.comboBox("presets").target().selectedIndex shouldBe 0
+            beforeNonContainer {
+                firstList = frame.comboBox("presets").target().getItemAt(1) as DefaultWordList
+                firstListAsString = firstList.words.joinToString(separator = "\n", postfix = "\n")
             }
 
-            test("selects the corresponding word list if the contents match that list") {
-                scheme.words = firstList.words
-                guiRun { editor.reset() }
 
-                frame.comboBox("presets").target().selectedIndex shouldBe 1
-            }
-
-            test("selects the placeholder if a word is changed") {
-                scheme.words = firstList.words
-                guiRun { editor.reset() }
-
-                guiRun { runWriteAction { wordsEditor.editor.document.setText("${firstListAsString}jealous") } }
-
-                frame.comboBox("presets").target().selectedIndex shouldBe 0
-            }
-
-            test("retains the non-placeholder selection if a newline is appended") {
-                scheme.words = firstList.words
-                guiRun { editor.reset() }
-
-                guiRun { runWriteAction { wordsEditor.editor.document.setText("$firstListAsString\n \n") } }
-
-                frame.comboBox("presets").target().selectedIndex shouldBe 1
-            }
-        }
-
-        test("insertion") {
-            test("does nothing if the placeholder is selected") {
-                scheme.words = listOf("word1", "word2")
-                guiRun { editor.reset() }
-
-                guiRun { frame.comboBox("presets").target().selectedIndex = 0 }
-
-                wordsEditor.text shouldBe "word1\nword2\n"
-            }
-
-            test("does nothing if another entry is selected and then the placeholder is selected") {
-                guiRun { frame.comboBox("presets").target().selectedIndex = 1 }
-
-                guiRun { frame.comboBox("presets").target().selectedIndex = 0 }
-
-                wordsEditor.text shouldBe firstListAsString
-            }
-
-            test("inserts the words of the selected entry") {
-                scheme.words = listOf("word1", "word2")
-                guiRun { editor.reset() }
-
-                guiRun { frame.comboBox("presets").target().selectedIndex = 1 }
-
-                wordsEditor.text shouldBe firstListAsString
-            }
-        }
-    }
-
-
-    test("removes blank lines from the words input") {
-        guiRun { runWriteAction { wordsEditor.editor.document.setText("word1\n  \nword2\n") } }
-
-        guiRun { editor.apply() }
-
-        guiGet { editor.scheme.words } shouldContainExactly listOf("word1", "word2")
-    }
-
-    test("'apply' makes no changes by default") {
-        val before = editor.scheme.deepCopy(retainUuid = true)
-
-        guiRun { editor.apply() }
-
-        before shouldBe editor.scheme
-    }
-
-    test("fields") {
-        forAll(
-            //@formatter:off
-            // TODO: Also add word input itself?
-            row("capitalization", frame.comboBox("capitalization").itemProp(), editor.scheme::capitalization.prop(), CapitalizationMode.SENTENCE),
-            row("affixDecorator", frame.comboBox("affixDescriptor").itemProp(), editor.scheme.affixDecorator::descriptor.prop(), "[@]"),
-            row("arrayDecorator", frame.spinner("arrayMinCount").valueProp(), editor.scheme.arrayDecorator::minCount.prop(), 7),
-            //@formatter:on
-        ) { description, editorProperty, schemeProperty, value ->
-            test(description) {
-                test("`reset` loads the scheme into the editor") {
-                    guiGet { editorProperty.get() } shouldNotBe value
-
-                    schemeProperty.set(value)
+            context("pre-selection") {
+                test("selects the placeholder if the initial words do no match any word list") {
+                    scheme.words = listOf("word1", "word2")
                     guiRun { editor.reset() }
 
-                    guiGet { editorProperty.get() } shouldBe value
+                    frame.comboBox("presets").target().selectedIndex shouldBe 0
                 }
 
-                test("`apply` saves the editor into the scheme") {
-                    schemeProperty.get() shouldNotBe value
+                test("selects the corresponding word list if the contents match that list") {
+                    scheme.words = firstList.words
+                    guiRun { editor.reset() }
 
-                    guiRun { editorProperty.set(value) }
-                    guiRun { editor.apply() }
-
-                    schemeProperty.get() shouldBe value
+                    frame.comboBox("presets").target().selectedIndex shouldBe 1
                 }
 
-                test("`addChangeListener` invokes the change listener") {
-                    var invoked = 0
-                    editor.addChangeListener { invoked++ }
+                test("selects the placeholder if a word is changed") {
+                    scheme.words = firstList.words
+                    guiRun { editor.reset() }
 
-                    guiRun { editorProperty.set(value) }
+                    guiRun { runWriteAction { wordsEditor.editor.document.setText("${firstListAsString}jealous") } }
 
-                    invoked shouldBe 1
+                    frame.comboBox("presets").target().selectedIndex shouldBe 0
+                }
+
+                test("retains the non-placeholder selection if a newline is appended") {
+                    scheme.words = firstList.words
+                    guiRun { editor.reset() }
+
+                    guiRun { runWriteAction { wordsEditor.editor.document.setText("$firstListAsString\n \n") } }
+
+                    frame.comboBox("presets").target().selectedIndex shouldBe 1
+                }
+            }
+
+            context("insertion") {
+                test("does nothing if the placeholder is selected") {
+                    scheme.words = listOf("word1", "word2")
+                    guiRun { editor.reset() }
+
+                    guiRun { frame.comboBox("presets").target().selectedIndex = 0 }
+
+                    wordsEditor.text shouldBe "word1\nword2\n"
+                }
+
+                test("does nothing if another entry is selected and then the placeholder is selected") {
+                    guiRun { frame.comboBox("presets").target().selectedIndex = 1 }
+
+                    guiRun { frame.comboBox("presets").target().selectedIndex = 0 }
+
+                    wordsEditor.text shouldBe firstListAsString
+                }
+
+                test("inserts the words of the selected entry") {
+                    scheme.words = listOf("word1", "word2")
+                    guiRun { editor.reset() }
+
+                    guiRun { frame.comboBox("presets").target().selectedIndex = 1 }
+
+                    wordsEditor.text shouldBe firstListAsString
                 }
             }
         }
+
+        context("words") {
+            test("removes blank lines from the input field") {
+                guiRun { runWriteAction { wordsEditor.editor.document.setText("word1\n  \nword2\n") } }
+
+                guiRun { editor.apply() }
+
+                guiGet { editor.scheme.words } shouldContainExactly listOf("word1", "word2")
+            }
+        }
     }
+
+
+    include(editorApplyTestFactory { editor })
+
+    include(
+        editorFieldsTestFactory(
+            { editor },
+            mapOf(
+                // TODO: Also add word input itself?
+                "capitalization" to
+                    row(
+                        { frame.comboBox("capitalization").itemProp() },
+                        { editor.scheme::capitalization.prop() },
+                        CapitalizationMode.SENTENCE,
+                    ),
+                "affixDecorator" to
+                    row(
+                        { frame.comboBox("affixDescriptor").itemProp() },
+                        { editor.scheme.affixDecorator::descriptor.prop() },
+                        "[@]",
+                    ),
+                "arrayDecorator" to
+                    row(
+                        { frame.spinner("arrayMaxCount").valueProp() },
+                        { editor.scheme.arrayDecorator::maxCount.prop() },
+                        7,
+                    ),
+            )
+        )
+    )
 })

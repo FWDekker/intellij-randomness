@@ -36,12 +36,12 @@ object SchemeEditorTest : FunSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
     }
 
-    afterEach {
+    afterNonContainer {
         frame.cleanUp()
         ideaFixture.tearDown()
     }
@@ -84,7 +84,7 @@ object SchemeEditorTest : FunSpec({
                     panel {
                         row("Label") {
                             textField()
-                            radioButton("Button").withName("button").visible(false)
+                            spinner(0..10).withName("spinner").visible(false)
                             checkBox("Check").withName("checkbox")
                         }
                     }
@@ -100,7 +100,7 @@ object SchemeEditorTest : FunSpec({
                     panel {
                         row("Label") {
                             textField()
-                            radioButton("Button").withName("button").visible(false)
+                            spinner(0..10).withName("spinner").visible(false)
                         }
                     }
                 }
@@ -122,7 +122,7 @@ object SchemeEditorTest : FunSpec({
 
             guiRun { frame.textBox().target().text = "new" }
             frame.textBox().requireText("new")
-            editor.reset()
+            guiRun { editor.reset() }
 
             frame.textBox().requireText("old")
         }
@@ -146,7 +146,7 @@ object SchemeEditorTest : FunSpec({
 
             guiRun { frame.textBox().target().text = "new" }
             frame.textBox().requireText("new")
-            editor.reset()
+            guiRun { editor.reset() }
 
             frame.textBox().requireText("old")
         }

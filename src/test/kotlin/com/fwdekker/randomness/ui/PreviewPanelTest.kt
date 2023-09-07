@@ -2,6 +2,8 @@ package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.DummyScheme
+import com.fwdekker.randomness.afterNonContainer
+import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.find
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
@@ -37,7 +39,7 @@ object PreviewPanelTest : FunSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -47,22 +49,22 @@ object PreviewPanelTest : FunSpec({
         panel.previewText shouldBe placeholder
     }
 
-    afterEach {
+    afterNonContainer {
         frame.cleanUp()
         guiRun { panel.dispose() }
         ideaFixture.tearDown()
     }
 
 
-    test("updatePreview") {
+    context("updatePreview") {
         test("updates the label's contents") {
             guiRun { panel.updatePreview() }
 
-            panel.previewText shouldBe "dummy0"
+            panel.previewText shouldBe "text0"
         }
     }
 
-    test("seed") {
+    context("seed") {
         test("reuses the old seed if the button is not pressed") {
             guiRun { panel.updatePreview() }
             val oldRandom = scheme?.random

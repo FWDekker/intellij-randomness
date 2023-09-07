@@ -19,14 +19,14 @@ object ErrorReporterTest : FunSpec({
     lateinit var reporter: ErrorReporter
 
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
         reporter = ErrorReporter()
     }
 
-    afterEach {
+    afterNonContainer {
         ideaFixture.tearDown()
     }
 

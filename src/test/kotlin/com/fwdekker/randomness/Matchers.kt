@@ -25,6 +25,7 @@ infix fun IntArray.shouldContainExactly(collection: Array<Int>) =
  * Matches a nullable string against the [Bundle] entry at [key] formatted with [args].
  *
  * @see matchesFormat
+ * @throws java.util.MissingFormatArgumentException if [args] has fewer arguments than required for [format]
  */
 fun matchBundle(key: String, vararg args: String): Matcher<String?> =
     Matcher { string ->

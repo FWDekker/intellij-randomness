@@ -5,21 +5,20 @@ import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.setAll
 import com.fwdekker.randomness.shouldValidateAsBundle
+import com.fwdekker.randomness.stateDeepCopyTestFactory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
-import io.kotest.data.headers
 import io.kotest.data.row
-import io.kotest.data.table
+import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
-import io.kotest.matchers.shouldNotBe
 
 
 /**
@@ -35,16 +34,17 @@ object TemplateReferenceTest : FunSpec({
     lateinit var referencedTemplate: Template
 
 
-    beforeEach {
+    beforeNonContainer {
         referencedTemplate = Template("referenced", mutableListOf(DummyScheme()))
         reference = TemplateReference(referencedTemplate.uuid)
         referencingTemplate = Template("referencing", mutableListOf(reference))
+
         list = TemplateList(mutableListOf(referencedTemplate, referencingTemplate))
         list.applyContext(Settings(list))
     }
 
 
-    test("name") {
+    context("name") {
         test("returns an alternative name if no template is set") {
             reference.template = null
 
@@ -56,7 +56,7 @@ object TemplateReferenceTest : FunSpec({
         }
     }
 
-    test("typeIcon") {
+    context("typeIcon") {
         test("uses the default type icon if the template is null") {
             reference.template = null
 
@@ -74,7 +74,7 @@ object TemplateReferenceTest : FunSpec({
         }
     }
 
-    test("icon") {
+    context("icon") {
         test("uses the default icon with a link overlay if the template is null") {
             reference.template = null
 
@@ -101,7 +101,7 @@ object TemplateReferenceTest : FunSpec({
         }
     }
 
-    test("parent") {
+    context("parent") {
         test("throws an exception if the reference is not in the context's template list") {
             list.templates.clear()
 
@@ -119,8 +119,8 @@ object TemplateReferenceTest : FunSpec({
         }
     }
 
-    test("template") {
-        test("get") {
+    context("template") {
+        context("get") {
             test("returns null if the UUID is null") {
                 reference.templateUuid = null
 
@@ -144,7 +144,7 @@ object TemplateReferenceTest : FunSpec({
             }
         }
 
-        test("set") {
+        context("set") {
             test("sets the template UUID") {
                 val template = Template("new")
                 list.templates += template
@@ -174,7 +174,7 @@ object TemplateReferenceTest : FunSpec({
     }
 
 
-    test("applyContext") {
+    context("applyContext") {
         test("changes the list of templates into which this reference refers") {
             reference.template shouldNot beNull()
 
@@ -184,24 +184,25 @@ object TemplateReferenceTest : FunSpec({
         }
     }
 
-    test("canReference") {
-        TODO()
+    context("canReference") {
+        TODO() // TODO: Implement these tests
     }
 
 
-    test("generateStrings") {
-        test("parameterized") {
-            forAll(
-                table(
-                    //@formatter:off
-                    headers("description", "scheme", "output"),
-                    row("returns the referenced template's value", reference, "dummy0"),
-                    row("capitalizes output", reference.also { it.capitalization = CapitalizationMode.UPPER }, "DUMMY0"),
-                    row("applies decorators in order affix, array", reference.also { it.affixDecorator.enabled = true; it.arrayDecorator.enabled = true }, """["dummy0", "dummy1", "dummy2"]"""),
-                    //@formatter:on
-                )
-            ) { _, scheme, output -> scheme.generateStrings()[0] shouldBe output }
-        }
+    context("generateStrings") {
+        withData(
+            mapOf(
+                "returns the referenced template's value" to
+                    row(reference, "text0"),
+                "capitalizes output" to
+                    row(reference.also { it.capitalization = CapitalizationMode.UPPER }, "DUMMY0"),
+                "applies decorators in order affix, array" to
+                    row(
+                        reference.also { it.affixDecorator.enabled = true; it.arrayDecorator.enabled = true },
+                        """["text0", "text1", "text2"]""",
+                    ),
+            )
+        ) { (scheme, output) -> scheme.generateStrings()[0] shouldBe output }
 
 
         test("returns the referenced template's value") {
@@ -221,49 +222,31 @@ object TemplateReferenceTest : FunSpec({
         }
     }
 
-    test("doValidate") {
-        forAll(
-            table(
-                //@formatter:off
-                headers("description", "scheme", "validation"),
-                row("succeeds for default state (given appropriate context)", reference, null),
-                row("fails if no template is referred to", reference.also { it.template = null }, "reference.error.no_selection"),
-                row("fails if the referred template cannot be found", reference.also { it.applyContext(Settings()) }, "reference.error.not_found"),
-                row("fails if the reference is recursive", run { referencingTemplate.schemes += TemplateReference(reference.uuid); referencingTemplate.applyContext(Settings(list)); reference }, "reference.error.recursion"),
-                row("fails if affix decorator is invalid", reference.also { it.affixDecorator.descriptor = """\""" }, ""),
-                row("fails if array decorator is invalid", reference.also { it.arrayDecorator.minCount = -24 }, ""),
-                //@formatter:on
+    context("doValidate") {
+        withData(
+            mapOf(
+                "succeeds for default state (given appropriate context)" to
+                    row(reference, null),
+                "fails if no template is referred to" to
+                    row(reference.also { it.template = null }, "reference.error.no_selection"),
+                "fails if the referred template cannot be found" to
+                    row(reference.also { it.applyContext(Settings()) }, "reference.error.not_found"),
+                "fails if the reference is recursive" to
+                    row(
+                        run {
+                            referencingTemplate.schemes += TemplateReference(reference.uuid)
+                            referencingTemplate.applyContext(Settings(list))
+                            reference
+                        },
+                        "reference.error.recursion",
+                    ),
+                "fails if affix decorator is invalid" to
+                    row(reference.also { it.affixDecorator.descriptor = """\""" }, ""),
+                "fails if array decorator is invalid" to
+                    row(reference.also { it.arrayDecorator.minCount = -24 }, ""),
             )
-        ) { _, scheme, validation -> scheme shouldValidateAsBundle validation }
+        ) { (scheme, validation) -> scheme shouldValidateAsBundle validation }
     }
 
-    test("deepCopy") {
-        lateinit var scheme: TemplateReference
-
-
-        beforeEach {
-            scheme = TemplateReference()
-        }
-
-
-        test("equals old instance") {
-            scheme.deepCopy() shouldBe scheme
-        }
-
-        test("is independent of old instance") {
-            val copy = scheme.deepCopy()
-
-            scheme.templateUuid = "251c0737-b1f1-40ec-9dc1-80a6c43b4dcb"
-
-            copy.templateUuid shouldNotBe scheme.templateUuid
-        }
-
-        test("retains uuid if chosen") {
-            scheme.deepCopy(true).uuid shouldBe scheme.uuid
-        }
-
-        test("replaces uuid if chosen") {
-            scheme.deepCopy(false).uuid shouldNotBe scheme.uuid
-        }
-    }
+    include(stateDeepCopyTestFactory { TemplateReference() })
 })

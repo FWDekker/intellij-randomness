@@ -3,6 +3,11 @@ package com.fwdekker.randomness
 import com.fwdekker.randomness.ui.JDateTimeField
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.ui.dsl.builder.MutableProperty
+import io.kotest.core.TestConfiguration
+import io.kotest.core.spec.AfterAny
+import io.kotest.core.spec.BeforeAny
+import io.kotest.core.spec.style.scopes.ContainerScope
+import io.kotest.core.test.TestType
 import org.assertj.swing.core.GenericTypeMatcher
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.FrameFixture
@@ -84,3 +89,44 @@ fun JSpinnerFixture.valueProp() = this.prop({ this.target()::getValue }, { this.
 fun JTextComponentFixture.dateTimeProp() = (this.target() as JDateTimeField)::longValue.prop()
 
 fun JTextComponentFixture.textProp() = this.prop({ this.target()::getText }, { this.target()::setText })
+
+
+/**
+ * Runs [before] before every test, but, unlike, [TestConfiguration.beforeAny], does not run before other scopes.
+ */
+fun TestConfiguration.beforeNonContainer(before: BeforeAny) {
+    this.beforeAny {
+        if (it.type != TestType.Container)
+            before(it)
+    }
+}
+
+/**
+ * Runs [before] before every test, but, unlike, [ContainerScope.beforeAny], does not run before other scopes.
+ */
+fun ContainerScope.beforeNonContainer(before: BeforeAny) {
+    this.beforeAny {
+        if (it.type != TestType.Container)
+            before(it)
+    }
+}
+
+/**
+ * Runs [after] after every test, but, unlike, [TestConfiguration.afterAny], does not run after other scopes.
+ */
+fun TestConfiguration.afterNonContainer(after: AfterAny) {
+    this.afterAny {
+        if (it.a.type != TestType.Container)
+            after(it)
+    }
+}
+
+/**
+ * Runs [after] after every test, but, unlike, [ContainerScope.afterAny], does not run after other scopes.
+ */
+fun ContainerScope.afterNonContainer(after: AfterAny) {
+    this.afterAny {
+        if (it.a.type != TestType.Container)
+            after(it)
+    }
+}

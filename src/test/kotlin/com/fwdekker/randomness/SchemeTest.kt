@@ -87,13 +87,13 @@ object SchemeTest : FunSpec({
         test("returns undecorated strings if there is no decorator") {
             val scheme = DummyScheme()
 
-            scheme.generateStrings(2) shouldContainExactly listOf("dummy0", "dummy1")
+            scheme.generateStrings(2) shouldContainExactly listOf("text0", "text1")
         }
 
         test("returns decorated strings if there is a decorator") {
             val scheme = DummyScheme(decorators = listOf(DummyDecoratorScheme(enabled = true)))
 
-            scheme.generateStrings(2) shouldContainExactly listOf("dummy0:decorated", "dummy1:decorated")
+            scheme.generateStrings(2) shouldContainExactly listOf("text0:decorated", "text1:decorated")
         }
 
         test("applies decorators in order") {
@@ -105,7 +105,7 @@ object SchemeTest : FunSpec({
                 ),
             )
 
-            scheme.generateStrings(2) shouldContainExactly listOf("dummy0:a:b:c", "dummy1:a:b:c")
+            scheme.generateStrings(2) shouldContainExactly listOf("text0:a:b:c", "text1:a:b:c")
         }
 
         test("applies decorators recursively") {
@@ -135,7 +135,7 @@ object SchemeTest : FunSpec({
                 )
             )
 
-            scheme.generateStrings()[0] shouldBe "dummy0:a:aa:aaa:ab:aba:b:ba"
+            scheme.generateStrings()[0] shouldBe "text0:a:aa:aaa:ab:aba:b:ba"
         }
     }
 })
@@ -161,16 +161,16 @@ object DecoratorSchemeTest : FunSpec({
 
         test("returns the generator's output if disabled") {
             val decorator = DummyDecoratorScheme()
-            decorator.generator = { count -> List(count) { "dummy$it" } }
+            decorator.generator = { count -> List(count) { "text$it" } }
 
-            decorator.generateStrings(2) shouldContainExactly listOf("dummy0", "dummy1")
+            decorator.generateStrings(2) shouldContainExactly listOf("text0", "text1")
         }
 
         test("decorators the generator's output if enabled") {
             val decorator = DummyDecoratorScheme(enabled = true)
-            decorator.generator = { count -> List(count) { "dummy$it" } }
+            decorator.generator = { count -> List(count) { "text$it" } }
 
-            decorator.generateStrings(2) shouldContainExactly listOf("dummy0:decorated", "dummy1:decorated")
+            decorator.generateStrings(2) shouldContainExactly listOf("text0:decorated", "text1:decorated")
         }
     }
 })

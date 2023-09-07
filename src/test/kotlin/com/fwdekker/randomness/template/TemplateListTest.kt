@@ -3,15 +3,12 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.shouldValidateAsBundle
+import com.fwdekker.randomness.stateDeepCopyTestFactory
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
-import io.kotest.data.headers
 import io.kotest.data.row
-import io.kotest.data.table
+import io.kotest.datatest.withData
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 
 
@@ -19,7 +16,7 @@ import io.kotest.matchers.types.shouldBeSameInstanceAs
  * Unit tests for [TemplateList].
  */
 object TemplateListTest : FunSpec({
-    test("applyContext") {
+    context("applyContext") {
         test("applies the context to itself") {
             val newContext = Settings()
             val list = TemplateList()
@@ -41,10 +38,10 @@ object TemplateListTest : FunSpec({
     }
 
 
-    test("listValidReferenceTargets") {
-        test("for reference") {
+    context("listValidReferenceTargets") {
+        context("for reference") {
             test("returns an error if the given reference is not in this list") {
-                //
+                // TODO: Implement this test
             }
 
             test("returns copies") {
@@ -58,7 +55,7 @@ object TemplateListTest : FunSpec({
     }
 
 
-    test("getTemplateByUuid") {
+    context("getTemplateByUuid") {
         test("returns null if no such template can be found") {
             val list = TemplateList()
 
@@ -82,7 +79,7 @@ object TemplateListTest : FunSpec({
         }
     }
 
-    test("getSchemeByUuid") {
+    context("getSchemeByUuid") {
         test("returns null if no such scheme can be found") {
             val list = TemplateList()
 
@@ -107,48 +104,33 @@ object TemplateListTest : FunSpec({
     }
 
 
-    test("doValidate") {
-        forAll(
-            table(
-                //@formatter:off
-                headers("description", "scheme", "validation"),
-                row("succeeds for default state", TemplateList(), null),
-                row("succeeds with no templates", TemplateList(mutableListOf()), null),
-                row("fails if multiple templates have the same name", TemplateList(mutableListOf(Template("same"), Template("same"))), "template_list.error.duplicate_name"),
-                row("fails if the single template is invalid", TemplateList(mutableListOf(Template(schemes = mutableListOf(DummyScheme(valid = false))))), ""),
-                row("fails if one of multiple templates is invalid", TemplateList(mutableListOf(Template("Valid"), Template("Invalid", mutableListOf(DummyScheme(valid = false))))), ""),
-                //@formatter:on
+    context("doValidate") {
+        withData(
+            mapOf(
+                "succeeds for default state" to
+                    row(TemplateList(), null),
+                "succeeds with no templates" to
+                    row(TemplateList(mutableListOf()), null),
+                "fails if multiple templates have the same name" to
+                    row(
+                        TemplateList(mutableListOf(Template("same"), Template("same"))),
+                        "template_list.error.duplicate_name",
+                    ),
+                "fails if the single template is invalid" to
+                    row(TemplateList(mutableListOf(Template(schemes = mutableListOf(DummyScheme(valid = false))))), ""),
+                "fails if one of multiple templates is invalid" to
+                    row(
+                        TemplateList(
+                            mutableListOf(
+                                Template("Valid"),
+                                Template("Invalid", mutableListOf(DummyScheme(valid = false))),
+                            ),
+                        ),
+                        "",
+                    ),
             )
-        ) { _, scheme, validation -> scheme shouldValidateAsBundle validation }
+        ) { (scheme, validation) -> scheme shouldValidateAsBundle validation }
     }
 
-    test("deepCopy") {
-        lateinit var list: TemplateList
-
-
-        beforeEach {
-            list = TemplateList()
-        }
-
-
-        test("equals old instance") {
-            list.deepCopy() shouldBe list
-        }
-
-        test("is independent of old instance") {
-            val copy = list.deepCopy()
-
-            list.templates[0].name = "other"
-
-            copy.templates[0].name shouldNotBe list.templates[0].name
-        }
-
-        test("retains uuid if chosen") {
-            list.deepCopy(true).uuid shouldBe list.uuid
-        }
-
-        test("replaces uuid if chosen") {
-            list.deepCopy(false).uuid shouldNotBe list.uuid
-        }
-    }
+    include(stateDeepCopyTestFactory { TemplateList() })
 })

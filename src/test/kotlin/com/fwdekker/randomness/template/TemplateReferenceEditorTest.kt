@@ -3,6 +3,9 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.afterNonContainer
+import com.fwdekker.randomness.beforeNonContainer
+import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.itemProp
@@ -12,11 +15,9 @@ import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
 import io.kotest.data.row
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
@@ -41,7 +42,7 @@ object TemplateReferenceEditorTest : FunSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -63,13 +64,13 @@ object TemplateReferenceEditorTest : FunSpec({
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterEach {
+    afterNonContainer {
         frame.cleanUp()
         ideaFixture.tearDown()
     }
 
 
-    test("reset") {
+    context("reset") {
         test("selects nothing if the reference refers to null") {
             reference.template = null
             guiRun { editor.reset() }
@@ -85,7 +86,7 @@ object TemplateReferenceEditorTest : FunSpec({
         }
     }
 
-    test("apply") {
+    context("apply") {
         test("makes no changes by default") {
             val before = editor.scheme.deepCopy(retainUuid = true)
 
@@ -95,43 +96,35 @@ object TemplateReferenceEditorTest : FunSpec({
         }
     }
 
-    test("fields") {
-        forAll(
-            //@formatter:off
-            row("template", frame.comboBox("template").itemProp(), editor.scheme::template.prop(), context.templates[2]),
-            row("capitalization", frame.comboBox("capitalization").itemProp(), editor.scheme::capitalization.prop(), CapitalizationMode.LOWER),
-            row("affixDecorator", frame.comboBox("affixDescriptor").itemProp(), editor.scheme.affixDecorator::descriptor.prop(), "[@]"),
-            row("arrayDecorator", frame.spinner("arrayMinCount").valueProp(), editor.scheme.arrayDecorator::minCount.prop(), 7),
-            //@formatter:on
-        ) { description, editorProperty, schemeProperty, value ->
-            test(description) {
-                test("`reset` loads the scheme into the editor") {
-                    guiGet { editorProperty.get() } shouldNotBe value
-
-                    schemeProperty.set(value)
-                    guiRun { editor.reset() }
-
-                    guiGet { editorProperty.get() } shouldBe value
-                }
-
-                test("`apply` saves the editor into the scheme") {
-                    schemeProperty.get() shouldNotBe value
-
-                    guiRun { editorProperty.set(value) }
-                    guiRun { editor.apply() }
-
-                    schemeProperty.get() shouldBe value
-                }
-
-                test("`addChangeListener` invokes the change listener") {
-                    var invoked = 0
-                    editor.addChangeListener { invoked++ }
-
-                    guiRun { editorProperty.set(value) }
-
-                    invoked shouldBe 1
-                }
-            }
-        }
-    }
+    include(
+        editorFieldsTestFactory(
+            { editor },
+            mapOf(
+                "template" to
+                    row(
+                        { frame.comboBox("template").itemProp() },
+                        { editor.scheme::template.prop() },
+                        "Template0",
+                    ),
+                "capitalization" to
+                    row(
+                        { frame.comboBox("capitalization").itemProp() },
+                        { editor.scheme::capitalization.prop() },
+                        CapitalizationMode.LOWER,
+                    ),
+                "affixDecorator" to
+                    row(
+                        { frame.comboBox("affixDescriptor").itemProp() },
+                        { editor.scheme.affixDecorator::descriptor.prop() },
+                        "[@]",
+                    ),
+                "arrayDecorator" to
+                    row(
+                        { frame.spinner("arrayMaxCount").valueProp() },
+                        { editor.scheme.arrayDecorator::maxCount.prop() },
+                        7,
+                    ),
+            )
+        )
+    )
 })

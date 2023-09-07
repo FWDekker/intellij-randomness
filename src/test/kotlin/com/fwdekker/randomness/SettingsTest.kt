@@ -4,10 +4,8 @@ import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
-import io.kotest.data.headers
 import io.kotest.data.row
-import io.kotest.data.table
+import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 
@@ -16,16 +14,17 @@ import io.kotest.matchers.types.shouldNotBeSameInstanceAs
  * Unit tests for [Settings].
  */
 object SettingsTest : FunSpec({
-    test("doValidate") {
-        forAll(
-            //@formatter:off
-            table(
-                headers("description", "scheme", "validation"),
-                row("succeeds for default state", Settings(), null),
-                row("fails if template list is invalid", Settings(TemplateList(mutableListOf(Template("Duplicate"), Template("Duplicate")))), ""),
+    context("doValidate") {
+        withData(
+            mapOf(
+                "succeeds for default state" to
+                    row(Settings(), null),
+                "fails if template list is invalid" to
+                    row(Settings(TemplateList(mutableListOf(Template("Duplicate"), Template("Duplicate")))), ""),
             )
-            //@formatter:on
-        ) { _, scheme, validation -> scheme shouldValidateAsBundle validation }
+        ) { (scheme, validation) ->
+            scheme shouldValidateAsBundle validation
+        }
     }
 
     context("deepCopy") {

@@ -3,6 +3,8 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.afterNonContainer
+import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.getActionButton
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
@@ -14,10 +16,8 @@ import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
-import io.kotest.data.headers
 import io.kotest.data.row
-import io.kotest.data.table
+import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.nulls.beNull
@@ -50,7 +50,7 @@ object TemplateJTreeTest : FunSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
@@ -70,12 +70,12 @@ object TemplateJTreeTest : FunSpec({
         tree = guiGet { TemplateJTree(originalState, currentState) }
     }
 
-    afterEach {
+    afterNonContainer {
         ideaFixture.tearDown()
     }
 
 
-    test("selectedNodeNotRoot") {
+    context("selectedNodeNotRoot") {
         test("returns null if nothing is selected") {
             guiRun { tree.clearSelection() }
 
@@ -97,8 +97,8 @@ object TemplateJTreeTest : FunSpec({
         }
     }
 
-    test("selectedScheme") {
-        test("get") {
+    context("selectedScheme") {
+        context("get") {
             test("returns null if nothing is selected") {
                 guiRun { tree.clearSelection() }
 
@@ -120,7 +120,7 @@ object TemplateJTreeTest : FunSpec({
             }
         }
 
-        test("set") {
+        context("set") {
             test("selects the first template if null is set") {
                 guiRun { tree.selectedScheme = null }
 
@@ -163,8 +163,8 @@ object TemplateJTreeTest : FunSpec({
         }
     }
 
-    test("selectedTemplate") {
-        test("get") {
+    context("selectedTemplate") {
+        context("get") {
             test("returns null if nothing is selected") {
                 guiRun { tree.clearSelection() }
 
@@ -194,7 +194,7 @@ object TemplateJTreeTest : FunSpec({
             }
         }
 
-        test("set") {
+        context("set") {
             test("selects the first template if null is set") {
                 guiRun { tree.selectedTemplate = null }
 
@@ -222,7 +222,7 @@ object TemplateJTreeTest : FunSpec({
     }
 
 
-    test("reload") {
+    context("reload") {
         test("synchronizes removed nodes") {
             guiRun { tree.myModel.list.templates.removeAll(tree.myModel.list.templates.take(2)) }
             guiGet { tree.rowCount } shouldBe 8
@@ -298,8 +298,8 @@ object TemplateJTreeTest : FunSpec({
     }
 
 
-    test("addScheme") {
-        test("unique name") {
+    context("addScheme") {
+        context("unique name") {
             test("appends (1) if a scheme with the given name already exists") {
                 guiRun { tree.addScheme(Template("Template0")) }
 
@@ -399,7 +399,7 @@ object TemplateJTreeTest : FunSpec({
         }
     }
 
-    test("removeScheme") {
+    context("removeScheme") {
         test("removes the given node from the tree") {
             guiRun { tree.removeScheme(tree.myModel.list.templates[1]) }
 
@@ -425,7 +425,7 @@ object TemplateJTreeTest : FunSpec({
         }
     }
 
-    test("moveSchemeByOnePosition") {
+    context("moveSchemeByOnePosition") {
         test("moves a template") {
             guiRun { tree.moveSchemeByOnePosition(tree.myModel.list.templates[1], moveDown = true) }
 
@@ -455,31 +455,31 @@ object TemplateJTreeTest : FunSpec({
         }
     }
 
-    test("canMoveSchemeByOnePosition") {
-        forAll(
-            table(
-                headers("description", "scheme", "moveDown", "expected"),
-                row("first template", tree.myModel.list.templates[0], c = false, d = false),
-                row("first scheme", tree.myModel.list.templates[0].schemes[0], c = false, d = false),
-                row("last template", tree.myModel.list.templates[2], c = true, d = false),
-                row("last scheme", tree.myModel.list.templates[2].schemes[1], c = true, d = false),
-                row("move scheme within template", tree.myModel.list.templates[0].schemes[1], c = false, d = true),
-                row("move templates within list", tree.myModel.list.templates[1], c = true, d = true),
-                row("move scheme between templates", tree.myModel.list.templates[1].schemes[0], c = true, d = true),
+    context("canMoveSchemeByOnePosition") {
+        @Suppress("BooleanLiteralArgument") // Argument names clear from lambda later on
+        withData(
+            mapOf(
+                "first template" to row(tree.myModel.list.templates[0], false, false),
+                "first scheme" to row(tree.myModel.list.templates[0].schemes[0], false, false),
+                "last template" to row(tree.myModel.list.templates[2], true, false),
+                "last scheme" to row(tree.myModel.list.templates[2].schemes[1], true, false),
+                "move scheme within template" to row(tree.myModel.list.templates[0].schemes[1], false, true),
+                "move templates within list" to row(tree.myModel.list.templates[1], true, true),
+                "move scheme between templates" to row(tree.myModel.list.templates[1].schemes[0], true, true),
             )
-        ) { _, scheme, moveDown, expected -> tree.canMoveSchemeByOnePosition(scheme, moveDown) shouldBe expected }
+        ) { (scheme, moveDown, expected) -> tree.canMoveSchemeByOnePosition(scheme, moveDown) shouldBe expected }
     }
 
 
-    test("buttons") {
+    context("buttons") {
         lateinit var frame: FrameFixture
 
 
-        beforeEach {
+        beforeNonContainer {
             frame = showInFrame(guiGet { tree.asDecoratedPanel() })
         }
 
-        afterEach {
+        afterNonContainer {
             frame.cleanUp()
         }
 
@@ -491,7 +491,7 @@ object TemplateJTreeTest : FunSpec({
             // No non-popup behavior to test
         }
 
-        test("RemoveButton") {
+        context("RemoveButton") {
             test("is disabled if nothing is selected") {
                 guiRun {
                     tree.clearSelection()
@@ -510,7 +510,7 @@ object TemplateJTreeTest : FunSpec({
             }
         }
 
-        test("CopyButton") {
+        context("CopyButton") {
             test("is disabled if nothing is selected") {
                 guiRun {
                     tree.clearSelection()
@@ -565,7 +565,7 @@ object TemplateJTreeTest : FunSpec({
             }
         }
 
-        test("UpButton") {
+        context("UpButton") {
             test("is disabled if nothing is selected") {
                 guiRun {
                     tree.clearSelection()
@@ -602,7 +602,7 @@ object TemplateJTreeTest : FunSpec({
             }
         }
 
-        test("DownButton") {
+        context("DownButton") {
             test("is disabled if nothing is selected") {
                 guiRun {
                     tree.clearSelection()
@@ -639,7 +639,7 @@ object TemplateJTreeTest : FunSpec({
             }
         }
 
-        test("ResetButton") {
+        context("ResetButton") {
             test("is disabled if nothing is selected") {
                 guiRun {
                     tree.clearSelection()

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.beforeNonContainer
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -16,14 +17,14 @@ object MaxLengthDocumentFilterTest : FunSpec({
     val getText = { document.getText(0, document.length) }
 
 
-    beforeEach {
+    beforeNonContainer {
         document = PlainDocument()
         filter = MaxLengthDocumentFilter(3)
         document.documentFilter = filter
     }
 
 
-    test("constructor") {
+    context("constructor") {
         test("throws an exception if 'maxLength' is negative") {
             shouldThrow<IllegalArgumentException> { MaxLengthDocumentFilter(-3) }
                 .message shouldBe "Maximum length must be a positive number, but was '-3'."
@@ -31,7 +32,7 @@ object MaxLengthDocumentFilterTest : FunSpec({
     }
 
 
-    test("insert") {
+    context("insert") {
         test("does nothing if the inserted string is null") {
             document.insertString(0, "str", null)
 
@@ -40,7 +41,7 @@ object MaxLengthDocumentFilterTest : FunSpec({
             getText() shouldBe "str"
         }
 
-        test("without overwrite") {
+        context("without overwrite") {
             test("inserts a string of length 0 at offset 0") {
                 document.insertString(0, "str", null)
 
@@ -92,7 +93,7 @@ object MaxLengthDocumentFilterTest : FunSpec({
             }
         }
 
-        test("with overwrite") {
+        context("with overwrite") {
             test("overwrites the last character if a single character is inserted after the end") {
                 document.insertString(0, "stx", null)
                 document.insertString(3, "r", null)
@@ -174,14 +175,14 @@ object MinMaxLengthDocumentFilterTest : FunSpec({
     val getText = { document.getText(0, document.length) }
 
 
-    beforeEach {
+    beforeNonContainer {
         document = PlainDocument()
         filter = MinMaxLengthDocumentFilter(2, 5)
         document.documentFilter = filter
     }
 
 
-    test("constructor") {
+    context("constructor") {
         test("throws an exception if 'minLength' is greater than 'maxLength'") {
             shouldThrow<IllegalArgumentException> { MinMaxLengthDocumentFilter(4, 2) }
                 .message shouldBe "Minimum length must be less than or equal to maximum length."
@@ -189,7 +190,7 @@ object MinMaxLengthDocumentFilterTest : FunSpec({
     }
 
 
-    test("insert") {
+    context("insert") {
         test("inserts new characters while the length is below range") {
             document.insertString(0, "str", null)
 
@@ -197,7 +198,7 @@ object MinMaxLengthDocumentFilterTest : FunSpec({
         }
     }
 
-    test("remove") {
+    context("remove") {
         test("removes characters if the result's length is in range") {
             document.insertString(0, "word", null)
 

@@ -2,6 +2,8 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.PersistentSettings
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.afterNonContainer
+import com.fwdekker.randomness.beforeNonContainer
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -25,19 +27,19 @@ object TemplateActionLoaderTest : FunSpec({
     lateinit var actionManager: ActionManager
 
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
         actionManager = ActionManager.getInstance()
     }
 
-    afterEach {
+    afterNonContainer {
         ideaFixture.tearDown()
     }
 
 
-    test("registerActions") {
+    context("registerActions") {
         test("registers multiple insert action variants and a settings action") {
             val template = Template()
             PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template))))
@@ -61,7 +63,7 @@ object TemplateActionLoaderTest : FunSpec({
         }
     }
 
-    test("unregisterActions") {
+    context("unregisterActions") {
         test("unregisters actions for each template") {
             val template = Template()
             PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template))))
@@ -73,7 +75,7 @@ object TemplateActionLoaderTest : FunSpec({
         }
     }
 
-    test("updateActions") {
+    context("updateActions") {
         test("registers actions of initial templates") {
             val template = Template()
 

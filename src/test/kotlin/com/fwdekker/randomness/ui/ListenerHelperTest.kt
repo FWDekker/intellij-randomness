@@ -1,6 +1,8 @@
 package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.DummySchemeEditor
+import com.fwdekker.randomness.afterNonContainer
+import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
 import com.intellij.openapi.editor.EditorFactory
@@ -10,10 +12,9 @@ import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.dsl.builder.panel
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
-import io.kotest.data.headers
+import io.kotest.data.Row2
 import io.kotest.data.row
-import io.kotest.data.table
+import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import javax.swing.JCheckBox
@@ -47,130 +48,129 @@ object ListenerHelperTest : FunSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
         listenerInvoked = false
     }
 
-    afterEach {
+    afterNonContainer {
         ideaFixture.tearDown()
     }
 
 
-    test("addChangeListenerTo") {
-        forAll(
+    context("addChangeListenerTo") {
+        withData(
             @Suppress("UNCHECKED_CAST") // Unavoidable
-            table(
-                headers("description", "createComponent", "changeComponent"),
-                row(
-                    "AbstractButton: JCheckBox: Change selection",
-                    { JCheckBox() },
-                    { (it as JCheckBox).isSelected = true },
-                ),
-                row(
-                    "AbstractButton: JRadioButton: Change selection",
-                    { JRadioButton() },
-                    { (it as JCheckBox).isSelected = true },
-                ),
-                row(
-                    "Document: Insert text",
-                    { PlainDocument() },
-                    { (it as PlainDocument).insertString(0, "text", null) },
-                ),
-                row(
-                    "Document: Remove text",
-                    { PlainDocument().also { it.insertString(0, "text", null) } },
-                    { (it as PlainDocument).remove(1, 2) },
-                ),
-                row(
-                    "Document: Replace text",
-                    { PlainDocument().also { it.insertString(0, "text", null) } },
-                    { (it as PlainDocument).replace(2, 1, "y", null) },
-                ),
-                row(
-                    "JBDocument: Set text",
-                    { EditorFactory.getInstance().createDocument("") },
-                    { (it as JBDocument).setText("text") },
-                ),
-                row(
-                    "JBDocument: Insert text",
-                    { EditorFactory.getInstance().createDocument("text") },
-                    { (it as JBDocument).insertString(1, "text") },
-                ),
-                row(
-                    "JBDocument: Remove text",
-                    { EditorFactory.getInstance().createDocument("text") },
-                    { (it as JBDocument).deleteString(2, 3) },
-                ),
-                row(
-                    "JBDocument: Replace text",
-                    { EditorFactory.getInstance().createDocument("text") },
-                    { (it as JBDocument).replaceString(0, 2, "text") },
-                ),
-                row(
-                    "JComboBox: Select different item",
-                    { ComboBox(arrayOf("item1", "item2")) },
-                    { (it as ComboBox<String>).item = "item1" },
-                ),
-                row(
-                    "JComboBox: While typing",
-                    { ComboBox(arrayOf("item1", "item2")).also { it.isEditable = true } },
-                    { ((it as ComboBox<String>).editor.editorComponent as JTextComponent).text = "ite" },
-                ),
-                row(
-                    "JSpinner: Change value",
-                    { JSpinner() },
-                    { (it as JSpinner).value = 5 },
-                ),
-                row(
-                    "JTextComponent: JTextArea",
-                    { JTextArea() },
-                    { (it as JTextArea).text = "text" },
-                ),
-                row(
-                    "JTextComponent: JDateTimeField",
-                    { JDateTimeField() },
-                    { (it as JDateTimeField).longValue = 22_424_977L },
-                ),
-                row(
-                    "JTextComponent: JTextField",
-                    { JTextField() },
-                    { (it as JTextField).text = "text" },
-                ),
-                row(
-                    "JTextComponent: Insert text",
-                    { JTextField() },
-                    { (it as JTextField).document.insertString(1, "text", null) },
-                ),
-                row(
-                    "JTextComponent: Remove text",
-                    { JTextField() },
-                    { (it as JTextField).document.remove(2, 2) },
-                ),
-                row(
-                    "JTree: Change selection",
-                    { JTree() },
-                    { (it as JTree).setSelectionRow(2) },
-                ),
-                row(
-                    "JTree: Add node",
-                    { JTree() },
-                    { (it as JTree).model().insertNodeInto(DefaultMutableTreeNode(), it.model().root(), 0) },
-                ),
-                row(
-                    "JTree: Remove node",
-                    { JTree() },
-                    { (it as JTree).model().removeNodeFromParent(it.model().root().firstChild as MutableTreeNode) },
-                ),
-                row(
-                    "SchemeEditor: Recursion",
-                    { DummySchemeEditor { panel { row { textField() } } } },
-                    { ((it as DummySchemeEditor).components.first() as JTextField).text = "text" },
-                ),
+            mapOf(
+                "AbstractButton: JCheckBox: Change selection" to
+                    row(
+                        { JCheckBox() },
+                        { (it as JCheckBox).isSelected = true },
+                    ),
+                "AbstractButton: JRadioButton: Change selection" to
+                    row(
+                        { JRadioButton() },
+                        { (it as JCheckBox).isSelected = true },
+                    ),
+                "Document: Insert text" to
+                    row(
+                        { PlainDocument() },
+                        { (it as PlainDocument).insertString(0, "text", null) },
+                    ),
+                "Document: Remove text" to
+                    row(
+                        { PlainDocument().also { it.insertString(0, "text", null) } },
+                        { (it as PlainDocument).remove(1, 2) },
+                    ),
+                "Document: Replace text" to
+                    row(
+                        { PlainDocument().also { it.insertString(0, "text", null) } },
+                        { (it as PlainDocument).replace(2, 1, "y", null) },
+                    ),
+                "JBDocument: Set text" to
+                    row(
+                        { EditorFactory.getInstance().createDocument("") },
+                        { (it as JBDocument).setText("text") },
+                    ),
+                "JBDocument: Insert text" to
+                    row(
+                        { EditorFactory.getInstance().createDocument("text") },
+                        { (it as JBDocument).insertString(1, "text") },
+                    ),
+                "JBDocument: Remove text" to
+                    row(
+                        { EditorFactory.getInstance().createDocument("text") },
+                        { (it as JBDocument).deleteString(2, 3) },
+                    ),
+                "JBDocument: Replace text" to
+                    row(
+                        { EditorFactory.getInstance().createDocument("text") },
+                        { (it as JBDocument).replaceString(0, 2, "text") },
+                    ),
+                "JComboBox: Select different item" to
+                    row(
+                        { ComboBox(arrayOf("item1", "item2")) },
+                        { (it as ComboBox<String>).item = "item1" },
+                    ),
+                "JComboBox: While typing" to
+                    row(
+                        { ComboBox(arrayOf("item1", "item2")).also { it.isEditable = true } },
+                        { ((it as ComboBox<String>).editor.editorComponent as JTextComponent).text = "ite" },
+                    ),
+                "JSpinner: Change value" to
+                    row(
+                        { JSpinner() },
+                        { (it as JSpinner).value = 5 },
+                    ),
+                "JTextComponent: JTextArea" to
+                    row(
+                        { JTextArea() },
+                        { (it as JTextArea).text = "text" },
+                    ),
+                "JTextComponent: JDateTimeField" to
+                    row(
+                        { JDateTimeField() },
+                        { (it as JDateTimeField).longValue = 22_424_977L },
+                    ),
+                "JTextComponent: JTextField" to
+                    row(
+                        { JTextField() },
+                        { (it as JTextField).text = "text" },
+                    ),
+                "JTextComponent: Insert text" to
+                    row(
+                        { JTextField() },
+                        { (it as JTextField).document.insertString(1, "text", null) },
+                    ),
+                "JTextComponent: Remove text" to
+                    row(
+                        { JTextField() },
+                        { (it as JTextField).document.remove(2, 2) },
+                    ),
+                "JTree: Change selection" to
+                    row(
+                        { JTree() },
+                        { (it as JTree).setSelectionRow(2) },
+                    ),
+                "JTree: Add node" to
+                    row(
+                        { JTree() },
+                        { (it as JTree).model().insertNodeInto(DefaultMutableTreeNode(), it.model().root(), 0) },
+                    ),
+                "JTree: Remove node" to
+                    row(
+                        { JTree() },
+                        { (it as JTree).model().removeNodeFromParent(it.model().root().firstChild as MutableTreeNode) },
+                    ),
+                "SchemeEditor: Recursion" to
+                    row(
+                        { DummySchemeEditor { panel { row { textField() } } } },
+                        { ((it as DummySchemeEditor).components.first() as JTextField).text = "text" },
+                    ),
             )
-        ) { _, createComponent: () -> Any, changeComponent: (Any) -> Unit ->
+        ) { (createComponent, changeComponent): Row2<() -> Any, (Any) -> Unit> ->
             val component = guiGet { createComponent() }
             addChangeListenerTo(component, listener = listener)
 
