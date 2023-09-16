@@ -41,7 +41,10 @@ object IntegerSchemeTest : FunSpec({
                 "converts to base >10" to
                     row(IntegerScheme(base = 12).withValue(248L), "188"),
                 "uses separator" to
-                    row(IntegerScheme(groupingSeparator = "#").withValue(949_442L), "949#442"),
+                    row(
+                        IntegerScheme(groupingSeparatorEnabled = true, groupingSeparator = "#").withValue(949_442L),
+                        "949#442",
+                    ),
                 "uses no separator if disabled" to
                     row(
                         IntegerScheme(groupingSeparatorEnabled = false, groupingSeparator = "#").withValue(179_644L),
@@ -76,7 +79,7 @@ object IntegerSchemeTest : FunSpec({
                             fixedLengthDecorator = FixedLengthDecorator(enabled = true),
                             arrayDecorator = ArrayDecorator(enabled = true),
                         ).withValue(53L),
-                        "[530L, 530L, 530L]",
+                        "[053L, 053L, 053L]",
                     ),
             )
         ) { (scheme, output) -> scheme.generateStrings()[0] shouldBe output }

@@ -24,7 +24,7 @@ object FixedLengthDecoratorTest : FunSpec({
                 "returns shortened string" to
                     row(FixedLengthDecorator(enabled = true, length = 3), "[i0"),
                 "returns padded string" to
-                    row(FixedLengthDecorator(enabled = true, length = 5, filler = "f"), "[i0]f"),
+                    row(FixedLengthDecorator(enabled = true, length = 5, filler = "f"), "f[i0]"),
                 "returns default input if correct length" to
                     row(FixedLengthDecorator(enabled = true, length = 4), "[i0]"),
             )

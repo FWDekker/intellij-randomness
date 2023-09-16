@@ -16,6 +16,9 @@ complexity:
   # [False Positive] Solved using resource bundles. All remaining duplicates are resource identifiers.
   StringLiteralDuplication:
     active: false
+  # [Exception] Acceptable for helper files.
+  TooManyFunctions:
+    excludes: '**/*Helper.kt'
 
 formatting:
   # [Disagree] Acceptable for many short arguments.
@@ -38,6 +41,9 @@ formatting:
     active: false
   # [Disagree] Consecutive blank lines are used consistently to group blocks of code.
   NoConsecutiveBlankLines:
+    active: false
+  # [Disagree] Required for lists and varargs, but ugly when it is unlikely that the function signature will change.
+  TrailingCommaOnCallSite:
     active: false
 
 potential-bugs:
@@ -63,8 +69,7 @@ style:
     active: false
   # [Exception] Acceptable in (parameterized) tests.
   DestructuringDeclarationWithTooManyEntries:
-    excludes:
-      - '**/test/**'
+    excludes: '**/test/**'
   # [Bug] Fails when used as function expression body.
   MultilineRawStringIndentation:
     active: false

@@ -31,7 +31,7 @@ fun matchBundle(key: String, vararg args: String): Matcher<String?> =
     Matcher { string ->
         val format = Bundle(key)
         MatcherResult(
-            string != null && string.matchesFormat(format, *args),
+            string != null && (string == format || string.matchesFormat(format, *args)),
             { "string was '$string' but should have matched format '$format'" },
             { "string was '$string' and should not have matched format '$format'" },
         )

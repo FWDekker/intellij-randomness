@@ -63,33 +63,26 @@ object TemplateGroupActionTest : FunSpec({
 object TemplateInsertActionTest : FunSpec({
     context("init") {
         context("text and description") {
-            lateinit var template: Template
-
-
-            beforeNonContainer {
-                template = Template("Name")
-            }
-
-
             withData(
+                nameFn = { it.b },
                 listOf(
                     row(
-                        TemplateInsertAction(template),
+                        TemplateInsertAction(Template("Name")),
                         "Name",
                         "Inserts a(n) Name at all carets.",
                     ),
                     row(
-                        TemplateInsertAction(template, array = true),
+                        TemplateInsertAction(Template("Name"), array = true),
                         "Name Array",
                         "Inserts an array of Name at all carets.",
                     ),
                     row(
-                        TemplateInsertAction(template, repeat = true),
+                        TemplateInsertAction(Template("Name"), repeat = true),
                         "Name Repeat",
                         "Inserts the same Name at each caret.",
                     ),
                     row(
-                        TemplateInsertAction(template, array = true, repeat = true),
+                        TemplateInsertAction(Template("Name"), array = true, repeat = true),
                         "Name Repeat Array",
                         "Inserts the same array of Name at each caret.",
                     ),

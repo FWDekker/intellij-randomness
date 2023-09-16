@@ -78,7 +78,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
                     .withFixedHeight(UIConstants.SIZE_VERY_LARGE)
                     .bind(
                         { document.getWordList() },
-                        { _, it: List<String> -> document.setWordList(it) },
+                        { _, list: List<String> -> document.setWordList(list) },
                         scheme::words.toMutableProperty()
                     )
             }

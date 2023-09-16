@@ -22,6 +22,7 @@ class TemplateListConfigurable : Configurable {
     /**
      * The user interface for changing the settings, displayed in IntelliJ's settings window.
      */
+    @Suppress("detekt:LateinitUsage") // Initialized in `createComponent`
     lateinit var editor: TemplateListEditor private set
 
     /**
@@ -57,7 +58,7 @@ class TemplateListConfigurable : Configurable {
     override fun reset() = editor.reset()
 
     /**
-     * Disposes of the configurable's resources.
+     * Disposes the configurable's resources.
      */
     override fun disposeUIResources() {
         editor.dispose()

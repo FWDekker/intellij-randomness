@@ -7,9 +7,9 @@ import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.isSelectedProp
-import com.fwdekker.randomness.itemProp
 import com.fwdekker.randomness.matcher
 import com.fwdekker.randomness.prop
+import com.fwdekker.randomness.textProp
 import com.fwdekker.randomness.valueProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -181,7 +181,7 @@ object ArrayDecoratorEditorTest : FunSpec({
             mapOf(
                 "minCount" to
                     row(
-                        { frame.spinner("arrayMaxCount").valueProp() },
+                        { frame.spinner("arrayMinCount").valueProp() },
                         { editor.scheme::minCount.prop() },
                         1,
                     ),
@@ -199,13 +199,13 @@ object ArrayDecoratorEditorTest : FunSpec({
                     ),
                 "separator" to
                     row(
-                        { frame.comboBox("arraySeparator").itemProp() },
+                        { frame.comboBox("arraySeparator").textProp() },
                         { editor.scheme::separator.prop() },
                         " - ",
                     ),
                 "affixDecorator" to
                     row(
-                        { frame.comboBox("arrayAffixDescriptor").itemProp() },
+                        { frame.comboBox("arrayAffixDescriptor").textProp() },
                         { editor.scheme.affixDecorator::descriptor.prop() },
                         "{@}",
                     ),

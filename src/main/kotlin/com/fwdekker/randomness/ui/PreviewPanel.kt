@@ -78,7 +78,7 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     }
 
     /**
-     * Disposes of this panel's resources, to be used when this panel is no longer used.
+     * Disposes this panel's resources, to be used when this panel is no longer used.
      */
     override fun dispose() = Disposer.dispose(this)
 

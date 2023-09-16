@@ -87,21 +87,24 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
     /**
      * Not implemented because this method is used only if this is a model for a table.
      *
-     * @throws NotImplementedError always
+     * @throws UnsupportedOperationException always
      */
-    @Throws(NotImplementedError::class)
-    override fun addRow() = throw NotImplementedError(Bundle("template_list.error.add_empty_row"))
+    @Throws(UnsupportedOperationException::class)
+    override fun addRow() =
+        throw UnsupportedOperationException(Bundle("template_list.error.add_empty_row"))
 
     /**
      * Not implemented because this method is used only if this is a model for a table.
      *
-     * @throws NotImplementedError always
+     * @throws UnsupportedOperationException always
      */
-    @Throws(NotImplementedError::class)
-    override fun removeRow(index: Int) = throw NotImplementedError(Bundle("template_list.error.remove_row_by_index"))
+    @Throws(UnsupportedOperationException::class)
+    override fun removeRow(index: Int) =
+        throw UnsupportedOperationException(Bundle("template_list.error.remove_row_by_index"))
 
     /**
-     * Moves the node at row [oldIndex] to row [newIndex], and expands and selects the moved node.
+     * Exchanges two consecutive rows, moving the node at row [oldIndex] to row [newIndex], and expands and selects the
+     * moved node.
      *
      * Indices are looked up using [rowToNode], and are typically relative to the current expansion state of the view.
      *
@@ -396,11 +399,11 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
     /**
      * Not implemented because this model does not contain an editor component.
      *
-     * @throws NotImplementedError always
+     * @throws UnsupportedOperationException always
      */
-    @Throws(NotImplementedError::class)
+    @Throws(UnsupportedOperationException::class)
     override fun valueForPathChanged(path: TreePath, newValue: Any) =
-        throw NotImplementedError(Bundle("template_list.error.change_value_by_path"))
+        throw UnsupportedOperationException(Bundle("template_list.error.change_value_by_path"))
 
     /**
      * Adds [listener] as a listener.

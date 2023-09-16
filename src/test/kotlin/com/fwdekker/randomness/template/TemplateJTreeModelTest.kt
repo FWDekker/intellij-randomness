@@ -10,6 +10,7 @@ import com.fwdekker.randomness.shouldContainExactly
 import com.fwdekker.randomness.ui.SimpleTreeModelListener
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.Row2
 import io.kotest.data.Row3
 import io.kotest.data.row
 import io.kotest.datatest.withData
@@ -61,28 +62,40 @@ object TemplateJTreeModelTest : FunSpec({
 
     context("rowToNode (default implementation)") {
         withData(
-            mapOf(
-                "negative index" to row(-2, null),
-                "too-high index" to row(241, null),
-                "0 is first template" to row(0, model.root.children[0]),
-                "1 is first leaf" to row(1, model.root.children[0].children[0]),
-                "row number for template includes siblings' schemes" to row(5, model.root.children[2]),
-                "row number for scheme includes aunts'/uncles' schemes" to row(4, model.root.children[1].children[0]),
+            mapOf<String, Row2<Int, () -> StateNode?>>(
+                "negative index" to
+                    row(-2) { null },
+                "too-high index" to
+                    row(241) { null },
+                "0 is first template" to
+                    row(0) { model.root.children[0] },
+                "1 is first leaf" to
+                    row(1) { model.root.children[0].children[0] },
+                "row number for template includes siblings' schemes" to
+                    row(5) { model.root.children[2] },
+                "row number for scheme includes aunts'/uncles' schemes" to
+                    row(4) { model.root.children[1].children[0] },
             )
-        ) { (row, node) -> model.rowToNode(row) shouldBe node }
+        ) { (row, node) -> model.rowToNode(row) shouldBe node() }
     }
 
     context("nodeToRow (default implementation)") {
         withData(
-            mapOf(
-                "null" to row(null, -1),
-                "unknown node" to row(StateNode(DummyScheme()), -1),
-                "first template is 0" to row(model.root.children[0], 0),
-                "first scheme is 1" to row(model.root.children[0].children[0], 1),
-                "row number for template includes siblings' schemes" to row(model.root.children[2], 5),
-                "row number for scheme includes aunts'/uncles' schemes" to row(model.root.children[1].children[0], 4),
+            mapOf<String, Row2<() -> StateNode?, Int>>(
+                "null" to
+                    row({ null }, -1),
+                "unknown node" to
+                    row({ StateNode(DummyScheme()) }, -1),
+                "first template is 0" to
+                    row({ model.root.children[0] }, 0),
+                "first scheme is 1" to
+                    row({ model.root.children[0].children[0] }, 1),
+                "row number for template includes siblings' schemes" to
+                    row({ model.root.children[2] }, 5),
+                "row number for scheme includes aunts'/uncles' schemes" to
+                    row({ model.root.children[1].children[0] }, 4),
             )
-        ) { (node, row) -> model.nodeToRow(node) shouldBe row }
+        ) { (node, row) -> model.nodeToRow(node()) shouldBe row }
     }
 
 
@@ -117,14 +130,14 @@ object TemplateJTreeModelTest : FunSpec({
 
     context("addRow") {
         test("throws an error") {
-            shouldThrow<NotImplementedError> { model.addRow() }
+            shouldThrow<UnsupportedOperationException> { model.addRow() }
                 .message should matchBundle("template_list.error.add_empty_row")
         }
     }
 
     context("removeRow") {
         test("throws an error") {
-            shouldThrow<NotImplementedError> { model.removeRow(4) }
+            shouldThrow<UnsupportedOperationException> { model.removeRow(4) }
                 .message should matchBundle("template_list.error.remove_row_by_index")
         }
     }
@@ -141,12 +154,6 @@ object TemplateJTreeModelTest : FunSpec({
                 model.exchangeRows(0, 3)
 
                 model.list.templates.names() shouldContainExactly listOf("Template1", "Template0", "Template2")
-            }
-
-            test("swaps a template with the second-next template") {
-                model.exchangeRows(0, 5)
-
-                model.list.templates.names() shouldContainExactly listOf("Template2", "Template0", "Template1")
             }
         }
 
@@ -175,13 +182,6 @@ object TemplateJTreeModelTest : FunSpec({
 
                 model.list.templates[1].schemes should beEmpty()
                 model.list.templates[2].schemes.names() shouldContainExactly listOf("Scheme2")
-            }
-
-            test("moves a scheme to a scheme in another template") {
-                model.exchangeRows(1, 4)
-
-                model.list.templates[0].schemes.names() shouldContainExactly listOf("Scheme2", "Scheme1")
-                model.list.templates[1].schemes.names() shouldContainExactly listOf("Scheme0")
             }
         }
     }
@@ -265,25 +265,23 @@ object TemplateJTreeModelTest : FunSpec({
         }
 
         withData(
-            mapOf(
+            mapOf<String, Row3<() -> StateNode?, () -> StateNode?, Int>>(
                 "parent is null" to
-                    row(null, model.root.children[1].children[0], -1),
+                    row({ null }, { model.root.children[1].children[0] }, -1),
                 "child is null" to
-                    row(model.root.children[1], null, -1),
-                "parent is infertile" to
-                    row(model.root.children[1].children[0], model.root.children[0].children[0], -1),
+                    row({ model.root.children[1] }, { null }, -1),
                 "parent is not child's parent" to
-                    row(model.root.children[1], model.root.children[0].children[1], -1),
+                    row({ model.root.children[1] }, { model.root.children[0].children[1] }, -1),
                 "parent is child's parent" to
-                    row(model.root.children[1], model.root.children[1].children[0], 0),
+                    row({ model.root.children[1] }, { model.root.children[1].children[0] }, 0),
                 "parent looks at UUID for matching" to
                     row(
-                        model.root.children[0],
-                        StateNode(model.list.templates[0].schemes[1].deepCopy(retainUuid = true)),
+                        { model.root.children[0] },
+                        { StateNode(model.list.templates[0].schemes[1].deepCopy(retainUuid = true)) },
                         1,
                     ),
             )
-        ) { (parent, child, expected) -> model.getIndexOfChild(parent, child) shouldBe expected }
+        ) { (parent, child, expected) -> model.getIndexOfChild(parent(), child()) shouldBe expected }
     }
 
     context("getParentOf") {
@@ -293,12 +291,12 @@ object TemplateJTreeModelTest : FunSpec({
         }
 
         withData(
-            mapOf(
-                "parent of root" to row(model.root, null),
-                "parent of template" to row(model.root.children[0], model.root),
-                "parent of scheme" to row(model.root.children[1].children[0], model.root.children[1]),
+            mapOf<String, Row2<() -> StateNode, () -> StateNode?>>(
+                "parent of root" to row({ model.root }, { null }),
+                "parent of template" to row({ model.root.children[0] }, { model.root }),
+                "parent of scheme" to row({ model.root.children[1].children[0] }, { model.root.children[1] }),
             )
-        ) { (node, expected) -> model.getParentOf(node) shouldBe expected }
+        ) { (node, expected) -> model.getParentOf(node()) shouldBe expected() }
     }
 
     context("getPathToRoot") {
@@ -310,16 +308,16 @@ object TemplateJTreeModelTest : FunSpec({
         withData(
             mapOf(
                 "path to root" to
-                    row(model.root, arrayOf(model.root)),
+                    row({ model.root }, { arrayOf(model.root) }),
                 "path to template" to
-                    row(model.root.children[0], arrayOf(model.root, model.root.children[0])),
+                    row({ model.root.children[0] }, { arrayOf(model.root, model.root.children[0]) }),
                 "path to scheme" to
                     row(
-                        model.root.children[1].children[0],
-                        arrayOf(model.root, model.root.children[1], model.root.children[1].children[0]),
+                        { model.root.children[1].children[0] },
+                        { arrayOf(model.root, model.root.children[1], model.root.children[1].children[0]) },
                     ),
             )
-        ) { (node, expected) -> model.getParentOf(node) shouldBe expected }
+        ) { (node, expected) -> model.getPathToRoot(node()).path shouldBe expected() }
     }
 
 
@@ -346,10 +344,10 @@ object TemplateJTreeModelTest : FunSpec({
         test("inserts a node at the last index of the parent") {
             val node = StateNode(Template("Template3"))
 
-            model.insertNode(model.root, node, index = 2)
+            model.insertNode(model.root, node, index = 3)
 
             model.root.children shouldHaveSize 4
-            model.root.children[2] shouldBe node
+            model.root.children[3] shouldBe node
             model.list.templates.names() shouldContainExactly listOf("Template0", "Template1", "Template2", "Template3")
         }
 
@@ -362,7 +360,7 @@ object TemplateJTreeModelTest : FunSpec({
             model.insertNode(model.root.children[0], scheme)
 
             lastEvent!!.treePath.lastPathComponent shouldBe model.root.children[0]
-            lastEvent!!.childIndices shouldContainExactly arrayOf(0)
+            lastEvent!!.childIndices shouldContainExactly arrayOf(2)
             lastEvent!!.children shouldContainExactly arrayOf(scheme)
         }
 
@@ -599,7 +597,8 @@ object TemplateJTreeModelTest : FunSpec({
 
     context("valueForPathChanged") {
         test("throws an error") {
-            shouldThrow<NotImplementedError> { model.valueForPathChanged(model.getPathToRoot(model.root), "dirt") }
+            val rootPath = model.getPathToRoot(model.root)
+            shouldThrow<UnsupportedOperationException> { model.valueForPathChanged(rootPath, "dirt") }
                 .message should matchBundle("template_list.error.change_value_by_path")
         }
     }

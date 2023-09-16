@@ -16,6 +16,7 @@ import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.Row3
 import io.kotest.data.row
 import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldContainExactly
@@ -24,6 +25,7 @@ import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.types.shouldBeSameInstanceAs
 import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers.showInFrame
@@ -39,8 +41,8 @@ object TemplateJTreeTest : FunSpec({
 
     lateinit var ideaFixture: IdeaTestFixture
 
-    lateinit var originalState: Settings
-    lateinit var currentState: Settings
+    lateinit var originalSettings: Settings
+    lateinit var currentSettings: Settings
     lateinit var tree: TemplateJTree
 
     fun List<Scheme>.names() = this.map { it.name }
@@ -54,7 +56,7 @@ object TemplateJTreeTest : FunSpec({
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        originalState =
+        originalSettings =
             Settings(
                 TemplateList(
                     mutableListOf(
@@ -64,10 +66,10 @@ object TemplateJTreeTest : FunSpec({
                     )
                 )
             )
-        originalState.applyContext(originalState)
-        currentState = originalState.deepCopy(retainUuid = true)
+        originalSettings.applyContext(originalSettings)
+        currentSettings = originalSettings.deepCopy(retainUuid = true)
 
-        tree = guiGet { TemplateJTree(originalState, currentState) }
+        tree = guiGet { TemplateJTree(originalSettings, currentSettings) }
     }
 
     afterNonContainer {
@@ -177,12 +179,12 @@ object TemplateJTreeTest : FunSpec({
                 tree.selectedTemplate should beNull()
             }
 
-            test("returns null if a non-template scheme is selected") {
-                val scheme = tree.myModel.list.templates[1].schemes[0]
+            test("returns the parent template if a non-template scheme is selected") {
+                val scheme = tree.myModel.list.templates[2].schemes[0]
 
                 guiRun { tree.selectionPath = tree.myModel.getPathToRoot(StateNode(scheme)) }
 
-                tree.selectedTemplate shouldBe scheme
+                tree.selectedTemplate shouldBe tree.myModel.list.templates[2]
             }
 
             test("returns the selected template otherwise") {
@@ -229,7 +231,7 @@ object TemplateJTreeTest : FunSpec({
 
             guiRun { tree.reload() }
 
-            guiGet { tree.rowCount } shouldBe 5
+            guiGet { tree.rowCount } shouldBe 3
         }
 
         test("synchronizes added nodes") {
@@ -292,8 +294,8 @@ object TemplateJTreeTest : FunSpec({
 
             guiRun { tree.reload() }
 
-            guiGet { tree.myModel.rowToNode(5)!!.state } shouldBe template
-            guiGet { tree.isExpanded(5) } shouldBe true
+            guiGet { tree.myModel.rowToNode(8)!!.state } shouldBe template
+            guiGet { tree.isExpanded(8) } shouldBe true
         }
     }
 
@@ -403,7 +405,7 @@ object TemplateJTreeTest : FunSpec({
         test("removes the given node from the tree") {
             guiRun { tree.removeScheme(tree.myModel.list.templates[1]) }
 
-            tree.myModel.list.templates.names() shouldContainExactly listOf("Template0", "Template1")
+            tree.myModel.list.templates.names() shouldContainExactly listOf("Template0", "Template2")
         }
 
         test("removes the selection if there is nothing to select") {
@@ -441,9 +443,12 @@ object TemplateJTreeTest : FunSpec({
         test("expands and selects the moved template") {
             val template = tree.myModel.list.templates[2]
 
+            guiRun { tree.selectedTemplate = template }
             guiRun { tree.moveSchemeByOnePosition(template, moveDown = false) }
 
-            tree.isExpanded(tree.myModel.nodeToRow(StateNode(template))) shouldBe true
+            val row = tree.myModel.nodeToRow(StateNode(template))
+            guiGet { tree.isExpanded(row) } shouldBe true // The `guiGet` is required
+            tree.isRowSelected(row) shouldBe true
         }
 
         test("selects the moved scheme") {
@@ -458,16 +463,16 @@ object TemplateJTreeTest : FunSpec({
     context("canMoveSchemeByOnePosition") {
         @Suppress("BooleanLiteralArgument") // Argument names clear from lambda later on
         withData(
-            mapOf(
-                "first template" to row(tree.myModel.list.templates[0], false, false),
-                "first scheme" to row(tree.myModel.list.templates[0].schemes[0], false, false),
-                "last template" to row(tree.myModel.list.templates[2], true, false),
-                "last scheme" to row(tree.myModel.list.templates[2].schemes[1], true, false),
-                "move scheme within template" to row(tree.myModel.list.templates[0].schemes[1], false, true),
-                "move templates within list" to row(tree.myModel.list.templates[1], true, true),
-                "move scheme between templates" to row(tree.myModel.list.templates[1].schemes[0], true, true),
+            mapOf<String, Row3<() -> Scheme, Boolean, Boolean>>(
+                "first template" to row({ tree.myModel.list.templates[0] }, false, false),
+                "first scheme" to row({ tree.myModel.list.templates[0].schemes[0] }, false, false),
+                "last template" to row({ tree.myModel.list.templates[2] }, true, false),
+                "last scheme" to row({ tree.myModel.list.templates[2].schemes[1] }, true, false),
+                "move scheme within template" to row({ tree.myModel.list.templates[0].schemes[1] }, false, true),
+                "move templates within list" to row({ tree.myModel.list.templates[1] }, true, true),
+                "move scheme between templates" to row({ tree.myModel.list.templates[1].schemes[0] }, true, true),
             )
-        ) { (scheme, moveDown, expected) -> tree.canMoveSchemeByOnePosition(scheme, moveDown) shouldBe expected }
+        ) { (scheme, moveDown, expected) -> tree.canMoveSchemeByOnePosition(scheme(), moveDown) shouldBe expected }
     }
 
 
@@ -539,29 +544,28 @@ object TemplateJTreeTest : FunSpec({
 
             test("ensures the copy uses the same settings state") {
                 // Arrange
-                val referredTemplate = tree.myModel.list.templates[0]
-                val referenceScheme = TemplateReference(referredTemplate.uuid)
-                val referenceTemplate = Template(schemes = mutableListOf(referenceScheme))
-                    .also { it.applyContext(originalState) }
+                val referencedTemplate = tree.myModel.list.templates[0]
+                val referencingScheme = TemplateReference(referencedTemplate.uuid)
+                val referencingTemplate = Template(schemes = mutableListOf(referencingScheme))
+                    .also { it.applyContext(currentSettings) }
 
-                originalState.templates += referenceTemplate
-                originalState.applyContext(originalState)
+                currentSettings.templates += referencingTemplate
+                currentSettings.applyContext(currentSettings)
 
                 guiRun { tree.reload() }
-                tree.myModel.list.templates.last() shouldBe referenceTemplate
+                tree.myModel.list.templates.last() shouldBe referencingTemplate
 
                 // Act
                 guiRun {
-                    tree.selectedScheme = tree.myModel.list.templates[1].schemes[0]
+                    tree.selectedScheme = tree.myModel.list.templates[3].schemes[0]
                     frame.getActionButton("Copy").click()
                 }
 
                 // Assert
                 val selectedScheme = tree.selectedScheme!! as TemplateReference
-                selectedScheme shouldBe referenceScheme
-                selectedScheme shouldNotBeSameInstanceAs referenceScheme
-                selectedScheme.template!! shouldBe referredTemplate
-                selectedScheme.template shouldNotBeSameInstanceAs referredTemplate
+                selectedScheme shouldBe referencingScheme
+                selectedScheme shouldNotBeSameInstanceAs referencingScheme
+                selectedScheme.template shouldBeSameInstanceAs referencedTemplate
             }
         }
 
@@ -661,6 +665,7 @@ object TemplateJTreeTest : FunSpec({
             test("removes the scheme if it was newly added") {
                 val template = Template("New Template")
                 tree.myModel.list.templates += template
+                guiRun { tree.reload() }
 
                 guiRun {
                     tree.selectedScheme = template
@@ -672,6 +677,7 @@ object TemplateJTreeTest : FunSpec({
 
             test("resets changes to the initially selected scheme") {
                 (tree.myModel.list.templates[0].schemes[0] as DummyScheme).name = "New Name"
+                guiRun { tree.reload() }
 
                 guiRun { frame.getActionButton("Reset").click() }
 
@@ -680,6 +686,7 @@ object TemplateJTreeTest : FunSpec({
 
             test("resets changes to a template") {
                 tree.myModel.list.templates[0].name = "New Name"
+                guiRun { tree.reload() }
 
                 guiRun {
                     tree.selectedScheme = tree.myModel.list.templates[0]
@@ -691,9 +698,10 @@ object TemplateJTreeTest : FunSpec({
 
             test("resets changes to a scheme") {
                 (tree.myModel.list.templates[1].schemes[0] as DummyScheme).name = "New Name"
+                guiRun { tree.reload() }
 
                 guiRun {
-                    tree.selectedScheme = tree.myModel.list.templates[0].schemes[0]
+                    tree.selectedScheme = tree.myModel.list.templates[1].schemes[0]
                     frame.getActionButton("Reset").click()
                 }
 
@@ -702,7 +710,7 @@ object TemplateJTreeTest : FunSpec({
 
             test("resets a template's scheme order") {
                 tree.myModel.list.templates[0].schemes.setAll(tree.myModel.list.templates[0].schemes.reversed())
-                // TODO: Add `tree.reload()`s back in?
+                guiRun { tree.reload() }
 
                 guiRun {
                     tree.selectedScheme = tree.myModel.list.templates[0]
@@ -714,6 +722,7 @@ object TemplateJTreeTest : FunSpec({
 
             test("resets a template's schemes") {
                 (tree.myModel.list.templates[2].schemes[0] as DummyScheme).name = "New Name"
+                guiRun { tree.reload() }
 
                 guiRun {
                     tree.selectedScheme = tree.myModel.list.templates[2]

@@ -7,8 +7,8 @@ import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.isSelectedProp
-import com.fwdekker.randomness.itemProp
 import com.fwdekker.randomness.prop
+import com.fwdekker.randomness.textProp
 import com.fwdekker.randomness.valueProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -70,10 +70,10 @@ object IntegerSchemeEditorTest : FunSpec({
             }
 
             test("binds the minimum and maximum values") {
-                guiRun { frame.spinner("minValue").target().value = 804L }
+                guiRun { frame.spinner("minValue").target().value = 6804L }
 
-                frame.spinner("minValue").requireValue(804L)
-                frame.spinner("maxValue").requireValue(804L)
+                frame.spinner("minValue").requireValue(6804L)
+                frame.spinner("maxValue").requireValue(6804L)
             }
         }
 
@@ -147,13 +147,13 @@ object IntegerSchemeEditorTest : FunSpec({
                     ),
                 "groupingSeparator" to
                     row(
-                        { frame.checkBox("groupingSeparator").isSelectedProp() },
+                        { frame.comboBox("groupingSeparator").textProp() },
                         { editor.scheme::groupingSeparator.prop() },
                         "!",
                     ),
                 "affixDecorator" to
                     row(
-                        { frame.comboBox("affixDescriptor").itemProp() },
+                        { frame.comboBox("affixDescriptor").textProp() },
                         { editor.scheme.affixDecorator::descriptor.prop() },
                         "[@]",
                     ),

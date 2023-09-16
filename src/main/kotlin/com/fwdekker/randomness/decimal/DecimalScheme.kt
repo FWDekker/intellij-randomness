@@ -130,7 +130,7 @@ data class DecimalScheme(
         /**
          * The default value of the [showTrailingZeroes] field.
          */
-        const val DEFAULT_SHOW_TRAILING_ZEROES = true
+        const val DEFAULT_SHOW_TRAILING_ZEROES = false
 
         /**
          * The preset values for the [decimalSeparator] field.

@@ -39,7 +39,7 @@ import javax.swing.SwingUtilities
  *
  * Though this editor only changes [TemplateList]s, it still maintains a reference to
  *
- * @param originalSettings the settings containing the templates to edit
+ * @property originalSettings the settings containing the templates to edit
  * @see TemplateListConfigurable
  */
 class TemplateListEditor(private val originalSettings: Settings = Settings.DEFAULT) : Disposable {
@@ -182,9 +182,9 @@ class TemplateListEditor(private val originalSettings: Settings = Settings.DEFAU
      * Does nothing if and only if [isModified] returns `false`.
      */
     fun applyState() {
-        val oldList = originalSettings.templates.toSet()
+        val oldList = originalSettings.templates
         originalSettings.copyFrom(readState())
-        val newList = originalSettings.templates.toSet()
+        val newList = originalSettings.templates
 
         TemplateActionLoader().updateActions(oldList, newList)
     }

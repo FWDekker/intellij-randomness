@@ -9,10 +9,10 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldStartWith
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import java.text.ParseException
 import java.time.LocalDateTime
+import java.time.Month
 
 
 /**
@@ -62,15 +62,15 @@ object JDateTimeFieldTest : FunSpec({
 
     context("longValue") {
         test("get") {
-            field.longValue = 2_625_932_560L
+            guiRun { field.value = LocalDateTime.of(1998, Month.SEPTEMBER, 24, 15, 5, 36) }
 
-            field.value shouldBe TODO() // TODO: Add this assertion
+            field.longValue shouldBe 906_649_536_000L
         }
 
         test("set") {
-            field.value = TODO()
+            guiRun { field.longValue = 2_625_932_560L }
 
-            field.longValue shouldBe TODO() // TODO: Add this assertion
+            field.value shouldBe LocalDateTime.of(1970, 1, 31, 9, 25, 32, 560_000_000)
         }
     }
 
@@ -94,30 +94,35 @@ object JDateTimeFieldTest : FunSpec({
         }
 
         test("fails if the text is null") {
-            shouldThrow<ParseException> {
-                guiRun {
+            guiRun {
+                shouldThrow<ParseException> {
                     field.text = null
                     field.commitEdit()
-                }
-            }.message shouldBe Bundle("datetime_field.error.empty_string")
+                }.message shouldBe Bundle("datetime_field.error.empty_string")
+            }
         }
 
         test("fails if the text is empty") {
-            shouldThrow<ParseException> {
-                guiRun {
+            guiRun {
+                shouldThrow<ParseException> {
                     field.text = ""
                     field.commitEdit()
-                }
-            }.message shouldBe Bundle("datetime_field.error.empty_string")
+                }.message shouldBe Bundle("datetime_field.error.empty_string")
+            }
         }
 
-        test("retains the old value if the set text is invalid") {
-            shouldThrow<ParseException> {
-                guiRun {
+        test("clears the old value if the set text is invalid") {
+            guiRun {
+                field.text = "3598-06-25"
+                field.commitEdit()
+
+                shouldThrow<ParseException> {
                     field.text = null
                     field.commitEdit()
                 }
-            }.message shouldStartWith "Text invalid date cannot parse at"
+
+                field.text shouldBe ""
+            }
         }
     }
 })

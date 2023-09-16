@@ -7,8 +7,8 @@ import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.isSelectedProp
-import com.fwdekker.randomness.itemProp
 import com.fwdekker.randomness.prop
+import com.fwdekker.randomness.textProp
 import com.fwdekker.randomness.valueProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -57,10 +57,10 @@ object DecimalSchemeEditorTest : FunSpec({
     context("input handling") {
         context("*Value") {
             test("binds the minimum and maximum values") {
-                guiRun { frame.spinner("minValue").target().value = 670L }
+                guiRun { frame.spinner("minValue").target().value = 3670.0 }
 
-                frame.spinner("minValue").requireValue(670L)
-                frame.spinner("maxValue").requireValue(670L)
+                frame.spinner("minValue").requireValue(3670.0)
+                frame.spinner("maxValue").requireValue(3670.0)
             }
         }
 
@@ -98,13 +98,13 @@ object DecimalSchemeEditorTest : FunSpec({
                     row(
                         { frame.spinner("minValue").valueProp() },
                         { editor.scheme::minValue.prop() },
-                        189L,
+                        189.0,
                     ),
                 "maxValue" to
                     row(
                         { frame.spinner("maxValue").valueProp() },
                         { editor.scheme::maxValue.prop() },
-                        200L,
+                        200.0,
                     ),
                 "decimalCount" to
                     row(
@@ -116,11 +116,11 @@ object DecimalSchemeEditorTest : FunSpec({
                     row(
                         { frame.checkBox("showTrailingZeroes").isSelectedProp() },
                         { editor.scheme::showTrailingZeroes.prop() },
-                        false,
+                        true,
                     ),
                 "decimalSeparator" to
                     row(
-                        { frame.comboBox("decimalSeparator").itemProp() },
+                        { frame.comboBox("decimalSeparator").textProp() },
                         { editor.scheme::decimalSeparator.prop() },
                         "|",
                     ),
@@ -132,13 +132,13 @@ object DecimalSchemeEditorTest : FunSpec({
                     ),
                 "groupingSeparator" to
                     row(
-                        { frame.comboBox("groupingSeparator").itemProp() },
+                        { frame.comboBox("groupingSeparator").textProp() },
                         { editor.scheme::groupingSeparator.prop() },
                         "/",
                     ),
                 "affixDecorator" to
                     row(
-                        { frame.comboBox("affixDescriptor").itemProp() },
+                        { frame.comboBox("affixDescriptor").textProp() },
                         { editor.scheme.affixDecorator::descriptor.prop() },
                         "[@]",
                     ),

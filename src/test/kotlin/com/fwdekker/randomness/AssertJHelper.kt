@@ -10,12 +10,13 @@ import io.kotest.core.spec.style.scopes.ContainerScope
 import io.kotest.core.test.TestType
 import org.assertj.swing.core.GenericTypeMatcher
 import org.assertj.swing.edt.GuiActionRunner
+import org.assertj.swing.fixture.AbstractTwoStateButtonFixture
 import org.assertj.swing.fixture.FrameFixture
-import org.assertj.swing.fixture.JCheckBoxFixture
 import org.assertj.swing.fixture.JComboBoxFixture
 import org.assertj.swing.fixture.JSpinnerFixture
 import org.assertj.swing.fixture.JTextComponentFixture
 import java.awt.Component
+import javax.swing.AbstractButton
 import kotlin.reflect.KMutableProperty0
 
 
@@ -80,9 +81,12 @@ fun <T> KMutableProperty0<T>.prop(): MutableProperty<Any?> = MutableProperty({ g
 fun <SELF, FIELD> SELF.prop(get: (SELF) -> (() -> FIELD), set: (SELF) -> ((FIELD) -> Unit)): MutableProperty<Any?> =
     MutableProperty(get(this)) { set(this)(it as FIELD) }
 
-fun JCheckBoxFixture.isSelectedProp() = this.prop({ this.target()::isSelected }, { this.target()::setSelected })
+fun <S, T : AbstractButton> AbstractTwoStateButtonFixture<S, T>.isSelectedProp() =
+    this.prop({ this.target()::isSelected }, { this.target()::setSelected })
 
-fun JComboBoxFixture.itemProp() = this.prop({ this.target().editor::getItem }, { this.target().editor::setItem })
+fun JComboBoxFixture.itemProp() = this.prop({ this.target()::getSelectedItem }, { this.target()::setSelectedItem })
+
+fun JComboBoxFixture.textProp() = this.prop({ this.target().editor::getItem }, { this.target().editor::setItem })
 
 fun JSpinnerFixture.valueProp() = this.prop({ this.target()::getValue }, { this.target()::setValue })
 

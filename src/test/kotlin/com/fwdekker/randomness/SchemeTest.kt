@@ -8,8 +8,8 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNot
 import io.kotest.matchers.types.shouldBeSameInstanceAs
+import java.awt.Color
 
 
 /**
@@ -37,7 +37,7 @@ object SchemeTest : FunSpec({
         test("does not add icon overlays if the scheme has no decorators") {
             val scheme = DummyScheme()
 
-            scheme.icon!!.overlays shouldNot beEmpty()
+            scheme.icon!!.overlays should beEmpty()
         }
 
         test("does not add icon overlays if the scheme's decorators have no icons") {
@@ -49,7 +49,7 @@ object SchemeTest : FunSpec({
 
         test("adds the scheme's decorators' icons") {
             val decorator = DummyDecoratorScheme()
-            decorator.typeIcon = TypeIcon(Icons.SCHEME, "dum", emptyList())
+            decorator.typeIcon = TypeIcon(Icons.SCHEME, "dum", listOf(Color.GRAY))
             val scheme = DummyScheme(decorators = listOf(decorator))
 
             scheme.icon?.overlays shouldContainExactly listOf(decorator.icon)

@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.Bundle
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 import javax.swing.JComponent

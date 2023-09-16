@@ -6,22 +6,20 @@ import com.intellij.openapi.actionSystem.impl.DynamicActionConfigurationCustomiz
 
 
 /**
- * Registers and unregisters actions for the user's [Template]s so that they can be inserted using shortcuts.
+ * Registers, replaces, and unregisters actions for the user's [Template]s so that they can be inserted using shortcuts.
+ *
+ * @property getTemplates shorthand to return all the user's stored [Template]s
  */
-class TemplateActionLoader : DynamicActionConfigurationCustomizer {
-    /**
-     * Shorthand to return all the user's stored [Template]s.
-     */
-    private val templates: List<Template> get() = PersistentSettings.default.state.templates
-
-
+open class TemplateActionLoader(
+    private val getTemplates: () -> List<Template> = { PersistentSettings.default.state.templates },
+) : DynamicActionConfigurationCustomizer {
     /**
      * Registers the actions for all [Template]s in the user's [PersistentSettings].
      *
      * @param actionManager the manager to register actions through
      */
     override fun registerActions(actionManager: ActionManager) {
-        templates.forEach { registerAction(actionManager, it) }
+        getTemplates().forEach { registerAction(actionManager, it) }
     }
 
     /**
@@ -30,7 +28,7 @@ class TemplateActionLoader : DynamicActionConfigurationCustomizer {
      * @param actionManager the manager to unregister actions through
      */
     override fun unregisterActions(actionManager: ActionManager) {
-        templates.forEach { unregisterAction(actionManager, it) }
+        getTemplates().forEach { unregisterAction(actionManager, it) }
     }
 
 
@@ -39,23 +37,15 @@ class TemplateActionLoader : DynamicActionConfigurationCustomizer {
      *
      * @param oldList the list of stored [Template]s before storing [newList]
      * @param newList the list of stored [Template]s after storing them
+     * @param actionManager the manager with which actions are (de)registered
      */
-    fun updateActions(oldList: Set<Template>, newList: Set<Template>) {
-        val actionManager = ActionManager.getInstance()
-
-        val newUuids = newList.map { it.uuid }
-        oldList.filterNot { it.uuid in newUuids }.forEach {
-            // TODO: Remove ALL actions, not just the one with `actionId`?
-            if (actionManager.getAction(it.actionId) != null)
-                actionManager.unregisterAction(it.actionId)
-        }
-
-        newList.forEach {
-            if (actionManager.getAction(it.actionId) == null)
-                registerAction(actionManager, it)
-            else
-                replaceAction(actionManager, it)
-        }
+    fun updateActions(
+        oldList: List<Template>,
+        newList: List<Template>,
+        actionManager: ActionManager = ActionManager.getInstance(),
+    ) {
+        oldList.filterNot { it in newList }.forEach { unregisterAction(actionManager, it) }
+        newList.forEach { registerAction(actionManager, it) }
     }
 
 
@@ -82,8 +72,10 @@ class TemplateActionLoader : DynamicActionConfigurationCustomizer {
      */
     private fun registerAction(actionManager: ActionManager, template: Template) =
         getActions(template).forEach { (actionId, action) ->
-            actionManager.registerAction(actionId, action)
-            actionManager.replaceAction(actionId, action)
+            if (actionManager.getAction(actionId) == null)
+                actionManager.registerAction(actionId, action)
+            else
+                actionManager.replaceAction(actionId, action)
         }
 
     /**
@@ -94,13 +86,9 @@ class TemplateActionLoader : DynamicActionConfigurationCustomizer {
      */
     private fun unregisterAction(actionManager: ActionManager, template: Template) =
         getActions(template).forEach { (actionId, _) -> actionManager.unregisterAction(actionId) }
-
-    /**
-     * Replaces the actions associated with [template].
-     *
-     * @param actionManager the manager to replace actions through
-     * @param template the [Template] to replace actions for
-     */
-    private fun replaceAction(actionManager: ActionManager, template: Template) =
-        getActions(template).forEach { (actionId, action) -> actionManager.replaceAction(actionId, action) }
 }
+
+/**
+ * Constructor-less version of [TemplateActionLoader], as is required in `plugin.xml`.
+ */
+class DefaultTemplateActionLoader : TemplateActionLoader()

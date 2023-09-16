@@ -10,6 +10,7 @@ import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.itemProp
 import com.fwdekker.randomness.prop
+import com.fwdekker.randomness.textProp
 import com.fwdekker.randomness.valueProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -37,6 +38,8 @@ object TemplateReferenceEditorTest : FunSpec({
     lateinit var reference: TemplateReference
     lateinit var editor: TemplateReferenceEditor
 
+    val theTemplate = Template("Template2", mutableListOf(DummyScheme())) // TODO: Rename this field (I was drunk)
+
 
     beforeContainer {
         FailOnThreadViolationRepaintManager.install()
@@ -51,7 +54,7 @@ object TemplateReferenceEditorTest : FunSpec({
                 mutableListOf(
                     Template("Template0", mutableListOf(DummyScheme())),
                     Template("Template1", mutableListOf(TemplateReference())),
-                    Template("Template2", mutableListOf(DummyScheme()))
+                    theTemplate,
                 )
             )
         )
@@ -75,7 +78,7 @@ object TemplateReferenceEditorTest : FunSpec({
             reference.template = null
             guiRun { editor.reset() }
 
-            guiRun { frame.comboBox("template").itemProp().get() } shouldBe null
+            guiGet { frame.comboBox("template").itemProp().get() } shouldBe null
         }
 
         test("does not load the reference's parent as a selectable option") {
@@ -90,7 +93,7 @@ object TemplateReferenceEditorTest : FunSpec({
         test("makes no changes by default") {
             val before = editor.scheme.deepCopy(retainUuid = true)
 
-            guiRun { editor.apply() }
+            editor.apply()
 
             before shouldBe editor.scheme
         }
@@ -104,7 +107,7 @@ object TemplateReferenceEditorTest : FunSpec({
                     row(
                         { frame.comboBox("template").itemProp() },
                         { editor.scheme::template.prop() },
-                        "Template0",
+                        theTemplate,
                     ),
                 "capitalization" to
                     row(
@@ -114,7 +117,7 @@ object TemplateReferenceEditorTest : FunSpec({
                     ),
                 "affixDecorator" to
                     row(
-                        { frame.comboBox("affixDescriptor").itemProp() },
+                        { frame.comboBox("affixDescriptor").textProp() },
                         { editor.scheme.affixDecorator::descriptor.prop() },
                         "[@]",
                     ),

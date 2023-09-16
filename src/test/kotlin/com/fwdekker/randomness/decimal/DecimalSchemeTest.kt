@@ -32,7 +32,10 @@ object DecimalSchemeTest : FunSpec({
                 "adds trailing zeroes" to
                     row(DecimalScheme(decimalCount = 3, showTrailingZeroes = true).withValue(702.78), "702.780"),
                 "uses grouping separator" to
-                    row(DecimalScheme(groupingSeparator = "#").withValue(311_752.11), "311#752.11"),
+                    row(
+                        DecimalScheme(groupingSeparatorEnabled = true, groupingSeparator = "#").withValue(311_752.11),
+                        "311#752.11",
+                    ),
                 "uses no grouping separator if disabled" to
                     row(
                         DecimalScheme(groupingSeparatorEnabled = false, groupingSeparator = "#").withValue(499_935.29),

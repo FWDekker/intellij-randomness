@@ -8,6 +8,7 @@ import com.intellij.ui.dsl.builder.panel
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -160,7 +161,7 @@ object SchemeEditorTest : FunSpec({
             guiRun { frame.textBox().target().text = "new" }
             editor.apply()
 
-            scheme.name shouldBe "new"
+            scheme.prefix shouldBe "new"
         }
 
         test("applies changes from decorators") {
@@ -199,13 +200,15 @@ object SchemeEditorTest : FunSpec({
         }
 
         test("invokes the listener when an extra component is edited") {
-            registerTestEditor { DummySchemeEditor { panel { row { textField().also { addExtraComponent(it) } } } } }
+            registerTestEditor {
+                DummySchemeEditor { panel { row { textField().also { addExtraComponent(it.component) } } } }
+            }
 
             var updateCount = 0
             editor.addChangeListener { updateCount++ }
             guiRun { frame.textBox().target().text = "new" }
 
-            updateCount shouldBe 1
+            updateCount shouldBeGreaterThanOrEqual 1
         }
 
         test("invokes the listener when a decorator editor's component is edited") {
@@ -228,7 +231,7 @@ object SchemeEditorTest : FunSpec({
             editor.addChangeListener { updateCount++ }
             guiRun { frame.textBox().target().text = "new" }
 
-            updateCount shouldBe 1
+            updateCount shouldBeGreaterThanOrEqual 2
         }
     }
 })

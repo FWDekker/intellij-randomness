@@ -92,7 +92,7 @@ data class TemplateReference(
             templateUuid == null -> Bundle("reference.error.no_selection")
             template == null -> Bundle("reference.error.not_found")
             recursion != null -> Bundle("reference.error.recursion", "(${recursion.joinToString(" → ") { it.name }})")
-            else -> arrayDecorator.doValidate()
+            else -> affixDecorator.doValidate() ?: arrayDecorator.doValidate()
         }
     }
 

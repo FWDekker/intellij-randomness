@@ -1,7 +1,5 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.PersistentSettings
-import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.afterNonContainer
 import com.fwdekker.randomness.beforeNonContainer
 import com.intellij.openapi.actionSystem.ActionManager
@@ -25,6 +23,8 @@ object TemplateActionLoaderTest : FunSpec({
 
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var actionManager: ActionManager
+    lateinit var templates: MutableList<Template>
+    lateinit var loader: TemplateActionLoader
 
 
     beforeNonContainer {
@@ -32,6 +32,8 @@ object TemplateActionLoaderTest : FunSpec({
         ideaFixture.setUp()
 
         actionManager = ActionManager.getInstance()
+        templates = mutableListOf()
+        loader = TemplateActionLoader { templates }
     }
 
     afterNonContainer {
@@ -42,9 +44,9 @@ object TemplateActionLoaderTest : FunSpec({
     context("registerActions") {
         test("registers multiple insert action variants and a settings action") {
             val template = Template()
-            PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template))))
+            templates += template
 
-            TemplateActionLoader().registerActions(actionManager)
+            loader.registerActions(actionManager)
 
             val actions = actionManager.getActionsWithPrefix(template.actionId)
             actions.filterIsInstance<TemplateInsertAction>() shouldHaveAtLeastSize 2
@@ -54,9 +56,9 @@ object TemplateActionLoaderTest : FunSpec({
         test("registers actions for each template") {
             val template1 = Template()
             val template2 = Template()
-            PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template1, template2))))
+            templates += listOf(template1, template2)
 
-            TemplateActionLoader().registerActions(actionManager)
+            loader.registerActions(actionManager)
 
             actionManager.getActionsWithPrefix(template1.actionId) shouldNot beEmpty()
             actionManager.getActionsWithPrefix(template2.actionId) shouldNot beEmpty()
@@ -66,10 +68,10 @@ object TemplateActionLoaderTest : FunSpec({
     context("unregisterActions") {
         test("unregisters actions for each template") {
             val template = Template()
-            PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template))))
-            TemplateActionLoader().registerActions(actionManager)
+            templates += template
+            loader.registerActions(actionManager)
 
-            TemplateActionLoader().unregisterActions(actionManager)
+            loader.unregisterActions(actionManager)
 
             actionManager.getActionsWithPrefix(template.actionId) should beEmpty()
         }
@@ -79,18 +81,18 @@ object TemplateActionLoaderTest : FunSpec({
         test("registers actions of initial templates") {
             val template = Template()
 
-            TemplateActionLoader().updateActions(emptySet(), setOf(template))
+            loader.updateActions(emptyList(), listOf(template))
 
             actionManager.getActionsWithPrefix(template.actionId) shouldNot beEmpty()
         }
 
         test("registers actions of new templates") {
             val template1 = Template()
-            PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template1))))
-            TemplateActionLoader().registerActions(actionManager)
+            templates += template1
+            loader.registerActions(actionManager)
 
             val template2 = Template()
-            TemplateActionLoader().updateActions(setOf(template1), setOf(template1, template2))
+            loader.updateActions(listOf(template1), listOf(template1, template2))
 
             actionManager.getActionsWithPrefix(template1.actionId) shouldNot beEmpty()
             actionManager.getActionsWithPrefix(template2.actionId) shouldNot beEmpty()
@@ -99,10 +101,10 @@ object TemplateActionLoaderTest : FunSpec({
         test("unregisters actions of now-removed templates") {
             val template1 = Template()
             val template2 = Template()
-            PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template1, template2))))
-            TemplateActionLoader().registerActions(actionManager)
+            templates += listOf(template1, template2)
+            loader.registerActions(actionManager)
 
-            TemplateActionLoader().updateActions(setOf(template1, template2), emptySet())
+            loader.updateActions(listOf(template1, template2), emptyList())
 
             actionManager.getActionsWithPrefix(template1.actionId) should beEmpty()
             actionManager.getActionsWithPrefix(template2.actionId) should beEmpty()
@@ -110,11 +112,11 @@ object TemplateActionLoaderTest : FunSpec({
 
         test("re-registers actions of updated templates") {
             val template = Template()
-            PersistentSettings.default.loadState(Settings(TemplateList(mutableListOf(template))))
-            TemplateActionLoader().registerActions(actionManager)
+            templates += template
+            loader.registerActions(actionManager)
             val oldActions = actionManager.getActionsWithPrefix(template.actionId)
 
-            TemplateActionLoader().updateActions(setOf(template), emptySet())
+            loader.updateActions(listOf(template), emptyList())
 
             actionManager.getActionsWithPrefix(template.actionId) shouldNotContainAnyOf oldActions
         }

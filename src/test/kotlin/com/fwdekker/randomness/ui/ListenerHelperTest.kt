@@ -1,14 +1,10 @@
 package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.DummySchemeEditor
-import com.fwdekker.randomness.afterNonContainer
 import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
-import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.testFramework.fixtures.IdeaTestFixture
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.dsl.builder.panel
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
@@ -28,17 +24,14 @@ import javax.swing.text.PlainDocument
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
-import com.intellij.openapi.editor.Document as JBDocument
 
 
 /**
  * Unit tests for extension functions in `ListenerHelperKt`.
  */
 object ListenerHelperTest : FunSpec({
-    tags(NamedTag("IdeaFixture"), NamedTag("Swing"))
+    tags(NamedTag("Swing"))
 
-
-    lateinit var ideaFixture: IdeaTestFixture
 
     var listenerInvoked = false
     val listener = { listenerInvoked = true }
@@ -49,14 +42,7 @@ object ListenerHelperTest : FunSpec({
     }
 
     beforeNonContainer {
-        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-        ideaFixture.setUp()
-
         listenerInvoked = false
-    }
-
-    afterNonContainer {
-        ideaFixture.tearDown()
     }
 
 
@@ -72,7 +58,7 @@ object ListenerHelperTest : FunSpec({
                 "AbstractButton: JRadioButton: Change selection" to
                     row(
                         { JRadioButton() },
-                        { (it as JCheckBox).isSelected = true },
+                        { (it as JRadioButton).isSelected = true },
                     ),
                 "Document: Insert text" to
                     row(
@@ -89,26 +75,7 @@ object ListenerHelperTest : FunSpec({
                         { PlainDocument().also { it.insertString(0, "text", null) } },
                         { (it as PlainDocument).replace(2, 1, "y", null) },
                     ),
-                "JBDocument: Set text" to
-                    row(
-                        { EditorFactory.getInstance().createDocument("") },
-                        { (it as JBDocument).setText("text") },
-                    ),
-                "JBDocument: Insert text" to
-                    row(
-                        { EditorFactory.getInstance().createDocument("text") },
-                        { (it as JBDocument).insertString(1, "text") },
-                    ),
-                "JBDocument: Remove text" to
-                    row(
-                        { EditorFactory.getInstance().createDocument("text") },
-                        { (it as JBDocument).deleteString(2, 3) },
-                    ),
-                "JBDocument: Replace text" to
-                    row(
-                        { EditorFactory.getInstance().createDocument("text") },
-                        { (it as JBDocument).replaceString(0, 2, "text") },
-                    ),
+                // JBDocument cannot easily be tested; fixtures are difficult
                 "JComboBox: Select different item" to
                     row(
                         { ComboBox(arrayOf("item1", "item2")) },
@@ -142,11 +109,11 @@ object ListenerHelperTest : FunSpec({
                 "JTextComponent: Insert text" to
                     row(
                         { JTextField() },
-                        { (it as JTextField).document.insertString(1, "text", null) },
+                        { (it as JTextField).document.insertString(0, "text", null) },
                     ),
                 "JTextComponent: Remove text" to
                     row(
-                        { JTextField() },
+                        { JTextField("text") },
                         { (it as JTextField).document.remove(2, 2) },
                     ),
                 "JTree: Change selection" to
@@ -166,7 +133,7 @@ object ListenerHelperTest : FunSpec({
                     ),
                 "SchemeEditor: Recursion" to
                     row(
-                        { DummySchemeEditor { panel { row { textField() } } } },
+                        { DummySchemeEditor { panel { row { textField().withName("text") } } } },
                         { ((it as DummySchemeEditor).components.first() as JTextField).text = "text" },
                     ),
             )

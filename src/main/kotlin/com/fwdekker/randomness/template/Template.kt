@@ -37,7 +37,7 @@ data class Template(
             WordScheme::class,
         ]
     )
-    val schemes: MutableList<Scheme> = DEFAULT_SCHEMES,
+    var schemes: MutableList<Scheme> = DEFAULT_SCHEMES,
     val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val typeIcon

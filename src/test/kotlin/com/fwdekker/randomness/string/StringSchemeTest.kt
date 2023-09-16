@@ -56,13 +56,13 @@ object StringSchemeTest : FunSpec({
                 "removes look-alike characters" to
                     row(StringScheme(pattern = "boiled", removeLookAlikeSymbols = true), "bed"),
                 "removes look-alike characters after interpreting regex" to
-                    row(StringScheme(pattern = "[xi]{4}", removeLookAlikeSymbols = true), "xxxx"),
+                    row(StringScheme(pattern = "[x]{4}[i]{4}", removeLookAlikeSymbols = true), "xxxx"),
                 "returns capitalized string" to
                     row(StringScheme(pattern = "text", capitalization = CapitalizationMode.UPPER), "TEXT"),
                 "returns pattern literally if regex disabled" to
                     row(StringScheme(pattern = "a[bc]d", isRegex = false), "a[bc]d"),
                 "returns reverse-regexed string" to
-                    row(StringScheme(pattern = "[x]{4}"), "xxx"),
+                    row(StringScheme(pattern = "[x]{4}"), "xxxx"),
             )
         ) { (scheme, output) -> scheme.generateStrings()[0] shouldBe output }
     }

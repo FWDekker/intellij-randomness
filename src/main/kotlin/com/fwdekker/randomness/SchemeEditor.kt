@@ -11,7 +11,7 @@ import javax.swing.JComponent
  * An editor for a [Scheme].
  *
  * @param S the type of scheme edited in this editor
- * @param scheme the scheme edited in this editor
+ * @property scheme the scheme edited in this editor
  */
 abstract class SchemeEditor<S : Scheme>(val scheme: S) : Disposable {
     /**
@@ -70,12 +70,13 @@ abstract class SchemeEditor<S : Scheme>(val scheme: S) : Disposable {
      *
      * @param listener the function to invoke on every change in this editor
      */
+    @Suppress("detekt:SpreadOperator") // Acceptable because this method is called rarely
     fun addChangeListener(listener: () -> Unit) =
         addChangeListenerTo(*(components + decoratorEditors).toTypedArray(), listener = listener)
 
 
     /**
-     * Disposes of this editor's resources.
+     * Disposes this editor's resources.
      */
     override fun dispose() = Disposer.dispose(this)
 }

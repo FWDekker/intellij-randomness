@@ -42,6 +42,17 @@ object Bundle {
  *
  * @throws java.util.MissingFormatArgumentException if [args] has fewer arguments than required for [format]
  */
-// TODO: Simplify documentation everywhere throughout the project to remove redundant `@param` specifications
 fun String.matchesFormat(format: String, vararg args: String) =
-    Regex(format.format(*args).replace(Regex("%[0-9]+\\\$[Ss]"), ".*")).matches(this)
+    // TODO: Simplify documentation everywhere throughout the project to remove redundant `@param` specifications
+    Regex("%[0-9]+\\\$[Ss]").findAll(format)
+        .toList()
+        .reversed()
+        .fold(format) { acc, match ->
+            if (match.value.drop(1).dropLast(2).toInt() > args.size)
+                acc.replaceRange(match.range, ".*")
+            else
+                acc
+        }
+        .format(*args)
+        .let { Regex(it) }
+        .matches(this)

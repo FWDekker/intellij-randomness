@@ -18,7 +18,8 @@
                                  displayName="Randomness" />
 
         <!-- Dynamically loads, unloads, and updates template actions -->
-        <dynamicActionConfigurationCustomizer implementation="com.fwdekker.randomness.template.TemplateActionLoader" />
+        <dynamicActionConfigurationCustomizer
+            implementation="com.fwdekker.randomness.template.DefaultTemplateActionLoader" />
     </extensions>
 
     <!-- Non-dynamic actions -->

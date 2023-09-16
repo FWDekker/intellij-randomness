@@ -3,8 +3,11 @@ package com.fwdekker.randomness
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNot
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
@@ -81,18 +84,16 @@ object TypeIconTest : FunSpec({
                 this.dispose()
             }
 
-            image.getRGB(0, 0, 32, 32, null, 0, 32).forEach { it shouldBe 0 }
+            image.getRGB(0, 0, 32, 32, null, 0, 32).filter { it != 0 } should beEmpty()
         }
 
-        test("paints something otherwise") {
+        test("paints something if the component is not null") {
             with(image.createGraphics()) {
-                val label = guiGet { JLabel() }
-
-                TypeIcon(PlainIcon(), "text", listOf(Color.GRAY)).paintIcon(label, this, 0, 0)
+                TypeIcon(PlainIcon(), "text", listOf(Color.GRAY)).paintIcon(guiGet { JLabel() }, this, 0, 0)
                 this.dispose()
             }
 
-            image.getRGB(0, 0, 32, 32, null, 0, 32).forEach { it shouldNotBe 0 }
+            image.getRGB(0, 0, 32, 32, null, 0, 32).filter { it != 0 } shouldNot beEmpty()
         }
     }
 })

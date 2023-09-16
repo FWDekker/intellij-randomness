@@ -19,7 +19,7 @@ class JDateTimeField(
     private val default: LocalDateTime = LocalDateTime.now(),
 ) : JFormattedTextField(DateTimeFormatter()) {
     /**
-     * The current [value] represented as a [Long].
+     * The current [value] represented as a [Long] of the millisecond epoch.
      */
     var longValue: Long
         get() = value.toEpochMilli()

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.ui.withName
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
@@ -83,7 +84,7 @@ class DummySchemeEditor(
 class DummyDecoratorSchemeEditor(
     scheme: DummyDecoratorScheme = DummyDecoratorScheme(),
 ) : SchemeEditor<DummyDecoratorScheme>(scheme) {
-    override val rootComponent = panel { row { textField().bindText(scheme::append) } }
+    override val rootComponent = panel { row { textField().withName("decoratorText").bindText(scheme::append) } }
 }
 
 /**

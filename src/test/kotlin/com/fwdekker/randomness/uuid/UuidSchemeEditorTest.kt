@@ -6,11 +6,12 @@ import com.fwdekker.randomness.editorApplyTestFactory
 import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.isSelectedProp
-import com.fwdekker.randomness.itemProp
 import com.fwdekker.randomness.prop
+import com.fwdekker.randomness.textProp
 import com.fwdekker.randomness.valueProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import com.intellij.ui.dsl.builder.MutableProperty
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
@@ -60,34 +61,44 @@ object UuidSchemeEditorTest : FunSpec({
             mapOf(
                 "type" to
                     row(
-                        { frame.spinner("type").valueProp() },
-                        // TODO: Fix `editorProperty` for button group
+                        {
+                            MutableProperty(
+                                {
+                                    when {
+                                        frame.radioButton("type1").target().isSelected -> 1
+                                        frame.radioButton("type4").target().isSelected -> 4
+                                        else -> error("No radio button was selected.")
+                                    }
+                                },
+                                { frame.radioButton("type${it as Int}").target().isSelected = true },
+                            )
+                        },
                         { editor.scheme::type.prop() },
-                        0
+                        1,
                     ),
                 "isUppercase" to
                     row(
                         { frame.checkBox("isUppercase").isSelectedProp() },
                         { editor.scheme::isUppercase.prop() },
-                        true
+                        true,
                     ),
                 "addDashes" to
                     row(
                         { frame.checkBox("addDashes").isSelectedProp() },
                         { editor.scheme::addDashes.prop() },
-                        false
+                        false,
                     ),
                 "affixDecorator" to
                     row(
-                        { frame.comboBox("affixDescriptor").itemProp() },
+                        { frame.comboBox("affixDescriptor").textProp() },
                         { editor.scheme.affixDecorator::descriptor.prop() },
-                        "[@]"
+                        "[@]",
                     ),
                 "arrayDecorator" to
                     row(
                         { frame.spinner("arrayMaxCount").valueProp() },
                         { editor.scheme.arrayDecorator::maxCount.prop() },
-                        7
+                        7,
                     ),
             )
         )

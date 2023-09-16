@@ -46,10 +46,10 @@ object ArrayDecoratorTest : FunSpec({
                         ArrayDecorator(enabled = true, separator = ",  "),
                         "[[i0],  [i1],  [i2]]",
                     ),
-                "converts escaped 'n' to newline" to
+                "converts escaped 'n' in separator to newline" to
                     row(
                         ArrayDecorator(enabled = true, separator = """\n"""),
-                        """[[i0]\n[i1]\n[i2]]""",
+                        "[[i0]\n[i1]\n[i2]]",
                     ),
                 "applies affix decorator" to
                     row(
@@ -76,7 +76,7 @@ object ArrayDecoratorTest : FunSpec({
             var i = 0
             scheme.generator = { count -> List(count) { "[i${i++}]" } }
 
-            scheme.generateStrings(count = 3) shouldBe listOf("[[i0], [i1], [i2]]", "[[i3], [i4], [i5]]")
+            scheme.generateStrings(count = 2) shouldBe listOf("[[i0], [i1], [i2]]", "[[i3], [i4], [i5]]")
         }
     }
 
@@ -89,8 +89,8 @@ object ArrayDecoratorTest : FunSpec({
                     row(ArrayDecorator(minCount = 0), "array.error.min_count_too_low"),
                 "fails for negative min count" to
                     row(ArrayDecorator(minCount = -23), "array.error.min_count_too_low"),
-                "fails for min count equals max count" to
-                    row(ArrayDecorator(minCount = 368, maxCount = 368), "array.error.min_count_above_max"),
+                "succeeds for min count equals max count" to
+                    row(ArrayDecorator(minCount = 368, maxCount = 368), null),
                 "fails for min count above max count" to
                     row(ArrayDecorator(minCount = 14, maxCount = 2), "array.error.min_count_above_max"),
                 "fails if affix decorator is invalid" to

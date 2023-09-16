@@ -184,8 +184,8 @@ object TemplateReferenceTest : FunSpec({
         }
     }
 
-    context("canReference") {
-        TODO() // TODO: Implement these tests
+    xcontext("canReference") {
+        TODO() // TODO: Add these tests
     }
 
 
@@ -193,16 +193,16 @@ object TemplateReferenceTest : FunSpec({
         withData(
             mapOf(
                 "returns the referenced template's value" to
-                    row(reference, "text0"),
+                    row({ reference }, "text0"),
                 "capitalizes output" to
-                    row(reference.also { it.capitalization = CapitalizationMode.UPPER }, "DUMMY0"),
+                    row({ reference.also { it.capitalization = CapitalizationMode.UPPER } }, "TEXT0"),
                 "applies decorators in order affix, array" to
                     row(
-                        reference.also { it.affixDecorator.enabled = true; it.arrayDecorator.enabled = true },
-                        """["text0", "text1", "text2"]""",
+                        { reference.also { it.affixDecorator.enabled = true; it.arrayDecorator.enabled = true } },
+                        "[text0, text1, text2]",
                     ),
             )
-        ) { (scheme, output) -> scheme.generateStrings()[0] shouldBe output }
+        ) { (scheme, output) -> scheme().generateStrings()[0] shouldBe output }
 
 
         test("returns the referenced template's value") {
@@ -226,26 +226,27 @@ object TemplateReferenceTest : FunSpec({
         withData(
             mapOf(
                 "succeeds for default state (given appropriate context)" to
-                    row(reference, null),
+                    row({ reference }, null),
                 "fails if no template is referred to" to
-                    row(reference.also { it.template = null }, "reference.error.no_selection"),
+                    row({ reference.also { it.template = null } }, "reference.error.no_selection"),
                 "fails if the referred template cannot be found" to
-                    row(reference.also { it.applyContext(Settings()) }, "reference.error.not_found"),
+                    row({ reference.also { it.applyContext(Settings()) } }, "reference.error.not_found"),
                 "fails if the reference is recursive" to
                     row(
-                        run {
-                            referencingTemplate.schemes += TemplateReference(reference.uuid)
-                            referencingTemplate.applyContext(Settings(list))
+                        {
+                            referencedTemplate.schemes +=
+                                TemplateReference(referencingTemplate.uuid).also { it.applyContext(Settings(list)) }
+
                             reference
                         },
                         "reference.error.recursion",
                     ),
                 "fails if affix decorator is invalid" to
-                    row(reference.also { it.affixDecorator.descriptor = """\""" }, ""),
+                    row({ reference.also { it.affixDecorator.descriptor = """\""" } }, ""),
                 "fails if array decorator is invalid" to
-                    row(reference.also { it.arrayDecorator.minCount = -24 }, ""),
+                    row({ reference.also { it.arrayDecorator.minCount = -24 } }, ""),
             )
-        ) { (scheme, validation) -> scheme shouldValidateAsBundle validation }
+        ) { (scheme, validation) -> scheme() shouldValidateAsBundle validation }
     }
 
     include(stateDeepCopyTestFactory { TemplateReference() })

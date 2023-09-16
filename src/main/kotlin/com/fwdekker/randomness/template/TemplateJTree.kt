@@ -37,12 +37,12 @@ import kotlin.math.min
 /**
  * A tree containing [Template]s and [Scheme]s.
  *
- * The tree contains the templates and schemes defined in the [TemplateList] of [currentSettings] by loading that list into
- * this tree's [TemplateJTreeModel]. Furthermore, when a new [Scheme] is added or copied, it will use the
+ * The tree contains the templates and schemes defined in the [TemplateList] of [currentSettings] by loading that list
+ * into this tree's [TemplateJTreeModel]. Furthermore, when a new [Scheme] is added or copied, it will use the
  * [currentSettings].
  *
- * This tree reads from [originalSettings] to determine whether particular [Scheme]s have been modified. Modified [Scheme]s
- * can be reset, in which case the original state is copied into that scheme in the [currentSettings].
+ * This tree reads from [originalSettings] to determine whether particular [Scheme]s have been modified. Modified
+ * [Scheme]s can be reset, in which case the original state is copied into that scheme in the [currentSettings].
  *
  * @property originalSettings The original settings before any modifications were made.
  * @property currentSettings The current settings which include modifications.

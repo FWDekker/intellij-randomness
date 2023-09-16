@@ -11,6 +11,7 @@ import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.itemProp
 import com.fwdekker.randomness.matcher
 import com.fwdekker.randomness.prop
+import com.fwdekker.randomness.textProp
 import com.fwdekker.randomness.valueProp
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.impl.EditorComponentImpl
@@ -142,7 +143,7 @@ object WordSchemeEditorTest : FunSpec({
             test("removes blank lines from the input field") {
                 guiRun { runWriteAction { wordsEditor.editor.document.setText("word1\n  \nword2\n") } }
 
-                guiRun { editor.apply() }
+                editor.apply()
 
                 guiGet { editor.scheme.words } shouldContainExactly listOf("word1", "word2")
             }
@@ -165,7 +166,7 @@ object WordSchemeEditorTest : FunSpec({
                     ),
                 "affixDecorator" to
                     row(
-                        { frame.comboBox("affixDescriptor").itemProp() },
+                        { frame.comboBox("affixDescriptor").textProp() },
                         { editor.scheme.affixDecorator::descriptor.prop() },
                         "[@]",
                     ),

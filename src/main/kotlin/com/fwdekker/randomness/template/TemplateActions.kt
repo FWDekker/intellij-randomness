@@ -145,15 +145,11 @@ class TemplateInsertAction(
 
         /**
          * Returns the component that the [editor] prefers to be focused when the editor is focused.
-         *
-         * @return the component that the [editor] prefers to be focused when the editor is focused.
          */
         override fun getPreferredFocusedComponent() = editor.preferredFocusedComponent
 
         /**
          * Creates a component containing the [editor] and the [previewPanel].
-         *
-         * @return a component containing the [editor] and the [previewPanel]
          */
         override fun createComponent() =
             JPanel(BorderLayout())
@@ -163,9 +159,7 @@ class TemplateInsertAction(
                 }
 
         /**
-         * Returns `true`
-         *
-         * @return `true`
+         * Returns `true`.
          */
         override fun isModified() = true
 
@@ -176,8 +170,6 @@ class TemplateInsertAction(
 
         /**
          * Returns [text].
-         *
-         * @return [text]
          */
         override fun getDisplayName() = text
 

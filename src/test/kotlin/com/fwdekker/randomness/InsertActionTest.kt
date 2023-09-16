@@ -13,9 +13,9 @@ import io.kotest.matchers.shouldBe
 /**
  * Integration tests for [InsertAction].
  */
-@Suppress("detekt:FunctionName", "detekt:FunctionMaxLength") // Makes JUnit tests easier to read
-// TODO: Convert to Kotest format
+@Suppress("detekt:FunctionMaxLength", "detekt:FunctionName", "detekt:TooManyFunctions")
 class InsertActionTest : BasePlatformTestCase() {
+    // TODO: Convert entire class to Kotest format
     private lateinit var document: Document
     private lateinit var caretModel: CaretModel
 
