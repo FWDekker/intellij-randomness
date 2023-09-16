@@ -30,14 +30,12 @@ abstract class State {
 
 
     /**
-     * Sets the [context] of this [State].
-     *
-     * @param context the new context of this [State]
+     * Sets the [State.context] of this [State] to be a reference to [context].
      */
     fun applyContext(context: Settings) = applyContext(Box({ context }))
 
     /**
-     * @see applyContext
+     * Sets the [State.context] of this [State] to [context].
      */
     open fun applyContext(context: Box<Settings>) {
         this.context = context
@@ -52,45 +50,40 @@ abstract class State {
     open fun doValidate(): String? = null
 
     /**
-     * Returns a deep copy of this state.
+     * Returns a deep copy, retaining the [uuid] if and only if [retainUuid] is `true`.
      *
      * Fields annotated with [Transient] are shallow-copied.
      *
-     * @param retainUuid `false` if and only if the copy should have a different, new [uuid]
-     * @return a deep copy of this scheme
-     * @see deepCopyTransient utility function for implementations
+     * @see deepCopyTransient utility function for subclasses that want to implement `deepCopy`
      */
     abstract fun deepCopy(retainUuid: Boolean = false): State
 
     /**
-     * Copies [Transient] fields from `this` to `self`.
+     * When invoked by the instance `this` as `self.deepCopyTransient()`, this method copies [Transient] fields from
+     * `this` to `self`, and returns `self`.
      *
-     * @param SELF the type of `self`
-     * @receiver `self`, the [State] that should copy [Transient] fields from `this` into itself
-     * @param retainUuid `false` if and only if `self` should retain its current [uuid]
-     * @return `self`
      * @see deepCopy
      */
     protected fun <SELF : State> SELF.deepCopyTransient(retainUuid: Boolean): SELF {
-        val copy: SELF = this
-        val original: State = this@State
+        val self: SELF = this
+        val thiz: State = this@State
 
-        if (retainUuid) copy.uuid = original.uuid
-        copy.applyContext(original.context.copy())
+        if (retainUuid) self.uuid = thiz.uuid
+        self.applyContext(thiz.context.copy())
 
-        return copy
+        return self
     }
 
     /**
-     * Copies the [other] into this state.
+     * Copies [other] into `this`.
      *
      * Works by shallow-copying a [deepCopy] of [other] into `this`. [Transient] fields are shallow-copied directly from
      * [other] instead.
      *
      * Implementations may choose to shallow-copy additional fields directly from [other].
      *
-     * @param other the state to copy into this state; should be a (sub)class of this state
-     * @see copyFromTransient utility function for implementations
+     * @param other the state to copy into `this`; should be a (sub)class of this state
+     * @see copyFromTransient utility function for subclasses that want to implement `copyFrom`
      */
     open fun copyFrom(other: State) {
         XmlSerializerUtil.copyBean(other.deepCopy(retainUuid = true), this)
@@ -98,9 +91,9 @@ abstract class State {
     }
 
     /**
-     * Copies [Transient] fields from [other] into `this`.
+     * Copies basic [Transient] fields from [other] into `this`.
      *
-     * @param other the state to copy [Transient] fields from into `this`
+     * Typically used by subclasses to help implement [copyFrom].
      */
     protected fun copyFromTransient(other: State) {
         this.uuid = other.uuid

@@ -16,7 +16,7 @@ import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [TemplateEditor].
+ * Unit tests for [TemplateEditor].
  */
 object TemplateEditorTest : FunSpec({
     tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
@@ -54,9 +54,7 @@ object TemplateEditorTest : FunSpec({
     include(
         editorFieldsTestFactory(
             { editor },
-            mapOf(
-                "name" to row({ frame.textBox("templateName").textProp() }, { editor.scheme::name.prop() }, "New Name"),
-            )
+            mapOf("name" to { row(frame.textBox("templateName").textProp(), editor.scheme::name.prop(), "New Name") })
         )
     )
 })

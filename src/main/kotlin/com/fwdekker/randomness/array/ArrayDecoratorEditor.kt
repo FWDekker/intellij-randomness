@@ -33,7 +33,7 @@ import javax.swing.JCheckBox
  *
  * @param scheme the scheme to edit
  * @property embedded `true` if the editor is embedded, which means that no titled separator is shown at the top, and
- * the user cannot disable the array decorator; [apply] always enables the array decorator
+ * the user cannot disable the array decorator; [apply] always enables the array decorator.
  */
 class ArrayDecoratorEditor(
     scheme: ArrayDecorator,

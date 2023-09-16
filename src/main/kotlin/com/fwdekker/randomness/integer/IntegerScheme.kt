@@ -45,20 +45,13 @@ data class IntegerScheme(
 
 
     /**
-     * Returns random formatted integers from [minValue] until [maxValue], inclusive.
-     *
-     * @param count the number of integers to generate
-     * @return random formatted integers from [minValue] until [maxValue], inclusive
+     * Returns [count] random formatted integers from [minValue] (inclusive) to [maxValue] (inclusive).
      */
     override fun generateUndecoratedStrings(count: Int) =
         List(count) { longToString(randomLong(minValue, maxValue)) }
 
     /**
-     * Returns a random long in the range from [from] until [until], inclusive, without causing overflow.
-     *
-     * @param from inclusive lower bound
-     * @param until inclusive upper bound
-     * @return a random long in the range from [from] until [until], inclusive, without causing overflow
+     * Returns a random long in the range from [from] (inclusive) to [until] (inclusive) without causing overflow.
      */
     private fun randomLong(from: Long, until: Long) =
         if (from == Long.MIN_VALUE && until == Long.MAX_VALUE) random.nextLong()
@@ -67,9 +60,6 @@ data class IntegerScheme(
 
     /**
      * Returns a nicely formatted representation of [value].
-     *
-     * @param value the value to format
-     * @return a nicely formatted representation of [value]
      */
     private fun longToString(value: Long): String {
         if (base != DECIMAL_BASE) {

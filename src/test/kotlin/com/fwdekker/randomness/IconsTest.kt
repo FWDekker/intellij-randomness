@@ -325,11 +325,7 @@ object RadialColorReplacementFilterTest : FunSpec({
 
 
 /**
- * A plain, single-color icon of given width and height.
- *
- * @property width The width of the icon.
- * @property height The height of the icon.
- * @property color The color to fill the icon with; default is transparent.
+ * A plain, single-[color] icon of given [width] and [height].
  */
 private data class PlainIcon(
     private val width: Int = 32,

@@ -28,7 +28,7 @@ import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [WordSchemeEditor].
+ * Unit tests for [WordSchemeEditor].
  */
 object WordSchemeEditorTest : FunSpec({
     tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
@@ -157,25 +157,34 @@ object WordSchemeEditorTest : FunSpec({
         editorFieldsTestFactory(
             { editor },
             mapOf(
-                // TODO: Also add word input itself?
-                "capitalization" to
+                "words" to {
                     row(
-                        { frame.comboBox("capitalization").itemProp() },
-                        { editor.scheme::capitalization.prop() },
+                        wordsEditor.editor.document.prop({ it::getWordList }, { it::setWordList }),
+                        editor.scheme::words.prop(),
+                        listOf("word1", "word2", "word3"),
+                    )
+                },
+                "capitalization" to {
+                    row(
+                        frame.comboBox("capitalization").itemProp(),
+                        editor.scheme::capitalization.prop(),
                         CapitalizationMode.SENTENCE,
-                    ),
-                "affixDecorator" to
+                    )
+                },
+                "affixDecorator" to {
                     row(
-                        { frame.comboBox("affixDescriptor").textProp() },
-                        { editor.scheme.affixDecorator::descriptor.prop() },
+                        frame.comboBox("affixDescriptor").textProp(),
+                        editor.scheme.affixDecorator::descriptor.prop(),
                         "[@]",
-                    ),
-                "arrayDecorator" to
+                    )
+                },
+                "arrayDecorator" to {
                     row(
-                        { frame.spinner("arrayMaxCount").valueProp() },
-                        { editor.scheme.arrayDecorator::maxCount.prop() },
+                        frame.spinner("arrayMaxCount").valueProp(),
+                        editor.scheme.arrayDecorator::maxCount.prop(),
                         7,
-                    ),
+                    )
+                },
             )
         )
     )

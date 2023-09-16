@@ -25,7 +25,7 @@ import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [TemplateReferenceEditor].
+ * Unit tests for [TemplateReferenceEditor].
  */
 object TemplateReferenceEditorTest : FunSpec({
     tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
@@ -37,8 +37,6 @@ object TemplateReferenceEditorTest : FunSpec({
     lateinit var context: Settings
     lateinit var reference: TemplateReference
     lateinit var editor: TemplateReferenceEditor
-
-    val theTemplate = Template("Template2", mutableListOf(DummyScheme())) // TODO: Rename this field (I was drunk)
 
 
     beforeContainer {
@@ -54,7 +52,7 @@ object TemplateReferenceEditorTest : FunSpec({
                 mutableListOf(
                     Template("Template0", mutableListOf(DummyScheme())),
                     Template("Template1", mutableListOf(TemplateReference())),
-                    theTemplate,
+                    Template("Template2", mutableListOf(DummyScheme())),
                 )
             )
         )
@@ -103,30 +101,34 @@ object TemplateReferenceEditorTest : FunSpec({
         editorFieldsTestFactory(
             { editor },
             mapOf(
-                "template" to
+                "template" to {
                     row(
-                        { frame.comboBox("template").itemProp() },
-                        { editor.scheme::template.prop() },
-                        theTemplate,
-                    ),
-                "capitalization" to
+                        frame.comboBox("template").itemProp(),
+                        editor.scheme::template.prop(),
+                        context.templates[2],
+                    )
+                },
+                "capitalization" to {
                     row(
-                        { frame.comboBox("capitalization").itemProp() },
-                        { editor.scheme::capitalization.prop() },
+                        frame.comboBox("capitalization").itemProp(),
+                        editor.scheme::capitalization.prop(),
                         CapitalizationMode.LOWER,
-                    ),
-                "affixDecorator" to
+                    )
+                },
+                "affixDecorator" to {
                     row(
-                        { frame.comboBox("affixDescriptor").textProp() },
-                        { editor.scheme.affixDecorator::descriptor.prop() },
+                        frame.comboBox("affixDescriptor").textProp(),
+                        editor.scheme.affixDecorator::descriptor.prop(),
                         "[@]",
-                    ),
-                "arrayDecorator" to
+                    )
+                },
+                "arrayDecorator" to {
                     row(
-                        { frame.spinner("arrayMaxCount").valueProp() },
-                        { editor.scheme.arrayDecorator::maxCount.prop() },
+                        frame.spinner("arrayMaxCount").valueProp(),
+                        editor.scheme.arrayDecorator::maxCount.prop(),
                         7,
-                    ),
+                    )
+                },
             )
         )
     )

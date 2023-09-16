@@ -21,7 +21,7 @@ import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [FixedLengthDecoratorEditor].
+ * Unit tests for [FixedLengthDecoratorEditor].
  */
 object FixedLengthDecoratorEditorTest : FunSpec({
     tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
@@ -73,7 +73,6 @@ object FixedLengthDecoratorEditorTest : FunSpec({
 
         context("filler") {
             test("enforces the filler's length filter") {
-                // TODO: Test length filter in other classes as well
                 guiRun { frame.textBox("fixedLengthFiller").target().text = "zAt" }
 
                 frame.textBox("fixedLengthFiller").requireText("t")
@@ -88,24 +87,15 @@ object FixedLengthDecoratorEditorTest : FunSpec({
         editorFieldsTestFactory(
             { editor },
             mapOf(
-                "enabled" to
-                    row(
-                        { frame.checkBox("fixedLengthEnabled").isSelectedProp() },
-                        { editor.scheme::enabled.prop() },
-                        false,
-                    ),
-                "length" to
-                    row(
-                        { frame.spinner("fixedLengthLength").valueProp() },
-                        { editor.scheme::length.prop() },
-                        5L,
-                    ),
-                "filler" to
-                    row(
-                        { frame.textBox("fixedLengthFiller").textProp() },
-                        { editor.scheme::filler.prop() },
-                        ".",
-                    ),
+                "enabled" to {
+                    row(frame.checkBox("fixedLengthEnabled").isSelectedProp(), editor.scheme::enabled.prop(), false)
+                },
+                "length" to {
+                    row(frame.spinner("fixedLengthLength").valueProp(), editor.scheme::length.prop(), 5L)
+                },
+                "filler" to {
+                    row(frame.textBox("fixedLengthFiller").textProp(), editor.scheme::filler.prop(), ".")
+                },
             )
         )
     )

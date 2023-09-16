@@ -33,7 +33,7 @@ import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [TemplateJTree].
+ * Unit tests for [TemplateJTree].
  */
 object TemplateJTreeTest : FunSpec({
     tags(NamedTag("IdeaFixture"), NamedTag("Swing"))

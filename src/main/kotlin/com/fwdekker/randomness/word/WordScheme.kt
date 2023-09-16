@@ -31,10 +31,7 @@ data class WordScheme(
 
 
     /**
-     * Returns formatted random words.
-     *
-     * @param count the number of words to generate
-     * @return formatted random words
+     * Returns [count] formatted random words.
      */
     override fun generateUndecoratedStrings(count: Int) =
         List(count) { capitalization.transform(words.random(random), random) }

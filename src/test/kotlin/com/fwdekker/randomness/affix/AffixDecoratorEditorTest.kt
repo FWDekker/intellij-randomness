@@ -104,14 +104,12 @@ object AffixDecoratorEditorTest : FunSpec({
             @Suppress("BooleanLiteralArgument") // Argument names are clear from lambda later on
             withData(
                 nameFn = { "enabledIf=${it.a}, checkboxChecked=${it.b}" },
-                listOf(
-                    row(null, false, true, false),
-                    row(null, true, true, true),
-                    row(false, false, false, false),
-                    row(false, true, false, false),
-                    row(true, false, true, false),
-                    row(true, true, true, true),
-                )
+                row(null, false, true, false),
+                row(null, true, true, true),
+                row(false, false, false, false),
+                row(false, true, false, false),
+                row(true, false, true, false),
+                row(true, true, true, true),
             ) { (predicateState, checkboxState, expectedCheckboxEnabled, expectedDescriptorEnabled) ->
                 val predicate = predicateState?.let { toggle.selected }
 
@@ -137,12 +135,13 @@ object AffixDecoratorEditorTest : FunSpec({
         editorFieldsTestFactory(
             { editor },
             mapOf(
-                "descriptor" to
+                "descriptor" to {
                     row(
-                        { frame.comboBox("affixDescriptor").textProp() },
-                        { editor.scheme::descriptor.prop() },
+                        frame.comboBox("affixDescriptor").textProp(),
+                        editor.scheme::descriptor.prop(),
                         "non-preset string",
-                    ),
+                    )
+                },
             )
         )
     )

@@ -71,13 +71,10 @@ data class Template(
 
 
     /**
-     * Generates random strings by concatenating the outputs of the [schemes].
+     * Generates [count] random strings by concatenating the outputs of the [schemes].
      *
      * The schemes are first all given a reference to the same [random] before each generating [count] random strings.
      * These results are then concatenated into the output.
-     *
-     * @param count the number of random strings to generate
-     * @return random strings generated from this template's underlying schemes
      */
     override fun generateUndecoratedStrings(count: Int) =
         schemes.onEach { it.random = random }.map { it.generateStrings(count) }

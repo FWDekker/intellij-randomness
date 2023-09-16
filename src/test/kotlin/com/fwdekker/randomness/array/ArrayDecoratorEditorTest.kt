@@ -24,7 +24,7 @@ import javax.swing.JCheckBox
 
 
 /**
- * GUI tests for [ArrayDecoratorEditor].
+ * Unit tests for [ArrayDecoratorEditor].
  */
 object ArrayDecoratorEditorTest : FunSpec({
     tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
@@ -181,36 +181,41 @@ object ArrayDecoratorEditorTest : FunSpec({
         editorFieldsTestFactory(
             { editor },
             mapOf(
-                "minCount" to
+                "minCount" to {
                     row(
-                        { frame.spinner("arrayMinCount").valueProp() },
-                        { editor.scheme::minCount.prop() },
+                        frame.spinner("arrayMinCount").valueProp(),
+                        editor.scheme::minCount.prop(),
                         1,
-                    ),
-                "maxCount" to
+                    )
+                },
+                "maxCount" to {
                     row(
-                        { frame.spinner("arrayMaxCount").valueProp() },
-                        { editor.scheme::maxCount.prop() },
+                        frame.spinner("arrayMaxCount").valueProp(),
+                        editor.scheme::maxCount.prop(),
                         483,
-                    ),
-                "separatorEnabled" to
+                    )
+                },
+                "separatorEnabled" to {
                     row(
-                        { frame.checkBox("arraySeparatorEnabled").isSelectedProp() },
-                        { editor.scheme::separatorEnabled.prop() },
+                        frame.checkBox("arraySeparatorEnabled").isSelectedProp(),
+                        editor.scheme::separatorEnabled.prop(),
                         false,
-                    ),
-                "separator" to
+                    )
+                },
+                "separator" to {
                     row(
-                        { frame.comboBox("arraySeparator").textProp() },
-                        { editor.scheme::separator.prop() },
+                        frame.comboBox("arraySeparator").textProp(),
+                        editor.scheme::separator.prop(),
                         " - ",
-                    ),
-                "affixDecorator" to
+                    )
+                },
+                "affixDecorator" to {
                     row(
-                        { frame.comboBox("arrayAffixDescriptor").textProp() },
-                        { editor.scheme.affixDecorator::descriptor.prop() },
+                        frame.comboBox("arrayAffixDescriptor").textProp(),
+                        editor.scheme.affixDecorator::descriptor.prop(),
                         "{@}",
-                    ),
+                    )
+                },
             )
         )
     )

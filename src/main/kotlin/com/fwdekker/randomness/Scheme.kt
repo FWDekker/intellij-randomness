@@ -58,13 +58,11 @@ abstract class Scheme : State() {
 
 
     /**
-     * Generates random decorated data according to the settings in this scheme and its decorators.
+     * Generates [count] random decorated data according to the settings in this scheme and its decorators.
      *
      * By default, this method applies the decorators on the output of [generateUndecoratedStrings]. Override this
      * method if the scheme should interact with its decorators in a different way.
      *
-     * @param count the number of data to generate
-     * @return random data
      * @throws DataGenerationException if data could not be generated
      */
     @Throws(DataGenerationException::class)
@@ -81,10 +79,8 @@ abstract class Scheme : State() {
     }
 
     /**
-     * Generates random data according to the settings in this scheme, ignoring settings from decorators.
+     * Generates [count] random data according to the settings in this scheme, ignoring settings from decorators.
      *
-     * @param count the number of data to generate
-     * @return random data
      * @throws DataGenerationException if data could not be generated
      * @see generateStrings
      */

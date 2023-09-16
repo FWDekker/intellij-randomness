@@ -22,7 +22,7 @@ import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [StringSchemeEditor].
+ * Unit tests for [StringSchemeEditor].
  */
 object StringSchemeEditorTest : FunSpec({
     tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
@@ -60,36 +60,41 @@ object StringSchemeEditorTest : FunSpec({
         editorFieldsTestFactory(
             { editor },
             mapOf(
-                "pattern" to
+                "pattern" to {
                     row(
-                        { frame.textBox("pattern").textProp() },
-                        { editor.scheme::pattern.prop() },
+                        frame.textBox("pattern").textProp(),
+                        editor.scheme::pattern.prop(),
                         "[a-z]{3,4}",
-                    ),
-                "isRegex" to
+                    )
+                },
+                "isRegex" to {
                     row(
-                        { frame.checkBox("isRegex").isSelectedProp() },
-                        { editor.scheme::isRegex.prop() },
+                        frame.checkBox("isRegex").isSelectedProp(),
+                        editor.scheme::isRegex.prop(),
                         false,
-                    ),
-                "removeLookAlikeCharacters" to
+                    )
+                },
+                "removeLookAlikeCharacters" to {
                     row(
-                        { frame.checkBox("removeLookAlikeCharacters").isSelectedProp() },
-                        { editor.scheme::removeLookAlikeSymbols.prop() },
+                        frame.checkBox("removeLookAlikeCharacters").isSelectedProp(),
+                        editor.scheme::removeLookAlikeSymbols.prop(),
                         true,
-                    ),
-                "capitalization" to
+                    )
+                },
+                "capitalization" to {
                     row(
-                        { frame.comboBox("capitalization").itemProp() },
-                        { editor.scheme::capitalization.prop() },
+                        frame.comboBox("capitalization").itemProp(),
+                        editor.scheme::capitalization.prop(),
                         CapitalizationMode.RANDOM,
-                    ),
-                "arrayDecorator" to
+                    )
+                },
+                "arrayDecorator" to {
                     row(
-                        { frame.spinner("arrayMaxCount").valueProp() },
-                        { editor.scheme.arrayDecorator::maxCount.prop() },
+                        frame.spinner("arrayMaxCount").valueProp(),
+                        editor.scheme.arrayDecorator::maxCount.prop(),
                         7,
-                    ),
+                    )
+                },
             )
         )
     )

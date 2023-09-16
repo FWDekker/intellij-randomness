@@ -24,8 +24,6 @@ import java.nio.charset.StandardCharsets
 class ErrorReporter : ErrorReportSubmitter() {
     /**
      * Returns the text that is displayed in the button to report the error.
-     *
-     * @return the text that is displayed in the button to report the error
      */
     override fun getReportActionText() = Bundle("reporter.report")
 
@@ -62,17 +60,12 @@ class ErrorReporter : ErrorReportSubmitter() {
 
     /**
      * Returns the privacy notice text.
-     *
-     * @return the privacy notice text
      */
     override fun getPrivacyNoticeText() = Bundle("reporter.privacy_notice")
 
 
     /**
-     * Constructs a URL to create an issue with [additionalInfo] that is below the maximum URL limit.
-     *
-     * @param additionalInfo additional information about the exception provided by the user
-     * @return a URL to create an issue with [additionalInfo] that is below the maximum URL limit
+     * Constructs a URL to create an issue that provides [additionalInfo] and is below the maximum URL limit.
      */
     fun getIssueUrl(additionalInfo: String?): String {
         val baseUrl = "https://github.com/FWDekker/intellij-randomness/issues/new?body="
@@ -81,14 +74,8 @@ class ErrorReporter : ErrorReportSubmitter() {
             "Additional info",
             if (additionalInfo.isNullOrBlank()) MORE_DETAIL_MESSAGE else additionalInfo
         )
-        val stacktraceSection = createMarkdownSection(
-            "Stacktraces",
-            STACKTRACE_MESSAGE
-        )
-        val versionSection = createMarkdownSection(
-            "Version information",
-            getFormattedVersionInformation()
-        )
+        val stacktraceSection = createMarkdownSection("Stacktraces", STACKTRACE_MESSAGE)
+        val versionSection = createMarkdownSection("Version information", getFormattedVersionInformation())
 
         return URLEncoder.encode(additionalInfoSection + stacktraceSection + versionSection, StandardCharsets.UTF_8)
             .replace("%2B", "+")
@@ -96,12 +83,8 @@ class ErrorReporter : ErrorReportSubmitter() {
     }
 
     /**
-     * Creates a Markdown "section" containing the title in bold followed by the contents on the next line, finalized by
-     * two newlines.
-     *
-     * @param title the title of the section
-     * @param contents the contents of the section
-     * @return a Markdown "section" with the [title] and [contents]
+     * Creates a Markdown "section" containing the [title] in bold followed by the [contents] on the next line,
+     * finalized by two newlines.
      */
     private fun createMarkdownSection(title: String, contents: String) =
         """
@@ -111,8 +94,6 @@ class ErrorReporter : ErrorReportSubmitter() {
 
     /**
      * Returns version information on the user's environment as a Markdown-style list.
-     *
-     * @return version information on the user's environment as a Markdown-style list
      */
     private fun getFormattedVersionInformation() =
         """

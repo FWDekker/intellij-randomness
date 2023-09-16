@@ -67,8 +67,13 @@ class TemplateReferenceEditor(scheme: TemplateReference) : SchemeEditor<Template
     }
 
 
-    // TODO: Document this
+    /**
+     * Renders a template.
+     */
     private class TemplateCellRenderer : ColoredListCellRenderer<Template>() {
+        /**
+         * Renders the [value] as its icon and name, ignoring other parameters.
+         */
         override fun customizeCellRenderer(
             list: JList<out Template>,
             value: Template?,

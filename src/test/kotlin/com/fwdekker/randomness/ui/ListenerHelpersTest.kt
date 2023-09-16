@@ -75,7 +75,7 @@ object ListenerHelpersTest : FunSpec({
                         { PlainDocument().also { it.insertString(0, "text", null) } },
                         { (it as PlainDocument).replace(2, 1, "y", null) },
                     ),
-                // JBDocument cannot easily be tested; fixtures are difficult
+                // `JBDocument` is excluded because setting up the correct fixtures is very difficult
                 "JComboBox: Select different item" to
                     row(
                         { ComboBox(arrayOf("item1", "item2")) },
@@ -151,11 +151,11 @@ object ListenerHelpersTest : FunSpec({
 
 
 /**
- * Returns the [model] of this [JTree] cast to a [DefaultTreeModel].
+ * Returns the [model] of this [JTree], cast to a [DefaultTreeModel].
  */
 private fun JTree.model() = this.model as DefaultTreeModel
 
 /**
- * Returns the [root] of this [DefaultTreeModel] cast to a [DefaultMutableTreeNode].
+ * Returns the [root] of this [DefaultTreeModel], cast to a [DefaultMutableTreeNode].
  */
 private fun DefaultTreeModel.root() = this.root as DefaultMutableTreeNode

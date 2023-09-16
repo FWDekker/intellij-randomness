@@ -87,9 +87,6 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
 
     /**
      * Returns an icon that describes both this icon's type and [other]'s type.
-     *
-     * @param other the icon to combine this icon with
-     * @return an icon that describes both this icon's type and [other]'s type
      */
     fun combineWith(other: TypeIcon) =
         TypeIcon(
@@ -216,8 +213,8 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
 /**
  * An icon with various icons displayed on top of it as overlays.
  *
- * @property base TODO
- * @property overlays TODO
+ * @property base The underlying base icon.
+ * @property overlays The various icons that are overlayed on top of [base].
  */
 data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList()) : Icon {
     init {
@@ -229,9 +226,6 @@ data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList())
 
     /**
      * Returns a copy of this icon that has [icon] as an additional overlay icon.
-     *
-     * @param icon the additional overlay icon
-     * @return a copy of this icon that has [icon] as an additional overlay icon
      */
     fun plusOverlay(icon: Icon) = copy(overlays = overlays + icon)
 
@@ -314,27 +308,17 @@ class RadialColorReplacementFilter(
 
     /**
      * Returns [toShift] which has its alpha multiplied by that of [shiftBy].
-     *
-     * @param toShift the color of which to shift the alpha
-     * @param shiftBy the color which has the alpha to shift by
-     * @return [toShift] which has its alpha multiplied by that of [shiftBy]
      */
     private fun shiftAlpha(toShift: Color, shiftBy: Color) =
         ColorUtil.withAlpha(toShift, asFraction(toShift.alpha) * asFraction(shiftBy.alpha))
 
     /**
-     * Represents an integer in the range `[0, 256)` to a fraction of that range.
-     *
-     * @param number the number to represent as a fraction
-     * @return number as a fraction
+     * Represents a [number] in the range `[0, 256)` as a fraction of that range.
      */
     private fun asFraction(number: Int) = number / COMPONENT_MAX.toDouble()
 
     /**
-     * Converts an offset to the [center] to a color in [colors].
-     *
-     * @param offset the offset to get the color for
-     * @return the color to be displayed at [offset]
+     * Returns the appropriate color from [colors] for an [offset] relative to the [center].
      */
     private fun positionToColor(offset: Pair<Int, Int>): Color {
         val angle = 2 * Math.PI - (atan2(offset.second.toDouble(), offset.first.toDouble()) + STARTING_ANGLE)

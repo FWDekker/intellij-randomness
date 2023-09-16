@@ -156,8 +156,6 @@ class TemplateJTree(
 
     /**
      * Returns a panel containing this tree decorated with accessible action buttons.
-     *
-     * @return a panel containing this tree decorated with accessible action buttons
      */
     fun asDecoratedPanel(): JPanel =
         ToolbarDecorator.createDecorator(this)
@@ -206,7 +204,7 @@ class TemplateJTree(
     /**
      * Adds [newScheme] at an appropriate location in the tree based on the currently selected node.
      *
-     * @param newScheme the scheme to add. Must be an instance of [Template] if [selectedNodeNotRoot] is `null`.
+     * @param newScheme the scheme to add; must be an instance of [Template] if [selectedNodeNotRoot] is `null`
      */
     fun addScheme(newScheme: Scheme) {
         val newNode = StateNode(newScheme)
@@ -236,8 +234,6 @@ class TemplateJTree(
      * Removes [scheme] from the tree, and selects an appropriate other scheme.
      *
      * Throws an exception if [scheme] is not in this tree.
-     *
-     * @param scheme the scheme to remove
      */
     fun removeScheme(scheme: Scheme) {
         val node = StateNode(scheme)
@@ -254,12 +250,10 @@ class TemplateJTree(
     }
 
     /**
-     * Moves [scheme] up or down by one position.
+     * Moves [scheme] by one position; down if [moveDown] is `true, and up otherwise.
      *
-     * If a non-[Template] is moved up or down outside its parent's boundaries, it is moved to a different parent.
-     *
-     * @param scheme the scheme to move up or down
-     * @param moveDown `true` if the scheme should be moved down, `false` if the scheme should be moved up
+     * If a non-[Template] is moved up or down outside its parent's boundaries, it is moved to the next parent in that
+     * direction.
      */
     fun moveSchemeByOnePosition(scheme: Scheme, moveDown: Boolean) {
         val node = StateNode(scheme)
@@ -271,24 +265,13 @@ class TemplateJTree(
 
     /**
      * Returns `true` if and only if [moveSchemeByOnePosition] can be invoked with these parameters.
-     *
-     * Throws an exception if the scheme is not in this tree.
-     *
-     * @param scheme the scheme to move up or down
-     * @param moveDown `true` if the scheme should be moved down, `false` if the scheme should be moved up
-     * @return `true` if and only if [moveSchemeByOnePosition] can be invoked with these parameters
      */
     fun canMoveSchemeByOnePosition(scheme: Scheme, moveDown: Boolean) =
         myModel.canExchangeRows(myModel.nodeToRow(StateNode(scheme)), getMoveTargetIndex(scheme, moveDown))
 
     /**
-     * Returns the index to which [scheme] is moved when [moveSchemeByOnePosition] is invoked, or an out-of-range index
-     * if the scheme cannot be moved.
-     *
-     * @param scheme the scheme to move up or down
-     * @param moveDown `true` if the scheme should be moved down, `false` if the scheme should be moved up
-     * @return the index to which [scheme] is moved when [moveSchemeByOnePosition] is invoked, or an out-of-range index
-     * if the scheme cannot be moved
+     * Returns the index to which [scheme] is moved (down if [moveDown] is `true`, or up otherwise) when
+     * [moveSchemeByOnePosition] is invoked, or an out-of-range index if [scheme] cannot be moved in that direction.
      */
     private fun getMoveTargetIndex(scheme: Scheme, moveDown: Boolean): Int {
         val node = StateNode(scheme)
@@ -307,8 +290,6 @@ class TemplateJTree(
 
     /**
      * Expands the path to [node] even if it is a leaf node.
-     *
-     * @param node the node to expand
      */
     private fun expandNode(node: StateNode?) {
         if (node == null) return
@@ -320,9 +301,6 @@ class TemplateJTree(
 
     /**
      * Returns `true` if and only if [scheme] has been modified with respect to [originalSettings].
-     *
-     * @param scheme the scheme to check for modification
-     * @return `true` if and only if [scheme] has been modified with respect to [originalSettings]
      */
     private fun isModified(scheme: Scheme) = originalSettings.templateList.getSchemeByUuid(scheme.uuid) != scheme
 
@@ -332,9 +310,6 @@ class TemplateJTree(
      * If the name is already unique, that name is returned. Otherwise, the name is appended with the first number `i`
      * such that `$name ($i)` is unique. If the template's current name already ends with a number in parentheses, that
      * number is taken as the starting number.
-     *
-     * @param template the template to find a good name for
-     * @return a unique name for [template]
      */
     private fun findUniqueNameFor(template: Template): String {
         val templateNames = myModel.list.templates.map { it.name }
@@ -358,15 +333,7 @@ class TemplateJTree(
      */
     private inner class CellRenderer : ColoredTreeCellRenderer() {
         /**
-         * Renders the [Scheme] in [value].
-         *
-         * @param tree ignored
-         * @param value the node to render
-         * @param selected ignored
-         * @param expanded ignored
-         * @param leaf ignored
-         * @param row ignored
-         * @param hasFocus ignored
+         * Renders the [Scheme] in [value], ignoring other parameters.
          */
         override fun customizeCellRenderer(
             tree: JTree,
@@ -412,8 +379,6 @@ class TemplateJTree(
     private inner class AddButton : AnActionButton(Bundle("shared.action.add"), AllIcons.General.Add) {
         /**
          * Specifies the thread in which [update] is invoked.
-         *
-         * @return the thread in which [update] is invoked
          */
         override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
@@ -432,8 +397,6 @@ class TemplateJTree(
 
         /**
          * Returns the shortcut for this action.
-         *
-         * @return the shortcut for this action
          */
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.ADD)
 
@@ -452,7 +415,7 @@ class TemplateJTree(
 
 
         /**
-         * A `PopupStep` for a list of [Scheme]s that can be inserted.
+         * A [PopupStep] for a list of [Scheme]s that can be inserted.
          *
          * Elements can be nested by overriding [hasSubstep] and [onChosen].
          *
@@ -462,17 +425,11 @@ class TemplateJTree(
             BaseListPopupStep<Scheme>(null, schemes) {
             /**
              * Returns [value]'s icon.
-             *
-             * @param value the value to return the icon of
-             * @return [value]'s icon
              */
             override fun getIconFor(value: Scheme?) = value?.icon
 
             /**
              * Returns [value]'s name.
-             *
-             * @param value the value to return the name of
-             * @return [value]'s name
              */
             override fun getTextFor(value: Scheme?) = value?.name ?: Bundle("misc.default_scheme_name")
 
@@ -495,21 +452,17 @@ class TemplateJTree(
 
             /**
              * Returns `true`.
-             *
-             * @return `true`
              */
             override fun isSpeedSearchEnabled() = true
 
             /**
              * Returns the index of the entry to select by default.
-             *
-             * @return the index of the entry to select by default
              */
             override fun getDefaultOptionIndex() = 0
         }
 
         /**
-         * The top-level `PopupStep`, which includes the default templates and various reference types.
+         * The top-level [PopupStep], which includes the default templates and various reference types.
          */
         private inner class MainPopupStep : AddSchemePopupStep(POPUP_STEP_SCHEMES) {
             override fun onChosen(value: Scheme?, finalChoice: Boolean) =
@@ -520,18 +473,13 @@ class TemplateJTree(
                 }
 
             /**
-             * Returns `true` if and only if the [Template] or [TemplateReference] entry is selected.
-             *
-             * @param value the value to check for
+             * Returns `true` if and only if [value] equals the [Template] or [TemplateReference] entry.
              */
             override fun hasSubstep(value: Scheme?) =
                 value == POPUP_STEP_SCHEMES[0] || value == POPUP_STEP_SCHEMES[POPUP_STEP_SCHEMES.size - 1]
 
             /**
              * Returns a separator if [value] should be preceded by a separator, or `null` otherwise.
-             *
-             * @param value the value to determine by whether to return a separator
-             * @return a separator if [value] should be preceded by a separator, or `null` otherwise
              */
             override fun getSeparatorAbove(value: Scheme?) =
                 if (value == POPUP_STEP_SCHEMES[1]) ListSeparator()
@@ -563,22 +511,16 @@ class TemplateJTree(
     private inner class RemoveButton : AnActionButton(Bundle("shared.action.remove"), AllIcons.General.Remove) {
         /**
          * Specifies the thread in which [update] is invoked.
-         *
-         * @return the thread in which [update] is invoked
          */
         override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
         /**
          * Returns `true` if and only if this action is enabled.
-         *
-         * @return `true` if and only if this action is enabled
          */
         override fun isEnabled() = selectedNodeNotRoot != null
 
         /**
          * Returns the shortcut for this action.
-         *
-         * @return the shortcut for this action
          */
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.REMOVE)
 
@@ -596,8 +538,6 @@ class TemplateJTree(
     private inner class CopyButton : AnActionButton(Bundle("shared.action.copy"), AllIcons.Actions.Copy) {
         /**
          * Specifies the thread in which [update] is invoked.
-         *
-         * @return the thread in which [update] is invoked
          */
         override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
@@ -627,22 +567,16 @@ class TemplateJTree(
     private inner class UpButton : AnActionButton(Bundle("shared.action.up"), AllIcons.Actions.MoveUp) {
         /**
          * Specifies the thread in which [update] is invoked.
-         *
-         * @return the thread in which [update] is invoked
          */
         override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
         /**
          * Returns `true` if and only if this action is enabled.
-         *
-         * @return `true` if and only if this action is enabled
          */
         override fun isEnabled() = selectedScheme?.let { canMoveSchemeByOnePosition(it, moveDown = false) } ?: false
 
         /**
          * Returns the shortcut for this action.
-         *
-         * @return the shortcut for this action
          */
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.UP)
 
@@ -660,22 +594,16 @@ class TemplateJTree(
     private inner class DownButton : AnActionButton(Bundle("shared.action.down"), AllIcons.Actions.MoveDown) {
         /**
          * Specifies the thread in which [update] is invoked.
-         *
-         * @return the thread in which [update] is invoked
          */
         override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
         /**
          * Returns `true` if and only if this action is enabled.
-         *
-         * @return `true` if and only if this action is enabled
          */
         override fun isEnabled() = selectedScheme?.let { canMoveSchemeByOnePosition(it, moveDown = true) } ?: false
 
         /**
          * Returns the shortcut for this action.
-         *
-         * @return the shortcut for this action
          */
         override fun getShortcut() = CommonActionsPanel.getCommonShortcut(CommonActionsPanel.Buttons.DOWN)
 
@@ -693,15 +621,11 @@ class TemplateJTree(
     private inner class ResetButton : AnActionButton(Bundle("shared.action.reset"), AllIcons.General.Reset) {
         /**
          * Specifies the thread in which [update] is invoked.
-         *
-         * @return the thread in which [update] is invoked
          */
         override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
         /**
          * Returns `true` if and only if this action is enabled.
-         *
-         * @return `true` if and only if this action is enabled
          */
         override fun isEnabled() = selectedScheme?.let { isModified(it) } ?: false
 

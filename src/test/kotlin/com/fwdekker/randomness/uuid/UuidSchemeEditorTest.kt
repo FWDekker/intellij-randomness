@@ -7,11 +7,11 @@ import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.isSelectedProp
 import com.fwdekker.randomness.testhelpers.prop
+import com.fwdekker.randomness.testhelpers.radioButtonGroupProp
 import com.fwdekker.randomness.testhelpers.textProp
 import com.fwdekker.randomness.testhelpers.valueProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import com.intellij.ui.dsl.builder.MutableProperty
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
@@ -21,7 +21,7 @@ import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [UuidSchemeEditor].
+ * Unit tests for [UuidSchemeEditor].
  */
 object UuidSchemeEditorTest : FunSpec({
     tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
@@ -59,47 +59,41 @@ object UuidSchemeEditorTest : FunSpec({
         editorFieldsTestFactory(
             { editor },
             mapOf(
-                "type" to
+                "type" to {
                     row(
-                        {
-                            MutableProperty(
-                                {
-                                    when {
-                                        frame.radioButton("type1").target().isSelected -> 1
-                                        frame.radioButton("type4").target().isSelected -> 4
-                                        else -> error("No radio button was selected.")
-                                    }
-                                },
-                                { frame.radioButton("type${it as Int}").target().isSelected = true },
-                            )
-                        },
-                        { editor.scheme::type.prop() },
+                        frame.radioButtonGroupProp("type", listOf(1, 4)),
+                        editor.scheme::type.prop(),
                         1,
-                    ),
-                "isUppercase" to
+                    )
+                },
+                "isUppercase" to {
                     row(
-                        { frame.checkBox("isUppercase").isSelectedProp() },
-                        { editor.scheme::isUppercase.prop() },
+                        frame.checkBox("isUppercase").isSelectedProp(),
+                        editor.scheme::isUppercase.prop(),
                         true,
-                    ),
-                "addDashes" to
+                    )
+                },
+                "addDashes" to {
                     row(
-                        { frame.checkBox("addDashes").isSelectedProp() },
-                        { editor.scheme::addDashes.prop() },
+                        frame.checkBox("addDashes").isSelectedProp(),
+                        editor.scheme::addDashes.prop(),
                         false,
-                    ),
-                "affixDecorator" to
+                    )
+                },
+                "affixDecorator" to {
                     row(
-                        { frame.comboBox("affixDescriptor").textProp() },
-                        { editor.scheme.affixDecorator::descriptor.prop() },
+                        frame.comboBox("affixDescriptor").textProp(),
+                        editor.scheme.affixDecorator::descriptor.prop(),
                         "[@]",
-                    ),
-                "arrayDecorator" to
+                    )
+                },
+                "arrayDecorator" to {
                     row(
-                        { frame.spinner("arrayMaxCount").valueProp() },
-                        { editor.scheme.arrayDecorator::maxCount.prop() },
+                        frame.spinner("arrayMaxCount").valueProp(),
+                        editor.scheme.arrayDecorator::maxCount.prop(),
                         7,
-                    ),
+                    )
+                },
             )
         )
     )

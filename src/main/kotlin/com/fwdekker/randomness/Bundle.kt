@@ -17,8 +17,6 @@ object Bundle {
     /**
      * Returns the string at [key].
      *
-     * @param key the key of the string to return
-     * @return the string at [key]
      * @throws MissingResourceException if no string with [key] can be found
      */
     @Throws(MissingResourceException::class)
@@ -27,9 +25,6 @@ object Bundle {
     /**
      * Returns the string at [key] formatted with [arguments].
      *
-     * @param key the key of the string to return
-     * @param arguments the arguments to insert into the template
-     * @return the string at [key] formatted with [arguments]
      * @throws MissingResourceException if no string with [key] can be found
      */
     @Throws(MissingResourceException::class)
@@ -43,7 +38,6 @@ object Bundle {
  * @throws java.util.MissingFormatArgumentException if [args] has fewer arguments than required for [format]
  */
 fun String.matchesFormat(format: String, vararg args: String) =
-    // TODO: Simplify documentation everywhere throughout the project to remove redundant `@param` specifications
     Regex("%[0-9]+\\\$[Ss]").findAll(format)
         .toList()
         .reversed()

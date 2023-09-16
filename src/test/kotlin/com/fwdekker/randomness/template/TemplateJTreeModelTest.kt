@@ -637,10 +637,10 @@ object TemplateJTreeModelTest : FunSpec({
 object StateNodeTest : FunSpec({
     context("canHaveChildren") {
         withData(
-            listOf(
-                row(TemplateList(mutableListOf()), true),
-                row(Template(), true),
-                row(DummyScheme(), false),
+            mapOf(
+                "TemplateList" to row(TemplateList(mutableListOf()), true),
+                "Template" to row(Template(), true),
+                "DummyScheme" to row(DummyScheme(), false),
             )
         ) { (state, expected) -> StateNode(state).canHaveChildren shouldBe expected }
     }

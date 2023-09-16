@@ -185,7 +185,7 @@ object TemplateReferenceTest : FunSpec({
     }
 
     xcontext("canReference") {
-        TODO() // TODO: Add these tests
+        TODO()
     }
 
 
@@ -205,7 +205,7 @@ object TemplateReferenceTest : FunSpec({
         ) { (scheme, output) -> scheme().generateStrings()[0] shouldBe output }
 
 
-        test("returns the referenced template's value") {
+        test("returns the referenced template's raw value") {
             reference.generateStrings(2) shouldBe referencedTemplate.generateStrings(2)
         }
 

@@ -32,42 +32,49 @@ fun editorApplyTestFactory(editor: () -> SchemeEditor<*>) = funSpec {
  *
  * @param S the type of scheme in the editor
  * @param editor returns the editor to test
- * @param fields the field's name, a property for the field in the editor, and a property for the field in the scheme
+ * @param fields maps the fields' names to a lambda that gives a property for the field in the editor, a property for
+ * the field in the scheme and a value to set into either field
  */
 fun <S : Scheme> editorFieldsTestFactory(
     editor: () -> SchemeEditor<S>,
-    fields: Map<String, Row3<() -> MutableProperty<Any?>, () -> MutableProperty<Any?>, Any?>>,
+    fields: Map<String, () -> Row3<MutableProperty<Any?>, MutableProperty<Any?>, Any?>>,
 ): TestFactory {
     return funSpec {
         context("bindings") {
             context("'apply' stores the editor's field in the scheme's field") {
-                withData(fields) { (editorProperty, schemeProperty, value) ->
-                    withClue("Pre: Scheme value should not be set value") { schemeProperty().get() shouldNotBe value }
+                withData(fields) { row ->
+                    val (editorProperty, schemeProperty, value) = row()
 
-                    guiRun { editorProperty().set(value) }
+                    withClue("Pre: Scheme value should not be set value") { schemeProperty.get() shouldNotBe value }
+
+                    guiRun { editorProperty.set(value) }
                     guiRun { editor().apply() }
 
-                    withClue("Post: Scheme value should be set value") { schemeProperty().get() shouldBe value }
+                    withClue("Post: Scheme value should be set value") { schemeProperty.get() shouldBe value }
                 }
             }
 
             context("'reset' loads the scheme's field into the editor's field") {
-                withData(fields) { (editorProperty, schemeProperty, value) ->
-                    withClue("Pre: Editor value should not be set value") { editorProperty().get() shouldNotBe value }
+                withData(fields) { row ->
+                    val (editorProperty, schemeProperty, value) = row()
 
-                    schemeProperty().set(value)
+                    withClue("Pre: Editor value should not be set value") { editorProperty.get() shouldNotBe value }
+
+                    schemeProperty.set(value)
                     guiRun { editor().reset() }
 
-                    withClue("Post: Editor value should be set value") { editorProperty().get() shouldBe value }
+                    withClue("Post: Editor value should be set value") { editorProperty.get() shouldBe value }
                 }
             }
 
             context("'addChangeListener' is invoked when the editor's field is changed") {
-                withData(fields) { (editorProperty, _, value) ->
+                withData(fields) { row ->
+                    val (editorProperty, _, value) = row()
+
                     var invoked = 0
                     editor().addChangeListener { invoked++ }
 
-                    guiRun { editorProperty().set(value) }
+                    guiRun { editorProperty.set(value) }
 
                     withClue("Listener should have been invoked") { invoked shouldBeGreaterThanOrEqual 1 }
                 }

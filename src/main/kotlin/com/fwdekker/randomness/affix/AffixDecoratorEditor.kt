@@ -56,12 +56,7 @@ class AffixDecoratorEditor(
 
 
 /**
- * Prefixes [name] with [prefix], and replaces the first character of [name] with its uppercase variant if [prefix]
- * is not the empty string.
- *
- * @param prefix the string to prepend to [name]
- * @param name the string to prepend by [name]
- * @return the camelCase concatenation of [prefix] and [name]
+ * Prefixes [name] with [prefix], ensuring the resulting string is still in camelCase.
  */
 private fun camelConcat(prefix: String, name: String) =
     if (prefix == "") name

@@ -53,7 +53,6 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
                         }
                     }
                     .onResetThis {
-                        // TODO: Do we want to retain this?
                         it.component.selectedIndex =
                             DefaultWordList.WORD_LISTS.map(DefaultWordList::words).indexOf(scheme.words) + 1
                     }
@@ -124,15 +123,21 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
 }
 
 
-// TODO: Document
+/**
+ * Resets the undo history of this [Document].
+ */
 private fun Document.resetUndoHistory() {
     (UndoManager.getGlobalInstance() as UndoManagerImpl)
         .invalidateActionsFor(DocumentReferenceManager.getInstance().create(this))
 }
 
-// TODO: Document
-private fun Document.getWordList() = this.text.split('\n').filterNot { it.isBlank() }
+/**
+ * Returns the list of all non-blank lines in this [Document].
+ */
+fun Document.getWordList() = this.text.split('\n').filterNot { it.isBlank() }
 
-// TODO: Document
-private fun Document.setWordList(wordList: List<String>) =
+/**
+ * Puts each entry of [wordList] onto a separate line in this [Document].
+ */
+fun Document.setWordList(wordList: List<String>) =
     runWriteAction { setText(wordList.joinToString(separator = "\n", postfix = "\n")) }

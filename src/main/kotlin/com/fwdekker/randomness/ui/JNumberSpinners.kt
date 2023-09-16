@@ -38,8 +38,6 @@ abstract class JNumberSpinner<T>(value: T, minValue: T?, maxValue: T?, stepSize:
 
     /**
      * Returns the current value of the spinner.
-     *
-     * @return the current value of the spinner
      */
     override fun getValue(): T = numberToT(numberModel.number)
 
@@ -135,13 +133,8 @@ class JIntSpinner(
  * Binds two spinners that form a range of valid values together.
  *
  * This function adds listeners to the spinners so that if one spinner's value is adjusted, the other's value is also
- * adjusted if not doing so would make the range invalid. Specifically, this function guarantees that the minimum value
- * never becomes larger than the maximum value, and guarantees that the difference between the minimum and the maximum
- * never exceeds [maxRange].
- *
- * @param min the [JSpinner] that represents the minimum value
- * @param max the [JSpinner] that represents the maximum value
- * @param maxRange the maximum difference between `min` and `max`
+ * adjusted if not doing so would make the range invalid. Specifically, this function guarantees that [min] never
+ * exceeds [max], and that the difference between [min] and [max] never exceeds [maxRange].
  */
 fun bindSpinners(min: JSpinner, max: JSpinner, maxRange: Double? = null) {
     if (maxRange != null)

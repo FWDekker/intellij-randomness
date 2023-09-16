@@ -59,15 +59,13 @@ class PersistentSettings : PersistentStateComponent<Settings> {
 
     /**
      * Returns the template list.
-     *
-     * @return the template list
      */
     override fun getState() = settings
 
     /**
-     * Invokes [TemplateList.copyFrom].
+     * Copies [settings] into `this`.
      *
-     * @param settings the state to invoke [TemplateList.copyFrom] on
+     * @see TemplateList.copyFrom
      */
     override fun loadState(settings: Settings) = this.settings.copyFrom(settings)
 

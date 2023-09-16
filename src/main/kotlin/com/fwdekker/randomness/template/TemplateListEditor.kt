@@ -39,7 +39,7 @@ import javax.swing.SwingUtilities
  *
  * Though this editor only changes [TemplateList]s, it still maintains a reference to
  *
- * @property originalSettings the settings containing the templates to edit
+ * @property originalSettings The settings containing the templates to edit.
  * @see TemplateListConfigurable
  */
 class TemplateListEditor(private val originalSettings: Settings = Settings.DEFAULT) : Disposable {
@@ -84,7 +84,8 @@ class TemplateListEditor(private val originalSettings: Settings = Settings.DEFAU
 
         splitter.secondComponent = schemeEditorPanel
 
-        loadState()
+        // Load current state
+        reset()
     }
 
     /**
@@ -140,9 +141,6 @@ class TemplateListEditor(private val originalSettings: Settings = Settings.DEFAU
 
     /**
      * Creates an editor to edit [scheme].
-     *
-     * @param scheme the scheme to create an editor for
-     * @return an editor to edit [scheme]
      */
     private fun createEditor(scheme: Scheme) =
         when (scheme) {
@@ -159,50 +157,29 @@ class TemplateListEditor(private val originalSettings: Settings = Settings.DEFAU
 
 
     /**
-     * Loads [state] into the editor and into [originalSettings].
+     * Validates the state of the editor and indicates whether and why it is invalid.
      *
-     * @param state the state to load
+     * @return `null` if the state is valid, or a string explaining why the state is invalid
      */
-    fun loadState(state: Settings = originalSettings) {
-        originalSettings.copyFrom(state)
-        currentSettings.copyFrom(state)
-        templateTree.reload()
-    }
+    fun doValidate(): String? = currentSettings.doValidate()
 
     /**
-     * Returns the editor's current state, including potentially unsaved changes.
-     *
-     * @return the editor's current state, including potentially unsaved changes
+     * Returns `true` if and only if the editor contains modifications relative to the last saved state.
      */
-    fun readState() = currentSettings.deepCopy(retainUuid = true)
+    fun isModified() = originalSettings != currentSettings
 
     /**
      * Saves the editor's state into [originalSettings].
      *
      * Does nothing if and only if [isModified] returns `false`.
      */
-    fun applyState() {
+    fun apply() {
         val oldList = originalSettings.templates
-        originalSettings.copyFrom(readState())
+        originalSettings.copyFrom(currentSettings)
         val newList = originalSettings.templates
 
         TemplateActionLoader().updateActions(oldList, newList)
     }
-
-
-    /**
-     * Validates the state of the editor, i.e. of [readState], and indicates whether and why it is invalid.
-     *
-     * @return `null` if the state is valid, or a string explaining why the state is invalid
-     */
-    fun doValidate(): String? = readState().doValidate()
-
-    /**
-     * Returns `true` if and only if the editor contains modifications relative to the last saved state.
-     *
-     * Override this method if the default equals method of [TemplateList] is not sufficient to detect changes.
-     */
-    fun isModified() = originalSettings != readState()
 
     /**
      * Resets the editor's state to the last saved state.
@@ -210,7 +187,8 @@ class TemplateListEditor(private val originalSettings: Settings = Settings.DEFAU
      * Does nothing if and only if [isModified] return `false`.
      */
     fun reset() {
-        loadState(originalSettings)
+        currentSettings.copyFrom(originalSettings)
+        templateTree.reload()
 
         queueSelection?.also {
             templateTree.selectedScheme = currentSettings.templateList.getSchemeByUuid(it)

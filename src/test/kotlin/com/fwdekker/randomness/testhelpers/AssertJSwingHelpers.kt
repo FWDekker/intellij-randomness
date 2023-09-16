@@ -11,17 +11,11 @@ import java.awt.Component
 
 /**
  * Runs [lambda] in the GUI thread.
- *
- * @param lambda the function to run in the GUI thread
  */
 fun guiRun(lambda: () -> Unit) = GuiActionRunner.execute(lambda)
 
 /**
  * Runs [lambda] in the GUI thread and returns the result.
- *
- * @param T the type of value to return
- * @param lambda the function to run in the GUI thread
- * @return the output of [lambda]
  */
 fun <T> guiGet(lambda: () -> T): T = GuiActionRunner.execute(lambda)
 
@@ -41,11 +35,8 @@ fun <T : Component> matcher(klass: Class<T>, requireValid: Boolean = true, match
     }
 
 /**
- * Finds a component that matches [matcher], or throws an exception if no matches exist.
+ * Finds a component that matches [matcher].
  *
- * @param T the type of component to find
- * @param matcher the matcher to compare components against
- * @return the component that matches [matcher], if any
  * @throws org.assertj.swing.exception.ComponentLookupException if no components match [matcher]
  */
 fun <T : Component> FrameFixture.find(matcher: GenericTypeMatcher<T>): T =
@@ -54,8 +45,6 @@ fun <T : Component> FrameFixture.find(matcher: GenericTypeMatcher<T>): T =
 /**
  * Returns the [ActionButton] that has [accessibleName].
  *
- * @param accessibleName the name of the button to return
- * @return the [ActionButton] that has [accessibleName]
  * @throws org.assertj.swing.exception.ComponentLookupException if no [ActionButton] has [accessibleName]
  */
 fun FrameFixture.getActionButton(accessibleName: String): ActionButton =

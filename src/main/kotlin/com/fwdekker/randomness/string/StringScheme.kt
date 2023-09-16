@@ -37,8 +37,6 @@ data class StringScheme(
 
     /**
      * Returns `true` if and only if this scheme does not use any regex functionality beyond escape characters.
-     *
-     * @return `true` if and only if this scheme does not use any regex functionality beyond escape characters
      */
     fun isSimple() =
         doValidate() == null &&
@@ -46,10 +44,7 @@ data class StringScheme(
 
 
     /**
-     * Returns strings of random alphanumerical characters.
-     *
-     * @param count the number of strings to generate
-     * @return strings of random alphanumerical characters
+     * Returns [count] strings of random alphanumerical characters.
      */
     override fun generateUndecoratedStrings(count: Int): List<String> {
         val rawStrings =

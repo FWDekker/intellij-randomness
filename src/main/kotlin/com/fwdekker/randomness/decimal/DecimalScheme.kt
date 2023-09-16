@@ -42,19 +42,13 @@ data class DecimalScheme(
 
 
     /**
-     * Returns random formatted decimals in the range from [minValue] until [maxValue], inclusive.
-     *
-     * @param count the number of decimals to generate
-     * @return random formatted decimals in the range from [minValue] until [maxValue], inclusive
+     * Returns [count] random formatted decimals in the range from [minValue] until [maxValue], inclusive.
      */
     override fun generateUndecoratedStrings(count: Int) =
         List(count) { doubleToString(random.nextDouble(minValue, maxValue.nextUp())) }
 
     /**
      * Returns a nicely formatted representation of [decimal].
-     *
-     * @param decimal the decimal to format
-     * @return a nicely formatted representation of [decimal]
      */
     private fun doubleToString(decimal: Double): String {
         val format = DecimalFormat()

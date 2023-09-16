@@ -40,17 +40,17 @@ object TemplateListTest : FunSpec({
 
     context("listValidReferenceTargets") {
         context("for reference") {
-            test("returns an error if the given reference is not in this list") {
-                // TODO: Implement this test
+            xtest("returns an error if the given reference is not in this list") {
+                TODO()
             }
 
-            test("returns copies") {
-                //
+            xtest("returns copies") {
+                TODO()
             }
         }
 
-        test("for template") {
-            //
+        xtest("for template") {
+            TODO()
         }
     }
 

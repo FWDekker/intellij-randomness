@@ -33,8 +33,6 @@ class TemplateListConfigurable : Configurable {
 
     /**
      * Returns `true` if the settings were modified since they were loaded or they are invalid.
-     *
-     * @return `true` if the settings were modified since they were loaded or they are invalid
      */
     override fun isModified() = editor.isModified() || editor.doValidate() != null
 
@@ -49,7 +47,7 @@ class TemplateListConfigurable : Configurable {
         if (validationInfo != null)
             throw ConfigurationException(validationInfo, Bundle("template_list.error.failed_to_save_settings"))
 
-        editor.applyState()
+        editor.apply()
     }
 
     /**
@@ -67,8 +65,6 @@ class TemplateListConfigurable : Configurable {
 
     /**
      * Creates a new editor and returns the root pane of the created editor.
-     *
-     * @return the root pane of the created editor
      */
     override fun createComponent(): JComponent {
         editor = TemplateListEditor()
@@ -79,8 +75,6 @@ class TemplateListConfigurable : Configurable {
 
     /**
      * Returns the name of the configurable as displayed in the settings window.
-     *
-     * @return the name of the configurable as displayed in the settings window
      */
     override fun getDisplayName() = "Randomness"
 }

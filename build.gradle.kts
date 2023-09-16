@@ -41,6 +41,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-runner:${properties("junitRunnerVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${properties("junitVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${properties("junitVersion")}")
+    testImplementation("org.junit.vintage:junit-vintage-engine:${properties("junitVersion")}")
     testImplementation("io.kotest:kotest-assertions-core:${properties("kotestVersion")}")
     testImplementation("io.kotest:kotest-framework-datatest:${properties("kotestVersion")}")
     testImplementation("io.kotest:kotest-runner-junit5:${properties("kotestVersion")}")

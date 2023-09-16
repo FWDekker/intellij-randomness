@@ -17,16 +17,11 @@ open class MaxLengthDocumentFilter(private val maxLength: Int) : DocumentFilter(
 
 
     /**
-     * Inserts [text] into the document.
+     * Inserts [text] into the document with attributes [attr], using [fb] to bypass recursively invoking the filter.
      *
      * While the document's length is not at its maximum, the characters of [text] are inserted at [offset]. Once the
      * document hits its maximum, the subsequent characters are overwritten by the remainder of [text]. If [text] is
      * still too long, the last character in the document is replaced by the last character of [text].
-     *
-     * @param fb bypass that can be used to mutate the document
-     * @param offset the offset at which to insert [text]
-     * @param text the text to insert at [offset]
-     * @param attr the attributes of [text]
      */
     override fun insertString(fb: FilterBypass, offset: Int, text: String?, attr: AttributeSet?) {
         if (text == null) return
@@ -47,13 +42,8 @@ open class MaxLengthDocumentFilter(private val maxLength: Int) : DocumentFilter(
     }
 
     /**
-     * Removes [length] characters starting at [offset] from the document.
-     *
-     * @param fb bypass that can be used to mutate the document
-     * @param offset the offset at which to insert [text]
-     * @param length the number of characters to remove from the document
-     * @param text the text to insert at [offset]
-     * @param attrs the attributes of [text]
+     * Replaces [length] characters starting at [offset] with [text], applying attributes [attrs], using [fb] to bypass
+     * recursively invoking the filter.
      */
     override fun replace(fb: FilterBypass, offset: Int, length: Int, text: String?, attrs: AttributeSet?) {
         remove(fb, offset, length)
@@ -75,11 +65,8 @@ class MinMaxLengthDocumentFilter(private val minLength: Int, maxLength: Int) : M
 
 
     /**
-     * Removes [length] characters starting at [offset] from the document.
-     *
-     * @param fb bypass that can be used to mutate the document
-     * @param offset the offset at which to remove characters
-     * @param length the number of characters to remove from the document
+     * Removes [length] characters starting at [offset] from the document, using [fb] to bypass recursively invoking the
+     * filter.
      */
     override fun remove(fb: FilterBypass, offset: Int, length: Int) {
         val removable = fb.document.length - minLength

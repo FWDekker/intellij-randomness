@@ -16,7 +16,6 @@ import io.kotest.matchers.shouldBe
  */
 @Suppress("detekt:FunctionMaxLength", "detekt:FunctionName", "detekt:TooManyFunctions")
 class InsertActionTest : BasePlatformTestCase() {
-    // TODO: Convert entire class to Kotest format
     private lateinit var document: Document
     private lateinit var caretModel: CaretModel
 
@@ -200,38 +199,26 @@ class InsertActionTest : BasePlatformTestCase() {
 
 
     /**
-     * Moves the primary caret to [offset].
-     *
-     * @param offset the offset to move the primary caret to
-     * @return the primary caret
+     * Moves the primary caret to [offset] and returns the primary caret.
      */
     private fun setCaret(offset: Int) =
         caretModel.primaryCaret.also { it.moveToOffset(offset) }
 
     /**
-     * Adds a caret at [offset].
-     *
-     * @param offset the offset to add a caret at
-     * @return the added caret
+     * Adds a caret at [offset] and returns the caret.
      */
     private fun addCaret(offset: Int) =
         caretModel.addCaret(myFixture.editor.offsetToVisualPosition(offset))!!
 
     /**
-     * Selects the given interval with the primary caret.
-     *
-     * @param fromOffset the start of the selected interval
-     * @param toOffset the end of the selected interval
+     * Selects the interval from [startOffset] (inclusive) to [endOffset] (exclusive) with the primary caret.
      */
-    private fun setSelection(fromOffset: Int, toOffset: Int) =
-        caretModel.primaryCaret.setSelection(fromOffset, toOffset)
+    private fun setSelection(startOffset: Int, endOffset: Int) =
+        caretModel.primaryCaret.setSelection(startOffset, endOffset)
 
     /**
-     * Adds a caret that selects the given interval.
-     *
-     * @param fromOffset the start of the selected interval
-     * @param toOffset the end of the selected interval
+     * Adds a caret that selects from [startOffset] (inclusive) to [endOffset] (exclusive).
      */
-    private fun addSelection(fromOffset: Int, toOffset: Int) =
-        addCaret(fromOffset).setSelection(fromOffset, toOffset)
+    private fun addSelection(startOffset: Int, endOffset: Int) =
+        addCaret(startOffset).setSelection(startOffset, endOffset)
 }

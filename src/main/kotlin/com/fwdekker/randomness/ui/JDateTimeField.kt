@@ -29,15 +29,11 @@ class JDateTimeField(
 
     /**
      * Returns the [LocalDateTime] contained in this field, or [default] otherwise.
-     *
-     * @return the [LocalDateTime] contained in this field, or [default] otherwise
      */
     override fun getValue() = super.getValue() as? LocalDateTime ?: default
 
     /**
      * Sets the [LocalDateTime] that is contained in this field.
-     *
-     * @param value the [LocalDateTime] to set
      */
     override fun setValue(value: Any) {
         require(value is LocalDateTime) { Bundle("datetime_field.error.invalid_type") }
@@ -53,8 +49,6 @@ class JDateTimeField(
         /**
          * Attempts to parse [text] to a [LocalDateTime] using a best guess to detect the date format used.
          *
-         * @param text the text to parse to a [LocalDateTime]
-         * @return the [LocalDateTime] parsed from [text]
          * @throws ParseException if [text] could not be converted to a [LocalDateTime]
          */
         override fun stringToValue(text: String?): LocalDateTime =
@@ -69,9 +63,6 @@ class JDateTimeField(
 
         /**
          * Returns the ISO-8601-ish representation of [value], which must be a [LocalDateTime].
-         *
-         * @param value the [LocalDateTime] to return the string representation of
-         * @return the ISO-8601-ish representation of [value], which must be a [LocalDateTime]
          */
         override fun valueToString(value: Any?): String =
             if (value !is LocalDateTime) throw ParseException(Bundle("datetime_field.error.invalid_type"), 0)
@@ -93,14 +84,10 @@ class JDateTimeField(
 
 /**
  * Converts an epoch millisecond timestamp to a [LocalDateTime] object.
- *
- * @return the [LocalDateTime] corresponding to this epoch millisecond timestamp
  */
 fun Long.toLocalDateTime(): LocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneOffset.UTC)
 
 /**
  * Converts this [LocalDateTime] to an epoch millisecond timestamp.
- *
- * @return the epoch millisecond timestamp corresponding to this [LocalDateTime]
  */
 fun LocalDateTime.toEpochMilli() = toInstant(ZoneOffset.UTC).toEpochMilli()

@@ -41,16 +41,12 @@ class TemplateGroupAction(private val template: Template) :
 
     /**
      * Specifies the thread in which [update] is invoked.
-     *
-     * @return the thread in which [update] is invoked
      */
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
 
     /**
-     * Update the presentation of the action.
-     *
-     * @param event the event to set the presentation on
+     * Updates the [event]'s presentation of this action.
      */
     override fun update(event: AnActionEvent) {
         super.update(event)

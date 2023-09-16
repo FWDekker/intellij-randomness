@@ -126,10 +126,6 @@ object IntegerSchemeTest : FunSpec({
 
 /**
  * Sets the [IntegerScheme.minValue] and [IntegerScheme.maxValue] to [value].
- *
- * @receiver the scheme to set the minimum and maximum value on
- * @param value the value to set
- * @return `this`
  */
 private fun IntegerScheme.withValue(value: Long): IntegerScheme {
     minValue = value

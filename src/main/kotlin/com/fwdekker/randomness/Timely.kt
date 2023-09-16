@@ -20,9 +20,6 @@ object Timely {
      * Runs the [generator] and returns its return value, or throws an exception if it takes longer than
      * [GENERATOR_TIMEOUT] milliseconds.
      *
-     * @param T the return type of [generator]
-     * @param generator the function to invoke
-     * @return the return value of [generator]
      * @throws DataGenerationException if the generator timed out or if data could not be generated
      */
     @Throws(DataGenerationException::class)

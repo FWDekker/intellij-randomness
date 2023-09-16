@@ -51,10 +51,8 @@ data class TemplateReference(
 
 
     /**
-     * Tries to find a recursive cycle of references within the current [context].
-     *
-     * @return a recursive path of [Template]s that reference each other starting at `this` reference's [parent], or
-     * `null` if there is no such path.
+     * Tries to find a recursive cycle of references within the current [context] starting at [parent], returning `null`
+     * if there is no such cycle.
      */
     private fun getRecursiveLoopOrNull(): List<Template>? {
         fun helper(source: TemplateReference, history: List<TemplateReference>): List<Template>? =

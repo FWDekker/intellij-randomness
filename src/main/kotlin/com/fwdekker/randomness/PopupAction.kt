@@ -29,8 +29,6 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
 
     /**
      * Specifies the thread in which [update] is invoked.
-     *
-     * @return the thread in which [update] is invoked
      */
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
@@ -77,9 +75,6 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
 
     /**
      * Returns the desired title for the popup given [event].
-     *
-     * @param event the event on which the title should be based
-     * @return the desired title for the popup given [event]
      */
     @Suppress("detekt:ComplexMethod") // Cannot be simplified
     private fun captionModifier(event: ActionEvent?): String {
@@ -140,15 +135,13 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
  */
 private class SimpleAbstractAction(private val myActionPerformed: (ActionEvent?) -> Unit) : AbstractAction() {
     /**
-     * Runs [myActionPerformed].
-     *
-     * @param event the event to pass to [myActionPerformed]
+     * @see myActionPerformed
      */
     override fun actionPerformed(event: ActionEvent?) = myActionPerformed(event)
 }
 
 /**
- * Returns the cartesian product of two lists.
+ * Returns the cartesian product of [this] and [other].
  *
  * By requiring both lists to actually be lists of lists, this method can be chained.
  *
@@ -160,10 +153,6 @@ private class SimpleAbstractAction(private val myActionPerformed: (ActionEvent?)
  * $ [[1, 2]] * [[3, 4]] * [[5, 6]]
  * [[1, 3, 5], [1, 3, 6], [1, 4, 5], [1, 4, 6], [2, 3, 5], [2, 3, 6], [2, 4, 5], [2, 4, 6]]
  * ```
- *
- * @param E the type of inner element
- * @param other the list to multiply with
- * @return the cartesian product of `this` and [other]
  */
 private operator fun <E> List<List<E>>.times(other: List<List<E>>) =
     this.flatMap { t1 -> other.map { t2 -> t1 + t2 } }

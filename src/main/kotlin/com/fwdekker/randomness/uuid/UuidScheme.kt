@@ -38,10 +38,7 @@ data class UuidScheme(
 
 
     /**
-     * Returns random type 4 UUIDs.
-     *
-     * @param count the number of type 4 UUIDs to generate
-     * @return random type 4 UUIDs
+     * Returns [count] random UUIDs.
      */
     override fun generateUndecoratedStrings(count: Int): List<String> {
         val generator = when (type) {

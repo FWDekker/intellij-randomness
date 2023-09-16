@@ -32,7 +32,7 @@ import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [TemplateListEditor].
+ * Unit tests for [TemplateListEditor].
  */
 object TemplateListEditorTest : FunSpec({
     tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
@@ -74,46 +74,6 @@ object TemplateListEditorTest : FunSpec({
         frame.cleanUp()
         guiRun { editor.dispose() }
         ideaFixture.tearDown()
-    }
-
-
-    context("reset") {
-        // TODO: Rewrite this maybe?
-
-        test("undoes changes to the initial selection") {
-            guiRun {
-                frame.tree().target().setSelectionRow(1)
-                frame.spinner("minValue").target().value = 7
-            }
-
-            guiRun { editor.reset() }
-
-            frame.spinner("minValue").target().value shouldBe 0L
-        }
-
-        test("retains the selection if `queueSelection` is null") {
-            editor.queueSelection = null
-
-            guiRun { editor.reset() }
-
-            frame.tree().target().selectionRows!! shouldContainExactly arrayOf(0)
-        }
-
-        test("selects the indicated template after reset") {
-            editor.queueSelection = context.templateList.templates[1].uuid
-
-            guiRun { editor.reset() }
-
-            frame.tree().target().selectionRows!! shouldContainExactly arrayOf(3)
-        }
-
-        test("does nothing if the indicated template could not be found") {
-            editor.queueSelection = "231ee9da-8f72-4535-b770-0119fdf68f70"
-
-            guiRun { editor.reset() }
-
-            frame.tree().target().selectionRows!! shouldContainExactly arrayOf(0)
-        }
     }
 
 
@@ -161,6 +121,75 @@ object TemplateListEditorTest : FunSpec({
                     frame.tree().target().setSelectionRow(1)
                 }
             }.message shouldBe "Unknown scheme type 'com.fwdekker.randomness.testhelpers.DummyScheme'."
+        }
+    }
+
+
+    context("reset") {
+        context("undoing changes") {
+            test("undoes changes to the current selection") {
+                guiRun {
+                    frame.tree().target().setSelectionRow(1)
+                    frame.spinner("minValue").target().value = 7L
+                }
+
+                guiRun { editor.reset() }
+
+                frame.spinner("minValue").target().value shouldBe 0L
+            }
+
+            test("undoes changes to another selection") {
+                guiRun {
+                    frame.tree().target().setSelectionRow(1)
+                    frame.spinner("minValue").target().value = 7L
+                    frame.tree().target().setSelectionRow(3)
+                }
+
+                guiRun { editor.reset() }
+
+                guiRun {
+                    frame.tree().target().setSelectionRow(1)
+                    frame.spinner("minValue").target().value shouldBe 0L
+                }
+            }
+        }
+
+        context("selection") {
+            test("retains the existing selection if `queueSelection` is null") {
+                guiRun { frame.tree().target().selectionRows = intArrayOf(1) }
+
+                editor.queueSelection = null
+                guiRun { editor.reset() }
+
+                frame.tree().target().selectionRows!! shouldContainExactly arrayOf(1)
+            }
+
+            test("resets the existing selection if the indicated scheme could not be found") {
+                guiRun { frame.tree().target().selectionRows = intArrayOf(3) }
+
+                editor.queueSelection = "231ee9da-8f72-4535-b770-0119fdf68f70"
+                guiRun { editor.reset() }
+
+                frame.tree().target().selectionRows!! shouldContainExactly arrayOf(0)
+            }
+
+            test("selects the indicated template") {
+                guiRun { frame.tree().target().selectionRows = intArrayOf(4) }
+
+                editor.queueSelection = context.templateList.templates[1].uuid
+                guiRun { editor.reset() }
+
+                frame.tree().target().selectionRows!! shouldContainExactly arrayOf(3)
+            }
+
+            test("selects the indicated scheme") {
+                guiRun { frame.tree().target().selectionRows = intArrayOf(2) }
+
+                editor.queueSelection = context.templateList.templates[1].schemes[0].uuid
+                guiRun { editor.reset() }
+
+                frame.tree().target().selectionRows!! shouldContainExactly arrayOf(4)
+            }
         }
     }
 })

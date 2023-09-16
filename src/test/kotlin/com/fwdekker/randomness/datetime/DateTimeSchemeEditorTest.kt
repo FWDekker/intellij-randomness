@@ -22,7 +22,7 @@ import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [DateTimeSchemeEditor].
+ * Unit tests for [DateTimeSchemeEditor].
  */
 object DateTimeSchemeEditorTest : FunSpec({
     tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
@@ -69,30 +69,18 @@ object DateTimeSchemeEditorTest : FunSpec({
         editorFieldsTestFactory(
             { editor },
             mapOf(
-                "minDateTime" to
-                    row(
-                        { frame.textBox("minDateTime").dateTimeProp() },
-                        { editor.scheme::minDateTime.prop() },
-                        369L,
-                    ),
-                "maxDateTime" to
-                    row(
-                        { frame.textBox("maxDateTime").dateTimeProp() },
-                        { editor.scheme::maxDateTime.prop() },
-                        822L,
-                    ),
-                "pattern" to
-                    row(
-                        { frame.textBox("pattern").textProp() },
-                        { editor.scheme::pattern.prop() },
-                        "dd/MM/yyyy",
-                    ),
-                "arrayDecorator" to
-                    row(
-                        { frame.spinner("arrayMaxCount").valueProp() },
-                        { editor.scheme.arrayDecorator::maxCount.prop() },
-                        7,
-                    ),
+                "minDateTime" to {
+                    row(frame.textBox("minDateTime").dateTimeProp(), editor.scheme::minDateTime.prop(), 369L)
+                },
+                "maxDateTime" to {
+                    row(frame.textBox("maxDateTime").dateTimeProp(), editor.scheme::maxDateTime.prop(), 822L)
+                },
+                "pattern" to {
+                    row(frame.textBox("pattern").textProp(), editor.scheme::pattern.prop(), "dd/MM/yyyy")
+                },
+                "arrayDecorator" to {
+                    row(frame.spinner("arrayMaxCount").valueProp(), editor.scheme.arrayDecorator::maxCount.prop(), 7)
+                },
             )
         )
     )

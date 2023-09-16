@@ -113,9 +113,6 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
      * method. Otherwise, if [oldIndex] is a non-template scheme and [newIndex] is a template, then the non-template
      * scheme is moved to the template at [newIndex]; if [oldIndex] is less than [newIndex] then the non-template scheme
      * becomes the template's first child, otherwise it becomes the template's last child.
-     *
-     * @param oldIndex the index of the row of the node to move
-     * @param newIndex the index of the row to move the node to
      */
     override fun exchangeRows(oldIndex: Int, newIndex: Int) {
         val nodeToMove = rowToNode(oldIndex)!!
@@ -145,10 +142,6 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
      * Returns `true` if and only if the node at row [oldIndex] can be moved to row [newIndex].
      *
      * Indices are looked up using [rowToNode], and are typically relative to the current expansion state of the view.
-     *
-     * @param oldIndex the index of the row of the node to move
-     * @param newIndex the index of the row to move the node to
-     * @return `true` if and only if the row at [oldIndex] can be moved to [newIndex]
      */
     override fun canExchangeRows(oldIndex: Int, newIndex: Int): Boolean {
         val oldNode = rowToNode(oldIndex)
@@ -162,9 +155,6 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
 
     /**
      * Returns `true` if and only if [node] does not have children.
-     *
-     * @param node the node to check whether it is a leaf
-     * @return `true` if and only if [node] does not have children
      */
     override fun isLeaf(node: Any?): Boolean {
         require(node is StateNode) {
@@ -175,13 +165,9 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
     }
 
     /**
-     * Returns the child at the index [index] in [parent].
+     * Returns the [index]th child of [parent].
      *
-     * Throws an exception if [index] is out of bounds in [parent].
-     *
-     * @param parent the parent to return the child of
-     * @param index the index of the child in the parent
-     * @return the child at the index [index] in [parent]
+     * Throws an exception if [parent] has no [index]th child.
      */
     override fun getChild(parent: Any?, index: Int): StateNode {
         require(parent is StateNode) {
@@ -193,10 +179,7 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
     }
 
     /**
-     * Returns the number of children in the parent.
-     *
-     * @param parent the parent to return the number of children of
-     * @return the number of children in the parent
+     * Returns the number of children of [parent].
      */
     override fun getChildCount(parent: Any?): Int {
         require(parent is StateNode) {
@@ -208,13 +191,8 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
     }
 
     /**
-     * Returns the index of the child in the parent, or `-1` if either the parent or the child is `null`, or `-1` if the
-     * child is not in the parent.
-     *
-     * @param parent the parent to find the index in
-     * @param child the child to return the index of
-     * @return the index of the child in the parent, or `-1` if either the parent or the child is `null`, or `-1` if the
-     * child is not in the parent
+     * Returns the relative index of [child] in [parent], or `-1` if either [parent] or [child] is `null`, or `-1` if
+     * [child] is not a child of [parent].
      */
     override fun getIndexOfChild(parent: Any?, child: Any?): Int {
         if (parent == null || child == null) return -1
@@ -230,12 +208,9 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
     }
 
     /**
-     * Returns the parent of [node], or `null` if the node has no parent.
+     * Returns the parent of [node], or `null` if [node] has no parent.
      *
      * Throws an exception if [node] is not contained in this model.
-     *
-     * @param node the node to return the parent of
-     * @return the parent of [node], or `null` if the node has no parent
      */
     fun getParentOf(node: StateNode): StateNode? {
         require(root.contains(node)) { Bundle("template_list.error.parent_of_node_not_in_model") }
@@ -248,12 +223,9 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
     }
 
     /**
-     * Returns the path from the [root] to [node].
+     * Returns the path from [root] to [node].
      *
      * Throws an exception if [node] is not contained in this model.
-     *
-     * @param node the node to return the path to
-     * @return the path from the [root] to [node]
      */
     fun getPathToRoot(node: StateNode): TreePath {
         require(root.contains(node)) { Bundle("template_list.error.path_of_node_not_in_model") }
@@ -267,13 +239,10 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
 
 
     /**
-     * Inserts [child] as a child into [parent] at index [index].
+     * Inserts [child] as the [index]th child of [parent].
      *
-     * Throws an exception if [index] is out of bounds in [parent].
-     *
-     * @param parent the node to insert the child into
-     * @param child the node to insert into the parent
-     * @param index the index in the parent to insert the child at
+     * Throws an exception if [index] is out of bounds in [parent], i.e. if [index] is negative or there is no
+     * ([index] - 1)th child.
      */
     fun insertNode(parent: StateNode, child: StateNode, index: Int = getChildCount(parent)) {
         parent.children = parent.children.toMutableList().also { it.add(index, child) }
@@ -288,10 +257,6 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
      * Inserts [child] as a child into [parent] right after [after].
      *
      * Throws an exception if [after] is not a child of [parent].
-     *
-     * @param parent the state to insert the child into
-     * @param child the state to insert into the parent
-     * @param after the state to insert the child after
      */
     fun insertNodeAfter(parent: StateNode, child: StateNode, after: StateNode) {
         val afterIndex = getIndexOfChild(parent, after)
@@ -304,8 +269,6 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
      * Removes [node] from this model.
      *
      * Throws an exception if [node] is not contained in this model, or if [node] is [getRoot].
-     *
-     * @param node the node to remove from the model
      */
     fun removeNode(node: StateNode) {
         require(root.contains(node)) { Bundle("template_list.error.remove_node_not_in_model") }
@@ -327,8 +290,6 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
      * children of [node] have been changed. In those two latter scenarios, use [fireNodeStructureChanged].
      *
      * Does nothing if [node] is `null`.
-     *
-     * @param node the node that has been changed
      */
     fun fireNodeChanged(node: StateNode?) {
         if (node == null) return
@@ -345,13 +306,9 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
     }
 
     /**
-     * Informs listeners that [node] has been inserted into this model.
+     * Informs listeners that [node] has been inserted into this model as the [index]th child of [parent].
      *
      * Does nothing if [node] is `null`.
-     *
-     * @param node the node that has been inserted into the model
-     * @param parent the parent into which the child was inserted
-     * @param index the index at which the child was inserted
      */
     fun fireNodeInserted(node: StateNode?, parent: StateNode, index: Int) {
         if (node == null) return
@@ -363,15 +320,12 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
     }
 
     /**
-     * Informs listeners that [child] has been removed from this model.
+     * Informs listeners that [child] has been removed from this model, but was formerly the [index]th child of
+     * [parent].
      *
      * If [child] has children nodes itself, then you must **not** invoke this method on those children.
      *
      * Does nothing if [child] is `null`.
-     *
-     * @param child the child that has been removed from the model
-     * @param parent the parent from which the child was removed
-     * @param index the former index of the child in the parent
      */
     fun fireNodeRemoved(child: StateNode?, parent: StateNode, index: Int) {
         if (child == null) return
@@ -386,8 +340,6 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
      * Informs listeners that [node]'s structure has been changed.
      *
      * Does nothing if [node] is `null`.
-     *
-     * @param node the node of which the structure has been changed
      */
     fun fireNodeStructureChanged(node: StateNode?) {
         if (node == null) return
@@ -472,9 +424,6 @@ class StateNode(val state: State) {
 
     /**
      * Returns `true` if and only if [node] is contained in the tree rooted at this node.
-     *
-     * @param node the node to find
-     * @return `true` if and only if [node] is contained in the tree rooted at this node
      */
     fun contains(node: StateNode): Boolean =
         this == node || canHaveChildren && children.any { it.contains(node) }
@@ -482,16 +431,11 @@ class StateNode(val state: State) {
 
     /**
      * Returns `true` if and only if [other]'s UUID is the same as [state]'s UUID.
-     *
-     * @param other the object to compare against
-     * @return `true` if and only if [other]'s UUID is the same as [state]'s UUID
      */
     override fun equals(other: Any?) = other is StateNode && this.state.uuid == other.state.uuid
 
     /**
      * Returns the hash code of the [state]'s UUID.
-     *
-     * @return the hash code of the [state]'s UUID
      */
     override fun hashCode() = state.uuid.hashCode()
 }

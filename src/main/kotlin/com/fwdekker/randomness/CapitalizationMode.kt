@@ -44,8 +44,6 @@ enum class CapitalizationMode(val transform: (String, Random) -> String) {
 
     /**
      * Returns the localized string name of this mode.
-     *
-     * @return the localized string name of this mode
      */
     fun toLocalizedString() =
         Bundle("shared.capitalization.${toString().replace(' ', '_').lowercase(Locale.getDefault())}")
@@ -53,10 +51,7 @@ enum class CapitalizationMode(val transform: (String, Random) -> String) {
 
 
 /**
- * Randomly converts this character to uppercase or lowercase.
- *
- * @param random the source of randomness to use
- * @return the uppercase or lowercase version of this character
+ * Randomly converts this character to uppercase or lowercase using [random] as a source of randomness.
  */
 private fun Char.toRandomCase(random: Random) =
     if (random.nextBoolean()) this.lowercaseChar()
@@ -64,8 +59,6 @@ private fun Char.toRandomCase(random: Random) =
 
 /**
  * Turns the first character uppercase while all other characters become lowercase.
- *
- * @return the sentence-case form of this string
  */
 private fun String.toSentenceCase() =
     this.lowercase(Locale.getDefault()).replaceFirstChar { it.uppercaseChar() }
