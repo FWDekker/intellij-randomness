@@ -8,6 +8,7 @@ import com.fwdekker.randomness.guiGet
 import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.isSelectedProp
 import com.fwdekker.randomness.prop
+import com.fwdekker.randomness.requireEnabledIs
 import com.fwdekker.randomness.textProp
 import com.fwdekker.randomness.valueProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
@@ -86,7 +87,7 @@ object IntegerSchemeEditorTest : FunSpec({
         }
 
         context("toggles the grouping separator depending on base value and checkbox state") {
-            @Suppress("BooleanLiteralArgument") // Argument names clear from lambda later on
+            @Suppress("BooleanLiteralArgument") // Argument names are clear from lambda later on
             withData(
                 row(8, false, false, false),
                 row(8, true, false, false),
@@ -100,10 +101,8 @@ object IntegerSchemeEditorTest : FunSpec({
                     frame.checkBox("groupingSeparatorEnabled").target().isSelected = checkBoxChecked
                 }
 
-                frame.checkBox("groupingSeparatorEnabled")
-                    .let { if (expectedCheckBoxEnabled) it.requireEnabled() else it.requireDisabled() }
-                frame.comboBox("groupingSeparator")
-                    .let { if (expectedInputEnabled) it.requireEnabled() else it.requireDisabled() }
+                frame.checkBox("groupingSeparatorEnabled").requireEnabledIs(expectedCheckBoxEnabled)
+                frame.comboBox("groupingSeparator").requireEnabledIs(expectedInputEnabled)
             }
         }
     }

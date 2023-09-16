@@ -56,17 +56,19 @@ object ArrayDecoratorEditorTest : FunSpec({
     }
 
 
-    context("embedded") {
-        test("shows the titled separator if the editor is not embedded") {
-            frame.panel(matcher(TitledSeparator::class.java)).requireVisible()
-        }
+    context("constructor") {
+        context("embedded") {
+            test("shows the titled separator if the editor is not embedded") {
+                frame.panel(matcher(TitledSeparator::class.java)).requireVisible()
+            }
 
-        test("hides the titled separator if the editor is embedded") {
-            frame.cleanUp()
-            editor = guiGet { ArrayDecoratorEditor(scheme, embedded = true) }
-            frame = showInFrame(editor.rootComponent)
+            test("hides the titled separator if the editor is embedded") {
+                frame.cleanUp()
+                editor = guiGet { ArrayDecoratorEditor(scheme, embedded = true) }
+                frame = showInFrame(editor.rootComponent)
 
-            frame.panel(matcher(TitledSeparator::class.java)).requireNotVisible()
+                frame.panel(matcher(TitledSeparator::class.java)).requireNotVisible()
+            }
         }
     }
 

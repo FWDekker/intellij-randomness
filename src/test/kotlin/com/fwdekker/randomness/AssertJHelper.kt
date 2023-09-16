@@ -9,7 +9,9 @@ import io.kotest.core.spec.BeforeAny
 import io.kotest.core.spec.style.scopes.ContainerScope
 import io.kotest.core.test.TestType
 import org.assertj.swing.core.GenericTypeMatcher
+import org.assertj.swing.driver.ComponentDriver
 import org.assertj.swing.edt.GuiActionRunner
+import org.assertj.swing.fixture.AbstractComponentFixture
 import org.assertj.swing.fixture.AbstractTwoStateButtonFixture
 import org.assertj.swing.fixture.FrameFixture
 import org.assertj.swing.fixture.JComboBoxFixture
@@ -71,6 +73,11 @@ fun <T : Component> FrameFixture.find(matcher: GenericTypeMatcher<T>): T =
  */
 fun FrameFixture.getActionButton(accessibleName: String): ActionButton =
     find(matcher(ActionButton::class.java) { it.accessibleContext.accessibleName == accessibleName })
+
+
+fun <S, C : Component, D : ComponentDriver> AbstractComponentFixture<S, C, D>.requireEnabledIs(enabled: Boolean) =
+    if (enabled) this.requireEnabled()
+    else this.requireDisabled()
 
 
 // TODO: Document these functions!

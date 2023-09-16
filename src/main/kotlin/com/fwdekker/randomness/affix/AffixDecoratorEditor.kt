@@ -64,5 +64,5 @@ class AffixDecoratorEditor(
  * @return the camelCase concatenation of [prefix] and [name]
  */
 private fun camelConcat(prefix: String, name: String) =
-    if (prefix != "") "${prefix}${name[0].uppercase(Locale.getDefault())}${name.drop(1)}"
-    else name
+    if (prefix == "") name
+    else "${prefix}${name[0].uppercase(Locale.getDefault())}${name.drop(1)}"

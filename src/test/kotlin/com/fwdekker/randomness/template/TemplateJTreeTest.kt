@@ -461,7 +461,7 @@ object TemplateJTreeTest : FunSpec({
     }
 
     context("canMoveSchemeByOnePosition") {
-        @Suppress("BooleanLiteralArgument") // Argument names clear from lambda later on
+        @Suppress("BooleanLiteralArgument") // Argument names are clear from lambda later on
         withData(
             mapOf<String, Row3<() -> Scheme, Boolean, Boolean>>(
                 "first template" to row({ tree.myModel.list.templates[0] }, false, false),
