@@ -1,12 +1,12 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.State
-import com.fwdekker.randomness.beEmptyIntArray
-import com.fwdekker.randomness.beforeNonContainer
-import com.fwdekker.randomness.matchBundle
-import com.fwdekker.randomness.shouldContainExactly
+import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.beEmptyIntArray
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.matchBundle
+import com.fwdekker.randomness.testhelpers.shouldContainExactly
 import com.fwdekker.randomness.ui.SimpleTreeModelListener
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec

@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.Settings
-import com.fwdekker.randomness.shouldValidateAsBundle
 import com.fwdekker.randomness.stateDeepCopyTestFactory
+import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData

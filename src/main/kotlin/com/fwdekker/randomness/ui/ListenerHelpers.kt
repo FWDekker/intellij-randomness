@@ -33,12 +33,14 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
                 component.addActionListener { listener() }
                 addChangeListenerTo(component.editor.editorComponent, listener = listener)
             }
+
             is JSpinner -> component.addChangeListener { listener() }
             is JTextComponent -> addChangeListenerTo(component.document, listener = listener)
             is JTree -> {
                 component.model.addTreeModelListener(SimpleTreeModelListener { listener() })
                 component.addTreeSelectionListener { listener() }
             }
+
             is SchemeEditor<*> -> component.addChangeListener(listener)
             else -> Unit
         }

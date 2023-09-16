@@ -2,6 +2,8 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
+import com.fwdekker.randomness.testhelpers.DummyState
+import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row

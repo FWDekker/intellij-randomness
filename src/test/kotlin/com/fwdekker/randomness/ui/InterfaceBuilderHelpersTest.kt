@@ -4,8 +4,8 @@ import io.kotest.core.spec.style.FunSpec
 
 
 /**
- * Unit tests for extension functions in `InterfaceBuilderHelperKt`.
+ * Unit tests for extension functions in `InterfaceBuilderHelpersKt`.
  */
-object InterfaceBuilderHelperTest : FunSpec({
+object InterfaceBuilderHelpersTest : FunSpec({
     // TODO: Add these tests
 })

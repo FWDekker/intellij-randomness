@@ -1,18 +1,18 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
-import com.fwdekker.randomness.afterNonContainer
-import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
-import com.fwdekker.randomness.guiGet
-import com.fwdekker.randomness.guiRun
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.setAll
-import com.fwdekker.randomness.shouldContainExactly
 import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.shouldContainExactly
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
@@ -160,7 +160,7 @@ object TemplateListEditorTest : FunSpec({
                     editor.reset()
                     frame.tree().target().setSelectionRow(1)
                 }
-            }.message shouldBe "Unknown scheme type 'com.fwdekker.randomness.DummyScheme'."
+            }.message shouldBe "Unknown scheme type 'com.fwdekker.randomness.testhelpers.DummyScheme'."
         }
     }
 })

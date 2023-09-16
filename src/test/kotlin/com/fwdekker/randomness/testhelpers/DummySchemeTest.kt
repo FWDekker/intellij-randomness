@@ -1,4 +1,4 @@
-package com.fwdekker.randomness
+package com.fwdekker.randomness.testhelpers
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe

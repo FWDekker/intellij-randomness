@@ -1,16 +1,16 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.afterNonContainer
-import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.editorApplyTestFactory
 import com.fwdekker.randomness.editorFieldsTestFactory
-import com.fwdekker.randomness.guiGet
-import com.fwdekker.randomness.guiRun
-import com.fwdekker.randomness.isSelectedProp
-import com.fwdekker.randomness.matcher
-import com.fwdekker.randomness.prop
-import com.fwdekker.randomness.textProp
-import com.fwdekker.randomness.valueProp
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.isSelectedProp
+import com.fwdekker.randomness.testhelpers.matcher
+import com.fwdekker.randomness.testhelpers.prop
+import com.fwdekker.randomness.testhelpers.textProp
+import com.fwdekker.randomness.testhelpers.valueProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.TitledSeparator

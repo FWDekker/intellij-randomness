@@ -1,5 +1,8 @@
-package com.fwdekker.randomness
+package com.fwdekker.randomness.testhelpers
 
+import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.State
+import com.fwdekker.randomness.matchesFormat
 import io.kotest.assertions.withClue
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.MatcherResult
@@ -8,8 +11,6 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 
-
-// TODO: Merge this file with `AssertJHelper`?
 
 /**
  * @see beEmptyArray

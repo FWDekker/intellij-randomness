@@ -2,13 +2,13 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.Settings
-import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.setAll
-import com.fwdekker.randomness.shouldValidateAsBundle
 import com.fwdekker.randomness.stateDeepCopyTestFactory
+import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec

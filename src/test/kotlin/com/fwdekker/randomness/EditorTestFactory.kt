@@ -1,5 +1,6 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.testhelpers.guiRun
 import com.intellij.ui.dsl.builder.MutableProperty
 import io.kotest.assertions.withClue
 import io.kotest.core.factory.TestFactory

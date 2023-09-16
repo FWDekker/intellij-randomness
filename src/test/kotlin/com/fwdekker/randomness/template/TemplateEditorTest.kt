@@ -1,11 +1,11 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.afterNonContainer
-import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.editorFieldsTestFactory
-import com.fwdekker.randomness.guiGet
-import com.fwdekker.randomness.prop
-import com.fwdekker.randomness.textProp
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.prop
+import com.fwdekker.randomness.testhelpers.textProp
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row

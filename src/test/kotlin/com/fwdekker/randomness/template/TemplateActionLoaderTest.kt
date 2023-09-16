@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.afterNonContainer
-import com.fwdekker.randomness.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory

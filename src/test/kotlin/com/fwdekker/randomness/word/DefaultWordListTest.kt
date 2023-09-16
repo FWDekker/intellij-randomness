@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.beEmpty

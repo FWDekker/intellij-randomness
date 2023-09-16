@@ -1,5 +1,7 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.testhelpers.DummyDecoratorScheme
+import com.fwdekker.randomness.testhelpers.DummyScheme
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec

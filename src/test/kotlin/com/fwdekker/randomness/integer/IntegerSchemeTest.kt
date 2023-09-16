@@ -3,8 +3,8 @@ package com.fwdekker.randomness.integer
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
-import com.fwdekker.randomness.shouldValidateAsBundle
 import com.fwdekker.randomness.stateDeepCopyTestFactory
+import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import io.kotest.assertions.withClue
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec

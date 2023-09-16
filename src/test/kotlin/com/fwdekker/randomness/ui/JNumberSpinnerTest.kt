@@ -1,7 +1,7 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.guiGet
-import com.fwdekker.randomness.guiRun
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec

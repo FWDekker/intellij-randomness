@@ -1,14 +1,14 @@
 package com.fwdekker.randomness.affix
 
-import com.fwdekker.randomness.afterNonContainer
-import com.fwdekker.randomness.beforeNonContainer
 import com.fwdekker.randomness.editorApplyTestFactory
 import com.fwdekker.randomness.editorFieldsTestFactory
-import com.fwdekker.randomness.guiGet
-import com.fwdekker.randomness.guiRun
-import com.fwdekker.randomness.prop
-import com.fwdekker.randomness.requireEnabledIs
-import com.fwdekker.randomness.textProp
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.prop
+import com.fwdekker.randomness.testhelpers.requireEnabledIs
+import com.fwdekker.randomness.testhelpers.textProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.layout.selected
@@ -113,7 +113,7 @@ object AffixDecoratorEditorTest : FunSpec({
                     row(true, true, true, true),
                 )
             ) { (predicateState, checkboxState, expectedCheckboxEnabled, expectedDescriptorEnabled) ->
-                val predicate = if (predicateState == null) null else toggle.selected
+                val predicate = predicateState?.let { toggle.selected }
 
                 frame.cleanUp()
                 editor = guiGet { AffixDecoratorEditor(scheme, presets = listOf("."), enabledIf = predicate) }

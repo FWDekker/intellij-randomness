@@ -1,8 +1,8 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.affix.AffixDecorator
-import com.fwdekker.randomness.shouldValidateAsBundle
 import com.fwdekker.randomness.stateDeepCopyTestFactory
+import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row

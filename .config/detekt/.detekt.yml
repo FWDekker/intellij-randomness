@@ -18,7 +18,7 @@ complexity:
     active: false
   # [Exception] Acceptable for helper files.
   TooManyFunctions:
-    excludes: '**/*Helper.kt'
+    excludes: '**/*Helpers.kt'
 
 formatting:
   # [Disagree] Acceptable for many short arguments.

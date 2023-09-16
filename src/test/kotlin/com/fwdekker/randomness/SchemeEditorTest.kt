@@ -1,5 +1,13 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.testhelpers.DummyDecoratorScheme
+import com.fwdekker.randomness.testhelpers.DummyDecoratorSchemeEditor
+import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.DummySchemeEditor
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
 import com.fwdekker.randomness.ui.withName
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory

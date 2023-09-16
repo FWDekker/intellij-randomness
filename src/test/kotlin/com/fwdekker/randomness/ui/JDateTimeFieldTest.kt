@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.beforeNonContainer
-import com.fwdekker.randomness.guiGet
-import com.fwdekker.randomness.guiRun
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
 import com.github.sisyphsu.dateparser.DateParserUtils
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.NamedTag

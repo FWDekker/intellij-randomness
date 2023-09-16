@@ -1,5 +1,12 @@
-package com.fwdekker.randomness
+package com.fwdekker.randomness.testhelpers
 
+import com.fwdekker.randomness.DecoratorScheme
+import com.fwdekker.randomness.Icons
+import com.fwdekker.randomness.InsertAction
+import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.State
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.ui.withName
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.bindText

@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.DummySchemeEditor
-import com.fwdekker.randomness.beforeNonContainer
-import com.fwdekker.randomness.guiGet
-import com.fwdekker.randomness.guiRun
+import com.fwdekker.randomness.testhelpers.DummySchemeEditor
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.panel
 import io.kotest.core.NamedTag
@@ -27,9 +27,9 @@ import javax.swing.tree.MutableTreeNode
 
 
 /**
- * Unit tests for extension functions in `ListenerHelperKt`.
+ * Unit tests for extension functions in `ListenerHelpersKt`.
  */
-object ListenerHelperTest : FunSpec({
+object ListenerHelpersTest : FunSpec({
     tags(NamedTag("Swing"))
 
 
