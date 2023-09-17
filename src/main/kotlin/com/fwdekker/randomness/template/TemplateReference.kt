@@ -54,7 +54,7 @@ data class TemplateReference(
      * Tries to find a recursive cycle of references within the current [context] starting at [parent], returning `null`
      * if there is no such cycle.
      */
-    private fun getRecursiveLoopOrNull(): List<Template>? {
+    private fun getReferenceCycleOrNull(): List<Template>? {
         fun helper(source: TemplateReference, history: List<TemplateReference>): List<Template>? =
             if (source in history) listOf(source.parent)
             else source.template?.schemes
@@ -66,14 +66,18 @@ data class TemplateReference(
     }
 
     /**
-     * Returns `true` if `this` reference can refer to [target] without causing recursion within the current [context].
+     * Returns `true` if and only if `this` would not be part of a cycle of recursive references in [context] after
+     * setting [template] to [target].
      */
-    fun canReference(target: Template) =
-        templateUuid.let { originalUuid ->
-            templateUuid = target.uuid
-            (getRecursiveLoopOrNull() == null)
-                .also { templateUuid = originalUuid }
-        }
+    fun canReference(target: Template): Boolean {
+        val originalUuid = templateUuid
+
+        templateUuid = target.uuid
+        val createsCycle = getReferenceCycleOrNull() == null
+        templateUuid = originalUuid
+
+        return createsCycle
+    }
 
 
     override fun generateUndecoratedStrings(count: Int) =
@@ -84,12 +88,12 @@ data class TemplateReference(
 
 
     override fun doValidate(): String? {
-        val recursion = getRecursiveLoopOrNull()
+        val cycle = getReferenceCycleOrNull()
 
         return when {
             templateUuid == null -> Bundle("reference.error.no_selection")
             template == null -> Bundle("reference.error.not_found")
-            recursion != null -> Bundle("reference.error.recursion", "(${recursion.joinToString(" → ") { it.name }})")
+            cycle != null -> Bundle("reference.error.recursion", "(${cycle.joinToString(" → ") { it.name }})")
             else -> affixDecorator.doValidate() ?: arrayDecorator.doValidate()
         }
     }

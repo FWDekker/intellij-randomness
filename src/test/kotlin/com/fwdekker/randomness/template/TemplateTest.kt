@@ -73,11 +73,6 @@ object TemplateTest : FunSpec({
     }
 
 
-    xtest("canReference") {
-        TODO()
-    }
-
-
     context("generateStrings") {
         withData(
             mapOf(

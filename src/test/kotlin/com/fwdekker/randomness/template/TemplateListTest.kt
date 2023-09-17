@@ -38,23 +38,6 @@ object TemplateListTest : FunSpec({
     }
 
 
-    context("listValidReferenceTargets") {
-        context("for reference") {
-            xtest("returns an error if the given reference is not in this list") {
-                TODO()
-            }
-
-            xtest("returns copies") {
-                TODO()
-            }
-        }
-
-        xtest("for template") {
-            TODO()
-        }
-    }
-
-
     context("getTemplateByUuid") {
         test("returns null if no such template can be found") {
             val list = TemplateList()

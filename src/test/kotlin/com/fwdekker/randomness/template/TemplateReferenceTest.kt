@@ -184,8 +184,58 @@ object TemplateReferenceTest : FunSpec({
         }
     }
 
-    xcontext("canReference") {
-        TODO()
+    context("canReference") {
+        test("returns true if the reference would be outside its own context") {
+            reference.canReference(Template()) shouldBe true
+        }
+
+        test("returns true if the reference would not create a cycle") {
+            reference.canReference(referencedTemplate) shouldBe true
+        }
+
+        test("returns true if the reference would break the current cycle") {
+            val safeTemplate = Template()
+            list.templates += safeTemplate
+            referencedTemplate.schemes += TemplateReference(referencingTemplate.uuid)
+
+            list.applyContext(Settings(list))
+
+            reference.canReference(safeTemplate) shouldBe true
+        }
+
+        test("returns false if the reference would refer to itself") {
+            reference.canReference(referencingTemplate) shouldBe false
+        }
+
+        test("returns false if the reference would create a cycle") {
+            referencedTemplate.schemes += TemplateReference(referencingTemplate.uuid)
+
+            list.applyContext(Settings(list))
+
+            reference.canReference(referencedTemplate) shouldBe false
+        }
+
+        test("returns false if the reference would refer to a cycle") {
+            val otherReferencedTemplate = Template(schemes = mutableListOf(TemplateReference(referencedTemplate.uuid)))
+            list.templates += otherReferencedTemplate
+            referencedTemplate.schemes += TemplateReference(otherReferencedTemplate.uuid)
+
+            list.applyContext(Settings(list))
+
+            reference.canReference(referencedTemplate) shouldBe false
+        }
+
+        test("returns true if the reference would not create a cycle but a cycle exists elsewhere") {
+            val cycleTemplate1 = Template()
+            list.templates += cycleTemplate1
+            val cycleTemplate2 = Template(schemes = mutableListOf(TemplateReference(cycleTemplate1.uuid)))
+            list.templates += cycleTemplate2
+            cycleTemplate1.schemes += TemplateReference(cycleTemplate2.uuid)
+
+            list.applyContext(Settings(list))
+
+            reference.canReference(referencedTemplate) shouldBe true
+        }
     }
 
 
@@ -232,15 +282,7 @@ object TemplateReferenceTest : FunSpec({
                 "fails if the referred template cannot be found" to
                     row({ reference.also { it.applyContext(Settings()) } }, "reference.error.not_found"),
                 "fails if the reference is recursive" to
-                    row(
-                        {
-                            referencedTemplate.schemes +=
-                                TemplateReference(referencingTemplate.uuid).also { it.applyContext(Settings(list)) }
-
-                            reference
-                        },
-                        "reference.error.recursion",
-                    ),
+                    row({ reference.also { it.template = referencingTemplate } }, "reference.error.recursion"),
                 "fails if affix decorator is invalid" to
                     row({ reference.also { it.affixDecorator.descriptor = """\""" } }, ""),
                 "fails if array decorator is invalid" to

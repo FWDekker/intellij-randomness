@@ -104,17 +104,19 @@ fun <E> Cell<ComboBox<E>>.isEditable(editable: Boolean) = this.also { it.compone
 /**
  * Sets the [filter] on the document of the [ComboBox] in this [Cell], and returns `this`.
  */
-fun <E> Cell<ComboBox<E>>.withFilter(filter: DocumentFilter) =
-    this.also {
-        ((component.editor.editorComponent as? JTextComponent)?.document as? AbstractDocument)?.documentFilter = filter
-    }
+fun <E> Cell<ComboBox<E>>.withFilter(filter: DocumentFilter): Cell<ComboBox<E>> {
+    ((component.editor.editorComponent as? JTextComponent)?.document as? AbstractDocument)?.documentFilter = filter
+    return this
+}
 
 /**
  * Sets an item renderer on the [ComboBox] in this [Cell] that renders a label displaying the mapping of an item using
  * [toString], and returns `this`.
  */
-fun <E> Cell<ComboBox<E>>.withSimpleRenderer(toString: (E) -> String = { it.toString() }) =
-    this.also { component.setRenderer { _, value, _, _, _ -> JBLabel(toString(value)) } }
+fun <E> Cell<ComboBox<E>>.withSimpleRenderer(toString: (E) -> String = { it.toString() }): Cell<ComboBox<E>> {
+    component.setRenderer { _, value, _, _, _ -> JBLabel(toString(value)) }
+    return this
+}
 
 
 /**

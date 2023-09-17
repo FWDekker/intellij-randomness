@@ -198,7 +198,9 @@ class TemplateListEditor(private val originalSettings: Settings = Settings.DEFAU
         }
     }
 
-
+    /**
+     * Disposes this editor's resources.
+     */
     override fun dispose() {
         schemeEditor?.dispose()
         previewPanel.dispose()
