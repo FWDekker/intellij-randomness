@@ -1,112 +1,66 @@
 package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
-import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.VariableLabelRadioButton
-import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.fwdekker.randomness.ui.buttons
-import com.fwdekker.randomness.ui.getValue
-import com.fwdekker.randomness.ui.setLabel
-import com.fwdekker.randomness.ui.setValue
-import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_CAPITALIZATION
-import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_QUOTATION
-import com.fwdekker.randomness.uuid.UuidScheme.Companion.DEFAULT_TYPE
-import com.intellij.ui.SeparatorFactory
-import com.intellij.ui.TitledSeparator
-import javax.swing.ButtonGroup
-import javax.swing.JCheckBox
-import javax.swing.JLabel
-import javax.swing.JPanel
+import com.fwdekker.randomness.ui.loadMnemonic
+import com.fwdekker.randomness.ui.withName
+import com.fwdekker.randomness.uuid.UuidScheme.Companion.PRESET_AFFIX_DECORATOR_DESCRIPTORS
+import com.intellij.ui.dsl.builder.BottomGap
+import com.intellij.ui.dsl.builder.bind
+import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 
 
 /**
- * Component for editing random UUID settings.
+ * Component for editing a [UuidScheme].
  *
- * @param scheme the scheme to edit in the component
+ * @param scheme the scheme to edit
  */
-class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : StateEditor<UuidScheme>(scheme) {
-    override lateinit var rootComponent: JPanel private set
-    override val preferredFocusedComponent
-        get() = typeGroup.buttons().firstOrNull { it.isSelected }
+class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidScheme>(scheme) {
+    override val rootComponent = panel {
+        group(Bundle("uuid.ui.value.header")) {
+            panel {
+                buttonsGroup {
+                    row(Bundle("uuid.ui.value.type.option")) {
+                        radioButton(Bundle("uuid.ui.value.type.1"), value = 1).withName("type1")
+                        radioButton(Bundle("uuid.ui.value.type.4"), value = 4).withName("type4")
+                    }.bottomGap(BottomGap.SMALL)
+                }.bind(scheme::type)
 
-    private lateinit var valueSeparator: TitledSeparator
-    private lateinit var typeLabel: JLabel
-    private lateinit var typeGroup: ButtonGroup
-    private lateinit var quotationLabel: JLabel
-    private lateinit var quotationGroup: ButtonGroup
-    private lateinit var customQuotation: VariableLabelRadioButton
-    private lateinit var capitalizationLabel: JLabel
-    private lateinit var capitalizationGroup: ButtonGroup
-    private lateinit var addDashesCheckBox: JCheckBox
-    private lateinit var arrayDecoratorPanel: JPanel
-    private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
+                row {
+                    checkBox(Bundle("uuid.ui.value.capitalization_option"))
+                        .loadMnemonic()
+                        .withName("isUppercase")
+                        .bindSelected(scheme::isUppercase)
+                }
+
+                row {
+                    checkBox(Bundle("uuid.add_dashes"))
+                        .loadMnemonic()
+                        .withName("addDashes")
+                        .bindSelected(scheme::addDashes)
+                }
+
+                row {
+                    AffixDecoratorEditor(scheme.affixDecorator, PRESET_AFFIX_DECORATOR_DESCRIPTORS)
+                        .also { decoratorEditors += it }
+                        .let { cell(it.rootComponent) }
+                }
+            }
+        }
+
+        row {
+            ArrayDecoratorEditor(scheme.arrayDecorator)
+                .also { decoratorEditors += it }
+                .let { cell(it.rootComponent).horizontalAlign(HorizontalAlign.FILL) }
+        }
+    }
 
 
     init {
-        nop() // Cannot use `lateinit` property as first statement in init
-
-        typeGroup.setLabel(typeLabel)
-
-        customQuotation.addToButtonGroup(quotationGroup)
-        quotationGroup.setLabel(quotationLabel)
-
-        capitalizationGroup.setLabel(capitalizationLabel)
-
-        loadState()
+        reset()
     }
-
-    /**
-     * Initializes custom UI components.
-     *
-     * This method is called by the scene builder at the start of the constructor.
-     */
-    private fun createUIComponents() {
-        valueSeparator = SeparatorFactory.createSeparator(Bundle("uuid.ui.value_separator"), null)
-
-        customQuotation = VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
-
-        arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
-        arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
-    }
-
-
-    override fun loadState(state: UuidScheme) {
-        super.loadState(state)
-
-        typeGroup.setValue(state.type.toString())
-        customQuotation.label = state.customQuotation
-        quotationGroup.setValue(state.quotation)
-        capitalizationGroup.setValue(state.capitalization)
-        addDashesCheckBox.isSelected = state.addDashes
-        arrayDecoratorEditor.loadState(state.arrayDecorator)
-    }
-
-    override fun readState(): UuidScheme =
-        UuidScheme(
-            type = typeGroup.getValue()?.toInt() ?: DEFAULT_TYPE,
-            quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
-            customQuotation = customQuotation.label,
-            capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
-            addDashes = addDashesCheckBox.isSelected,
-            arrayDecorator = arrayDecoratorEditor.readState()
-        ).also { it.uuid = originalState.uuid }
-
-
-    override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(
-            typeGroup, quotationGroup, customQuotation, capitalizationGroup, addDashesCheckBox, arrayDecoratorEditor,
-            listener = listener
-        )
-}
-
-
-/**
- * Null operation, does nothing.
- */
-private fun nop() {
-    // Does nothing
 }

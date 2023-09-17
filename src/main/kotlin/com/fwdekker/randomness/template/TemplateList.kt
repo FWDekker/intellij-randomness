@@ -1,10 +1,11 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
-import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.State
+import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
@@ -20,63 +21,24 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
  * A collection of different templates.
  *
  * @property templates The collection of templates, each with a unique name.
- * @see TemplateSettings
  */
 data class TemplateList(
     @MapAnnotation(sortBeforeSave = false)
-    var templates: List<Template> = DEFAULT_TEMPLATES.toMutableList(),
-) : Settings() {
-    /**
-     * Sets the [SettingsState] for each template in this list and returns this instance.
-     *
-     * @param settingsState the settings state for each template in this list
-     * @return this instance
-     */
-    fun applySettingsState(settingsState: SettingsState): TemplateList {
-        templates.forEach { it.setSettingsState(settingsState) }
-        return this
-    }
-
-
-    /**
-     * Find a recursive path of templates including each other, starting at [reference].
-     *
-     * @param reference the reference to start searching at
-     * @return a recursive path of templates including each other starting at [reference], or `null` if there is no such
-     * path
-     */
-    fun findRecursionFrom(reference: TemplateReference) = findRecursionFrom(reference, mutableListOf())
-
-    /**
-     * @see findRecursionFrom
-     */
-    private fun findRecursionFrom(
-        reference: TemplateReference,
-        history: MutableList<TemplateReference>,
-    ): List<Template>? {
-        if (reference in history) return listOf(reference.parent)
-        history += reference
-
-        return reference.template?.schemes
-            ?.filterIsInstance<TemplateReference>()
-            ?.firstNotNullOfOrNull { findRecursionFrom(it, history) }
-            ?.let { listOf(reference.parent) + it }
+    val templates: MutableList<Template> = DEFAULT_TEMPLATES,
+) : State() {
+    override fun applyContext(context: Box<Settings>) {
+        super.applyContext(context)
+        templates.forEach { it.applyContext(context) }
     }
 
 
     /**
      * Returns the template in this list with [uuid] as its UUID.
-     *
-     * @param uuid the UUID to search for
-     * @return the template in this list with [uuid] as its UUID
      */
     fun getTemplateByUuid(uuid: String) = templates.singleOrNull { it.uuid == uuid }
 
     /**
      * Returns the template or scheme in this list with [uuid] as its UUID.
-     *
-     * @param uuid the UUID to search for
-     * @return the template or scheme in this list with [uuid] as its UUID
      */
     fun getSchemeByUuid(uuid: String) = templates.flatMap { listOf(it) + it.schemes }.singleOrNull { it.uuid == uuid }
 
@@ -94,18 +56,8 @@ data class TemplateList(
         }
     }
 
-    /**
-     * Returns a deep copy of this list.
-     *
-     * Note that the schemes in the returned list do not necessarily use the [SettingsState] in which this list resides.
-     * It may be necessary to use [applySettingsState] afterwards.
-     *
-     * @param retainUuid `false` if and only if the copy should have a different, new [uuid]
-     * @return a deep copy of this list
-     */
     override fun deepCopy(retainUuid: Boolean) =
-        TemplateList(templates.map { it.deepCopy(retainUuid) })
-            .also { if (retainUuid) it.uuid = this.uuid }
+        copy(templates = templates.map { it.deepCopy(retainUuid) }.toMutableList()).deepCopyTransient(retainUuid)
 
 
     /**
@@ -115,49 +67,48 @@ data class TemplateList(
         /**
          * The default value of the [templates] field.
          */
-        val DEFAULT_TEMPLATES: List<Template>
-            get() = listOf(
-                Template("Integer", listOf(IntegerScheme())),
-                Template("Decimal", listOf(DecimalScheme())),
-                Template("String", listOf(StringScheme())),
-                Template("UUID", listOf(UuidScheme())),
-                Template("Date-Time", listOf(DateTimeScheme())),
-                Template("Hex color", listOf(StringScheme(pattern = "#[0-9a-f]{6}"))),
+        val DEFAULT_TEMPLATES
+            get() = mutableListOf(
+                Template("Integer", mutableListOf(IntegerScheme())),
+                Template("Decimal", mutableListOf(DecimalScheme())),
+                Template("String", mutableListOf(StringScheme())),
+                Template("UUID", mutableListOf(UuidScheme())),
+                Template("Date-Time", mutableListOf(DateTimeScheme())),
+                Template("Hex color", mutableListOf(StringScheme(pattern = "#[0-9a-f]{6}"))),
                 Template(
                     "Name",
-                    listOf(
-                        WordScheme(words = DefaultWordList.WORD_LIST_MAP["Forenames"]!!.words),
-                        StringScheme(pattern = " ", isRegex = false),
-                        WordScheme(words = DefaultWordList.WORD_LIST_MAP["Surnames"]!!.words)
+                    mutableListOf(
+                        WordScheme(
+                            words = DefaultWordList.WORD_LIST_MAP["Forenames"]!!.words,
+                            affixDecorator = AffixDecorator(enabled = true, descriptor = "@ "),
+                        ),
+                        WordScheme(words = DefaultWordList.WORD_LIST_MAP["Surnames"]!!.words),
                     )
                 ),
                 Template(
                     "Lorem Ipsum",
-                    listOf(
+                    mutableListOf(
                         WordScheme(
                             words = DefaultWordList.WORD_LIST_MAP["Lorem"]!!.words,
-                            capitalization = CapitalizationMode.FIRST_LETTER
+                            capitalization = CapitalizationMode.FIRST_LETTER,
+                            affixDecorator = AffixDecorator(enabled = true, descriptor = "@ "),
                         ),
-                        StringScheme(pattern = " ", isRegex = false),
                         WordScheme(
                             words = DefaultWordList.WORD_LIST_MAP["Lorem"]!!.words,
+                            capitalization = CapitalizationMode.LOWER,
                             arrayDecorator = ArrayDecorator(
                                 enabled = true,
                                 minCount = 3,
                                 maxCount = 7,
-                                brackets = "",
-                                separator = "",
-                                customSeparator = "",
-                                isSpaceAfterSeparator = true
+                                separator = " ",
+                                affixDecorator = AffixDecorator(enabled = true, descriptor = "@."),
                             )
                         ),
-                        StringScheme(pattern = ".", isRegex = false)
-                    ),
-                    ArrayDecorator(brackets = "", separator = "")
+                    )
                 ),
                 Template(
                     "IP address",
-                    listOf(
+                    mutableListOf(
                         IntegerScheme(
                             minValue = 0,
                             maxValue = 255,
@@ -166,22 +117,10 @@ data class TemplateList(
                                 minCount = 4,
                                 maxCount = 4,
                                 separator = ".",
-                                customSeparator = ".",
-                                isSpaceAfterSeparator = false
-                            )
-                        )
+                            ),
+                        ),
                     )
                 )
             )
-
-
-        /**
-         * Constructs a [TemplateList] consisting of a single template containing [schemes].
-         *
-         * @param schemes the schemes to give to the list's single template
-         * @param name the name of the template
-         */
-        fun from(vararg schemes: Scheme, name: String = Bundle("template.name.default")) =
-            TemplateList(listOf(Template(name, schemes.toList())))
     }
 }

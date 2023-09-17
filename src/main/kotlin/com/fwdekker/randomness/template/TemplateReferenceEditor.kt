@@ -1,155 +1,88 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.CapitalizationMode.Companion.getMode
-import com.fwdekker.randomness.SettingsState
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.template.TemplateReference.Companion.DEFAULT_CAPITALIZATION
-import com.fwdekker.randomness.template.TemplateReference.Companion.DEFAULT_QUOTATION
-import com.fwdekker.randomness.ui.MaxLengthDocumentFilter
-import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.VariableLabelRadioButton
-import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.fwdekker.randomness.ui.getValue
-import com.fwdekker.randomness.ui.setLabel
-import com.fwdekker.randomness.ui.setValue
+import com.fwdekker.randomness.template.TemplateReference.Companion.PRESET_AFFIX_DECORATOR_DESCRIPTORS
+import com.fwdekker.randomness.template.TemplateReference.Companion.PRESET_CAPITALIZATION
+import com.fwdekker.randomness.ui.onResetThis
+import com.fwdekker.randomness.ui.withName
+import com.fwdekker.randomness.ui.withSimpleRenderer
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.ColoredListCellRenderer
-import com.intellij.ui.SeparatorFactory
-import com.intellij.ui.TitledSeparator
-import com.intellij.ui.components.JBList
-import com.intellij.ui.components.JBScrollPane
-import java.awt.BorderLayout
-import javax.swing.ButtonGroup
-import javax.swing.DefaultListModel
-import javax.swing.JLabel
+import com.intellij.ui.dsl.builder.bindItem
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.toNullableProperty
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import javax.swing.JList
-import javax.swing.JPanel
-import javax.swing.ListSelectionModel
 
 
 /**
- * Component for editing [TemplateReference]s.
+ * Component for editing a [TemplateReference].
  *
- * @param reference the reference to edit
+ * @param scheme the scheme to edit
  */
-class TemplateReferenceEditor(reference: TemplateReference) : StateEditor<TemplateReference>(reference) {
-    override lateinit var rootComponent: JPanel private set
-    override val preferredFocusedComponent
-        get() = templateList
+class TemplateReferenceEditor(scheme: TemplateReference) : SchemeEditor<TemplateReference>(scheme) {
+    override val rootComponent = panel {
+        group(Bundle("reference.ui.value.header")) {
+            row(Bundle("reference.ui.value.template_option")) {
+                comboBox(emptyList(), TemplateCellRenderer())
+                    .onResetThis { cell ->
+                        cell.component.removeAllItems()
 
-    private lateinit var templateListSeparator: TitledSeparator
-    private lateinit var templateListPanel: JPanel
-    private lateinit var templateListModel: DefaultListModel<Template>
-    private lateinit var templateList: JBList<Template>
-    private lateinit var appearanceSeparator: TitledSeparator
-    private lateinit var capitalizationLabel: JLabel
-    private lateinit var capitalizationGroup: ButtonGroup
-    private lateinit var customQuotation: VariableLabelRadioButton
-    private lateinit var quotationLabel: JLabel
-    private lateinit var quotationGroup: ButtonGroup
-    private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
-    private lateinit var arrayDecoratorEditorPanel: JPanel
+                        (+scheme.context).templateList.templates
+                            .filter { scheme.canReference(it) }
+                            .forEach { cell.component.addItem(it) }
+                    }
+                    .withName("template")
+                    .bindItem(scheme::template.toNullableProperty())
+            }
+
+            row(Bundle("reference.ui.value.capitalization_option")) {
+                cell(ComboBox(PRESET_CAPITALIZATION))
+                    .withSimpleRenderer(CapitalizationMode::toLocalizedString)
+                    .withName("capitalization")
+                    .bindItem(scheme::capitalization.toNullableProperty())
+            }
+
+            row {
+                AffixDecoratorEditor(scheme.affixDecorator, PRESET_AFFIX_DECORATOR_DESCRIPTORS)
+                    .also { decoratorEditors += it }
+                    .let { cell(it.rootComponent) }
+            }
+        }
+
+        row {
+            ArrayDecoratorEditor(scheme.arrayDecorator)
+                .also { decoratorEditors += it }
+                .let { cell(it.rootComponent).horizontalAlign(HorizontalAlign.FILL) }
+        }
+    }
 
 
     init {
-        nop() // Cannot use `lateinit` property as first statement in init
-
-        capitalizationGroup.setLabel(capitalizationLabel)
-
-        customQuotation.addToButtonGroup(quotationGroup)
-        quotationGroup.setLabel(quotationLabel)
-
-        loadState()
+        reset()
     }
+
 
     /**
-     * Initializes custom UI components.
-     *
-     * This method is called by the scene builder at the start of the constructor.
+     * Renders a template.
      */
-    private fun createUIComponents() {
-        templateListSeparator = SeparatorFactory.createSeparator(Bundle("reference.ui.template_list"), null)
-
-        templateListModel = DefaultListModel<Template>()
-        templateList = JBList(templateListModel)
-        templateList.cellRenderer = object : ColoredListCellRenderer<Template>() {
-            override fun customizeCellRenderer(
-                list: JList<out Template>,
-                value: Template?,
-                index: Int,
-                selected: Boolean,
-                hasFocus: Boolean,
-            ) {
-                icon = value?.icon ?: Template.DEFAULT_ICON
-                append(value?.name ?: Bundle("template.name.unknown"))
-            }
+    private class TemplateCellRenderer : ColoredListCellRenderer<Template>() {
+        /**
+         * Renders the [value] as its icon and name, ignoring other parameters.
+         */
+        override fun customizeCellRenderer(
+            list: JList<out Template>,
+            value: Template?,
+            index: Int,
+            selected: Boolean,
+            hasFocus: Boolean,
+        ) {
+            icon = value?.icon ?: Template.DEFAULT_ICON
+            append(value?.name ?: Bundle("template.name.unknown"))
         }
-        templateList.selectionMode = ListSelectionModel.SINGLE_SELECTION
-        templateList.setEmptyText(Bundle("reference.ui.empty"))
-        templateListPanel = JPanel(BorderLayout())
-        templateListPanel.add(JBScrollPane(templateList), BorderLayout.WEST)
-
-        appearanceSeparator = SeparatorFactory.createSeparator(Bundle("reference.ui.appearance"), null)
-        customQuotation = VariableLabelRadioButton(UIConstants.WIDTH_TINY, MaxLengthDocumentFilter(2))
-
-        arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
-        arrayDecoratorEditorPanel = arrayDecoratorEditor.rootComponent
     }
-
-
-    override fun loadState(state: TemplateReference) {
-        super.loadState(state)
-
-        // Find templates that would not cause recursion if selected
-        val listCopy = (+state.templateList).deepCopy(retainUuid = true)
-            .also { it.applySettingsState(SettingsState(it)) }
-        val referenceCopy =
-            listCopy.templates.flatMap { it.schemes }.single { it.uuid == originalState.uuid } as TemplateReference
-        val validTemplates =
-            (+state.templateList).templates
-                .filter { template ->
-                    referenceCopy.template = template
-                    listCopy.findRecursionFrom(referenceCopy) == null
-                }
-
-        templateListModel.removeAllElements()
-        templateListModel.addAll(validTemplates)
-        templateList.setSelectedValue(state.template, true)
-
-        customQuotation.label = state.customQuotation
-        quotationGroup.setValue(state.quotation)
-        capitalizationGroup.setValue(state.capitalization)
-
-        arrayDecoratorEditor.loadState(state.arrayDecorator)
-    }
-
-    override fun readState() =
-        TemplateReference(
-            templateUuid = templateList.selectedValue?.uuid,
-            quotation = quotationGroup.getValue() ?: DEFAULT_QUOTATION,
-            customQuotation = customQuotation.label,
-            capitalization = capitalizationGroup.getValue()?.let { getMode(it) } ?: DEFAULT_CAPITALIZATION,
-            arrayDecorator = arrayDecoratorEditor.readState()
-        ).also {
-            it.uuid = originalState.uuid
-            it.templateList = originalState.templateList.copy()
-        }
-
-
-    override fun addChangeListener(listener: () -> Unit) {
-        templateList.addListSelectionListener { listener() }
-        addChangeListenerTo(
-            capitalizationGroup, quotationGroup, customQuotation, arrayDecoratorEditor,
-            listener = listener
-        )
-    }
-}
-
-
-/**
- * Null operation, does nothing.
- */
-private fun nop() {
-    // Does nothing
 }

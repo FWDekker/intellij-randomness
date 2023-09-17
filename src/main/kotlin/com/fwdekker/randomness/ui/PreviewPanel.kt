@@ -9,11 +9,11 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.undo.UndoUtil
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
+import com.intellij.openapi.util.Disposer
 import com.intellij.ui.InplaceButton
 import com.intellij.ui.SeparatorFactory
-import com.intellij.ui.TitledSeparator
+import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
 import kotlin.random.Random
@@ -31,17 +31,14 @@ import kotlin.random.Random
  *
  * @property getScheme Returns a scheme that generates previews. Its random source will be changed.
  */
-@Suppress("detekt:LateinitUsage") // Initialized by scene builder
+@Suppress("detekt:LateinitUsage") // Initialized in panel DSL
 class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     /**
      * The root panel containing the preview elements.
      */
-    lateinit var rootComponent: JPanel private set
-    private lateinit var separator: TitledSeparator
-    private lateinit var refreshButton: JComponent
-    private lateinit var previewDocument: Document
-    private lateinit var previewEditor: Editor
-    private lateinit var previewComponent: JComponent
+    val rootComponent: JPanel
+    private val refreshButton: JComponent
+    private val previewDocument: Document
 
     /**
      * The current seed to generate data with.
@@ -56,43 +53,46 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
         set(value) = runWriteAction { previewDocument.setText(value) }
 
 
-    /**
-     * Initializes custom UI components.
-     *
-     * This method is called by the scene builder at the start of the constructor.
-     */
-    private fun createUIComponents() {
-        separator = SeparatorFactory.createSeparator(Bundle("preview.title"), null)
-        refreshButton = InplaceButton(Bundle("shared.action.refresh"), AllIcons.Actions.Refresh) {
-            seed = Random.nextInt()
-            updatePreview()
-        }
+    init {
+        // Components
+        refreshButton =
+            InplaceButton(Bundle("shared.action.refresh"), AllIcons.Actions.Refresh) {
+                seed = Random.nextInt()
+                updatePreview()
+            }
 
         val factory = EditorFactory.getInstance()
-        previewDocument = factory.createDocument(Bundle("preview.placeholder"))
-        UndoUtil.disableUndoFor(previewDocument)
-        previewEditor = factory.createViewer(previewDocument)
-        previewComponent = previewEditor.component
+        previewDocument = factory.createDocument(Bundle("preview.placeholder")).also { UndoUtil.disableUndoFor(it) }
+        val previewEditor = factory.createViewer(previewDocument)
+        previewEditor.component.setFixedHeight(UIConstants.SIZE_MEDIUM)
+        Disposer.register(this) { EditorFactory.getInstance().releaseEditor(previewEditor) }
+
+        // Layout
+        rootComponent = JPanel(BorderLayout())
+        val header = JPanel(BorderLayout())
+        header.add(SeparatorFactory.createSeparator(Bundle("preview.title"), null), BorderLayout.CENTER)
+        header.add(refreshButton, BorderLayout.EAST)
+
+        rootComponent.add(header, BorderLayout.NORTH)
+        rootComponent.add(previewEditor.component, BorderLayout.CENTER)
     }
 
     /**
-     * Disposes of this panel's resources, to be used when this panel is no longer used.
+     * Disposes this panel's resources, to be used when this panel is no longer used.
      */
-    override fun dispose() {
-        EditorFactory.getInstance().releaseEditor(previewEditor)
-    }
+    override fun dispose() = Disposer.dispose(this)
 
 
     /**
      * Updates the preview with the current settings.
      */
-    @Suppress("SwallowedException") // Alternative is to add coupling to SettingsComponent
+    @Suppress("SwallowedException") // Alternative is to add coupling to `SettingsComponent`
     fun updatePreview() {
         try {
             previewText = generateTimely { getScheme().also { it.random = Random(seed) }.generateStrings() }.first()
-        } catch (e: DataGenerationException) {
-            previewText = Bundle("preview.invalid", e.message)
-        } catch (e: IllegalArgumentException) {
+        } catch (exception: DataGenerationException) {
+            previewText = Bundle("preview.invalid", exception.message)
+        } catch (exception: IllegalArgumentException) {
             // Ignore exception; invalid settings are handled by form validation
         }
     }

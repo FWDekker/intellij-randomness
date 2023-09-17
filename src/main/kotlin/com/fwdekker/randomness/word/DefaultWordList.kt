@@ -52,5 +52,13 @@ data class DefaultWordList(val name: String, val filename: String) {
          * The available [WORD_LISTS] as indexed by [name].
          */
         val WORD_LIST_MAP = WORD_LISTS.associateBy { it.name }
+
+
+        /**
+         * Clears the word cache, for testing.
+         */
+        fun clearCache() {
+            CACHE.clear()
+        }
     }
 }

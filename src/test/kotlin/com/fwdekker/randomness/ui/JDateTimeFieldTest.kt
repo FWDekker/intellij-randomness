@@ -1,19 +1,27 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
 import com.github.sisyphsu.dateparser.DateParserUtils
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import java.text.ParseException
 import java.time.LocalDateTime
+import java.time.Month
 
 
 /**
- * GUI tests for [JDateTimeField].
+ * Unit tests for [JDateTimeField].
  */
-object JDateTimeFieldTest : DescribeSpec({
+object JDateTimeFieldTest : FunSpec({
+    tags(NamedTag("Swing"))
+
+
     lateinit var field: JDateTimeField
 
 
@@ -21,85 +29,99 @@ object JDateTimeFieldTest : DescribeSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
-        field = GuiActionRunner.execute<JDateTimeField> { JDateTimeField(LocalDateTime.MIN) }
+    beforeNonContainer {
+        field = guiGet { JDateTimeField(LocalDateTime.MIN) }
     }
 
 
-    describe("value") {
-        describe("get") {
-            it("returns the default if no value has been set") {
+    context("value") {
+        context("get") {
+            test("returns the default if no value has been set") {
                 val default = LocalDateTime.now()
-                val myField = GuiActionRunner.execute<JDateTimeField> { JDateTimeField(default) }
+                val myField = guiGet { JDateTimeField(default) }
 
-                assertThat(myField.value).isEqualTo(default)
+                myField.value shouldBe default
             }
         }
 
-        describe("set") {
-            it("throws an error if a non-date-time is set") {
-                assertThatThrownBy { GuiActionRunner.execute { field.setValue("invalid") } }
-                    .isInstanceOf(IllegalArgumentException::class.java)
-                    .hasMessage("Input value must be a 'LocalDateTime'.")
+        context("set") {
+            test("throws an error if a non-date-time is set") {
+                shouldThrow<IllegalArgumentException> { guiRun { field.setValue("invalid") } }
+                    .message shouldBe Bundle("datetime_field.error.invalid_type")
             }
         }
 
-        it("returns the value that is set to it") {
+        test("returns the value that is set to it") {
             val dateTime = LocalDateTime.now()
-            GuiActionRunner.execute { field.value = dateTime }
 
-            assertThat(field.value).isEqualTo(dateTime)
+            guiRun { field.value = dateTime }
+
+            field.value shouldBe dateTime
+        }
+    }
+
+    context("longValue") {
+        test("get") {
+            guiRun { field.value = LocalDateTime.of(1998, Month.SEPTEMBER, 24, 15, 5, 36) }
+
+            field.longValue shouldBe 906_649_536_000L
+        }
+
+        test("set") {
+            guiRun { field.longValue = 2_625_932_560L }
+
+            field.value shouldBe LocalDateTime.of(1970, 1, 31, 9, 25, 32, 560_000_000)
         }
     }
 
 
-    describe("formatter") {
-        it("formats the value as the intended date") {
+    context("formatter") {
+        test("formats the value as the intended date") {
             val dateTime = LocalDateTime.now().withNano(0)
-            GuiActionRunner.execute { field.value = dateTime }
 
-            assertThat(DateParserUtils.parseDateTime(field.text)).isEqualTo(dateTime)
+            guiRun { field.value = dateTime }
+
+            DateParserUtils.parseDateTime(field.text) shouldBe dateTime
         }
 
-        it("interprets input dates of other formats") {
-            GuiActionRunner.execute {
+        test("interprets input dates of other formats") {
+            guiRun {
                 field.text = "4494-09-23"
                 field.commitEdit()
             }
 
-            assertThat(field.value).isEqualTo(DateParserUtils.parseDateTime(field.text))
+            field.value shouldBe DateParserUtils.parseDateTime(field.text)
         }
 
-        it("fails if the text is null") {
-            GuiActionRunner.execute {
-                assertThatThrownBy {
+        test("fails if the text is null") {
+            guiRun {
+                shouldThrow<ParseException> {
+                    field.text = null
+                    field.commitEdit()
+                }.message shouldBe Bundle("datetime_field.error.empty_string")
+            }
+        }
+
+        test("fails if the text is empty") {
+            guiRun {
+                shouldThrow<ParseException> {
+                    field.text = ""
+                    field.commitEdit()
+                }.message shouldBe Bundle("datetime_field.error.empty_string")
+            }
+        }
+
+        test("clears the old value if the set text is invalid") {
+            guiRun {
+                field.text = "3598-06-25"
+                field.commitEdit()
+
+                shouldThrow<ParseException> {
                     field.text = null
                     field.commitEdit()
                 }
-                    .isInstanceOf(ParseException::class.java)
-                    .hasMessage("Input string must not be empty.")
-            }
-        }
 
-        it("fails if the text is empty") {
-            GuiActionRunner.execute {
-                assertThatThrownBy {
-                    field.text = ""
-                    field.commitEdit()
-                }
-                    .isInstanceOf(ParseException::class.java)
-                    .hasMessage("Input string must not be empty.")
-            }
-        }
-
-        it("retains the old value if the set text is invalid") {
-            GuiActionRunner.execute {
-                assertThatThrownBy {
-                    field.text = "invalid date"
-                    field.commitEdit()
-                }
-                    .isInstanceOf(ParseException::class.java)
-                    .hasMessage("Text invalid date cannot parse at 0")
+                field.text shouldBe ""
             }
         }
     }

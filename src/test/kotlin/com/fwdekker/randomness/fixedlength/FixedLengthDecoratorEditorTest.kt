@@ -1,19 +1,32 @@
 package com.fwdekker.randomness.fixedlength
 
+import com.fwdekker.randomness.editorApplyTestFactory
+import com.fwdekker.randomness.editorFieldsTestFactory
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.isSelectedProp
+import com.fwdekker.randomness.testhelpers.prop
+import com.fwdekker.randomness.testhelpers.textProp
+import com.fwdekker.randomness.testhelpers.valueProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.row
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [FixedLengthDecoratorEditor].
+ * Unit tests for [FixedLengthDecoratorEditor].
  */
-object FixedLengthDecoratorEditorTest : DescribeSpec({
+object FixedLengthDecoratorEditorTest : FunSpec({
+    tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
+
+
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
@@ -25,115 +38,65 @@ object FixedLengthDecoratorEditorTest : DescribeSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
         scheme = FixedLengthDecorator(enabled = true)
-        editor = GuiActionRunner.execute<FixedLengthDecoratorEditor> { FixedLengthDecoratorEditor(scheme) }
+        editor = guiGet { FixedLengthDecoratorEditor(scheme) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterEach {
+    afterNonContainer {
         frame.cleanUp()
         ideaFixture.tearDown()
     }
 
 
-    describe("event handling") {
-        it("keeps only the last input to the filler") {
-            GuiActionRunner.execute { frame.textBox("fixedLengthFiller").target().text = "zAt" }
+    context("input handling") {
+        context("fixedLengthEnabled") {
+            test("disables inputs if deselected") {
+                guiRun { frame.checkBox("fixedLengthEnabled").target().isSelected = false }
 
-            frame.textBox("fixedLengthFiller").requireText("t")
-        }
-
-        it("disables inputs when the scheme is disabled") {
-            GuiActionRunner.execute { frame.checkBox("fixedLengthEnabled").target().isSelected = false }
-
-            frame.spinner("fixedLengthLength").requireDisabled()
-            frame.textBox("fixedLengthFiller").requireDisabled()
-        }
-
-        it("enables inputs when the scheme is re-enabled") {
-            GuiActionRunner.execute {
-                frame.checkBox("fixedLengthEnabled").target().isSelected = false
-                frame.checkBox("fixedLengthEnabled").target().isSelected = true
+                frame.spinner("fixedLengthLength").requireDisabled()
+                frame.textBox("fixedLengthFiller").requireDisabled()
             }
 
-            frame.spinner("fixedLengthLength").requireEnabled()
-            frame.textBox("fixedLengthFiller").requireEnabled()
-        }
-    }
+            test("enables inputs if (re)selected") {
+                guiRun { frame.checkBox("fixedLengthEnabled").target().isSelected = false }
+                guiRun { frame.checkBox("fixedLengthEnabled").target().isSelected = true }
 
-
-    describe("loadState") {
-        it("loads the scheme's enabled state") {
-            GuiActionRunner.execute { editor.loadState(FixedLengthDecorator(enabled = true)) }
-
-            frame.checkBox("fixedLengthEnabled").requireEnabled()
-        }
-
-        it("loads the scheme's length") {
-            GuiActionRunner.execute { editor.loadState(FixedLengthDecorator(enabled = true, length = 808)) }
-
-            frame.spinner("fixedLengthLength").requireValue(808)
-        }
-
-        it("loads the scheme's filler") {
-            GuiActionRunner.execute { editor.loadState(FixedLengthDecorator(enabled = true, filler = "k")) }
-
-            frame.textBox("fixedLengthFiller").requireText("k")
-        }
-    }
-
-    describe("readState") {
-        it("returns the original state if no editor changes are made") {
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
-        }
-
-        it("returns the editor's state") {
-            GuiActionRunner.execute {
-                frame.checkBox("fixedLengthEnabled").target().isSelected = true
-                frame.spinner("fixedLengthLength").target().value = 410
-                frame.textBox("fixedLengthFiller").target().text = "h"
+                frame.spinner("fixedLengthLength").requireEnabled()
+                frame.textBox("fixedLengthFiller").requireEnabled()
             }
-
-            val readScheme = editor.readState()
-            assertThat(readScheme.enabled).isTrue()
-            assertThat(readScheme.length).isEqualTo(410)
-            assertThat(readScheme.filler).isEqualTo("h")
         }
 
-        it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.checkBox("fixedLengthEnabled").target().isSelected = false }
-            assertThat(editor.isModified()).isTrue()
+        context("filler") {
+            test("enforces the filler's length filter") {
+                guiRun { frame.textBox("fixedLengthFiller").target().text = "zAt" }
 
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
-            assertThat(editor.isModified()).isFalse()
-
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
-        }
-
-        it("returns a different instance from the loaded scheme") {
-            assertThat(editor.readState())
-                .isEqualTo(editor.originalState)
-                .isNotSameAs(editor.originalState)
-        }
-
-        it("retains the scheme's UUID") {
-            assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
+                frame.textBox("fixedLengthFiller").requireText("t")
+            }
         }
     }
 
 
-    describe("addChangeListener") {
-        it("invokes the listener if a field changes") {
-            var listenerInvoked = false
-            editor.addChangeListener { listenerInvoked = true }
+    include(editorApplyTestFactory { editor })
 
-            GuiActionRunner.execute { frame.spinner("fixedLengthLength").target().value = 274 }
-
-            assertThat(listenerInvoked).isTrue()
-        }
-    }
+    include(
+        editorFieldsTestFactory(
+            { editor },
+            mapOf(
+                "enabled" to {
+                    row(frame.checkBox("fixedLengthEnabled").isSelectedProp(), editor.scheme::enabled.prop(), false)
+                },
+                "length" to {
+                    row(frame.spinner("fixedLengthLength").valueProp(), editor.scheme::length.prop(), 5L)
+                },
+                "filler" to {
+                    row(frame.textBox("fixedLengthFiller").textProp(), editor.scheme::filler.prop(), ".")
+                },
+            )
+        )
+    )
 })

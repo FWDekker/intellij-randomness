@@ -2,8 +2,8 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SettingsState
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.datetime.DateTimeSchemeEditor
 import com.fwdekker.randomness.decimal.DecimalScheme
@@ -13,11 +13,12 @@ import com.fwdekker.randomness.integer.IntegerSchemeEditor
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.string.StringSchemeEditor
 import com.fwdekker.randomness.ui.PreviewPanel
-import com.fwdekker.randomness.ui.SimpleTreeModelListener
+import com.fwdekker.randomness.ui.addChangeListenerTo
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.ui.Splitter
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBScrollPane
@@ -31,32 +32,32 @@ import javax.swing.SwingUtilities
 
 
 /**
- * Component for editing [TemplateList]s while keeping in mind the overall [SettingsState].
+ * Component for editing a [TemplateList]s.
  *
- * The editor consists of a left side and a right side. The left side contains a tree with the templates as roots and
- * their schemes as the leaves. When the user selects a scheme, the appropriate [StateEditor] for that scheme is loaded
- * on the right side.
+ * The editor essentially has a master-detail layout. On the left, a [TemplateJTree] shows all templates and the schemes
+ * contained within them, and on the right, a [SchemeEditor] for the currently-selected template or scheme is shown.
  *
- * The tree itself contains copies of the entries in the given [TemplateList]. Changes in the editor are immediately
- * written to these copies so that when another scheme editor is displayed the changes are not lost. The changes in the
- * copies are written into the given template list only when [applyState] is invoked.
+ * Though this editor only changes [TemplateList]s, it still maintains a reference to
  *
- * @param settings the settings containing the templates to edit
- * @see TemplateSettingsConfigurable
+ * @property originalSettings The settings containing the templates to edit.
+ * @see TemplateListConfigurable
  */
-class TemplateListEditor(settings: SettingsState = SettingsState.DEFAULT) : StateEditor<SettingsState>(settings) {
-    override val rootComponent = JPanel(BorderLayout())
+class TemplateListEditor(private val originalSettings: Settings = Settings.DEFAULT) : Disposable {
+    /**
+     * The root component of the editor.
+     */
+    val rootComponent = JPanel(BorderLayout())
 
-    private val currentState: SettingsState = SettingsState()
-    private val templateTree = TemplateJTree(originalState, currentState)
+    private val currentSettings = Settings()
+    private val templateTree = TemplateJTree(originalSettings, currentSettings)
     private val schemeEditorPanel = JPanel(BorderLayout())
-    private var schemeEditor: StateEditor<*>? = null
+    private var schemeEditor: SchemeEditor<*>? = null
     private val previewPanel: PreviewPanel
 
     /**
      * The UUID of the scheme to select after the next invocation of [reset].
      *
-     * @see TemplateSettingsConfigurable
+     * @see TemplateListConfigurable
      */
     var queueSelection: String? = null
 
@@ -77,13 +78,14 @@ class TemplateListEditor(settings: SettingsState = SettingsState.DEFAULT) : Stat
             if (selectedNode.state is Template) selectedNode.state
             else parentNode.state as Template
         }
-        addChangeListener { previewPanel.updatePreview() }
+        addChangeListenerTo(templateTree) { previewPanel.updatePreview() }
         schemeEditorPanel.border = JBEmptyBorder(EDITOR_PANEL_MARGIN)
         schemeEditorPanel.add(previewPanel.rootComponent, BorderLayout.SOUTH)
 
         splitter.secondComponent = schemeEditorPanel
 
-        loadState()
+        // Load current state
+        reset()
     }
 
     /**
@@ -106,7 +108,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.DEFAULT) : Stat
         schemeEditor = createEditor(selectedState)
             .also { editor ->
                 editor.addChangeListener {
-                    editor.applyState()
+                    editor.apply()
                     templateTree.myModel.fireNodeStructureChanged(selectedNode)
                 }
 
@@ -131,7 +133,7 @@ class TemplateListEditor(settings: SettingsState = SettingsState.DEFAULT) : Stat
                     )
                 }
 
-                editor.applyState() // Apply validation fixes from UI
+                editor.apply() // Apply validation fixes from UI
                 templateTree.myModel.fireNodeStructureChanged(selectedNode)
                 schemeEditorPanel.revalidate() // Show editor immediately
             }
@@ -139,9 +141,6 @@ class TemplateListEditor(settings: SettingsState = SettingsState.DEFAULT) : Stat
 
     /**
      * Creates an editor to edit [scheme].
-     *
-     * @param scheme the scheme to create an editor for
-     * @return an editor to edit [scheme]
      */
     private fun createEditor(scheme: Scheme) =
         when (scheme) {
@@ -153,45 +152,55 @@ class TemplateListEditor(settings: SettingsState = SettingsState.DEFAULT) : Stat
             is DateTimeScheme -> DateTimeSchemeEditor(scheme)
             is TemplateReference -> TemplateReferenceEditor(scheme)
             is Template -> TemplateEditor(scheme)
-            else -> error(Bundle("template_list.error.unknown_scheme_type", scheme.javaClass.canonicalName))
+            else -> error(Bundle("template_list.error.unknown_state_type", "scheme", scheme.javaClass.canonicalName))
         }
 
 
-    override fun loadState(state: SettingsState) {
-        super.loadState(state)
+    /**
+     * Validates the state of the editor and indicates whether and why it is invalid.
+     *
+     * @return `null` if the state is valid, or a string explaining why the state is invalid
+     */
+    fun doValidate(): String? = currentSettings.doValidate()
 
-        currentState.copyFrom(state)
-        templateTree.reload()
-    }
+    /**
+     * Returns `true` if and only if the editor contains modifications relative to the last saved state.
+     */
+    fun isModified() = originalSettings != currentSettings
 
-    override fun readState() = currentState.deepCopy(retainUuid = true)
-
-    override fun applyState() {
-        val oldList = originalState.templateList.templates.toSet()
-        super.applyState()
-        val newList = originalState.templateList.templates.toSet()
+    /**
+     * Saves the editor's state into [originalSettings].
+     *
+     * Does nothing if and only if [isModified] returns `false`.
+     */
+    fun apply() {
+        val oldList = originalSettings.templates
+        originalSettings.copyFrom(currentSettings)
+        val newList = originalSettings.templates
 
         TemplateActionLoader().updateActions(oldList, newList)
     }
 
-
-    override fun reset() {
-        super.reset()
+    /**
+     * Resets the editor's state to the last saved state.
+     *
+     * Does nothing if and only if [isModified] return `false`.
+     */
+    fun reset() {
+        currentSettings.copyFrom(originalSettings)
+        templateTree.reload()
 
         queueSelection?.also {
-            templateTree.selectedScheme = currentState.templateList.getSchemeByUuid(it)
+            templateTree.selectedScheme = currentSettings.templateList.getSchemeByUuid(it)
             SwingUtilities.invokeLater { schemeEditor?.preferredFocusedComponent?.requestFocus() }
 
             queueSelection = null
         }
     }
 
-
-    override fun addChangeListener(listener: () -> Unit) {
-        templateTree.model.addTreeModelListener(SimpleTreeModelListener { listener() })
-        templateTree.addTreeSelectionListener { listener() }
-    }
-
+    /**
+     * Disposes this editor's resources.
+     */
     override fun dispose() {
         schemeEditor?.dispose()
         previewPanel.dispose()

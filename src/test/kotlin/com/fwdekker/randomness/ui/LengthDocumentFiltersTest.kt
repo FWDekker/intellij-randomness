@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.ui
 
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.assertj.swing.edt.GuiActionRunner
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 import javax.swing.text.DocumentFilter
 import javax.swing.text.PlainDocument
 
@@ -11,232 +11,218 @@ import javax.swing.text.PlainDocument
 /**
  * Unit tests for [MaxLengthDocumentFilter].
  */
-object MaxLengthDocumentFilterTest : DescribeSpec({
+object MaxLengthDocumentFilterTest : FunSpec({
     lateinit var document: PlainDocument
     lateinit var filter: DocumentFilter
     val getText = { document.getText(0, document.length) }
 
 
-    beforeEach {
+    beforeNonContainer {
         document = PlainDocument()
         filter = MaxLengthDocumentFilter(3)
         document.documentFilter = filter
     }
 
 
-    describe("constructor") {
-        it("throws an exception if `maxLength` is negative") {
-            assertThatThrownBy { MaxLengthDocumentFilter(-3) }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("Maximum length must be a positive number, but was '-3'.")
+    context("constructor") {
+        test("throws an exception if 'maxLength' is negative") {
+            shouldThrow<IllegalArgumentException> { MaxLengthDocumentFilter(-3) }
+                .message shouldBe "Maximum length must be a positive number, but was '-3'."
         }
     }
 
 
-    describe("insert") {
-        it("does nothing if the string is `null`") {
-            document.insertString(0, "qib", null)
+    context("insert") {
+        test("does nothing if the inserted string is null") {
+            document.insertString(0, "str", null)
+
             document.insertString(0, null, null)
 
-            assertThat(getText()).isEqualTo("qib")
+            getText() shouldBe "str"
         }
 
-        describe("without overwrite") {
-            it("inserts a string of length 0 at offset 0") {
+        context("without overwrite") {
+            test("inserts a string of length 0 at offset 0") {
+                document.insertString(0, "str", null)
+
                 document.insertString(0, "", null)
 
-                assertThat(getText()).isEqualTo("")
+                getText() shouldBe "str"
             }
 
-            it("inserts a string of length 0 at offset 1") {
-                document.insertString(0, "p", null)
+            test("inserts a string of length 0 at offset 1") {
+                document.insertString(0, "str", null)
+
                 document.insertString(1, "", null)
 
-                assertThat(getText()).isEqualTo("p")
+                getText() shouldBe "str"
             }
 
-            it("inserts a string of length 1 into an empty document") {
-                document.insertString(0, "w", null)
-
-                assertThat(getText()).isEqualTo("w")
-            }
-
-            it("inserts multiple strings after each other") {
+            test("inserts a string of length 1 into an empty document") {
                 document.insertString(0, "c", null)
-                document.insertString(1, "n", null)
-                document.insertString(2, "s", null)
 
-                assertThat(getText()).isEqualTo("cns")
+                getText() shouldBe "c"
             }
 
-            it("inserts a string at the start") {
-                document.insertString(0, "lh", null)
-                document.insertString(0, "u", null)
+            test("inserts multiple strings after each other") {
+                document.insertString(0, "s", null)
+                document.insertString(1, "t", null)
+                document.insertString(2, "r", null)
 
-                assertThat(getText()).isEqualTo("ulh")
+                getText() shouldBe "str"
             }
 
-            it("inserts a string in the middle") {
-                document.insertString(0, "sc", null)
-                document.insertString(1, "f", null)
+            test("inserts a string at the start") {
+                document.insertString(0, "tr", null)
+                document.insertString(0, "s", null)
 
-                assertThat(getText()).isEqualTo("sfc")
+                getText() shouldBe "str"
             }
 
-            it("inserts a string of maximum length into an empty document") {
-                document.insertString(0, "usj", null)
+            test("inserts a string in the middle") {
+                document.insertString(0, "sr", null)
+                document.insertString(1, "t", null)
 
-                assertThat(getText()).isEqualTo("usj")
+                getText() shouldBe "str"
+            }
+
+            test("inserts a string of maximum length into an empty document") {
+                document.insertString(0, "str", null)
+
+                getText() shouldBe "str"
             }
         }
 
-        describe("with overwrite") {
-            it("overwrites the last character if a single character is inserted after the end") {
-                document.insertString(0, "gqs", null)
-                document.insertString(3, "h", null)
+        context("with overwrite") {
+            test("overwrites the last character if a single character is inserted after the end") {
+                document.insertString(0, "stx", null)
+                document.insertString(3, "r", null)
 
-                assertThat(getText()).isEqualTo("gqh")
+                getText() shouldBe "str"
             }
 
-            it("overwrites the last character if multiple characters are inserted after the end") {
-                document.insertString(0, "yir", null)
-                document.insertString(3, "fps", null)
+            test("overwrites the last character if multiple characters are inserted after the end") {
+                document.insertString(0, "stx", null)
+                document.insertString(3, "yzr", null)
 
-                assertThat(getText()).isEqualTo("yis")
+                getText() shouldBe "str"
             }
 
-            it("overwrites the first character") {
-                document.insertString(0, "sfb", null)
-                document.insertString(0, "m", null)
+            test("overwrites the first character if a single character is inserted at the start") {
+                document.insertString(0, "xtr", null)
+                document.insertString(0, "s", null)
 
-                assertThat(getText()).isEqualTo("mfb")
+                getText() shouldBe "str"
             }
 
-            it("overwrites the first two characters") {
-                document.insertString(0, "dkq", null)
-                document.insertString(0, "av", null)
+            test("overwrites the first two characters if two characters are inserted at the start") {
+                document.insertString(0, "xyr", null)
+                document.insertString(0, "st", null)
 
-                assertThat(getText()).isEqualTo("avq")
+                getText() shouldBe "str"
             }
 
-            it("overwrites the last two characters") {
-                document.insertString(0, "gqz", null)
-                document.insertString(1, "sp", null)
+            test("overwrites the last two characters if two characters are inserted at an offset") {
+                document.insertString(0, "sxy", null)
+                document.insertString(1, "tr", null)
 
-                assertThat(getText()).isEqualTo("gsp")
+                getText() shouldBe "str"
             }
 
-            it("overwrites all characters") {
-                document.insertString(0, "jyl", null)
-                document.insertString(0, "dxh", null)
+            test("overwrites all characters") {
+                document.insertString(0, "xyz", null)
+                document.insertString(0, "str", null)
 
-                assertThat(getText()).isEqualTo("dxh")
+                getText() shouldBe "str"
             }
 
-            it("overwrites the last character if multiple characters are inserted at offset 2") {
-                document.insertString(0, "amj", null)
-                document.insertString(2, "vwr", null)
+            test("inserts the last 'maxLength' characters of the string into an empty document") {
+                document.insertString(0, "stxyzr", null)
 
-                assertThat(getText()).isEqualTo("amr")
+                getText() shouldBe "str"
             }
 
-            it("inserts the last `maxLength` characters of the string into an empty document") {
-                document.insertString(0, "qauguw", null)
+            test("inserts the characters that still fit at the start and overwrites the remainder") {
+                document.insertString(0, "xr", null)
+                document.insertString(0, "st", null)
 
-                assertThat(getText()).isEqualTo("qaw")
+                getText() shouldBe "str"
             }
 
-            it("inserts the characters that still fit at the start and overwrites the remainder") {
-                document.insertString(0, "yr", null)
-                document.insertString(0, "qn", null)
+            test("inserts the characters that still fit in the middle and overwrites the remainder") {
+                document.insertString(0, "sx", null)
+                document.insertString(1, "tr", null)
 
-                assertThat(getText()).isEqualTo("qnr")
+                getText() shouldBe "str"
             }
 
-            it("inserts the characters that still fit in the middle and overwrites the remainder") {
-                document.insertString(0, "ih", null)
-                document.insertString(1, "pq", null)
+            test("inserts the characters that still fit, overwrites the remainder, and inserts the last character") {
+                document.insertString(0, "sxy", null)
+                document.insertString(1, "tzr", null)
 
-                assertThat(getText()).isEqualTo("ipq")
-            }
-
-            it("inserts the characters that still fit, overwrites the remainder, and inserts the last character") {
-                document.insertString(0, "pmt", null)
-                document.insertString(1, "deo", null)
-
-                assertThat(getText()).isEqualTo("pdo")
+                getText() shouldBe "str"
             }
         }
     }
 })
 
-
 /**
  * Unit tests for [MinMaxLengthDocumentFilter].
  */
-object MinMaxLengthDocumentFilterTest : DescribeSpec({
+object MinMaxLengthDocumentFilterTest : FunSpec({
     lateinit var document: PlainDocument
     lateinit var filter: DocumentFilter
     val getText = { document.getText(0, document.length) }
 
 
-    beforeEach {
+    beforeNonContainer {
         document = PlainDocument()
         filter = MinMaxLengthDocumentFilter(2, 5)
         document.documentFilter = filter
     }
 
 
-    describe("constructor") {
-        it("throws an exception if `minLength` is greater than `maxLength`") {
-            assertThatThrownBy { MinMaxLengthDocumentFilter(4, 2) }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("Minimum length must be less than or equal to maximum length.")
+    context("constructor") {
+        test("throws an exception if 'minLength' is greater than 'maxLength'") {
+            shouldThrow<IllegalArgumentException> { MinMaxLengthDocumentFilter(4, 2) }
+                .message shouldBe "Minimum length must be less than or equal to maximum length."
         }
     }
 
 
-    describe("insert") {
-        it("inserts new characters while the length is below range") {
-            GuiActionRunner.execute { document.insertString(0, "yaw", null) }
+    context("insert") {
+        test("inserts new characters while the length is below range") {
+            document.insertString(0, "str", null)
 
-            assertThat(getText()).isEqualTo("yaw")
+            getText() shouldBe "str"
         }
     }
 
-    describe("remove") {
-        it("removes characters if the result's length is in range") {
-            GuiActionRunner.execute { document.insertString(0, "gpck", null) }
+    context("remove") {
+        test("removes characters if the result's length is in range") {
+            document.insertString(0, "word", null)
 
-            GuiActionRunner.execute { document.remove(1, 2) }
+            document.remove(1, 2)
 
-            assertThat(getText()).isEqualTo("gk")
+            getText() shouldBe "wd"
         }
 
-        it("does not remove characters if the result is too short") {
-            GuiActionRunner.execute { document.insertString(0, "gpck", null) }
+        test("removes the last characters in the selection if removing more would put result's length out of range") {
+            document.insertString(0, "word", null)
 
-            GuiActionRunner.execute { document.remove(1, 2) }
+            document.remove(0, 3)
 
-            assertThat(getText()).isEqualTo("gk")
+            getText() shouldBe "wd"
         }
 
-        it("removes the last characters in the selection if removing more would put result's length out of range") {
-            GuiActionRunner.execute { document.insertString(0, "pqmn", null) }
-
-            GuiActionRunner.execute { document.remove(0, 3) }
-
-            assertThat(getText()).isEqualTo("pn")
-        }
-
-        it("removes characters if that puts the result's length into range") {
+        test("removes characters if that puts the result's length back into range") {
             document.documentFilter = null
-            GuiActionRunner.execute { document.insertString(0, "ownqokkbp", null) }
+            document.insertString(0, "very-long", null)
             document.documentFilter = filter
 
-            GuiActionRunner.execute { document.remove(3, 6) }
+            document.remove(3, 6)
 
-            assertThat(getText()).isEqualTo("own")
+            getText() shouldBe "ver"
         }
     }
 })

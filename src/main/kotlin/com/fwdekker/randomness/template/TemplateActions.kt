@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.InsertAction
 import com.fwdekker.randomness.OverlayIcon
-import com.fwdekker.randomness.RandomnessIcons
 import com.fwdekker.randomness.Timely.generateTimely
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
@@ -41,16 +41,12 @@ class TemplateGroupAction(private val template: Template) :
 
     /**
      * Specifies the thread in which [update] is invoked.
-     *
-     * @return the thread in which [update] is invoked
      */
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
 
     /**
-     * Update the presentation of the action.
-     *
-     * @param event the event to set the presentation on
+     * Updates the [event]'s presentation of this action.
      */
     override fun update(event: AnActionEvent) {
         super.update(event)
@@ -133,13 +129,8 @@ class TemplateInsertAction(
      * @param arrayDecorator the decorator being edited in this configurable
      */
     inner class ArrayDecoratorConfigurable(arrayDecorator: ArrayDecorator) : Configurable {
-        private val editor = ArrayDecoratorEditor(arrayDecorator, disablable = false, showSeparator = false)
-        private val previewPanel = PreviewPanel {
-            template.deepCopy().also {
-                it.arrayDecorator = editor.readState()
-                it.arrayDecorator.enabled = true
-            }
-        }
+        private val editor = ArrayDecoratorEditor(arrayDecorator, embedded = true)
+        private val previewPanel = PreviewPanel { template.deepCopy().also { it.arrayDecorator.enabled = true } }
 
 
         init {
@@ -150,15 +141,11 @@ class TemplateInsertAction(
 
         /**
          * Returns the component that the [editor] prefers to be focused when the editor is focused.
-         *
-         * @return the component that the [editor] prefers to be focused when the editor is focused.
          */
         override fun getPreferredFocusedComponent() = editor.preferredFocusedComponent
 
         /**
          * Creates a component containing the [editor] and the [previewPanel].
-         *
-         * @return a component containing the [editor] and the [previewPanel]
          */
         override fun createComponent() =
             JPanel(BorderLayout())
@@ -168,21 +155,17 @@ class TemplateInsertAction(
                 }
 
         /**
-         * Returns `true` if and only if the [editor] contains modifications relative to the last saved state.
-         *
-         * @return `true` if and only if the [editor] contains modifications relative to the last saved state
+         * Returns `true`.
          */
-        override fun isModified() = editor.isModified()
+        override fun isModified() = true
 
         /**
          * Saves the [editor]'s state.
          */
-        override fun apply() = editor.applyState()
+        override fun apply() = Unit
 
         /**
          * Returns [text].
-         *
-         * @return [text]
          */
         override fun getDisplayName() = text
 
@@ -201,13 +184,14 @@ class TemplateInsertAction(
  *
  * @property template The template to select after opening the settings dialog.
  * @see TemplateGroupAction
- * @see TemplateSettingsConfigurable
+ * @see TemplateListConfigurable
  */
+@Suppress("DialogTitleCapitalization") // False positive
 class TemplateSettingsAction(private val template: Template? = null) : AnAction(
     if (template == null) Bundle("template.name.settings")
     else Bundle("template.name.settings_suffix", template.name),
     template?.let { Bundle("template.description.settings", it.name) },
-    template?.icon?.plusOverlay(OverlayIcon.SETTINGS) ?: RandomnessIcons.SETTINGS
+    template?.icon?.plusOverlay(OverlayIcon.SETTINGS) ?: Icons.SETTINGS
 ) {
     /**
      * Opens the IntelliJ settings menu at the right location to adjust the template configurable.
@@ -216,7 +200,7 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
      */
     override fun actionPerformed(event: AnActionEvent) =
         ShowSettingsUtil.getInstance()
-            .showSettingsDialog(event.project, TemplateSettingsConfigurable::class.java) { configurable ->
+            .showSettingsDialog(event.project, TemplateListConfigurable::class.java) { configurable ->
                 configurable?.also { it.templateToSelect = template?.uuid }
             }
 }

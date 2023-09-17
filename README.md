@@ -99,7 +99,7 @@ See [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.
 ### 🧪 Quality assurance
 ```bash
 $ gradlew test                # Run tests
-$ gradlew test --tests X      # Run tests in class X
+$ gradlew test --tests X      # Run tests in class X (package name optional)
 $ gradlew check               # Run tests and static analysis
 $ gradlew runPluginVerifier   # Check for compatibility issues
 ```

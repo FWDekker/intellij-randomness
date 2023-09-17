@@ -21,7 +21,7 @@ plugins {
 
     // Documentation
     id("org.jetbrains.changelog") version "2.1.0"
-    id("org.jetbrains.dokka") version "1.8.20"  // See also `gradle.properties
+    id("org.jetbrains.dokka") version "1.8.20"
 }
 
 
@@ -37,11 +37,13 @@ dependencies {
     implementation("com.vdurmont:emoji-java:${properties("emojiVersion")}")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
-    testImplementation("org.assertj:assertj-core:${properties("assertjVersion")}")
     testImplementation("org.assertj:assertj-swing-junit:${properties("assertjSwingVersion")}")
     testRuntimeOnly("org.junit.platform:junit-platform-runner:${properties("junitRunnerVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${properties("junitVersion")}")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${properties("junitVersion")}")
+    testImplementation("org.junit.vintage:junit-vintage-engine:${properties("junitVersion")}")
+    testImplementation("io.kotest:kotest-assertions-core:${properties("kotestVersion")}")
+    testImplementation("io.kotest:kotest-framework-datatest:${properties("kotestVersion")}")
     testImplementation("io.kotest:kotest-runner-junit5:${properties("kotestVersion")}")
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${properties("detektVersion")}")
@@ -134,10 +136,12 @@ tasks {
 
     // Documentation
     dokkaHtml.configure {
+        notCompatibleWithConfigurationCache("Not sure why")
+
         pluginsMapConfiguration.set(
             mapOf(
                 "org.jetbrains.dokka.base.DokkaBase" to
-                    """{ "footerMessage": "© ${Year.now().value} Florine&nbsp;W.&nbsp;Dekker" }"""
+                    """{ "footerMessage": "&copy; ${Year.now().value} Florine&nbsp;W.&nbsp;Dekker" }"""
             )
         )
         moduleName.set("Randomness v${properties("version")}")

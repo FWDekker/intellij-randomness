@@ -1,157 +1,114 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.StateEditor
-import com.fwdekker.randomness.array.ArrayDecorator.Companion.DEFAULT_BRACKETS
-import com.fwdekker.randomness.array.ArrayDecorator.Companion.DEFAULT_SEPARATOR
+import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecorator.Companion.MIN_MIN_COUNT
+import com.fwdekker.randomness.array.ArrayDecorator.Companion.PRESET_AFFIX_DECORATOR_DESCRIPTORS
+import com.fwdekker.randomness.array.ArrayDecorator.Companion.PRESET_SEPARATORS
 import com.fwdekker.randomness.ui.JIntSpinner
 import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.VariableLabelRadioButton
-import com.fwdekker.randomness.ui.addChangeListenerTo
+import com.fwdekker.randomness.ui.bindCurrentText
+import com.fwdekker.randomness.ui.bindIntValue
 import com.fwdekker.randomness.ui.bindSpinners
-import com.fwdekker.randomness.ui.getValue
-import com.fwdekker.randomness.ui.setLabel
-import com.fwdekker.randomness.ui.setValue
-import com.intellij.ui.ContextHelpLabel
-import com.intellij.ui.SeparatorFactory
-import com.intellij.ui.TitledSeparator
-import java.awt.Component
-import javax.swing.ButtonGroup
+import com.fwdekker.randomness.ui.indentedRowRange
+import com.fwdekker.randomness.ui.isEditable
+import com.fwdekker.randomness.ui.loadMnemonic
+import com.fwdekker.randomness.ui.withFixedWidth
+import com.fwdekker.randomness.ui.withName
+import com.intellij.openapi.ui.ComboBox
+import com.intellij.ui.dsl.builder.BottomGap
+import com.intellij.ui.dsl.builder.Cell
+import com.intellij.ui.dsl.builder.TopGap
+import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.selected
+import com.intellij.ui.layout.and
+import com.intellij.ui.layout.selected
 import javax.swing.JCheckBox
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.JRadioButton
-import javax.swing.event.ChangeEvent
 
 
 /**
- * Component for settings of random array generation.
+ * Component for editing an [ArrayDecorator].
  *
- * @param settings the settings to edit in the component
- * @param disablable `true` if and only if the user has the option of disabling the array scheme. If this is set to
- * `false`, [readState] will return a decorator which is always enabled.
- * @param showSeparator `true` if and only if a titled separator should be shown at the top
+ * @param scheme the scheme to edit
+ * @property embedded `true` if the editor is embedded, which means that no titled separator is shown at the top, and
+ * the user cannot disable the array decorator; [apply] always enables the array decorator.
  */
 class ArrayDecoratorEditor(
-    settings: ArrayDecorator,
-    disablable: Boolean = true,
-    showSeparator: Boolean = true,
-) : StateEditor<ArrayDecorator>(settings) {
-    override lateinit var rootComponent: JPanel private set
-    override val preferredFocusedComponent
-        get() = minCountSpinner.editorComponent
+    scheme: ArrayDecorator,
+    private val embedded: Boolean = false,
+) : SchemeEditor<ArrayDecorator>(scheme) {
+    override val rootComponent = panel {
+        separator(Bundle("array.title"))
+            .topGap(TopGap.MEDIUM)
+            .visible(!embedded)
 
-    private lateinit var separator: TitledSeparator
-    private lateinit var enabledCheckBox: JCheckBox
-    private lateinit var controlPanel: JPanel
-    private lateinit var minCountSpinner: JIntSpinner
-    private lateinit var maxCountSpinner: JIntSpinner
-    private lateinit var bracketsLabel: JLabel
-    private lateinit var bracketsGroup: ButtonGroup
-    private lateinit var customBrackets: VariableLabelRadioButton
-    private lateinit var customBracketsHelpLabel: JLabel
-    private lateinit var separatorLabel: JLabel
-    private lateinit var separatorGroup: ButtonGroup
-    private lateinit var customSeparator: VariableLabelRadioButton
-    private lateinit var newlineSeparatorButton: JRadioButton
-    private lateinit var spaceAfterSeparatorCheckBox: JCheckBox
+        indentedRowRange(indented = !embedded) {
+            lateinit var enabledCheckBox: Cell<JCheckBox>
+
+            row {
+                checkBox(Bundle("array.ui.enabled"))
+                    .loadMnemonic()
+                    .withName("arrayEnabled")
+                    .bindSelected(scheme::enabled)
+                    .also { enabledCheckBox = it }
+            }.visible(!embedded)
+
+            indentedRowRange(indented = !embedded) {
+                lateinit var minCountSpinner: JIntSpinner
+                lateinit var maxCountSpinner: JIntSpinner
+
+                row(Bundle("array.ui.min_count_option")) {
+                    cell(JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT))
+                        .withFixedWidth(UIConstants.SIZE_SMALL)
+                        .withName("arrayMinCount")
+                        .bindIntValue(scheme::minCount)
+                        .also { minCountSpinner = it.component }
+                }
+
+                row(Bundle("array.ui.max_count_option")) {
+                    cell(JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT))
+                        .withFixedWidth(UIConstants.SIZE_SMALL)
+                        .withName("arrayMaxCount")
+                        .bindIntValue(scheme::maxCount)
+                        .also { maxCountSpinner = it.component }
+                }.bottomGap(BottomGap.SMALL)
+
+                bindSpinners(minCountSpinner, maxCountSpinner)
+
+                row {
+                    lateinit var separatorEnabledCheckBox: JCheckBox
+
+                    checkBox(Bundle("array.ui.separator.option"))
+                        .withName("arraySeparatorEnabled")
+                        .bindSelected(scheme::separatorEnabled)
+                        .also { separatorEnabledCheckBox = it.component }
+
+                    cell(ComboBox(PRESET_SEPARATORS))
+                        .enabledIf(enabledCheckBox.selected.and(separatorEnabledCheckBox.selected))
+                        .isEditable(true)
+                        .withName("arraySeparator")
+                        .bindCurrentText(scheme::separator)
+                }
+
+                row {
+                    AffixDecoratorEditor(
+                        scheme.affixDecorator,
+                        PRESET_AFFIX_DECORATOR_DESCRIPTORS,
+                        enabledIf = enabledCheckBox.selected,
+                        enableMnemonic = false,
+                        namePrefix = "array",
+                    )
+                        .also { decoratorEditors += it }
+                        .let { cell(it.rootComponent) }
+                }
+            }.enabledIf(enabledCheckBox.selected)
+        }
+    }
 
 
     init {
-        if (disablable) {
-            enabledCheckBox.addChangeListener(
-                { _: ChangeEvent? ->
-                    controlPanel.getChildren().forEach { it.isEnabled = enabledCheckBox.isSelected }
-                    spaceAfterSeparatorCheckBox.isEnabled =
-                        enabledCheckBox.isSelected && !newlineSeparatorButton.isSelected
-                }.also { it(null) }
-            )
-        } else {
-            enabledCheckBox.isVisible = false
-        }
-
-        if (!showSeparator) separator.isVisible = false
-
-        customBrackets.addToButtonGroup(bracketsGroup)
-        bracketsGroup.setLabel(bracketsLabel)
-
-        customSeparator.addToButtonGroup(separatorGroup)
-        separatorGroup.setLabel(separatorLabel)
-
-        newlineSeparatorButton.addChangeListener(
-            { _: ChangeEvent? ->
-                spaceAfterSeparatorCheckBox.isEnabled =
-                    (!disablable || enabledCheckBox.isSelected) && !newlineSeparatorButton.isSelected
-            }.also { it(null) }
-        )
-
-        loadState()
+        reset()
     }
-
-    /**
-     * Initializes custom UI components.
-     *
-     * This method is called by the scene builder at the start of the constructor.
-     */
-    private fun createUIComponents() {
-        separator = SeparatorFactory.createSeparator(Bundle("array.title"), null)
-
-        customBrackets = VariableLabelRadioButton(UIConstants.WIDTH_MEDIUM)
-        customBracketsHelpLabel = ContextHelpLabel.create(Bundle("array.ui.brackets.comment"))
-        customSeparator = VariableLabelRadioButton()
-
-        minCountSpinner = JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT)
-        maxCountSpinner = JIntSpinner(value = MIN_MIN_COUNT, minValue = MIN_MIN_COUNT)
-        bindSpinners(minCountSpinner, maxCountSpinner)
-    }
-
-
-    override fun loadState(state: ArrayDecorator) {
-        super.loadState(state)
-
-        enabledCheckBox.isSelected = state.enabled
-        minCountSpinner.value = state.minCount
-        maxCountSpinner.value = state.maxCount
-        customBrackets.label = state.customBrackets
-        bracketsGroup.setValue(state.brackets)
-        customSeparator.label = state.customSeparator
-        separatorGroup.setValue(state.separator)
-        spaceAfterSeparatorCheckBox.isSelected = state.isSpaceAfterSeparator
-    }
-
-    override fun readState(): ArrayDecorator =
-        ArrayDecorator(
-            enabled = enabledCheckBox.isSelected,
-            minCount = minCountSpinner.value,
-            maxCount = maxCountSpinner.value,
-            brackets = bracketsGroup.getValue() ?: DEFAULT_BRACKETS,
-            customBrackets = customBrackets.label,
-            separator = separatorGroup.getValue() ?: DEFAULT_SEPARATOR,
-            customSeparator = customSeparator.label,
-            isSpaceAfterSeparator = spaceAfterSeparatorCheckBox.isSelected
-        ).also { it.uuid = originalState.uuid }
-
-
-    override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(
-            enabledCheckBox, minCountSpinner, maxCountSpinner, bracketsGroup, customBrackets, separatorGroup,
-            customSeparator, spaceAfterSeparatorCheckBox,
-            listener = listener
-        )
 }
-
-
-/**
- * Returns the [Component]s recursively contained in this [JPanel].
- *
- * @return the [Component]s recursively contained in this [JPanel]
- */
-private fun JPanel.getChildren(): List<Component> =
-    components.flatMap {
-        when (it) {
-            is VariableLabelRadioButton -> listOf(it)
-            is JPanel -> listOf(it) + it.getChildren()
-            else -> listOf(it)
-        }
-    }.toList()

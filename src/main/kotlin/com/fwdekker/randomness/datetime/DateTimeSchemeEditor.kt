@@ -1,116 +1,91 @@
 package com.fwdekker.randomness.datetime
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.StateEditor
+import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
+import com.fwdekker.randomness.datetime.DateTimeScheme.Companion.DEFAULT_MAX_DATE_TIME
+import com.fwdekker.randomness.datetime.DateTimeScheme.Companion.DEFAULT_MIN_DATE_TIME
 import com.fwdekker.randomness.ui.JDateTimeField
-import com.fwdekker.randomness.ui.addChangeListener
+import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.intellij.ui.SeparatorFactory
-import com.intellij.ui.TitledSeparator
-import com.intellij.ui.components.BrowserLink
-import com.intellij.ui.components.JBLabel
-import com.intellij.util.ui.JBUI
-import javax.swing.JButton
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.JTextField
-import javax.swing.SwingConstants
+import com.fwdekker.randomness.ui.bindDateTimeLongValue
+import com.fwdekker.randomness.ui.toLocalDateTime
+import com.fwdekker.randomness.ui.withFixedWidth
+import com.fwdekker.randomness.ui.withName
+import com.intellij.ui.dsl.builder.BottomGap
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 
 
 /**
- * Component for editing random date-time settings.
+ * Component for editing a [DateTimeScheme].
  *
- * @param scheme the scheme to edit in the component
+ * @param scheme the scheme to edit
  */
-class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : StateEditor<DateTimeScheme>(scheme) {
-    override lateinit var rootComponent: JPanel private set
-    override val preferredFocusedComponent
-        get() = rootComponent
+class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : SchemeEditor<DateTimeScheme>(scheme) {
+    override val rootComponent = panel {
+        group(Bundle("datetime.ui.value.header")) {
+            lateinit var minDateTimeField: JDateTimeField
+            lateinit var maxDateTimeField: JDateTimeField
 
-    private lateinit var valueSeparator: TitledSeparator
-    private lateinit var minDateTimeField: JDateTimeField
-    private lateinit var maxDateTimeField: JDateTimeField
-    private lateinit var patternField: JTextField
-    private lateinit var patternHelpButton: JButton
-    private lateinit var patternCommentLabel: JLabel
-    private lateinit var arrayDecoratorEditor: ArrayDecoratorEditor
-    private lateinit var arrayDecoratorPanel: JPanel
+            row(Bundle("datetime.ui.value.min_datetime_option")) {
+                cell(JDateTimeField(DEFAULT_MIN_DATE_TIME.toLocalDateTime()))
+                    .withFixedWidth(UIConstants.SIZE_LARGE)
+                    .withName("minDateTime")
+                    .bindDateTimeLongValue(scheme::minDateTime)
+                    .also { minDateTimeField = it.component }
+            }
+
+            row(Bundle("datetime.ui.value.max_datetime_option")) {
+                cell(JDateTimeField(DEFAULT_MAX_DATE_TIME.toLocalDateTime()))
+                    .withFixedWidth(UIConstants.SIZE_LARGE)
+                    .withName("maxDateTime")
+                    .bindDateTimeLongValue(scheme::maxDateTime)
+                    .also { maxDateTimeField = it.component }
+            }.bottomGap(BottomGap.SMALL)
+
+            bindDateTimes(minDateTimeField, maxDateTimeField)
+
+            row(Bundle("datetime.ui.value.pattern_option")) {
+                textField()
+                    .withFixedWidth(UIConstants.SIZE_VERY_LARGE)
+                    .comment(Bundle("datetime.ui.pattern_comment"))
+                    .withName("pattern")
+                    .bindText(scheme::pattern)
+
+                browserLink(Bundle("datetime.ui.value.pattern_help"), Bundle("datetime.ui.value.pattern_help_url"))
+            }
+        }
+
+        row {
+            ArrayDecoratorEditor(scheme.arrayDecorator)
+                .also { decoratorEditors += it }
+                .let { cell(it.rootComponent).horizontalAlign(HorizontalAlign.FILL) }
+        }
+    }
 
 
     init {
-        bindDateTimes(minDateTimeField, maxDateTimeField)
-
-        loadState()
+        reset()
     }
+}
 
-    /**
-     * Initializes custom UI components.
-     *
-     * This method is called by the scene builder at the start of the constructor.
-     */
-    private fun createUIComponents() {
-        valueSeparator = SeparatorFactory.createSeparator(Bundle("datetime.ui.value_separator"), null)
 
-        minDateTimeField = JDateTimeField(DateTimeScheme.DEFAULT_MIN_DATE_TIME.toLocalDateTime())
-        maxDateTimeField = JDateTimeField(DateTimeScheme.DEFAULT_MAX_DATE_TIME.toLocalDateTime())
+/**
+ * Binds two `DateTimePicker`s together, analogous to how [com.fwdekker.randomness.ui.bindSpinners] works.
+ */
+private fun bindDateTimes(minField: JDateTimeField, maxField: JDateTimeField) {
+    addChangeListenerTo(minField) {
+        val minEpoch = minField.longValue
+        val maxEpoch = maxField.longValue
 
-        patternHelpButton = BrowserLink(
-            Bundle("datetime.ui.pattern_help"),
-            "https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html"
-        )
-        patternCommentLabel = JBLabel()
-            .also {
-                it.foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
-                it.isFocusable = false
-                it.setCopyable(false)
-                it.verticalTextPosition = SwingConstants.TOP
-            }
-
-        arrayDecoratorEditor = ArrayDecoratorEditor(originalState.arrayDecorator)
-        arrayDecoratorPanel = arrayDecoratorEditor.rootComponent
+        if (minEpoch > maxEpoch) maxField.value = minField.value
     }
+    addChangeListenerTo(maxField) {
+        val minEpoch = minField.longValue
+        val maxEpoch = maxField.longValue
 
-    /**
-     * Binds two `DateTimePicker`s together, analogous to how [com.fwdekker.randomness.ui.bindSpinners] works.
-     */
-    private fun bindDateTimes(minField: JDateTimeField, maxField: JDateTimeField) {
-        minField.addChangeListener {
-            val minEpoch = minField.value.toEpochMilli()
-            val maxEpoch = maxField.value.toEpochMilli()
-
-            if (minEpoch > maxEpoch) maxField.value = minField.value
-        }
-        maxField.addChangeListener {
-            val minEpoch = minField.value.toEpochMilli()
-            val maxEpoch = maxField.value.toEpochMilli()
-
-            if (maxEpoch < minEpoch) minField.value = maxField.value
-        }
+        if (maxEpoch < minEpoch) minField.value = maxField.value
     }
-
-
-    override fun loadState(state: DateTimeScheme) {
-        super.loadState(state)
-
-        minDateTimeField.value = state.minDateTime.toLocalDateTime()
-        maxDateTimeField.value = state.maxDateTime.toLocalDateTime()
-        patternField.text = state.pattern
-        arrayDecoratorEditor.loadState(state.arrayDecorator)
-    }
-
-    override fun readState() =
-        DateTimeScheme(
-            minDateTime = minDateTimeField.value.toEpochMilli(),
-            maxDateTime = maxDateTimeField.value.toEpochMilli(),
-            pattern = patternField.text,
-            arrayDecorator = arrayDecoratorEditor.readState()
-        ).also { it.uuid = originalState.uuid }
-
-
-    override fun addChangeListener(listener: () -> Unit) =
-        addChangeListenerTo(
-            minDateTimeField, maxDateTimeField, patternField, arrayDecoratorEditor,
-            listener = listener
-        )
 }

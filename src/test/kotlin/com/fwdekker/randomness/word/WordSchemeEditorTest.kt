@@ -1,24 +1,39 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.matcher
+import com.fwdekker.randomness.editorApplyTestFactory
+import com.fwdekker.randomness.editorFieldsTestFactory
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.find
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.itemProp
+import com.fwdekker.randomness.testhelpers.matcher
+import com.fwdekker.randomness.testhelpers.prop
+import com.fwdekker.randomness.testhelpers.textProp
+import com.fwdekker.randomness.testhelpers.valueProp
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.impl.EditorComponentImpl
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.row
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.shouldBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [WordSchemeEditor].
+ * Unit tests for [WordSchemeEditor].
  */
-object WordSchemeEditorTest : DescribeSpec({
+object WordSchemeEditorTest : FunSpec({
+    tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
+
+
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
@@ -31,228 +46,146 @@ object WordSchemeEditorTest : DescribeSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
         scheme = WordScheme()
-        editor = GuiActionRunner.execute<WordSchemeEditor> { WordSchemeEditor(scheme) }
+        editor = guiGet { WordSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
 
-        wordsEditor = frame.robot().finder().find(matcher(EditorComponentImpl::class.java) { it.isValid })
+        wordsEditor = frame.find(matcher(EditorComponentImpl::class.java))
     }
 
-    afterEach {
+    afterNonContainer {
         frame.cleanUp()
-        GuiActionRunner.execute { editor.dispose() }
+        guiRun { editor.dispose() }
         ideaFixture.tearDown()
     }
 
 
-    describe("loadState") {
-        it("loads the scheme's words") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("summer", "another"))) }
+    context("input handling") {
+        context("presets") {
+            lateinit var firstList: DefaultWordList
+            lateinit var firstListAsString: String
 
-            assertThat(wordsEditor.text).isEqualTo("summer\nanother\n")
-        }
 
-        it("loads the scheme's quotation") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(quotation = "'")) }
-
-            frame.radioButton("quotationNone").requireSelected(false)
-            frame.radioButton("quotationSingle").requireSelected(true)
-            frame.radioButton("quotationDouble").requireSelected(false)
-            frame.radioButton("quotationBacktick").requireSelected(false)
-            frame.panel("quotationCustom").radioButton().requireSelected(false)
-        }
-
-        it("loads the scheme's custom quotation") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(customQuotation = "eN")) }
-
-            frame.panel("quotationCustom").textBox().requireText("eN")
-        }
-
-        it("selects the scheme's custom quotation") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(quotation = "s", customQuotation = "s")) }
-
-            frame.panel("quotationCustom").radioButton().requireSelected()
-        }
-
-        it("loads the scheme's capitalization") {
-            GuiActionRunner.execute { editor.loadState(WordScheme(capitalization = CapitalizationMode.LOWER)) }
-
-            frame.radioButton("capitalizationRetain").requireSelected(false)
-            frame.radioButton("capitalizationLower").requireSelected(true)
-            frame.radioButton("capitalizationUpper").requireSelected(false)
-            frame.radioButton("capitalizationRandom").requireSelected(false)
-            frame.radioButton("capitalizationSentence").requireSelected(false)
-            frame.radioButton("capitalizationFirstLetter").requireSelected(false)
-        }
-    }
-
-    describe("readState") {
-        describe("defaults") {
-            it("returns default quotation if no quotation is selected") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(quotation = "unsupported")) }
-
-                assertThat(editor.readState().quotation).isEqualTo(WordScheme.DEFAULT_QUOTATION)
+            beforeNonContainer {
+                firstList = frame.comboBox("presets").target().getItemAt(1) as DefaultWordList
+                firstListAsString = firstList.words.joinToString(separator = "\n", postfix = "\n")
             }
 
-            it("returns default capitalization if unknown capitalization is selected") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(capitalization = CapitalizationMode.DUMMY)) }
 
-                assertThat(editor.readState().capitalization).isEqualTo(WordScheme.DEFAULT_CAPITALIZATION)
-            }
-        }
+            context("pre-selection") {
+                test("selects the placeholder if the initial words do no match any word list") {
+                    scheme.words = listOf("word1", "word2")
+                    guiRun { editor.reset() }
 
-        it("removes blank lines from the words input") {
-            GuiActionRunner.execute { runWriteAction { wordsEditor.editor.document.setText("suppose\n  \nsand\n") } }
-
-            assertThat(editor.readState().words).isEqualTo(listOf("suppose", "sand"))
-        }
-
-        it("returns the original state if no editor changes are made") {
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
-        }
-
-        it("returns the editor's state") {
-            GuiActionRunner.execute {
-                runWriteAction { wordsEditor.editor.document.setText("might\nexpense") }
-                frame.radioButton("quotationSingle").target().isSelected = true
-                frame.radioButton("capitalizationLower").target().isSelected = true
-            }
-
-            val readScheme = editor.readState()
-            assertThat(readScheme.quotation).isEqualTo("'")
-            assertThat(readScheme.capitalization).isEqualTo(CapitalizationMode.LOWER)
-            assertThat(readScheme.words).isEqualTo(listOf("might", "expense"))
-        }
-
-        it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.radioButton("quotationSingle").target().isSelected = true }
-            assertThat(editor.isModified()).isTrue()
-
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
-            assertThat(editor.isModified()).isFalse()
-
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
-        }
-
-        it("returns a different instance from the loaded scheme") {
-            val readState = editor.readState()
-
-            assertThat(readState)
-                .isEqualTo(editor.originalState)
-                .isNotSameAs(editor.originalState)
-            assertThat(readState.arrayDecorator)
-                .isEqualTo(editor.originalState.arrayDecorator)
-                .isNotSameAs(editor.originalState.arrayDecorator)
-        }
-
-        it("retains the scheme's UUID") {
-            assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
-        }
-    }
-
-
-    describe("word list insertion") {
-        lateinit var firstList: DefaultWordList
-        lateinit var firstListAsString: String
-
-
-        beforeEach {
-            firstList = frame.comboBox("wordListBox").target().getItemAt(1) as DefaultWordList
-            firstListAsString = firstList.words.joinToString(separator = "\n", postfix = "\n")
-        }
-
-
-        describe("pre-selection") {
-            it("selects the placeholder if the initial words do no match any word list") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("ugly", "wait"))) }
-
-                assertThat(frame.comboBox("wordListBox").target().selectedIndex).isEqualTo(0)
-            }
-
-            it("selects the corresponding word list if the contents match that list") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(words = firstList.words)) }
-
-                assertThat(frame.comboBox("wordListBox").target().selectedIndex).isEqualTo(1)
-            }
-
-            it("selects the placeholder if a word is changed") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(words = firstList.words)) }
-
-                GuiActionRunner.execute {
-                    runWriteAction {
-                        wordsEditor.editor.document.setText("${firstListAsString}jealous")
-                    }
+                    frame.comboBox("presets").target().selectedIndex shouldBe 0
                 }
 
-                assertThat(frame.comboBox("wordListBox").target().selectedIndex).isEqualTo(0)
-            }
+                test("selects the corresponding word list if the contents match that list") {
+                    scheme.words = firstList.words
+                    guiRun { editor.reset() }
 
-            it("retains the non-placeholder selection if a newline is appended") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(words = firstList.words)) }
-
-                GuiActionRunner.execute {
-                    runWriteAction {
-                        wordsEditor.editor.document.setText("$firstListAsString\n \n")
-                    }
+                    frame.comboBox("presets").target().selectedIndex shouldBe 1
                 }
 
-                assertThat(frame.comboBox("wordListBox").target().selectedIndex).isEqualTo(1)
+                test("selects the placeholder if a word is changed") {
+                    scheme.words = firstList.words
+                    guiRun { editor.reset() }
+
+                    guiRun { runWriteAction { wordsEditor.editor.document.setText("${firstListAsString}jealous") } }
+
+                    frame.comboBox("presets").target().selectedIndex shouldBe 0
+                }
+
+                test("retains the non-placeholder selection if a newline is appended") {
+                    scheme.words = firstList.words
+                    guiRun { editor.reset() }
+
+                    guiRun { runWriteAction { wordsEditor.editor.document.setText("$firstListAsString\n \n") } }
+
+                    frame.comboBox("presets").target().selectedIndex shouldBe 1
+                }
+            }
+
+            context("insertion") {
+                test("does nothing if the placeholder is selected") {
+                    scheme.words = listOf("word1", "word2")
+                    guiRun { editor.reset() }
+
+                    guiRun { frame.comboBox("presets").target().selectedIndex = 0 }
+
+                    wordsEditor.text shouldBe "word1\nword2\n"
+                }
+
+                test("does nothing if another entry is selected and then the placeholder is selected") {
+                    guiRun { frame.comboBox("presets").target().selectedIndex = 1 }
+
+                    guiRun { frame.comboBox("presets").target().selectedIndex = 0 }
+
+                    wordsEditor.text shouldBe firstListAsString
+                }
+
+                test("inserts the words of the selected entry") {
+                    scheme.words = listOf("word1", "word2")
+                    guiRun { editor.reset() }
+
+                    guiRun { frame.comboBox("presets").target().selectedIndex = 1 }
+
+                    wordsEditor.text shouldBe firstListAsString
+                }
             }
         }
 
-        describe("insertion") {
-            it("does nothing if the placeholder is selected") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("street", "sell"))) }
+        context("words") {
+            test("removes blank lines from the input field") {
+                guiRun { runWriteAction { wordsEditor.editor.document.setText("word1\n  \nword2\n") } }
 
-                GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 0 }
+                editor.apply()
 
-                assertThat(wordsEditor.text).isEqualTo("street\nsell\n")
-            }
-
-            it("does nothing if another entry is selected and then the placeholder is selected") {
-                GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 1 }
-
-                GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 0 }
-
-                assertThat(wordsEditor.text).isEqualTo(firstListAsString)
-            }
-
-            it("inserts the words of the selected entry") {
-                GuiActionRunner.execute { editor.loadState(WordScheme(words = listOf("grow", "trip"))) }
-
-                GuiActionRunner.execute { frame.comboBox("wordListBox").target().selectedIndex = 1 }
-
-                assertThat(wordsEditor.text).isEqualTo(firstListAsString)
+                guiGet { editor.scheme.words } shouldContainExactly listOf("word1", "word2")
             }
         }
     }
 
 
-    describe("addChangeListener") {
-        it("invokes the listener if a field changes") {
-            var listenerInvoked = false
-            editor.addChangeListener { listenerInvoked = true }
+    include(editorApplyTestFactory { editor })
 
-            GuiActionRunner.execute { frame.radioButton("quotationBacktick").target().isSelected = true }
-
-            assertThat(listenerInvoked).isTrue()
-        }
-
-        it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute {
-                editor.loadState(WordScheme(arrayDecorator = ArrayDecorator(enabled = true)))
-            }
-
-            var listenerInvoked = false
-            editor.addChangeListener { listenerInvoked = true }
-
-            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 528 }
-
-            assertThat(listenerInvoked).isTrue()
-        }
-    }
+    include(
+        editorFieldsTestFactory(
+            { editor },
+            mapOf(
+                "words" to {
+                    row(
+                        wordsEditor.editor.document.prop({ it::getWordList }, { it::setWordList }),
+                        editor.scheme::words.prop(),
+                        listOf("word1", "word2", "word3"),
+                    )
+                },
+                "capitalization" to {
+                    row(
+                        frame.comboBox("capitalization").itemProp(),
+                        editor.scheme::capitalization.prop(),
+                        CapitalizationMode.SENTENCE,
+                    )
+                },
+                "affixDecorator" to {
+                    row(
+                        frame.comboBox("affixDescriptor").textProp(),
+                        editor.scheme.affixDecorator::descriptor.prop(),
+                        "[@]",
+                    )
+                },
+                "arrayDecorator" to {
+                    row(
+                        frame.spinner("arrayMaxCount").valueProp(),
+                        editor.scheme.arrayDecorator::maxCount.prop(),
+                        7,
+                    )
+                },
+            )
+        )
+    )
 })

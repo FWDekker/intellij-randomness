@@ -1,36 +1,47 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.DummyScheme
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SettingsState
-import com.fwdekker.randomness.clickActionButton
+import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
+import com.fwdekker.randomness.setAll
 import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.shouldContainExactly
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.JBSplitter
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.Row2
+import io.kotest.data.row
+import io.kotest.datatest.withData
+import io.kotest.matchers.shouldBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.AbstractComponentFixture
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [TemplateListEditor].
+ * Unit tests for [TemplateListEditor].
  */
-object TemplateListEditorTest : DescribeSpec({
+object TemplateListEditorTest : FunSpec({
+    tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
+
+
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
-    lateinit var state: SettingsState
+    lateinit var context: Settings
     lateinit var editor: TemplateListEditor
 
 
@@ -41,225 +52,143 @@ object TemplateListEditorTest : DescribeSpec({
             { vertical, proportionKey, defaultProportion -> JBSplitter(vertical, proportionKey, defaultProportion) }
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        state = SettingsState(
+        context = Settings(
             TemplateList(
-                listOf(
-                    Template("Whip", listOf(IntegerScheme(), StringScheme())),
-                    Template("Ability", listOf(DecimalScheme(), WordScheme()))
+                mutableListOf(
+                    Template("Template1", mutableListOf(IntegerScheme(), StringScheme())),
+                    Template("Template2", mutableListOf(DecimalScheme(), WordScheme()))
                 )
             )
         )
-        state.templateList.applySettingsState(state)
+        context.templateList.applyContext(context)
 
-        editor = GuiActionRunner.execute<TemplateListEditor> { TemplateListEditor(state) }
+        editor = guiGet { TemplateListEditor(context) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterEach {
+    afterNonContainer {
         frame.cleanUp()
-        GuiActionRunner.execute { editor.dispose() }
+        guiRun { editor.dispose() }
         ideaFixture.tearDown()
     }
 
 
-    describe("loadState") {
-        it("loads the list's schemes") {
-            assertThat(GuiActionRunner.execute<Int> { frame.tree().target().rowCount }).isEqualTo(6)
-        }
-    }
+    context("editor creation") {
+        context("loads the appropriate editor") {
+            withData(
+                mapOf(
+                    "integer" to row(IntegerScheme()) { it.spinner("minValue") },
+                    "decimal" to row(DecimalScheme()) { it.spinner("minValue") },
+                    "string" to row(StringScheme()) { it.textBox("pattern") },
+                    "uuid" to row(UuidScheme()) { it.radioButton("type1") },
+                    "word" to row(WordScheme()) { it.comboBox("presets") },
+                    "date-time" to row(DateTimeScheme()) { it.textBox("minDateTime") },
+                    "template reference" to row(TemplateReference()) { it.comboBox("template") },
+                )
+            ) { (scheme, matcher): Row2<Scheme, (FrameFixture) -> AbstractComponentFixture<*, *, *>> ->
+                context.templates.setAll(listOf(Template(schemes = mutableListOf(scheme))))
+                context.templateList.applyContext(context)
 
-    describe("readState") {
-        it("returns the original state if no editor changes are made") {
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
-        }
+                guiRun {
+                    editor.reset()
+                    frame.tree().target().setSelectionRow(1)
+                }
 
-        it("returns the editor's state") {
-            GuiActionRunner.execute {
-                frame.tree().target().selectionRows = intArrayOf(0)
-                frame.clickActionButton("Remove")
+                matcher(frame).requireVisible()
             }
-
-            val readScheme = editor.readState()
-            assertThat(readScheme.templateList.templates).hasSize(1)
         }
 
-        it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute {
-                frame.tree().target().selectionRows = intArrayOf(0)
-                frame.clickActionButton("Remove")
-            }
-            assertThat(editor.isModified()).isTrue()
+        test("loads an editor for templates") {
+            context.templates.setAll(listOf(Template(schemes = mutableListOf())))
+            context.templateList.applyContext(context)
 
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
-            assertThat(editor.isModified()).isFalse()
+            guiRun { editor.reset() }
 
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
+            frame.textBox("templateName").requireVisible()
         }
 
-        it("returns different instances of the settings") {
-            val readState = editor.readState()
+        test("throws an error for unknown scheme types") {
+            context.templates.setAll(listOf(Template(schemes = mutableListOf(DummyScheme()))))
+            context.templateList.applyContext(context)
 
-            assertThat(readState).isNotSameAs(state)
-            assertThat(readState.templateList).isNotSameAs(state.templateList)
-        }
-
-        it("retains the list's UUIDs") {
-            val readState = editor.readState()
-
-            assertThat(readState.uuid).isEqualTo(state.uuid)
-            assertThat(readState.templateList.uuid).isEqualTo(state.templateList.uuid)
-            assertThat(readState.templateList.templates.map { it.uuid })
-                .containsExactlyElementsOf(state.templateList.templates.map { it.uuid })
+            shouldThrow<IllegalStateException> {
+                guiRun {
+                    editor.reset()
+                    frame.tree().target().setSelectionRow(1)
+                }
+            }.message shouldBe "Unknown scheme type 'com.fwdekker.randomness.testhelpers.DummyScheme'."
         }
     }
 
 
-    describe("reset") {
-        it("undoes changes to the initial selection") {
-            GuiActionRunner.execute {
-                frame.tree().target().setSelectionRow(1)
-                frame.spinner("minValue").target().value = 7
+    context("reset") {
+        context("undoing changes") {
+            test("undoes changes to the current selection") {
+                guiRun {
+                    frame.tree().target().setSelectionRow(1)
+                    frame.spinner("minValue").target().value = 7L
+                }
+
+                guiRun { editor.reset() }
+
+                frame.spinner("minValue").target().value shouldBe 0L
             }
 
-            GuiActionRunner.execute { editor.reset() }
+            test("undoes changes to another selection") {
+                guiRun {
+                    frame.tree().target().setSelectionRow(1)
+                    frame.spinner("minValue").target().value = 7L
+                    frame.tree().target().setSelectionRow(3)
+                }
 
-            assertThat(frame.spinner("minValue").target().value).isEqualTo(0L)
-        }
+                guiRun { editor.reset() }
 
-        it("retains the selection if `queueSelection` is null") {
-            editor.queueSelection = null
-
-            GuiActionRunner.execute { editor.reset() }
-
-            assertThat(frame.tree().target().selectionRows).containsExactly(0)
-        }
-
-        it("selects the indicated template after reset") {
-            editor.queueSelection = state.templateList.templates[1].uuid
-
-            GuiActionRunner.execute { editor.reset() }
-
-            assertThat(frame.tree().target().selectionRows).containsExactly(3)
-        }
-
-        it("does nothing if the indicated template could not be found") {
-            editor.queueSelection = "231ee9da-8f72-4535-b770-0119fdf68f70"
-
-            GuiActionRunner.execute { editor.reset() }
-
-            assertThat(frame.tree().target().selectionRows).containsExactly(0)
-        }
-    }
-
-    describe("addChangeListener") {
-        it("invokes the listener if the model is changed") {
-            GuiActionRunner.execute { frame.tree().target().setSelectionRow(1) }
-            var invoked = 0
-            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
-
-            GuiActionRunner.execute { frame.spinner("minValue").target().value = 321 }
-
-            assertThat(invoked).isNotZero()
-        }
-
-        it("invokes the listener if a scheme is removed") {
-            GuiActionRunner.execute { frame.tree().target().selectionRows = intArrayOf(0) }
-            var invoked = 0
-            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
-
-            GuiActionRunner.execute { frame.clickActionButton("Remove") }
-
-            assertThat(invoked).isNotZero()
-        }
-
-        it("invokes the listener if the selection is changed") {
-            GuiActionRunner.execute { frame.tree().target().clearSelection() }
-            var invoked = 0
-            GuiActionRunner.execute { editor.addChangeListener { invoked++ } }
-
-            GuiActionRunner.execute { frame.tree().target().setSelectionRow(2) }
-
-            assertThat(invoked).isNotZero()
-        }
-    }
-
-
-    describe("scheme editor") {
-        it("loads the selected scheme's editor") {
-            GuiActionRunner.execute { frame.tree().target().setSelectionRow(2) }
-
-            frame.textBox("pattern").requireVisible()
-        }
-
-        it("retains changes made in a scheme editor") {
-            GuiActionRunner.execute {
-                frame.tree().target().setSelectionRow(2)
-                frame.textBox("pattern").target().text = "strange"
-            }
-
-            GuiActionRunner.execute {
-                frame.tree().target().setSelectionRow(1)
-                frame.tree().target().setSelectionRow(2)
-            }
-
-            frame.textBox("pattern").requireText("strange")
-        }
-
-
-        describe("editor creation") {
-            data class Param(
-                val name: String,
-                val scheme: Scheme,
-                val matcher: (FrameFixture) -> AbstractComponentFixture<*, *, *>,
-            )
-
-            listOf(
-                Param("integer", IntegerScheme()) { it.spinner("minValue") },
-                Param("decimal", DecimalScheme()) { it.spinner("minValue") },
-                Param("string", StringScheme()) { it.textBox("pattern") },
-                Param("UUID", UuidScheme()) { it.radioButton("type1") },
-                Param("word", WordScheme()) { it.radioButton("capitalizationRetain") },
-                Param("date-time", DateTimeScheme()) { it.textBox("minDateTime") },
-                Param("template reference", TemplateReference()) { it.list() }
-            ).forEach { (name, scheme, matcher) ->
-                it("loads an editor for ${name}s") {
-                    state.templateList.templates = listOf(Template(schemes = listOf(scheme)))
-                    state.templateList.applySettingsState(state)
-
-                    GuiActionRunner.execute {
-                        editor.reset()
-                        frame.tree().target().setSelectionRow(1)
-                    }
-
-                    matcher(frame).requireVisible()
+                guiRun {
+                    frame.tree().target().setSelectionRow(1)
+                    frame.spinner("minValue").target().value shouldBe 0L
                 }
             }
+        }
 
-            it("loads an editor for templates") {
-                state.templateList.templates = listOf(Template(schemes = emptyList()))
-                state.templateList.applySettingsState(state)
+        context("selection") {
+            test("retains the existing selection if `queueSelection` is null") {
+                guiRun { frame.tree().target().selectionRows = intArrayOf(1) }
 
-                GuiActionRunner.execute { editor.reset() }
+                editor.queueSelection = null
+                guiRun { editor.reset() }
 
-                frame.textBox("templateName").requireVisible()
+                frame.tree().target().selectionRows!! shouldContainExactly arrayOf(1)
             }
 
-            it("throws an error for unknown scheme types") {
-                state.templateList.templates = listOf(Template(schemes = listOf(DummyScheme.from("grain"))))
-                state.templateList.applySettingsState(state)
+            test("resets the existing selection if the indicated scheme could not be found") {
+                guiRun { frame.tree().target().selectionRows = intArrayOf(3) }
 
-                assertThatThrownBy {
-                    GuiActionRunner.execute {
-                        editor.reset()
-                        frame.tree().target().setSelectionRow(1)
-                    }
-                }
-                    .isInstanceOf(IllegalStateException::class.java)
-                    .hasMessage("Unknown scheme type 'com.fwdekker.randomness.DummyScheme'.")
+                editor.queueSelection = "231ee9da-8f72-4535-b770-0119fdf68f70"
+                guiRun { editor.reset() }
+
+                frame.tree().target().selectionRows!! shouldContainExactly arrayOf(0)
+            }
+
+            test("selects the indicated template") {
+                guiRun { frame.tree().target().selectionRows = intArrayOf(4) }
+
+                editor.queueSelection = context.templateList.templates[1].uuid
+                guiRun { editor.reset() }
+
+                frame.tree().target().selectionRows!! shouldContainExactly arrayOf(3)
+            }
+
+            test("selects the indicated scheme") {
+                guiRun { frame.tree().target().selectionRows = intArrayOf(2) }
+
+                editor.queueSelection = context.templateList.templates[1].schemes[0].uuid
+                guiRun { editor.reset() }
+
+                frame.tree().target().selectionRows!! shouldContainExactly arrayOf(4)
             }
         }
     }

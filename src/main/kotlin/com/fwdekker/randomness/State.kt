@@ -2,6 +2,7 @@ package com.fwdekker.randomness
 
 import com.fasterxml.uuid.Generators
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.util.xmlb.annotations.Transient
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
@@ -15,6 +16,31 @@ abstract class State {
      */
     var uuid: String = Generators.randomBasedGenerator(Random.Default.asJavaRandom()).generate().toString()
 
+    /**
+     * The context of this state in the form of a reference to the [Settings].
+     *
+     * Useful in case the scheme's behavior depends not only on its own internal state, but also on that of other
+     * schemes.
+     *
+     * @see applyContext
+     */
+    @get:Transient
+    var context: Box<Settings> = Box({ PersistentSettings.default.state })
+        protected set
+
+
+    /**
+     * Sets the [State.context] of this [State] to be a reference to [context].
+     */
+    fun applyContext(context: Settings) = applyContext(Box({ context }))
+
+    /**
+     * Sets the [State.context] of this [State] to [context].
+     */
+    open fun applyContext(context: Box<Settings>) {
+        this.context = context
+    }
+
 
     /**
      * Validates the state, and indicates whether and why it is invalid.
@@ -24,23 +50,53 @@ abstract class State {
     open fun doValidate(): String? = null
 
     /**
-     * Copies the [other] into this state.
+     * Returns a deep copy, retaining the [uuid] if and only if [retainUuid] is `true`.
      *
-     * Works by copying all references in a [deepCopy] of [other] into `this`. Note that fields annotated with
-     * `Transient` are not copied at all, unless the field is defined in the constructor, in which case it is
-     * shallow-copied. Implementations are additionally allowed, but not required, to deep-copy [Settings] fields.
+     * Fields annotated with [Transient] are shallow-copied.
      *
-     * @param other the state to copy into this state; should be a (sub)class of this state
-     */
-    open fun copyFrom(other: State) = XmlSerializerUtil.copyBean(other.deepCopy(retainUuid = true), this)
-
-    /**
-     * Returns a deep copy of this state.
-     *
-     * Fields annotated with `Transient` will be shallow-copied.
-     *
-     * @param retainUuid `false` if and only if the copy should have a different, new [uuid]
-     * @return a deep copy of this scheme
+     * @see deepCopyTransient utility function for subclasses that want to implement `deepCopy`
      */
     abstract fun deepCopy(retainUuid: Boolean = false): State
+
+    /**
+     * When invoked by the instance `this` as `self.deepCopyTransient()`, this method copies [Transient] fields from
+     * `this` to `self`, and returns `self`.
+     *
+     * @see deepCopy
+     */
+    protected fun <SELF : State> SELF.deepCopyTransient(retainUuid: Boolean): SELF {
+        val self: SELF = this
+        val thiz: State = this@State
+
+        if (retainUuid) self.uuid = thiz.uuid
+        self.applyContext(thiz.context.copy())
+
+        return self
+    }
+
+    /**
+     * Copies [other] into `this`.
+     *
+     * Works by shallow-copying a [deepCopy] of [other] into `this`. [Transient] fields are shallow-copied directly from
+     * [other] instead.
+     *
+     * Implementations may choose to shallow-copy additional fields directly from [other].
+     *
+     * @param other the state to copy into `this`; should be a (sub)class of this state
+     * @see copyFromTransient utility function for subclasses that want to implement `copyFrom`
+     */
+    open fun copyFrom(other: State) {
+        XmlSerializerUtil.copyBean(other.deepCopy(retainUuid = true), this)
+        copyFromTransient(other)
+    }
+
+    /**
+     * Copies basic [Transient] fields from [other] into `this`.
+     *
+     * Typically used by subclasses to help implement [copyFrom].
+     */
+    protected fun copyFromTransient(other: State) {
+        this.uuid = other.uuid
+        this.applyContext(other.context.copy())
+    }
 }

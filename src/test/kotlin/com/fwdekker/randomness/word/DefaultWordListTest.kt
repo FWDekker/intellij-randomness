@@ -1,9 +1,14 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.Bundle
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.collections.beEmpty
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.longs.shouldBeLessThan
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
 import java.io.IOException
 import kotlin.system.measureNanoTime
 
@@ -11,62 +16,62 @@ import kotlin.system.measureNanoTime
 /**
  * Unit tests for [DefaultWordList].
  */
-object DefaultWordListTest : DescribeSpec({
-    describe("words") {
-        it("throws an exception if the file does not exist") {
-            val list = DefaultWordList("throw", "word-lists/does-not-exist.txt")
+object DefaultWordListTest : FunSpec({
+    beforeNonContainer {
+        DefaultWordList.clearCache()
+    }
 
-            assertThatThrownBy { list.words }
-                .isInstanceOf(IOException::class.java)
-                .hasMessage(Bundle("word_list.error.file_not_found"))
+
+    context("words") {
+        test("throws an exception if the file does not exist") {
+            val list = DefaultWordList("name", "word-lists/does-not-exist.txt")
+
+            shouldThrow<IOException> { list.words }.message shouldBe Bundle("word_list.error.file_not_found")
         }
 
-        it("returns an empty list of words if the file is empty") {
-            val list = DefaultWordList("tailor", "word-lists/empty-list.txt")
+        test("returns an empty list of words if the file is empty") {
+            val list = DefaultWordList("name", "word-lists/empty-list.txt")
 
-            assertThat(list.words).isEmpty()
+            list.words should beEmpty()
         }
 
-        it("returns the list of words from the file") {
-            val list = DefaultWordList("off", "word-lists/non-empty-list.txt")
+        test("returns the list of words from the file") {
+            val list = DefaultWordList("name", "word-lists/non-empty-list.txt")
 
-            assertThat(list.words).containsExactly("lorem", "ipsum", "dolor")
+            list.words shouldContainExactly listOf("lorem", "ipsum", "dolor")
         }
 
-        it("does not return blank lines") {
-            val list = DefaultWordList("wander", "word-lists/with-blank-lines.txt")
+        test("does not return blank lines") {
+            val list = DefaultWordList("name", "word-lists/with-blank-lines.txt")
 
-            assertThat(list.words).containsExactly("afraid", "dive", "snow", "enemy")
+            list.words shouldContainExactly listOf("lorem", "ipsum", "dolor", "sit")
         }
 
-        describe("caching") {
-            it("throws an exception again if the words are read again") {
-                val list = DefaultWordList("bound", "word-lists/does-not-exist.txt")
+        context("caching") {
+            test("throws an exception again if the words are read again") {
+                val list = DefaultWordList("name", "word-lists/does-not-exist.txt")
 
-                assertThatThrownBy { list.words }.isInstanceOf(IOException::class.java)
-                    .hasMessage(Bundle("word_list.error.file_not_found"))
-
-                assertThatThrownBy { list.words }.isInstanceOf(IOException::class.java)
-                    .hasMessage(Bundle("word_list.error.file_not_found"))
+                shouldThrow<IOException> { list.words }
+                shouldThrow<IOException> { list.words }.message shouldBe Bundle("word_list.error.file_not_found")
             }
 
-            it("returns words quicker if read again from the same instance") {
-                val list = DefaultWordList("height", "word-lists/timing-test-instance.txt")
+            test("returns words quicker if read again from the same instance") {
+                val list = DefaultWordList("name", "word-lists/timing-test.txt")
 
                 val firstTime = measureNanoTime { list.words }
                 val secondTime = measureNanoTime { list.words }
 
-                assertThat(secondTime).isLessThan(firstTime / 2)
+                secondTime shouldBeLessThan firstTime / 2
             }
 
-            it("returns words quicker if read again from another instance") {
-                val firstList = DefaultWordList("charge", "word-lists/timing-test-global.txt")
+            test("returns words quicker if read again from another instance") {
+                val firstList = DefaultWordList("name", "word-lists/timing-test.txt")
                 val firstTime = measureNanoTime { firstList.words }
 
-                val secondList = DefaultWordList("charge", "word-lists/timing-test-global.txt")
+                val secondList = DefaultWordList("name", "word-lists/timing-test.txt")
                 val secondTime = measureNanoTime { secondList.words }
 
-                assertThat(secondTime).isLessThan(firstTime / 2)
+                secondTime shouldBeLessThan firstTime / 2
             }
         }
     }

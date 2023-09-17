@@ -1,104 +1,178 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArrayDecorator
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import com.fwdekker.randomness.testhelpers.DummyDecoratorScheme
+import com.fwdekker.randomness.testhelpers.DummyScheme
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.collections.beEmpty
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.nulls.beNull
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeSameInstanceAs
+import java.awt.Color
 
 
 /**
  * Unit tests for [Scheme].
  */
-object SchemeTest : DescribeSpec({
-    lateinit var scheme: DummyScheme
+object SchemeTest : FunSpec({
+    tags(NamedTag("Scheme"))
 
 
-    beforeEach {
-        scheme = DummyScheme()
-    }
+    context("icon") {
+        test("returns null if the type icon is null") {
+            val scheme = DummyScheme()
 
-
-    describe("uuid") {
-        it("assigns different UUIDs for different instances") {
-            assertThat(DummyScheme().uuid).isNotEqualTo(DummyScheme().uuid)
-        }
-
-        it("changes the scheme's UUID when it is copied with `retainUuid` set to false") {
-            assertThat(scheme.deepCopy(retainUuid = false).uuid).isNotEqualTo(scheme.uuid)
-        }
-
-        it("does not change the scheme's UUID when it is copied with `retainUuid` set to true") {
-            assertThat(scheme.deepCopy(retainUuid = true).uuid).isEqualTo(scheme.uuid)
-        }
-
-        it("changes the scheme's UUID to the other's UUID when copied from another instance") {
-            val other = DummyScheme()
-
-            scheme.copyFrom(other)
-
-            assertThat(scheme.uuid).isEqualTo(other.uuid)
-        }
-    }
-
-    describe("icon") {
-        it("returns null if the type icon is null") {
             scheme.typeIcon = null
 
-            assertThat(scheme.icon).isNull()
+            scheme.icon should beNull()
         }
 
-        it("uses the type icon as a basis for the icon") {
-            assertThat((scheme.icon as OverlayedIcon).base).isEqualTo(scheme.typeIcon)
+        test("uses the type icon as a basis for the icon") {
+            val scheme = DummyScheme()
+
+            scheme.icon?.base shouldBe scheme.typeIcon
         }
 
-        it("does not add icon overlays if the scheme's decorators have no icons") {
-            scheme.arrayDecorator.enabled = false
+        test("does not add icon overlays if the scheme has no decorators") {
+            val scheme = DummyScheme()
 
-            assertThat(scheme.icon!!.overlays).isEmpty()
+            scheme.icon!!.overlays should beEmpty()
         }
 
-        it("adds the scheme's decorators' icons") {
-            scheme.arrayDecorator.enabled = true
+        test("does not add icon overlays if the scheme's decorators have no icons") {
+            val decorator = DummyDecoratorScheme()
+            val scheme = DummyScheme(decorators = listOf(decorator))
 
-            assertThat(scheme.icon!!.overlays).containsExactly(scheme.arrayDecorator.icon)
+            scheme.icon!!.overlays should beEmpty()
+        }
+
+        test("adds the scheme's decorators' icons") {
+            val decorator = DummyDecoratorScheme()
+            decorator.typeIcon = TypeIcon(Icons.SCHEME, "dum", listOf(Color.GRAY))
+            val scheme = DummyScheme(decorators = listOf(decorator))
+
+            scheme.icon?.overlays shouldContainExactly listOf(decorator.icon)
         }
     }
 
+    context("applyContext") {
+        test("applies the context to itself") {
+            val context = Settings()
+            val scheme = DummyScheme()
 
-    describe("generateStrings") {
-        it("throws an exception if the scheme is invalid") {
-            scheme.literals = listOf(DummyScheme.INVALID_OUTPUT)
+            scheme.applyContext(context)
 
-            assertThatThrownBy { scheme.generateStrings() }
-                .isInstanceOf(DataGenerationException::class.java)
-                .hasMessage("Invalid input!")
+            +scheme.context shouldBeSameInstanceAs context
         }
 
-        it("returns undecorated strings if there is no decorator") {
-            scheme.arrayDecorator.enabled = false
+        test("applies the context to each decorator") {
+            val context = Settings()
+            val decorator = DummyDecoratorScheme()
+            val scheme = DummyScheme(decorators = listOf(decorator))
 
-            assertThat(scheme.generateStrings(2))
-                .containsExactly(DummyScheme.DEFAULT_OUTPUT, DummyScheme.DEFAULT_OUTPUT)
+            scheme.applyContext(context)
+
+            +decorator.context shouldBeSameInstanceAs context
+        }
+    }
+
+    context("generateStrings") {
+        test("throws an exception if the scheme is invalid") {
+            val scheme = DummyScheme(valid = false)
+
+            shouldThrow<DataGenerationException> { scheme.generateStrings() }.message shouldBe "DummyScheme is invalid"
         }
 
-        it("returns decorated strings if there is a decorator") {
-            scheme.arrayDecorator.enabled = true
-            scheme.arrayDecorator.minCount = 1
-            scheme.arrayDecorator.maxCount = 1
+        test("returns undecorated strings if there is no decorator") {
+            val scheme = DummyScheme()
 
-            assertThat(scheme.generateStrings(2))
-                .containsExactly("[${DummyScheme.DEFAULT_OUTPUT}]", "[${DummyScheme.DEFAULT_OUTPUT}]")
+            scheme.generateStrings(2) shouldContainExactly listOf("text0", "text1")
         }
 
-        it("applies decorators on each other in ascending order") {
-            scheme.decorators = listOf(
-                ArrayDecorator(enabled = true, minCount = 2, maxCount = 2),
-                ArrayDecorator(enabled = true, minCount = 3, maxCount = 3)
+        test("returns decorated strings if there is a decorator") {
+            val scheme = DummyScheme(decorators = listOf(DummyDecoratorScheme(enabled = true)))
+
+            scheme.generateStrings(2) shouldContainExactly listOf("text0:decorated", "text1:decorated")
+        }
+
+        test("applies decorators in order") {
+            val scheme = DummyScheme(
+                decorators = listOf(
+                    DummyDecoratorScheme(enabled = true, append = ":a"),
+                    DummyDecoratorScheme(enabled = true, append = ":b"),
+                    DummyDecoratorScheme(enabled = true, append = ":c"),
+                ),
             )
-            scheme.literals = listOf("save")
 
-            assertThat(scheme.generateStrings()).containsExactly("[[save, save], [save, save], [save, save]]")
+            scheme.generateStrings(2) shouldContainExactly listOf("text0:a:b:c", "text1:a:b:c")
+        }
+
+        test("applies decorators recursively") {
+            val scheme = DummyScheme(
+                decorators = listOf(
+                    DummyDecoratorScheme(
+                        enabled = true,
+                        append = ":a",
+                        decorators = listOf(
+                            DummyDecoratorScheme(
+                                enabled = true,
+                                append = ":aa",
+                                decorators = listOf(DummyDecoratorScheme(enabled = true, append = ":aaa")),
+                            ),
+                            DummyDecoratorScheme(
+                                enabled = true,
+                                append = ":ab",
+                                decorators = listOf(DummyDecoratorScheme(enabled = true, append = ":aba")),
+                            ),
+                        ),
+                    ),
+                    DummyDecoratorScheme(
+                        enabled = true,
+                        append = ":b",
+                        decorators = listOf(DummyDecoratorScheme(enabled = true, append = ":ba")),
+                    ),
+                )
+            )
+
+            scheme.generateStrings()[0] shouldBe "text0:a:aa:aaa:ab:aba:b:ba"
         }
     }
 })
 
+/**
+ * Unit tests for [DecoratorScheme].
+ */
+object DecoratorSchemeTest : FunSpec({
+    context("generateStrings") {
+        test("throws an exception if the decorator is invalid") {
+            val decorator = DummyDecoratorScheme(enabled = true, valid = false)
+
+            shouldThrow<DataGenerationException> { decorator.generateStrings() }
+                .message shouldBe "DummyDecoratorScheme is invalid"
+        }
+
+        test("throws an exception if the decorator is invalid, even if disabled") {
+            val decorator = DummyDecoratorScheme(valid = false)
+
+            shouldThrow<DataGenerationException> { decorator.generateStrings() }
+                .message shouldBe "DummyDecoratorScheme is invalid"
+        }
+
+        test("returns the generator's output if disabled") {
+            val decorator = DummyDecoratorScheme()
+            decorator.generator = { count -> List(count) { "text$it" } }
+
+            decorator.generateStrings(2) shouldContainExactly listOf("text0", "text1")
+        }
+
+        test("decorators the generator's output if enabled") {
+            val decorator = DummyDecoratorScheme(enabled = true)
+            decorator.generator = { count -> List(count) { "text$it" } }
+
+            decorator.generateStrings(2) shouldContainExactly listOf("text0:decorated", "text1:decorated")
+        }
+    }
+})

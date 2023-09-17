@@ -1,13 +1,12 @@
 package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.RandomnessIcons
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.TypeIcon
+import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.ui.JBColor
-import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.nextUp
@@ -20,12 +19,10 @@ import kotlin.math.nextUp
  * @property maxValue The maximum value to be generated, inclusive.
  * @property decimalCount The number of decimals to display.
  * @property showTrailingZeroes Whether to include trailing zeroes in the decimals.
- * @property groupingSeparator The character that should separate groups.
- * @property customGroupingSeparator The grouping separator defined in the custom option.
  * @property decimalSeparator The character that should separate decimals.
- * @property customDecimalSeparator The decimal separator defined in the custom option.
- * @property prefix The string to prepend to the generated value.
- * @property suffix The string to append to the generated value.
+ * @property groupingSeparatorEnabled `true` if and only if the [groupingSeparator] should be used to separate groups.
+ * @property groupingSeparator The character that should separate groups if [groupingSeparatorEnabled] is `true`.
+ * @property affixDecorator The affixation to apply to the generated values.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class DecimalScheme(
@@ -33,51 +30,39 @@ data class DecimalScheme(
     var maxValue: Double = DEFAULT_MAX_VALUE,
     var decimalCount: Int = DEFAULT_DECIMAL_COUNT,
     var showTrailingZeroes: Boolean = DEFAULT_SHOW_TRAILING_ZEROES,
-    var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
-    var customGroupingSeparator: String = DEFAULT_CUSTOM_GROUPING_SEPARATOR,
     var decimalSeparator: String = DEFAULT_DECIMAL_SEPARATOR,
-    var customDecimalSeparator: String = DEFAULT_CUSTOM_DECIMAL_SEPARATOR,
-    var prefix: String = DEFAULT_PREFIX,
-    var suffix: String = DEFAULT_SUFFIX,
-    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
+    var groupingSeparatorEnabled: Boolean = DEFAULT_GROUPING_SEPARATOR_ENABLED,
+    var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
+    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
-    @get:Transient
     override val name = Bundle("decimal.title")
     override val typeIcon = BASE_ICON
-
-    override val decorators: List<SchemeDecorator>
-        get() = listOf(arrayDecorator)
+    override val decorators get() = listOf(affixDecorator, arrayDecorator)
 
 
     /**
-     * Returns random formatted decimals in the range from [minValue] until [maxValue], inclusive.
-     *
-     * @param count the number of decimals to generate
-     * @return random formatted decimals in the range from [minValue] until [maxValue], inclusive
+     * Returns [count] random formatted decimals in the range from [minValue] until [maxValue], inclusive.
      */
     override fun generateUndecoratedStrings(count: Int) =
         List(count) { doubleToString(random.nextDouble(minValue, maxValue.nextUp())) }
 
     /**
      * Returns a nicely formatted representation of [decimal].
-     *
-     * @param decimal the decimal to format
-     * @return a nicely formatted representation of [decimal]
      */
     private fun doubleToString(decimal: Double): String {
         val format = DecimalFormat()
-        format.isGroupingUsed = groupingSeparator.isNotEmpty()
 
         if (showTrailingZeroes) format.minimumFractionDigits = decimalCount
-        format.isGroupingUsed = groupingSeparator.isNotEmpty()
+        format.isGroupingUsed = groupingSeparatorEnabled
         format.maximumFractionDigits = decimalCount
-        format.decimalFormatSymbols = format.decimalFormatSymbols
-            .also {
-                it.groupingSeparator = groupingSeparator.getOrElse(0) { Char.MIN_VALUE }
+        format.decimalFormatSymbols =
+            format.decimalFormatSymbols.also {
+                it.groupingSeparator = groupingSeparator.getOrElse(0) { DEFAULT_GROUPING_SEPARATOR[0] }
                 it.decimalSeparator = decimalSeparator[0]
             }
 
-        return prefix + format.format(decimal) + suffix
+        return format.format(decimal)
     }
 
 
@@ -86,14 +71,16 @@ data class DecimalScheme(
             minValue > maxValue -> Bundle("decimal.error.min_value_above_max")
             maxValue - minValue > MAX_VALUE_DIFFERENCE -> Bundle("decimal.error.value_range", MAX_VALUE_DIFFERENCE)
             decimalCount < MIN_DECIMAL_COUNT -> Bundle("decimal.error.decimal_count_too_low", MIN_DECIMAL_COUNT)
-            groupingSeparator.length > 1 -> Bundle("decimal.error.grouping_separator_length")
             decimalSeparator.length != 1 -> Bundle("decimal.error.decimal_separator_length")
-            else -> arrayDecorator.doValidate()
+            groupingSeparator.length != 1 -> Bundle("decimal.error.grouping_separator_length")
+            else -> affixDecorator.doValidate() ?: arrayDecorator.doValidate()
         }
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid))
-            .also { if (retainUuid) it.uuid = this.uuid }
+        copy(
+            affixDecorator = affixDecorator.deepCopy(retainUuid),
+            arrayDecorator = arrayDecorator.deepCopy(retainUuid),
+        ).deepCopyTransient(retainUuid)
 
 
     /**
@@ -104,7 +91,7 @@ data class DecimalScheme(
          * The base icon for decimals.
          */
         val BASE_ICON = TypeIcon(
-            RandomnessIcons.SCHEME,
+            Icons.SCHEME,
             "4.2",
             listOf(JBColor(Color(98, 181, 67, 154), Color(98, 181, 67, 154)))
         )
@@ -137,17 +124,12 @@ data class DecimalScheme(
         /**
          * The default value of the [showTrailingZeroes] field.
          */
-        const val DEFAULT_SHOW_TRAILING_ZEROES = true
+        const val DEFAULT_SHOW_TRAILING_ZEROES = false
 
         /**
-         * The default value of the [groupingSeparator] field.
+         * The preset values for the [decimalSeparator] field.
          */
-        const val DEFAULT_GROUPING_SEPARATOR = ""
-
-        /**
-         * The default value of the [customGroupingSeparator] field.
-         */
-        const val DEFAULT_CUSTOM_GROUPING_SEPARATOR = "'"
+        val PRESET_DECIMAL_SEPARATORS = arrayOf(",", ".")
 
         /**
          * The default value of the [decimalSeparator] field.
@@ -155,18 +137,33 @@ data class DecimalScheme(
         const val DEFAULT_DECIMAL_SEPARATOR = "."
 
         /**
-         * The default value of the [customDecimalSeparator] field.
+         * The default value of the [groupingSeparatorEnabled] field.
          */
-        const val DEFAULT_CUSTOM_DECIMAL_SEPARATOR = "/"
+        const val DEFAULT_GROUPING_SEPARATOR_ENABLED = false
 
         /**
-         * The default value of the [prefix] field.
+         * The preset values for the [groupingSeparator] field.
          */
-        const val DEFAULT_PREFIX = ""
+        val PRESET_GROUPING_SEPARATORS = arrayOf(".", ",", "_")
 
         /**
-         * The default value of the [suffix] field.
+         * The default value of the [groupingSeparator] field.
          */
-        const val DEFAULT_SUFFIX = ""
+        const val DEFAULT_GROUPING_SEPARATOR = ","
+
+        /**
+         * The preset values for the [affixDecorator] descriptor.
+         */
+        val PRESET_AFFIX_DECORATOR_DESCRIPTORS = listOf("@f", "@d")
+
+        /**
+         * The default value of the [affixDecorator] field.
+         */
+        val DEFAULT_AFFIX_DECORATOR get() = AffixDecorator(enabled = false, descriptor = "f@")
+
+        /**
+         * The default value of the [arrayDecorator] field.
+         */
+        val DEFAULT_ARRAY_DECORATOR get() = ArrayDecorator()
     }
 }

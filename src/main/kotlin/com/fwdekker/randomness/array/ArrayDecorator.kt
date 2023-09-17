@@ -1,10 +1,10 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.BracketsDescriptor
 import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.DecoratorScheme
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
-import com.fwdekker.randomness.SchemeDecorator
+import com.fwdekker.randomness.affix.AffixDecorator
 
 
 /**
@@ -13,48 +13,37 @@ import com.fwdekker.randomness.SchemeDecorator
  * @property enabled `true` if and only if arrays should be generated instead of singular values.
  * @property minCount The minimum number of elements to generate, inclusive.
  * @property maxCount The maximum number of elements to generate, inclusive.
- * @property brackets The brackets to surround arrays with.
- * @property customBrackets The brackets defined in the custom option.
+ * @property separatorEnabled Whether to separate elements using [separator].
  * @property separator The string to place between generated elements.
- * @property customSeparator The separator defined in the custom option.
- * @property isSpaceAfterSeparator `true` if and only if a space should be placed after each separator.
+ * @property affixDecorator The affixation to apply to the generated values.
  */
 data class ArrayDecorator(
     var enabled: Boolean = DEFAULT_ENABLED,
     var minCount: Int = DEFAULT_MIN_COUNT,
     var maxCount: Int = DEFAULT_MAX_COUNT,
-    var brackets: String = DEFAULT_BRACKETS,
-    var customBrackets: String = DEFAULT_CUSTOM_BRACKETS,
+    var separatorEnabled: Boolean = DEFAULT_SEPARATOR_ENABLED,
     var separator: String = DEFAULT_SEPARATOR,
-    var customSeparator: String = DEFAULT_CUSTOM_SEPARATOR,
-    var isSpaceAfterSeparator: Boolean = DEFAULT_SPACE_AFTER_SEPARATOR,
-) : SchemeDecorator() {
-    override val decorators: List<SchemeDecorator> = emptyList()
+    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+) : DecoratorScheme() {
     override val name = Bundle("array.title")
-    override val icon: OverlayedIcon?
-        get() = if (enabled) OverlayedIcon(OverlayIcon.ARRAY) else null
+    override val icon get() = if (enabled) OverlayedIcon(OverlayIcon.ARRAY) else null
+    override val decorators = listOf(affixDecorator)
+    override val isEnabled get() = enabled
 
 
     override fun generateUndecoratedStrings(count: Int): List<String> {
-        if (!enabled) return generator(count)
-
-        val separator = separator + if (isSpaceAfterSeparator && separator !== "\n") " " else ""
-        val bracketsDescriptor = BracketsDescriptor(brackets)
-
         val partsPerString = random.nextInt(minCount, maxCount + 1)
-        val parts = generator(count * partsPerString)
-        val stringsWithoutBrackets = parts.chunked(partsPerString) { it.joinToString(separator = separator) }
-
-        return stringsWithoutBrackets.map { bracketsDescriptor.interpolate(it) }
+        return generator(count * partsPerString)
+            .chunked(partsPerString) { it.joinToString(if (separatorEnabled) separator.replace("\\n", "\n") else "") }
     }
 
 
     override fun doValidate() =
         if (minCount < MIN_MIN_COUNT) Bundle("array.error.min_count_too_low", MIN_MIN_COUNT)
         else if (maxCount < minCount) Bundle("array.error.min_count_above_max")
-        else BracketsDescriptor(brackets).doValidate()
+        else affixDecorator.doValidate()
 
-    override fun deepCopy(retainUuid: Boolean) = copy().also { if (retainUuid) it.uuid = this.uuid }
+    override fun deepCopy(retainUuid: Boolean) = copy().deepCopyTransient(retainUuid)
 
 
     /**
@@ -82,28 +71,28 @@ data class ArrayDecorator(
         const val DEFAULT_MAX_COUNT = 3
 
         /**
-         * The default value of the [brackets] field.
+         * The default value of the [separatorEnabled] field.
          */
-        const val DEFAULT_BRACKETS = "[@]"
+        const val DEFAULT_SEPARATOR_ENABLED = true
 
         /**
-         * The default value of the [customBrackets] field.
+         * The preset values for the [separator] field.
          */
-        const val DEFAULT_CUSTOM_BRACKETS = "listOf(@)"
+        val PRESET_SEPARATORS = arrayOf(", ", "; ", "\\n")
 
         /**
          * The default value of the [separator] field.
          */
-        const val DEFAULT_SEPARATOR = ","
+        const val DEFAULT_SEPARATOR = ", "
 
         /**
-         * The default value of the [customSeparator] field.
+         * The preset values for the [affixDecorator] descriptor.
          */
-        const val DEFAULT_CUSTOM_SEPARATOR = ";"
+        val PRESET_AFFIX_DECORATOR_DESCRIPTORS = listOf("[@]", "{@}", "(@)")
 
         /**
-         * The default value of the [isSpaceAfterSeparator] field.
+         * The default value of the [affixDecorator] field.
          */
-        const val DEFAULT_SPACE_AFTER_SEPARATOR = true
+        val DEFAULT_AFFIX_DECORATOR get() = AffixDecorator(enabled = true, descriptor = "[@]")
     }
 }

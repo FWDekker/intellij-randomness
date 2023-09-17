@@ -1,7 +1,6 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.template.TemplateGroupAction
-import com.fwdekker.randomness.template.TemplateSettings
 import com.fwdekker.randomness.template.TemplateSettingsAction
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -21,7 +20,7 @@ import javax.swing.KeyStroke
 /**
  * Shows a popup for all available Randomness actions.
  */
-class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
+class PopupAction : AnAction(Icons.RANDOMNESS) {
     /**
      * `true` if and only if the user focused a non-viewer editor when opening this popup.
      */
@@ -30,8 +29,6 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
 
     /**
      * Specifies the thread in which [update] is invoked.
-     *
-     * @return the thread in which [update] is invoked
      */
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
@@ -41,7 +38,7 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
      * @param event carries contextual information
      */
     override fun update(event: AnActionEvent) {
-        event.presentation.icon = RandomnessIcons.RANDOMNESS
+        event.presentation.icon = Icons.RANDOMNESS
 
         // Running this in `actionPerformed` always sets it to `true`
         isEditable = event.getData(CommonDataKeys.EDITOR)?.isViewer == false
@@ -78,9 +75,6 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
 
     /**
      * Returns the desired title for the popup given [event].
-     *
-     * @param event the event on which the title should be based
-     * @return the desired title for the popup given [event]
      */
     @Suppress("detekt:ComplexMethod") // Cannot be simplified
     private fun captionModifier(event: ActionEvent?): String {
@@ -112,7 +106,7 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
          * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
-            TemplateSettings.default.state.templates.map { TemplateGroupAction(it) }.toTypedArray<AnAction>() +
+            PersistentSettings.default.state.templates.map { TemplateGroupAction(it) }.toTypedArray<AnAction>() +
                 Separator() +
                 TemplateSettingsAction()
     }
@@ -127,7 +121,7 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
          * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
-            TemplateSettings.default.state.templates.map { TemplateSettingsAction(it) }.toTypedArray<AnAction>() +
+            PersistentSettings.default.state.templates.map { TemplateSettingsAction(it) }.toTypedArray<AnAction>() +
                 Separator() +
                 TemplateSettingsAction()
     }
@@ -141,15 +135,13 @@ class PopupAction : AnAction(RandomnessIcons.RANDOMNESS) {
  */
 private class SimpleAbstractAction(private val myActionPerformed: (ActionEvent?) -> Unit) : AbstractAction() {
     /**
-     * Runs [myActionPerformed].
-     *
-     * @param event the event to pass to [myActionPerformed]
+     * @see myActionPerformed
      */
     override fun actionPerformed(event: ActionEvent?) = myActionPerformed(event)
 }
 
 /**
- * Returns the cartesian product of two lists.
+ * Returns the cartesian product of [this] and [other].
  *
  * By requiring both lists to actually be lists of lists, this method can be chained.
  *
@@ -161,10 +153,6 @@ private class SimpleAbstractAction(private val myActionPerformed: (ActionEvent?)
  * $ [[1, 2]] * [[3, 4]] * [[5, 6]]
  * [[1, 3, 5], [1, 3, 6], [1, 4, 5], [1, 4, 6], [2, 3, 5], [2, 3, 6], [2, 4, 5], [2, 4, 6]]
  * ```
- *
- * @param E the type of inner element
- * @param other the list to multiply with
- * @return the cartesian product of `this` and [other]
  */
 private operator fun <E> List<List<E>>.times(other: List<List<E>>) =
     this.flatMap { t1 -> other.map { t2 -> t1 + t2 } }

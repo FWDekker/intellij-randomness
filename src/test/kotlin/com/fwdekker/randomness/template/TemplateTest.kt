@@ -1,186 +1,120 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.DataGenerationException
-import com.fwdekker.randomness.DummyScheme
-import com.fwdekker.randomness.SettingsState
+import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.integer.IntegerScheme
-import com.fwdekker.randomness.string.StringScheme
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import kotlin.random.Random
+import com.fwdekker.randomness.stateDeepCopyTestFactory
+import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.row
+import io.kotest.datatest.withData
+import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeSameInstanceAs
 
 
 /**
  * Unit tests for [Template].
  */
-object TemplateTest : DescribeSpec({
-    lateinit var template: Template
+object TemplateTest : FunSpec({
+    tags(NamedTag("Scheme"))
 
 
-    beforeEach {
-        template = Template()
-    }
-
-
-    describe("typeIcon") {
-        it("returns the single scheme's icon if the single scheme has an icon") {
+    context("typeIcon") {
+        test("returns the single scheme's icon if that scheme has an icon") {
             val scheme = IntegerScheme()
-            template.schemes = listOf(scheme)
+            val template = Template(schemes = mutableListOf(scheme))
 
-            assertThat(template.typeIcon).isEqualTo(scheme.typeIcon)
+            template.typeIcon shouldBe scheme.typeIcon
         }
 
-        it("returns the default icon if the single scheme has no icon") {
-            val scheme = DummyScheme()
-            scheme.typeIcon = null
+        test("returns the default icon if the single scheme has no icon") {
+            val scheme = DummyScheme().also { it.typeIcon = null }
+            val template = Template(schemes = mutableListOf(scheme))
 
-            template.schemes = listOf(scheme)
-
-            assertThat(template.typeIcon).isEqualTo(Template.DEFAULT_ICON)
+            template.typeIcon shouldBe Template.DEFAULT_ICON
         }
 
-        it("returns the default icon if no scheme is present") {
-            template.schemes = emptyList()
+        test("returns the default icon if no scheme is present") {
+            val template = Template()
 
-            assertThat(template.typeIcon).isEqualTo(Template.DEFAULT_ICON)
+            template.typeIcon shouldBe Template.DEFAULT_ICON
         }
 
-        it("returns the scheme's combined icon if multiple are present") {
-            template.schemes = listOf(DummyScheme(), DummyScheme())
+        test("returns the scheme's combined icon if multiple are present") {
+            val template = Template(schemes = mutableListOf(DummyScheme(), DummyScheme()))
 
-            assertThat(template.typeIcon.colors.size).isGreaterThan(1)
+            template.typeIcon.colors.size shouldBeGreaterThan 1
+        }
+    }
+
+    context("applyContext") {
+        test("applies the context to itself") {
+            val newContext = Settings()
+            val template = Template()
+
+            template.applyContext(newContext)
+
+            +template.context shouldBeSameInstanceAs newContext
+        }
+
+        test("applies the context to each scheme") {
+            val newContext = Settings()
+            val template = Template(schemes = mutableListOf(DummyScheme(), DummyScheme()))
+
+            template.applyContext(newContext)
+
+            template.schemes.forEach { +it.context shouldBeSameInstanceAs newContext }
         }
     }
 
 
-    describe("generateStrings") {
-        it("throws an exception if the template is invalid") {
-            template.schemes = listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))
-
-            assertThatThrownBy { template.generateStrings() }.isInstanceOf(DataGenerationException::class.java)
-        }
-
-        it("generates empty strings if it contains no schemes") {
-            template.schemes = emptyList()
-
-            assertThat(template.generateStrings()).containsExactly("")
-        }
-
-        it("generates the single scheme's output") {
-            val random = { Random(78) }
-
-            val scheme = IntegerScheme()
-            template.schemes = listOf(scheme)
-
-            val schemeOutput = scheme.also { it.random = random() }.generateStrings(3)
-            val templateOutput = template.also { it.random = random() }.generateStrings(3)
-
-            assertThat(schemeOutput).containsExactlyElementsOf(templateOutput)
-        }
-
-        it("generates the concatenation of multiple schemes' outputs") {
-            val random = { Random(624) }
-
-            val schemeA = IntegerScheme(minValue = 461, maxValue = 664)
-                .also { it.random = random() }
-            val schemeB = StringScheme("-")
-                .also { it.random = schemeA.random }
-            val schemeC = IntegerScheme(minValue = 125, maxValue = 607)
-                .also { it.random = schemeB.random }
-
-            template.schemes = listOf(schemeA, schemeB, schemeC)
-            template.random = random()
-
-            val outputsA = schemeA.generateStrings(3)
-            val outputsB = schemeB.generateStrings(3)
-            val outputsC = schemeC.generateStrings(3)
-            val combinedOutputs = outputsA.zip(outputsB) { a, b -> a + b }.zip(outputsC) { a, b -> a + b }
-
-            assertThat(template.generateStrings(3)).containsExactlyElementsOf(combinedOutputs)
-        }
-    }
-
-    describe("setSettingsState") {
-        it("overwrites the settings state of the contained schemes") {
-            val newSettings = TemplateList()
-            val reference = TemplateReference()
-            template.schemes = listOf(reference)
-
-            template.setSettingsState(SettingsState(templateList = newSettings))
-
-            assertThat(+reference.templateList).isSameAs(newSettings)
-        }
-    }
-
-
-    describe("doValidate") {
-        it("passes for the default settings") {
-            assertThat(Template().doValidate()).isNull()
-        }
-
-        it("passes for a template without schemes") {
-            template.schemes = emptyList()
-
-            assertThat(template.doValidate()).isNull()
-        }
-
-        it("fails if the template does not have a name") {
-            template.name = " "
-
-            assertThat(template.doValidate()).isEqualTo("Assign a name to template '<empty>'.")
-        }
-
-        it("fails if the single scheme is invalid") {
-            template.schemes = listOf(DummyScheme.from(DummyScheme.INVALID_OUTPUT))
-
-            assertThat(template.doValidate()).isEqualTo("${DummyScheme.INVALID_OUTPUT} > Invalid input!")
-        }
-
-        it("fails if one of multiple schemes is invalid") {
-            template.schemes = listOf(
-                DummyScheme(),
-                DummyScheme(),
-                DummyScheme.from(DummyScheme.INVALID_OUTPUT),
-                DummyScheme()
+    context("generateStrings") {
+        withData(
+            mapOf(
+                "returns an empty string if it contains no schemes" to
+                    row(Template(), ""),
+                "returns the single scheme's output" to
+                    row(Template(schemes = mutableListOf(DummyScheme())), "text0"),
+                "returns the concatenation of the schemes' outputs" to
+                    row(
+                        Template(
+                            schemes = mutableListOf(
+                                DummyScheme(prefix = "a"),
+                                DummyScheme(prefix = "b"),
+                                DummyScheme(prefix = "c"),
+                            ),
+                        ),
+                        "a0b0c0",
+                    ),
             )
+        ) { (scheme, output) -> scheme.generateStrings()[0] shouldBe output }
 
-            assertThat(template.doValidate()).isEqualTo("${DummyScheme.INVALID_OUTPUT} > Invalid input!")
-        }
+        test("throws an exception if the template is invalid") {
+            val template = Template(schemes = mutableListOf(DummyScheme(valid = false)))
 
-        it("fails if the decorator is invalid") {
-            template.arrayDecorator.minCount = -160
-
-            assertThat(template.doValidate()).isNotNull()
+            shouldThrow<DataGenerationException> { template.generateStrings() }
         }
     }
 
-    describe("deepCopy") {
-        it("creates an independent copy") {
-            template.schemes = listOf(StringScheme("rubber"))
-            template.arrayDecorator.minCount = 857
-
-            val copy = template.deepCopy()
-            (copy.schemes.first() as StringScheme).pattern = "ribbon"
-            copy.arrayDecorator.minCount = 410
-
-            assertThat((template.schemes.first() as StringScheme).pattern).isEqualTo("rubber")
-            assertThat(template.arrayDecorator.minCount).isEqualTo(857)
-        }
+    context("doValidate") {
+        withData(
+            mapOf(
+                "succeeds for default state" to
+                    row(Template(), null),
+                "fails if name is blank" to
+                    row(Template("  "), "template.error.no_name"),
+                "fails if scheme is invalid" to
+                    row(Template("Template", mutableListOf(DummyScheme(valid = false))), ""),
+                "fails if array decorator is invalid" to
+                    row(Template(arrayDecorator = ArrayDecorator(minCount = -24)), ""),
+            )
+        ) { (scheme, validation) -> scheme shouldValidateAsBundle validation }
     }
 
-    describe("copyFrom") {
-        it("copies state from another instance") {
-            template.name = "become"
-            template.schemes = listOf(StringScheme("quarrel"))
-            template.arrayDecorator.minCount = 820
-
-            val newTemplate = Template()
-            newTemplate.copyFrom(template)
-
-            assertThat(newTemplate)
-                .isEqualTo(template)
-                .isNotSameAs(template)
-        }
-    }
+    include(stateDeepCopyTestFactory { Template() })
 })

@@ -1,113 +1,62 @@
 package com.fwdekker.randomness.fixedlength
 
-import com.fwdekker.randomness.DataGenerationException
-import com.fwdekker.randomness.DummyScheme
-import com.fwdekker.randomness.fixedlength.FixedLengthDecorator.Companion.MIN_LENGTH
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import com.fwdekker.randomness.stateDeepCopyTestFactory
+import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.row
+import io.kotest.datatest.withData
+import io.kotest.matchers.shouldBe
 
 
 /**
  * Unit tests for [FixedLengthDecorator].
  */
-object FixedLengthDecoratorTest : DescribeSpec({
-    lateinit var fixedLengthDecorator: FixedLengthDecorator
-    lateinit var dummyScheme: DummyScheme
+object FixedLengthDecoratorTest : FunSpec({
+    tags(NamedTag("Scheme"))
 
 
-    beforeEach {
-        fixedLengthDecorator = FixedLengthDecorator(enabled = true)
-        dummyScheme = DummyScheme(decorators = listOf(fixedLengthDecorator))
-    }
+    context("generateStrings") {
+        withData(
+            mapOf(
+                "returns default input if disabled" to
+                    row(FixedLengthDecorator(enabled = false, length = 1), "[i0]"),
+                "returns shortened string" to
+                    row(FixedLengthDecorator(enabled = true, length = 3), "[i0"),
+                "returns padded string" to
+                    row(FixedLengthDecorator(enabled = true, length = 5, filler = "f"), "f[i0]"),
+                "returns default input if correct length" to
+                    row(FixedLengthDecorator(enabled = true, length = 4), "[i0]"),
+            )
+        ) { (scheme, output) ->
+            scheme.generator = { count -> List(count) { "[i$it]" } }
 
-
-    describe("generateStrings") {
-        it("throws an exception if the scheme is invalid") {
-            fixedLengthDecorator.length = -14
-
-            assertThatThrownBy { dummyScheme.generateStrings() }.isInstanceOf(DataGenerationException::class.java)
-        }
-
-        it("returns variable-length values if disabled") {
-            fixedLengthDecorator.enabled = false
-            fixedLengthDecorator.length = 5
-            dummyScheme.literals = listOf("property")
-
-            assertThat(dummyScheme.generateStrings()).containsExactly("property")
-        }
-
-        it("shortens the given string if it is too long") {
-            fixedLengthDecorator.length = 3
-            dummyScheme.literals = listOf("recent")
-
-            assertThat(dummyScheme.generateStrings()).containsExactly("rec")
-        }
-
-        it("pads the given string if it is too short") {
-            fixedLengthDecorator.length = 6
-            fixedLengthDecorator.filler = "o"
-            dummyScheme.literals = listOf("c")
-
-            assertThat(dummyScheme.generateStrings()).containsExactly("oooooc")
-        }
-
-        it("does not change the string if it already has the desired length") {
-            fixedLengthDecorator.length = 9
-            fixedLengthDecorator.filler = "o"
-            dummyScheme.literals = listOf("permanent")
-
-            assertThat(dummyScheme.generateStrings()).containsExactly("permanent")
+            scheme.generateStrings()[0] shouldBe output
         }
     }
 
+    context("doValidate") {
+        withData(
+            mapOf(
+                "succeeds for default state" to
+                    row(FixedLengthDecorator(), null),
+                "succeeds for one length" to
+                    row(FixedLengthDecorator(length = 1), null),
+                "fails for zero length" to
+                    row(FixedLengthDecorator(length = 0), "fixed_length.error.length_too_low"),
+                "fails for negative length" to
+                    row(FixedLengthDecorator(length = -4), "fixed_length.error.length_too_low"),
+                "fails for empty filler" to
+                    row(FixedLengthDecorator(filler = ""), "fixed_length.error.filler_length"),
+                "fails for non-char filler" to
+                    row(FixedLengthDecorator(filler = "long"), "fixed_length.error.filler_length"),
+            )
+        ) { (scheme, validation) ->
+            scheme.generator = { List(it) { "[in]" } }
 
-    describe("doValidate") {
-        it("passes for the default settings") {
-            assertThat(FixedLengthDecorator().doValidate()).isNull()
-        }
-
-        it("fails if the length is too low") {
-            fixedLengthDecorator.length = -659
-
-            assertThat(fixedLengthDecorator.doValidate()).isEqualTo("Fixed length should be at least $MIN_LENGTH.")
-        }
-
-        it("fails if the filler is an empty string") {
-            fixedLengthDecorator.filler = ""
-
-            assertThat(fixedLengthDecorator.doValidate()).isEqualTo("Filler should be exactly one character.")
-        }
-
-        it("fails if the filler is a multi-character string") {
-            fixedLengthDecorator.filler = "3lq6u"
-
-            assertThat(fixedLengthDecorator.doValidate()).isEqualTo("Filler should be exactly one character.")
+            scheme shouldValidateAsBundle validation
         }
     }
 
-    describe("deepCopy") {
-        it("creates an independent copy") {
-            fixedLengthDecorator.length = 7
-
-            val copy = fixedLengthDecorator.deepCopy()
-            copy.length = 458
-
-            assertThat(fixedLengthDecorator.length).isEqualTo(7)
-        }
-    }
-
-    describe("copyFrom") {
-        it("copies state from another instance") {
-            fixedLengthDecorator.enabled = false
-            fixedLengthDecorator.length = 837
-            fixedLengthDecorator.filler = "n"
-
-            val newScheme = FixedLengthDecorator()
-            newScheme.copyFrom(fixedLengthDecorator)
-
-            assertThat(newScheme).isEqualTo(fixedLengthDecorator)
-            assertThat(newScheme).isNotSameAs(fixedLengthDecorator)
-        }
-    }
+    include(stateDeepCopyTestFactory { FixedLengthDecorator() })
 })

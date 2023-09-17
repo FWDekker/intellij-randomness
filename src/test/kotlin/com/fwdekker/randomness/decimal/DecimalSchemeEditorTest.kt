@@ -1,20 +1,32 @@
 package com.fwdekker.randomness.decimal
 
-import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.editorApplyTestFactory
+import com.fwdekker.randomness.editorFieldsTestFactory
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.isSelectedProp
+import com.fwdekker.randomness.testhelpers.prop
+import com.fwdekker.randomness.testhelpers.textProp
+import com.fwdekker.randomness.testhelpers.valueProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.row
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 
 
 /**
- * GUI tests for [DecimalSchemeEditor].
+ * Unit tests for [DecimalSchemeEditor].
  */
-object DecimalSchemeEditorTest : DescribeSpec({
+object DecimalSchemeEditorTest : FunSpec({
+    tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
+
+
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
@@ -26,209 +38,147 @@ object DecimalSchemeEditorTest : DescribeSpec({
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEach {
+    beforeNonContainer {
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
         scheme = DecimalScheme()
-        editor = GuiActionRunner.execute<DecimalSchemeEditor> { DecimalSchemeEditor(scheme) }
+        editor = guiGet { DecimalSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
     }
 
-    afterEach {
+    afterNonContainer {
         frame.cleanUp()
         ideaFixture.tearDown()
     }
 
 
 
-    describe("input handling") {
-        it("truncates decimals in the decimal count") {
-            GuiActionRunner.execute { frame.spinner("decimalCount").target().value = 693.57f }
+    context("input handling") {
+        context("*Value") {
+            test("binds the minimum and maximum values") {
+                guiRun { frame.spinner("minValue").target().value = 3670.0 }
 
-            frame.spinner("decimalCount").requireValue(693)
+                frame.spinner("minValue").requireValue(3670.0)
+                frame.spinner("maxValue").requireValue(3670.0)
+            }
+        }
+
+        context("decimalCount") {
+            test("truncates decimals in the decimal count") {
+                guiRun { frame.spinner("decimalCount").target().value = 693.57f }
+
+                frame.spinner("decimalCount").requireValue(693)
+            }
+        }
+
+        context("groupingSeparator") {
+            context("enforces the length filter") {
+                beforeNonContainer {
+                    guiRun { frame.checkBox("groupingSeparatorEnabled").target().isSelected = true }
+                }
+
+
+                test("enforces a minimum length of 1") {
+                    guiRun { frame.comboBox("groupingSeparator").target().editor.item = "" }
+
+                    frame.comboBox("groupingSeparator").requireSelection(",")
+                }
+
+                test("enforces a maximum length of 1") {
+                    guiRun { frame.comboBox("groupingSeparator").target().editor.item = "long" }
+
+                    frame.comboBox("groupingSeparator").requireSelection(",")
+                }
+            }
+
+            context("enabled state") {
+                test("enables the input if the checkbox is selected") {
+                    guiRun { frame.checkBox("groupingSeparatorEnabled").target().isSelected = true }
+
+                    frame.comboBox("groupingSeparator").requireEnabled()
+                }
+
+                test("disables the input if the checkbox is not selected") {
+                    guiRun { frame.checkBox("groupingSeparatorEnabled").target().isSelected = false }
+
+                    frame.comboBox("groupingSeparator").requireDisabled()
+                }
+            }
         }
     }
 
 
-    describe("loadState") {
-        it("loads the scheme's minimum value") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(minValue = 157.61, maxValue = 637.03)) }
+    include(editorApplyTestFactory { editor })
 
-            frame.spinner("minValue").requireValue(157.61)
-        }
-
-        it("loads the scheme's maximum value") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(minValue = 212.79, maxValue = 408.68)) }
-
-            frame.spinner("maxValue").requireValue(408.68)
-        }
-
-        it("loads the scheme's decimal count") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(decimalCount = 18)) }
-
-            frame.spinner("decimalCount").requireValue(18)
-        }
-
-        it("loads the scheme's value for showing trailing zeroes") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(showTrailingZeroes = false)) }
-
-            frame.checkBox("showTrailingZeroes").requireSelected(false)
-        }
-
-        it("loads the scheme's grouping separator") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(groupingSeparator = "_")) }
-
-            frame.radioButton("groupingSeparatorNone").requireSelected(false)
-            frame.radioButton("groupingSeparatorPeriod").requireSelected(false)
-            frame.radioButton("groupingSeparatorComma").requireSelected(false)
-            frame.radioButton("groupingSeparatorUnderscore").requireSelected(true)
-            frame.panel("groupingSeparatorCustom").radioButton().requireSelected(false)
-        }
-
-        it("loads the scheme's custom grouping separator") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(customGroupingSeparator = "c")) }
-
-            frame.panel("groupingSeparatorCustom").textBox().requireText("c")
-        }
-
-        it("selects the scheme's custom grouping separator") {
-            GuiActionRunner.execute {
-                editor.loadState(DecimalScheme(groupingSeparator = "s", customGroupingSeparator = "s"))
-            }
-
-            frame.panel("groupingSeparatorCustom").radioButton().requireSelected()
-        }
-
-        it("loads the scheme's decimal separator") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(decimalSeparator = ".")) }
-
-            frame.radioButton("decimalSeparatorComma").requireSelected(false)
-            frame.radioButton("decimalSeparatorPeriod").requireSelected(true)
-            frame.panel("decimalSeparatorCustom").radioButton().requireSelected(false)
-        }
-
-        it("loads the scheme's custom decimal separator") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(customDecimalSeparator = "j")) }
-
-            frame.panel("decimalSeparatorCustom").textBox().requireText("j")
-        }
-
-        it("selects the scheme's custom decimal separator") {
-            GuiActionRunner.execute {
-                editor.loadState(DecimalScheme(decimalSeparator = "o", customDecimalSeparator = "o"))
-            }
-
-            frame.panel("decimalSeparatorCustom").radioButton().requireSelected()
-        }
-
-        it("loads the scheme's prefix") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(prefix = "x")) }
-
-            frame.textBox("prefix").requireText("x")
-        }
-
-        it("loads the scheme's suffix") {
-            GuiActionRunner.execute { editor.loadState(DecimalScheme(suffix = "rough")) }
-
-            frame.textBox("suffix").requireText("rough")
-        }
-    }
-
-    describe("readState") {
-        describe("defaults") {
-            it("returns default grouping separator if no grouping separator is selected") {
-                GuiActionRunner.execute { editor.loadState(DecimalScheme(groupingSeparator = "unsupported")) }
-
-                assertThat(editor.readState().groupingSeparator).isEqualTo(DecimalScheme.DEFAULT_GROUPING_SEPARATOR)
-            }
-
-            it("returns default decimal separator if no decimal separator is selected") {
-                GuiActionRunner.execute { editor.loadState(DecimalScheme(decimalSeparator = "unsupported")) }
-
-                assertThat(editor.readState().decimalSeparator).isEqualTo(DecimalScheme.DEFAULT_DECIMAL_SEPARATOR)
-            }
-        }
-
-        it("returns the original state if no editor changes are made") {
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
-        }
-
-        it("returns the editor's state") {
-            GuiActionRunner.execute {
-                frame.spinner("minValue").target().value = 112.54
-                frame.spinner("maxValue").target().value = 644.74
-                frame.spinner("decimalCount").target().value = 485
-                frame.checkBox("showTrailingZeroes").target().isSelected = false
-                frame.radioButton("groupingSeparatorUnderscore").target().isSelected = true
-                frame.panel("groupingSeparatorCustom").textBox().target().text = "u"
-                frame.radioButton("decimalSeparatorComma").target().isSelected = true
-                frame.panel("decimalSeparatorCustom").textBox().target().text = "p"
-                frame.textBox("prefix").target().text = "exercise"
-                frame.textBox("suffix").target().text = "court"
-            }
-
-            val readScheme = editor.readState()
-            assertThat(readScheme.minValue).isEqualTo(112.54)
-            assertThat(readScheme.maxValue).isEqualTo(644.74)
-            assertThat(readScheme.decimalCount).isEqualTo(485)
-            assertThat(readScheme.showTrailingZeroes).isFalse()
-            assertThat(readScheme.groupingSeparator).isEqualTo("_")
-            assertThat(readScheme.customGroupingSeparator).isEqualTo("u")
-            assertThat(readScheme.decimalSeparator).isEqualTo(",")
-            assertThat(readScheme.customDecimalSeparator).isEqualTo("p")
-            assertThat(readScheme.prefix).isEqualTo("exercise")
-            assertThat(readScheme.suffix).isEqualTo("court")
-        }
-
-        it("returns the loaded state if no editor changes are made") {
-            GuiActionRunner.execute { frame.spinner("minValue").target().value = 112.54 }
-            assertThat(editor.isModified()).isTrue()
-
-            GuiActionRunner.execute { editor.loadState(editor.readState()) }
-            assertThat(editor.isModified()).isFalse()
-
-            assertThat(editor.readState()).isEqualTo(editor.originalState)
-        }
-
-        it("returns a different instance from the loaded scheme") {
-            val readState = editor.readState()
-
-            assertThat(readState)
-                .isEqualTo(editor.originalState)
-                .isNotSameAs(editor.originalState)
-            assertThat(readState.arrayDecorator)
-                .isEqualTo(editor.originalState.arrayDecorator)
-                .isNotSameAs(editor.originalState.arrayDecorator)
-        }
-
-        it("retains the scheme's UUID") {
-            assertThat(editor.readState().uuid).isEqualTo(editor.originalState.uuid)
-        }
-    }
-
-
-    describe("addChangeListener") {
-        it("invokes the listener if a field changes") {
-            var listenerInvoked = false
-            editor.addChangeListener { listenerInvoked = true }
-
-            GuiActionRunner.execute { frame.spinner("minValue").target().value = 121.95 }
-
-            assertThat(listenerInvoked).isTrue()
-        }
-
-        it("invokes the listener if the array decorator changes") {
-            GuiActionRunner.execute {
-                editor.loadState(DecimalScheme(arrayDecorator = ArrayDecorator(enabled = true)))
-            }
-
-            var listenerInvoked = false
-            editor.addChangeListener { listenerInvoked = true }
-
-            GuiActionRunner.execute { frame.spinner("arrayMinCount").target().value = 528 }
-
-            assertThat(listenerInvoked).isTrue()
-        }
-    }
+    include(
+        editorFieldsTestFactory(
+            { editor },
+            mapOf(
+                "minValue" to {
+                    row(
+                        frame.spinner("minValue").valueProp(),
+                        editor.scheme::minValue.prop(),
+                        189.0,
+                    )
+                },
+                "maxValue" to {
+                    row(
+                        frame.spinner("maxValue").valueProp(),
+                        editor.scheme::maxValue.prop(),
+                        200.0,
+                    )
+                },
+                "decimalCount" to {
+                    row(
+                        frame.spinner("decimalCount").valueProp(),
+                        editor.scheme::decimalCount.prop(),
+                        4L,
+                    )
+                },
+                "showTrailingZeroes" to {
+                    row(
+                        frame.checkBox("showTrailingZeroes").isSelectedProp(),
+                        editor.scheme::showTrailingZeroes.prop(),
+                        true,
+                    )
+                },
+                "decimalSeparator" to {
+                    row(
+                        frame.comboBox("decimalSeparator").textProp(),
+                        editor.scheme::decimalSeparator.prop(),
+                        "|",
+                    )
+                },
+                "groupingSeparatorEnabled" to {
+                    row(
+                        frame.checkBox("groupingSeparatorEnabled").isSelectedProp(),
+                        editor.scheme::groupingSeparatorEnabled.prop(),
+                        true,
+                    )
+                },
+                "groupingSeparator" to {
+                    row(
+                        frame.comboBox("groupingSeparator").textProp(),
+                        editor.scheme::groupingSeparator.prop(),
+                        "/",
+                    )
+                },
+                "affixDecorator" to {
+                    row(
+                        frame.comboBox("affixDescriptor").textProp(),
+                        editor.scheme.affixDecorator::descriptor.prop(),
+                        "[@]",
+                    )
+                },
+                "arrayDecorator" to {
+                    row(
+                        frame.spinner("arrayMaxCount").valueProp(),
+                        editor.scheme.arrayDecorator::maxCount.prop(),
+                        7,
+                    )
+                },
+            )
+        )
+    )
 })

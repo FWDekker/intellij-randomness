@@ -21,8 +21,8 @@ import javax.swing.Icon
  *
  * @property repeat `true` if and only if the same value should be inserted at each caret.
  * @property text The text that identifies the action to the user.
- * @param description The optional description of the action.
- * @param icon The icon that represents the action.
+ * @param description the optional description of the action
+ * @param icon the icon that represents the action
  */
 abstract class InsertAction(
     val repeat: Boolean = false,
@@ -40,8 +40,6 @@ abstract class InsertAction(
 
     /**
      * Specifies the thread in which [update] is invoked.
-     *
-     * @return the thread in which [update] is invoked
      */
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
@@ -80,13 +78,13 @@ abstract class InsertAction(
                     else
                         generateStrings(editor.caretModel.caretCount)
                 }
-            } catch (e: DataGenerationException) {
+            } catch (exception: DataGenerationException) {
                 HintManager.getInstance().showErrorHint(
                     editor,
-                    if (e.message.isNullOrBlank())
+                    if (exception.message.isNullOrBlank())
                         Bundle("shared.error.could_not_generate")
                     else
-                        Bundle("shared.error.could_not_generate.no_message", e.message)
+                        Bundle("shared.error.could_not_generate.no_message", exception.message)
                 )
                 return
             }
@@ -106,9 +104,6 @@ abstract class InsertAction(
 
     /**
      * Generates [count] strings.
-     *
-     * @param count the number of strings to generate
-     * @return [count] strings
      */
     abstract fun generateStrings(count: Int): List<String>
 }

@@ -1,17 +1,14 @@
 package com.fwdekker.randomness.datetime
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.RandomnessIcons
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.SchemeDecorator
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.ui.toLocalDateTime
 import com.intellij.ui.JBColor
-import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 
@@ -27,14 +24,11 @@ data class DateTimeScheme(
     var minDateTime: Long = DEFAULT_MIN_DATE_TIME,
     var maxDateTime: Long = DEFAULT_MAX_DATE_TIME,
     var pattern: String = DEFAULT_PATTERN,
-    var arrayDecorator: ArrayDecorator = ArrayDecorator(),
+    val arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
-    @get:Transient
     override val name = Bundle("datetime.title")
     override val typeIcon = BASE_ICON
-
-    override val decorators: List<SchemeDecorator>
-        get() = listOf(arrayDecorator)
+    override val decorators get() = listOf(arrayDecorator)
 
 
     override fun generateUndecoratedStrings(count: Int): List<String> {
@@ -48,8 +42,8 @@ data class DateTimeScheme(
             try {
                 DateTimeFormatter.ofPattern(pattern)
                 null
-            } catch (e: IllegalArgumentException) {
-                e.message
+            } catch (exception: IllegalArgumentException) {
+                exception.message
             }
 
         return if (minDateTime > maxDateTime) Bundle("datetime.error.min_datetime_above_max")
@@ -57,12 +51,7 @@ data class DateTimeScheme(
     }
 
     override fun deepCopy(retainUuid: Boolean) =
-        DateTimeScheme(
-            minDateTime = minDateTime,
-            maxDateTime = maxDateTime,
-            pattern = pattern,
-            arrayDecorator = arrayDecorator.deepCopy(retainUuid)
-        ).also { if (retainUuid) it.uuid = this.uuid }
+        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid)).deepCopyTransient(retainUuid)
 
 
     /**
@@ -73,7 +62,7 @@ data class DateTimeScheme(
          * The base icon for date-times.
          */
         val BASE_ICON = TypeIcon(
-            RandomnessIcons.SCHEME,
+            Icons.SCHEME,
             "2:3",
             listOf(JBColor(Color(249, 139, 158, 154), Color(249, 139, 158, 154)))
         )
@@ -94,18 +83,3 @@ data class DateTimeScheme(
         const val DEFAULT_PATTERN: String = "yyyy-MM-dd HH:mm:ss"
     }
 }
-
-
-/**
- * Converts an epoch millisecond timestamp to a [LocalDateTime] object.
- *
- * @return the [LocalDateTime] corresponding to this epoch millisecond timestamp
- */
-fun Long.toLocalDateTime(): LocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneOffset.UTC)
-
-/**
- * Converts this [LocalDateTime] to an epoch millisecond timestamp.
- *
- * @return the epoch millisecond timestamp corresponding to this [LocalDateTime]
- */
-fun LocalDateTime.toEpochMilli() = toInstant(ZoneOffset.UTC).toEpochMilli()

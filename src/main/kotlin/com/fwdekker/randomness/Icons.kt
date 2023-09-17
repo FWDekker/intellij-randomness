@@ -14,7 +14,7 @@ import kotlin.math.atan2
 /**
  * Basic Randomness icons.
  */
-object RandomnessIcons {
+object Icons {
     /**
      * The main icon of Randomness.
      */
@@ -87,13 +87,10 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
 
     /**
      * Returns an icon that describes both this icon's type and [other]'s type.
-     *
-     * @param other the icon to combine this icon with
-     * @return an icon that describes both this icon's type and [other]'s type
      */
     fun combineWith(other: TypeIcon) =
         TypeIcon(
-            RandomnessIcons.TEMPLATE,
+            Icons.TEMPLATE,
             if (this.text == other.text) this.text else "",
             this.colors + other.colors
         )
@@ -194,44 +191,41 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
         /**
          * Overlay icon for arrays.
          */
-        val ARRAY by lazy { OverlayIcon(RandomnessIcons.ARRAY, RandomnessIcons.ARRAY_FILLED) }
+        val ARRAY by lazy { OverlayIcon(Icons.ARRAY, Icons.ARRAY_FILLED) }
 
         /**
          * Overlay icon for template references.
          */
-        val REFERENCE by lazy { OverlayIcon(RandomnessIcons.REFERENCE, RandomnessIcons.REFERENCE_FILLED) }
+        val REFERENCE by lazy { OverlayIcon(Icons.REFERENCE, Icons.REFERENCE_FILLED) }
 
         /**
          * Overlay icon for repeated insertion.
          */
-        val REPEAT by lazy { OverlayIcon(RandomnessIcons.REPEAT, RandomnessIcons.REPEAT_FILLED) }
+        val REPEAT by lazy { OverlayIcon(Icons.REPEAT, Icons.REPEAT_FILLED) }
 
         /**
          * Overlay icon for settings.
          */
-        val SETTINGS by lazy { OverlayIcon(RandomnessIcons.SETTINGS, RandomnessIcons.SETTINGS_FILLED) }
+        val SETTINGS by lazy { OverlayIcon(Icons.SETTINGS, Icons.SETTINGS_FILLED) }
     }
 }
 
 /**
  * An icon with various icons displayed on top of it as overlays.
  *
- * @property base
- * @property overlays
+ * @property base The underlying base icon.
+ * @property overlays The various icons that are overlayed on top of [base].
  */
 data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList()) : Icon {
     init {
-        require(base.iconWidth == base.iconHeight) { Bundle("icons.error.base_square") }
-        require(overlays.all { it.iconWidth == it.iconHeight }) { Bundle("icons.error.overlay_square") }
-        require(overlays.map { it.iconWidth }.toSet().size <= 1) { Bundle("icons.error.overlay_same_size") }
+        require(base.iconWidth == base.iconHeight) { "Base must be square." }
+        require(overlays.all { it.iconWidth == it.iconHeight }) { "Overlays must be square." }
+        require(overlays.map { it.iconWidth }.toSet().size <= 1) { "All overlays must have same size." }
     }
 
 
     /**
      * Returns a copy of this icon that has [icon] as an additional overlay icon.
-     *
-     * @param icon the additional overlay icon
-     * @return a copy of this icon that has [icon] as an additional overlay icon
      */
     fun plusOverlay(icon: Icon) = copy(overlays = overlays + icon)
 
@@ -291,8 +285,8 @@ class RadialColorReplacementFilter(
     private val center: Pair<Int, Int>? = null,
 ) : RGBImageFilter() {
     init {
-        require(colors.isNotEmpty()) { Bundle("icons.error.one_colour") }
-        require(colors.size == 1 || center != null) { Bundle("icons.error.center_undefined") }
+        require(colors.isNotEmpty()) { "At least one color must be defined." }
+        require(colors.size == 1 || center != null) { "Center must be defined if more than one color is given." }
     }
 
 
@@ -314,27 +308,17 @@ class RadialColorReplacementFilter(
 
     /**
      * Returns [toShift] which has its alpha multiplied by that of [shiftBy].
-     *
-     * @param toShift the color of which to shift the alpha
-     * @param shiftBy the color which has the alpha to shift by
-     * @return [toShift] which has its alpha multiplied by that of [shiftBy]
      */
     private fun shiftAlpha(toShift: Color, shiftBy: Color) =
         ColorUtil.withAlpha(toShift, asFraction(toShift.alpha) * asFraction(shiftBy.alpha))
 
     /**
-     * Represents an integer in the range `[0, 256)` to a fraction of that range.
-     *
-     * @param number the number to represent as a fraction
-     * @return number as a fraction
+     * Represents a [number] in the range `[0, 256)` as a fraction of that range.
      */
     private fun asFraction(number: Int) = number / COMPONENT_MAX.toDouble()
 
     /**
-     * Converts an offset to the [center] to a color in [colors].
-     *
-     * @param offset the offset to get the color for
-     * @return the color to be displayed at [offset]
+     * Returns the appropriate color from [colors] for an [offset] relative to the [center].
      */
     private fun positionToColor(offset: Pair<Int, Int>): Color {
         val angle = 2 * Math.PI - (atan2(offset.second.toDouble(), offset.first.toDouble()) + STARTING_ANGLE)

@@ -1,237 +1,107 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.DataGenerationException
-import com.fwdekker.randomness.DummyScheme
-import io.kotest.core.spec.style.DescribeSpec
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import com.fwdekker.randomness.affix.AffixDecorator
+import com.fwdekker.randomness.stateDeepCopyTestFactory
+import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
+import io.kotest.core.NamedTag
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.row
+import io.kotest.datatest.withData
+import io.kotest.matchers.ints.shouldBeInRange
+import io.kotest.matchers.shouldBe
 
 
 /**
  * Unit tests for [ArrayDecorator].
  */
-object ArrayDecoratorTest : DescribeSpec({
-    lateinit var arrayDecorator: ArrayDecorator
-    lateinit var dummyScheme: DummyScheme
+object ArrayDecoratorTest : FunSpec({
+    tags(NamedTag("Scheme"))
 
 
-    beforeEach {
-        arrayDecorator = ArrayDecorator(enabled = true)
-        dummyScheme = DummyScheme(decorators = listOf(arrayDecorator))
-    }
-
-
-    describe("generateStrings") {
-        it("throws an exception if the scheme is invalid") {
-            arrayDecorator.minCount = -321
-
-            assertThatThrownBy { dummyScheme.generateStrings() }.isInstanceOf(DataGenerationException::class.java)
-        }
-
-        it("returns non-array values if disabled") {
-            arrayDecorator.enabled = false
-            dummyScheme.literals = listOf("Heal")
-
-            assertThat(dummyScheme.generateStrings()).containsExactly("Heal")
-        }
-
-        describe("count") {
-            it("generates a single value") {
-                arrayDecorator.minCount = 1
-                arrayDecorator.maxCount = 1
-                arrayDecorator.separator = ","
-
-                dummyScheme.generateStrings(50).forEach { string ->
-                    assertThat(string.count { it == ',' }).isZero()
-                }
-            }
-
-            it("generates a fixed number of values") {
-                arrayDecorator.minCount = 8
-                arrayDecorator.maxCount = 8
-                arrayDecorator.separator = ","
-
-                dummyScheme.generateStrings(50).forEach { string ->
-                    assertThat(string.count { it == ',' }).isEqualTo(7)
-                }
-            }
-
-            it("generates at least the minimum number of values") {
-                arrayDecorator.minCount = 4
-                arrayDecorator.maxCount = 12
-                arrayDecorator.separator = ","
-
-                dummyScheme.generateStrings(50).forEach { string ->
-                    assertThat(string.count { it == ',' }).isGreaterThanOrEqualTo(3)
-                }
-            }
-
-            it("generates at most the maximum number of values") {
-                arrayDecorator.minCount = 9
-                arrayDecorator.maxCount = 82
-                arrayDecorator.separator = ","
-
-                dummyScheme.generateStrings(50).forEach { string ->
-                    assertThat(string.count { it == ',' }).isLessThanOrEqualTo(81)
-                }
-            }
-        }
-
-        describe("brackets") {
-            it("returns an array-like string given no brackets") {
-                arrayDecorator.minCount = 4
-                arrayDecorator.maxCount = 4
-                arrayDecorator.brackets = ""
-                arrayDecorator.separator = "h"
-                arrayDecorator.isSpaceAfterSeparator = false
-                dummyScheme.literals = listOf("Elvish", "Stride")
-
-                assertThat(dummyScheme.generateStrings()).containsExactly("ElvishhStridehElvishhStride")
-            }
-
-            it("puts brackets on both sides of the output if there is no @ in the brackets") {
-                arrayDecorator.minCount = 2
-                arrayDecorator.maxCount = 2
-                arrayDecorator.brackets = "yn"
-                dummyScheme.literals = listOf("Fatten", "Across")
-
-                assertThat(dummyScheme.generateStrings()).containsExactly("ynFatten, Acrossyn")
-            }
-
-            it("substitutes the @ in the brackets with the output") {
-                arrayDecorator.minCount = 2
-                arrayDecorator.maxCount = 2
-                arrayDecorator.brackets = "(@)"
-                dummyScheme.literals = listOf("Cloud", "Taxi")
-
-                assertThat(dummyScheme.generateStrings()).containsExactly("(Cloud, Taxi)")
-            }
-        }
-
-        describe("separator") {
-            it("returns an array-like string given a non-singular separator") {
-                arrayDecorator.minCount = 3
-                arrayDecorator.brackets = "[@#"
-                arrayDecorator.separator = ";;"
-                arrayDecorator.isSpaceAfterSeparator = true
-                dummyScheme.literals = listOf("Garhwali", "Pattypan", "Troll")
-
-                assertThat(dummyScheme.generateStrings()).containsExactly("[Garhwali;; Pattypan;; Troll#")
-            }
-
-            it("returns an array-like string given a disabled space-after-separator") {
-                arrayDecorator.minCount = 3
-                arrayDecorator.maxCount = 3
-                arrayDecorator.brackets = "<@>"
-                arrayDecorator.separator = "-"
-                arrayDecorator.isSpaceAfterSeparator = false
-                dummyScheme.literals = listOf("Remain", "Pound")
-
-                assertThat(dummyScheme.generateStrings()).containsExactly("<Remain-Pound-Remain>")
-            }
-
-            it("returns an array-like string without space after separator given the newline separator") {
-                arrayDecorator.minCount = 2
-                arrayDecorator.maxCount = 2
-                arrayDecorator.brackets = "[@]"
-                arrayDecorator.separator = "\n"
-                arrayDecorator.isSpaceAfterSeparator = true
-                dummyScheme.literals = listOf("Union", "Bell")
-
-                assertThat(dummyScheme.generateStrings()).containsExactly("[Union\nBell]")
-            }
-        }
-
-        it("returns multiple array-like strings that appropriately chunk the underlying generator's outputs") {
-            arrayDecorator.minCount = 2
-            arrayDecorator.maxCount = 2
-            dummyScheme.literals = listOf("Flesh", "Strap", "Stem")
-
-            assertThat(dummyScheme.generateStrings(3)).containsExactly(
-                "[Flesh, Strap]",
-                "[Stem, Flesh]",
-                "[Strap, Stem]"
+    context("generateStrings") {
+        withData(
+            mapOf(
+                "returns default input if disabled" to
+                    row(
+                        ArrayDecorator(enabled = false, minCount = 3),
+                        "[i0]",
+                    ),
+                "returns a single value" to
+                    row(
+                        ArrayDecorator(enabled = true, minCount = 1, maxCount = 1),
+                        "[[i0]]",
+                    ),
+                "returns a fixed number of values" to
+                    row(
+                        ArrayDecorator(enabled = true, minCount = 3, maxCount = 3),
+                        "[[i0], [i1], [i2]]",
+                    ),
+                "returns array with multi-char separator" to
+                    row(
+                        ArrayDecorator(enabled = true, separator = ";;"),
+                        "[[i0];;[i1];;[i2]]",
+                    ),
+                "retains leading whitespace in separator" to
+                    row(
+                        ArrayDecorator(enabled = true, separator = ",  "),
+                        "[[i0],  [i1],  [i2]]",
+                    ),
+                "converts escaped 'n' in separator to newline" to
+                    row(
+                        ArrayDecorator(enabled = true, separator = """\n"""),
+                        "[[i0]\n[i1]\n[i2]]",
+                    ),
+                "applies affix decorator" to
+                    row(
+                        ArrayDecorator(enabled = true, affixDecorator = AffixDecorator(enabled = true, "(@)")),
+                        "([i0], [i1], [i2])",
+                    ),
             )
+        ) { (scheme, output) ->
+            scheme.generator = { count -> List(count) { "[i$it]" } }
+
+            scheme.generateStrings()[0] shouldBe output
+        }
+
+        test("generates the desired number of entries") {
+            val scheme = ArrayDecorator(enabled = true, minCount = 3, maxCount = 8)
+            scheme.generator = { count -> List(count) { "[i$it]" } }
+
+            scheme.generateStrings(count = 50).map { string -> string.count { it == ',' } + 1 }
+                .forEach { it shouldBeInRange 3..8 }
+        }
+
+        test("appropriately chunks generator outputs") {
+            val scheme = ArrayDecorator(enabled = true)
+            var i = 0
+            scheme.generator = { count -> List(count) { "[i${i++}]" } }
+
+            scheme.generateStrings(count = 2) shouldBe listOf("[[i0], [i1], [i2]]", "[[i3], [i4], [i5]]")
         }
     }
 
+    context("doValidate") {
+        withData(
+            mapOf(
+                "succeeds for default state" to
+                    row(ArrayDecorator(), null),
+                "fails for zero min count" to
+                    row(ArrayDecorator(minCount = 0), "array.error.min_count_too_low"),
+                "fails for negative min count" to
+                    row(ArrayDecorator(minCount = -23), "array.error.min_count_too_low"),
+                "succeeds for min count equals max count" to
+                    row(ArrayDecorator(minCount = 368, maxCount = 368), null),
+                "fails for min count above max count" to
+                    row(ArrayDecorator(minCount = 14, maxCount = 2), "array.error.min_count_above_max"),
+                "fails if affix decorator is invalid" to
+                    row(ArrayDecorator(affixDecorator = AffixDecorator(descriptor = """\""")), ""),
+            )
+        ) { (scheme, validation) ->
+            scheme.generator = { count -> List(count) { "[i$it]" } }
 
-    describe("doValidate") {
-        it("passes for the default settings") {
-            assertThat(ArrayDecorator().doValidate()).isNull()
-        }
-
-        describe("count") {
-            it("fails for min count equals 0") {
-                arrayDecorator.minCount = 0
-
-                assertThat(arrayDecorator.doValidate()).isEqualTo("Minimum count should be at least 1.")
-            }
-
-            it("fails for negative min count") {
-                arrayDecorator.minCount = -23
-
-                assertThat(arrayDecorator.doValidate()).isEqualTo("Minimum count should be at least 1.")
-            }
-
-            it("passes if the minimum count equals the maximum count") {
-                arrayDecorator.minCount = 368
-                arrayDecorator.maxCount = 368
-
-                assertThat(arrayDecorator.doValidate()).isNull()
-            }
-
-            it("fails if max count is less than min count") {
-                arrayDecorator.minCount = 14
-                arrayDecorator.maxCount = 2
-
-                assertThat(arrayDecorator.doValidate())
-                    .isEqualTo("Minimum count should be less than or equal to maximum count.")
-            }
-        }
-
-        describe("brackets") {
-            it("passes for valid brackets") {
-                arrayDecorator.brackets = "dVN(An@)\\yk"
-
-                assertThat(arrayDecorator.doValidate()).isNull()
-            }
-
-            it("fails for invalid brackets") {
-                arrayDecorator.brackets = "zFT<pgaQH@\\"
-
-                assertThat(arrayDecorator.doValidate()).isNotNull()
-            }
+            scheme shouldValidateAsBundle validation
         }
     }
 
-    describe("deepCopy") {
-        it("creates an independent copy") {
-            arrayDecorator.minCount = 44
-
-            val copy = arrayDecorator.deepCopy()
-            copy.minCount = 15
-
-            assertThat(arrayDecorator.minCount).isEqualTo(44)
-        }
-    }
-
-    describe("copyFrom") {
-        it("copies state from another instance") {
-            arrayDecorator.enabled = false
-            arrayDecorator.minCount = 34
-            arrayDecorator.maxCount = 830
-            arrayDecorator.brackets = "0fWx<@i6jTJ"
-            arrayDecorator.customBrackets = "Wvtx2Lz7"
-            arrayDecorator.separator = "f3hu)Rxiz1"
-            arrayDecorator.customSeparator = "pKlq0b2"
-            arrayDecorator.isSpaceAfterSeparator = false
-
-            val newScheme = ArrayDecorator()
-            newScheme.copyFrom(arrayDecorator)
-
-            assertThat(newScheme).isEqualTo(arrayDecorator)
-            assertThat(newScheme).isNotSameAs(arrayDecorator)
-        }
-    }
+    include(stateDeepCopyTestFactory { ArrayDecorator() })
 })

@@ -38,19 +38,8 @@ abstract class JNumberSpinner<T>(value: T, minValue: T?, maxValue: T?, stepSize:
 
     /**
      * Returns the current value of the spinner.
-     *
-     * @return the current value of the spinner
      */
     override fun getValue(): T = numberToT(numberModel.number)
-
-    /**
-     * Sets the value of the spinner.
-     *
-     * @param value the new value of the spinner
-     */
-    override fun setValue(value: Any) {
-        numberModel.value = value
-    }
 
 
     /**
@@ -136,5 +125,33 @@ class JIntSpinner(
 
     init {
         this.editor = NumberEditor(this).also { it.format.decimalFormatSymbols = DEFAULT_FORMAT }
+    }
+}
+
+
+/**
+ * Binds two spinners that form a range of valid values together.
+ *
+ * This function adds listeners to the spinners so that if one spinner's value is adjusted, the other's value is also
+ * adjusted if not doing so would make the range invalid. Specifically, this function guarantees that [min] never
+ * exceeds [max], and that the difference between [min] and [max] never exceeds [maxRange].
+ */
+fun bindSpinners(min: JSpinner, max: JSpinner, maxRange: Double? = null) {
+    if (maxRange != null)
+        require(maxRange >= 0) { "maxRange must be a positive number." }
+
+    min.addChangeListener {
+        val minValue = (min.value as Number).toDouble()
+        val maxValue = (max.value as Number).toDouble()
+
+        if (minValue > maxValue) max.value = minValue
+        if (maxRange != null && maxValue - minValue > maxRange) max.value = minValue + maxRange
+    }
+    max.addChangeListener {
+        val minValue = (min.value as Number).toDouble()
+        val maxValue = (max.value as Number).toDouble()
+
+        if (maxValue < minValue) min.value = maxValue
+        if (maxRange != null && maxValue - minValue > maxRange) min.value = maxValue - maxRange
     }
 }
