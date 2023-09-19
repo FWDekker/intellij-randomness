@@ -3,6 +3,7 @@ package com.fwdekker.randomness
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
 import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.components.SettingsCategory
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
 import com.intellij.util.xmlb.annotations.Transient
@@ -50,8 +51,12 @@ data class Settings(var templateList: TemplateList = TemplateList()) : State() {
  * The actual user's actual stored actually-serialized settings (actually).
  */
 @JBState(
-    name = "com.fwdekker.randomness.PersistentSettings",
-    storages = [Storage("\$APP_CONFIG\$/randomness-beta.xml")],
+    name = "Randomness",
+    storages = [
+        Storage("\$APP_CONFIG\$/randomness.xml", deprecated = true),
+        Storage("\$APP_CONFIG\$/randomness-beta.xml", exportable = true),
+    ],
+    category = SettingsCategory.PLUGINS,
 )
 class PersistentSettings : PersistentStateComponent<Settings> {
     private val settings = Settings()
