@@ -15,6 +15,7 @@ import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.ui.Gray
 import com.intellij.util.xmlb.annotations.XCollection
+import kotlin.random.Random
 
 
 /**
@@ -76,9 +77,13 @@ data class Template(
      * The schemes are first all given a reference to the same [random] before each generating [count] random strings.
      * These results are then concatenated into the output.
      */
-    override fun generateUndecoratedStrings(count: Int) =
-        schemes.onEach { it.random = random }.map { it.generateStrings(count) }
+    override fun generateUndecoratedStrings(count: Int): List<String> {
+        val seed = random.nextInt()
+
+        return schemes.onEach { it.random = Random(seed + it.uuid.hashCode()) }
+            .map { it.generateStrings(count) }
             .let { data -> (0 until count).map { i -> data.joinToString("") { it[i] } } }
+    }
 
 
     override fun doValidate() =
