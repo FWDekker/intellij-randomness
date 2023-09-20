@@ -1,20 +1,25 @@
 package com.fwdekker.randomness.template
 
+import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.stateDeepCopyTestFactory
+import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.testhelpers.DummyScheme
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
+import com.fwdekker.randomness.word.WordScheme
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
+import kotlin.random.Random
 
 
 /**
@@ -98,6 +103,46 @@ object TemplateTest : FunSpec({
             val template = Template(schemes = mutableListOf(DummyScheme(valid = false)))
 
             shouldThrow<DataGenerationException> { template.generateStrings() }
+        }
+
+        context("rng") {
+            test("returns the same given the same seed") {
+                val template = Template(schemes = mutableListOf(StringScheme("[a-zA-Z]{10}"), IntegerScheme()))
+
+                val outputs1 = template.also { it.random = Random(1) }.generateStrings(5)
+                val outputs2 = template.also { it.random = Random(1) }.generateStrings(5)
+
+                outputs1 shouldContainExactly outputs2
+            }
+
+            test("sets the rng of a scheme independent of scheme order") {
+                val schemeA = IntegerScheme()
+                val glue = StringScheme("-")
+                val schemeB = IntegerScheme()
+
+                val output1 = Template(schemes = mutableListOf(schemeA, glue, schemeB))
+                    .also { it.random = Random(1) }
+                    .generateStrings()[0]
+                val output2 = Template(schemes = mutableListOf(schemeB, glue, schemeA))
+                    .also { it.random = Random(1) }
+                    .generateStrings()[0]
+
+                output1.split("-").reversed() shouldContainExactly output2.split("-")
+            }
+
+            test("sets the rng independent of the rng of other schemes") {
+                val prefix = WordScheme(words = listOf("pre"))
+                val scheme = IntegerScheme()
+                val postfix = WordScheme(words = listOf("post"))
+                val template = Template(schemes = mutableListOf(prefix, scheme, postfix))
+
+                val output1 = template.also { it.random = Random(1) }.generateStrings()[0]
+                prefix.capitalization = CapitalizationMode.RANDOM
+                postfix.capitalization = CapitalizationMode.RANDOM
+                val output2 = template.also { it.random = Random(1) }.generateStrings()[0]
+
+                output1.drop(3).dropLast(4) shouldBe output2.drop(3).dropLast(4)
+            }
         }
     }
 
