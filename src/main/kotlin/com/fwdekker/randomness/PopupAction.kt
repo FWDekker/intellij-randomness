@@ -106,7 +106,7 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
          * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
-            PersistentSettings.default.state.templates.map { TemplateGroupAction(it) }.toTypedArray<AnAction>() +
+            Settings.DEFAULT.templates.map { TemplateGroupAction(it) }.toTypedArray<AnAction>() +
                 Separator() +
                 TemplateSettingsAction()
     }
@@ -121,7 +121,7 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
          * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
-            PersistentSettings.default.state.templates.map { TemplateSettingsAction(it) }.toTypedArray<AnAction>() +
+            Settings.DEFAULT.templates.map { TemplateSettingsAction(it) }.toTypedArray<AnAction>() +
                 Separator() +
                 TemplateSettingsAction()
     }

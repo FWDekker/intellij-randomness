@@ -12,7 +12,6 @@ import com.fwdekker.randomness.ui.withName
 import com.fwdekker.randomness.ui.withSimpleRenderer
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.BottomGap
-import com.intellij.ui.dsl.builder.EMPTY_LABEL
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
@@ -38,14 +37,14 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : SchemeEditor<S
                 browserLink(Bundle("string.ui.value.pattern_help"), Bundle("string.ui.value.pattern_help_url"))
             }
 
-            row(EMPTY_LABEL) {
+            row("") {
                 checkBox(Bundle("string.ui.value.is_regex_option"))
                     .loadMnemonic()
                     .withName("isRegex")
                     .bindSelected(scheme::isRegex)
             }
 
-            row(EMPTY_LABEL) {
+            row("") {
                 checkBox(Bundle("string.ui.value.remove_look_alike"))
                     .loadMnemonic()
                     .withName("removeLookAlikeCharacters")

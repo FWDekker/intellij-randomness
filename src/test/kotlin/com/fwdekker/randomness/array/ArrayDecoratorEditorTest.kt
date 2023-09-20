@@ -17,6 +17,8 @@ import com.intellij.ui.TitledSeparator
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
+import io.kotest.matchers.collections.beEmpty
+import io.kotest.matchers.should
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
@@ -67,7 +69,7 @@ object ArrayDecoratorEditorTest : FunSpec({
                 editor = guiGet { ArrayDecoratorEditor(scheme, embedded = true) }
                 frame = showInFrame(editor.rootComponent)
 
-                frame.panel(matcher(TitledSeparator::class.java)).requireNotVisible()
+                frame.robot().finder().findAll(matcher(TitledSeparator::class.java)) should beEmpty()
             }
         }
     }
@@ -88,14 +90,14 @@ object ArrayDecoratorEditorTest : FunSpec({
                 frame.spinner("arrayMinCount").requireEnabled()
             }
 
-            test("keeps components visible if the editor is embedded") {
+            test("remains disabled and is disconnected from inputs if the editor is embedded") {
                 frame.cleanUp()
+                scheme.enabled = false
                 editor = guiGet { ArrayDecoratorEditor(scheme, embedded = true) }
                 frame = showInFrame(editor.rootComponent)
 
                 // This special matcher does not require the component to be visible
-                frame.checkBox(matcher(JCheckBox::class.java) { it.name == "arrayEnabled" }).requireSelected()
-
+                frame.checkBox(matcher(JCheckBox::class.java) { it.name == "arrayEnabled" }).requireNotSelected()
                 frame.spinner("arrayMinCount").requireEnabled()
             }
         }
@@ -181,6 +183,13 @@ object ArrayDecoratorEditorTest : FunSpec({
         editorFieldsTestFactory(
             { editor },
             mapOf(
+                "enabled" to {
+                    row(
+                        frame.checkBox("arrayEnabled").isSelectedProp(),
+                        editor.scheme::enabled.prop(),
+                        false,
+                    )
+                },
                 "minCount" to {
                     row(
                         frame.spinner("arrayMinCount").valueProp(),

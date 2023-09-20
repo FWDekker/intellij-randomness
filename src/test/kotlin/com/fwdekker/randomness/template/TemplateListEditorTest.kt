@@ -176,7 +176,7 @@ object TemplateListEditorTest : FunSpec({
             test("selects the indicated template") {
                 guiRun { frame.tree().target().selectionRows = intArrayOf(4) }
 
-                editor.queueSelection = context.templateList.templates[1].uuid
+                editor.queueSelection = context.templates[1].uuid
                 guiRun { editor.reset() }
 
                 frame.tree().target().selectionRows!! shouldContainExactly arrayOf(3)
@@ -185,7 +185,7 @@ object TemplateListEditorTest : FunSpec({
             test("selects the indicated scheme") {
                 guiRun { frame.tree().target().selectionRows = intArrayOf(2) }
 
-                editor.queueSelection = context.templateList.templates[1].schemes[0].uuid
+                editor.queueSelection = context.templates[1].schemes[0].uuid
                 guiRun { editor.reset() }
 
                 frame.tree().target().selectionRows!! shouldContainExactly arrayOf(4)

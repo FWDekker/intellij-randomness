@@ -4,6 +4,7 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Panel
+import com.intellij.ui.dsl.builder.TopGap
 import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.dsl.builder.toMutableProperty
 import com.intellij.ui.layout.ComponentPredicate
@@ -20,11 +21,15 @@ import kotlin.reflect.KMutableProperty0
 
 
 /**
- * Creates and returns a range of rows from [spec], which is indented if and only if [indented] is `true`.
+ * Creates and returns a range of rows from [init], headed by an underlined [title] if and only if [title] is not
+ * `null`, and indented if and only if [indent] is `true`.
  */
-fun Panel.indentedRowRange(indented: Boolean, spec: Panel.() -> Unit) =
-    if (indented) indent(spec)
-    else rowsRange(spec)
+fun Panel.decoratedRowRange(title: String? = null, indent: Boolean, init: Panel.() -> Unit) =
+    when {
+        title != null -> rowsRange { group(title, indent = indent, init = init).topGap(TopGap.MEDIUM) }
+        indent -> indent(init)
+        else -> rowsRange(init)
+    }
 
 
 /**
@@ -118,6 +123,15 @@ fun <E> Cell<ComboBox<E>>.withSimpleRenderer(toString: (E) -> String = { it.toSt
     return this
 }
 
+
+/**
+ * A predicate that always returns [output].
+ */
+class LiteralPredicate(private val output: Boolean) : ComponentPredicate() {
+    override fun addListener(listener: (Boolean) -> Unit) = Unit
+
+    override fun invoke() = output
+}
 
 /**
  * Returns a [ComponentPredicate] that evaluates [lambda] on the value of this [JIntSpinner].

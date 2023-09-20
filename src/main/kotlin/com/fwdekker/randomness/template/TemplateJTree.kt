@@ -12,6 +12,7 @@ import com.fwdekker.randomness.word.WordScheme
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionToolbarPosition
 import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.ListSeparator
@@ -126,7 +127,7 @@ class TemplateJTree(
 
 
     init {
-        TreeSpeedSearch(this) { path -> path.path.filterIsInstance<Scheme>().joinToString { it.name } }
+        TreeSpeedSearch(this, true) { path -> path.path.filterIsInstance<Scheme>().joinToString { it.name } }
 
         emptyText.text = Bundle("template_list.ui.empty")
         isRootVisible = false
@@ -164,12 +165,12 @@ class TemplateJTree(
             .setScrollPaneBorder(JBUI.Borders.empty())
             .disableAddAction()
             .disableRemoveAction()
-            .addExtraAction(AddButton())
-            .addExtraAction(RemoveButton())
-            .addExtraAction(CopyButton())
-            .addExtraAction(UpButton())
-            .addExtraAction(DownButton())
-            .addExtraAction(ResetButton())
+            .addExtraAction(AddButton() as AnAction)
+            .addExtraAction(RemoveButton() as AnAction)
+            .addExtraAction(CopyButton() as AnAction)
+            .addExtraAction(UpButton() as AnAction)
+            .addExtraAction(DownButton() as AnAction)
+            .addExtraAction(ResetButton() as AnAction)
             .setButtonComparator(
                 Bundle("shared.action.add"),
                 Bundle("shared.action.edit"),
@@ -499,7 +500,7 @@ class TemplateJTree(
          * Ineligible [Template]s are automatically filtered out.
          */
         private inner class ReferencesPopupStep : AddSchemePopupStep(
-            currentSettings.templateList.templates
+            currentSettings.templates
                 .filter { selectedTemplate!!.canReference(it) }
                 .map { TemplateReference(it.uuid) }
         )
