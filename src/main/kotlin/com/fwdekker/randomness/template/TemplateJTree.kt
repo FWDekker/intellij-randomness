@@ -408,10 +408,7 @@ class TemplateJTree(
          */
         override fun actionPerformed(event: AnActionEvent) =
             JBPopupFactory.getInstance()
-                .createListPopup(
-                    if (selectedNodeNotRoot == null) DefaultTemplatesPopupStep()
-                    else MainPopupStep()
-                )
+                .createListPopup(MainPopupStep(templatesOnly = selectedNodeNotRoot == null))
                 .show(preferredPopupPoint)
 
 
@@ -422,8 +419,9 @@ class TemplateJTree(
          *
          * @param schemes the schemes that can be inserted
          */
-        private abstract inner class AddSchemePopupStep(schemes: List<Scheme>) :
-            BaseListPopupStep<Scheme>(null, schemes) {
+        private abstract inner class AbstractPopupStep(
+            schemes: List<Scheme>,
+        ) : BaseListPopupStep<Scheme>(null, schemes) {
             /**
              * Returns [value]'s icon.
              */
@@ -451,6 +449,7 @@ class TemplateJTree(
                 return null
             }
 
+
             /**
              * Returns `true`.
              */
@@ -464,14 +463,21 @@ class TemplateJTree(
 
         /**
          * The top-level [PopupStep], which includes the default templates and various reference types.
+         *
+         * @property templatesOnly `true` if and only if non-[Template] schemes cannot be inserted.
          */
-        private inner class MainPopupStep : AddSchemePopupStep(POPUP_STEP_SCHEMES) {
+        private inner class MainPopupStep(private val templatesOnly: Boolean) : AbstractPopupStep(POPUP_STEP_SCHEMES) {
             override fun onChosen(value: Scheme?, finalChoice: Boolean) =
                 when (value) {
-                    POPUP_STEP_SCHEMES[0] -> DefaultTemplatesPopupStep()
+                    POPUP_STEP_SCHEMES[0] -> TemplatesPopupStep()
                     POPUP_STEP_SCHEMES[POPUP_STEP_SCHEMES.size - 1] -> ReferencesPopupStep()
                     else -> super.onChosen(value, finalChoice)
                 }
+
+            /**
+             * Returns `true` if and only if [value] is a [Template] or [templatesOnly] is `false`.
+             */
+            override fun isSelectable(value: Scheme?) = value is Template || !templatesOnly
 
             /**
              * Returns `true` if and only if [value] equals the [Template] or [TemplateReference] entry.
@@ -490,8 +496,8 @@ class TemplateJTree(
         /**
          * A [PopupStep] that shows only the default templates.
          */
-        private inner class DefaultTemplatesPopupStep :
-            AddSchemePopupStep(listOf(Template("Empty")) + TemplateList.DEFAULT_TEMPLATES)
+        private inner class TemplatesPopupStep :
+            AbstractPopupStep(listOf(Template("Empty")) + TemplateList.DEFAULT_TEMPLATES)
 
         /**
          * A [PopupStep] that contains a [TemplateReference] for each [Template] that can currently be referenced from
@@ -499,7 +505,7 @@ class TemplateJTree(
          *
          * Ineligible [Template]s are automatically filtered out.
          */
-        private inner class ReferencesPopupStep : AddSchemePopupStep(
+        private inner class ReferencesPopupStep : AbstractPopupStep(
             currentSettings.templates
                 .filter { selectedTemplate!!.canReference(it) }
                 .map { TemplateReference(it.uuid) }
