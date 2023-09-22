@@ -25,7 +25,7 @@ abstract class State {
      * @see applyContext
      */
     @get:Transient
-    var context: Box<Settings> = Box({ PersistentSettings.default.state })
+    var context: Box<Settings> = Box({ Settings.DEFAULT })
         protected set
 
 

@@ -162,7 +162,7 @@ class TemplateInsertAction(
         /**
          * Saves the [editor]'s state.
          */
-        override fun apply() = Unit
+        override fun apply() = editor.apply()
 
         /**
          * Returns [text].

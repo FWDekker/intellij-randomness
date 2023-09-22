@@ -1,6 +1,8 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 import java.time.Year
 
@@ -10,18 +12,18 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    id("org.jetbrains.kotlin.jvm") version "1.8.22"  // See also `gradle.properties`
-    id("org.jetbrains.intellij") version "1.14.2"
+    id("org.jetbrains.kotlin.jvm") version "1.9.10"  // Use latest version, ignoring `gradle.properties`
+    id("org.jetbrains.intellij") version "1.15.0"
 
     // Tests/coverage
-    id("org.jetbrains.kotlinx.kover") version "0.7.2"
+    id("org.jetbrains.kotlinx.kover") version "0.7.3"
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.23.0"  // See also `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.23.1"  // See also `gradle.properties`
 
     // Documentation
-    id("org.jetbrains.changelog") version "2.1.0"
-    id("org.jetbrains.dokka") version "1.8.20"
+    id("org.jetbrains.changelog") version "2.2.0"
+    id("org.jetbrains.dokka") version "1.9.0"
 }
 
 
@@ -57,14 +59,14 @@ tasks {
         sourceCompatibility = properties("javaVersion")
         targetCompatibility = properties("javaVersion")
     }
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = properties("javaVersion")
             apiVersion = properties("kotlinApiVersion")
             languageVersion = properties("kotlinVersion")
         }
     }
-    withType<io.gitlab.arturbosch.detekt.Detekt> {
+    withType<Detekt> {
         jvmTarget = properties("javaVersion")
     }
 
@@ -136,7 +138,7 @@ tasks {
 
     // Documentation
     dokkaHtml.configure {
-        notCompatibleWithConfigurationCache("Not sure why")
+        notCompatibleWithConfigurationCache("cf. https://github.com/Kotlin/dokka/issues/1217")
 
         pluginsMapConfiguration.set(
             mapOf(

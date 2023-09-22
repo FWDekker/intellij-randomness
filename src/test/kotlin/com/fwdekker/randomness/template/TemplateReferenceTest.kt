@@ -248,7 +248,12 @@ object TemplateReferenceTest : FunSpec({
                     row({ reference.also { it.capitalization = CapitalizationMode.UPPER } }, "TEXT0"),
                 "applies decorators in order affix, array" to
                     row(
-                        { reference.also { it.affixDecorator.enabled = true; it.arrayDecorator.enabled = true } },
+                        {
+                            reference.also {
+                                it.affixDecorator.enabled = true
+                                it.arrayDecorator.enabled = true
+                            }
+                        },
                         "[text0, text1, text2]",
                     ),
             )
