@@ -1,21 +1,29 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.PersistentSettings.Companion.CURRENT_VERSION
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.SettingsCategory
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
+import com.intellij.util.xmlb.XmlSerializer
 import com.intellij.util.xmlb.annotations.Transient
+import org.jdom.Element
+import java.lang.module.ModuleDescriptor
 import com.intellij.openapi.components.State as JBState
 
 
 /**
  * Contains references to various [State] objects.
  *
+ * @property version The version of Randomness with which these settings were created.
  * @property templateList The template list.
  */
-data class Settings(var templateList: TemplateList = TemplateList()) : State() {
+data class Settings(
+    var version: String = CURRENT_VERSION,
+    var templateList: TemplateList = TemplateList(),
+) : State() {
     /**
      * @see TemplateList.templates
      */
@@ -43,36 +51,64 @@ data class Settings(var templateList: TemplateList = TemplateList()) : State() {
         /**
          * The persistent [Settings] instance.
          */
-        val DEFAULT: Settings by lazy { PersistentSettings.default.state }
+        val DEFAULT: Settings by lazy { service<PersistentSettings>().settings }
     }
 }
 
 /**
- * The actual user's actual stored actually-serialized settings (actually).
+ * The persistent [Settings] instance, stored as an [Element] to allow custom conversion for backwards compatibility.
+ *
+ * @see Settings.DEFAULT Preferred method of accessing the persistent settings instance.
  */
 @JBState(
     name = "Randomness",
     storages = [
-        Storage("\$APP_CONFIG\$/randomness.xml", deprecated = true),
-        Storage("\$APP_CONFIG\$/randomness-beta.xml", exportable = true),
+        Storage("randomness.xml", deprecated = true),
+        Storage("randomness-beta.xml", exportable = true),
     ],
     category = SettingsCategory.PLUGINS,
 )
-class PersistentSettings : PersistentStateComponent<Settings> {
-    private val settings = Settings()
-
-
+class PersistentSettings : PersistentStateComponent<Element> {
     /**
-     * Returns the template list.
+     * The persistent settings instance.
+     *
+     * @see Settings.DEFAULT Preferred method of accessing the persistent settings instance.
      */
-    override fun getState() = settings
+    val settings = Settings()
+
 
     /**
-     * Copies [settings] into `this`.
+     * Returns the [settings] as an [Element].
+     */
+    override fun getState(): Element = XmlSerializer.serialize(settings)
+
+    /**
+     * Deserializes [element] into a [Settings] instance, which is then copied into the [settings] instance.
      *
      * @see TemplateList.copyFrom
      */
-    override fun loadState(settings: Settings) = this.settings.copyFrom(settings)
+    override fun loadState(element: Element) =
+        settings.copyFrom(XmlSerializer.deserialize(upgrade(element), Settings::class.java))
+
+
+    /**
+     * Silently upgrades the format of the settings contained in [element] to the format of the latest version.
+     */
+    private fun upgrade(element: Element): Element {
+        val elementVersion = element.getAttributeValueByName("version")?.let { ModuleDescriptor.Version.parse(it) }
+
+        when {
+            elementVersion == null -> Unit
+
+            // Placeholder to show how an upgrade might work. Remove this once an actual upgrade has been added.
+            elementVersion < ModuleDescriptor.Version.parse("0.0.0-placeholder") ->
+                element.getContentByPath("templateList", null, "templates", null)?.getElements()
+                    ?.forEachIndexed { idx, template -> template.setAttributeValueByName("name", "Template$idx") }
+        }
+
+        element.setAttributeValueByName("version", CURRENT_VERSION)
+        return element
+    }
 
 
     /**
@@ -80,8 +116,8 @@ class PersistentSettings : PersistentStateComponent<Settings> {
      */
     companion object {
         /**
-         * The persistent instance.
+         * The currently-running version of Randomness.
          */
-        val default: PersistentSettings get() = service()
+        const val CURRENT_VERSION: String = "3.0.0-beta.3"
     }
 }

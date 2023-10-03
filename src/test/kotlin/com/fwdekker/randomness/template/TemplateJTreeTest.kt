@@ -58,13 +58,13 @@ object TemplateJTreeTest : FunSpec({
 
         originalSettings =
             Settings(
-                TemplateList(
+                templateList = TemplateList(
                     mutableListOf(
                         Template("Template0", mutableListOf(DummyScheme("Scheme0"), DummyScheme("Scheme1"))),
                         Template("Template1", mutableListOf(DummyScheme("Scheme2"))),
-                        Template("Template2", mutableListOf(DummyScheme("Scheme3"), DummyScheme("Scheme4")))
+                        Template("Template2", mutableListOf(DummyScheme("Scheme3"), DummyScheme("Scheme4"))),
                     )
-                )
+                ),
             )
         originalSettings.applyContext(originalSettings)
         currentSettings = originalSettings.deepCopy(retainUuid = true)

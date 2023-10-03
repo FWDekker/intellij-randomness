@@ -11,6 +11,7 @@ Check the plugin description for more details and animated usage examples.
 * In addition to a list of standard separators, you can now also choose your own separator for all data types, including
   for arrays.
 * You can automatically pad (or truncate) integers to a specific length.
+* Future backwards compatibility, ensuring that your settings can always be imported into future versions.
 
 ### Changed
 * Randomness now uses templates to generate data.

@@ -57,12 +57,12 @@ object TemplateListEditorTest : FunSpec({
         ideaFixture.setUp()
 
         context = Settings(
-            TemplateList(
+            templateList = TemplateList(
                 mutableListOf(
                     Template("Template1", mutableListOf(IntegerScheme(), StringScheme())),
-                    Template("Template2", mutableListOf(DecimalScheme(), WordScheme()))
+                    Template("Template2", mutableListOf(DecimalScheme(), WordScheme())),
                 )
-            )
+            ),
         )
         context.templateList.applyContext(context)
 
