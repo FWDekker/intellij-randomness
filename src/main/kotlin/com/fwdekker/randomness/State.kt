@@ -8,7 +8,11 @@ import kotlin.random.asJavaRandom
 
 
 /**
- * A state holds variables that can be configured.
+ * A state holds variables that can be configured, validated, copied, and loaded.
+ *
+ * All non-transient non-primitive fields of a state should be immutable references. For example, if a state has a field
+ * `list: List<String>`, then `list` should be a `val`, not a `var`, so that references to `state.list` remain valid
+ * even after `copyFrom`.
  */
 abstract class State {
     /**
@@ -59,8 +63,8 @@ abstract class State {
     abstract fun deepCopy(retainUuid: Boolean = false): State
 
     /**
-     * When invoked by the instance `this` as `self.deepCopyTransient()`, this method copies [Transient] fields from
-     * `this` to `self`, and returns `self`.
+     * When invoked by the instance `this` on (another) instance `self` as `self.deepCopyTransient()`, this method
+     * copies [Transient] fields from `this` to `self`, and returns `self`.
      *
      * @see deepCopy
      */

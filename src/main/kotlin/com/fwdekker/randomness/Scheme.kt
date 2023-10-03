@@ -11,7 +11,7 @@ import kotlin.random.Random
 /**
  * A scheme is a [State] that is also a configurable random number generator.
  *
- * Schemes can additionally use [DecoratorScheme]s to extend their functionality.
+ * Schemes may use [DecoratorScheme]s to extend their functionality.
  */
 abstract class Scheme : State() {
     /**
