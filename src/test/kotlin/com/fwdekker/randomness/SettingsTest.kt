@@ -22,7 +22,12 @@ object SettingsTest : FunSpec({
                 "succeeds for default state" to
                     row(Settings(), null),
                 "fails if template list is invalid" to
-                    row(Settings(TemplateList(mutableListOf(Template("Duplicate"), Template("Duplicate")))), ""),
+                    row(
+                        Settings(
+                            templateList = TemplateList(mutableListOf(Template("Duplicate"), Template("Duplicate"))),
+                        ),
+                        "",
+                    ),
             )
         ) { (scheme, validation) ->
             scheme shouldValidateAsBundle validation
@@ -31,7 +36,7 @@ object SettingsTest : FunSpec({
 
     context("deepCopy") {
         test("deep-copies the template list") {
-            val settings = Settings(TemplateList(mutableListOf(Template("old"))))
+            val settings = Settings(templateList = TemplateList(mutableListOf(Template("old"))))
 
             val copy = settings.deepCopy()
             copy.templates[0].name = "new"
@@ -49,8 +54,8 @@ object SettingsTest : FunSpec({
         }
 
         test("deep-copies the template list") {
-            val settings = Settings(TemplateList(mutableListOf(Template("old"))))
-            val other = Settings(TemplateList(mutableListOf(Template("new"))))
+            val settings = Settings(templateList = TemplateList(mutableListOf(Template("old"))))
+            val other = Settings(templateList = TemplateList(mutableListOf(Template("new"))))
 
             settings.copyFrom(other)
 

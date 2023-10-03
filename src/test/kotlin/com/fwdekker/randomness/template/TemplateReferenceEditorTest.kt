@@ -48,13 +48,13 @@ object TemplateReferenceEditorTest : FunSpec({
         ideaFixture.setUp()
 
         context = Settings(
-            TemplateList(
+            templateList = TemplateList(
                 mutableListOf(
                     Template("Template0", mutableListOf(DummyScheme())),
                     Template("Template1", mutableListOf(TemplateReference())),
                     Template("Template2", mutableListOf(DummyScheme())),
                 )
-            )
+            ),
         )
 
         reference = context.templates[1].schemes[0] as TemplateReference

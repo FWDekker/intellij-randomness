@@ -40,7 +40,7 @@ object TemplateReferenceTest : FunSpec({
         referencingTemplate = Template("referencing", mutableListOf(reference))
 
         list = TemplateList(mutableListOf(referencedTemplate, referencingTemplate))
-        list.applyContext(Settings(list))
+        list.applyContext(Settings(templateList = list))
     }
 
 
@@ -178,7 +178,7 @@ object TemplateReferenceTest : FunSpec({
         test("changes the list of templates into which this reference refers") {
             reference.template shouldNot beNull()
 
-            reference.applyContext(Settings(TemplateList(mutableListOf())))
+            reference.applyContext(Settings(templateList = TemplateList(mutableListOf())))
 
             reference.template should beNull()
         }
@@ -198,7 +198,7 @@ object TemplateReferenceTest : FunSpec({
             list.templates += safeTemplate
             referencedTemplate.schemes += TemplateReference(referencingTemplate.uuid)
 
-            list.applyContext(Settings(list))
+            list.applyContext(Settings(templateList = list))
 
             reference.canReference(safeTemplate) shouldBe true
         }
@@ -210,7 +210,7 @@ object TemplateReferenceTest : FunSpec({
         test("returns false if the reference would create a cycle") {
             referencedTemplate.schemes += TemplateReference(referencingTemplate.uuid)
 
-            list.applyContext(Settings(list))
+            list.applyContext(Settings(templateList = list))
 
             reference.canReference(referencedTemplate) shouldBe false
         }
@@ -220,7 +220,7 @@ object TemplateReferenceTest : FunSpec({
             list.templates += otherReferencedTemplate
             referencedTemplate.schemes += TemplateReference(otherReferencedTemplate.uuid)
 
-            list.applyContext(Settings(list))
+            list.applyContext(Settings(templateList = list))
 
             reference.canReference(referencedTemplate) shouldBe false
         }
@@ -232,7 +232,7 @@ object TemplateReferenceTest : FunSpec({
             list.templates += cycleTemplate2
             cycleTemplate1.schemes += TemplateReference(cycleTemplate2.uuid)
 
-            list.applyContext(Settings(list))
+            list.applyContext(Settings(templateList = list))
 
             reference.canReference(referencedTemplate) shouldBe true
         }
