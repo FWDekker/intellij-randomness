@@ -15,6 +15,7 @@ import com.fwdekker.randomness.testhelpers.textProp
 import com.fwdekker.randomness.testhelpers.valueProp
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.impl.EditorComponentImpl
+import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.NamedTag
@@ -59,7 +60,7 @@ object WordSchemeEditorTest : FunSpec({
 
     afterNonContainer {
         frame.cleanUp()
-        guiRun { editor.dispose() }
+        guiRun { Disposer.dispose(editor) }
         ideaFixture.tearDown()
     }
 

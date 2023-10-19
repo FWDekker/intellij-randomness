@@ -1,8 +1,10 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.openapi.util.Disposer
 import javax.swing.JComponent
 
 
@@ -18,7 +20,7 @@ import javax.swing.JComponent
  *
  * @see TemplateSettingsAction
  */
-class TemplateListConfigurable : Configurable {
+class TemplateListConfigurable : Configurable, Disposable {
     /**
      * The user interface for changing the settings, displayed in IntelliJ's settings window.
      */
@@ -37,7 +39,7 @@ class TemplateListConfigurable : Configurable {
     override fun isModified() = editor.isModified() || editor.doValidate() != null
 
     /**
-     * Saves the changes in the settings component to the default settings object.
+     * Saves the changes in the settings component to the default settings object, and updates template shortcuts.
      *
      * @throws ConfigurationException if the changes cannot be saved
      */
@@ -47,7 +49,11 @@ class TemplateListConfigurable : Configurable {
         if (validationInfo != null)
             throw ConfigurationException(validationInfo, Bundle("template_list.error.failed_to_save_settings"))
 
+        val oldList = editor.originalTemplateList.deepCopy(retainUuid = true)
         editor.apply()
+        val newList = editor.originalTemplateList.deepCopy(retainUuid = true)
+
+        TemplateActionLoader().updateActions(oldList.templates, newList.templates)
     }
 
     /**
@@ -56,18 +62,21 @@ class TemplateListConfigurable : Configurable {
     override fun reset() = editor.reset()
 
     /**
-     * Disposes the configurable's resources.
+     * Recursively disposes this configurable's resources.
      */
-    override fun disposeUIResources() {
-        editor.dispose()
-    }
+    override fun disposeUIResources() = Disposer.dispose(this)
+
+    /**
+     * Non-recursively disposes this configurable's resources.
+     */
+    override fun dispose() = Unit
 
 
     /**
      * Creates a new editor and returns the root pane of the created editor.
      */
     override fun createComponent(): JComponent {
-        editor = TemplateListEditor()
+        editor = TemplateListEditor().also { Disposer.register(this, it) }
         editor.queueSelection = templateToSelect
         return editor.rootComponent
     }

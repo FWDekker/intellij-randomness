@@ -105,7 +105,10 @@ tasks {
         if (project.hasProperty("kotest.tags")) systemProperty("kotest.tags", project.findProperty("kotest.tags")!!)
 
         useJUnitPlatform {
-            includeEngines("junit-vintage", "kotest")
+            if (!project.hasProperty("kotest.tags"))
+                includeEngines("junit-vintage")
+
+            includeEngines("kotest")
         }
 
         testLogging {

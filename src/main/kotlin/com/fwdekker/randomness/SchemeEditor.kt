@@ -76,5 +76,5 @@ abstract class SchemeEditor<S : Scheme>(val scheme: S) : Disposable {
     /**
      * Disposes this editor's resources.
      */
-    override fun dispose() = Disposer.dispose(this)
+    override fun dispose() = decoratorEditors.forEach { Disposer.dispose(it) }
 }

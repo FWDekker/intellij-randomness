@@ -8,6 +8,7 @@ import com.intellij.openapi.components.SettingsCategory
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
 import com.intellij.util.xmlb.XmlSerializer
+import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Transient
 import org.jdom.Element
 import java.lang.module.ModuleDescriptor
@@ -22,7 +23,8 @@ import com.intellij.openapi.components.State as JBState
  */
 data class Settings(
     var version: String = CURRENT_VERSION,
-    var templateList: TemplateList = TemplateList(),
+    @OptionTag
+    val templateList: TemplateList = TemplateList(),
 ) : State() {
     /**
      * @see TemplateList.templates
@@ -31,17 +33,23 @@ data class Settings(
     val templates: MutableList<Template> get() = templateList.templates
 
 
+    init {
+        applyContext(this)
+    }
+
+
+    override fun applyContext(context: Box<Settings>) {
+        super.applyContext(context)
+        templateList.applyContext(context)
+    }
+
+
     override fun doValidate() = templateList.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(templateList = templateList.deepCopy(retainUuid = retainUuid)).deepCopyTransient(retainUuid)
-
-    override fun copyFrom(other: State) {
-        require(other is Settings) { "Cannot copy from different type." }
-
-        this.templateList.copyFrom(other.templateList)
-        copyFromTransient(other)
-    }
+        copy(templateList = templateList.deepCopy(retainUuid = retainUuid))
+            .deepCopyTransient(retainUuid)
+            .also { it.applyContext(it) }
 
 
     /**
@@ -51,7 +59,8 @@ data class Settings(
         /**
          * The persistent [Settings] instance.
          */
-        val DEFAULT: Settings by lazy { service<PersistentSettings>().settings }
+        val DEFAULT: Settings
+            get() = service<PersistentSettings>().settings
     }
 }
 
@@ -70,11 +79,11 @@ data class Settings(
 )
 class PersistentSettings : PersistentStateComponent<Element> {
     /**
-     * The persistent settings instance.
+     * The [Settings] that should be persisted.
      *
      * @see Settings.DEFAULT Preferred method of accessing the persistent settings instance.
      */
-    val settings = Settings()
+    var settings = Settings()
 
 
     /**
@@ -83,12 +92,11 @@ class PersistentSettings : PersistentStateComponent<Element> {
     override fun getState(): Element = XmlSerializer.serialize(settings)
 
     /**
-     * Deserializes [element] into a [Settings] instance, which is then copied into the [settings] instance.
-     *
-     * @see TemplateList.copyFrom
+     * Deserializes [element] into a [Settings] instance, which is then stored in [settings].
      */
-    override fun loadState(element: Element) =
-        settings.copyFrom(XmlSerializer.deserialize(upgrade(element), Settings::class.java))
+    override fun loadState(element: Element) {
+        settings = XmlSerializer.deserialize(upgrade(element), Settings::class.java)
+    }
 
 
     /**

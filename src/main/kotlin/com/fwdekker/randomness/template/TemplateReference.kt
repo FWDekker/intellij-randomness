@@ -98,6 +98,11 @@ data class TemplateReference(
         }
     }
 
+    /**
+     * Note that the [context] must be updated manually.
+     *
+     * @see Scheme.deepCopy
+     */
     override fun deepCopy(retainUuid: Boolean) =
         copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid)).deepCopyTransient(retainUuid)
 

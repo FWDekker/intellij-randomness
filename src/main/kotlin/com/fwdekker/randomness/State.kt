@@ -1,7 +1,6 @@
 package com.fwdekker.randomness
 
 import com.fasterxml.uuid.Generators
-import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.Transient
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
@@ -10,9 +9,12 @@ import kotlin.random.asJavaRandom
 /**
  * A state holds variables that can be configured, validated, copied, and loaded.
  *
- * All non-transient non-primitive fields of a state should be immutable references. For example, if a state has a field
- * `list: List<String>`, then `list` should be a `val`, not a `var`, so that references to `state.list` remain valid
- * even after `copyFrom`.
+ * In a [State], fields are typically mutable, because the user can change the field. However, fields that themselves
+ * also contain data (e.g. a [Collection] or a [DecoratorScheme]) should be stored as immutable references (but may
+ * themselves be mutable). For example, instead of having the field `var list: List<String>`, a [State] should have the
+ * field `val list: MutableList<String>`. This reflects the typical case in which the user does not change the reference
+ * to the object, but changes the properties inside the object. And, more importantly, means that nested a
+ * [SchemeEditor] can share a single unchanging reference to a [State] with its nested [SchemeEditor]s.
  */
 abstract class State {
     /**
@@ -58,7 +60,7 @@ abstract class State {
      *
      * Fields annotated with [Transient] are shallow-copied.
      *
-     * @see deepCopyTransient utility function for subclasses that want to implement `deepCopy`
+     * @see deepCopyTransient utility function for subclasses that want to implement [deepCopy]
      */
     abstract fun deepCopy(retainUuid: Boolean = false): State
 
@@ -73,34 +75,8 @@ abstract class State {
         val thiz: State = this@State
 
         if (retainUuid) self.uuid = thiz.uuid
-        self.applyContext(thiz.context.copy())
+        self.applyContext(thiz.context.copy()) // Copies the [Box], not the context itself
 
         return self
-    }
-
-    /**
-     * Copies [other] into `this`.
-     *
-     * Works by shallow-copying a [deepCopy] of [other] into `this`. [Transient] fields are shallow-copied directly from
-     * [other] instead.
-     *
-     * Implementations may choose to shallow-copy additional fields directly from [other].
-     *
-     * @param other the state to copy into `this`; should be a (sub)class of this state
-     * @see copyFromTransient utility function for subclasses that want to implement `copyFrom`
-     */
-    open fun copyFrom(other: State) {
-        XmlSerializerUtil.copyBean(other.deepCopy(retainUuid = true), this)
-        copyFromTransient(other)
-    }
-
-    /**
-     * Copies basic [Transient] fields from [other] into `this`.
-     *
-     * Typically used by subclasses to help implement [copyFrom].
-     */
-    protected fun copyFromTransient(other: State) {
-        this.uuid = other.uuid
-        this.applyContext(other.context.copy())
     }
 }

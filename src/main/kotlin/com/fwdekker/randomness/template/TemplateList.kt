@@ -14,7 +14,7 @@ import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.DefaultWordList
 import com.fwdekker.randomness.word.WordScheme
-import com.intellij.util.xmlb.annotations.MapAnnotation
+import com.intellij.util.xmlb.annotations.OptionTag
 
 
 /**
@@ -23,7 +23,7 @@ import com.intellij.util.xmlb.annotations.MapAnnotation
  * @property templates The collection of templates, each with a unique name.
  */
 data class TemplateList(
-    @MapAnnotation(sortBeforeSave = false)
+    @OptionTag
     val templates: MutableList<Template> = DEFAULT_TEMPLATES,
 ) : State() {
     override fun applyContext(context: Box<Settings>) {
@@ -56,6 +56,11 @@ data class TemplateList(
         }
     }
 
+    /**
+     * Note that the [context] must be updated manually.
+     *
+     * @see State.deepCopy
+     */
     override fun deepCopy(retainUuid: Boolean) =
         copy(templates = templates.map { it.deepCopy(retainUuid) }.toMutableList()).deepCopyTransient(retainUuid)
 

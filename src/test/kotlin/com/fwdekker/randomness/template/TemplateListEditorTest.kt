@@ -12,9 +12,11 @@ import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.shouldContainExactly
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
+import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.JBSplitter
@@ -24,6 +26,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.Row2
 import io.kotest.data.row
 import io.kotest.datatest.withData
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.AbstractComponentFixture
@@ -41,7 +44,7 @@ object TemplateListEditorTest : FunSpec({
     lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
-    lateinit var context: Settings
+    lateinit var templateList: TemplateList
     lateinit var editor: TemplateListEditor
 
 
@@ -56,23 +59,22 @@ object TemplateListEditorTest : FunSpec({
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        context = Settings(
-            templateList = TemplateList(
+        templateList =
+            TemplateList(
                 mutableListOf(
                     Template("Template1", mutableListOf(IntegerScheme(), StringScheme())),
                     Template("Template2", mutableListOf(DecimalScheme(), WordScheme())),
                 )
-            ),
-        )
-        context.templateList.applyContext(context)
+            )
+        templateList.applyContext(Settings(templateList = templateList))
 
-        editor = guiGet { TemplateListEditor(context) }
+        editor = guiGet { TemplateListEditor(templateList) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
     afterNonContainer {
         frame.cleanUp()
-        guiRun { editor.dispose() }
+        guiRun { Disposer.dispose(editor) }
         ideaFixture.tearDown()
     }
 
@@ -90,8 +92,8 @@ object TemplateListEditorTest : FunSpec({
                     "template reference" to row(TemplateReference()) { it.comboBox("template") },
                 )
             ) { (scheme, matcher): Row2<Scheme, (FrameFixture) -> AbstractComponentFixture<*, *, *>> ->
-                context.templates.setAll(listOf(Template(schemes = mutableListOf(scheme))))
-                context.templateList.applyContext(context)
+                templateList.templates.setAll(listOf(Template(schemes = mutableListOf(scheme))))
+                templateList.applyContext(templateList.context)
 
                 guiRun {
                     editor.reset()
@@ -103,8 +105,8 @@ object TemplateListEditorTest : FunSpec({
         }
 
         test("loads an editor for templates") {
-            context.templates.setAll(listOf(Template(schemes = mutableListOf())))
-            context.templateList.applyContext(context)
+            templateList.templates.setAll(listOf(Template(schemes = mutableListOf())))
+            templateList.applyContext(templateList.context)
 
             guiRun { editor.reset() }
 
@@ -112,15 +114,13 @@ object TemplateListEditorTest : FunSpec({
         }
 
         test("throws an error for unknown scheme types") {
-            context.templates.setAll(listOf(Template(schemes = mutableListOf(DummyScheme()))))
-            context.templateList.applyContext(context)
+            templateList.templates.setAll(listOf(Template(schemes = mutableListOf(DummyScheme()))))
+            templateList.applyContext(templateList.context)
 
-            shouldThrow<IllegalStateException> {
-                guiRun {
-                    editor.reset()
-                    frame.tree().target().setSelectionRow(1)
-                }
-            }.message shouldBe "Unknown scheme type 'com.fwdekker.randomness.testhelpers.DummyScheme'."
+            guiRun { editor.reset() }
+
+            shouldThrow<IllegalStateException> { guiRun { frame.tree().target().setSelectionRow(1) } }
+                .message should matchBundle("template_list.error.unknown_scheme_type")
         }
     }
 
@@ -164,19 +164,19 @@ object TemplateListEditorTest : FunSpec({
                 frame.tree().target().selectionRows!! shouldContainExactly arrayOf(1)
             }
 
-            test("resets the existing selection if the indicated scheme could not be found") {
+            test("clears the existing selection if the indicated scheme could not be found") {
                 guiRun { frame.tree().target().selectionRows = intArrayOf(3) }
 
                 editor.queueSelection = "231ee9da-8f72-4535-b770-0119fdf68f70"
                 guiRun { editor.reset() }
 
-                frame.tree().target().selectionRows!! shouldContainExactly arrayOf(0)
+                frame.tree().target().selectionCount shouldBe 0
             }
 
             test("selects the indicated template") {
                 guiRun { frame.tree().target().selectionRows = intArrayOf(4) }
 
-                editor.queueSelection = context.templates[1].uuid
+                editor.queueSelection = templateList.templates[1].uuid
                 guiRun { editor.reset() }
 
                 frame.tree().target().selectionRows!! shouldContainExactly arrayOf(3)
@@ -185,7 +185,7 @@ object TemplateListEditorTest : FunSpec({
             test("selects the indicated scheme") {
                 guiRun { frame.tree().target().selectionRows = intArrayOf(2) }
 
-                editor.queueSelection = context.templates[1].schemes[0].uuid
+                editor.queueSelection = templateList.templates[1].schemes[0].uuid
                 guiRun { editor.reset() }
 
                 frame.tree().target().selectionRows!! shouldContainExactly arrayOf(4)

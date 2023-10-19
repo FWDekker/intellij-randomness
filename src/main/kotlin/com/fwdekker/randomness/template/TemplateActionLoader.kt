@@ -37,7 +37,8 @@ open class TemplateActionLoader(
         newList: List<Template>,
         actionManager: ActionManager = ActionManager.getInstance(),
     ) {
-        oldList.filterNot { it in newList }.forEach { unregisterAction(actionManager, it) }
+        val newUuidList = newList.map { it.uuid }
+        oldList.filterNot { it.uuid in newUuidList }.forEach { unregisterAction(actionManager, it) }
         newList.forEach { registerAction(actionManager, it) }
     }
 

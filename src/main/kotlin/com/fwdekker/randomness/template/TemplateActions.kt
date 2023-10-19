@@ -8,12 +8,14 @@ import com.fwdekker.randomness.Timely.generateTimely
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.PreviewPanel
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ShowSettingsUtil
+import com.intellij.openapi.util.Disposer
 import java.awt.BorderLayout
 import javax.swing.JPanel
 
@@ -128,9 +130,13 @@ class TemplateInsertAction(
      *
      * @param arrayDecorator the decorator being edited in this configurable
      */
-    inner class ArrayDecoratorConfigurable(arrayDecorator: ArrayDecorator) : Configurable {
-        private val editor = ArrayDecoratorEditor(arrayDecorator, embedded = true)
-        private val previewPanel = PreviewPanel { template.deepCopy().also { it.arrayDecorator.enabled = true } }
+    inner class ArrayDecoratorConfigurable(arrayDecorator: ArrayDecorator) : Configurable, Disposable {
+        private val editor =
+            ArrayDecoratorEditor(arrayDecorator, embedded = true)
+                .also { Disposer.register(this, it) }
+        private val previewPanel =
+            PreviewPanel { template.deepCopy().also { it.arrayDecorator.enabled = true } }
+                .also { Disposer.register(this, it) }
 
 
         init {
@@ -170,12 +176,14 @@ class TemplateInsertAction(
         override fun getDisplayName() = text
 
         /**
-         * Disposes the [editor] and [previewPanel].
+         * Recursively disposes this configurable's resources.
          */
-        override fun disposeUIResources() {
-            editor.dispose()
-            previewPanel.dispose()
-        }
+        override fun disposeUIResources() = Disposer.dispose(this)
+
+        /**
+         * Non-recursively disposes this configurable's resources.
+         */
+        override fun dispose() = Unit
     }
 }
 
