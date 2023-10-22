@@ -2,6 +2,7 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -30,11 +31,10 @@ object TemplateTest : FunSpec({
 
 
     context("typeIcon") {
-        test("returns the single scheme's icon if that scheme has an icon") {
-            val scheme = IntegerScheme()
-            val template = Template(schemes = mutableListOf(scheme))
+        test("returns the default icon if the template contains no schemes") {
+            val template = Template()
 
-            template.typeIcon shouldBe scheme.typeIcon
+            template.typeIcon shouldBe Template.DEFAULT_ICON
         }
 
         test("returns the default icon if the single scheme has no icon") {
@@ -44,10 +44,13 @@ object TemplateTest : FunSpec({
             template.typeIcon shouldBe Template.DEFAULT_ICON
         }
 
-        test("returns the default icon if no scheme is present") {
-            val template = Template()
+        test("returns a template version of the single scheme's TypeIcon") {
+            val scheme = IntegerScheme()
+            val template = Template(schemes = mutableListOf(scheme))
 
-            template.typeIcon shouldBe Template.DEFAULT_ICON
+            template.typeIcon.base shouldBe Icons.TEMPLATE
+            template.typeIcon.text shouldBe scheme.typeIcon.text
+            template.typeIcon.colors shouldBe scheme.typeIcon.colors
         }
 
         test("returns the scheme's combined icon if multiple are present") {

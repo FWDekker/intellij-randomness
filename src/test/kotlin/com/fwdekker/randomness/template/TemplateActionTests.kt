@@ -185,11 +185,11 @@ object TemplateSettingsActionTest : FunSpec({
             }
 
             test("uses the template's icon if the template is not null") {
-                val icon = TypeIcon(Icons.SCHEME, "war", listOf(Color.GREEN))
+                val icon = TypeIcon(Icons.SCHEME, "wax", listOf(Color.GREEN))
                 val template = Template("subject", mutableListOf(DummyScheme().also { it.typeIcon = icon }))
                 val action = TemplateSettingsAction(template)
 
-                (action.templatePresentation.icon as OverlayedIcon).base shouldBe icon
+                (action.templatePresentation.icon as OverlayedIcon).base shouldBe template.typeIcon
             }
         }
     }
