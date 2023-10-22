@@ -27,7 +27,7 @@ import javax.swing.tree.MutableTreeNode
 
 
 /**
- * Unit tests for extension functions in `ListenerHelpersKt`.
+ * Unit tests for extension functions in [ListenerHelpersKt].
  */
 object ListenerHelpersTest : FunSpec({
     tags(NamedTag("Swing"))
@@ -75,7 +75,7 @@ object ListenerHelpersTest : FunSpec({
                         { PlainDocument().also { it.insertString(0, "text", null) } },
                         { (it as PlainDocument).replace(2, 1, "y", null) },
                     ),
-                // `JBDocument` is excluded because setting up the correct fixtures is very difficult
+                // [JBDocument] is excluded because setting up the correct fixtures is very difficult
                 "JComboBox: Select different item" to
                     row(
                         { ComboBox(arrayOf("item1", "item2")) },

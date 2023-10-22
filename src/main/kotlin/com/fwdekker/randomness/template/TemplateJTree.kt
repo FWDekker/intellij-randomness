@@ -257,7 +257,7 @@ class TemplateJTree(
     /**
      * Replaces [oldScheme] with [newScheme] in-place.
      *
-     * If `newScheme` is `null`, then `oldScheme` is removed without being replaced.
+     * If [newScheme] is `null`, then [oldScheme] is removed without being replaced.
      */
     fun replaceScheme(oldScheme: Scheme, newScheme: Scheme?) {
         if (newScheme == null) {
@@ -467,12 +467,12 @@ class TemplateJTree(
             /**
              * Inserts [value] into the tree.
              *
-             * Subclasses may modify the behavior of this method to instead return the `PopupStep` nested under this
+             * Subclasses may modify the behavior of this method to instead return the [PopupStep] nested under this
              * entry.
              *
              * @param value the value to insert
              * @param finalChoice ignored
-             * @return `null`, or the `PopupStep` that is nested under this entry
+             * @return `null`, or the [PopupStep] that is nested under this entry
              */
             override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? {
                 if (value != null)

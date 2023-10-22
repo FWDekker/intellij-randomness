@@ -84,7 +84,7 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     /**
      * Updates the preview with the current settings.
      */
-    @Suppress("SwallowedException") // Alternative is to add coupling to `SettingsComponent`
+    @Suppress("SwallowedException") // Alternative is to add coupling to [SettingsComponent]
     fun updatePreview() {
         try {
             previewText = generateTimely { getScheme().also { it.random = Random(seed) }.generateStrings() }.first()

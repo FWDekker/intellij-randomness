@@ -40,7 +40,7 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
     override fun update(event: AnActionEvent) {
         event.presentation.icon = Icons.RANDOMNESS
 
-        // Running this in `actionPerformed` always sets it to `true`
+        // Running this in [actionPerformed] always sets it to `true`
         isEditable = event.getData(CommonDataKeys.EDITOR)?.isViewer == false
     }
 
@@ -129,7 +129,7 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
 
 
 /**
- * An `AbstractAction` that uses [myActionPerformed] as the implementation of its [actionPerformed] method.
+ * An [AbstractAction] that uses [myActionPerformed] as the implementation of its [actionPerformed] method.
  *
  * @property myActionPerformed The code to execute in [actionPerformed].
  */

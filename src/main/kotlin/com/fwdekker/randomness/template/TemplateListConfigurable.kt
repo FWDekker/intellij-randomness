@@ -24,7 +24,7 @@ class TemplateListConfigurable : Configurable, Disposable {
     /**
      * The user interface for changing the settings, displayed in IntelliJ's settings window.
      */
-    @Suppress("detekt:LateinitUsage") // Initialized in `createComponent`
+    @Suppress("detekt:LateinitUsage") // Initialized in [createComponent]
     lateinit var editor: TemplateListEditor private set
 
     /**
