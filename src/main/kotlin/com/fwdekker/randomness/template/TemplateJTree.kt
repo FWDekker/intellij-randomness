@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.PopupAction
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
@@ -386,9 +387,8 @@ class TemplateJTree(
             icon = scheme.icon
 
             if (scheme is Template) {
-                val index = currentTemplateList.templates.indexOf(scheme) + 1
-                if (index <= INDEXED_TEMPLATE_COUNT)
-                    append("${index % INDEXED_TEMPLATE_COUNT} ", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES, false)
+                PopupAction.indexToMnemonic(currentTemplateList.templates.indexOf(scheme))
+                    ?.run { append("$this ", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES, false) }
             }
 
             append(
@@ -691,10 +691,5 @@ class TemplateJTree(
                 DateTimeScheme(),
                 TemplateReference(),
             )
-
-        /**
-         * Number of [Template]s that should be rendered with the index in front.
-         */
-        const val INDEXED_TEMPLATE_COUNT = 10
     }
 }

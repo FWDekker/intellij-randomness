@@ -54,7 +54,7 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
         val popup = JBPopupFactory.getInstance()
             .createActionGroupPopup(
                 Bundle("popup.title"), popupGroup, event.dataContext,
-                JBPopupFactory.ActionSelectionAid.NUMBERING,
+                JBPopupFactory.ActionSelectionAid.ALPHA_NUMBERING,
                 true
             )
             as ListPopupImpl
@@ -124,6 +124,20 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
             Settings.DEFAULT.templates.map { TemplateSettingsAction(it) }.toTypedArray<AnAction>() +
                 Separator() +
                 TemplateSettingsAction()
+    }
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * Returns the mnemonic for the entry at the [index]th row.
+         *
+         * @see JBPopupFactory.ActionSelectionAid.ALPHA_NUMBERING
+         */
+        fun indexToMnemonic(index: Int) =
+            (('1'..'9') + '0' + ('A'..'Z')).getOrNull(index)
     }
 }
 
@@ -201,26 +215,28 @@ fun ListPopupImpl.registerModifierActions(captionModifier: (ActionEvent?) -> Str
             }
         )
 
-        @Suppress("detekt:MagicNumber") // Not worth a constant
-        for (key in 0..9) {
-            registerAction(
-                "${a}${b}${c}invokeAction$key",
-                KeyStroke.getKeyStroke("$a $b $c pressed $key"),
-                SimpleAbstractAction { event ->
-                    event ?: return@SimpleAbstractAction
+        @Suppress("detekt:ForEachOnRange") // Not relevant for such small numbers
+        (0 until list.model.size)
+            .associateWith { PopupAction.indexToMnemonic(it) }
+            .filterValues { it != null }
+            .forEach { (index, mnemonic) ->
+                registerAction(
+                    "${a}${b}${c}invokeAction$mnemonic",
+                    KeyStroke.getKeyStroke("$a $b $c pressed $mnemonic"),
+                    SimpleAbstractAction { event ->
+                        event ?: return@SimpleAbstractAction
 
-                    val targetRow = if (key == 0) 9 else key - 1
-                    list.addSelectionInterval(targetRow, targetRow)
-                    handleSelect(
-                        true,
-                        KeyEvent(
-                            component,
-                            event.id, event.getWhen(), event.modifiers,
-                            KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED, KeyEvent.KEY_LOCATION_UNKNOWN
+                        list.addSelectionInterval(index, index)
+                        handleSelect(
+                            true,
+                            KeyEvent(
+                                component,
+                                event.id, event.getWhen(), event.modifiers,
+                                KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED, KeyEvent.KEY_LOCATION_UNKNOWN
+                            )
                         )
-                    )
-                }
-            )
-        }
+                    }
+                )
+            }
     }
 }
