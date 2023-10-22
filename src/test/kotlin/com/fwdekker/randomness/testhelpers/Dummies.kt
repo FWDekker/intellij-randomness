@@ -18,7 +18,7 @@ import kotlin.random.Random
 /**
  * A simple [State] with a single mutable [list].
  */
-data class DummyState(var list: MutableList<Int> = mutableListOf()) : State() {
+data class DummyState(val list: MutableList<Int> = mutableListOf()) : State() {
     override fun deepCopy(retainUuid: Boolean) =
         copy(list = list.toMutableList()).deepCopyTransient(retainUuid)
 }

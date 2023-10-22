@@ -98,11 +98,24 @@ See [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.
 
 ### 🧪 Quality assurance
 ```bash
-$ gradlew test                # Run tests
-$ gradlew test --tests X      # Run tests in class X (package name optional)
-$ gradlew check               # Run tests and static analysis
-$ gradlew runPluginVerifier   # Check for compatibility issues
+$ gradlew test                    # Run tests (and collect coverage)
+$ gradlew test --tests X          # Run tests in class X (package name optional)
+$ gradlew test -Pkotest.tags="X"  # Run tests with `NamedTag` X (also supports not (!), and (&), or (|))
+$ gradlew koverHtmlReport         # Create HTML coverage report for previous test run
+$ gradlew check                   # Run tests and static analysis
+$ gradlew runPluginVerifier       # Check for compatibility issues
 ```
+
+#### 🏷️ Filtering tests
+[Kotest tests can be tagged](https://kotest.io/docs/framework/tags.html) to allow selectively running tests.
+Tag an entire test class by adding `tags(...)` to the class definition, or tag an individual test `context` by
+writing `context("foo").config(tags = setOf(...)) {`.
+It is not possible to tag an individual `test` due to limitations in Kotest.
+
+To run only one `context` in some test class `X`, prefix the `context`'s name with `f:` and run with `--tests X`.
+The prefix `f:` filters out other `context`s in that test class, and `--tests X` filters out other test classes.
+Alternatively, tag the desired `context` with the `Focus` tag and run with `-Pkotest.tags="Focus"` to filter by that
+tag.
 
 ### 📚 Documentation
 ```bash

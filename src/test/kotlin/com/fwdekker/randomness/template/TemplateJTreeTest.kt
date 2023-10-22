@@ -10,6 +10,7 @@ import com.fwdekker.randomness.testhelpers.getActionButton
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
 import com.fwdekker.randomness.testhelpers.matchBundle
+import com.fwdekker.randomness.testhelpers.shouldContainExactly
 import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -19,6 +20,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.Row3
 import io.kotest.data.row
 import io.kotest.datatest.withData
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.nulls.beNull
@@ -35,14 +37,16 @@ import org.assertj.swing.fixture.FrameFixture
 /**
  * Unit tests for [TemplateJTree].
  */
+@Suppress("detekt:LargeClass") // Would be weird to split up given that CUT is not split up either
 object TemplateJTreeTest : FunSpec({
     tags(NamedTag("IdeaFixture"), NamedTag("Swing"))
 
 
     lateinit var ideaFixture: IdeaTestFixture
+    lateinit var frame: FrameFixture
 
-    lateinit var originalSettings: Settings
-    lateinit var currentSettings: Settings
+    lateinit var originalList: TemplateList
+    lateinit var currentList: TemplateList
     lateinit var tree: TemplateJTree
 
     fun List<Scheme>.names() = this.map { it.name }
@@ -56,23 +60,25 @@ object TemplateJTreeTest : FunSpec({
         ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
         ideaFixture.setUp()
 
-        originalSettings =
-            Settings(
-                templateList = TemplateList(
-                    mutableListOf(
-                        Template("Template0", mutableListOf(DummyScheme("Scheme0"), DummyScheme("Scheme1"))),
-                        Template("Template1", mutableListOf(DummyScheme("Scheme2"))),
-                        Template("Template2", mutableListOf(DummyScheme("Scheme3"), DummyScheme("Scheme4"))),
-                    )
-                ),
+        originalList =
+            TemplateList(
+                mutableListOf(
+                    Template("Template0", mutableListOf(DummyScheme("Scheme0"), DummyScheme("Scheme1"))),
+                    Template("Template1", mutableListOf(DummyScheme("Scheme2"))),
+                    Template("Template2", mutableListOf(DummyScheme("Scheme3"), DummyScheme("Scheme4"))),
+                )
             )
-        originalSettings.applyContext(originalSettings)
-        currentSettings = originalSettings.deepCopy(retainUuid = true)
+        originalList.applyContext(Settings(templateList = originalList))
 
-        tree = guiGet { TemplateJTree(originalSettings, currentSettings) }
+        currentList = originalList.deepCopy(retainUuid = true)
+        currentList.applyContext(Settings(templateList = currentList))
+
+        tree = guiGet { TemplateJTree(originalList, currentList) }
+        frame = showInFrame(tree)
     }
 
     afterNonContainer {
+        frame.cleanUp()
         ideaFixture.tearDown()
     }
 
@@ -84,16 +90,10 @@ object TemplateJTreeTest : FunSpec({
             tree.selectedNodeNotRoot should beNull()
         }
 
-        test("returns null if the root is selected") {
-            guiRun { tree.selectionPath = tree.myModel.getPathToRoot(tree.myModel.root) }
-
-            tree.selectedNodeNotRoot should beNull()
-        }
-
         test("returns the selected node otherwise") {
-            val node = StateNode(tree.myModel.list.templates[0])
+            val node = StateNode(currentList.templates[0])
 
-            guiRun { tree.selectionPath = tree.myModel.getPathToRoot(node) }
+            guiRun { tree.selectionRows = intArrayOf(0) }
 
             tree.selectedNodeNotRoot shouldBe node
         }
@@ -107,14 +107,8 @@ object TemplateJTreeTest : FunSpec({
                 tree.selectedScheme should beNull()
             }
 
-            test("returns null if the root is selected") {
-                guiRun { tree.selectionPath = tree.myModel.getPathToRoot(tree.myModel.root) }
-
-                tree.selectedScheme should beNull()
-            }
-
             test("returns the selected scheme otherwise") {
-                val template = tree.myModel.list.templates[0]
+                val template = currentList.templates[0]
 
                 guiRun { tree.selectionPath = tree.myModel.getPathToRoot(StateNode(template)) }
 
@@ -123,45 +117,41 @@ object TemplateJTreeTest : FunSpec({
         }
 
         context("set") {
-            test("selects the first template if null is set") {
+            test("removes the selection if null is set") {
                 guiRun { tree.selectedScheme = null }
 
-                tree.selectedScheme shouldBe tree.myModel.list.templates[0]
+                tree.selectionCount shouldBe 0
             }
 
-            test("selects the root if null is set and there are no templates") {
-                guiRun {
-                    tree.myModel.list.templates.clear()
-                    tree.reload()
-                    tree.selectedScheme = null
-                }
-
-                tree.selectedScheme should beNull()
-            }
-
-            test("selects the first template if the scheme cannot be found") {
+            test("removes the selection if the scheme cannot be found") {
                 guiRun { tree.selectedScheme = DummyScheme("Not In Tree") }
 
-                tree.selectedScheme shouldBe tree.myModel.list.templates[0]
+                tree.selectionCount shouldBe 0
             }
 
-            test("selects the root if the scheme cannot be found and there are no templates") {
+            test("selects the given scheme otherwise") {
+                val scheme = currentList.templates[1].schemes[0]
+
                 guiRun {
-                    tree.myModel.list.templates.clear()
-                    tree.reload()
-                    tree.selectedScheme = DummyScheme("Not In Tree")
+                    tree.expandRow(1)
+                    tree.selectedScheme = scheme
                 }
 
-                tree.selectedScheme should beNull()
+                tree.selectionRows!! shouldContainExactly arrayOf(2)
+            }
+        }
+
+        test("selects the scheme by its UUID") {
+            val copy = currentList.templates[0].schemes[1].deepCopy(retainUuid = true)
+            (copy as DummyScheme).name = "New Name"
+
+            guiRun {
+                tree.expandRow(0)
+                tree.selectedScheme = copy
             }
 
-            test("selects the given scheme if it exists") {
-                val scheme = tree.myModel.list.templates[1].schemes[0]
-
-                guiRun { tree.selectedScheme = scheme }
-
-                tree.selectedScheme shouldBe scheme
-            }
+            guiGet { tree.selectedScheme?.uuid } shouldBe copy.uuid
+            guiGet { tree.selectedScheme } shouldNotBe copy
         }
     }
 
@@ -173,52 +163,39 @@ object TemplateJTreeTest : FunSpec({
                 tree.selectedTemplate should beNull()
             }
 
-            test("returns null if the root is selected") {
-                guiRun { tree.selectionPath = tree.myModel.getPathToRoot(tree.myModel.root) }
-
-                tree.selectedTemplate should beNull()
-            }
-
             test("returns the parent template if a non-template scheme is selected") {
-                val scheme = tree.myModel.list.templates[2].schemes[0]
+                guiRun {
+                    tree.expandRow(2)
+                    tree.selectionRows = intArrayOf(3)
+                }
 
-                guiRun { tree.selectionPath = tree.myModel.getPathToRoot(StateNode(scheme)) }
-
-                tree.selectedTemplate shouldBe tree.myModel.list.templates[2]
+                tree.selectedTemplate shouldBe currentList.templates[2]
             }
 
             test("returns the selected template otherwise") {
-                val template = tree.myModel.list.templates[0]
+                guiRun { tree.selectionRows = intArrayOf(1) }
 
-                guiRun { tree.selectionPath = tree.myModel.getPathToRoot(StateNode(template)) }
-
-                tree.selectedTemplate shouldBe template
+                tree.selectedTemplate shouldBe currentList.templates[1]
             }
         }
 
         context("set") {
-            test("selects the first template if null is set") {
+            test("removes the selection if null is set") {
                 guiRun { tree.selectedTemplate = null }
 
-                tree.selectedTemplate shouldBe tree.myModel.list.templates[0]
+                tree.selectionCount shouldBe 0
             }
 
-            test("selects the root if null is set and there are no templates") {
-                guiRun {
-                    tree.myModel.list.templates.clear()
-                    tree.reload()
-                    tree.selectedTemplate = null
-                }
+            test("removes the selection if the template cannot be found") {
+                guiRun { tree.selectedTemplate = Template("New Template") }
 
-                tree.selectedTemplate should beNull()
+                tree.selectionCount shouldBe 0
             }
 
             test("selects the given template if it exists") {
-                val template = tree.myModel.list.templates[1]
+                guiRun { tree.selectedTemplate = currentList.templates[2] }
 
-                guiRun { tree.selectedTemplate = template }
-
-                tree.selectedTemplate shouldBe template
+                tree.selectionRows!! shouldContainExactly arrayOf(2)
             }
         }
     }
@@ -226,40 +203,57 @@ object TemplateJTreeTest : FunSpec({
 
     context("reload") {
         test("synchronizes removed nodes") {
-            guiRun { tree.myModel.list.templates.removeAll(tree.myModel.list.templates.take(2)) }
-            guiGet { tree.rowCount } shouldBe 8
+            guiRun { currentList.templates.remove(currentList.templates[2]) }
+            guiGet { tree.rowCount } shouldBe 3
 
             guiRun { tree.reload() }
 
-            guiGet { tree.rowCount } shouldBe 3
+            guiGet { tree.rowCount } shouldBe 2
         }
 
         test("synchronizes added nodes") {
-            guiRun { tree.myModel.list.templates += Template("New Template", mutableListOf(DummyScheme("New Scheme"))) }
-            guiGet { tree.rowCount } shouldBe 8
+            guiRun { currentList.templates += Template("New Template", mutableListOf(DummyScheme("New Scheme"))) }
+            guiGet { tree.rowCount } shouldBe 3
 
             guiRun { tree.reload() }
 
-            guiGet { tree.rowCount } shouldBe 10
+            guiGet { tree.rowCount } shouldBe 5 // Including new scheme
         }
 
         test("retains the scheme selection") {
-            guiRun { tree.selectedScheme = tree.myModel.list.templates[1].schemes[0] }
+            guiRun {
+                tree.expandRow(0)
+                tree.selectedScheme = currentList.templates[1].schemes[0]
+            }
 
             guiRun { tree.reload() }
 
-            tree.selectedScheme shouldBe tree.myModel.list.templates[1].schemes[0]
+            tree.selectedScheme shouldBe currentList.templates[1].schemes[0]
+        }
+
+        test("resets the selected scheme's state to the original") {
+            guiRun {
+                tree.expandRow(0)
+                tree.selectedScheme = currentList.templates[1].schemes[0]
+            }
+
+            guiRun { tree.reload() }
+
+            tree.selectedScheme shouldBe originalList.templates[1].schemes[0]
         }
 
         test("selects the first template if the selected node was removed") {
-            guiRun { tree.selectedScheme = tree.myModel.list.templates[1].schemes[0] }
+            guiRun {
+                tree.expandRow(1)
+                tree.selectedScheme = currentList.templates[1].schemes[0]
+            }
 
             guiRun {
-                tree.myModel.list.templates[1].schemes.clear()
+                currentList.templates[1].schemes.clear()
                 tree.reload()
             }
 
-            tree.selectedScheme shouldBe tree.myModel.list.templates[0]
+            tree.selectedScheme shouldBe currentList.templates[0]
         }
 
         test("selects the first template if no node was selected before") {
@@ -267,7 +261,7 @@ object TemplateJTreeTest : FunSpec({
 
             guiRun { tree.reload() }
 
-            tree.selectedScheme shouldBe tree.myModel.list.templates[0]
+            tree.selectedScheme shouldBe currentList.templates[0]
         }
 
         test("keeps collapsed nodes collapsed") {
@@ -288,175 +282,331 @@ object TemplateJTreeTest : FunSpec({
             guiGet { tree.isExpanded(0) } shouldBe true
         }
 
-        test("expands new nodes") {
+        test("expands new templates") {
             val template = Template("New Template", mutableListOf(DummyScheme("New Scheme")))
-            guiRun { tree.myModel.list.templates += template }
+            guiRun { currentList.templates += template }
 
             guiRun { tree.reload() }
 
-            guiGet { tree.myModel.rowToNode(8)!!.state } shouldBe template
-            guiGet { tree.isExpanded(8) } shouldBe true
+            guiGet { (tree.getPathForRow(3).lastPathComponent as StateNode).state } shouldBe template
+            guiGet { tree.isExpanded(3) } shouldBe true
+        }
+    }
+
+    context("expandAll") {
+        test("collapses all templates if an empty list is given") {
+            guiRun { tree.expandNodes(emptyList()) }
+
+            guiGet { tree.isExpanded(0) } shouldBe false
+            guiGet { tree.isExpanded(1) } shouldBe false
+            guiGet { tree.isExpanded(2) } shouldBe false
+        }
+
+        test("expands all templates if a full list is given") {
+            guiRun { tree.expandNodes(currentList.templates.map { it.uuid }) }
+
+            guiGet { tree.isExpanded(0) } shouldBe true
+            guiGet { tree.isExpanded(3) } shouldBe true
+            guiGet { tree.isExpanded(5) } shouldBe true
+        }
+
+        test("expands the given nodes and collapses all other nodes") {
+            guiRun {
+                tree.collapseRow(0)
+                tree.collapseRow(1)
+                tree.expandRow(2)
+            }
+            guiGet { tree.rowCount } shouldBe 5
+
+            guiRun { tree.expandNodes(currentList.templates.take(2).map { it.uuid }) }
+
+            guiGet { tree.isExpanded(0) } shouldBe true
+            guiGet { tree.isExpanded(3) } shouldBe true
+            guiGet { tree.isExpanded(5) } shouldBe false
         }
     }
 
 
     context("addScheme") {
         context("unique name") {
-            test("appends (1) if a scheme with the given name already exists") {
+            test("appends (1) if a template with the given name already exists") {
                 guiRun { tree.addScheme(Template("Template0")) }
 
-                tree.myModel.list.templates[1].name shouldBe "Template0 (1)"
+                currentList.templates[1].name shouldBe "Template0 (1)"
             }
 
-            test("appends (2) if two schemes with the given name already exist") {
+            test("appends (2) if two templates with the given name already exist") {
                 guiRun {
                     tree.addScheme(Template("Template0"))
                     tree.addScheme(Template("Template0"))
                 }
 
-                tree.myModel.list.templates[2].name shouldBe "Template0 (2)"
+                currentList.templates[2].name shouldBe "Template0 (2)"
             }
 
-            test("appends (2) if a scheme ending with (1) already exists") {
+            test("appends (2) if a template ending with (1) already exists") {
                 guiRun {
                     tree.addScheme(Template("Template0 (1)"))
                     tree.addScheme(Template("Template0"))
                 }
 
-                tree.myModel.list.templates[2].name shouldBe "Template0 (2)"
+                currentList.templates[2].name shouldBe "Template0 (2)"
             }
 
-            test("replaces (1) with (2) if a scheme ending with (1) already exists") {
+            test("replaces (1) with (2) if a template ending with (1) already exists") {
                 guiRun {
                     tree.addScheme(Template("Template0 (1)"))
                     tree.addScheme(Template("Template0 (1)"))
                 }
 
-                tree.myModel.list.templates[2].name shouldBe "Template0 (2)"
+                currentList.templates[2].name shouldBe "Template0 (2)"
             }
 
-            test("replaces (13) with (14) if a scheme ending with (13) already exists") {
+            test("replaces (13) with (14) if a template ending with (13) already exists") {
                 guiRun {
                     tree.addScheme(Template("Template0 (13)"))
                     tree.addScheme(Template("Template0 (13)"))
                 }
 
-                tree.myModel.list.templates[2].name shouldBe "Template0 (14)"
+                currentList.templates[2].name shouldBe "Template0 (14)"
             }
         }
 
-        test("inserts the template at the bottom if nothing is selected") {
-            guiRun { tree.clearSelection() }
+        context("template") {
+            test("inserts the template at the bottom if nothing is selected") {
+                guiRun { tree.clearSelection() }
 
-            guiRun { tree.addScheme(Template("New Template")) }
+                guiRun { tree.addScheme(Template("New Template")) }
 
-            tree.myModel.list.templates.last().name shouldBe "New Template"
+                currentList.templates.last().name shouldBe "New Template"
+            }
+
+            test("inserts the template below the selected template") {
+                guiRun { tree.selectedScheme = currentList.templates[1] }
+
+                guiRun { tree.addScheme(Template("New Template")) }
+
+                currentList.templates[2].name shouldBe "New Template"
+            }
+
+            test("inserts the template below the selected scheme") {
+                guiRun {
+                    tree.expandRow(0)
+                    tree.selectedScheme = currentList.templates[0].schemes[1]
+                }
+
+                guiRun { tree.addScheme(Template("New Template")) }
+
+                currentList.templates[1].name shouldBe "New Template"
+            }
+
+            test("selects the inserted template") {
+                guiRun { tree.selectedScheme = currentList.templates[1] }
+
+                guiRun { tree.addScheme(Template("New Template")) }
+
+                currentList.templates[2].name shouldBe "New Template"
+            }
+
+            test("expands the inserted template") {
+                val template = Template("New Template", mutableListOf(DummyScheme("New Scheme")))
+                guiRun { tree.clearSelection() }
+
+                guiRun { tree.addScheme(template) }
+
+                guiGet { (tree.getPathForRow(3).lastPathComponent as StateNode).state } shouldBe template
+                guiGet { tree.isExpanded(3) } shouldBe true
+            }
         }
 
-        test("fails if a scheme is inserted while nothing is selected") {
-            guiRun { tree.clearSelection() }
+        context("scheme") {
+            test("fails if a scheme is inserted while nothing is selected") {
+                guiRun { tree.clearSelection() }
 
-            shouldThrow<IllegalArgumentException> { tree.addScheme(DummyScheme()) }
-                .message should matchBundle("template_list.error.add_template_to_non_root")
-        }
+                shouldThrow<IllegalArgumentException> { tree.addScheme(DummyScheme()) }
+                    .message should matchBundle("template_list.error.wrong_child_type")
+            }
 
-        test("inserts the template below the selected template") {
-            guiRun { tree.selectedScheme = tree.myModel.list.templates[1] }
+            test("inserts the scheme at the bottom of the selected template") {
+                guiRun { tree.selectedScheme = currentList.templates[1] }
 
-            guiRun { tree.addScheme(Template("New Template")) }
+                guiRun { tree.addScheme(DummyScheme("New Scheme")) }
 
-            tree.myModel.list.templates[2].name shouldBe "New Template"
-        }
+                currentList.templates[1].schemes.last().name shouldBe "New Scheme"
+            }
 
-        test("inserts the scheme at the bottom of the selected template") {
-            guiRun { tree.selectedScheme = tree.myModel.list.templates[1] }
+            test("inserts the scheme below the selected scheme") {
+                guiRun {
+                    tree.expandRow(2)
+                    tree.selectedScheme = currentList.templates[2].schemes[0]
+                }
 
-            guiRun { tree.addScheme(DummyScheme("New Scheme")) }
+                guiRun { tree.addScheme(DummyScheme("New Scheme")) }
 
-            tree.myModel.list.templates[1].schemes.last().name shouldBe "New Scheme"
-        }
+                currentList.templates[2].schemes[1].name shouldBe "New Scheme"
+            }
 
-        test("inserts the template after the selected scheme") {
-            guiRun { tree.selectedScheme = tree.myModel.list.templates[0].schemes[1] }
+            test("selects the inserted scheme") {
+                guiRun {
+                    tree.expandRow(1)
+                    tree.selectedScheme = currentList.templates[1].schemes[0]
+                }
 
-            guiRun { tree.addScheme(Template("New Template")) }
+                guiRun { tree.addScheme(DummyScheme()) }
 
-            tree.myModel.list.templates[1].name shouldBe "New Template"
-        }
-
-        test("inserts the scheme below the selected scheme") {
-            guiRun { tree.selectedScheme = tree.myModel.list.templates[2].schemes[0] }
-
-            guiRun { tree.addScheme(DummyScheme("New Scheme")) }
-
-            tree.myModel.list.templates[2].schemes[1].name shouldBe "New Scheme"
-        }
-
-        test("selects the inserted node") {
-            guiRun { tree.selectedScheme = tree.myModel.list.templates[1].schemes[0] }
-
-            guiRun { tree.addScheme(DummyScheme()) }
-
-            tree.selectedScheme shouldBe tree.myModel.list.templates[1].schemes[1]
+                tree.selectedScheme shouldBe currentList.templates[1].schemes[1]
+            }
         }
     }
 
     context("removeScheme") {
         test("removes the given node from the tree") {
-            guiRun { tree.removeScheme(tree.myModel.list.templates[1]) }
+            guiRun { tree.removeScheme(currentList.templates[1]) }
 
-            tree.myModel.list.templates.names() shouldContainExactly listOf("Template0", "Template2")
+            currentList.templates.names() shouldContainExactly listOf("Template0", "Template2")
         }
 
         test("removes the selection if there is nothing to select") {
-            guiRun { repeat(3) { tree.removeScheme(tree.myModel.list.templates[0]) } }
+            guiRun { repeat(3) { tree.removeScheme(currentList.templates[0]) } }
 
             tree.selectedScheme should beNull()
         }
 
         test("selects the parent if the removed node had no siblings left") {
-            guiRun { tree.removeScheme(tree.myModel.list.templates[1].schemes[0]) }
+            guiRun { tree.expandRow(1) }
+
+            guiRun { tree.removeScheme(currentList.templates[1].schemes[0]) }
 
             tree.selectedScheme?.name shouldBe "Template1"
         }
 
         test("selects the next sibling if the removed node has siblings") {
-            guiRun { tree.removeScheme(tree.myModel.list.templates[0].schemes[0]) }
+            guiRun { tree.expandRow(0) }
+
+            guiRun { tree.removeScheme(currentList.templates[0].schemes[0]) }
 
             tree.selectedScheme?.name shouldBe "Scheme1"
         }
     }
 
+    context("replaceScheme") {
+        test("removes the scheme if replaced with `null`") {
+            val scheme = currentList.templates[1]
+
+            guiRun { tree.replaceScheme(scheme, null) }
+
+            currentList.templates shouldNotContain scheme
+        }
+
+        test("replaces the node with another node") {
+            val oldScheme = currentList.templates[2].schemes[1]
+            val newScheme = DummyScheme()
+
+            guiRun { tree.replaceScheme(oldScheme, newScheme) }
+
+            currentList.templates[2].schemes shouldNotContain oldScheme
+            currentList.templates[2].schemes shouldContain newScheme
+        }
+
+        test("retains the current expansion state") {
+            guiRun { tree.expandRow(0) }
+
+            guiRun { tree.replaceScheme(currentList.templates[0].schemes[1], DummyScheme()) }
+
+            guiGet { tree.isExpanded(0) } shouldBe true
+        }
+
+        test("retains the current selection") {
+            guiRun { tree.selectedScheme = currentList.templates[2] }
+
+            tree.replaceScheme(currentList.templates[1].schemes[0], DummyScheme())
+
+            guiGet { tree.selectedScheme } shouldBe currentList.templates[2]
+        }
+    }
+
     context("moveSchemeByOnePosition") {
-        test("moves a template") {
-            guiRun { tree.moveSchemeByOnePosition(tree.myModel.list.templates[1], moveDown = true) }
+        context("template") {
+            test("moves a template") {
+                guiRun { tree.moveSchemeByOnePosition(currentList.templates[1], moveDown = true) }
 
-            tree.myModel.list.templates.names() shouldContainExactly listOf("Template0", "Template2", "Template1")
+                currentList.templates.names() shouldContainExactly listOf("Template0", "Template2", "Template1")
+            }
+
+            test("selects the moved template") {
+                val template = currentList.templates[2]
+
+                guiRun { tree.selectedTemplate = template }
+                guiRun { tree.moveSchemeByOnePosition(template, moveDown = false) }
+
+                tree.selectedTemplate shouldBe template
+            }
+
+            test("keeps the moved template expanded") {
+                val template = currentList.templates[2]
+                guiRun { tree.expandRow(2) }
+
+                guiRun {
+                    tree.selectedTemplate = template
+                    tree.moveSchemeByOnePosition(template, moveDown = false)
+                }
+
+                guiGet { tree.isExpanded(1) } shouldBe true
+            }
+
+            test("keeps the moved template collapsed") {
+                guiRun { tree.collapseRow(2) }
+
+                guiRun {
+                    tree.selectedTemplate = currentList.templates[2]
+                    tree.moveSchemeByOnePosition(currentList.templates[2], moveDown = false)
+                }
+
+                guiGet { tree.isCollapsed(1) } shouldBe true
+            }
         }
 
-        test("moves a scheme") {
-            guiRun { tree.moveSchemeByOnePosition(tree.myModel.list.templates[0].schemes[1], moveDown = false) }
+        context("scheme") {
+            test("moves a scheme") {
+                guiRun { tree.expandRow(0) }
 
-            tree.myModel.list.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
-        }
+                guiRun { tree.moveSchemeByOnePosition(currentList.templates[0].schemes[1], moveDown = false) }
 
-        test("expands and selects the moved template") {
-            val template = tree.myModel.list.templates[2]
+                currentList.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
+            }
 
-            guiRun { tree.selectedTemplate = template }
-            guiRun { tree.moveSchemeByOnePosition(template, moveDown = false) }
+            test("retains the selection after moving a scheme") {
+                val scheme = currentList.templates[2].schemes[0]
+                guiRun {
+                    tree.expandRow(2)
+                    tree.selectedScheme = scheme
+                }
 
-            val row = tree.myModel.nodeToRow(StateNode(template))
-            guiGet { tree.isExpanded(row) } shouldBe true // The `guiGet` is required
-            tree.isRowSelected(row) shouldBe true
-        }
+                guiRun { tree.moveSchemeByOnePosition(scheme, moveDown = true) }
 
-        test("selects the moved scheme") {
-            val scheme = tree.myModel.list.templates[2].schemes[0]
+                tree.selectedScheme shouldBe scheme
+            }
 
-            guiRun { tree.moveSchemeByOnePosition(scheme, moveDown = true) }
+            test("keeps the scheme's parent expanded if the parent does not change") {
+                guiRun { tree.expandRow(0) }
 
-            tree.selectedScheme?.name shouldBe scheme.name
+                guiRun { tree.moveSchemeByOnePosition(currentList.templates[0].schemes[1], moveDown = false) }
+
+                guiGet { tree.isExpanded(0) } shouldBe true
+            }
+
+            test("expands the scheme's new parent if the parent changes") {
+                guiRun {
+                    tree.collapseRow(1)
+                    tree.expandRow(0)
+                }
+
+                val scheme = currentList.templates[0].schemes[1]
+                guiRun { tree.moveSchemeByOnePosition(scheme, moveDown = true) }
+
+                tree.myModel.root.descendants[2].children shouldContain StateNode(scheme)
+                guiGet { tree.isExpanded(2) } shouldBe true
+            }
         }
     }
 
@@ -464,23 +614,25 @@ object TemplateJTreeTest : FunSpec({
         @Suppress("BooleanLiteralArgument") // Argument names are clear from lambda later on
         withData(
             mapOf<String, Row3<() -> Scheme, Boolean, Boolean>>(
-                "first template" to row({ tree.myModel.list.templates[0] }, false, false),
-                "first scheme" to row({ tree.myModel.list.templates[0].schemes[0] }, false, false),
-                "last template" to row({ tree.myModel.list.templates[2] }, true, false),
-                "last scheme" to row({ tree.myModel.list.templates[2].schemes[1] }, true, false),
-                "move scheme within template" to row({ tree.myModel.list.templates[0].schemes[1] }, false, true),
-                "move templates within list" to row({ tree.myModel.list.templates[1] }, true, true),
-                "move scheme between templates" to row({ tree.myModel.list.templates[1].schemes[0] }, true, true),
+                "first template" to row({ currentList.templates[0] }, false, false),
+                "first scheme" to row({ currentList.templates[0].schemes[0] }, false, false),
+                "last template" to row({ currentList.templates[2] }, true, false),
+                "last scheme" to row({ currentList.templates[2].schemes[1] }, true, false),
+                "move scheme within template" to row({ currentList.templates[0].schemes[1] }, false, true),
+                "move templates within list" to row({ currentList.templates[1] }, true, true),
+                "move scheme between templates" to row({ currentList.templates[1].schemes[0] }, true, true),
             )
-        ) { (scheme, moveDown, expected) -> tree.canMoveSchemeByOnePosition(scheme(), moveDown) shouldBe expected }
+        ) { (scheme, moveDown, expected) ->
+            guiRun { tree.expandNodes() }
+
+            tree.canMoveSchemeByOnePosition(scheme(), moveDown) shouldBe expected
+        }
     }
 
 
     context("buttons") {
-        lateinit var frame: FrameFixture
-
-
         beforeNonContainer {
+            frame.cleanUp()
             frame = showInFrame(guiGet { tree.asDecoratedPanel() })
         }
 
@@ -507,11 +659,14 @@ object TemplateJTreeTest : FunSpec({
             }
 
             test("removes the selected scheme") {
-                guiRun { tree.selectedScheme = tree.myModel.list.templates[0].schemes[1] }
+                guiRun {
+                    tree.expandRow(0)
+                    tree.selectedScheme = currentList.templates[0].schemes[1]
+                }
 
                 guiRun { frame.getActionButton("Remove").click() }
 
-                tree.myModel.list.templates[0].schemes.names() shouldContainExactly listOf("Scheme0")
+                currentList.templates[0].schemes.names() shouldContainExactly listOf("Scheme0")
             }
         }
 
@@ -526,38 +681,46 @@ object TemplateJTreeTest : FunSpec({
             }
 
             test("copies the selected scheme") {
-                guiRun { tree.selectedScheme = tree.myModel.list.templates[1].schemes[0] }
+                guiRun {
+                    tree.expandRow(1)
+                    tree.selectedScheme = currentList.templates[1].schemes[0]
+                }
 
                 guiRun { frame.getActionButton("Copy").click() }
 
-                tree.myModel.list.templates[1].schemes.names() shouldContainExactly listOf("Scheme2", "Scheme2")
+                currentList.templates[1].schemes.names() shouldContainExactly listOf("Scheme2", "Scheme2")
             }
 
             test("creates an independent copy of the selected scheme") {
-                guiRun { tree.selectedScheme = tree.myModel.list.templates[2].schemes[1] }
+                guiRun {
+                    tree.expandRow(2)
+                    tree.selectedScheme = currentList.templates[2].schemes[1]
+                }
 
                 guiRun { frame.getActionButton("Copy").click() }
-                (tree.myModel.list.templates[2].schemes[2] as DummyScheme).name = "New Name"
+                (currentList.templates[2].schemes[2] as DummyScheme).name = "New Name"
 
-                tree.myModel.list.templates[2].schemes[1].name shouldNotBe "New Name"
+                currentList.templates[2].schemes.names() shouldContainExactly listOf("Scheme3", "Scheme4", "New Name")
             }
 
             test("ensures the copy uses the same settings state") {
                 // Arrange
-                val referencedTemplate = tree.myModel.list.templates[0]
+                val referencedTemplate = currentList.templates[0]
                 val referencingScheme = TemplateReference(referencedTemplate.uuid)
                 val referencingTemplate = Template(schemes = mutableListOf(referencingScheme))
-                    .also { it.applyContext(currentSettings) }
+                    .also { it.applyContext(currentList.context) }
 
-                currentSettings.templates += referencingTemplate
-                currentSettings.applyContext(currentSettings)
+                currentList.templates += referencingTemplate
 
-                guiRun { tree.reload() }
-                tree.myModel.list.templates.last() shouldBe referencingTemplate
+                guiRun {
+                    tree.reload()
+                    tree.expandRow(3)
+                }
+                currentList.templates[3] shouldBe referencingTemplate
 
                 // Act
                 guiRun {
-                    tree.selectedScheme = tree.myModel.list.templates[3].schemes[0]
+                    tree.selectedScheme = currentList.templates[3].schemes[0]
                     frame.getActionButton("Copy").click()
                 }
 
@@ -581,7 +744,7 @@ object TemplateJTreeTest : FunSpec({
 
             test("is disabled if the selected scheme cannot be moved up") {
                 guiRun {
-                    tree.selectedScheme = tree.myModel.list.templates[0]
+                    tree.selectedScheme = currentList.templates[0]
                     updateButtons()
                 }
 
@@ -590,7 +753,7 @@ object TemplateJTreeTest : FunSpec({
 
             test("is enabled if the selected scheme can be moved up") {
                 guiRun {
-                    tree.selectedScheme = tree.myModel.list.templates[1]
+                    tree.selectedScheme = currentList.templates[1]
                     updateButtons()
                 }
 
@@ -598,11 +761,14 @@ object TemplateJTreeTest : FunSpec({
             }
 
             test("moves the selected scheme up") {
-                guiRun { tree.selectedScheme = tree.myModel.list.templates[0].schemes[1] }
+                guiRun {
+                    tree.expandRow(0)
+                    tree.selectedScheme = currentList.templates[0].schemes[1]
+                }
 
                 guiRun { frame.getActionButton("Up").click() }
 
-                tree.myModel.list.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
+                currentList.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
             }
         }
 
@@ -618,7 +784,7 @@ object TemplateJTreeTest : FunSpec({
 
             test("is disabled if the selected scheme cannot be moved down") {
                 guiRun {
-                    tree.selectedScheme = tree.myModel.list.templates[2]
+                    tree.selectedScheme = currentList.templates[2]
                     updateButtons()
                 }
 
@@ -627,7 +793,7 @@ object TemplateJTreeTest : FunSpec({
 
             test("is enabled if the selected scheme can be moved down") {
                 guiRun {
-                    tree.selectedScheme = tree.myModel.list.templates[1]
+                    tree.selectedScheme = currentList.templates[1]
                     updateButtons()
                 }
 
@@ -635,11 +801,14 @@ object TemplateJTreeTest : FunSpec({
             }
 
             test("moves the selected scheme down") {
-                guiRun { tree.selectedScheme = tree.myModel.list.templates[2].schemes[0] }
+                guiRun {
+                    tree.expandRow(2)
+                    tree.selectedScheme = currentList.templates[2].schemes[0]
+                }
 
                 guiRun { frame.getActionButton("Down").click() }
 
-                tree.myModel.list.templates[2].schemes.names() shouldContainExactly listOf("Scheme4", "Scheme3")
+                currentList.templates[2].schemes.names() shouldContainExactly listOf("Scheme4", "Scheme3")
             }
         }
 
@@ -655,7 +824,7 @@ object TemplateJTreeTest : FunSpec({
 
             test("is disabled if the selection has not been modified") {
                 guiRun {
-                    tree.selectedScheme = tree.myModel.list.templates[0]
+                    tree.selectedScheme = currentList.templates[0]
                     updateButtons()
                 }
 
@@ -664,7 +833,7 @@ object TemplateJTreeTest : FunSpec({
 
             test("removes the scheme if it was newly added") {
                 val template = Template("New Template")
-                tree.myModel.list.templates += template
+                currentList.templates += template
                 guiRun { tree.reload() }
 
                 guiRun {
@@ -672,64 +841,69 @@ object TemplateJTreeTest : FunSpec({
                     frame.getActionButton("Reset").click()
                 }
 
-                tree.myModel.list.templates.names() shouldNotContain "New Template"
+                currentList.templates.names() shouldNotContain "New Template"
             }
 
             test("resets changes to the initially selected scheme") {
-                (tree.myModel.list.templates[0].schemes[0] as DummyScheme).name = "New Name"
+                (currentList.templates[0].schemes[0] as DummyScheme).name = "New Name"
                 guiRun { tree.reload() }
+                currentList.templates[0].schemes[0].name shouldBe "New Name"
 
                 guiRun { frame.getActionButton("Reset").click() }
 
-                (tree.myModel.list.templates[0].schemes[0] as DummyScheme).name shouldBe "Scheme0"
+                currentList.templates[0].schemes[0].name shouldBe "Scheme0"
             }
 
             test("resets changes to a template") {
-                tree.myModel.list.templates[0].name = "New Name"
+                currentList.templates[0].name = "New Name"
                 guiRun { tree.reload() }
+                currentList.templates[0].name shouldBe "New Name"
 
                 guiRun {
-                    tree.selectedScheme = tree.myModel.list.templates[0]
+                    tree.selectedScheme = currentList.templates[0]
                     frame.getActionButton("Reset").click()
                 }
 
-                tree.myModel.list.templates[0].name shouldBe "Template0"
+                currentList.templates[0].name shouldBe "Template0"
             }
 
-            test("resets changes to a scheme") {
-                (tree.myModel.list.templates[1].schemes[0] as DummyScheme).name = "New Name"
+            test("resets changes to the selected scheme") {
+                (currentList.templates[1].schemes[0] as DummyScheme).name = "New Name"
                 guiRun { tree.reload() }
+                currentList.templates[1].schemes[0].name shouldBe "New Name"
 
                 guiRun {
-                    tree.selectedScheme = tree.myModel.list.templates[1].schemes[0]
+                    tree.selectedScheme = currentList.templates[1].schemes[0]
                     frame.getActionButton("Reset").click()
                 }
 
-                tree.myModel.list.templates[1].schemes[0].name shouldBe "Scheme2"
+                currentList.templates[1].schemes[0].name shouldBe "Scheme2"
             }
 
-            test("resets a template's scheme order") {
-                tree.myModel.list.templates[0].schemes.setAll(tree.myModel.list.templates[0].schemes.reversed())
+            test("resets the selected template's scheme order") {
+                currentList.templates[0].schemes.setAll(currentList.templates[0].schemes.reversed())
                 guiRun { tree.reload() }
+                currentList.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
 
                 guiRun {
-                    tree.selectedScheme = tree.myModel.list.templates[0]
+                    tree.selectedScheme = currentList.templates[0]
                     frame.getActionButton("Reset").click()
                 }
 
-                tree.myModel.list.templates[0].schemes.names() shouldContainExactly listOf("Scheme0", "Scheme1")
+                currentList.templates[0].schemes.names() shouldContainExactly listOf("Scheme0", "Scheme1")
             }
 
-            test("resets a template's schemes") {
-                (tree.myModel.list.templates[2].schemes[0] as DummyScheme).name = "New Name"
+            test("resets the selected template's schemes") {
+                (currentList.templates[2].schemes[0] as DummyScheme).name = "New Name"
                 guiRun { tree.reload() }
+                currentList.templates[2].schemes[0].name shouldBe "New Name"
 
                 guiRun {
-                    tree.selectedScheme = tree.myModel.list.templates[2]
+                    tree.selectedScheme = currentList.templates[2]
                     frame.getActionButton("Reset").click()
                 }
 
-                tree.myModel.list.templates[2].schemes[0].name shouldBe "Scheme3"
+                currentList.templates[2].schemes[0].name shouldBe "Scheme3"
             }
         }
     }

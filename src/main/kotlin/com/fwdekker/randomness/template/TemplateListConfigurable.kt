@@ -1,15 +1,17 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.openapi.util.Disposer
 import javax.swing.JComponent
 
 
 /**
  * Tells IntelliJ how to use a [TemplateListEditor] to edit a [TemplateList] in the settings dialog.
  *
- * Set [templateToSelect] before [createComponent] is invoked to determine which template should be selected when the
+ * Set [schemeToSelect] before [createComponent] is invoked to determine which template should be selected when the
  * configurable opens.
  *
  * This class is separate from [TemplateListEditor] because that class creates UI components in the constructor. But
@@ -18,7 +20,7 @@ import javax.swing.JComponent
  *
  * @see TemplateSettingsAction
  */
-class TemplateListConfigurable : Configurable {
+class TemplateListConfigurable : Configurable, Disposable {
     /**
      * The user interface for changing the settings, displayed in IntelliJ's settings window.
      */
@@ -26,9 +28,23 @@ class TemplateListConfigurable : Configurable {
     lateinit var editor: TemplateListEditor private set
 
     /**
-     * The UUID of the template to select after calling [createComponent].
+     * The UUID of the scheme to select after calling [createComponent].
      */
-    var templateToSelect: String? = null
+    var schemeToSelect: String? = null
+
+
+    /**
+     * Returns the name of the configurable as displayed in the settings window.
+     */
+    override fun getDisplayName() = "Randomness"
+
+    /**
+     * Creates a new editor and returns the root pane of the created editor.
+     */
+    override fun createComponent(): JComponent {
+        editor = TemplateListEditor(initialSelection = schemeToSelect).also { Disposer.register(this, it) }
+        return editor.rootComponent
+    }
 
 
     /**
@@ -37,7 +53,7 @@ class TemplateListConfigurable : Configurable {
     override fun isModified() = editor.isModified() || editor.doValidate() != null
 
     /**
-     * Saves the changes in the settings component to the default settings object.
+     * Saves the changes in the settings component to the default settings object, and updates template shortcuts.
      *
      * @throws ConfigurationException if the changes cannot be saved
      */
@@ -47,7 +63,11 @@ class TemplateListConfigurable : Configurable {
         if (validationInfo != null)
             throw ConfigurationException(validationInfo, Bundle("template_list.error.failed_to_save_settings"))
 
+        val oldList = editor.originalTemplateList.deepCopy(retainUuid = true)
         editor.apply()
+        val newList = editor.originalTemplateList.deepCopy(retainUuid = true)
+
+        TemplateActionLoader().updateActions(oldList.templates, newList.templates)
     }
 
     /**
@@ -55,26 +75,14 @@ class TemplateListConfigurable : Configurable {
      */
     override fun reset() = editor.reset()
 
-    /**
-     * Disposes the configurable's resources.
-     */
-    override fun disposeUIResources() {
-        editor.dispose()
-    }
-
 
     /**
-     * Creates a new editor and returns the root pane of the created editor.
+     * Recursively disposes this configurable's resources.
      */
-    override fun createComponent(): JComponent {
-        editor = TemplateListEditor()
-        editor.queueSelection = templateToSelect
-        return editor.rootComponent
-    }
-
+    override fun disposeUIResources() = Disposer.dispose(this)
 
     /**
-     * Returns the name of the configurable as displayed in the settings window.
+     * Non-recursively disposes this configurable's resources.
      */
-    override fun getDisplayName() = "Randomness"
+    override fun dispose() = Unit
 }

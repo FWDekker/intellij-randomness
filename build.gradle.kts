@@ -41,8 +41,6 @@ dependencies {
 
     testImplementation("org.assertj:assertj-swing-junit:${properties("assertjSwingVersion")}")
     testRuntimeOnly("org.junit.platform:junit-platform-runner:${properties("junitRunnerVersion")}")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${properties("junitVersion")}")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:${properties("junitVersion")}")
     testImplementation("org.junit.vintage:junit-vintage-engine:${properties("junitVersion")}")
     testImplementation("io.kotest:kotest-assertions-core:${properties("kotestVersion")}")
     testImplementation("io.kotest:kotest-framework-datatest:${properties("kotestVersion")}")
@@ -104,9 +102,13 @@ tasks {
     // Tests/coverage
     test {
         systemProperty("java.awt.headless", "false")
+        if (project.hasProperty("kotest.tags")) systemProperty("kotest.tags", project.findProperty("kotest.tags")!!)
 
         useJUnitPlatform {
-            includeEngines("junit-vintage", "junit-jupiter", "kotest")
+            if (!project.hasProperty("kotest.tags"))
+                includeEngines("junit-vintage")
+
+            includeEngines("kotest")
         }
 
         testLogging {

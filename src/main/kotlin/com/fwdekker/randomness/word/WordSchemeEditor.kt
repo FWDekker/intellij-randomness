@@ -13,11 +13,13 @@ import com.fwdekker.randomness.ui.withName
 import com.fwdekker.randomness.ui.withSimpleRenderer
 import com.fwdekker.randomness.word.WordScheme.Companion.PRESET_AFFIX_DECORATOR_DESCRIPTORS
 import com.fwdekker.randomness.word.WordScheme.Companion.PRESET_CAPITALIZATION
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.DocumentReferenceManager
 import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.util.Disposer
@@ -70,7 +72,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
                 extraComponents += document
 
                 val wordListEditor = factory.createEditor(document)
-                Disposer.register(this@WordSchemeEditor) { EditorFactory.getInstance().releaseEditor(wordListEditor) }
+                Disposer.register(this@WordSchemeEditor, factory.wrapDisposable(wordListEditor))
                 cell(wordListEditor.component)
                     .onReset { document.resetUndoHistory() }
                     .horizontalAlign(HorizontalAlign.FILL)
@@ -141,3 +143,12 @@ fun Document.getWordList() = this.text.split('\n').filterNot { it.isBlank() }
  */
 fun Document.setWordList(wordList: List<String>) =
     runWriteAction { setText(wordList.joinToString(separator = "\n", postfix = "\n")) }
+
+/**
+ * Returns a [Disposable] that can dispose the [editor] through the [EditorFactory] that created it.
+ */
+@Suppress("ObjectLiteralToLambda") // `Disposable` docs state that lambdas should be avoided
+private fun EditorFactory.wrapDisposable(editor: Editor) =
+    object : Disposable {
+        override fun dispose() = this@wrapDisposable.releaseEditor(editor)
+    }

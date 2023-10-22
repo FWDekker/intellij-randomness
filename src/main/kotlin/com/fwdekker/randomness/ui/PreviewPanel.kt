@@ -27,8 +27,6 @@ import kotlin.random.Random
  * changes. After registering some components with this panel, the preview will be updated whenever those components are
  * updated.
  *
- * Note that [dispose] should be invoked when this panel is no longer used.
- *
  * @property getScheme Returns a scheme that generates previews. Its random source will be changed.
  */
 @Suppress("detekt:LateinitUsage") // Initialized in panel DSL
@@ -80,7 +78,7 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     /**
      * Disposes this panel's resources, to be used when this panel is no longer used.
      */
-    override fun dispose() = Disposer.dispose(this)
+    override fun dispose() = Unit
 
 
     /**

@@ -2,7 +2,6 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
@@ -38,63 +37,70 @@ import kotlin.math.min
 /**
  * A tree containing [Template]s and [Scheme]s.
  *
- * The tree contains the templates and schemes defined in the [TemplateList] of [currentSettings] by loading that list
- * into this tree's [TemplateJTreeModel]. Furthermore, when a new [Scheme] is added or copied, it will use the
- * [currentSettings].
+ * Changes made through this tree's interface (e.g. adding, removing, copying) are immediately reflected in the
+ * [currentTemplateList]. The [originalTemplateList] is used only as a reference point to determine what changes have
+ * occurred, for example when [isModified] is called or when the end user requests that changes are (partially)
+ * reverted.
  *
- * This tree reads from [originalSettings] to determine whether particular [Scheme]s have been modified. Modified
- * [Scheme]s can be reset, in which case the original state is copied into that scheme in the [currentSettings].
+ * If changes are made outside of this tree's interface (i.e. by directly operating on the [currentTemplateList]
+ * instance that was passed in the constructor), this tree's internal model becomes desynchronized, and must be
+ * resynchronized by invoking [reload]. Except for [reload], the behaviour of this tree is undefined while
+ * desynchronized.
  *
- * @property originalSettings The original settings before any modifications were made.
- * @property currentSettings The current settings which include modifications.
+ * Internally, the [currentTemplateList] is loaded into a [TemplateJTreeModel]. The [TemplateJTree] class is the
+ * corresponding user interface class, which additionally provides (1) toolbars and buttons for manipulating the model,
+ * (2) node expansion and selection, and (3) handling for tracking and reversing modifications.
+ *
+ * @property originalTemplateList The (read-only) original templates without modifications.
+ * @property currentTemplateList The current templates, including modifications.
  */
+@Suppress("detekt:TooManyFunctions") // Cannot be avoided
 class TemplateJTree(
-    private val originalSettings: Settings,
-    private var currentSettings: Settings,
-) : Tree(TemplateJTreeModel(currentSettings.templateList)) {
+    private val originalTemplateList: TemplateList,
+    private var currentTemplateList: TemplateList,
+) : Tree(TemplateJTreeModel(currentTemplateList)) {
     /**
      * The tree's model.
+     *
+     * This field should not be accessed directly by outside classes. (But it's not `private` because the field is very
+     * useful during tests.)
      *
      * This field cannot be named `model` because this causes an NPE during initialization. This field cannot be named
      * `treeModel` because this name is already taken and cannot be overridden.
      */
-    val myModel: TemplateJTreeModel
+    internal val myModel: TemplateJTreeModel
         get() = super.getModel() as TemplateJTreeModel
 
     /**
      * The currently selected node, or `null` if no node is selected, or `null` if the root is selected.
      */
     val selectedNodeNotRoot: StateNode?
-        get() = (lastSelectedPathComponent as? StateNode)
-            ?.let {
-                if (it == model.root) null
-                else it
-            }
+        get() = (lastSelectedPathComponent as? StateNode)?.let { if (it == model.root) null else it }
 
     /**
-     * The currently selected scheme, or `null` if no scheme is currently selected.
+     * The currently selected scheme (or template), or `null` if no scheme is currently selected.
      *
-     * Setting `null` will select the first template in the tree, or the root if there are no templates.
+     * Setting a scheme that is either `null` or not in the tree will clear the current selection.
      */
     var selectedScheme: Scheme?
         get() = selectedNodeNotRoot?.state as? Scheme
         set(value) {
-            val node = value?.let { StateNode(it) }
+            val descendants = myModel.root.descendants
 
-            setSelectionRow(
-                myModel.nodeToRow(
-                    if (node != null && myModel.root.contains(node)) node
-                    else myModel.root.children.firstOrNull() ?: myModel.root
-                )
-            )
+            if (value == null || StateNode(value) !in descendants)
+                clearSelection()
+            else
+                selectionPath = myModel.getPathToRoot(descendants.single { it == StateNode(value) })
         }
 
     /**
-     * The currently selected template, or `null` if no template is currently selected.
+     * The currently selected template, or the parent of the currently selected non-template scheme, or `null` if no
+     * scheme is currently selected.
      *
-     * If a non-template scheme is currently selected, the template parent of that scheme is returned.
+     * Setting a template that is either `null` or not in the tree will select the first template in the tree, or clears
+     * the selection if the tree is empty.
      *
-     * Setting `null` will select the first template in the tree, or the root if there are no templates.
+     * @see selectedScheme
      */
     var selectedTemplate: Template?
         get() {
@@ -108,22 +114,15 @@ class TemplateJTree(
         }
 
     /**
-     * UUIDs of templates that have explicitly been collapsed by the user.
+     * UUIDs of templates that have explicitly been collapsed.
+     *
+     * Though a [TemplateJTree] knows which rows in the tree have been expanded and collapsed, it does not know by
+     * itself which templates these rows belong to. The tree would normally use the [myModel] to find this out, but that
+     * does not work if the UI and the model have become desynchronized, as is the case during [reload]. Therefore, the
+     * [collapsedNodes] field can be used even while desynchronized to determine which templates are collapsed, and,
+     * in particular, which templates should (not) be expanded after resynchronization.
      */
-    private val explicitlyCollapsed = mutableSetOf<String>()
-
-    /**
-     * All currently visible nodes in depth-first order.
-     */
-    private val visibleNodes: List<StateNode>
-        get() {
-            val hidden = explicitlyCollapsed
-                .mapNotNull { myModel.list.getTemplateByUuid(it) }
-                .flatMap { it.schemes }
-                .map { StateNode(it) }
-                .toSet()
-            return myModel.root.recursiveChildren.minus(hidden)
-        }
+    private val collapsedNodes = currentTemplateList.templates.map { it.uuid }.toMutableSet()
 
 
     init {
@@ -136,23 +135,15 @@ class TemplateJTree(
         setCellRenderer(CellRenderer())
         addTreeWillExpandListener(object : TreeWillExpandListener {
             override fun treeWillExpand(event: TreeExpansionEvent) {
-                explicitlyCollapsed.remove((event.path.lastPathComponent as StateNode).state.uuid)
+                collapsedNodes -= (event.path.lastPathComponent as StateNode).state.uuid
             }
 
             override fun treeWillCollapse(event: TreeExpansionEvent) {
-                explicitlyCollapsed.add((event.path.lastPathComponent as StateNode).state.uuid)
+                collapsedNodes += (event.path.lastPathComponent as StateNode).state.uuid
             }
         })
 
-        myModel.rowToNode = { visibleNodes.getOrNull(it) }
-        myModel.nodeToRow = { visibleNodes.indexOf(it) }
-        myModel.expandAndSelect = {
-            expandNode(it)
-            selectedScheme = it.state as Scheme
-        }
-
-        myModel.list.templates.forEach { expandPath(myModel.getPathToRoot(StateNode(it))) }
-        selectedScheme = null
+        setSelectionRow(0)
     }
 
     /**
@@ -178,56 +169,69 @@ class TemplateJTree(
                 Bundle("shared.action.copy"),
                 Bundle("shared.action.up"),
                 Bundle("shared.action.down"),
-                Bundle("shared.action.reset")
+                Bundle("shared.action.reset"),
             )
             .setForcedDnD()
             .createPanel()
 
 
     /**
-     * Reloads the list of templates in [myModel].
+     * Notifies the tree that external changes have been made to [currentTemplateList], and resynchronizes the tree's
+     * model with the template list.
      *
-     * This is a wrapper around [TemplateJTreeModel.reload] that additionally tries to retain the current selection
-     * and expansion state.
+     * If [changedScheme] is not `null`, then only the part of the model that includes the [changedScheme] is
+     * resynchronized. Otherwise, if [changedScheme] is `null`, the entire model is resynchronized.
+     *
+     * This is a wrapper around [TemplateJTreeModel.fireNodeStructureChanged] that additionally tries to retain the
+     * current selection and expansion state. Any new templates that have been added will initially be collapsed.
+     *
+     * @see runPreservingState
      */
-    fun reload() {
-        val oldSelectedScheme = selectedScheme
+    fun reload(changedScheme: Scheme? = null) {
+        runPreservingState { myModel.fireNodeStructureChanged(changedScheme?.let { StateNode(it) } ?: myModel.root) }
 
-        myModel.reload()
-        myModel.list.templates
-            .filterNot { it.uuid in explicitlyCollapsed }
-            .forEach { expandPath(myModel.getPathToRoot(StateNode(it))) }
-
-        selectedScheme = oldSelectedScheme
+        selectedScheme = selectedScheme ?: currentTemplateList.templates.firstOrNull()
     }
+
+    /**
+     * Expands the [Template]s identified by [uuids], and collapses all other [Template]s.
+     */
+    fun expandNodes(uuids: Collection<String> = currentTemplateList.templates.map { it.uuid }) =
+        myModel.root.children
+            .associateWith { it.state.uuid in uuids }
+            .mapKeys { myModel.getPathToRoot(it.key) }
+            .forEach { (path, shouldExpand) -> setExpandedState(path, shouldExpand) }
 
 
     /**
      * Adds [newScheme] at an appropriate location in the tree based on the currently selected node.
      *
-     * @param newScheme the scheme to add; must be an instance of [Template] if [selectedNodeNotRoot] is `null`
+     * @param newScheme the scheme to add; must be a [Template] if [selectedNodeNotRoot] is `null`
      */
     fun addScheme(newScheme: Scheme) {
-        val newNode = StateNode(newScheme)
         val selectedNode = selectedNodeNotRoot
+        val newNode = StateNode(newScheme)
         if (newScheme is Template) newScheme.name = findUniqueNameFor(newScheme)
 
-        if (selectedNode == null) {
-            require(newScheme is Template) { Bundle("template_list.error.add_template_to_non_root") }
-            myModel.insertNode(myModel.root, newNode)
-        } else if (selectedNode.state is Template) {
-            if (newScheme is Template)
-                myModel.insertNodeAfter(myModel.root, newNode, selectedNode)
-            else
-                myModel.insertNode(selectedNode, newNode)
-        } else {
-            if (newScheme is Template)
-                myModel.insertNodeAfter(myModel.root, newNode, myModel.getParentOf(selectedNode)!!)
-            else
-                myModel.insertNodeAfter(myModel.getParentOf(selectedNode)!!, newNode, selectedNode)
+        runPreservingState {
+            if (selectedNode == null) {
+                myModel.insertNode(myModel.root, newNode)
+            } else if (selectedNode.state is Template) {
+                if (newScheme is Template)
+                    myModel.insertNodeAfter(myModel.root, selectedNode, newNode)
+                else
+                    myModel.insertNode(selectedNode, newNode)
+            } else {
+                if (newScheme is Template)
+                    myModel.insertNodeAfter(myModel.root, myModel.getParentOf(selectedNode)!!, newNode)
+                else
+                    myModel.insertNodeAfter(myModel.getParentOf(selectedNode)!!, selectedNode, newNode)
+            }
         }
 
-        expandNode(newNode)
+        val path = myModel.getPathToRoot(newNode)
+        makeVisible(path)
+        expandPath(path)
         selectedScheme = newScheme
     }
 
@@ -239,15 +243,36 @@ class TemplateJTree(
     fun removeScheme(scheme: Scheme) {
         val node = StateNode(scheme)
         val parent = myModel.getParentOf(node)!!
-        val oldIndex = myModel.getIndexOfChild(parent, node)
+        val oldIndex = parent.children.indexOf(node)
 
-        myModel.removeNode(node)
+        runPreservingState { myModel.removeNode(node) }
 
         selectionPath =
             myModel.getPathToRoot(
                 if (myModel.isLeaf(parent)) parent
-                else myModel.getChild(parent, min(oldIndex, myModel.getChildCount(parent) - 1))
+                else parent.children[min(oldIndex, parent.children.count() - 1)]
             )
+    }
+
+    /**
+     * Replaces [oldScheme] with [newScheme] in-place.
+     *
+     * If `newScheme` is `null`, then `oldScheme` is removed without being replaced.
+     */
+    fun replaceScheme(oldScheme: Scheme, newScheme: Scheme?) {
+        if (newScheme == null) {
+            removeScheme(oldScheme)
+            return
+        }
+
+        val oldNode = StateNode(oldScheme)
+        val newNode = StateNode(newScheme)
+        val parent = myModel.getParentOf(oldNode)!!
+
+        runPreservingState {
+            myModel.insertNodeAfter(parent, oldNode, newNode)
+            myModel.removeNode(oldNode)
+        }
     }
 
     /**
@@ -258,17 +283,25 @@ class TemplateJTree(
      */
     fun moveSchemeByOnePosition(scheme: Scheme, moveDown: Boolean) {
         val node = StateNode(scheme)
-        val index = myModel.nodeToRow(node)
 
-        myModel.exchangeRows(index, getMoveTargetIndex(scheme, moveDown))
-        // `exchangeRows` expands and selects the moved node
+        runPreservingState {
+            myModel.exchangeRows(
+                myModel.root.descendants.indexOf(node),
+                getMoveTargetIndex(scheme, moveDown)
+            )
+        }
+
+        makeVisible(myModel.getPathToRoot(node))
     }
 
     /**
      * Returns `true` if and only if [moveSchemeByOnePosition] can be invoked with these parameters.
      */
     fun canMoveSchemeByOnePosition(scheme: Scheme, moveDown: Boolean) =
-        myModel.canExchangeRows(myModel.nodeToRow(StateNode(scheme)), getMoveTargetIndex(scheme, moveDown))
+        myModel.canExchangeRows(
+            myModel.root.descendants.indexOf(StateNode(scheme)),
+            getMoveTargetIndex(scheme, moveDown)
+        )
 
     /**
      * Returns the index to which [scheme] is moved (down if [moveDown] is `true`, or up otherwise) when
@@ -277,33 +310,32 @@ class TemplateJTree(
     private fun getMoveTargetIndex(scheme: Scheme, moveDown: Boolean): Int {
         val node = StateNode(scheme)
 
-        if (scheme !is Template)
-            return myModel.nodeToRow(node) + if (moveDown) 1 else -1
+        val children = myModel.root.children
+        val descendants = myModel.root.descendants
+        val diff = if (moveDown) 1 else -1
 
-        val parent = myModel.getParentOf(node)!!
-        val indexInParent = myModel.getIndexOfChild(parent, node)
-        val uncleIndexInParent = indexInParent + if (moveDown) 1 else -1
-
-        return if (uncleIndexInParent !in 0 until myModel.getChildCount(parent)) -1
-        else myModel.nodeToRow(myModel.getChild(parent, uncleIndexInParent))
+        return if (scheme !is Template) descendants.indexOf(node) + diff
+        else descendants.indexOf(children.getOrNull(children.indexOf(node) + diff))
     }
 
 
     /**
-     * Expands the path to [node] even if it is a leaf node.
+     * Runs [lambda] while ensuring that the [selectedScheme] and [collapsedNodes] remain unchanged.
      */
-    private fun expandNode(node: StateNode?) {
-        if (node == null) return
+    private fun runPreservingState(lambda: () -> Unit) {
+        val oldSelected = selectedScheme
+        val oldCollapsed = collapsedNodes
 
-        val path = myModel.getPathToRoot(node)
-        expandPath(path.parentPath)
-        expandPath(path)
+        lambda()
+
+        expandNodes(currentTemplateList.templates.map { it.uuid }.toSet() - oldCollapsed)
+        selectedScheme = oldSelected
     }
 
     /**
-     * Returns `true` if and only if [scheme] has been modified with respect to [originalSettings].
+     * Returns `true` if and only if [scheme] has been modified with respect to [originalTemplateList].
      */
-    private fun isModified(scheme: Scheme) = originalSettings.templateList.getSchemeByUuid(scheme.uuid) != scheme
+    private fun isModified(scheme: Scheme) = originalTemplateList.getSchemeByUuid(scheme.uuid) != scheme
 
     /**
      * Finds a good, unique name for [template] so that it can be inserted into this list without conflict.
@@ -313,7 +345,7 @@ class TemplateJTree(
      * number is taken as the starting number.
      */
     private fun findUniqueNameFor(template: Template): String {
-        val templateNames = myModel.list.templates.map { it.name }
+        val templateNames = currentTemplateList.templates.map { it.name }
         if (template.name !in templateNames) return template.name
 
         var i = 1
@@ -354,7 +386,7 @@ class TemplateJTree(
             icon = scheme.icon
 
             if (scheme is Template) {
-                val index = myModel.list.templates.indexOf(scheme) + 1
+                val index = currentTemplateList.templates.indexOf(scheme) + 1
                 if (index <= INDEXED_TEMPLATE_COUNT)
                     append("${index % INDEXED_TEMPLATE_COUNT} ", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES, false)
             }
@@ -444,7 +476,7 @@ class TemplateJTree(
              */
             override fun onChosen(value: Scheme?, finalChoice: Boolean): PopupStep<*>? {
                 if (value != null)
-                    addScheme(value.deepCopy().also { it.applyContext(currentSettings) })
+                    addScheme(value.deepCopy().also { it.applyContext(currentTemplateList.context) })
 
                 return null
             }
@@ -506,7 +538,7 @@ class TemplateJTree(
          * Ineligible [Template]s are automatically filtered out.
          */
         private inner class ReferencesPopupStep : AbstractPopupStep(
-            currentSettings.templates
+            currentTemplateList.templates
                 .filter { selectedTemplate!!.canReference(it) }
                 .map { TemplateReference(it.uuid) }
         )
@@ -524,7 +556,7 @@ class TemplateJTree(
         /**
          * Returns `true` if and only if this action is enabled.
          */
-        override fun isEnabled() = selectedNodeNotRoot != null
+        override fun isEnabled() = selectedScheme != null
 
         /**
          * Returns the shortcut for this action.
@@ -553,19 +585,14 @@ class TemplateJTree(
          *
          * @return `true` if and only if this action is enabled
          */
-        override fun isEnabled() = selectedNodeNotRoot != null
+        override fun isEnabled() = selectedScheme != null
 
         /**
          * Copies the selected scheme in the tree.
          *
          * @param event ignored
          */
-        override fun actionPerformed(event: AnActionEvent) {
-            val copy = selectedScheme!!.deepCopy()
-            copy.applyContext(currentSettings)
-
-            addScheme(copy)
-        }
+        override fun actionPerformed(event: AnActionEvent) = addScheme(selectedScheme!!.deepCopy())
     }
 
     /**
@@ -641,23 +668,8 @@ class TemplateJTree(
          *
          * @param event ignored
          */
-        override fun actionPerformed(event: AnActionEvent) {
-            val toReset = selectedScheme!!
-            val toResetFrom = originalSettings.templateList.getSchemeByUuid(toReset.uuid)
-            if (toResetFrom == null) {
-                removeScheme(toReset)
-                return
-            }
-
-            toReset.copyFrom(toResetFrom)
-            toReset.applyContext(currentSettings)
-
-            myModel.fireNodeChanged(StateNode(toReset))
-            myModel.fireNodeStructureChanged(StateNode(toReset))
-
-            clearSelection()
-            myModel.expandAndSelect(StateNode(toReset))
-        }
+        override fun actionPerformed(event: AnActionEvent) =
+            selectedScheme!!.let { replaceScheme(it, originalTemplateList.getSchemeByUuid(it.uuid)) }
     }
 
 

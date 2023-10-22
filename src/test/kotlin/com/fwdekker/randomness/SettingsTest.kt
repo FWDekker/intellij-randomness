@@ -2,14 +2,12 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
-import com.fwdekker.randomness.testhelpers.DummyState
+import com.fwdekker.randomness.template.TemplateReference
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 
 
 /**
@@ -43,24 +41,17 @@ object SettingsTest : FunSpec({
 
             settings.templates[0].name shouldBe "old"
         }
-    }
 
-    context("copyFrom") {
-        test("cannot copy from another type") {
-            val settings = Settings()
+        test("sets the copy's context to itself") {
+            val referenced = Template("old")
+            val reference = Template("ref", schemes = mutableListOf(TemplateReference(referenced.uuid)))
+            val settings = Settings(templateList = TemplateList(mutableListOf(referenced, reference)))
 
-            shouldThrow<IllegalArgumentException> { settings.copyFrom(DummyState()) }
-                .message shouldBe "Cannot copy from different type."
-        }
+            val copy = settings.deepCopy(retainUuid = true)
+            copy.templates.single { it.name == "old" }.name = "new"
 
-        test("deep-copies the template list") {
-            val settings = Settings(templateList = TemplateList(mutableListOf(Template("old"))))
-            val other = Settings(templateList = TemplateList(mutableListOf(Template("new"))))
-
-            settings.copyFrom(other)
-
-            settings.templateList shouldNotBeSameInstanceAs other.templateList
-            settings.templates[0].name shouldBe "new"
+            val referencingCopy = copy.templates.single { it.name == "ref" }
+            (referencingCopy.schemes.single() as TemplateReference).template?.name shouldBe "new"
         }
     }
 })

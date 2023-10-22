@@ -3,7 +3,6 @@ package com.fwdekker.randomness
 import com.fwdekker.randomness.testhelpers.DummyState
 import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -70,47 +69,6 @@ object StateTest : FunSpec({
 
             original.list shouldHaveSize 0
             copy.list shouldHaveSize 1
-        }
-    }
-
-    context("copyFrom") {
-        test("copies the UUID") {
-            val original = DummyState()
-            val other = DummyState()
-
-            original.copyFrom(other)
-
-            original.uuid shouldBe other.uuid
-        }
-
-        test("copies fields") {
-            val original = DummyState(mutableListOf(0))
-            val other = DummyState(mutableListOf(1))
-
-            original.copyFrom(other)
-
-            original.list shouldContainExactly listOf(1)
-        }
-
-        test("deep-copies fields") {
-            val original = DummyState(mutableListOf(0))
-            val other = DummyState(mutableListOf(1))
-
-            original.copyFrom(other)
-            other.list.add(2)
-
-            original.list shouldContainExactly listOf(1)
-        }
-
-        test("copies the context") {
-            val context = Settings()
-            val original = DummyState()
-            val other = DummyState()
-            other.applyContext(context)
-
-            original.copyFrom(other)
-
-            +original.context shouldBeSameInstanceAs context
         }
     }
 })

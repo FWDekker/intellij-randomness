@@ -8,6 +8,7 @@ import com.fwdekker.randomness.testhelpers.find
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
 import com.fwdekker.randomness.testhelpers.matcher
+import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.InplaceButton
@@ -51,7 +52,7 @@ object PreviewPanelTest : FunSpec({
 
     afterNonContainer {
         frame.cleanUp()
-        guiRun { panel.dispose() }
+        guiRun { Disposer.dispose(panel) }
         ideaFixture.tearDown()
     }
 
