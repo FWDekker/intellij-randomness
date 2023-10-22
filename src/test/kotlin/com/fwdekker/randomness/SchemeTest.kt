@@ -21,7 +21,7 @@ object SchemeTest : FunSpec({
     tags(Tags.SCHEME)
 
 
-    context("f:icon") {
+    context("icon") {
         test("returns null if the type icon is null") {
             val scheme = DummyScheme()
 

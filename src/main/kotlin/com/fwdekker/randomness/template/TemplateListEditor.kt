@@ -81,7 +81,7 @@ class TemplateListEditor(
 
         // Load current state
         reset()
-        templateTree.expandNodes()
+        templateTree.expandAll()
 
         // Select a scheme
         initialSelection

@@ -240,15 +240,15 @@ object TemplateListEditorTest : FunSpec({
             guiRun {
                 frame.tree().target().setSelectionRow(1)
                 frame.spinner("minValue").target().value = 7L
-                frame.tree().target().setSelectionRow(3)
             }
-
-            guiRun { editor.reset() }
 
             guiRun {
-                frame.tree().target().setSelectionRow(1)
-                frame.spinner("minValue").target().value shouldBe 0L
+                frame.tree().target().setSelectionRow(3)
+                editor.reset()
             }
+
+            guiRun { frame.tree().target().setSelectionRow(1) }
+            guiGet { frame.spinner("minValue").target().value } shouldBe 0L
         }
     }
 })

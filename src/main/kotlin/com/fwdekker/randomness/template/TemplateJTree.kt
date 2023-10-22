@@ -29,8 +29,6 @@ import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.JBUI
 import javax.swing.JPanel
 import javax.swing.JTree
-import javax.swing.event.TreeExpansionEvent
-import javax.swing.event.TreeWillExpandListener
 import javax.swing.tree.TreeSelectionModel
 import kotlin.math.min
 
@@ -81,7 +79,8 @@ class TemplateJTree(
     /**
      * The currently selected scheme (or template), or `null` if no scheme is currently selected.
      *
-     * Setting a scheme that is either `null` or not in the tree will clear the current selection.
+     * Setting `null` or setting a [Scheme] with a UUID that does not occur in this tree will clear the current
+     * selection.
      */
     var selectedScheme: Scheme?
         get() = selectedNodeNotRoot?.state as? Scheme
@@ -115,15 +114,27 @@ class TemplateJTree(
         }
 
     /**
-     * UUIDs of templates that have explicitly been collapsed.
+     * The list of currently-collapsed [Template]s by UUID.
      *
-     * Though a [TemplateJTree] knows which rows in the tree have been expanded and collapsed, it does not know by
-     * itself which templates these rows belong to. The tree would normally use the [myModel] to find this out, but that
-     * does not work if the UI and the model have become desynchronized, as is the case during [reload]. Therefore, the
-     * [collapsedNodes] field can be used even while desynchronized to determine which templates are collapsed, and,
-     * in particular, which templates should (not) be expanded after resynchronization.
+     * This field is rather finicky. It is used in [runPreservingState], which is used in [reload], which may be invoked
+     * while the UI and the [myModel] are desynchronized. Therefore, in the getter, this field uses [getUI] to access
+     * the (possibly outdated) UI to determine which [Template]s have currently been collapsed. In the setter,
+     * meanwhile, all [Template]s are expanded except the given [Template]s, to ensure that new [Template]s (which were
+     * added in such a way as to cause desynchronization) are expanded by default.
      */
-    private val collapsedNodes = currentTemplateList.templates.map { it.uuid }.toMutableSet()
+    private var collapsedTemplates: Collection<String>
+        get() {
+            val ui = getUI() ?: return emptyList()
+
+            return (0 until ui.getRowCount(this))
+                .mapNotNull { ui.getPathForRow(this, it) }
+                .filter { isCollapsed(it) }
+                .map { (it.lastPathComponent as StateNode).state.uuid }
+        }
+        set(value) =
+            myModel.root.children
+                .filter { it.state.uuid !in value }
+                .forEach { expandPath(myModel.getPathToRoot(it)) }
 
 
     init {
@@ -134,15 +145,6 @@ class TemplateJTree(
         showsRootHandles = true
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
         setCellRenderer(CellRenderer())
-        addTreeWillExpandListener(object : TreeWillExpandListener {
-            override fun treeWillExpand(event: TreeExpansionEvent) {
-                collapsedNodes -= (event.path.lastPathComponent as StateNode).state.uuid
-            }
-
-            override fun treeWillCollapse(event: TreeExpansionEvent) {
-                collapsedNodes += (event.path.lastPathComponent as StateNode).state.uuid
-            }
-        })
 
         setSelectionRow(0)
     }
@@ -184,24 +186,21 @@ class TemplateJTree(
      * resynchronized. Otherwise, if [changedScheme] is `null`, the entire model is resynchronized.
      *
      * This is a wrapper around [TemplateJTreeModel.fireNodeStructureChanged] that additionally tries to retain the
-     * current selection and expansion state. Any new templates that have been added will initially be collapsed.
+     * current selection and expansion state. Any new templates that have been added will initially be expanded.
      *
      * @see runPreservingState
      */
     fun reload(changedScheme: Scheme? = null) {
         runPreservingState { myModel.fireNodeStructureChanged(changedScheme?.let { StateNode(it) } ?: myModel.root) }
 
-        selectedScheme = selectedScheme ?: currentTemplateList.templates.firstOrNull()
+        if (selectedScheme == null)
+            selectedScheme = currentTemplateList.templates.firstOrNull()
     }
 
     /**
-     * Expands the [Template]s identified by [uuids], and collapses all other [Template]s.
+     * Expands all [Template]s.
      */
-    fun expandNodes(uuids: Collection<String> = currentTemplateList.templates.map { it.uuid }) =
-        myModel.root.children
-            .associateWith { it.state.uuid in uuids }
-            .mapKeys { myModel.getPathToRoot(it.key) }
-            .forEach { (path, shouldExpand) -> setExpandedState(path, shouldExpand) }
+    fun expandAll() = myModel.root.children.forEach { expandPath(myModel.getPathToRoot(it)) }
 
 
     /**
@@ -321,15 +320,15 @@ class TemplateJTree(
 
 
     /**
-     * Runs [lambda] while ensuring that the [selectedScheme] and [collapsedNodes] remain unchanged.
+     * Runs [lambda] while ensuring that the [selectedScheme] and collapsed templates remain unchanged.
      */
     private fun runPreservingState(lambda: () -> Unit) {
         val oldSelected = selectedScheme
-        val oldCollapsed = collapsedNodes
+        val oldCollapsed = collapsedTemplates
 
         lambda()
 
-        expandNodes(currentTemplateList.templates.map { it.uuid }.toSet() - oldCollapsed)
+        collapsedTemplates = oldCollapsed
         selectedScheme = oldSelected
     }
 

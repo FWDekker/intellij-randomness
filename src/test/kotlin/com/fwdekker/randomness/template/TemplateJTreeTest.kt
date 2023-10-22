@@ -291,38 +291,29 @@ object TemplateJTreeTest : FunSpec({
             guiGet { (tree.getPathForRow(3).lastPathComponent as StateNode).state } shouldBe template
             guiGet { tree.isExpanded(3) } shouldBe true
         }
+
+        test(
+            "keeps collapsed nodes collapsed even if that template's original row index is larger than the new total " +
+                "row count"
+        ) {
+            guiRun {
+                currentList.templates.also { it.setAll(it.takeLast(1)) }
+                currentList.templates.single().schemes.also { it.setAll(it.take(1)) }
+            }
+
+            guiGet { tree.reload() }
+
+            guiGet { tree.isCollapsed(0) } shouldBe true
+        }
     }
 
     context("expandAll") {
-        test("collapses all templates if an empty list is given") {
-            guiRun { tree.expandNodes(emptyList()) }
+        test("expands all templates") {
+            guiGet { tree.rowCount } shouldBe 3
 
-            guiGet { tree.isExpanded(0) } shouldBe false
-            guiGet { tree.isExpanded(1) } shouldBe false
-            guiGet { tree.isExpanded(2) } shouldBe false
-        }
+            guiRun { tree.expandAll() }
 
-        test("expands all templates if a full list is given") {
-            guiRun { tree.expandNodes(currentList.templates.map { it.uuid }) }
-
-            guiGet { tree.isExpanded(0) } shouldBe true
-            guiGet { tree.isExpanded(3) } shouldBe true
-            guiGet { tree.isExpanded(5) } shouldBe true
-        }
-
-        test("expands the given nodes and collapses all other nodes") {
-            guiRun {
-                tree.collapseRow(0)
-                tree.collapseRow(1)
-                tree.expandRow(2)
-            }
-            guiGet { tree.rowCount } shouldBe 5
-
-            guiRun { tree.expandNodes(currentList.templates.take(2).map { it.uuid }) }
-
-            guiGet { tree.isExpanded(0) } shouldBe true
-            guiGet { tree.isExpanded(3) } shouldBe true
-            guiGet { tree.isExpanded(5) } shouldBe false
+            guiGet { tree.rowCount } shouldBe 8
         }
     }
 
@@ -456,6 +447,25 @@ object TemplateJTreeTest : FunSpec({
 
                 tree.selectedScheme shouldBe currentList.templates[1].schemes[1]
             }
+
+            test("keeps the parent expanded") {
+                guiRun { tree.selectedScheme = currentList.templates[1] }
+
+                guiRun { tree.addScheme(DummyScheme()) }
+
+                guiGet { tree.isExpanded(1) } shouldBe true
+            }
+
+            test("expands the parent if it is not currently expanded") {
+                guiRun {
+                    tree.removeScheme(currentList.templates[1].schemes[0])
+                    tree.selectedScheme = currentList.templates[1]
+                }
+
+                guiRun { tree.addScheme(DummyScheme()) }
+
+                guiGet { tree.isExpanded(1) } shouldBe true
+            }
         }
     }
 
@@ -472,7 +482,7 @@ object TemplateJTreeTest : FunSpec({
             tree.selectedScheme should beNull()
         }
 
-        test("selects the parent if the removed node had no siblings left") {
+        test("selects the parent if the removed node had no other siblings") {
             guiRun { tree.expandRow(1) }
 
             guiRun { tree.removeScheme(currentList.templates[1].schemes[0]) }
@@ -486,6 +496,14 @@ object TemplateJTreeTest : FunSpec({
             guiRun { tree.removeScheme(currentList.templates[0].schemes[0]) }
 
             tree.selectedScheme?.name shouldBe "Scheme1"
+        }
+
+        test("keeps the parent expanded if it still has children") {
+            guiRun { tree.expandRow(0) }
+
+            guiRun { tree.removeScheme(currentList.templates[0].schemes[0]) }
+
+            guiGet { tree.isExpanded(0) } shouldBe true
         }
     }
 
@@ -508,20 +526,40 @@ object TemplateJTreeTest : FunSpec({
             currentList.templates[2].schemes shouldContain newScheme
         }
 
-        test("retains the current expansion state") {
+        test("retains the current selection") {
+            guiRun { tree.selectedScheme = currentList.templates[2] }
+
+            guiRun { tree.replaceScheme(currentList.templates[1].schemes[0], DummyScheme()) }
+
+            guiGet { tree.selectedScheme } shouldBe currentList.templates[2]
+        }
+
+        test("keeps the replaced template collapsed") {
+            val oldTemplate = currentList.templates[0]
+            val newTemplate = Template(schemes = mutableListOf(DummyScheme())).also { it.uuid = oldTemplate.uuid }
+            guiRun { tree.collapseRow(0) }
+
+            guiRun { tree.replaceScheme(oldTemplate, newTemplate) }
+
+            guiGet { tree.isCollapsed(0) } shouldBe true
+        }
+
+        test("keeps the replaced template expanded") {
+            val oldTemplate = currentList.templates[0]
+            val newTemplate = Template(schemes = mutableListOf(DummyScheme())).also { it.uuid = oldTemplate.uuid }
+            guiRun { tree.expandRow(0) }
+
+            guiRun { tree.replaceScheme(oldTemplate, newTemplate) }
+
+            guiGet { tree.isExpanded(0) } shouldBe true
+        }
+
+        test("keeps the parent expanded") {
             guiRun { tree.expandRow(0) }
 
             guiRun { tree.replaceScheme(currentList.templates[0].schemes[1], DummyScheme()) }
 
             guiGet { tree.isExpanded(0) } shouldBe true
-        }
-
-        test("retains the current selection") {
-            guiRun { tree.selectedScheme = currentList.templates[2] }
-
-            tree.replaceScheme(currentList.templates[1].schemes[0], DummyScheme())
-
-            guiGet { tree.selectedScheme } shouldBe currentList.templates[2]
         }
     }
 
@@ -595,7 +633,7 @@ object TemplateJTreeTest : FunSpec({
                 guiGet { tree.isExpanded(0) } shouldBe true
             }
 
-            test("expands the scheme's new parent if the parent changes") {
+            test("if the parent changes, keeps the old parent expanded and expands the new parent") {
                 guiRun {
                     tree.collapseRow(1)
                     tree.expandRow(0)
@@ -604,6 +642,7 @@ object TemplateJTreeTest : FunSpec({
                 val scheme = currentList.templates[0].schemes[1]
                 guiRun { tree.moveSchemeByOnePosition(scheme, moveDown = true) }
 
+                guiGet { tree.isExpanded(0) } shouldBe true
                 tree.myModel.root.descendants[2].children shouldContain StateNode(scheme)
                 guiGet { tree.isExpanded(2) } shouldBe true
             }
@@ -623,7 +662,7 @@ object TemplateJTreeTest : FunSpec({
                 "move scheme between templates" to row({ currentList.templates[1].schemes[0] }, true, true),
             )
         ) { (scheme, moveDown, expected) ->
-            guiRun { tree.expandNodes() }
+            guiRun { tree.expandAll() }
 
             tree.canMoveSchemeByOnePosition(scheme(), moveDown) shouldBe expected
         }
