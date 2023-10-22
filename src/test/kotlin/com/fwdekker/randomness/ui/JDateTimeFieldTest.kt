@@ -1,13 +1,14 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.matchBundle
 import com.github.sisyphsu.dateparser.DateParserUtils
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import java.text.ParseException
@@ -19,7 +20,7 @@ import java.time.Month
  * Unit tests for [JDateTimeField].
  */
 object JDateTimeFieldTest : FunSpec({
-    tags(NamedTag("Swing"))
+    tags(Tags.SWING)
 
 
     lateinit var field: JDateTimeField
@@ -47,7 +48,7 @@ object JDateTimeFieldTest : FunSpec({
         context("set") {
             test("throws an error if a non-date-time is set") {
                 shouldThrow<IllegalArgumentException> { guiRun { field.setValue("invalid") } }
-                    .message shouldBe Bundle("datetime_field.error.invalid_type")
+                    .message should matchBundle("datetime_field.error.invalid_type")
             }
         }
 
@@ -98,7 +99,7 @@ object JDateTimeFieldTest : FunSpec({
                 shouldThrow<ParseException> {
                     field.text = null
                     field.commitEdit()
-                }.message shouldBe Bundle("datetime_field.error.empty_string")
+                }.message should matchBundle("datetime_field.error.empty_string")
             }
         }
 
@@ -107,7 +108,7 @@ object JDateTimeFieldTest : FunSpec({
                 shouldThrow<ParseException> {
                     field.text = ""
                     field.commitEdit()
-                }.message shouldBe Bundle("datetime_field.error.empty_string")
+                }.message should matchBundle("datetime_field.error.empty_string")
             }
         }
 

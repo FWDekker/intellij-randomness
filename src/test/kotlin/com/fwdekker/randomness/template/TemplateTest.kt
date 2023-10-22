@@ -8,10 +8,10 @@ import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import com.fwdekker.randomness.word.WordScheme
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
@@ -26,7 +26,7 @@ import kotlin.random.Random
  * Unit tests for [Template].
  */
 object TemplateTest : FunSpec({
-    tags(NamedTag("Scheme"))
+    tags(Tags.SCHEME)
 
 
     context("typeIcon") {

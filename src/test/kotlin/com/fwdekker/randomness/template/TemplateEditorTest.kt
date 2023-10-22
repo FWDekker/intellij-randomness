@@ -1,12 +1,12 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.editorFieldsTestFactory
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.textProp
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
@@ -19,7 +19,7 @@ import org.assertj.swing.fixture.FrameFixture
  * Unit tests for [TemplateEditor].
  */
 object TemplateEditorTest : FunSpec({
-    tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
+    tags(Tags.EDITOR, Tags.IDEA_FIXTURE, Tags.SWING)
 
 
     lateinit var frame: FrameFixture

@@ -8,6 +8,7 @@ import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.setAll
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
@@ -20,7 +21,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.Row2
 import io.kotest.data.row
@@ -40,7 +40,7 @@ import org.assertj.swing.fixture.FrameFixture
  * Unit tests for [TemplateListEditor].
  */
 object TemplateListEditorTest : FunSpec({
-    tags(NamedTag("Editor"), NamedTag("IdeaFixture"), NamedTag("Swing"))
+    tags(Tags.EDITOR, Tags.IDEA_FIXTURE, Tags.SWING)
 
 
     lateinit var ideaFixture: IdeaTestFixture

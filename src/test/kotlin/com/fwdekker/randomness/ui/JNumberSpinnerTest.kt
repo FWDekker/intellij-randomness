@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
@@ -16,7 +16,7 @@ import javax.swing.JSpinner
  * Unit tests for [JNumberSpinner].
  */
 object JNumberSpinnerTest : FunSpec({
-    tags(NamedTag("Swing"))
+    tags(Tags.SWING)
 
 
     beforeContainer {
@@ -59,7 +59,7 @@ object JNumberSpinnerTest : FunSpec({
  * Unit tests for [bindSpinners].
  */
 object BindSpinnersTest : FunSpec({
-    tags(NamedTag("Swing"))
+    tags(Tags.SWING)
 
 
     beforeContainer {
@@ -104,7 +104,7 @@ object BindSpinnersTest : FunSpec({
  * Unit tests for [JDoubleSpinner].
  */
 object JDoubleSpinnerTest : FunSpec({
-    tags(NamedTag("Swing"))
+    tags(Tags.SWING)
 
 
     beforeContainer {
@@ -157,7 +157,7 @@ object JDoubleSpinnerTest : FunSpec({
  * Unit tests for [JLongSpinner].
  */
 object JLongSpinnerTest : FunSpec({
-    tags(NamedTag("Swing"))
+    tags(Tags.SWING)
 
 
     beforeContainer {
@@ -210,7 +210,7 @@ object JLongSpinnerTest : FunSpec({
  * Unit tests for [JIntSpinner].
  */
 object JIntSpinnerTest : FunSpec({
-    tags(NamedTag("Swing"))
+    tags(Tags.SWING)
 
 
     beforeContainer {

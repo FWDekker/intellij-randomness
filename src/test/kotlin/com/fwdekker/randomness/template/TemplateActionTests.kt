@@ -1,16 +1,16 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.matchBundle
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
@@ -27,7 +27,7 @@ import java.awt.Color
  * Unit tests for [TemplateGroupAction].
  */
 object TemplateGroupActionTest : FunSpec({
-    tags(NamedTag("IdeaFixture"))
+    tags(Tags.IDEA_FIXTURE)
 
 
     lateinit var ideaFixture: IdeaTestFixture
@@ -132,7 +132,7 @@ object TemplateInsertActionTest : FunSpec({
  * Unit tests for [TemplateSettingsAction].
  */
 object TemplateSettingsActionTest : FunSpec({
-    tags(NamedTag("IdeaFixture"))
+    tags(Tags.IDEA_FIXTURE)
 
 
     lateinit var ideaFixture: IdeaTestFixture
@@ -153,7 +153,7 @@ object TemplateSettingsActionTest : FunSpec({
             test("uses a default text if the template is null") {
                 val action = TemplateSettingsAction(template = null)
 
-                action.templatePresentation.text shouldBe Bundle("template.name.settings")
+                action.templatePresentation.text should matchBundle("template.name.settings")
             }
 
             test("uses the template's name if the template is not null") {

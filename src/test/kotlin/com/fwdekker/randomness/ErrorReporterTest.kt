@@ -1,10 +1,10 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
@@ -14,7 +14,7 @@ import io.kotest.matchers.string.shouldNotContain
  * Unit tests for [ErrorReporter].
  */
 object ErrorReporterTest : FunSpec({
-    tags(NamedTag("IdeaFixture"))
+    tags(Tags.IDEA_FIXTURE)
 
 
     lateinit var ideaFixture: IdeaTestFixture

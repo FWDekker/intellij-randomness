@@ -1,16 +1,16 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.setAll
 import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
@@ -25,7 +25,7 @@ import io.kotest.matchers.shouldNot
  * Unit tests for [TemplateReference].
  */
 object TemplateReferenceTest : FunSpec({
-    tags(NamedTag("Scheme"))
+    tags(Tags.SCHEME)
 
 
     lateinit var list: TemplateList
@@ -48,7 +48,7 @@ object TemplateReferenceTest : FunSpec({
         test("returns an alternative name if no template is set") {
             reference.template = null
 
-            reference.name shouldBe Bundle("reference.title")
+            reference.name should matchBundle("reference.title")
         }
 
         test("returns the referenced template's name with brackets") {

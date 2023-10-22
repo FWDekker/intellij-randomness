@@ -4,8 +4,8 @@ import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.stateDeepCopyTestFactory
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
@@ -16,7 +16,7 @@ import io.kotest.matchers.shouldBe
  * Unit tests for [WordScheme].
  */
 object WordSchemeTest : FunSpec({
-    tags(NamedTag("Scheme"))
+    tags(Tags.SCHEME)
 
 
     context("generateStrings") {

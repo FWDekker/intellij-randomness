@@ -4,6 +4,7 @@ import com.fwdekker.randomness.testhelpers.DummyDecoratorScheme
 import com.fwdekker.randomness.testhelpers.DummyDecoratorSchemeEditor
 import com.fwdekker.randomness.testhelpers.DummyScheme
 import com.fwdekker.randomness.testhelpers.DummySchemeEditor
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
@@ -13,7 +14,6 @@ import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
@@ -33,7 +33,7 @@ import javax.swing.JCheckBox
  * Unit tests for [SchemeEditor].
  */
 object SchemeEditorTest : FunSpec({
-    tags(NamedTag("IdeaFixture"), NamedTag("Swing"))
+    tags(Tags.EDITOR, Tags.IDEA_FIXTURE, Tags.SWING)
 
 
     lateinit var ideaFixture: IdeaTestFixture

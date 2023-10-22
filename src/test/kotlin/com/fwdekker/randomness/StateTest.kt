@@ -1,7 +1,7 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.testhelpers.DummyState
-import io.kotest.core.NamedTag
+import com.fwdekker.randomness.testhelpers.Tags
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -13,7 +13,7 @@ import io.kotest.matchers.types.shouldBeSameInstanceAs
  * Unit tests for [State].
  */
 object StateTest : FunSpec({
-    tags(NamedTag("Scheme"))
+    tags(Tags.SCHEME)
 
 
     context("uuid") {

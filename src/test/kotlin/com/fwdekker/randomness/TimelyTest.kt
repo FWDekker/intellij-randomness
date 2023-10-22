@@ -2,8 +2,10 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.Timely.GENERATOR_TIMEOUT
 import com.fwdekker.randomness.Timely.generateTimely
+import com.fwdekker.randomness.testhelpers.matchBundle
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 
 
@@ -17,7 +19,7 @@ object TimelyTest : FunSpec({
 
     test("throws an exception if the generator does not finish within time") {
         shouldThrow<DataGenerationException> { generateTimely { Thread.sleep(GENERATOR_TIMEOUT + 1000L) } }
-            .message shouldBe Bundle("helpers.error.timed_out")
+            .message should matchBundle("helpers.error.timed_out")
     }
 
     test("throws an exception if the generator throws an exception") {

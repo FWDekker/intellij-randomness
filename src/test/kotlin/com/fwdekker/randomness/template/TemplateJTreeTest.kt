@@ -4,6 +4,7 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.setAll
 import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.getActionButton
@@ -15,7 +16,6 @@ import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.Row3
 import io.kotest.data.row
@@ -39,7 +39,7 @@ import org.assertj.swing.fixture.FrameFixture
  */
 @Suppress("detekt:LargeClass") // Would be weird to split up given that CUT is not split up either
 object TemplateJTreeTest : FunSpec({
-    tags(NamedTag("IdeaFixture"), NamedTag("Swing"))
+    tags(Tags.IDEA_FIXTURE, Tags.SWING)
 
 
     lateinit var ideaFixture: IdeaTestFixture

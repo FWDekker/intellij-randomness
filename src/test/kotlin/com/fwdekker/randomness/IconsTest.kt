@@ -1,9 +1,9 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContainExactly
@@ -65,7 +65,7 @@ object TypeIconTest : FunSpec({
 
 
     context("paintIcon") {
-        tags(NamedTag("Swing"))
+        tags(Tags.SWING)
 
 
         lateinit var image: BufferedImage
@@ -105,7 +105,7 @@ object TypeIconTest : FunSpec({
  */
 object OverlayIconTest : FunSpec({
     context("paintIcon") {
-        tags(NamedTag("Swing"))
+        tags(Tags.SWING)
 
 
         lateinit var image: BufferedImage
@@ -207,7 +207,7 @@ object OverlayedIconTest : FunSpec({
 
 
     context("paintIcon") {
-        tags(NamedTag("Swing"))
+        tags(Tags.SWING)
 
 
         lateinit var image: BufferedImage

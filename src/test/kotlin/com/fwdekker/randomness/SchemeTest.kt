@@ -2,8 +2,8 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.testhelpers.DummyDecoratorScheme
 import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.Tags
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContainExactly
@@ -18,10 +18,10 @@ import java.awt.Color
  * Unit tests for [Scheme].
  */
 object SchemeTest : FunSpec({
-    tags(NamedTag("Scheme"))
+    tags(Tags.SCHEME)
 
 
-    context("icon") {
+    context("f:icon") {
         test("returns null if the type icon is null") {
             val scheme = DummyScheme()
 
@@ -146,6 +146,9 @@ object SchemeTest : FunSpec({
  * Unit tests for [DecoratorScheme].
  */
 object DecoratorSchemeTest : FunSpec({
+    tags(Tags.SCHEME)
+
+
     context("generateStrings") {
         test("throws an exception if the decorator is invalid") {
             val decorator = DummyDecoratorScheme(enabled = true, valid = false)
