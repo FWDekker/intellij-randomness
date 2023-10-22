@@ -98,9 +98,10 @@ See [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.
 
 ### 🧪 Quality assurance
 ```bash
-$ gradlew test                    # Run tests
+$ gradlew test                    # Run tests (and collect coverage)
 $ gradlew test --tests X          # Run tests in class X (package name optional)
 $ gradlew test -Pkotest.tags="X"  # Run tests with `NamedTag` X (also supports not (!), and (&), or (|))
+$ gradlew koverHtmlReport         # Create HTML coverage report for previous test run
 $ gradlew check                   # Run tests and static analysis
 $ gradlew runPluginVerifier       # Check for compatibility issues
 ```

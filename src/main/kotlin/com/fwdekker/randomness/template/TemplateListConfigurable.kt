@@ -11,7 +11,7 @@ import javax.swing.JComponent
 /**
  * Tells IntelliJ how to use a [TemplateListEditor] to edit a [TemplateList] in the settings dialog.
  *
- * Set [templateToSelect] before [createComponent] is invoked to determine which template should be selected when the
+ * Set [schemeToSelect] before [createComponent] is invoked to determine which template should be selected when the
  * configurable opens.
  *
  * This class is separate from [TemplateListEditor] because that class creates UI components in the constructor. But
@@ -28,9 +28,23 @@ class TemplateListConfigurable : Configurable, Disposable {
     lateinit var editor: TemplateListEditor private set
 
     /**
-     * The UUID of the template to select after calling [createComponent].
+     * The UUID of the scheme to select after calling [createComponent].
      */
-    var templateToSelect: String? = null
+    var schemeToSelect: String? = null
+
+
+    /**
+     * Returns the name of the configurable as displayed in the settings window.
+     */
+    override fun getDisplayName() = "Randomness"
+
+    /**
+     * Creates a new editor and returns the root pane of the created editor.
+     */
+    override fun createComponent(): JComponent {
+        editor = TemplateListEditor(initialSelection = schemeToSelect).also { Disposer.register(this, it) }
+        return editor.rootComponent
+    }
 
 
     /**
@@ -61,6 +75,7 @@ class TemplateListConfigurable : Configurable, Disposable {
      */
     override fun reset() = editor.reset()
 
+
     /**
      * Recursively disposes this configurable's resources.
      */
@@ -70,20 +85,4 @@ class TemplateListConfigurable : Configurable, Disposable {
      * Non-recursively disposes this configurable's resources.
      */
     override fun dispose() = Unit
-
-
-    /**
-     * Creates a new editor and returns the root pane of the created editor.
-     */
-    override fun createComponent(): JComponent {
-        editor = TemplateListEditor().also { Disposer.register(this, it) }
-        editor.queueSelection = templateToSelect
-        return editor.rootComponent
-    }
-
-
-    /**
-     * Returns the name of the configurable as displayed in the settings window.
-     */
-    override fun getDisplayName() = "Randomness"
 }

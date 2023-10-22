@@ -20,8 +20,8 @@ import com.fwdekker.randomness.uuid.UuidSchemeEditor
 import com.fwdekker.randomness.word.WordScheme
 import com.fwdekker.randomness.word.WordSchemeEditor
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.ui.Splitter
 import com.intellij.openapi.util.Disposer
+import com.intellij.ui.JBSplitter
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBEmptyBorder
@@ -42,9 +42,14 @@ import javax.swing.SwingUtilities
  * contained within them, and on the right, a [SchemeEditor] for the currently-selected template or scheme is shown.
  *
  * @property originalTemplateList The templates to edit.
+ * @param initialSelection the UUID of the scheme to select initially, or `null` or an invalid UUID to select the first
+ * template
  * @see TemplateListConfigurable
  */
-class TemplateListEditor(val originalTemplateList: TemplateList = Settings.DEFAULT.templateList) : Disposable {
+class TemplateListEditor(
+    val originalTemplateList: TemplateList = Settings.DEFAULT.templateList,
+    initialSelection: String? = null,
+) : Disposable {
     /**
      * The root component of the editor.
      */
@@ -58,16 +63,9 @@ class TemplateListEditor(val originalTemplateList: TemplateList = Settings.DEFAU
         PreviewPanel { templateTree.selectedTemplate ?: StringScheme("") }
             .also { Disposer.register(this, it) }
 
-    /**
-     * The UUID of the scheme to select after the next invocation of [reset].
-     *
-     * @see TemplateListConfigurable
-     */
-    var queueSelection: String? = null
-
 
     init {
-        val splitter = createSplitter(false, SPLITTER_PROPORTION_KEY, DEFAULT_SPLITTER_PROPORTION)
+        val splitter = createSplitter()
         rootComponent.add(splitter, BorderLayout.CENTER)
 
         // Left half
@@ -84,6 +82,14 @@ class TemplateListEditor(val originalTemplateList: TemplateList = Settings.DEFAU
         // Load current state
         reset()
         templateTree.expandNodes()
+
+        // Select a scheme
+        initialSelection
+            ?.let { currentTemplateList.getSchemeByUuid(it) }
+            ?.also {
+                templateTree.selectedScheme = it
+                SwingUtilities.invokeLater { schemeEditor?.preferredFocusedComponent?.requestFocus() }
+            }
     }
 
     /**
@@ -124,6 +130,18 @@ class TemplateListEditor(val originalTemplateList: TemplateList = Settings.DEFAU
         templateTree.reload(selectedState)
         schemeEditorPanel.revalidate() // Show editor immediately
     }
+
+    /**
+     * Creates a new splitter.
+     *
+     * If a test that depends on [TemplateListEditor] freezes for a long time or fails to initialize the UI, try
+     * setting [useTestSplitter] to `true`.
+     *
+     * @return the created splitter
+     */
+    private fun createSplitter() =
+        if (useTestSplitter) JBSplitter(false, SPLITTER_PROPORTION_KEY, DEFAULT_SPLITTER_PROPORTION)
+        else OnePixelSplitter(false, SPLITTER_PROPORTION_KEY, DEFAULT_SPLITTER_PROPORTION)
 
     /**
      * Creates an editor to edit [scheme].
@@ -174,13 +192,6 @@ class TemplateListEditor(val originalTemplateList: TemplateList = Settings.DEFAU
         currentTemplateList.applyContext((+currentTemplateList.context).copy(templateList = currentTemplateList))
 
         templateTree.reload()
-
-        queueSelection?.also {
-            templateTree.selectedScheme = currentTemplateList.getSchemeByUuid(it)
-            SwingUtilities.invokeLater { schemeEditor?.preferredFocusedComponent?.requestFocus() }
-
-            queueSelection = null
-        }
     }
 
     /**
@@ -200,8 +211,8 @@ class TemplateListEditor(val originalTemplateList: TemplateList = Settings.DEFAU
         /**
          * Scrolls to the newly focused element if that element is in the [editor].
          */
-        override fun propertyChange(event: PropertyChangeEvent?) {
-            val focused = event?.newValue as? JComponent
+        override fun propertyChange(event: PropertyChangeEvent) {
+            val focused = event.newValue as? JComponent
             if (focused == null || !editor.rootComponent.isAncestorOf(focused))
                 return
 
@@ -245,14 +256,8 @@ class TemplateListEditor(val originalTemplateList: TemplateList = Settings.DEFAU
         const val EDITOR_PANEL_MARGIN = 10
 
         /**
-         * Creates a new splitter.
-         *
-         * For some reason, `OnePixelSplitter` does not work in tests. Therefore, tests overwrite this field to inject a
-         * different constructor.
+         * Whether [createSplitter] should use a separate kind of splitter that is more compatible with tests.
          */
-        var createSplitter: (Boolean, String, Float) -> Splitter =
-            { vertical, proportionKey, defaultProportion ->
-                OnePixelSplitter(vertical, proportionKey, defaultProportion)
-            }
+        var useTestSplitter: Boolean = false
     }
 }
