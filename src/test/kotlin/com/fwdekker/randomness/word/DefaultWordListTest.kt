@@ -1,14 +1,13 @@
 package com.fwdekker.randomness.word
 
-import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.matchBundle
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.longs.shouldBeLessThan
 import io.kotest.matchers.should
-import io.kotest.matchers.shouldBe
 import java.io.IOException
 import kotlin.system.measureNanoTime
 
@@ -26,7 +25,7 @@ object DefaultWordListTest : FunSpec({
         test("throws an exception if the file does not exist") {
             val list = DefaultWordList("name", "word-lists/does-not-exist.txt")
 
-            shouldThrow<IOException> { list.words }.message shouldBe Bundle("word_list.error.file_not_found")
+            shouldThrow<IOException> { list.words }.message should matchBundle("word_list.error.file_not_found")
         }
 
         test("returns an empty list of words if the file is empty") {
@@ -52,7 +51,7 @@ object DefaultWordListTest : FunSpec({
                 val list = DefaultWordList("name", "word-lists/does-not-exist.txt")
 
                 shouldThrow<IOException> { list.words }
-                shouldThrow<IOException> { list.words }.message shouldBe Bundle("word_list.error.file_not_found")
+                    .message should matchBundle("word_list.error.file_not_found")
             }
 
             test("returns words quicker if read again from the same instance") {

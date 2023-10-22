@@ -1,12 +1,12 @@
 package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.testhelpers.DummySchemeEditor
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.panel
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.Row2
 import io.kotest.data.row
@@ -30,7 +30,7 @@ import javax.swing.tree.MutableTreeNode
  * Unit tests for extension functions in `ListenerHelpersKt`.
  */
 object ListenerHelpersTest : FunSpec({
-    tags(NamedTag("Swing"))
+    tags(Tags.SWING)
 
 
     var listenerInvoked = false
@@ -75,7 +75,7 @@ object ListenerHelpersTest : FunSpec({
                         { PlainDocument().also { it.insertString(0, "text", null) } },
                         { (it as PlainDocument).replace(2, 1, "y", null) },
                     ),
-                // `JBDocument` is excluded because setting up the correct fixtures is very difficult
+                // [JBDocument] is excluded because setting up the correct fixtures is very difficult
                 "JComboBox: Select different item" to
                     row(
                         { ComboBox(arrayOf("item1", "item2")) },

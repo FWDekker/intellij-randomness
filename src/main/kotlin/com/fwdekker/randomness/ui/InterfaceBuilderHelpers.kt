@@ -128,8 +128,14 @@ fun <E> Cell<ComboBox<E>>.withSimpleRenderer(toString: (E) -> String = { it.toSt
  * A predicate that always returns [output].
  */
 class LiteralPredicate(private val output: Boolean) : ComponentPredicate() {
+    /**
+     * Does nothing, because there's no need to respond to any events to determine the output of [invoke].
+     */
     override fun addListener(listener: (Boolean) -> Unit) = Unit
 
+    /**
+     * Returns [output].
+     */
     override fun invoke() = output
 }
 

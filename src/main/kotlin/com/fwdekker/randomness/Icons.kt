@@ -86,17 +86,6 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
 
 
     /**
-     * Returns an icon that describes both this icon's type and [other]'s type.
-     */
-    fun combineWith(other: TypeIcon) =
-        TypeIcon(
-            Icons.TEMPLATE,
-            if (this.text == other.text) this.text else "",
-            this.colors + other.colors
-        )
-
-
-    /**
      * Paints the colored text icon.
      *
      * @param c a [Component] to get properties useful for painting
@@ -133,6 +122,18 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
          * The scale of the text inside the icon relative to the icon's size.
          */
         const val FONT_SIZE = 12f / 32f
+
+
+        /**
+         * Returns a single icon that describes all [icons], or `null` if [icons] is empty.
+         */
+        fun combine(icons: Collection<TypeIcon>): TypeIcon? =
+            if (icons.isEmpty()) null
+            else TypeIcon(
+                Icons.TEMPLATE,
+                if (icons.map { it.text }.toSet().size == 1) icons.first().text else "",
+                icons.flatMap { it.colors }
+            )
     }
 }
 

@@ -57,8 +57,8 @@ abstract class JNumberSpinner<T>(value: T, minValue: T?, maxValue: T?, stepSize:
 /**
  * A [JNumberSpinner] for doubles.
  *
- * Note that setting `minValue` or `maxValue` to a very large number may cause the parent component's width to be overly
- * large.
+ * Note that setting the minimum or maximum value to a very large number may cause the parent component's width to be
+ * overly large.
  *
  * @param value the default value
  * @param minValue the smallest number that may be represented

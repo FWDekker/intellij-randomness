@@ -33,12 +33,13 @@ data class TemplateList(
 
 
     /**
-     * Returns the template in this list with [uuid] as its UUID.
+     * Returns the template in this list that has [uuid] as its UUID, or `null` if there is no such template.
      */
     fun getTemplateByUuid(uuid: String) = templates.singleOrNull { it.uuid == uuid }
 
     /**
-     * Returns the template or scheme in this list with [uuid] as its UUID.
+     * Returns the template or scheme in this list that has [uuid] as its UUID, or `null` if there is no such template
+     * or scheme.
      */
     fun getSchemeByUuid(uuid: String) = templates.flatMap { listOf(it) + it.schemes }.singleOrNull { it.uuid == uuid }
 

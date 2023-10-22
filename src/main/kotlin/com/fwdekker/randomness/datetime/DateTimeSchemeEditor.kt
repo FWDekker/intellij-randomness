@@ -73,7 +73,7 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : SchemeEd
 
 
 /**
- * Binds two `DateTimePicker`s together, analogous to how [com.fwdekker.randomness.ui.bindSpinners] works.
+ * Binds two [JDateTimeField]s together, analogous to how [com.fwdekker.randomness.ui.bindSpinners] works.
  */
 private fun bindDateTimes(minField: JDateTimeField, maxField: JDateTimeField) {
     addChangeListenerTo(minField) {

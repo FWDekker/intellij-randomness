@@ -3,6 +3,8 @@ package com.fwdekker.randomness
 import com.intellij.openapi.util.JDOMUtil
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.nulls.beNull
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 
 
@@ -55,7 +57,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getContentByName("needle")?.name shouldBe null
+            element.getContentByName("needle")?.name should beNull()
         }
 
         test("returns `null` if multiple children have the given name") {
@@ -70,7 +72,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getContentByName("needle")?.name shouldBe null
+            element.getContentByName("needle")?.name should beNull()
         }
     }
 
@@ -100,7 +102,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getAttributeValueByName("needle") shouldBe null
+            element.getAttributeValueByName("needle") should beNull()
         }
 
         test("returns `null` if multiple children have the given name") {
@@ -115,7 +117,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getAttributeValueByName("needle") shouldBe null
+            element.getAttributeValueByName("needle") should beNull()
         }
 
         test("returns `null` if the child does not have a value attribute") {
@@ -129,7 +131,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getAttributeValueByName("needle") shouldBe null
+            element.getAttributeValueByName("needle") should beNull()
         }
     }
 
@@ -161,7 +163,7 @@ object XmlHelpersTest : FunSpec({
                 </tag>
                 """.trimIndent()
             )
-            element.getAttributeValueByName("needle") shouldBe null
+            element.getAttributeValueByName("needle") should beNull()
 
             element.setAttributeValueByName("needle", "new-value")
 
@@ -214,7 +216,7 @@ object XmlHelpersTest : FunSpec({
         test("returns `null` if there are no children") {
             val element = JDOMUtil.load("<tag></tag>")
 
-            element.getSingleContent() shouldBe null
+            element.getSingleContent() should beNull()
         }
 
         test("returns `null` if there are multiple children") {
@@ -227,7 +229,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getSingleContent() shouldBe null
+            element.getSingleContent() should beNull()
         }
     }
 
@@ -291,7 +293,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getContentByPath("wrong", null, "prong", null)?.name shouldBe null
+            element.getContentByPath("wrong", null, "prong", null)?.name should beNull()
         }
     }
 })

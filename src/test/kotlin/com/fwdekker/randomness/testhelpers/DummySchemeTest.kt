@@ -9,6 +9,9 @@ import io.kotest.matchers.shouldNotBe
  * Non-comprehensive tests and sanity checks for [DummyScheme].
  */
 object DummySchemeTest : FunSpec({
+    tags(Tags.SCHEME)
+
+
     test("does not equal another fresh instance") {
         DummyScheme() shouldNotBe DummyScheme()
     }

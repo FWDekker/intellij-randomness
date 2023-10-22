@@ -1,12 +1,13 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.NamedTag
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
@@ -33,39 +34,8 @@ object TypeIconTest : FunSpec({
     }
 
 
-    context("combineWith") {
-        test("returns a template TypeIcon") {
-            val icon1 = TypeIcon(PlainIcon(), "text1", listOf(Color.GREEN))
-            val icon2 = TypeIcon(PlainIcon(), "text2", listOf(Color.RED))
-
-            icon1.combineWith(icon2).base shouldBe Icons.TEMPLATE
-        }
-
-        test("retains the text if it is the same for both icons") {
-            val icon1 = TypeIcon(PlainIcon(), "text", listOf(Color.PINK))
-            val icon2 = TypeIcon(PlainIcon(), "text", listOf(Color.CYAN))
-
-            icon1.combineWith(icon2).text shouldBe "text"
-        }
-
-        test("removes the text if it is different for the icons") {
-            val icon1 = TypeIcon(PlainIcon(), "text1", listOf(Color.GRAY))
-            val icon2 = TypeIcon(PlainIcon(), "text2", listOf(Color.ORANGE))
-
-            icon1.combineWith(icon2).text shouldBe ""
-        }
-
-        test("appends the colors of the combined icons") {
-            val icon1 = TypeIcon(PlainIcon(), "text1", listOf(Color.BLUE, Color.WHITE))
-            val icon2 = TypeIcon(PlainIcon(), "text2", listOf(Color.RED, Color.PINK))
-
-            icon1.combineWith(icon2).colors shouldContainExactly listOf(Color.BLUE, Color.WHITE, Color.RED, Color.PINK)
-        }
-    }
-
-
     context("paintIcon") {
-        tags(NamedTag("Swing"))
+        tags(Tags.SWING)
 
 
         lateinit var image: BufferedImage
@@ -98,6 +68,64 @@ object TypeIconTest : FunSpec({
             image.getRGB(0, 0, 32, 32, null, 0, 32).filter { it != 0 } shouldNot beEmpty()
         }
     }
+
+
+    context("combine") {
+        test("returns `null` if no icons are given to combine") {
+            TypeIcon.combine(emptyList()) should beNull()
+        }
+
+        test("returns a template icon for a single icon") {
+            val icons = listOf(TypeIcon(PlainIcon(), "text", listOf(Color.LIGHT_GRAY)))
+
+            TypeIcon.combine(icons)!!.base shouldBe Icons.TEMPLATE
+        }
+
+        test("returns a template icon for multiple icons") {
+            val icons =
+                listOf(
+                    TypeIcon(PlainIcon(), "text1", listOf(Color.GREEN)),
+                    TypeIcon(PlainIcon(), "text2", listOf(Color.RED)),
+                    TypeIcon(PlainIcon(), "text3", listOf(Color.MAGENTA)),
+                )
+
+            TypeIcon.combine(icons)!!.base shouldBe Icons.TEMPLATE
+        }
+
+        test("retains the text if it is the same for all icons") {
+            val icons =
+                listOf(
+                    TypeIcon(PlainIcon(), "text", listOf(Color.PINK)),
+                    TypeIcon(PlainIcon(), "text", listOf(Color.CYAN)),
+                    TypeIcon(PlainIcon(), "text", listOf(Color.GREEN)),
+                )
+
+            TypeIcon.combine(icons)!!.text shouldBe "text"
+        }
+
+        test("removes the text if it is not the same for all icons") {
+            val icons =
+                listOf(
+                    TypeIcon(PlainIcon(), "text1", listOf(Color.GRAY)),
+                    TypeIcon(PlainIcon(), "text2", listOf(Color.ORANGE)),
+                    TypeIcon(PlainIcon(), "text2", listOf(Color.BLUE)),
+                )
+
+            TypeIcon.combine(icons)!!.text shouldBe ""
+        }
+
+        test("appends the colors of the combined icons") {
+            val icons =
+                listOf(
+                    TypeIcon(PlainIcon(), "text1", listOf(Color.BLUE, Color.WHITE)),
+                    TypeIcon(PlainIcon(), "text2", listOf(Color.RED)),
+                    TypeIcon(PlainIcon(), "text3", listOf(Color.PINK, Color.BLACK, Color.BLUE)),
+                )
+
+            TypeIcon.combine(icons)!!.colors shouldContainExactly
+                listOf(Color.BLUE, Color.WHITE, Color.RED, Color.PINK, Color.BLACK, Color.BLUE)
+        }
+    }
 })
 
 /**
@@ -105,7 +133,7 @@ object TypeIconTest : FunSpec({
  */
 object OverlayIconTest : FunSpec({
     context("paintIcon") {
-        tags(NamedTag("Swing"))
+        tags(Tags.SWING)
 
 
         lateinit var image: BufferedImage
@@ -207,7 +235,7 @@ object OverlayedIconTest : FunSpec({
 
 
     context("paintIcon") {
-        tags(NamedTag("Swing"))
+        tags(Tags.SWING)
 
 
         lateinit var image: BufferedImage

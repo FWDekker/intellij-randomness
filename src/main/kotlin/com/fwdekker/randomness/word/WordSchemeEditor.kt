@@ -147,7 +147,7 @@ fun Document.setWordList(wordList: List<String>) =
 /**
  * Returns a [Disposable] that can dispose the [editor] through the [EditorFactory] that created it.
  */
-@Suppress("ObjectLiteralToLambda") // `Disposable` docs state that lambdas should be avoided
+@Suppress("ObjectLiteralToLambda") // [Disposable] docs state that lambdas should be avoided
 private fun EditorFactory.wrapDisposable(editor: Editor) =
     object : Disposable {
         override fun dispose() = this@wrapDisposable.releaseEditor(editor)
