@@ -273,8 +273,9 @@ class TemplateJTree(
         val parent = myModel.getParentOf(oldNode)!!
 
         runPreservingState {
-            myModel.insertNodeAfter(parent, oldNode, newNode)
+            val index = parent.children.indexOf(oldNode)
             myModel.removeNode(oldNode)
+            myModel.insertNode(parent, newNode, index)
         }
     }
 
@@ -356,7 +357,7 @@ class TemplateJTree(
     /**
      * Returns `true` if and only if [scheme] has been modified with respect to [originalTemplateList].
      */
-    private fun isModified(scheme: Scheme) = originalTemplateList.getSchemeByUuid(scheme.uuid) != scheme
+    private fun isModified(scheme: Scheme) = scheme != originalTemplateList.getSchemeByUuid(scheme.uuid)
 
     /**
      * Finds a good, unique name for [template] so that it can be inserted into this list without conflict.
@@ -689,7 +690,8 @@ class TemplateJTree(
          * @param event ignored
          */
         override fun actionPerformed(event: AnActionEvent) =
-            selectedScheme!!.let { replaceScheme(it, originalTemplateList.getSchemeByUuid(it.uuid)) }
+            selectedScheme!!
+                .let { replaceScheme(it, originalTemplateList.getSchemeByUuid(it.uuid)?.deepCopy(retainUuid = true)) }
     }
 
 

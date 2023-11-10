@@ -105,7 +105,24 @@ class TemplateJTreeModel(
     fun insertNode(parent: StateNode, child: StateNode, index: Int = getChildCount(parent)) {
         require(parent in nodes) { Bundle("template_list.error.node_not_in_tree") }
         require(parent.canHaveChild(child)) { Bundle("template_list.error.wrong_child_type") }
+        require(child !in parent.children) { Bundle("template_list.error.duplicate_uuid") }
 
+        if (parent == root) {
+            val childChildren = child.children
+
+            root.children
+                .associateWith { rootChild -> rootChild.children.filter { it in childChildren } }
+                .filterValues { it.isNotEmpty() }
+                .forEach { (rootChild, duplicates) ->
+                    rootChild.children = rootChild.children.toMutableList()
+                        .map {
+                            if (it in duplicates) StateNode(it.state.deepCopy(retainUuid = false))
+                            else it
+                        }
+
+                    fireNodeStructureChanged(rootChild)
+                }
+        }
         parent.children = parent.children.toMutableList().also { it.add(index, child) }
 
         if (parent == root && parent.children.count() == 1)

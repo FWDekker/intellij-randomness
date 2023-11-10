@@ -670,7 +670,7 @@ object TemplateJTreeTest : FunSpec({
 
         test("scheme can move up into empty template") {
             guiRun {
-                currentList.templates.add(index=2, Template("Template2.5"))
+                currentList.templates.add(index = 2, Template("Template2.5"))
                 tree.reload()
             }
 
@@ -962,6 +962,20 @@ object TemplateJTreeTest : FunSpec({
                 }
 
                 currentList.templates[2].schemes[0].name shouldBe "Scheme3"
+            }
+
+            test("resets changes multiple times") {
+                (currentList.templates[0].schemes[0] as DummyScheme).name = "New Name"
+                guiRun { tree.reload() }
+                currentList.templates[0].schemes[0].name shouldBe "New Name"
+                guiRun { frame.getActionButton("Reset").click() }
+                (currentList.templates[0].schemes[0] as DummyScheme).name = "New Name"
+                guiRun { tree.reload() }
+                currentList.templates[0].schemes[0].name shouldBe "New Name"
+
+                guiRun { frame.getActionButton("Reset").click() }
+
+                currentList.templates[0].schemes[0].name shouldBe "Scheme0"
             }
         }
     }

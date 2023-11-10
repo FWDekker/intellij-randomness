@@ -98,6 +98,11 @@ object TemplateJTreeModelTest : FunSpec({
             shouldThrow<IndexOutOfBoundsException> { model.insertNode(model.root, StateNode(Template()), index = 14) }
         }
 
+        test("throws an error if a node with the same uuid already exists in the parent") {
+            shouldThrow<IllegalArgumentException> { model.insertNode(model.root, model.root.children[0]) }
+                .message should matchBundle("template_list.error.duplicate_uuid")
+        }
+
 
         test("inserts a node at a specific index") {
             val node = StateNode(Template("Template3"))
@@ -117,6 +122,20 @@ object TemplateJTreeModelTest : FunSpec({
             model.root.children shouldHaveSize 4
             model.root.children[3] shouldBe node
             list.templates.names() shouldContainExactly listOf("Template0", "Template1", "Template2", "Template3")
+        }
+
+
+        test("replaces uuids of schemes with the same uuid in other templates") {
+            val target = list.templates[0].schemes[0]
+            val targetUuid = target.uuid
+
+            model.insertNode(
+                model.root,
+                StateNode(Template(schemes = mutableListOf(target.deepCopy(retainUuid = true))))
+            )
+
+            list.templates[0].schemes[0].uuid shouldNotBe targetUuid
+            list.templates.last().schemes[0].uuid shouldBe targetUuid
         }
 
 
