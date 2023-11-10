@@ -166,14 +166,23 @@ class TemplateJTreeModel(
      */
     fun canMoveRow(fromIndex: Int, toIndex: Int, position: Position): Boolean {
         val descendants = root.descendants
+        val templates = root.children
+
         val fromNode = descendants.getOrNull(fromIndex)
         val toNode = descendants.getOrNull(toIndex)
 
         return when {
             fromIndex == toIndex || fromNode == null || toNode == null -> false
-            fromNode.state !is Template -> (toNode.state !is Template) xor (position == Position.INTO)
-            position != Position.ABOVE -> position == Position.BELOW && toIndex == descendants.lastIndex
-            else -> toNode.state is Template && toNode != root.children.run { getOrNull(indexOf(fromNode) + 1) }
+
+            fromNode.state is Template ->
+                when (position) {
+                    Position.INTO -> false
+                    Position.BELOW -> toNode == descendants.last() && fromNode != templates.last()
+                    Position.ABOVE ->
+                        toNode.state is Template && toNode != templates.run { getOrNull(indexOf(fromNode) + 1) }
+                }
+
+            else -> (position == Position.INTO) xor (toNode.state !is Template)
         }
     }
 
@@ -231,7 +240,7 @@ class TemplateJTreeModel(
      * @see canMoveRow
      * @see RefinedDropSupport
      */
-    override fun isDropInto(component: JComponent, fromIndex: Int, toIndex: Int) =
+    override fun isDropInto(component: JComponent?, fromIndex: Int, toIndex: Int) =
         canDrop(fromIndex, toIndex, Position.INTO)
 
     /**

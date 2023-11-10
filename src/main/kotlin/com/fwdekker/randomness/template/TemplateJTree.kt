@@ -323,7 +323,7 @@ class TemplateJTree(
             if (scheme is Template) {
                 val index = templates.indexOf(fromNode)
 
-                if (index == templates.lastIndex - 1) Pair(descendants.last(), Position.BELOW)
+                if (moveDown && index == templates.lastIndex - 1) Pair(descendants.last(), Position.BELOW)
                 else Pair(templates.getOrNull(index + if (!moveDown) -1 else 2), Position.ABOVE)
             } else {
                 val index = descendants.indexOf(fromNode)

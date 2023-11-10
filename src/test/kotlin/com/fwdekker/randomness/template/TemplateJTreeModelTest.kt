@@ -7,6 +7,7 @@ import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.shouldContainExactly
 import com.fwdekker.randomness.ui.SimpleTreeModelListener
+import com.intellij.ui.RowsDnDSupport.RefinedDropSupport.Position
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.Row2
@@ -238,66 +239,172 @@ object TemplateJTreeModelTest : FunSpec({
     }
 
     context("exchangeRows") {
-        test("cannot swap out-of-bounds indices") {
-            shouldThrow<IllegalArgumentException> { model.exchangeRows(3, 495) }
-                .message should matchBundle("template_list.error.cannot_swap_rows")
-        }
-
-        context("templates") {
-            test("swaps a template with the previous template") {
-                model.exchangeRows(5, 3)
-
-                list.templates.names() shouldContainExactly listOf("Template0", "Template2", "Template1")
-            }
-
-            test("swaps a template with the next template") {
-                model.exchangeRows(0, 3)
-
-                list.templates.names() shouldContainExactly listOf("Template1", "Template0", "Template2")
-            }
-        }
-
-        context("schemes") {
-            test("swaps a scheme with the previous scheme under the same parent") {
-                model.exchangeRows(1, 2)
-
-                list.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
-            }
-
-            test("swaps a scheme with the next scheme under the same parent") {
-                model.exchangeRows(2, 1)
-
-                list.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
-            }
-
-            test("'swaps' a scheme with its parent, making it the last child of the parent's previous sibling") {
-                model.exchangeRows(4, 3)
-
-                list.templates[0].schemes.names() shouldContainExactly listOf("Scheme0", "Scheme1", "Scheme2")
-                list.templates[1].schemes should beEmpty()
-            }
-
-            test("moves a scheme to its parent's next sibling, making it that sibling's first child") {
-                model.exchangeRows(4, 5)
-
-                list.templates[1].schemes should beEmpty()
-                list.templates[2].schemes.names() shouldContainExactly listOf("Scheme2")
-            }
+        test("throws an error") {
+            shouldThrow<UnsupportedOperationException> { model.exchangeRows(1, 2) }
         }
     }
 
     context("canExchangeRows") {
+        test("throws an error") {
+            shouldThrow<UnsupportedOperationException> { model.canExchangeRows(1, 2) }
+        }
+    }
+
+    context("canMoveRow") {
+        beforeNonContainer {
+            model.insertNode(StateNode(list.templates[2]), StateNode(DummyScheme("Scheme3"))) // row 6
+        }
+
+
         withData(
             mapOf(
-                "old node cannot be found" to row(-2, 2, false),
-                "new node cannot be found" to row(1, -4, false),
-                "old is template, new is non-template" to row(0, 2, false),
-                "old is non-template, new is first template" to row(1, 0, false),
-                "old is non-template, new is non-first template" to row(4, 3, true),
-                "both are templates" to row(0, 5, true),
-                "both are schemes" to row(1, 4, true),
+                "cannot move to itself" to row(3, 3, Position.BELOW, false),
+                "cannot move from invalid index" to row(-2, 2, Position.ABOVE, false),
+                "cannot move to invalid index" to row(1, -4, Position.BELOW, false),
+                "cannot move template into scheme" to row(3, 1, Position.INTO, false),
+                "cannot move template into template" to row(0, 5, Position.INTO, false),
+                "cannot move template below template" to row(5, 0, Position.BELOW, false),
+                "cannot move template below non-last scheme" to row(0, 4, Position.BELOW, false),
+                "cannot move template above next template" to row(0, 3, Position.ABOVE, false),
+                "cannot move template above scheme" to row(3, 2, Position.ABOVE, false),
+                "can move middle template above first template" to row(3, 0, Position.ABOVE, true),
+                "can move middle template above last template" to row(0, 5, Position.ABOVE, true),
+                "can move middle template below last scheme" to row(3, 6, Position.BELOW, true),
+                "cannot move second-to-last template above last template" to row(3, 5, Position.ABOVE, false),
+                "cannot move last template below last scheme" to row(5, 6, Position.BELOW, false),
+                "cannot move scheme into scheme" to row(4, 2, Position.INTO, false),
+                "cannot move scheme above first template" to row(1, 0, Position.ABOVE, false),
+                "can move scheme into template" to row(6, 0, Position.INTO, true),
+                "can move scheme above scheme" to row(2, 1, Position.ABOVE, true),
+                "can move scheme below scheme" to row(1, 6, Position.BELOW, true),
             )
-        ) { (oldIndex, newIndex, expected) -> model.canExchangeRows(oldIndex, newIndex) shouldBe expected }
+        ) { (fromIndex, toIndex, position, expected) ->
+            model.canMoveRow(fromIndex, toIndex, position) shouldBe expected
+        }
+
+
+        test("can move middle template below last template if last template has no schemes") {
+            model.insertNode(model.root, StateNode(Template("Template3"))) // row 7
+
+            model.canMoveRow(3, 7, Position.BELOW) shouldBe true
+        }
+    }
+
+    context("moveRow") {
+        test("cannot swap out-of-bounds indices") {
+            shouldThrow<IllegalArgumentException> { model.moveRow(3, 495, Position.BELOW) }
+                .message should matchBundle("template_list.error.cannot_move_row")
+        }
+
+        context("templates") {
+            test("moves a template above the first template") {
+                model.moveRow(5, 0, Position.ABOVE)
+
+                list.templates.names() shouldContainExactly listOf("Template2", "Template0", "Template1")
+            }
+
+            test("moves a template above the last template") {
+                model.moveRow(0, 5, Position.ABOVE)
+
+                list.templates.names() shouldContainExactly listOf("Template1", "Template0", "Template2")
+            }
+
+            test("moves a template below the last scheme (if the last template is non-empty)") {
+                model.insertNode(StateNode(list.templates[2]), StateNode(DummyScheme("Scheme3"))) // row 6
+
+                model.moveRow(3, 6, Position.BELOW)
+
+                list.templates.names() shouldContainExactly listOf("Template0", "Template2", "Template1")
+            }
+
+            test("moves a template below the last template (if the last template is empty)") {
+                model.moveRow(3, 5, Position.BELOW)
+
+                list.templates.names() shouldContainExactly listOf("Template0", "Template2", "Template1")
+            }
+        }
+
+        context("schemes") {
+            test("moves a scheme above the previous scheme under the same parent") {
+                model.moveRow(2, 1, Position.ABOVE)
+
+                list.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
+            }
+
+            test("moves a scheme below the next scheme under the same parent") {
+                model.moveRow(1, 2, Position.BELOW)
+
+                list.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
+            }
+
+            test("moves a scheme into its own parent") {
+                model.moveRow(1, 0, Position.INTO)
+
+                list.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
+            }
+
+            test("moves a scheme into another template") {
+                model.moveRow(1, 3, Position.INTO)
+
+                list.templates[0].schemes.names() shouldContainExactly listOf("Scheme1")
+                list.templates[1].schemes.names() shouldContainExactly listOf("Scheme2", "Scheme0")
+            }
+
+            test("moves a scheme above a scheme in another template") {
+                model.moveRow(2, 4, Position.ABOVE)
+
+                list.templates[0].schemes.names() shouldContainExactly listOf("Scheme0")
+                list.templates[1].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme2")
+            }
+
+            test("moves a scheme below a scheme in another template") {
+                model.moveRow(4, 1, Position.BELOW)
+
+                list.templates[0].schemes.names() shouldContainExactly listOf("Scheme0", "Scheme2", "Scheme1")
+                list.templates[1].schemes.names() shouldContainExactly emptyList()
+            }
+        }
+    }
+
+    context("canDrop") {
+        test("translates indices according to `viewIndexToModelIndex`") {
+            model.canDrop(2, 3, Position.BELOW) shouldBe false
+
+            model.viewIndexToModelIndex = { it - 1 }
+
+            model.canDrop(2, 3, Position.BELOW) shouldBe true
+        }
+    }
+
+    context("isDropInto") {
+        test("returns `false` if the node can be dropped into the other") {
+            model.isDropInto(null, 1, 3) shouldBe true
+        }
+
+        test("returns `true` if the node can be dropped into the other") {
+            model.isDropInto(null, 0, 0) shouldBe false
+        }
+    }
+
+    context("drop") {
+        test("translates indices according to `viewIndexToModelIndex`") {
+            val assertOriginal = { list.templates[0].schemes.names() shouldContainExactly listOf("Scheme0", "Scheme1") }
+            val assertSwapped = { list.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0") }
+
+            assertOriginal()
+            model.drop(1, 2, Position.BELOW)
+            assertSwapped()
+            model.drop(1, 2, Position.BELOW)
+            assertOriginal()
+
+            model.viewIndexToModelIndex = { it - 1 }
+
+            assertOriginal()
+            model.drop(2, 3, Position.BELOW)
+            assertSwapped()
+            model.drop(2, 3, Position.BELOW)
+            assertOriginal()
+        }
     }
 
 
@@ -307,13 +414,9 @@ object TemplateJTreeModelTest : FunSpec({
                 .message should matchBundle("template_list.error.unknown_node_type")
         }
 
-        test("throws an error if the given node is not contained in the model") {
-            shouldThrow<IllegalArgumentException> { model.isLeaf(StateNode(DummyScheme())) }
-                .message should matchBundle("template_list.error.node_not_in_tree")
-        }
-
         withData(
             mapOf(
+                "is not in tree" to row({ StateNode(DummyScheme()) }, false),
                 "cannot have children" to row({ model.root.children[0].children[1] }, true),
                 "can have children, but has none" to row({ model.root.children[2] }, true),
                 "can have children and has children" to row({ model.root.children[0] }, false),
