@@ -4,7 +4,10 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.State
 import com.fwdekker.randomness.setAll
+import com.intellij.ui.RowsDnDSupport.RefinedDropSupport
+import com.intellij.ui.RowsDnDSupport.RefinedDropSupport.Position
 import com.intellij.util.ui.EditableModel
+import javax.swing.JComponent
 import javax.swing.JTree
 import javax.swing.event.TreeModelEvent
 import javax.swing.event.TreeModelListener
@@ -22,7 +25,9 @@ import javax.swing.tree.TreePath
  * @param list the list to be modeled
  */
 @Suppress("detekt:TooManyFunctions") // Normal for Swing implementations
-class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : TreeModel, EditableModel {
+class TemplateJTreeModel(
+    list: TemplateList = TemplateList(mutableListOf()),
+) : TreeModel, EditableModel, RefinedDropSupport {
     /**
      * The listeners that are informed when the state of the tree changes.
      */
@@ -37,6 +42,35 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
      * The list of all [StateNode]s in this tree.
      */
     private val nodes get() = listOf(root) + root.descendants
+
+    /**
+     * Converts the row index in the view to the corresponding row index in the model.
+     *
+     * For example, if the model has rows `[0, 3]` with children `[1, 2]` and `[4]`, respectively, and row `0` is
+     * collapsed in the view, then the view has rows `[0, 3, 4]` while the model has rows `[0, 1, 2, 3, 4]`, and this
+     * method functions as the map `{0: 0, 1: 3, 2: 4}`. Inputs outside the view's valid row indices are not supported.
+     *
+     * This field is used only in the methods [canDrop] and [drop] in order to implement [RefinedDropSupport], which
+     * assumes that the model knows view-based indices.
+     *
+     * @see RefinedDropSupport
+     */
+    var viewIndexToModelIndex: (Int) -> Int = { it }
+
+    /**
+     * A wrapper provided by the view and used by [TemplateJTreeModel.drop] to ensure the view's selection and expansion
+     * state are retained.
+     *
+     * This wrapper is invoked in the method [drop] with a lambda that performs the dropping when invoked. By default,
+     * the wrapper does nothing special, but can be overridden to perform some actions before and after dropping the
+     * [StateNode].
+     *
+     * This field is used only in the method [drop] in order to implement [RefinedDropSupport], which assumes that the
+     * model can somehow retain the view's state.
+     *
+     * @see RefinedDropSupport
+     */
+    var wrapDrop: (() -> Unit) -> Unit = { it() }
 
 
     /**
@@ -108,66 +142,122 @@ class TemplateJTreeModel(list: TemplateList = TemplateList(mutableListOf())) : T
     }
 
     /**
-     * Exchanges two consecutive rows, moving the node at row [oldIndex] to row [newIndex].
+     * Use [moveRow] instead.
      *
-     * If [oldIndex] and [newIndex] both refer to a template or both refer to a scheme, then the node at [oldIndex] will
-     * be inserted so that it has the same index in its parent as the node at [newIndex] had before invoking this
-     * method. Otherwise, if [oldIndex] refers to a non-template scheme and [newIndex] refers to a template, then the
-     * non-template scheme is moved into the template at [newIndex]; specifically, if [oldIndex] is less than [newIndex]
-     * then the non-template scheme becomes the template's first child, otherwise it becomes the template's last child.
+     * @throws UnsupportedOperationException always
+     * @see moveRow
      */
-    override fun exchangeRows(oldIndex: Int, newIndex: Int) {
-        require(canExchangeRows(oldIndex, newIndex)) {
-            Bundle("template_list.error.cannot_swap_rows", oldIndex, newIndex)
+    @Throws(UnsupportedOperationException::class)
+    override fun exchangeRows(oldIndex: Int, newIndex: Int) = throw UnsupportedOperationException()
+
+    /**
+     * Use [canMoveRow] instead.
+     *
+     * @throws UnsupportedOperationException always
+     * @see canMoveRow
+     */
+    @Throws(UnsupportedOperationException::class)
+    override fun canExchangeRows(oldIndex: Int, newIndex: Int): Boolean = throw UnsupportedOperationException()
+
+    /**
+     * Returns `true` if and only if [moveRow] can be invoked with the given parameters.
+     *
+     * @see moveRow
+     */
+    fun canMoveRow(fromIndex: Int, toIndex: Int, position: Position): Boolean {
+        val descendants = root.descendants
+        val fromNode = descendants.getOrNull(fromIndex)
+        val toNode = descendants.getOrNull(toIndex)
+
+        return when {
+            fromIndex == toIndex || fromNode == null || toNode == null -> false
+            fromNode.state !is Template -> (toNode.state !is Template) xor (position == Position.INTO)
+            position != Position.ABOVE -> position == Position.BELOW && toIndex == descendants.lastIndex
+            else -> toNode.state is Template && toNode != root.children.run { getOrNull(indexOf(fromNode) + 1) }
+        }
+    }
+
+    /**
+     * Moves the node at row [fromIndex] near the node at row [toIndex] as specified by [position].
+     *
+     * If [fromIndex] refers to a [Template], then the [Template] can either be moved [Position.ABOVE] another
+     * [Template], or [Position.BELOW] the very last [Scheme] of the [TemplateList].
+     *
+     * If [fromIndex] refers to a non-[Template] [Scheme], then the [Scheme] can either be moved [Position.INTO] a
+     * [Template] to append it to that [Template], or [Position.ABOVE] or [Position.BELOW] another non-[Template]
+     * [Scheme].
+     *
+     * @throws IllegalArgumentException if [canMoveRow] returns `false` for the given arguments
+     */
+    fun moveRow(fromIndex: Int, toIndex: Int, position: Position) {
+        require(canMoveRow(fromIndex, toIndex, position)) {
+            Bundle("template_list.error.cannot_move_row", fromIndex, position.name, toIndex)
         }
 
-        val nodeToMove = root.descendants[oldIndex]
-        val targetNode = root.descendants[newIndex]
+        val descendants = root.descendants
+        val fromNode = descendants[fromIndex]
+        val toNode = descendants[toIndex]
 
-        val targetNodeParent: StateNode
-        val targetIndexInParent: Int
-        if (nodeToMove.state !is Template && targetNode.state is Template) {
-            if (newIndex < oldIndex) {
-                targetNodeParent = root.children[root.children.indexOf(targetNode) - 1]
-                targetIndexInParent = targetNodeParent.children.count()
-            } else {
-                targetNodeParent = targetNode
-                targetIndexInParent = 0
+        removeNode(fromNode)
+
+        if (fromNode.state is Template) {
+            when (position) {
+                Position.ABOVE -> insertNode(root, fromNode, root.children.indexOf(toNode))
+                Position.BELOW -> insertNode(root, fromNode)
+                Position.INTO -> error("Bug: 'canMoveRow' should have caught this case.")
             }
         } else {
-            targetNodeParent = getParentOf(targetNode)!!
-            targetIndexInParent = targetNodeParent.children.indexOf(targetNode)
+            val toNodeParent = getParentOf(toNode)!!
+            when (position) {
+                Position.ABOVE -> insertNode(toNodeParent, fromNode, toNodeParent.children.indexOf(toNode))
+                Position.BELOW -> insertNodeAfter(toNodeParent, toNode, fromNode)
+                Position.INTO -> insertNode(toNode, fromNode)
+            }
         }
-
-        removeNode(nodeToMove)
-        insertNode(targetNodeParent, nodeToMove, targetIndexInParent)
     }
 
     /**
-     * Returns `true` if and only if the node at row [oldIndex] can be moved to row [newIndex].
-     */
-    override fun canExchangeRows(oldIndex: Int, newIndex: Int): Boolean {
-        val oldNode = root.descendants.getOrNull(oldIndex)
-        val newNode = root.descendants.getOrNull(newIndex)
-
-        return oldNode != null && newNode != null &&
-            if (oldNode.state is Template) newNode.state is Template
-            else newIndex != 0
-    }
-
-
-    /**
-     * Returns `true` if and only if [node] does not have children.
+     * Invokes [canMoveRow] after converting [fromIndex] and [toIndex] using [viewIndexToModelIndex].
      *
-     * Throws an exception if [node] is not a [StateNode] or if [node] is not contained in this model.
+     * @see canMoveRow
+     * @see RefinedDropSupport
+     */
+    override fun canDrop(fromIndex: Int, toIndex: Int, position: Position) =
+        canMoveRow(viewIndexToModelIndex(fromIndex), viewIndexToModelIndex(toIndex), position)
+
+    /**
+     * Returns `true` if and only if the node at [fromIndex] can be moved [Position.INTO] the node at [toIndex].
+     *
+     * @see canMoveRow
+     * @see RefinedDropSupport
+     */
+    override fun isDropInto(component: JComponent, fromIndex: Int, toIndex: Int) =
+        canDrop(fromIndex, toIndex, Position.INTO)
+
+    /**
+     * Invokes [moveRow] after converting [fromIndex] and [toIndex] using [viewIndexToModelIndex].
+     *
+     * @see moveRow
+     * @see RefinedDropSupport
+     */
+    override fun drop(fromIndex: Int, toIndex: Int, position: Position) =
+        wrapDrop { moveRow(viewIndexToModelIndex(fromIndex), viewIndexToModelIndex(toIndex), position) }
+
+
+    /**
+     * Returns `true` if and only if [node] is contained in this model and [node] does not have children.
+     *
+     * Throws an exception if [node] is not a [StateNode].
+     *
+     * Unlike methods such as [getChild], this method does not throw an exception if [node] is not contained in this
+     * model, because [com.intellij.ui.tree.ui.DefaultTreeUI] calls this method on non-nodes during drag-and-drop.
      */
     override fun isLeaf(node: Any): Boolean {
         require(node is StateNode) {
             Bundle("template_list.error.unknown_node_type", "node", node.javaClass.canonicalName)
         }
-        require(node in nodes) { Bundle("template_list.error.node_not_in_tree") }
 
-        return !node.canHaveChildren || node.children.isEmpty()
+        return node in nodes && (!node.canHaveChildren || node.children.isEmpty())
     }
 
     /**
