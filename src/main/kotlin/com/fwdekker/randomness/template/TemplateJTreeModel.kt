@@ -194,7 +194,7 @@ class TemplateJTreeModel(
             fromNode.state is Template ->
                 when (position) {
                     Position.INTO -> false
-                    Position.BELOW -> toNode == descendants.last() && fromNode != templates.last()
+                    Position.BELOW -> toNode == templates.last() && toNode != fromNode
                     Position.ABOVE ->
                         toNode.state is Template && toNode != templates.run { getOrNull(indexOf(fromNode) + 1) }
                 }
@@ -243,15 +243,6 @@ class TemplateJTreeModel(
     }
 
     /**
-     * Invokes [canMoveRow] after converting [fromIndex] and [toIndex] using [viewIndexToModelIndex].
-     *
-     * @see canMoveRow
-     * @see RefinedDropSupport
-     */
-    override fun canDrop(fromIndex: Int, toIndex: Int, position: Position) =
-        canMoveRow(viewIndexToModelIndex(fromIndex), viewIndexToModelIndex(toIndex), position)
-
-    /**
      * Returns `true` if and only if the node at [fromIndex] can be moved [Position.INTO] the node at [toIndex].
      *
      * @see canMoveRow
@@ -259,6 +250,15 @@ class TemplateJTreeModel(
      */
     override fun isDropInto(component: JComponent?, fromIndex: Int, toIndex: Int) =
         canDrop(fromIndex, toIndex, Position.INTO)
+
+    /**
+     * Invokes [canMoveRow] after converting [fromIndex] and [toIndex] using [viewIndexToModelIndex].
+     *
+     * @see canMoveRow
+     * @see RefinedDropSupport
+     */
+    override fun canDrop(fromIndex: Int, toIndex: Int, position: Position) =
+        canMoveRow(viewIndexToModelIndex(fromIndex), viewIndexToModelIndex(toIndex), position)
 
     /**
      * Invokes [moveRow] after converting [fromIndex] and [toIndex] using [viewIndexToModelIndex].

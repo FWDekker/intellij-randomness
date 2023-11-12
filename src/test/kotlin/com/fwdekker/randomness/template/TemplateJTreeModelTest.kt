@@ -283,12 +283,12 @@ object TemplateJTreeModelTest : FunSpec({
                 "cannot move template into scheme" to row(3, 1, Position.INTO, false),
                 "cannot move template into template" to row(0, 5, Position.INTO, false),
                 "cannot move template below template" to row(5, 0, Position.BELOW, false),
-                "cannot move template below non-last scheme" to row(0, 4, Position.BELOW, false),
+                "cannot move template below scheme" to row(0, 4, Position.BELOW, false),
                 "cannot move template above next template" to row(0, 3, Position.ABOVE, false),
                 "cannot move template above scheme" to row(3, 2, Position.ABOVE, false),
                 "can move middle template above first template" to row(3, 0, Position.ABOVE, true),
                 "can move middle template above last template" to row(0, 5, Position.ABOVE, true),
-                "can move middle template below last scheme" to row(3, 6, Position.BELOW, true),
+                "can move middle template below last template" to row(3, 5, Position.BELOW, true),
                 "cannot move second-to-last template above last template" to row(3, 5, Position.ABOVE, false),
                 "cannot move last template below last scheme" to row(5, 6, Position.BELOW, false),
                 "cannot move scheme into scheme" to row(4, 2, Position.INTO, false),
@@ -328,15 +328,7 @@ object TemplateJTreeModelTest : FunSpec({
                 list.templates.names() shouldContainExactly listOf("Template1", "Template0", "Template2")
             }
 
-            test("moves a template below the last scheme (if the last template is non-empty)") {
-                model.insertNode(StateNode(list.templates[2]), StateNode(DummyScheme("Scheme3"))) // row 6
-
-                model.moveRow(3, 6, Position.BELOW)
-
-                list.templates.names() shouldContainExactly listOf("Template0", "Template2", "Template1")
-            }
-
-            test("moves a template below the last template (if the last template is empty)") {
+            test("moves a template below the last template") {
                 model.moveRow(3, 5, Position.BELOW)
 
                 list.templates.names() shouldContainExactly listOf("Template0", "Template2", "Template1")
@@ -385,16 +377,6 @@ object TemplateJTreeModelTest : FunSpec({
         }
     }
 
-    context("canDrop") {
-        test("translates indices according to `viewIndexToModelIndex`") {
-            model.canDrop(2, 3, Position.BELOW) shouldBe false
-
-            model.viewIndexToModelIndex = { it - 1 }
-
-            model.canDrop(2, 3, Position.BELOW) shouldBe true
-        }
-    }
-
     context("isDropInto") {
         test("returns `false` if the node can be dropped into the other") {
             model.isDropInto(null, 1, 3) shouldBe true
@@ -402,6 +384,16 @@ object TemplateJTreeModelTest : FunSpec({
 
         test("returns `true` if the node can be dropped into the other") {
             model.isDropInto(null, 0, 0) shouldBe false
+        }
+    }
+
+    context("canDrop") {
+        test("translates indices according to `viewIndexToModelIndex`") {
+            model.canDrop(2, 3, Position.BELOW) shouldBe false
+
+            model.viewIndexToModelIndex = { it - 1 }
+
+            model.canDrop(2, 3, Position.BELOW) shouldBe true
         }
     }
 
