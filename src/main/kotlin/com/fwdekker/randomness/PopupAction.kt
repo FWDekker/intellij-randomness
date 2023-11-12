@@ -41,7 +41,7 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
         event.presentation.icon = Icons.RANDOMNESS
 
         // Running this in [actionPerformed] always sets it to `true`
-        isEditable = event.getData(CommonDataKeys.EDITOR)?.isViewer == false
+        isEditable = event.getData(CommonDataKeys.EDITOR)?.document?.isWritable == true
     }
 
     /**
