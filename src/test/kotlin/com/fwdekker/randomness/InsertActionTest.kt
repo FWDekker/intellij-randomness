@@ -181,20 +181,27 @@ class InsertActionTest : BasePlatformTestCase() {
 
     fun `test that it disables the presentation if the editor is null`() {
         val presentation = Presentation()
-        val event = AnActionEvent.createFromDataContext("", presentation) { null }
 
-        insertAction.update(event)
+        insertAction.update(AnActionEvent.createFromDataContext("", presentation) { null })
 
         presentation.isEnabled shouldBe false
     }
 
     fun `test that it enables the presentation if the editor is not null`() {
         val presentation = Presentation()
-        val event = AnActionEvent.createFromDataContext("", presentation) { myFixture.editor }
 
-        insertAction.update(event)
+        insertAction.update(AnActionEvent.createFromDataContext("", presentation) { myFixture.editor })
 
         presentation.isEnabled shouldBe true
+    }
+
+    fun `test that it disables the presentation if the editor is read-only`() {
+        val presentation = Presentation()
+
+        myFixture.editor.document.setReadOnly(true)
+        insertAction.update(AnActionEvent.createFromDataContext("", presentation) { myFixture.editor })
+
+        presentation.isEnabled shouldBe false
     }
 
 

@@ -52,7 +52,7 @@ abstract class InsertAction(
         val presentation = event.presentation
         val editor = event.getData(CommonDataKeys.EDITOR)
 
-        presentation.isEnabled = editor != null
+        presentation.isEnabled = editor?.document?.isWritable == true
     }
 
     /**
