@@ -14,7 +14,7 @@ import io.kotest.matchers.shouldBe
 /**
  * Integration tests for [InsertAction].
  */
-@Suppress("detekt:FunctionMaxLength", "detekt:FunctionName", "detekt:TooManyFunctions")
+@Suppress("detekt:FunctionMaxLength", "detekt:FunctionName", "detekt:TooManyFunctions") // Acceptable for tests
 class InsertActionTest : BasePlatformTestCase() {
     private lateinit var document: Document
     private lateinit var caretModel: CaretModel

@@ -22,6 +22,7 @@ import com.intellij.ui.AnActionButton
 import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.CommonActionsPanel
 import com.intellij.ui.LayeredIcon
+import com.intellij.ui.RowsDnDSupport.RefinedDropSupport.Position
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.TreeSpeedSearch
@@ -85,7 +86,7 @@ class TemplateJTree(
     var selectedScheme: Scheme?
         get() = selectedNodeNotRoot?.state as? Scheme
         set(value) {
-            val descendants = myModel.root.descendants
+            val descendants = myModel.root.descendants()
 
             if (value == null || StateNode(value) !in descendants)
                 clearSelection()
@@ -144,6 +145,8 @@ class TemplateJTree(
         isRootVisible = false
         showsRootHandles = true
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
+        myModel.viewIndexToModelIndex = { myModel.root.descendants().indexOf(getPathForRow(it).lastPathComponent) }
+        myModel.wrapDrop = ::runPreservingState
         setCellRenderer(CellRenderer())
 
         setSelectionRow(0)
@@ -250,7 +253,7 @@ class TemplateJTree(
         selectionPath =
             myModel.getPathToRoot(
                 if (myModel.isLeaf(parent)) parent
-                else parent.children[min(oldIndex, parent.children.count() - 1)]
+                else parent.children[min(oldIndex, parent.children.lastIndex)]
             )
     }
 
@@ -270,52 +273,71 @@ class TemplateJTree(
         val parent = myModel.getParentOf(oldNode)!!
 
         runPreservingState {
-            myModel.insertNodeAfter(parent, oldNode, newNode)
+            val index = parent.children.indexOf(oldNode)
             myModel.removeNode(oldNode)
+            myModel.insertNode(parent, newNode, index)
         }
+    }
+
+    /**
+     * Returns `true` if and only if [moveSchemeByOnePosition] can be invoked with these parameters.
+     *
+     * @see TemplateJTreeModel.canMoveRow
+     */
+    fun canMoveSchemeByOnePosition(scheme: Scheme, moveDown: Boolean): Boolean {
+        val (fromIndex, toIndex, position) = getMoveDescriptor(scheme, moveDown)
+        return myModel.canMoveRow(fromIndex, toIndex, position)
     }
 
     /**
      * Moves [scheme] by one position; down if [moveDown] is `true, and up otherwise.
      *
-     * If a non-[Template] is moved up or down outside its parent's boundaries, it is moved to the next parent in that
-     * direction.
+     * @see TemplateJTreeModel.moveRow
      */
     fun moveSchemeByOnePosition(scheme: Scheme, moveDown: Boolean) {
         val node = StateNode(scheme)
 
         runPreservingState {
-            myModel.exchangeRows(
-                myModel.root.descendants.indexOf(node),
-                getMoveTargetIndex(scheme, moveDown)
-            )
+            val (fromIndex, toIndex, position) = getMoveDescriptor(scheme, moveDown)
+            myModel.moveRow(fromIndex, toIndex, position)
         }
 
         makeVisible(myModel.getPathToRoot(node))
     }
 
     /**
-     * Returns `true` if and only if [moveSchemeByOnePosition] can be invoked with these parameters.
+     * Returns the arguments to pass to [TemplateJTreeModel.moveRow] or [TemplateJTreeModel.canMoveRow] to describe
+     * moving [scheme] up (if [moveDown] is `false`) or down (if [moveDown] is `true`).
+     *
+     * If an invalid move is returned, for example with negative indices, the move was not possible to begin with.
+     *
+     * @see canMoveSchemeByOnePosition
+     * @see moveSchemeByOnePosition
      */
-    fun canMoveSchemeByOnePosition(scheme: Scheme, moveDown: Boolean) =
-        myModel.canExchangeRows(
-            myModel.root.descendants.indexOf(StateNode(scheme)),
-            getMoveTargetIndex(scheme, moveDown)
-        )
+    @Suppress("detekt:CognitiveComplexMethod", "detekt:MagicNumber") // Complexity unavoidable, -2 is not magic
+    private fun getMoveDescriptor(scheme: Scheme, moveDown: Boolean): Triple<Int, Int, Position> {
+        val descendants = myModel.root.descendants()
+        val templates = myModel.root.children
 
-    /**
-     * Returns the index to which [scheme] is moved (down if [moveDown] is `true`, or up otherwise) when
-     * [moveSchemeByOnePosition] is invoked, or an out-of-range index if [scheme] cannot be moved in that direction.
-     */
-    private fun getMoveTargetIndex(scheme: Scheme, moveDown: Boolean): Int {
-        val node = StateNode(scheme)
+        val fromNode = StateNode(scheme)
+        val (toNode, position) =
+            if (scheme is Template) {
+                val index = templates.indexOf(fromNode)
 
-        val children = myModel.root.children
-        val descendants = myModel.root.descendants
-        val diff = if (moveDown) 1 else -1
+                if (moveDown && index == templates.lastIndex - 1) Pair(templates.last(), Position.BELOW)
+                else Pair(templates.getOrNull(index + if (!moveDown) -1 else 2), Position.ABOVE)
+            } else {
+                val index = descendants.indexOf(fromNode)
+                val candidate = descendants.getOrNull(index + if (!moveDown) -2 else 1)
 
-        return if (scheme !is Template) descendants.indexOf(node) + diff
-        else descendants.indexOf(children.getOrNull(children.indexOf(node) + diff))
+                when {
+                    candidate == null || candidate.state !is Template -> Pair(candidate, Position.BELOW)
+                    candidate.children.isEmpty() -> Pair(candidate, Position.INTO)
+                    else -> Pair(candidate.children.first(), Position.ABOVE)
+                }
+            }
+
+        return Triple(descendants.indexOf(fromNode), descendants.indexOf(toNode), position)
     }
 
 
@@ -335,7 +357,7 @@ class TemplateJTree(
     /**
      * Returns `true` if and only if [scheme] has been modified with respect to [originalTemplateList].
      */
-    private fun isModified(scheme: Scheme) = originalTemplateList.getSchemeByUuid(scheme.uuid) != scheme
+    private fun isModified(scheme: Scheme) = scheme != originalTemplateList.getSchemeByUuid(scheme.uuid)
 
     /**
      * Finds a good, unique name for [template] so that it can be inserted into this list without conflict.
@@ -501,7 +523,7 @@ class TemplateJTree(
             override fun onChosen(value: Scheme?, finalChoice: Boolean) =
                 when (value) {
                     POPUP_STEP_SCHEMES[0] -> TemplatesPopupStep()
-                    POPUP_STEP_SCHEMES[POPUP_STEP_SCHEMES.size - 1] -> ReferencesPopupStep()
+                    POPUP_STEP_SCHEMES[POPUP_STEP_SCHEMES.lastIndex] -> ReferencesPopupStep()
                     else -> super.onChosen(value, finalChoice)
                 }
 
@@ -514,7 +536,7 @@ class TemplateJTree(
              * Returns `true` if and only if [value] equals the [Template] or [TemplateReference] entry.
              */
             override fun hasSubstep(value: Scheme?) =
-                value == POPUP_STEP_SCHEMES[0] || value == POPUP_STEP_SCHEMES[POPUP_STEP_SCHEMES.size - 1]
+                value == POPUP_STEP_SCHEMES[0] || value == POPUP_STEP_SCHEMES[POPUP_STEP_SCHEMES.lastIndex]
 
             /**
              * Returns a separator if [value] should be preceded by a separator, or `null` otherwise.
@@ -668,7 +690,8 @@ class TemplateJTree(
          * @param event ignored
          */
         override fun actionPerformed(event: AnActionEvent) =
-            selectedScheme!!.let { replaceScheme(it, originalTemplateList.getSchemeByUuid(it.uuid)) }
+            selectedScheme!!
+                .let { replaceScheme(it, originalTemplateList.getSchemeByUuid(it.uuid)?.deepCopy(retainUuid = true)) }
     }
 
 

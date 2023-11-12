@@ -643,7 +643,7 @@ object TemplateJTreeTest : FunSpec({
                 guiRun { tree.moveSchemeByOnePosition(scheme, moveDown = true) }
 
                 guiGet { tree.isExpanded(0) } shouldBe true
-                tree.myModel.root.descendants[2].children shouldContain StateNode(scheme)
+                tree.myModel.root.descendants()[2].children shouldContain StateNode(scheme)
                 guiGet { tree.isExpanded(2) } shouldBe true
             }
         }
@@ -653,18 +653,37 @@ object TemplateJTreeTest : FunSpec({
         @Suppress("BooleanLiteralArgument") // Argument names are clear from lambda later on
         withData(
             mapOf<String, Row3<() -> Scheme, Boolean, Boolean>>(
-                "first template" to row({ currentList.templates[0] }, false, false),
-                "first scheme" to row({ currentList.templates[0].schemes[0] }, false, false),
-                "last template" to row({ currentList.templates[2] }, true, false),
-                "last scheme" to row({ currentList.templates[2].schemes[1] }, true, false),
-                "move scheme within template" to row({ currentList.templates[0].schemes[1] }, false, true),
-                "move templates within list" to row({ currentList.templates[1] }, true, true),
-                "move scheme between templates" to row({ currentList.templates[1].schemes[0] }, true, true),
+                "first template cannot move up" to row({ currentList.templates[0] }, false, false),
+                "first scheme cannot move up" to row({ currentList.templates[0].schemes[0] }, false, false),
+                "last template cannot move down" to row({ currentList.templates[2] }, true, false),
+                "last scheme cannot move down" to row({ currentList.templates[2].schemes[1] }, true, false),
+                "template can move within list" to row({ currentList.templates[1] }, false, true),
+                "second-to-last template can move down" to row({ currentList.templates[1] }, true, true),
+                "scheme can move within template" to row({ currentList.templates[0].schemes[1] }, false, true),
+                "scheme can go to previous template" to row({ currentList.templates[2].schemes[0] }, false, true),
+                "scheme can go to next template" to row({ currentList.templates[1].schemes[0] }, true, true),
             )
         ) { (scheme, moveDown, expected) ->
-            guiRun { tree.expandAll() }
-
             tree.canMoveSchemeByOnePosition(scheme(), moveDown) shouldBe expected
+        }
+
+
+        test("scheme can move up into empty template") {
+            guiRun {
+                currentList.templates.add(index = 2, Template("Template2.5"))
+                tree.reload()
+            }
+
+            tree.canMoveSchemeByOnePosition(currentList.templates[3].schemes[0], moveDown = false) shouldBe true
+        }
+
+        test("scheme can move down into empty template") {
+            guiRun {
+                currentList.templates.add(Template("Template3"))
+                tree.reload()
+            }
+
+            tree.canMoveSchemeByOnePosition(currentList.templates[2].schemes[1], moveDown = true) shouldBe true
         }
     }
 
@@ -943,6 +962,20 @@ object TemplateJTreeTest : FunSpec({
                 }
 
                 currentList.templates[2].schemes[0].name shouldBe "Scheme3"
+            }
+
+            test("resets changes multiple times") {
+                (currentList.templates[0].schemes[0] as DummyScheme).name = "New Name"
+                guiRun { tree.reload() }
+                currentList.templates[0].schemes[0].name shouldBe "New Name"
+                guiRun { frame.getActionButton("Reset").click() }
+                (currentList.templates[0].schemes[0] as DummyScheme).name = "New Name"
+                guiRun { tree.reload() }
+                currentList.templates[0].schemes[0].name shouldBe "New Name"
+
+                guiRun { frame.getActionButton("Reset").click() }
+
+                currentList.templates[0].schemes[0].name shouldBe "Scheme0"
             }
         }
     }
