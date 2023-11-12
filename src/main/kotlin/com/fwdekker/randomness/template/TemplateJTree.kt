@@ -86,7 +86,7 @@ class TemplateJTree(
     var selectedScheme: Scheme?
         get() = selectedNodeNotRoot?.state as? Scheme
         set(value) {
-            val descendants = myModel.root.descendants
+            val descendants = myModel.root.descendants()
 
             if (value == null || StateNode(value) !in descendants)
                 clearSelection()
@@ -145,7 +145,7 @@ class TemplateJTree(
         isRootVisible = false
         showsRootHandles = true
         selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
-        myModel.viewIndexToModelIndex = { myModel.root.descendants.indexOf(getPathForRow(it).lastPathComponent) }
+        myModel.viewIndexToModelIndex = { myModel.root.descendants().indexOf(getPathForRow(it).lastPathComponent) }
         myModel.wrapDrop = ::runPreservingState
         setCellRenderer(CellRenderer())
 
@@ -316,7 +316,7 @@ class TemplateJTree(
      */
     @Suppress("detekt:CognitiveComplexMethod", "detekt:MagicNumber") // Complexity unavoidable, -2 is not magic
     private fun getMoveDescriptor(scheme: Scheme, moveDown: Boolean): Triple<Int, Int, Position> {
-        val descendants = myModel.root.descendants
+        val descendants = myModel.root.descendants()
         val templates = myModel.root.children
 
         val fromNode = StateNode(scheme)

@@ -643,7 +643,7 @@ object TemplateJTreeTest : FunSpec({
                 guiRun { tree.moveSchemeByOnePosition(scheme, moveDown = true) }
 
                 guiGet { tree.isExpanded(0) } shouldBe true
-                tree.myModel.root.descendants[2].children shouldContain StateNode(scheme)
+                tree.myModel.root.descendants()[2].children shouldContain StateNode(scheme)
                 guiGet { tree.isExpanded(2) } shouldBe true
             }
         }

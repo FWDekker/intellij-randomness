@@ -41,7 +41,7 @@ class TemplateJTreeModel(
     /**
      * The list of all [StateNode]s in this tree.
      */
-    private val nodes get() = listOf(root) + root.descendants
+    private val nodes get() = listOf(root) + root.descendants()
 
     /**
      * Converts the row index in the view to the corresponding row index in the model.
@@ -182,7 +182,7 @@ class TemplateJTreeModel(
      * @see moveRow
      */
     fun canMoveRow(fromIndex: Int, toIndex: Int, position: Position): Boolean {
-        val descendants = root.descendants
+        val descendants = root.descendants()
         val templates = root.children
 
         val fromNode = descendants.getOrNull(fromIndex)
@@ -220,7 +220,7 @@ class TemplateJTreeModel(
             Bundle("template_list.error.cannot_move_row", fromIndex, position.name, toIndex)
         }
 
-        val descendants = root.descendants
+        val descendants = root.descendants()
         val fromNode = descendants[fromIndex]
         val toNode = descendants[toIndex]
 
@@ -479,19 +479,6 @@ class StateNode(val state: State) {
             }
         }
 
-    /**
-     * The (recursive) descendants of this node in depth-first order (excluding `this` node itself), or an empty list
-     * if this node cannot have children.
-     */
-    val descendants: List<StateNode>
-        get() {
-            return when (state) {
-                is TemplateList -> children.flatMap { listOf(it) + it.children }
-                is Template -> children
-                else -> emptyList()
-            }
-        }
-
 
     /**
      * Returns `true` if and only if this node can have [child] as a child.
@@ -502,6 +489,18 @@ class StateNode(val state: State) {
             is Template -> child.state is Scheme && child.state !is Template
             else -> false
         }
+
+    /**
+     * The (recursive) descendants of this node in depth-first order (excluding `this` node itself), or an empty list
+     * if this node cannot have children.
+     */
+    fun descendants(): List<StateNode> {
+        return when (state) {
+            is TemplateList -> children.flatMap { listOf(it) + it.children }
+            is Template -> children
+            else -> emptyList()
+        }
+    }
 
 
     /**

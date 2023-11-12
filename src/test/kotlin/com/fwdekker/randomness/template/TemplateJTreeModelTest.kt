@@ -795,7 +795,7 @@ object StateNodeTest : FunSpec({
                 Template("Template1", mutableListOf(DummyScheme("Scheme1"))),
             )
 
-            val children = StateNode(TemplateList(templates)).descendants
+            val children = StateNode(TemplateList(templates)).descendants()
 
             children.map { (it.state as Scheme).name } shouldContainExactly
                 listOf("Template0", "Scheme0", "Scheme1", "Template1", "Scheme1")
@@ -804,13 +804,13 @@ object StateNodeTest : FunSpec({
         test("returns the schemes of a template") {
             val schemes = mutableListOf<Scheme>(DummyScheme("Scheme0"), DummyScheme("Scheme1"))
 
-            val children = StateNode(Template(schemes = schemes)).descendants
+            val children = StateNode(Template(schemes = schemes)).descendants()
 
             children.map { (it.state as Scheme).name } shouldContainExactly schemes.map { it.name }
         }
 
         test("returns an empty list if the node cannot have children") {
-            StateNode(DummyScheme()).descendants should beEmpty()
+            StateNode(DummyScheme()).descendants() should beEmpty()
         }
     }
 
