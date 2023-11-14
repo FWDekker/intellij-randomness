@@ -1,16 +1,15 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.template.TemplateListConfigurable
-import com.intellij.ide.BrowserUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.options.ShowSettingsUtil
+import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
+import com.intellij.openapi.ui.MessageDialogBuilder
 
 
 /**
@@ -27,30 +26,38 @@ class Notifier : StartupActivity {
      */
     private fun showWelcomeToV3(project: Project) {
         val key = "notifications.welcome_to_v3"
+        val oldConfig = PathManager.getOptionsFile("randomness")
 
         val propComp = PropertiesComponent.getInstance()
         val propKey = "com.fwdekker.randomness.$key"
-        if (propComp.isTrueValue(propKey))
+        if (propComp.isTrueValue(propKey) || !oldConfig.exists())
             return
-        propComp.setValue(propKey, true)
 
         NotificationGroupManager.getInstance()
             .getNotificationGroup("com.fwdekker.randomness.updates")
             .createNotification(Bundle("$key.title"), Bundle("$key.content"), NotificationType.INFORMATION)
             .setSubtitle(Bundle("$key.subtitle"))
             .setIcon(Icons.RANDOMNESS)
-            .addAction(object : NotificationAction(Bundle("$key.usage")) {
-                override fun actionPerformed(event: AnActionEvent, notification: Notification) =
-                    BrowserUtil.browse(Bundle("$key.usage_url"))
+            .setSuggestionType(true)
+            .addAction(object : NotificationAction(Bundle("$key.delete_old_config")) {
+                override fun actionPerformed(event: AnActionEvent, notification: Notification) {
+                    MessageDialogBuilder
+                        .yesNo(Bundle("$key.delete_old_config_confirm"), "", Icons.RANDOMNESS)
+                        .ask(project)
+                        .also {
+                            if (it) {
+                                oldConfig.delete()
+                                propComp.setValue(propKey, true)
+                                notification.hideBalloon()
+                            }
+                        }
+                }
             })
-            .addAction(object : NotificationAction(Bundle("$key.changes")) {
-                override fun actionPerformed(event: AnActionEvent, notification: Notification) =
-                    BrowserUtil.browse(Bundle("$key.changes_url"))
-            })
-            .addAction(object : NotificationAction(Bundle("$key.settings")) {
-                override fun actionPerformed(event: AnActionEvent, notification: Notification) =
-                    ShowSettingsUtil.getInstance()
-                        .showSettingsDialog(event.project, TemplateListConfigurable::class.java)
+            .addAction(object : NotificationAction(Bundle("$key.do_not_ask_again")) {
+                override fun actionPerformed(event: AnActionEvent, notification: Notification) {
+                    propComp.setValue(propKey, true)
+                    notification.hideBalloon()
+                }
             })
             .notify(project)
     }
