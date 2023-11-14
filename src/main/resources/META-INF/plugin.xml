@@ -2,6 +2,7 @@
     <id>com.fwdekker.randomness</id>
     <name>Randomness</name>
     <vendor email="florine@fwdekker.com" url="https://fwdekker.com/">FWDekker</vendor>
+    <resource-bundle>randomness</resource-bundle>
 
     <depends>com.intellij.modules.platform</depends>
 
@@ -20,6 +21,12 @@
         <!-- Dynamically loads, unloads, and updates template actions -->
         <dynamicActionConfigurationCustomizer
             implementation="com.fwdekker.randomness.template.DefaultTemplateActionLoader" />
+
+        <!-- Manages notifications -->
+        <notificationGroup displayType="STICKY_BALLOON"
+                           id="com.fwdekker.randomness.updates"
+                           key="notifications.groups.updates.display_name"/>
+        <postStartupActivity implementation="com.fwdekker.randomness.Notifier" id="com.fwdekker.randomness.Notifier"/>
     </extensions>
 
     <!-- Non-dynamic actions -->
