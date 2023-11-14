@@ -11,12 +11,14 @@ Check the plugin description for more details and animated usage examples.
 * In addition to a list of standard separators, you can now also choose your own separator for all data types, including
   for arrays.
 * You can automatically pad (or truncate) integers to a specific length.
-* Future backwards compatibility, ensuring that your settings can always be imported into future versions.
+* A notification is shown after upgrading to v3 to inform the user of incompatibilities with settings from older
+  versions.
+* Future backwards compatibility ensures that your settings can always be imported into future versions.
 
 ### Changed
 * Randomness now uses templates to generate data.
   A template consists of a list of "primitive" data types which are concatenated together.
-  Data types include the old data types (integer, decimal, string, word, UUID), but also the new date-time, and the
+  Data types include the old data types (integer, decimal, string, word, UUID), but also the new date-time and the
   template reference.
 * Strings no longer consist of customisable symbol sets, but are specified using a regex.
 * Words are no longer read from dictionary files, but are stored directly in the settings window. To reuse words in

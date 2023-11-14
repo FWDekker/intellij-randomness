@@ -11,7 +11,7 @@ import com.intellij.util.xmlb.XmlSerializer
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Transient
 import org.jdom.Element
-import java.lang.module.ModuleDescriptor
+import java.lang.module.ModuleDescriptor.Version
 import com.intellij.openapi.components.State as JBState
 
 
@@ -72,8 +72,8 @@ data class Settings(
 @JBState(
     name = "Randomness",
     storages = [
-        Storage("randomness.xml", deprecated = true),
-        Storage("randomness-beta.xml", exportable = true),
+        Storage("randomness-beta.xml", deprecated = true, exportable = true),
+        Storage("randomness3.xml", exportable = true),
     ],
     category = SettingsCategory.PLUGINS,
 )
@@ -103,13 +103,13 @@ class PersistentSettings : PersistentStateComponent<Element> {
      * Silently upgrades the format of the settings contained in [element] to the format of the latest version.
      */
     private fun upgrade(element: Element): Element {
-        val elementVersion = element.getAttributeValueByName("version")?.let { ModuleDescriptor.Version.parse(it) }
+        val elementVersion = element.getAttributeValueByName("version")?.let { Version.parse(it) }
 
         when {
             elementVersion == null -> Unit
 
             // Placeholder to show how an upgrade might work. Remove this once an actual upgrade has been added.
-            elementVersion < ModuleDescriptor.Version.parse("0.0.0-placeholder") ->
+            elementVersion < Version.parse("0.0.0-placeholder") ->
                 element.getContentByPath("templateList", null, "templates", null)?.getElements()
                     ?.forEachIndexed { idx, template -> template.setAttributeValueByName("name", "Template$idx") }
         }
@@ -126,6 +126,6 @@ class PersistentSettings : PersistentStateComponent<Element> {
         /**
          * The currently-running version of Randomness.
          */
-        const val CURRENT_VERSION: String = "3.0.0-beta.3"
+        const val CURRENT_VERSION: String = "3.0.0" // Synchronize this with the version in `gradle.properties`
     }
 }

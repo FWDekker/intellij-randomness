@@ -145,7 +145,7 @@ class PopupAction : AnAction(Icons.RANDOMNESS) {
 /**
  * An [AbstractAction] that uses [myActionPerformed] as the implementation of its [actionPerformed] method.
  *
- * @property myActionPerformed The code to execute in [actionPerformed].
+ * @param myActionPerformed the code to execute in [actionPerformed]
  */
 private class SimpleAbstractAction(private val myActionPerformed: (ActionEvent?) -> Unit) : AbstractAction() {
     /**

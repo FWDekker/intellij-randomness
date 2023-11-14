@@ -278,8 +278,8 @@ data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList())
 /**
  * Replaces all colors with one of [colors] depending on the angle relative to [center].
  *
- * @property colors The colors that should be used, in clockwise order starting north-west.
- * @property center The center relative to which colors should be calculated; not required if only one color is given.
+ * @param colors the colors that should be used, in clockwise order starting north-west
+ * @param center the center relative to which colors should be calculated; not required if only one color is given
  */
 class RadialColorReplacementFilter(
     private val colors: List<Color>,

@@ -27,7 +27,7 @@ import kotlin.random.Random
  * changes. After registering some components with this panel, the preview will be updated whenever those components are
  * updated.
  *
- * @property getScheme Returns a scheme that generates previews. Its random source will be changed.
+ * @param getScheme returns a scheme that generates previews; its random source will be changed
  */
 @Suppress("detekt:LateinitUsage") // Initialized in panel DSL
 class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {

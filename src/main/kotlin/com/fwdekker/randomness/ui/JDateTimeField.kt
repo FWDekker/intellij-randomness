@@ -13,7 +13,7 @@ import javax.swing.JFormattedTextField
 /**
  * A [JFormattedTextField] for [LocalDateTime]s, supporting virtually any date-time format as its input.
  *
- * @property default The default [LocalDateTime] that is returned in case no [value] has ever been set.
+ * @param default the default [LocalDateTime] that is returned in case no [value] has ever been set
  */
 class JDateTimeField(
     private val default: LocalDateTime = LocalDateTime.now(),
