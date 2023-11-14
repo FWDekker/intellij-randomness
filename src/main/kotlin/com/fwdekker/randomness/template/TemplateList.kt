@@ -77,12 +77,9 @@ data class TemplateList(
             get() = mutableListOf(
                 Template("Integer", mutableListOf(IntegerScheme())),
                 Template("Decimal", mutableListOf(DecimalScheme())),
-                Template("String", mutableListOf(StringScheme())),
-                Template("UUID", mutableListOf(UuidScheme())),
-                Template("Date-Time", mutableListOf(DateTimeScheme())),
-                Template("Hex color", mutableListOf(StringScheme(pattern = "#[0-9a-f]{6}"))),
+                Template("Alphanumerical String", mutableListOf(StringScheme())),
                 Template(
-                    "Name",
+                    "Personal Name",
                     mutableListOf(
                         WordScheme(
                             words = DefaultWordList.WORD_LIST_MAP["Forenames"]!!.words,
@@ -113,20 +110,54 @@ data class TemplateList(
                     )
                 ),
                 Template(
+                    "Hex Color",
+                    mutableListOf(
+                        IntegerScheme(
+                            minValue = 0L,
+                            maxValue = 256L,
+                            base = 16,
+                            affixDecorator = AffixDecorator(enabled = false),
+                            arrayDecorator = ArrayDecorator(
+                                enabled = true,
+                                minCount = 3,
+                                maxCount = 3,
+                                separatorEnabled = false,
+                                affixDecorator = AffixDecorator(
+                                    enabled = true,
+                                    descriptor = "#@",
+                                ),
+                            ),
+                        )
+                    )
+                ),
+                Template("UUID", mutableListOf(UuidScheme())),
+                Template("Date-Time", mutableListOf(DateTimeScheme())),
+                Template(
                     "IP address",
                     mutableListOf(
                         IntegerScheme(
-                            minValue = 0,
-                            maxValue = 255,
+                            minValue = 0L,
+                            maxValue = 255L,
                             arrayDecorator = ArrayDecorator(
                                 enabled = true,
                                 minCount = 4,
                                 maxCount = 4,
                                 separator = ".",
+                                affixDecorator = AffixDecorator(enabled = false),
                             ),
                         ),
                     )
-                )
+                ),
+                Template(
+                    "Constructor",
+                    mutableListOf(
+                        StringScheme(pattern = "MyClass(name = ", isRegex = false),
+                        StringScheme(pattern = "\"[a-zA-Z0-9]{5,8}\"", isRegex = true),
+                        StringScheme(pattern = ", value = ", isRegex = false),
+                        IntegerScheme(),
+                        StringScheme(pattern = ")", isRegex = false),
+                    )
+                ),
             )
     }
 }
