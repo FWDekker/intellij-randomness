@@ -23,7 +23,7 @@ import javax.swing.JPanel
 /**
  * All actions related to inserting template-based strings.
  *
- * @property template The template to create actions for.
+ * @param template the template to create actions for
  * @see TemplateInsertAction
  * @see TemplateSettingsAction
  */
@@ -88,8 +88,8 @@ class TemplateGroupAction(private val template: Template) :
 /**
  * Inserts random strings in the editor using the given template.
  *
- * @property template The template to use for inserting data.
- * @property array `true` if and only if an array of values should be inserted.
+ * @param template the template to use for inserting data
+ * @param array `true` if and only if an array of values should be inserted
  * @param repeat `true` if and only if the same value should be inserted at each caret
  * @see TemplateGroupAction
  */
@@ -190,7 +190,7 @@ class TemplateInsertAction(
 /**
  * Open the settings dialog to edit [template].
  *
- * @property template The template to select after opening the settings dialog.
+ * @param template the template to select after opening the settings dialog
  * @see TemplateGroupAction
  * @see TemplateListConfigurable
  */

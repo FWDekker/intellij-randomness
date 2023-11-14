@@ -48,7 +48,7 @@ fun addChangeListenerTo(vararg components: Any, listener: () -> Unit) {
 /**
  * A [JBDocumentListener] that invokes [listener] on each event.
  *
- * @property listener The listener to invoke on any event.
+ * @param listener the listener to invoke on any event
  */
 class SimpleJBDocumentListener(private val listener: (JBDocumentEvent) -> Unit) : JBDocumentListener {
     /**
@@ -64,7 +64,7 @@ class SimpleJBDocumentListener(private val listener: (JBDocumentEvent) -> Unit) 
 /**
  * A [DocumentListener] that invokes [listener] on each event.
  *
- * @property listener The listener to invoke on any event.
+ * @param listener the listener to invoke on any event
  */
 class SimpleDocumentListener(private val listener: (DocumentEvent) -> Unit) : DocumentListener {
     /**
@@ -92,7 +92,7 @@ class SimpleDocumentListener(private val listener: (DocumentEvent) -> Unit) : Do
 /**
  * A [TreeModelListener] that invokes [listener] on each event.
  *
- * @property listener The listener to invoke on any event.
+ * @param listener the listener to invoke on any event
  */
 class SimpleTreeModelListener(private val listener: (TreeModelEvent) -> Unit) : TreeModelListener {
     /**

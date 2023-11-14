@@ -8,7 +8,7 @@ import com.intellij.openapi.actionSystem.impl.DynamicActionConfigurationCustomiz
 /**
  * Registers, replaces, and unregisters actions for the user's [Template]s so that they can be inserted using shortcuts.
  *
- * @property getTemplates Shorthand to return all the user's stored [Template]s.
+ * @param getTemplates shorthand to return all the user's stored [Template]s
  */
 open class TemplateActionLoader(
     private val getTemplates: () -> List<Template> = { Settings.DEFAULT.templates },

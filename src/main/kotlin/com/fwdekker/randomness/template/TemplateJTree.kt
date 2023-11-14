@@ -51,8 +51,8 @@ import kotlin.math.min
  * corresponding user interface class, which additionally provides (1) toolbars and buttons for manipulating the model,
  * (2) node expansion and selection, and (3) handling for tracking and reversing modifications.
  *
- * @property originalTemplateList The (read-only) original templates without modifications.
- * @property currentTemplateList The current templates, including modifications.
+ * @param originalTemplateList the (read-only) original templates without modifications
+ * @param currentTemplateList the current templates, including modifications
  */
 @Suppress("detekt:TooManyFunctions") // Cannot be avoided
 class TemplateJTree(
@@ -517,7 +517,7 @@ class TemplateJTree(
         /**
          * The top-level [PopupStep], which includes the default templates and various reference types.
          *
-         * @property templatesOnly `true` if and only if non-[Template] schemes cannot be inserted.
+         * @param templatesOnly `true` if and only if non-[Template] schemes cannot be inserted
          */
         private inner class MainPopupStep(private val templatesOnly: Boolean) : AbstractPopupStep(POPUP_STEP_SCHEMES) {
             override fun onChosen(value: Scheme?, finalChoice: Boolean) =

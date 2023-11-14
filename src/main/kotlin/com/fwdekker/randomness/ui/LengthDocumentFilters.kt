@@ -8,7 +8,7 @@ import kotlin.math.min
 /**
  * A document filter that ensures the document always contains at most [maxLength] characters.
  *
- * @property maxLength The maximum length of the text in the document, must be at least `1`.
+ * @param maxLength the maximum length of the text in the document, must be at least `1`
  */
 open class MaxLengthDocumentFilter(private val maxLength: Int) : DocumentFilter() {
     init {
@@ -54,8 +54,8 @@ open class MaxLengthDocumentFilter(private val maxLength: Int) : DocumentFilter(
 /**
  * Similar to [MaxLengthDocumentFilter], but the length cannot go below [minLength] either.
  *
- * @property minLength The minimum allowable length of the document. If the length is initially below this value, any
- * progress made towards this value is accepted but cannot be undone.
+ * @param minLength the minimum allowable length of the document; if the length is initially below this value, any
+ * progress made towards this value is accepted but cannot be undone
  * @param maxLength the maximum allowable length of the document
  */
 class MinMaxLengthDocumentFilter(private val minLength: Int, maxLength: Int) : MaxLengthDocumentFilter(maxLength) {

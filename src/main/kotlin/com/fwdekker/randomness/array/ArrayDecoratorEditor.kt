@@ -34,7 +34,7 @@ import javax.swing.JCheckBox
  * Component for editing an [ArrayDecorator].
  *
  * @param scheme the scheme to edit
- * @property embedded `true` if the editor is embedded, which means that no titled separator is shown at the top,
+ * @param embedded `true` if the editor is embedded, which means that no titled separator is shown at the top,
  * components are additionally indented, and the user cannot disable the array decorator; does not affect the value of
  * [ArrayDecorator.enabled]
  */

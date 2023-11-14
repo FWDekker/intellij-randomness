@@ -12,18 +12,18 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    id("org.jetbrains.kotlin.jvm") version "1.9.10"  // Use latest version, ignoring `gradle.properties`
-    id("org.jetbrains.intellij") version "1.15.0"
+    id("org.jetbrains.kotlin.jvm") version "1.9.20"  // Use latest version, ignoring `gradle.properties`
+    id("org.jetbrains.intellij") version "1.16.0"
 
     // Tests/coverage
-    id("org.jetbrains.kotlinx.kover") version "0.7.3"
+    id("org.jetbrains.kotlinx.kover") version "0.7.4"
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.23.1"  // See also `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.23.3"  // See also `gradle.properties`
 
     // Documentation
     id("org.jetbrains.changelog") version "2.2.0"
-    id("org.jetbrains.dokka") version "1.9.0"
+    id("org.jetbrains.dokka") version "1.9.10"
 }
 
 
