@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URI
 import java.net.URL
 import java.time.Year
 
@@ -30,6 +31,7 @@ plugins {
 /// Dependencies
 repositories {
     mavenCentral()
+    maven { url = URI("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies") } // IntelliJ UI test robot
 }
 
 dependencies {
@@ -39,6 +41,9 @@ dependencies {
     implementation("com.vdurmont:emoji-java:${properties("emojiVersion")}")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
+    testImplementation("com.intellij.remoterobot:ide-launcher:${properties("intellijTestRobotVersion")}")
+    testImplementation("com.intellij.remoterobot:remote-fixtures:${properties("intellijTestRobotVersion")}") // TODO: Remove?
+    testImplementation("com.intellij.remoterobot:remote-robot:${properties("intellijTestRobotVersion")}")
     testImplementation("org.assertj:assertj-swing-junit:${properties("assertjSwingVersion")}")
     testRuntimeOnly("org.junit.platform:junit-platform-runner:${properties("junitRunnerVersion")}")
     testImplementation("org.junit.vintage:junit-vintage-engine:${properties("junitVersion")}")
@@ -124,6 +129,14 @@ tasks {
             html { onCheck = false }
             xml { onCheck = false }
         }
+    }
+
+    runIdeForUiTests {
+        systemProperty("idea.trust.all.projects", true)
+    }
+
+    downloadRobotServerPlugin {
+        version = properties("intellijTestRobotVersion")
     }
 
 

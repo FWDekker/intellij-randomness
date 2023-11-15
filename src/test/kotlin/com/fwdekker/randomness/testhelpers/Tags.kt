@@ -20,6 +20,11 @@ object Tags {
     val IDEA_FIXTURE = NamedTag("IdeaFixture")
 
     /**
+     * Tests that use the IntelliJ UI test robot.
+     */
+    val INTELLIJ_ROBOT = NamedTag("IntelliJRobot")
+
+    /**
      * Tests for [com.fwdekker.randomness.Scheme]s.
      */
     val SCHEME = NamedTag("Scheme")

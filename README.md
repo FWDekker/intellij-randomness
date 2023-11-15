@@ -14,8 +14,6 @@
     <a href="https://fwdekker.github.io/intellij-randomness/"><img src="https://img.shields.io/badge/documentation-ready-blue?style=for-the-badge" alt="Documentation" /></a>
 </p>
 
-# This README is about the upcoming v3 release. For information about the latest public version, [check the old README](https://github.com/FWDekker/intellij-randomness/tree/v2)
-
 Rather than going to [random.org](https://www.random.org/) or making up your own random data, you can now insert random
 numbers, UUIDs, names, IP addresses, and much more using an IntelliJ action!
 
