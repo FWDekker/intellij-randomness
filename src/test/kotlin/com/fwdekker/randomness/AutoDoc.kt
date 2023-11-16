@@ -6,6 +6,7 @@ import com.intellij.remoterobot.fixtures.ActionButtonFixture
 import com.intellij.remoterobot.fixtures.ComponentFixture
 import com.intellij.remoterobot.fixtures.EditorFixture
 import com.intellij.remoterobot.fixtures.JButtonFixture
+import com.intellij.remoterobot.fixtures.JListFixture
 import com.intellij.remoterobot.fixtures.JMenuBarFixture
 import com.intellij.remoterobot.fixtures.JTextFieldFixture
 import com.intellij.remoterobot.fixtures.JTreeFixture
@@ -97,7 +98,7 @@ class AutoDoc : FunSpec({
         remoteRobot.find<JMenuBarFixture>(byXpath("//div[@text='File']")).click()
         remoteRobot.find<JMenuBarFixture>(byXpath("//div[@text='File']//div[@text='Close Project']")).click()
         projectDir.deleteRecursively()
-        remoteRobot.find<JTreeFixture>(byXpath("//div[contains(@visible_text, 'randomness-autodoc')]")).clickRow(0)
+        remoteRobot.find<JTreeFixture>(byXpath("//div[contains(@visible_text, 'randomness-autodoc')]"), timeout=Duration.ofSeconds(5)).clickRow(0)
         remoteRobot.find<JButtonFixture>(byXpath("//div[@text='Remove From List']")).click()
     }
 
@@ -105,8 +106,9 @@ class AutoDoc : FunSpec({
     context("make screenshots") {
         test("fast-insertion.png") {
             remoteRobot.find<EditorFixture>(byXpath("//div[@accessiblename='Editor for FooTest.java']")).click()
-            remoteRobot.keyboard { hotKey(KeyEvent.ALT_DOWN_MASK, KeyEvent.VK_R) }
-            ImageIO.write(remoteRobot.getScreenshot(), "png", Path("build/autodoc/fast-insertion.png").toFile())
+            remoteRobot.find<JMenuBarFixture>(byXpath("//div[@text='Tools']")).click()
+            remoteRobot.find<JMenuBarFixture>(byXpath("//div[@text='Tools']//div[@text='Randomness']")).click()
+            ImageIO.write(remoteRobot.find(JListFixture::class.java, byXpath("//div[@class='MyList'])"), timeout=Duration.ofSeconds(5)).getScreenshot(), "png", Path("build/autodoc/fast-insertion.png").toFile())
             remoteRobot.keyboard { escape() }
         }
 
