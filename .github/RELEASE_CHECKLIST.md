@@ -6,6 +6,7 @@
     * Make sure to preview the change notes in the IDE by loading the plugin.
     * Make sure the list of acknowledgements is up-to-date.
 * Update screenshots and GIFs in `.github/img/` and on the plugin repository if necessary.
+    * Set the global UI scale to 200% before recording/screenshotting to ensure high-resolution images.
     * Use the project in `src/test/resources/screenshots/` to store code snippets in.
       Do not store `.idea/`, `.gradle`, and similar build files in this project.
     * Hide (inlay) hints and set font size to 20.
