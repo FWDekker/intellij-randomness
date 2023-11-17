@@ -133,7 +133,6 @@ class TemplateInsertAction(
     inner class ArrayDecoratorConfigurable(arrayDecorator: ArrayDecorator) : Configurable, Disposable {
         private val editor =
             ArrayDecoratorEditor(arrayDecorator, embedded = true)
-                .also { it.addChangeListener { it.apply() } }
                 .also { Disposer.register(this, it) }
         private val previewPanel =
             PreviewPanel { template.deepCopy(retainUuid = true).also { it.arrayDecorator.enabled = true } }
@@ -141,7 +140,10 @@ class TemplateInsertAction(
 
 
         init {
-            editor.addChangeListener { previewPanel.updatePreview() }
+            editor.addChangeListener {
+                editor.apply()
+                previewPanel.updatePreview()
+            }
             previewPanel.updatePreview()
         }
 
