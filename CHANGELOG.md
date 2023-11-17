@@ -1,5 +1,5 @@
 # Changelog
-## Unreleased
+## 3.0.0 -- 2023-11-17
 This release brings a major overhaul of how data is generated, allowing you to create your own data types such as IP
 addresses or entire JSON objects.
 At the same time, it remains just as easy to generate plain numbers.
@@ -11,8 +11,8 @@ Check the plugin description for more details and animated usage examples.
 * In addition to a list of standard separators, you can now also choose your own separator for all data types, including
   for arrays.
 * You can automatically pad (or truncate) integers to a specific length.
-* A notification is shown after upgrading to v3 to inform the user of incompatibilities with settings from older
-  versions.
+* A notification is shown after upgrading to Randomness 3 to inform the user of incompatibilities with settings from
+  older versions.
 * Future backwards compatibility ensures that your settings can always be imported into future versions.
 
 ### Changed

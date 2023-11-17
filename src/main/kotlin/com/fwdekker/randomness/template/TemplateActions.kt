@@ -135,12 +135,15 @@ class TemplateInsertAction(
             ArrayDecoratorEditor(arrayDecorator, embedded = true)
                 .also { Disposer.register(this, it) }
         private val previewPanel =
-            PreviewPanel { template.deepCopy().also { it.arrayDecorator.enabled = true } }
+            PreviewPanel { template.deepCopy(retainUuid = true).also { it.arrayDecorator.enabled = true } }
                 .also { Disposer.register(this, it) }
 
 
         init {
-            editor.addChangeListener { previewPanel.updatePreview() }
+            editor.addChangeListener {
+                editor.apply()
+                previewPanel.updatePreview()
+            }
             previewPanel.updatePreview()
         }
 

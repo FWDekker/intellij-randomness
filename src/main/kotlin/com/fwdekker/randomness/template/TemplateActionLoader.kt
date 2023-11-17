@@ -3,6 +3,7 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Settings
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.impl.DynamicActionConfigurationCustomizer
+import com.intellij.openapi.extensions.PluginId
 
 
 /**
@@ -61,7 +62,7 @@ open class TemplateActionLoader(
     private fun registerAction(actionManager: ActionManager, template: Template) =
         getActions(template).forEach { (actionId, action) ->
             if (actionManager.getAction(actionId) == null)
-                actionManager.registerAction(actionId, action)
+                actionManager.registerAction(actionId, action, PluginId.getId("com.fwdekker.randomness"))
             else
                 actionManager.replaceAction(actionId, action)
         }
