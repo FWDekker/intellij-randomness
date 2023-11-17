@@ -14,8 +14,6 @@
     <a href="https://fwdekker.github.io/intellij-randomness/"><img src="https://img.shields.io/badge/documentation-ready-blue?style=for-the-badge" alt="Documentation" /></a>
 </p>
 
-# This README is about the upcoming v3 release. For information about the latest public version, [check the old README](https://github.com/FWDekker/intellij-randomness/tree/v2)
-
 Rather than going to [random.org](https://www.random.org/) or making up your own random data, you can now insert random
 numbers, UUIDs, names, IP addresses, and much more using an IntelliJ action!
 
@@ -43,7 +41,7 @@ Randomness can also be found in the main menu under <kbd>Tools</kbd> or in <kbd>
   There are six basic data types that can be inserted and customised:
     1. **Integers**, such as `7,826,922`, from a custom range, in any base from binary to hexatrigesimal.
     2. **Decimals**, such as `8,816,573.10`, using customisable separators.
-    3. **Strings**, such as `"PaQDQqSBEH"`, specified using a regex.
+    3. **Strings**, such as `"PaQDQqSBEH"`, with support for reverse regex.
     4. **Words**, such as `"Bridge"`, with predefined or custom word lists.
     5. **UUIDs**, such as `0caa7b28-fe58-4ba6-a25a-9e5beaaf8f4b`, with or without dashes.
     6. **Date-times**, such as `2022-02-03 19:03`, or any other format you want.
@@ -58,7 +56,7 @@ Randomness can also be found in the main menu under <kbd>Tools</kbd> or in <kbd>
   <img width="450px" src=".github/img/configuration-sample.gif" alt="Animation of how to configure templates" />
 * 🗃️ **Arrays**<br />
   Need a lot of data?
-  Insert **an entire array** of any template you want.
+  Insert an **entire array** of any template you want.
   For example, an array of integers might look like `[978, 881, 118, 286, 288]`.
   You can customise the brackets, delimiter, and number of elements to your liking every time you insert an array,
   because no two arrays are the same.
@@ -81,6 +79,8 @@ Randomness can also be found in the main menu under <kbd>Tools</kbd> or in <kbd>
   <img src=".github/img/fast-insertion.png" alt="Insertion popup" />
 * 👀 **Previews**<br />
   To **help you decide** what settings to choose, a preview of the template is shown while you're editing.
+
+  <img width="450px" src=".github/img/previews.gif" alt="Preview window in Randomness" />
 
 
 ## 💻 Development

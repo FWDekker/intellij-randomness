@@ -24,7 +24,7 @@ import org.assertj.swing.fixture.FrameFixture
 /**
  * Unit tests for [TemplateListConfigurable].
  */
-class TemplateListConfigurableTest : FunSpec({
+object TemplateListConfigurableTest : FunSpec({
     tags(Tags.IDEA_FIXTURE)
 
 

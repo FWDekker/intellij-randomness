@@ -77,7 +77,8 @@ tasks {
     patchPluginXml {
         changeNotes.set(provider {
             changelog.renderItem(
-                changelog.getUnreleased(),
+                if (changelog.has(properties("version"))) changelog.get(properties("version"))
+                else changelog.getUnreleased(),
                 Changelog.OutputType.HTML
             )
         })
