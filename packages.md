@@ -1,35 +1,47 @@
 # Package com.fwdekker.randomness
 
-Contains classes shared by all sub-packages.
+Entry point of the plugin. Contains main classes, shared classes, and helper classes.
+
+# Package com.fwdekker.randomness.affix
+
+Decorator for surrounding a value with constant strings such as quotation marks and braces.
 
 # Package com.fwdekker.randomness.array
 
-Insertion of random arrays of other types of data.
+Decorator for generating multiple values each time.
+
+# Package com.fwdekker.randomness.datetime
+
+Scheme for random dates and times.
 
 # Package com.fwdekker.randomness.decimal
 
-Insertion of random decimals.
+Scheme for random decimal numbers.
+
+# Package com.fwdekker.randomness.fixedlength
+
+Decorator for forcing values to a specified length.
 
 # Package com.fwdekker.randomness.integer
 
-Insertion of random integers.
+Scheme for random non-decimal numbers.
 
 # Package com.fwdekker.randomness.string
 
-Insertion of random strings.
+Scheme for random and non-random strings.
+
+# Package com.fwdekker.randomness.template
+
+Scheme consisting of other schemes.
 
 # Package com.fwdekker.randomness.ui
 
-Custom or specialized Swing components.
+Custom or specialized UI components.
 
 # Package com.fwdekker.randomness.uuid
 
-Insertion of random UUIDs.
+Scheme for random UUIDs.
 
 # Package com.fwdekker.randomness.word
 
-Insertion of random words.
-
-# Package icons
-
-Collection of available icons.
+Scheme for random words selected from word lists.

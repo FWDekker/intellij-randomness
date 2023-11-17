@@ -1,262 +1,267 @@
 package com.fwdekker.randomness.ui
 
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.assertj.swing.edt.GuiActionRunner
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import com.fwdekker.randomness.testhelpers.Tags
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.nulls.beNull
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
+import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import javax.swing.JSpinner
 
 
 /**
- * Unit tests for a sample implementation of [JNumberSpinner].
+ * Unit tests for [JNumberSpinner].
  */
-object JNumberSpinnerTest : Spek({
-    class JFloatSpinner(
-        value: Float = 0.0f,
-        minValue: Float = -Float.MAX_VALUE,
-        maxValue: Float = Float.MAX_VALUE,
-        description: String? = null
-    ) : JNumberSpinner<Float>(value, minValue, maxValue, 0.1f, description = description) {
-        override val numberToT: (Number) -> Float
-            get() = { it.toFloat() }
+object JNumberSpinnerTest : FunSpec({
+    tags(Tags.SWING)
+
+
+    beforeContainer {
+        FailOnThreadViolationRepaintManager.install()
     }
 
 
-    fun createJFloatSpinner() =
-        GuiActionRunner.execute<JFloatSpinner> { JFloatSpinner() }
-
-    fun createJFloatSpinner(value: Float, minValue: Float, maxValue: Float, description: String? = null) =
-        GuiActionRunner.execute<JFloatSpinner> { JFloatSpinner(value, minValue, maxValue, description) }
-
-
-    describe("constructor failures") {
-        it("should fail if the minimum value is greater than the maximum value") {
-            assertThatThrownBy { createJFloatSpinner(value = -725.18f, minValue = -602.98f, maxValue = -929.41f) }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("(minimum <= value <= maximum) is false")
+    context("constructor failures") {
+        test("should fail if the minimum value is greater than the maximum value") {
+            shouldThrow<IllegalArgumentException> { JIntSpinner(value = -725, minValue = -602, maxValue = -929) }
+                .message shouldBe "(minimum <= value <= maximum) is false"
         }
 
-        it("should fail if the value is not in between the minimum and maximum value") {
-            assertThatThrownBy { createJFloatSpinner(value = 1136.57f, minValue = 552.50f, maxValue = 944.18f) }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("(minimum <= value <= maximum) is false")
+        test("should fail if the value is not in between the minimum and maximum value") {
+            shouldThrow<IllegalArgumentException> { JIntSpinner(value = 1136, minValue = 552, maxValue = 944) }
+                .message shouldBe "(minimum <= value <= maximum) is false"
         }
     }
 
-    describe("input handling") {
-        it("should get and set the value") {
-            val spinner = createJFloatSpinner()
+    context("input handling") {
+        test("should get and set the value") {
+            val spinner = guiGet { JIntSpinner() }
 
-            GuiActionRunner.execute { spinner.value = 179.40f }
+            guiRun { spinner.value = 179 }
 
-            assertThat(spinner.value).isEqualTo(179.40f)
+            spinner.value shouldBe 179
         }
 
-        it("should return a float even if a long is set") {
-            val spinner = createJFloatSpinner()
+        test("should return an int even if a long is set") {
+            val spinner = guiGet { JIntSpinner() }
 
-            GuiActionRunner.execute { (spinner as JSpinner).value = 638L }
+            guiRun { (spinner as JSpinner).value = 638L }
 
-            assertThat(spinner.value).isEqualTo(638.0f)
-        }
-    }
-
-    describe("validation") {
-        it("should fail if the value is lower than the minimum value") {
-            val spinner = createJFloatSpinner(value = 0.0f, minValue = -24.8f, maxValue = 31.5f)
-
-            GuiActionRunner.execute { spinner.value = -88.5f }
-
-            val info = spinner.validateValue()
-            assertThat(info).isNotNull()
-            assertThat(info?.message).isEqualTo("The value should be greater than or equal to -24.8.")
-        }
-
-        it("should fail if the value is higher than the maximum value") {
-            val spinner = createJFloatSpinner(value = 26.7f, minValue = 16.8f, maxValue = 32.3f)
-
-            GuiActionRunner.execute { spinner.value = 93.8f }
-
-            val info = spinner.validateValue()
-            assertThat(info).isNotNull()
-            assertThat(info?.message).isEqualTo("The value should be less than or equal to 32.3.")
-        }
-
-        it("should pass if the minimum value was adjusted") {
-            val spinner = createJFloatSpinner(value = 169.9f, minValue = 139.6f, maxValue = 597.8f)
-
-            GuiActionRunner.execute {
-                spinner.minValue = 5.83f
-                spinner.value = 88.59f
-            }
-
-            assertThat(spinner.validateValue()).isNull()
-        }
-
-        it("should pass if the maximum value was adjusted") {
-            val spinner = createJFloatSpinner(value = -234.8f, minValue = -493.1f, maxValue = 202.8f)
-
-            GuiActionRunner.execute {
-                spinner.maxValue = 474.77f
-                spinner.value = 345.01f
-            }
-
-            assertThat(spinner.validateValue()).isNull()
-        }
-
-        it("returns validation information with the custom range name if the range is exceeded") {
-            val spinner = createJFloatSpinner(value = 59.1f, minValue = 49.8f, maxValue = 83.3f, description = "desc")
-            GuiActionRunner.execute { spinner.value = -76.4f }
-
-            val info = spinner.validateValue()
-            assertThat(info).isNotNull()
-            assertThat(info?.message).isEqualTo("The desc should be greater than or equal to 49.8.")
+            spinner.value shouldBe 638
         }
     }
 })
 
+/**
+ * Unit tests for [bindSpinners].
+ */
+object BindSpinnersTest : FunSpec({
+    tags(Tags.SWING)
+
+
+    beforeContainer {
+        FailOnThreadViolationRepaintManager.install()
+    }
+
+
+    context("binding") {
+        test("throws an exception if the range is negative") {
+            val min = guiGet { JSpinner() }
+            val max = guiGet { JSpinner() }
+
+            shouldThrow<IllegalArgumentException> { bindSpinners(min, max, -37.20) }
+                .message shouldBe "maxRange must be a positive number."
+        }
+    }
+
+    context("updating") {
+        test("updates the minimum spinner if the maximum goes below its value") {
+            val min = guiGet { JSpinner() }
+            val max = guiGet { JSpinner() }
+            bindSpinners(min, max)
+
+            guiRun { max.value = -284.85 }
+
+            min.value shouldBe -284.85
+        }
+
+        test("updates the maximum spinner if the minimum goes above its value") {
+            val min = guiGet { JSpinner() }
+            val max = guiGet { JSpinner() }
+            bindSpinners(min, max)
+
+            guiRun { min.value = 684.41 }
+
+            max.value shouldBe 684.41
+        }
+    }
+})
 
 /**
  * Unit tests for [JDoubleSpinner].
  */
-object JDoubleSpinnerTest : Spek({
-    describe("input handling") {
-        it("should return a double even if a long is set") {
-            val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner() }
+object JDoubleSpinnerTest : FunSpec({
+    tags(Tags.SWING)
 
-            GuiActionRunner.execute { (spinner as JSpinner).value = -750L }
 
-            assertThat(spinner.value).isEqualTo(-750.0)
+    beforeContainer {
+        FailOnThreadViolationRepaintManager.install()
+    }
+
+
+    context("input handling") {
+        test("should return a double even if a long is set") {
+            val spinner = guiGet { JDoubleSpinner() }
+
+            guiRun { (spinner as JSpinner).value = -750L }
+
+            spinner.value shouldBe -750.0
         }
     }
 
-    describe("getting surrounding values") {
-        describe("previous value") {
-            it("returns the previous value") {
-                val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner(741.4) }
+    context("getting surrounding values") {
+        context("previous value") {
+            test("returns the previous value") {
+                val spinner = guiGet { JDoubleSpinner(741.4) }
 
-                assertThat(spinner.previousValue).isEqualTo(741.3)
+                spinner.previousValue shouldBe 741.3
             }
 
-            it("returns null if the current value is already at the minimum") {
-                val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner(-637.8, minValue = -637.8) }
+            test("returns null if the current value is already at the minimum") {
+                val spinner = guiGet { JDoubleSpinner(-637.8, minValue = -637.8) }
 
-                assertThat(spinner.previousValue).isNull()
+                spinner.previousValue should beNull()
             }
         }
 
-        describe("next value") {
-            it("returns the next value") {
-                val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner(629.9) }
+        context("next value") {
+            test("returns the next value") {
+                val spinner = guiGet { JDoubleSpinner(629.9) }
 
-                assertThat(spinner.nextValue).isEqualTo(630.0)
+                spinner.nextValue shouldBe 630.0
             }
 
-            it("returns null if the current value is already at the maximum") {
-                val spinner = GuiActionRunner.execute<JDoubleSpinner> { JDoubleSpinner(-28.3, maxValue = -28.3) }
+            test("returns null if the current value is already at the maximum") {
+                val spinner = guiGet { JDoubleSpinner(-28.3, maxValue = -28.3) }
 
-                assertThat(spinner.nextValue).isNull()
+                spinner.nextValue should beNull()
             }
         }
     }
 })
-
 
 /**
  * Unit tests for [JLongSpinner].
  */
-object JLongSpinnerTest : Spek({
-    describe("input handling") {
-        it("truncates when storing a double") {
-            val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner() }
+object JLongSpinnerTest : FunSpec({
+    tags(Tags.SWING)
 
-            GuiActionRunner.execute { spinner.setValue(786.79) }
 
-            assertThat(spinner.value).isEqualTo(786L)
+    beforeContainer {
+        FailOnThreadViolationRepaintManager.install()
+    }
+
+
+    context("input handling") {
+        test("truncates when storing a double") {
+            val spinner = guiGet { JLongSpinner() }
+
+            guiRun { spinner.setValue(786.79) }
+
+            spinner.value shouldBe 786L
         }
     }
 
-    describe("getting surrounding values") {
-        describe("previous value") {
-            it("returns the previous value") {
-                val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner(56L) }
+    context("getting surrounding values") {
+        context("previous value") {
+            test("returns the previous value") {
+                val spinner = guiGet { JLongSpinner(56L) }
 
-                assertThat(spinner.previousValue).isEqualTo(55L)
+                spinner.previousValue shouldBe 55L
             }
 
-            it("returns null if the current value is already at the minimum") {
-                val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner(203L, minValue = 203L) }
+            test("returns null if the current value is already at the minimum") {
+                val spinner = guiGet { JLongSpinner(203L, minValue = 203L) }
 
-                assertThat(spinner.previousValue).isNull()
+                spinner.previousValue should beNull()
             }
         }
 
-        describe("next value") {
-            it("returns the next value") {
-                val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner(112L) }
+        context("next value") {
+            test("returns the next value") {
+                val spinner = guiGet { JLongSpinner(112L) }
 
-                assertThat(spinner.nextValue).isEqualTo(113L)
+                spinner.nextValue shouldBe 113L
             }
 
-            it("returns null if the current value is already at the maximum") {
-                val spinner = GuiActionRunner.execute<JLongSpinner> { JLongSpinner(119L, maxValue = 119L) }
+            test("returns null if the current value is already at the maximum") {
+                val spinner = guiGet { JLongSpinner(119L, maxValue = 119L) }
 
-                assertThat(spinner.nextValue).isNull()
+                spinner.nextValue should beNull()
             }
         }
     }
 })
 
-
 /**
  * Unit tests for [JIntSpinner].
  */
-object JIntSpinnerTest : Spek({
-    describe("input handling") {
-        it("truncates when storing a double") {
-            val spinner = GuiActionRunner.execute<JIntSpinner> { JIntSpinner() }
+object JIntSpinnerTest : FunSpec({
+    tags(Tags.SWING)
 
-            GuiActionRunner.execute { spinner.setValue(850.45) }
 
-            assertThat(spinner.value).isEqualTo(850)
+    beforeContainer {
+        FailOnThreadViolationRepaintManager.install()
+    }
+
+
+    context("input handling") {
+        test("truncates when storing a double") {
+            val spinner = guiGet { JIntSpinner() }
+
+            guiRun { spinner.setValue(850.45) }
+
+            spinner.value shouldBe 850
         }
 
-        it("should overflow when storing a large long") {
-            val spinner = GuiActionRunner.execute<JIntSpinner> { JIntSpinner() }
+        test("overflows when storing a large long") {
+            val spinner = guiGet { JIntSpinner() }
 
-            GuiActionRunner.execute { spinner.setValue(Integer.MAX_VALUE.toLong() + 2) }
+            guiRun { spinner.setValue(Integer.MAX_VALUE.toLong() + 2) }
 
-            assertThat(spinner.value).isEqualTo(Integer.MIN_VALUE + 1)
+            spinner.value shouldBe Integer.MIN_VALUE + 1
         }
     }
 
-    describe("getting surrounding values") {
-        describe("previous value") {
-            it("returns the previous value") {
-                val spinner = GuiActionRunner.execute<JIntSpinner> { JIntSpinner(205) }
+    context("getting surrounding values") {
+        context("previous value") {
+            test("returns the previous value") {
+                val spinner = guiGet { JIntSpinner(205) }
 
-                assertThat(spinner.previousValue).isEqualTo(204)
+                spinner.previousValue shouldBe 204
             }
 
-            it("returns null if the current value is already at the minimum") {
-                val spinner = GuiActionRunner.execute<JIntSpinner> { JIntSpinner(188, minValue = 188) }
+            test("returns null if the current value is already at the minimum") {
+                val spinner = guiGet { JIntSpinner(188, minValue = 188) }
 
-                assertThat(spinner.previousValue).isNull()
+                spinner.previousValue should beNull()
             }
         }
 
-        describe("next value") {
-            it("returns the next value") {
-                val spinner = GuiActionRunner.execute<JIntSpinner> { JIntSpinner(96) }
+        context("next value") {
+            test("returns the next value") {
+                val spinner = guiGet { JIntSpinner(96) }
 
-                assertThat(spinner.nextValue).isEqualTo(97)
+                spinner.nextValue shouldBe 97
             }
 
-            it("returns null if the current value is already at the maximum") {
-                val spinner = GuiActionRunner.execute<JIntSpinner> { JIntSpinner(182, maxValue = 182) }
+            test("returns null if the current value is already at the maximum") {
+                val spinner = guiGet { JIntSpinner(182, maxValue = 182) }
 
-                assertThat(spinner.nextValue).isNull()
+                spinner.nextValue should beNull()
             }
         }
     }

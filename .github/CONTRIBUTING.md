@@ -22,7 +22,7 @@ Pull requests that do not meet the following guidelines are **fine**; these are 
 
 ### 📚 Documentation
 Always update related documentation, both code documentation and user instructions such as the [README](../README.md).
-Additionally, make sure you update the [change notes](../src/main/resources/META-INF/change-notes.html) if necessary.
+Additionally, make sure you update the [change notes](../CHANGELOG.md) if necessary.
 
 ### 🧪 Tests
 If you fixed a bug or added a new feature, make sure you add tests that cover this.

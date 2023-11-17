@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <g id="array">
+    <path d="M9.6 16L9.6 13.6L13.6 13.6L13.6 2.4L9.6 2.4L9.6 0L16 0L16 16L9.6 16L9.6 16Z" id="Right" fill="#6E6E6E" fill-rule="evenodd" stroke="none" />
+    <path d="M0 16L0 0L6.4 0L6.4 2.4L2.4 2.4L2.4 13.6L6.4 13.6L6.4 16L0 16L0 16Z" id="Left" fill="#6E6E6E" fill-rule="evenodd" stroke="none" />
+  </g>
+</svg>

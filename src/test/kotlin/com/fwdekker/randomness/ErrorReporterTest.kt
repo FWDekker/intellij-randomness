@@ -1,120 +1,48 @@
 package com.fwdekker.randomness
 
-import com.intellij.openapi.diagnostic.IdeaLoggingEvent
+import com.fwdekker.randomness.testhelpers.Tags
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import org.assertj.core.api.Assertions.assertThat
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 
 
 /**
  * Unit tests for [ErrorReporter].
  */
-object ErrorReporterTest : Spek({
-    describe("error reporter") {
-        lateinit var ideaFixture: IdeaTestFixture
-        lateinit var reporter: ErrorReporter
+object ErrorReporterTest : FunSpec({
+    tags(Tags.IDEA_FIXTURE)
 
 
-        beforeEachTest {
-            ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-            ideaFixture.setUp()
-
-            reporter = ErrorReporter()
-        }
-
-        afterEachTest {
-            ideaFixture.tearDown()
-        }
+    lateinit var ideaFixture: IdeaTestFixture
+    lateinit var reporter: ErrorReporter
 
 
-        describe("issue url") {
-            it("includes all components if they fit in the URL") {
-                val url = reporter.getIssueUrl(
-                    arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION"))),
-                    "ADDITIONAL_INFO"
-                )
+    beforeNonContainer {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
 
-                assertThat(url)
-                    .contains("ADDITIONAL_INFO")
-                    .contains("EXCEPTION")
-                    .contains("Randomness+version")
-            }
+        reporter = ErrorReporter()
+    }
 
-            it("excludes the stacktraces if they are too long") {
-                val url = reporter.getIssueUrl(
-                    arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION_${List(10_000) { "A" }}"))),
-                    "ADDITIONAL_INFO"
-                )
+    afterNonContainer {
+        ideaFixture.tearDown()
+    }
 
-                assertThat(url)
-                    .contains("ADDITIONAL_INFO")
-                    .doesNotContain("EXCEPTION")
-                    .contains("Randomness+version")
-            }
 
-            it("excludes the additional info if they are too long") {
-                val url = reporter.getIssueUrl(
-                    arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION"))),
-                    "ADDITIONAL_INFO_${List(10_000) { "A" }}"
-                )
+    test("replaces whitespace with a plus") {
+        reporter.getIssueUrl("lorem ipsum") shouldContain "lorem+ipsum"
+    }
 
-                assertThat(url)
-                    .doesNotContain("ADDITIONAL_INFO")
-                    .contains("EXCEPTION")
-                    .contains("Randomness+version")
-            }
+    test("escapes # and & in the additional info") {
+        reporter.getIssueUrl("a#b") shouldNotContain "a#b"
+        reporter.getIssueUrl("a&b") shouldNotContain "a&b"
+    }
 
-            it("excludes both additional info and stacktraces if either is too long") {
-                val url = reporter.getIssueUrl(
-                    arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION_${List(10_000) { "A" }}"))),
-                    "ADDITIONAL_INFO_${List(10_000) { "A" }}"
-                )
-
-                assertThat(url)
-                    .doesNotContain("ADDITIONAL_INFO")
-                    .doesNotContain("EXCEPTION")
-                    .contains("Randomness+version")
-            }
-
-            describe("encoding") {
-                it("includes all parts that are not expanded due to encoding") {
-                    val url = reporter.getIssueUrl(
-                        arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION"))),
-                        "ADDITIONAL_INFO_${List(1000) { "A" }}"
-                    )
-
-                    assertThat(url)
-                        .contains("ADDITIONAL_INFO")
-                        .contains("EXCEPTION")
-                        .contains("Randomness+version")
-                }
-
-                it("does not expand whitespace") {
-                    val url = reporter.getIssueUrl(
-                        arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION"))),
-                        "ADDITIONAL_INFO_${List(1000) { " " }}_" // Trailing `_` to prevent trimming
-                    )
-
-                    assertThat(url)
-                        .contains("ADDITIONAL_INFO")
-                        .contains("EXCEPTION")
-                        .contains("Randomness+version")
-                }
-
-                it("excludes parts that are expanded") {
-                    val url = reporter.getIssueUrl(
-                        arrayOf(IdeaLoggingEvent("", Exception("EXCEPTION"))),
-                        "ADDITIONAL_INFO_${List(2000) { "\n" }}"
-                    )
-
-                    assertThat(url)
-                        .doesNotContain("ADDITIONAL_INFO")
-                        .contains("EXCEPTION")
-                        .contains("Randomness+version")
-                }
-            }
-        }
+    test("asks the user to provide additional information if none was provided") {
+        reporter.getIssueUrl(null) shouldContain "Please+describe+your+issue"
     }
 })

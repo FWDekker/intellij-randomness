@@ -1,236 +1,43 @@
 <idea-plugin>
     <id>com.fwdekker.randomness</id>
     <name>Randomness</name>
-    <version>0.0.0</version>  <!-- Patched in from `gradle.properties` -->
     <vendor email="florine@fwdekker.com" url="https://fwdekker.com/">FWDekker</vendor>
+    <resource-bundle>randomness</resource-bundle>
 
     <depends>com.intellij.modules.platform</depends>
-
-    <idea-version since-build="0.0" />  <!-- Patched in from `gradle.properties` -->
 
     <extensions defaultExtensionNs="com.intellij">
         <errorHandler implementation="com.fwdekker.randomness.ErrorReporter" />
 
         <!-- Persistence -->
-        <applicationService serviceImplementation="com.fwdekker.randomness.integer.IntegerSettings" />
-        <applicationService serviceImplementation="com.fwdekker.randomness.decimal.DecimalSettings" />
-        <applicationService serviceImplementation="com.fwdekker.randomness.string.StringSettings" />
-        <applicationService serviceImplementation="com.fwdekker.randomness.word.WordSettings" />
-        <applicationService serviceImplementation="com.fwdekker.randomness.uuid.UuidSettings" />
-        <applicationService serviceImplementation="com.fwdekker.randomness.array.ArraySettings" />
+        <applicationService serviceImplementation="com.fwdekker.randomness.PersistentSettings" />
 
         <!-- Settings window -->
-        <applicationConfigurable instance="com.fwdekker.randomness.RandomnessConfigurable"
-                                 id="randomness.MainConfigurable"
-                                 parentId="tools"
-                                 displayName="Randomness">
-            <configurable instance="com.fwdekker.randomness.integer.IntegerSettingsConfigurable"
-                          id="randomness.IntegerSettingsConfigurable"
-                          parentId="randomness.MainConfigurable"
-                          displayName="Integers" />
-            <configurable instance="com.fwdekker.randomness.decimal.DecimalSettingsConfigurable"
-                          id="randomness.DecimalSettingsConfigurable"
-                          parentId="randomness.MainConfigurable"
-                          displayName="Decimals" />
-            <configurable instance="com.fwdekker.randomness.string.StringSettingsConfigurable"
-                          id="randomness.StringSettingsConfigurable"
-                          parentId="randomness.MainConfigurable"
-                          displayName="Strings" />
-            <configurable instance="com.fwdekker.randomness.word.WordSettingsConfigurable"
-                          id="randomness.WordSettingsConfigurable"
-                          parentId="randomness.MainConfigurable"
-                          displayName="Words" />
-            <configurable instance="com.fwdekker.randomness.uuid.UuidSettingsConfigurable"
-                          id="randomness.UuidSettingsConfigurable"
-                          parentId="randomness.MainConfigurable"
-                          displayName="UUIDs" />
-            <configurable instance="com.fwdekker.randomness.array.ArraySettingsConfigurable"
-                          id="randomness.ArraySettingsConfigurable"
-                          parentId="randomness.MainConfigurable"
-                          displayName="Arrays" />
-        </applicationConfigurable>
+        <applicationConfigurable parentId="tools"
+                                 instance="com.fwdekker.randomness.template.TemplateListConfigurable"
+                                 id="com.fwdekker.randomness.template.TemplateListConfigurable"
+                                 displayName="Randomness" />
+
+        <!-- Dynamically loads, unloads, and updates template actions -->
+        <dynamicActionConfigurationCustomizer
+            implementation="com.fwdekker.randomness.template.DefaultTemplateActionLoader" />
+
+        <!-- Manages notifications -->
+        <notificationGroup displayType="STICKY_BALLOON"
+                           id="com.fwdekker.randomness.updates"
+                           key="notifications.groups.updates.display_name"/>
+        <postStartupActivity implementation="com.fwdekker.randomness.Notifier" id="com.fwdekker.randomness.Notifier"/>
     </extensions>
 
+    <!-- Non-dynamic actions -->
     <actions>
-        <!-- Popup -->
-        <action id="randomness.ShowGroup" class="com.fwdekker.randomness.PopupAction"
+        <action id="com.fwdekker.randomness.PopupAction" class="com.fwdekker.randomness.PopupAction"
                 text="Randomness" description="Opens the Randomness popup."
-                icon="/icons/data.svg">
+                icon="/icons/randomness.svg">
             <keyboard-shortcut first-keystroke="alt R" keymap="$default" />
             <add-to-group group-id="GenerateGroup" anchor="last" />
             <add-to-group group-id="ToolsMenu" anchor="last" />
+            <synonym text="Random Data Generator" />
         </action>
-
-        <!-- Integers -->
-        <action id="randomness.InsertInteger"
-                class="com.fwdekker.randomness.integer.IntegerInsertAction"
-                text="Random Integer"
-                description="Inserts a random integer at each caret."
-                icon="/icons/integer.svg" />
-        <action id="randomness.InsertIntegerArray"
-                class="com.fwdekker.randomness.integer.IntegerInsertAction$ArrayAction"
-                text="Random Integer Array"
-                description="Inserts an array of random integers at each caret."
-                icon="/icons/integer-array.svg" />
-        <action id="randomness.InsertIntegerRepeat"
-                class="com.fwdekker.randomness.integer.IntegerInsertAction$RepeatAction"
-                text="Random Repeated Integer"
-                description="Inserts the same random integer at each caret."
-                icon="/icons/integer-repeat.svg" />
-        <action id="randomness.InsertIntegerRepeatArray"
-                class="com.fwdekker.randomness.integer.IntegerInsertAction$RepeatArrayAction"
-                text="Random Repeated Integer Array"
-                description="Inserts the same array of random integers at each caret."
-                icon="/icons/integer-repeat-array.svg" />
-        <action id="randomness.IntegerSettings"
-                class="com.fwdekker.randomness.integer.IntegerSettingsAction"
-                text="Integer Settings"
-                description="Settings for the Random Integer action."
-                icon="/icons/integer-settings.svg" />
-        <action id="randomness.IntegerQuickSwitchScheme"
-                class="com.fwdekker.randomness.integer.IntegerSettingsAction$IntegerQuickSwitchSchemeAction"
-                text="Integer Quick Switch Scheme"
-                description="Quickly switch scheme for the Random Integer action."
-                icon="/icons/integer-quick-switch-scheme.svg" />
-
-        <!-- Decimals -->
-        <action id="randomness.InsertDecimal"
-                class="com.fwdekker.randomness.decimal.DecimalInsertAction"
-                text="Random Decimal"
-                description="Inserts a random decimal at each caret."
-                icon="/icons/decimal.svg" />
-        <action id="randomness.InsertDecimalArray"
-                class="com.fwdekker.randomness.decimal.DecimalInsertAction$ArrayAction"
-                text="Random Decimal Array"
-                description="Inserts an array of random decimals at each caret."
-                icon="/icons/decimal-array.svg" />
-        <action id="randomness.InsertDecimalRepeat"
-                class="com.fwdekker.randomness.decimal.DecimalInsertAction$RepeatAction"
-                text="Random Repeated Decimal"
-                description="Inserts the same random decimal at each caret."
-                icon="/icons/decimal-repeat.svg" />
-        <action id="randomness.InsertDecimalRepeatArray"
-                class="com.fwdekker.randomness.decimal.DecimalInsertAction$RepeatArrayAction"
-                text="Random Repeated Decimal Array"
-                description="Inserts the same array of random decimals at each caret."
-                icon="/icons/decimal-repeat-array.svg" />
-        <action id="randomness.DecimalSettings"
-                class="com.fwdekker.randomness.decimal.DecimalSettingsAction"
-                text="Decimal Settings"
-                description="Settings for the Random Decimal action."
-                icon="/icons/decimal-settings.svg" />
-        <action id="randomness.DecimalQuickSwitchScheme"
-                class="com.fwdekker.randomness.decimal.DecimalSettingsAction$DecimalQuickSwitchSchemeAction"
-                text="Decimal Quick Switch Scheme"
-                description="Quickly switch scheme for the Random Decimal action."
-                icon="/icons/decimal-quick-switch-scheme.svg" />
-
-        <!-- Strings -->
-        <action id="randomness.InsertString"
-                class="com.fwdekker.randomness.string.StringInsertAction"
-                text="Random String"
-                description="Inserts a random string at each caret."
-                icon="/icons/string.svg" />
-        <action id="randomness.InsertStringArray"
-                class="com.fwdekker.randomness.string.StringInsertAction$ArrayAction"
-                text="Random String Array"
-                description="Insert an array of random strings at each caret."
-                icon="/icons/string-array.svg" />
-        <action id="randomness.InsertStringRepeat"
-                class="com.fwdekker.randomness.string.StringInsertAction$RepeatAction"
-                text="Random Repeated String"
-                description="Inserts the same random string at each caret."
-                icon="/icons/string-repeat.svg" />
-        <action id="randomness.InsertStringRepeatArray"
-                class="com.fwdekker.randomness.string.StringInsertAction$RepeatArrayAction"
-                text="Random Repeated String Array"
-                description="Inserts the same array of random strings at each caret."
-                icon="/icons/string-repeat-array.svg" />
-        <action id="randomness.StringSettings"
-                class="com.fwdekker.randomness.string.StringSettingsAction"
-                text="String Settings"
-                description="Settings for the Random String action."
-                icon="/icons/string-settings.svg" />
-        <action id="randomness.StringQuickSwitchScheme"
-                class="com.fwdekker.randomness.string.StringSettingsAction$StringQuickSwitchSchemeAction"
-                text="String Quick Switch Scheme"
-                description="Quickly switch scheme for the Random String action."
-                icon="/icons/string-quick-switch-scheme.svg" />
-
-        <!-- Words -->
-        <action id="randomness.InsertWord"
-                class="com.fwdekker.randomness.word.WordInsertAction"
-                text="Random Word"
-                description="Inserts a random word at each caret."
-                icon="/icons/word.svg" />
-        <action id="randomness.InsertWordArray"
-                class="com.fwdekker.randomness.word.WordInsertAction$ArrayAction"
-                text="Random Word Array"
-                description="Inserts an array of random words at each caret."
-                icon="/icons/word-array.svg" />
-        <action id="randomness.InsertWordRepeat"
-                class="com.fwdekker.randomness.word.WordInsertAction$RepeatAction"
-                text="Random Repeated Word"
-                description="Inserts the same random word at each caret."
-                icon="/icons/word-repeat.svg" />
-        <action id="randomness.InsertWordRepeatArray"
-                class="com.fwdekker.randomness.word.WordInsertAction$RepeatArrayAction"
-                text="Random Repeated Word Array"
-                description="Inserts the same array of random words at each caret."
-                icon="/icons/word-repeat-array.svg" />
-        <action id="randomness.WordSettings"
-                class="com.fwdekker.randomness.word.WordSettingsAction"
-                text="Word Settings"
-                description="Settings for the Random Word action."
-                icon="/icons/word-settings.svg" />
-        <action id="randomness.WordQuickSwitchScheme"
-                class="com.fwdekker.randomness.word.WordSettingsAction$WordQuickSwitchSchemeAction"
-                text="Word Quick Switch Scheme"
-                description="Quickly switch scheme for the Random Word action."
-                icon="/icons/word-quick-switch-scheme.svg" />
-
-        <!-- UUIDs -->
-        <action id="randomness.InsertUuid"
-                class="com.fwdekker.randomness.uuid.UuidInsertAction"
-                text="Random UUID"
-                description="Inserts a random UUID at each caret."
-                icon="/icons/uuid.svg" />
-        <action id="randomness.InsertUuidArray"
-                class="com.fwdekker.randomness.uuid.UuidInsertAction$ArrayAction"
-                text="Random UUID Array"
-                description="Inserts an array of random UUIDs at each caret."
-                icon="/icons/uuid-array.svg" />
-        <action id="randomness.InsertUuidRepeat"
-                class="com.fwdekker.randomness.uuid.UuidInsertAction$RepeatAction"
-                text="Random Repeated UUID"
-                description="Inserts the same random UUID at each caret."
-                icon="/icons/uuid-repeat.svg" />
-        <action id="randomness.InsertUuidRepeatArray"
-                class="com.fwdekker.randomness.uuid.UuidInsertAction$RepeatArrayAction"
-                text="Random Repeated UUID Array"
-                description="Inserts the same array of random UUIDs at each caret."
-                icon="/icons/uuid-repeat-array.svg" />
-        <action id="randomness.UuidSettings"
-                class="com.fwdekker.randomness.uuid.UuidSettingsAction"
-                text="UUID Settings"
-                description="Settings for the Random UUID action."
-                icon="/icons/uuid-settings.svg" />
-        <action id="randomness.UuidQuickSwitchScheme"
-                class="com.fwdekker.randomness.uuid.UuidSettingsAction$UuidQuickSwitchSchemeAction"
-                text="UUID Quick Switch Scheme"
-                description="Quickly switch scheme for the Random Uuid action."
-                icon="/icons/uuid-quick-switch-scheme.svg" />
-
-        <!-- Arrays -->
-        <action id="randomness.ArraySettings"
-                class="com.fwdekker.randomness.array.ArraySettingsAction"
-                text="Array Settings"
-                description="Settings for inserting arrays of data."
-                icon="/icons/data-settings.svg" />
-        <action id="randomness.ArrayQuickSwitchScheme"
-                class="com.fwdekker.randomness.array.ArraySettingsAction$ArrayQuickSwitchSchemeAction"
-                text="Array Quick Switch Scheme"
-                description="Quickly switch scheme for the Random Array action."
-                icon="/icons/data-quick-switch-scheme.svg" />
     </actions>
 </idea-plugin>

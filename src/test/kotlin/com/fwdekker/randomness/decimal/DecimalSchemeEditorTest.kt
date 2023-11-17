@@ -1,0 +1,184 @@
+package com.fwdekker.randomness.decimal
+
+import com.fwdekker.randomness.editorApplyTestFactory
+import com.fwdekker.randomness.editorFieldsTestFactory
+import com.fwdekker.randomness.testhelpers.Tags
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.isSelectedProp
+import com.fwdekker.randomness.testhelpers.prop
+import com.fwdekker.randomness.testhelpers.textProp
+import com.fwdekker.randomness.testhelpers.valueProp
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.row
+import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
+import org.assertj.swing.fixture.Containers.showInFrame
+import org.assertj.swing.fixture.FrameFixture
+
+
+/**
+ * Unit tests for [DecimalSchemeEditor].
+ */
+object DecimalSchemeEditorTest : FunSpec({
+    tags(Tags.EDITOR, Tags.IDEA_FIXTURE, Tags.SWING)
+
+
+    lateinit var ideaFixture: IdeaTestFixture
+    lateinit var frame: FrameFixture
+
+    lateinit var scheme: DecimalScheme
+    lateinit var editor: DecimalSchemeEditor
+
+
+    beforeContainer {
+        FailOnThreadViolationRepaintManager.install()
+    }
+
+    beforeNonContainer {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
+
+        scheme = DecimalScheme()
+        editor = guiGet { DecimalSchemeEditor(scheme) }
+        frame = showInFrame(editor.rootComponent)
+    }
+
+    afterNonContainer {
+        frame.cleanUp()
+        ideaFixture.tearDown()
+    }
+
+
+
+    context("input handling") {
+        context("*Value") {
+            test("binds the minimum and maximum values") {
+                guiRun { frame.spinner("minValue").target().value = 3670.0 }
+
+                frame.spinner("minValue").requireValue(3670.0)
+                frame.spinner("maxValue").requireValue(3670.0)
+            }
+        }
+
+        context("decimalCount") {
+            test("truncates decimals in the decimal count") {
+                guiRun { frame.spinner("decimalCount").target().value = 693.57f }
+
+                frame.spinner("decimalCount").requireValue(693)
+            }
+        }
+
+        context("groupingSeparator") {
+            context("enforces the length filter") {
+                beforeNonContainer {
+                    guiRun { frame.checkBox("groupingSeparatorEnabled").target().isSelected = true }
+                }
+
+
+                test("enforces a minimum length of 1") {
+                    guiRun { frame.comboBox("groupingSeparator").target().editor.item = "" }
+
+                    frame.comboBox("groupingSeparator").requireSelection(",")
+                }
+
+                test("enforces a maximum length of 1") {
+                    guiRun { frame.comboBox("groupingSeparator").target().editor.item = "long" }
+
+                    frame.comboBox("groupingSeparator").requireSelection(",")
+                }
+            }
+
+            context("enabled state") {
+                test("enables the input if the checkbox is selected") {
+                    guiRun { frame.checkBox("groupingSeparatorEnabled").target().isSelected = true }
+
+                    frame.comboBox("groupingSeparator").requireEnabled()
+                }
+
+                test("disables the input if the checkbox is not selected") {
+                    guiRun { frame.checkBox("groupingSeparatorEnabled").target().isSelected = false }
+
+                    frame.comboBox("groupingSeparator").requireDisabled()
+                }
+            }
+        }
+    }
+
+
+    include(editorApplyTestFactory { editor })
+
+    include(
+        editorFieldsTestFactory(
+            { editor },
+            mapOf(
+                "minValue" to {
+                    row(
+                        frame.spinner("minValue").valueProp(),
+                        editor.scheme::minValue.prop(),
+                        189.0,
+                    )
+                },
+                "maxValue" to {
+                    row(
+                        frame.spinner("maxValue").valueProp(),
+                        editor.scheme::maxValue.prop(),
+                        200.0,
+                    )
+                },
+                "decimalCount" to {
+                    row(
+                        frame.spinner("decimalCount").valueProp(),
+                        editor.scheme::decimalCount.prop(),
+                        4L,
+                    )
+                },
+                "showTrailingZeroes" to {
+                    row(
+                        frame.checkBox("showTrailingZeroes").isSelectedProp(),
+                        editor.scheme::showTrailingZeroes.prop(),
+                        true,
+                    )
+                },
+                "decimalSeparator" to {
+                    row(
+                        frame.comboBox("decimalSeparator").textProp(),
+                        editor.scheme::decimalSeparator.prop(),
+                        "|",
+                    )
+                },
+                "groupingSeparatorEnabled" to {
+                    row(
+                        frame.checkBox("groupingSeparatorEnabled").isSelectedProp(),
+                        editor.scheme::groupingSeparatorEnabled.prop(),
+                        true,
+                    )
+                },
+                "groupingSeparator" to {
+                    row(
+                        frame.comboBox("groupingSeparator").textProp(),
+                        editor.scheme::groupingSeparator.prop(),
+                        "/",
+                    )
+                },
+                "affixDecorator" to {
+                    row(
+                        frame.comboBox("affixDescriptor").textProp(),
+                        editor.scheme.affixDecorator::descriptor.prop(),
+                        "[@]",
+                    )
+                },
+                "arrayDecorator" to {
+                    row(
+                        frame.spinner("arrayMaxCount").valueProp(),
+                        editor.scheme.arrayDecorator::maxCount.prop(),
+                        7,
+                    )
+                },
+            )
+        )
+    )
+})

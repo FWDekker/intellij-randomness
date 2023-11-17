@@ -1,141 +1,91 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.DummyInsertAction
-import com.intellij.util.ui.CollectionItemEditor
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.Tags
+import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.find
+import com.fwdekker.randomness.testhelpers.guiGet
+import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.matcher
+import com.intellij.openapi.util.Disposer
+import com.intellij.testFramework.fixtures.IdeaTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import com.intellij.ui.InplaceButton
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
-import java.util.ResourceBundle
-import javax.swing.ButtonGroup
-import javax.swing.JCheckBox
-import javax.swing.JRadioButton
-import javax.swing.JSpinner
 
 
 /**
  * Unit tests for [PreviewPanel].
  */
-object PreviewPanelTest : Spek({
-    var action: DummyInsertAction? = null
+object PreviewPanelTest : FunSpec({
+    tags(Tags.IDEA_FIXTURE, Tags.SWING)
 
-    val placeholder = ResourceBundle.getBundle("randomness").getString("settings.placeholder")
-    val randomText = "random_value"
 
+    lateinit var ideaFixture: IdeaTestFixture
     lateinit var panel: PreviewPanel
     lateinit var frame: FrameFixture
 
+    var scheme: DummyScheme? = null
+    val placeholder = Bundle("preview.placeholder")
 
-    beforeGroup {
+
+    beforeContainer {
         FailOnThreadViolationRepaintManager.install()
     }
 
-    beforeEachTest {
-        panel = GuiActionRunner.execute<PreviewPanel> {
-            PreviewPanel { DummyInsertAction { randomText }.also { action = it } }
-        }
-        frame = Containers.showInFrame(panel.rootPane)
+    beforeNonContainer {
+        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
+        ideaFixture.setUp()
 
-        assertThat(frame.textBox("previewLabel").text()).isEqualTo(placeholder)
+        panel = guiGet { PreviewPanel { DummyScheme().also { scheme = it } } }
+        frame = Containers.showInFrame(panel.rootComponent)
+
+        panel.previewText shouldBe placeholder
     }
 
-    afterEachTest {
+    afterNonContainer {
         frame.cleanUp()
+        guiRun { Disposer.dispose(panel) }
+        ideaFixture.tearDown()
     }
 
 
-    describe("updatePreview") {
-        it("updates the label's contents") {
-            GuiActionRunner.execute { panel.updatePreview() }
+    context("updatePreview") {
+        test("updates the label's contents") {
+            guiRun { panel.updatePreview() }
 
-            assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
+            panel.previewText shouldBe "text0"
         }
     }
 
-    describe("updatePreviewOnUpdateOf") {
-        it("updates when a JSpinner is updated") {
-            GuiActionRunner.execute {
-                val spinner = JSpinner()
-                panel.updatePreviewOnUpdateOf(spinner)
-                spinner.value = 5
-            }
+    context("seed") {
+        test("reuses the old seed if the button is not pressed") {
+            guiRun { panel.updatePreview() }
+            val oldRandom = scheme?.random
 
-            assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
+            guiRun { panel.updatePreview() }
+            val newRandom = scheme?.random
+
+            newRandom?.nextInt() shouldBe oldRandom?.nextInt()
         }
 
-        it("updates when a JCheckBox is updated") {
-            GuiActionRunner.execute {
-                val spinner = JCheckBox()
-                panel.updatePreviewOnUpdateOf(spinner)
-                spinner.isSelected = true
-            }
+        test("uses a new seed when the button is pressed") {
+            guiRun { panel.updatePreview() }
+            val oldRandom = scheme?.random
 
-            assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
-        }
+            guiRun { frame.find(matcher(InplaceButton::class.java)).doClick() }
 
-        // Requires dependency on IntelliJ classes
-        xit("updates when an activity table is updated") {
-            GuiActionRunner.execute {
-                val itemEditor = object : CollectionItemEditor<EditableDatum<String>> {
-                    override fun getItemClass() = EditableDatum(false, "")::class.java
+            guiRun { panel.updatePreview() }
+            val newRandom = scheme?.random
 
-                    override fun clone(item: EditableDatum<String>, forInPlaceEditing: Boolean) =
-                        EditableDatum(item.active, item.datum)
-                }
-                val table = object : ActivityTableModelEditor<String>(arrayOf(), itemEditor, "", "") {}
-
-                panel.updatePreviewOnUpdateOf(table)
-                table.data = listOf("a")
-            }
-
-            assertThat(frame.textBox("previewLabel").text()).isEqualTo(randomText)
-        }
-
-        it("updates when a group of JRadioButtons is updated") {
-            GuiActionRunner.execute {
-                val group = ButtonGroup()
-                JRadioButton("a").also { group.add(it) }
-                JRadioButton("b").also { group.add(it) }
-                JRadioButton("c").also { group.add(it) }
-
-                panel.updatePreviewOnUpdateOf(group)
-                group.buttons()[1].isSelected = true
-            }
-        }
-
-        it("throws an exception if the component type is unknown") {
-            assertThatThrownBy { panel.updatePreviewOnUpdateOf("string") }
-                .isInstanceOf(IllegalArgumentException::class.java)
-        }
-    }
-
-    describe("seed") {
-        it("reuses the old seed if the button is not pressed") {
-            GuiActionRunner.execute { panel.updatePreview() }
-            val oldRandom = action?.random
-
-            GuiActionRunner.execute { panel.updatePreview() }
-            val newRandom = action?.random
-
-            assertThat(newRandom?.nextInt()).isEqualTo(oldRandom?.nextInt())
-        }
-
-        it("uses a new seed when the button is pressed") {
-            GuiActionRunner.execute { panel.updatePreview() }
-            val oldRandom = action?.random
-
-            GuiActionRunner.execute {
-                frame.button("refreshButton").target().mouseListeners.forEach { it.mouseClicked(null) }
-            }
-
-            GuiActionRunner.execute { panel.updatePreview() }
-            val newRandom = action?.random
-
-            assertThat(newRandom?.nextInt()).isNotEqualTo(oldRandom?.nextInt())
+            newRandom?.nextInt() shouldNotBe oldRandom?.nextInt()
         }
     }
 })

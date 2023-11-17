@@ -1,81 +1,80 @@
 package com.fwdekker.randomness
 
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import com.fwdekker.randomness.testhelpers.matchBundle
+import io.kotest.assertions.retry
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldBeEqualIgnoringCase
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.minutes
 
 
 /**
  * Unit tests for [CapitalizationMode].
  */
-object CapitalizationModeTest : Spek({
-    describe("transform") {
-        describe("retain mode") {
-            it("does nothing to a string") {
-                assertThat(CapitalizationMode.RETAIN.transform("AwfJYzzUoR")).isEqualTo("AwfJYzzUoR")
+object CapitalizationModeTest : FunSpec({
+    val random = Random.Default
+
+
+    context("transform") {
+        context("retain mode") {
+            test("does nothing to a string") {
+                CapitalizationMode.RETAIN.transform("LOREm IpSuM", random) shouldBe "LOREm IpSuM"
             }
         }
 
-        describe("sentence mode") {
-            it("does nothing to an empty string") {
-                assertThat(CapitalizationMode.SENTENCE.transform("")).isEqualTo("")
+        context("sentence mode") {
+            test("does nothing to an empty string") {
+                CapitalizationMode.SENTENCE.transform("", random) shouldBe ""
             }
 
-            it("changes a string to sentence case") {
-                assertThat(CapitalizationMode.SENTENCE.transform("cOoKiE cAN")).isEqualTo("Cookie can")
-            }
-        }
-
-        describe("uppercase mode") {
-            it("changes all characters to uppercase") {
-                assertThat(CapitalizationMode.UPPER.transform("vAnDaLisM")).isEqualTo("VANDALISM")
+            test("changes a string to sentence case") {
+                CapitalizationMode.SENTENCE.transform("LOrEM ipsUm", random) shouldBe "Lorem ipsum"
             }
         }
 
-        describe("lowercase mode") {
-            it("changes all characters to lowercase") {
-                assertThat(CapitalizationMode.LOWER.transform("ChAnnEl")).isEqualTo("channel")
+        context("uppercase mode") {
+            test("changes all characters to uppercase") {
+                CapitalizationMode.UPPER.transform("LoREm iPSUM", random) shouldBe "LOREM IPSUM"
             }
         }
 
-        describe("first letter mode") {
-            it("changes all first letters to uppercase") {
-                assertThat(CapitalizationMode.FIRST_LETTER.transform("bgiOP SMQpR")).isEqualTo("Bgiop Smqpr")
+        context("lowercase mode") {
+            test("changes all characters to lowercase") {
+                CapitalizationMode.LOWER.transform("lorEm IpSUM", random) shouldBe "lorem ipsum"
             }
         }
 
-        describe("random mode") {
-            it("changes the capitalization to something else") {
-                assertThat(CapitalizationMode.RANDOM.transform("GHmdukhNqua"))
-                    .isNotEqualTo("GHmdukhNqua") // Has a chance of 0.002% of failing
-                    .isEqualToIgnoringCase("GHmdukhNqua")
+        context("first letter mode") {
+            test("changes all first letters to uppercase") {
+                CapitalizationMode.FIRST_LETTER.transform("lOReM IPSum", random) shouldBe "Lorem Ipsum"
+            }
+        }
+
+        context("random mode") {
+            test("changes the capitalization to something else") {
+                retry(100, 1.minutes) {
+                    val input = "lOReM ipsUm"
+                    val output = CapitalizationMode.RANDOM.transform(input, random)
+
+                    output shouldNotBe input // Has a chance of 0.002% of failing
+                    output shouldBeEqualIgnoringCase input
+                }
+            }
+
+            test("produces reproducibly random strings") {
+                val transform = { CapitalizationMode.RANDOM.transform("lorem ipsum", Random(0)) }
+
+                transform() shouldBe transform()
             }
         }
     }
 
-    describe("descriptor") {
-        it("returns the name") {
-            assertThat(CapitalizationMode.LOWER.descriptor).isEqualTo("lower")
-        }
-    }
-
-    describe("toString") {
-        it("returns the name in the toString method") {
-            assertThat(CapitalizationMode.LOWER.toString()).isEqualTo("lower")
-        }
-    }
-
-    describe("finding mode by descriptor") {
-        it("returns the capitalization mode based on its descriptor") {
-            assertThat(CapitalizationMode.getMode("sentence")).isEqualTo(CapitalizationMode.SENTENCE)
-        }
-
-        it("throws an exception if the descriptor is not recognized") {
-            assertThatThrownBy { CapitalizationMode.getMode("") }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("There does not exist a capitalization mode with name ``.")
-                .hasNoCause()
+    context("toLocalizedString") {
+        test("returns the associated localized string") {
+            CapitalizationMode.FIRST_LETTER.toLocalizedString() should matchBundle("shared.capitalization.first_letter")
         }
     }
 })

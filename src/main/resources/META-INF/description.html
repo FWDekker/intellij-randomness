@@ -1,46 +1,47 @@
-Insert random numbers, strings, and UUIDs using an IntelliJ action.<br />
+Insert random numbers, UUIDs, names, IP addresses, and much more using an IntelliJ action.<br />
 <br />
-To insert random data, press <kbd>Alt + R</kbd> (<kbd>⌥R</kbd>) and choose the type of data you want to insert.
-A different value will be inserted at each caret.<br />
-<br />
-<img src="https://user-images.githubusercontent.com/13442533/72684774-bd87c400-3ae3-11ea-9e68-f6e36c0e5ba1.gif"
-     alt="Animated sample usage of Randomness." />
+To insert random data, press <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) to open the list of available templates and choose
+one that suits your task.
+By default, a different value is inserted at each caret.
 
 <h2>🕸 Data Types</h2>
-There are five types of data that can be inserted:
+There are six basic data types that can be inserted and customised:
 <ol>
-    <li><b>Integers</b>, such as <tt>7,826,922</tt>, in any base from binary to hexatrigesimal.</li>
+    <li><b>Integers</b>, such as <tt>7,826,922</tt>, from a custom range, in any base from binary to hexatrigesimal.</li>
     <li><b>Decimals</b>, such as <tt>8,816,573.10</tt>, using customisable separators.</li>
-    <li><b>Strings</b>, such as <tt>"PaQDQqSBEH"</tt>, with custom symbol lists.</li>
-    <li><b>Words</b>, such as <tt>"Bridge"</tt>, with custom word lists.</li>
+    <li><b>Strings</b>, such as <tt>"PaQDQqSBEH"</tt>, with support for reverse regex.</li>
+    <li><b>Words</b>, such as <tt>"Bridge"</tt>, with predefined or custom word lists.</li>
     <li><b>UUIDs</b>, such as <tt>0caa7b28-fe58-4ba6-a25a-9e5beaaf8f4b</tt>, with or without dashes.</li>
+    <li><b>Date-times</b>, such as <tt>2022-02-03 19:03</tt>, or any other format you want.</li>
 </ol>
 
-In addition to these data types, it's also possible to generate entire <b>arrays</b> of a data type.
+<h2>🧬 Templates</h2>
+For complex kinds of data, you can use templates.
+A template is a list of data types that should be concatenated to create random data.
+Insert <b>phone numbers</b>, <b>email addresses</b>, <b>URLs</b>, <b>IP addresses</b>, or any <b>custom data type</b>
+you can think of.
+Of course, Randomness comes bundled with a whole array of predefined templates to help you out.
+If needed, you can reuse a template by including it in another template using a <b>reference</b>.
+
+<h2>🗃️ Arrays</h2>
+Need a lot of data?
+Insert an <b>entire array</b> of any template you want.
 For example, an array of integers might look like <tt>[978, 881, 118, 286, 288]</tt>.
+You can customise the brackets, delimiter, and number of elements to your liking every time you insert an array,
+because no two arrays are the same.
 
-<h2>⚙ Settings</h2>
-The way the data is generated can be <b>adjusted to your demands</b>.
-You can customise the smallest integer to generate, the quotation marks to surround strings with, the number of elements
-to put in an array, the decimal separator to use, the capitalisation of strings and UUIDs, and much more.
-
-<h2>👀 Previews</h2>
-To <b>help you decide</b> what settings to choose, a preview of the data that is generated with your current settings is
-shown at the bottom of the settings window.
-
-<h2>💨 Shortcuts</h2>
+<h2>⌨ Shortcuts</h2>
 Instead of using up all your shortcuts, Randomness only uses the <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) shortcut by
 default.
-However, you have the option to assign a unique shortcut to each individual data type and each settings window to
-<b>streamline your workflow</b>.
+However, to <b>streamline your workflow</b>, you can assign shortcuts to any template under your IDE's <kbd>Keymap</kbd>
+settings.
 
-<h2>💬 Symbol sets</h2>
-While Randomness comes with a varied selection of symbols to use for generating strings, it also gives you the option to
-<b>add your own symbols</b>, with support for Chinese symbols and emoji.
+<h2>💨 Fast insertion</h2>
+The insertion popup (shown when you press <kbd>Alt + R</kbd> (or <kbd>⌥R</kbd>) by default) is <b>searchable</b>:
+Just type something in the popup and relevant templates will be filtered out.
+Or use the <b>hotkeys</b> that are assigned to the first 10 templates in the list:
+Press any digit to directly insert the corresponding template.
+<b>Reorder templates</b> in the settings menu to change which template uses which hotkey.
 
-<h2>📚 Dictionaries</h2>
-Randomness is bundled with a small English dictionary from which it chooses random words.
-However, you may want to add random words from another language or insert random movie quotes.
-You can <b>create your own dictionaries</b> by creating a text file and putting one option on each line, and saving the
-file with the <tt>.dic</tt> extension.
-Empty lines and lines that start with a <tt>#</tt> are ignored.
+<h2>👀 Previews</h2>
+To <b>help you decide</b> what settings to choose, a preview of the template is shown while you're editing.

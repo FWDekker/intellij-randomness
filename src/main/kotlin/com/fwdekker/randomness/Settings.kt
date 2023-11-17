@@ -1,102 +1,55 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.PersistentSettings.Companion.CURRENT_VERSION
+import com.fwdekker.randomness.template.Template
+import com.fwdekker.randomness.template.TemplateList
 import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.components.SettingsCategory
+import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.service
+import com.intellij.util.xmlb.XmlSerializer
+import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Transient
+import org.jdom.Element
+import java.lang.module.ModuleDescriptor.Version
+import com.intellij.openapi.components.State as JBState
 
 
 /**
- * Settings are composed of [Scheme]s and persist these over IDE restarts.
+ * Contains references to various [State] objects.
  *
- * @param SELF the type of settings that should be persisted; should be a self reference
- * @param SCHEME the type of scheme that the settings consist of
+ * @property version The version of Randomness with which these settings were created.
+ * @property templateList The template list.
  */
-interface Settings<SELF : Any, SCHEME : Scheme<SCHEME>> : PersistentStateComponent<SELF> {
+data class Settings(
+    var version: String = CURRENT_VERSION,
+    @OptionTag
+    val templateList: TemplateList = TemplateList(),
+) : State() {
     /**
-     * The various schemes that are contained within the settings.
+     * @see TemplateList.templates
      */
-    var schemes: MutableList<SCHEME>
-
-    /**
-     * The name of the scheme that is currently active.
-     */
-    var currentSchemeName: String
+    @get:Transient
+    val templates: MutableList<Template> get() = templateList.templates
 
 
-    /**
-     * The instance of the scheme that is currently active.
-     *
-     * This field is backed by [currentSchemeName]. If [currentSchemeName] refers to a scheme that is not contained in
-     * [schemes], `get`ting this field will throw an exception.
-     */
-    @Suppress("UseCheckOrError") // This is shorter and faster
-    var currentScheme: SCHEME
-        @Transient
-        get() = schemes.firstOrNull { it.name == currentSchemeName }
-            ?: throw IllegalStateException("Current scheme does not exist.")
-        set(value) {
-            currentSchemeName = value.name
-        }
+    init {
+        applyContext(this)
+    }
 
 
-    /**
-     * Returns a deep copy of the settings and the contained schemes.
-     *
-     * @return a deep copy of the settings and the contained schemes
-     */
-    fun deepCopy(): SELF
-
-    /**
-     * Returns `this`.
-     *
-     * @return `this`
-     */
-    override fun getState(): SELF
-
-    /**
-     * Copies the fields of `state` to `this`.
-     *
-     * @param state the state to load into `this`
-     */
-    override fun loadState(state: SELF)
-}
+    override fun applyContext(context: Box<Settings>) {
+        super.applyContext(context)
+        templateList.applyContext(context)
+    }
 
 
-/**
- * A scheme is a collection of configurable values.
- *
- * In a typical use case a user can quickly switch between instances of schemes of the same type to change the "preset"
- * or "configuration" that is currently being used.
- *
- * @param SELF the type of scheme that is stored; should be a self reference
- * @see Settings
- */
-interface Scheme<SELF> : com.intellij.openapi.options.Scheme {
-    /**
-     * The name of the scheme, used to identify it.
-     */
-    var myName: String
+    override fun doValidate() = templateList.doValidate()
 
-
-    /**
-     * Same as [myName].
-     */
-    override fun getName() = myName
-
-
-    /**
-     * Shallowly copies the state of [other] into `this`.
-     *
-     * @param other the state to copy into `this`
-     */
-    fun copyFrom(other: SELF)
-
-    /**
-     * Returns a copy of this scheme that has the given name.
-     *
-     * @param name the name to give to the copy
-     * @return a copy of this scheme that has the given name
-     */
-    fun copyAs(name: String): SELF
+    override fun deepCopy(retainUuid: Boolean) =
+        copy(templateList = templateList.deepCopy(retainUuid = retainUuid))
+            .deepCopyTransient(retainUuid)
+            .also { it.applyContext(it) }
 
 
     /**
@@ -104,8 +57,75 @@ interface Scheme<SELF> : com.intellij.openapi.options.Scheme {
      */
     companion object {
         /**
-         * The name of the default scheme.
+         * The persistent [Settings] instance.
          */
-        const val DEFAULT_NAME = "Default"
+        val DEFAULT: Settings
+            get() = service<PersistentSettings>().settings
+    }
+}
+
+/**
+ * The persistent [Settings] instance, stored as an [Element] to allow custom conversion for backwards compatibility.
+ *
+ * @see Settings.DEFAULT Preferred method of accessing the persistent settings instance.
+ */
+@JBState(
+    name = "Randomness",
+    storages = [
+        Storage("randomness-beta.xml", deprecated = true, exportable = true),
+        Storage("randomness3.xml", exportable = true),
+    ],
+    category = SettingsCategory.PLUGINS,
+)
+class PersistentSettings : PersistentStateComponent<Element> {
+    /**
+     * The [Settings] that should be persisted.
+     *
+     * @see Settings.DEFAULT Preferred method of accessing the persistent settings instance.
+     */
+    var settings = Settings()
+
+
+    /**
+     * Returns the [settings] as an [Element].
+     */
+    override fun getState(): Element = XmlSerializer.serialize(settings)
+
+    /**
+     * Deserializes [element] into a [Settings] instance, which is then stored in [settings].
+     */
+    override fun loadState(element: Element) {
+        settings = XmlSerializer.deserialize(upgrade(element), Settings::class.java)
+    }
+
+
+    /**
+     * Silently upgrades the format of the settings contained in [element] to the format of the latest version.
+     */
+    private fun upgrade(element: Element): Element {
+        val elementVersion = element.getAttributeValueByName("version")?.let { Version.parse(it) }
+
+        when {
+            elementVersion == null -> Unit
+
+            // Placeholder to show how an upgrade might work. Remove this once an actual upgrade has been added.
+            elementVersion < Version.parse("0.0.0-placeholder") ->
+                element.getContentByPath("templateList", null, "templates", null)?.getElements()
+                    ?.forEachIndexed { idx, template -> template.setAttributeValueByName("name", "Template$idx") }
+        }
+
+        element.setAttributeValueByName("version", CURRENT_VERSION)
+        return element
+    }
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The currently-running version of Randomness.
+         */
+        const val CURRENT_VERSION: String = "3.0.0" // Synchronize this with the version in `gradle.properties`
     }
 }

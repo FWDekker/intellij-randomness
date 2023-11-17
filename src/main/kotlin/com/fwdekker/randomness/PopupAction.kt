@@ -1,72 +1,72 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.array.ArraySettingsAction
-import com.fwdekker.randomness.decimal.DecimalGroupAction
-import com.fwdekker.randomness.decimal.DecimalSettingsAction
-import com.fwdekker.randomness.integer.IntegerGroupAction
-import com.fwdekker.randomness.integer.IntegerSettingsAction
-import com.fwdekker.randomness.string.StringGroupAction
-import com.fwdekker.randomness.string.StringSettingsAction
-import com.fwdekker.randomness.ui.registerModifierActions
-import com.fwdekker.randomness.uuid.UuidGroupAction
-import com.fwdekker.randomness.uuid.UuidSettingsAction
-import com.fwdekker.randomness.word.WordGroupAction
-import com.fwdekker.randomness.word.WordSettingsAction
+import com.fwdekker.randomness.template.TemplateGroupAction
+import com.fwdekker.randomness.template.TemplateSettingsAction
 import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.popup.list.ListPopupImpl
-import icons.RandomnessIcons
 import java.awt.event.ActionEvent
+import java.awt.event.KeyEvent
+import java.util.Locale
+import javax.swing.AbstractAction
+import javax.swing.KeyStroke
 
 
 /**
  * Shows a popup for all available Randomness actions.
  */
-class PopupAction : AnAction() {
+class PopupAction : AnAction(Icons.RANDOMNESS) {
     /**
-     * Whether the user focused the editor when opening this popup.
+     * `true` if and only if the user focused a non-viewer editor when opening this popup.
      */
-    private var hasEditor: Boolean = true
+    private var isEditable: Boolean = true
 
+
+    /**
+     * Specifies the thread in which [update] is invoked.
+     */
+    override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
     /**
      * Sets the icon of this action.
      *
-     * @param event carries information on the invocation place
+     * @param event carries contextual information
      */
     override fun update(event: AnActionEvent) {
-        event.presentation.icon = RandomnessIcons.Data.Base
-        hasEditor = event.getData(CommonDataKeys.EDITOR) != null
+        event.presentation.icon = Icons.RANDOMNESS
+
+        // Running this in [actionPerformed] always sets it to `true`
+        isEditable = event.getData(CommonDataKeys.EDITOR)?.document?.isWritable == true
     }
 
     /**
      * Displays a popup with all actions provided by Randomness.
      *
-     * @param event carries information on the invocation place
+     * @param event carries contextual information
      */
     override fun actionPerformed(event: AnActionEvent) {
-        val popupGroup = if (hasEditor) PopupGroup() else SettingsOnlyPopupGroup()
+        val popupGroup = if (isEditable) PopupGroup() else SettingsOnlyPopupGroup()
         val popup = JBPopupFactory.getInstance()
             .createActionGroupPopup(
-                TITLE, popupGroup, event.dataContext,
-                JBPopupFactory.ActionSelectionAid.NUMBERING,
+                Bundle("popup.title"), popupGroup, event.dataContext,
+                JBPopupFactory.ActionSelectionAid.ALPHA_NUMBERING,
                 true
             )
             as ListPopupImpl
 
-        popup.speedSearch.setEnabled(false)
-        if (hasEditor) {
-            popup.setCaption(TITLE)
-            popup.setAdText(AD_TEXT)
+        if (isEditable) {
+            popup.setCaption(Bundle("popup.title"))
+            popup.setAdText(Bundle("popup.ad"))
             popup.registerModifierActions { this.captionModifier(it) }
         } else {
-            popup.setCaption(CTRL_TITLE)
-            popup.setAdText("Editor is not selected. Displaying settings only.")
-            popup.registerModifierActions { CTRL_TITLE }
+            popup.setCaption(Bundle("popup.title.ctrl"))
+            popup.setAdText(Bundle("popup.ad.settings_only"))
+            popup.registerModifierActions { Bundle("popup.title.ctrl") }
         }
 
         popup.showInBestPositionFor(event.dataContext)
@@ -74,12 +74,9 @@ class PopupAction : AnAction() {
 
 
     /**
-     * Returns the desired title for the popup given an event.
-     *
-     * @param event the event on which the title should be based
-     * @return the desired title for the popup given an event
+     * Returns the desired title for the popup given [event].
      */
-    @Suppress("ComplexMethod") // Cannot be simplified
+    @Suppress("detekt:ComplexMethod") // Cannot be simplified
     private fun captionModifier(event: ActionEvent?): String {
         val modifiers = event?.modifiers ?: 0
         val altPressed = modifiers and ActionEvent.ALT_MASK != 0
@@ -87,58 +84,46 @@ class PopupAction : AnAction() {
         val shiftPressed = modifiers and ActionEvent.SHIFT_MASK != 0
 
         return when {
-            altPressed && ctrlPressed && shiftPressed -> ALT_CTRL_SHIFT_TITLE
-            altPressed && ctrlPressed -> ALT_CTRL_TITLE
-            altPressed && shiftPressed -> ALT_SHIFT_TITLE
-            ctrlPressed && shiftPressed -> CTRL_SHIFT_TITLE
-            altPressed -> ALT_TITLE
-            ctrlPressed -> CTRL_TITLE
-            shiftPressed -> SHIFT_TITLE
-            else -> TITLE
+            altPressed && ctrlPressed && shiftPressed -> Bundle("popup.title.alt_ctrl_shift")
+            altPressed && ctrlPressed -> Bundle("popup.title.alt_ctrl")
+            altPressed && shiftPressed -> Bundle("popup.title.alt_shift")
+            ctrlPressed && shiftPressed -> Bundle("popup.title.ctrl_shift")
+            altPressed -> Bundle("popup.title.alt")
+            ctrlPressed -> Bundle("popup.title.ctrl")
+            shiftPressed -> Bundle("popup.title.shift")
+            else -> Bundle("popup.title")
         }
     }
 
 
     /**
-     * The `ActionGroup` containing all Randomness actions.
+     * The [ActionGroup] containing all Randomness actions.
      */
     private class PopupGroup : ActionGroup() {
         /**
          * Returns all group actions.
          *
-         * @param event carries information on the invocation place
+         * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
-            arrayOf(
-                IntegerGroupAction(),
-                DecimalGroupAction(),
-                StringGroupAction(),
-                WordGroupAction(),
-                UuidGroupAction(),
-                Separator(),
-                ArraySettingsAction()
-            )
+            Settings.DEFAULT.templates.map { TemplateGroupAction(it) }.toTypedArray<AnAction>() +
+                Separator() +
+                TemplateSettingsAction()
     }
 
     /**
-     * The `ActionGroup` containing only settings-related actions.
+     * The [ActionGroup] containing only settings-related actions.
      */
     private class SettingsOnlyPopupGroup : ActionGroup() {
         /**
          * Returns all settings actions.
          *
-         * @param event carries information on the invocation place
+         * @param event carries contextual information
          */
         override fun getChildren(event: AnActionEvent?) =
-            arrayOf(
-                IntegerSettingsAction(),
-                DecimalSettingsAction(),
-                StringSettingsAction(),
-                WordSettingsAction(),
-                UuidSettingsAction(),
-                Separator(),
-                ArraySettingsAction()
-            )
+            Settings.DEFAULT.templates.map { TemplateSettingsAction(it) }.toTypedArray<AnAction>() +
+                Separator() +
+                TemplateSettingsAction()
     }
 
 
@@ -147,48 +132,111 @@ class PopupAction : AnAction() {
      */
     companion object {
         /**
-         * The default popup title.
+         * Returns the mnemonic for the entry at the [index]th row.
+         *
+         * @see JBPopupFactory.ActionSelectionAid.ALPHA_NUMBERING
          */
-        const val TITLE = "Insert Data"
+        fun indexToMnemonic(index: Int) =
+            (('1'..'9') + '0' + ('A'..'Z')).getOrNull(index)
+    }
+}
 
-        /**
-         * The popup title while the alt key is held down.
-         */
-        const val ALT_TITLE = "Insert Repeated Data"
 
-        /**
-         * The popup title when the alt and control keys are held down.
-         */
-        const val ALT_CTRL_TITLE = "Quick Switch Scheme"
+/**
+ * An [AbstractAction] that uses [myActionPerformed] as the implementation of its [actionPerformed] method.
+ *
+ * @param myActionPerformed the code to execute in [actionPerformed]
+ */
+private class SimpleAbstractAction(private val myActionPerformed: (ActionEvent?) -> Unit) : AbstractAction() {
+    /**
+     * @see myActionPerformed
+     */
+    override fun actionPerformed(event: ActionEvent?) = myActionPerformed(event)
+}
 
-        /**
-         * The popup title when the alt, control, and shift keys are held down.
-         */
-        const val ALT_CTRL_SHIFT_TITLE = "Quick Switch Array Scheme"
+/**
+ * Returns the cartesian product of [this] and [other].
+ *
+ * By requiring both lists to actually be lists of lists, this method can be chained.
+ *
+ * Consider the following examples, using a simplified notation for lists for readability:
+ * ```
+ * $ [[1, 2]] * [[3, 4]]
+ * [[1, 3], [1, 4], [2, 3], [2, 4]]
+ *
+ * $ [[1, 2]] * [[3, 4]] * [[5, 6]]
+ * [[1, 3, 5], [1, 3, 6], [1, 4, 5], [1, 4, 6], [2, 3, 5], [2, 3, 6], [2, 4, 5], [2, 4, 6]]
+ * ```
+ */
+private operator fun <E> List<List<E>>.times(other: List<List<E>>) =
+    this.flatMap { t1 -> other.map { t2 -> t1 + t2 } }
 
-        /**
-         * The popup title when the alt and shift keys are held down.
-         */
-        const val ALT_SHIFT_TITLE = "Insert Repeated Array"
+/**
+ * Registers actions such that actions can be selected while holding (combinations of) modifier keys.
+ *
+ * All combinations of modifier keys are registered for events. Additionally, the [captionModifier] function is invoked
+ * every time the user presses or releases any modifier key, even while holding other modifier keys.
+ *
+ * Events are also registered for pressing the Enter key (with or without modifier keys) to invoke the action that is
+ * currently highlighted, and for pressing one of the numbers 1-9 (with or without modifier keys) to invoke the action
+ * at that index in the popup.
+ *
+ * @param captionModifier returns the caption to set based on the event
+ */
+fun ListPopupImpl.registerModifierActions(captionModifier: (ActionEvent?) -> String) {
+    val modifiers = listOf(listOf("alt"), listOf("control"), listOf("shift"))
+    val optionalModifiers = listOf(listOf("")) + modifiers
 
-        /**
-         * The popup title when the control key is held down.
-         */
-        const val CTRL_TITLE = "Change Settings"
+    (modifiers * optionalModifiers * optionalModifiers).forEach { (a, b, c) ->
+        registerAction(
+            "${a}${b}${c}Released",
+            KeyStroke.getKeyStroke("$b $c released ${a.uppercase(Locale.getDefault())}"),
+            SimpleAbstractAction { setCaption(captionModifier(it)) }
+        )
+        registerAction(
+            "${a}${b}${c}Pressed",
+            KeyStroke.getKeyStroke("$a $b $c pressed ${a.uppercase(Locale.getDefault())}"),
+            SimpleAbstractAction { setCaption(captionModifier(it)) }
+        )
+        registerAction(
+            "${a}${b}${c}invokeAction",
+            KeyStroke.getKeyStroke("$a $b $c pressed ENTER"),
+            SimpleAbstractAction { event ->
+                event ?: return@SimpleAbstractAction
 
-        /**
-         * The popup title when the control and shift keys are held down.
-         */
-        const val CTRL_SHIFT_TITLE = "Change Array Settings"
+                handleSelect(
+                    true,
+                    KeyEvent(
+                        component,
+                        event.id, event.getWhen(), event.modifiers,
+                        KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED, KeyEvent.KEY_LOCATION_UNKNOWN
+                    )
+                )
+            }
+        )
 
-        /**
-         * The popup title when the shift key is held down.
-         */
-        const val SHIFT_TITLE = "Insert Array"
+        @Suppress("detekt:ForEachOnRange") // Not relevant for such small numbers
+        (0 until list.model.size)
+            .associateWith { PopupAction.indexToMnemonic(it) }
+            .filterValues { it != null }
+            .forEach { (index, mnemonic) ->
+                registerAction(
+                    "${a}${b}${c}invokeAction$mnemonic",
+                    KeyStroke.getKeyStroke("$a $b $c pressed $mnemonic"),
+                    SimpleAbstractAction { event ->
+                        event ?: return@SimpleAbstractAction
 
-        /**
-         * The text shown at the bottom of the popup.
-         */
-        const val AD_TEXT = "Shift = Array. Ctrl = Settings. Alt = Repeat."
+                        list.addSelectionInterval(index, index)
+                        handleSelect(
+                            true,
+                            KeyEvent(
+                                component,
+                                event.id, event.getWhen(), event.modifiers,
+                                KeyEvent.VK_ENTER, KeyEvent.CHAR_UNDEFINED, KeyEvent.KEY_LOCATION_UNKNOWN
+                            )
+                        )
+                    }
+                )
+            }
     }
 }
