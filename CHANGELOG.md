@@ -1,4 +1,8 @@
 # Changelog
+## Unreleased
+(empty)
+
+
 ## 3.0.0 -- 2023-11-17
 This release brings a major overhaul of how data is generated, allowing you to create your own data types such as IP
 addresses or entire JSON objects.
