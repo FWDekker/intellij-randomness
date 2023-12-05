@@ -126,6 +126,6 @@ class PersistentSettings : PersistentStateComponent<Element> {
         /**
          * The currently-running version of Randomness.
          */
-        const val CURRENT_VERSION: String = "3.0.0" // Synchronize this with the version in `gradle.properties`
+        const val CURRENT_VERSION: String = "3.0.0-next" // Synchronize this with the version in `gradle.properties`
     }
 }
