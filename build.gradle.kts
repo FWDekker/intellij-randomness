@@ -2,6 +2,11 @@ import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
+import org.jetbrains.dokka.DokkaConfiguration.Visibility
+import org.jetbrains.dokka.base.DokkaBase
+import org.jetbrains.dokka.base.DokkaBaseConfiguration
+import org.jetbrains.dokka.versioning.VersioningConfiguration
+import org.jetbrains.dokka.versioning.VersioningPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 import java.time.Year
@@ -12,18 +17,25 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    id("org.jetbrains.kotlin.jvm") version "1.9.20"  // Use latest version, ignoring `gradle.properties`
-    id("org.jetbrains.intellij") version "1.16.0"
+    id("org.jetbrains.kotlin.jvm") version "1.9.21"  // Use latest version, ignoring `gradle.properties`
+    id("org.jetbrains.intellij") version "1.16.1"
 
     // Tests/coverage
-    id("org.jetbrains.kotlinx.kover") version "0.7.4"
+    id("org.jetbrains.kotlinx.kover") version "0.7.5"
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.23.3"  // See also `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.23.4"  // See also `gradle.properties`
 
     // Documentation
     id("org.jetbrains.changelog") version "2.2.0"
-    id("org.jetbrains.dokka") version "1.9.10"
+    id("org.jetbrains.dokka") version "1.9.10"  // See also `buildscript { dependencies` below and `gradle.properties`
+}
+
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.dokka:dokka-base:1.9.10")  // See also `plugins` above and `gradle.properties`
+        classpath("org.jetbrains.dokka:versioning-plugin:1.9.10")  // See also `plugins` above and `gradle.properties`
+    }
 }
 
 
@@ -47,6 +59,7 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5:${properties("kotestVersion")}")
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${properties("detektVersion")}")
+    dokkaHtmlPlugin("org.jetbrains.dokka:versioning-plugin:${properties("dokkaVersion")}")
 }
 
 
@@ -143,13 +156,19 @@ tasks {
     dokkaHtml.configure {
         notCompatibleWithConfigurationCache("cf. https://github.com/Kotlin/dokka/issues/1217")
 
-        pluginsMapConfiguration.set(
-            mapOf(
-                "org.jetbrains.dokka.base.DokkaBase" to
-                    """{ "footerMessage": "&copy; ${Year.now().value} Florine&nbsp;W.&nbsp;Dekker" }"""
-            )
-        )
-        moduleName.set("Randomness v${properties("version")}")
+        pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+            customAssets = listOf(file(".config/dokka/logo-icon.svg"))
+            footerMessage = "&copy; ${Year.now().value} Florine&nbsp;W.&nbsp;Dekker"
+        }
+        pluginConfiguration<VersioningPlugin, VersioningConfiguration> {
+            if (project.hasProperty("dokka.pagesDir")) {
+                val pagesDir = project.property("dokka.pagesDir")
+                olderVersions = listOf(file("$pagesDir"))
+                olderVersionsDir = file("$pagesDir/older/")
+            }
+        }
+        moduleName.set("Randomness")
+        moduleVersion.set("v${properties("version")}")
         offlineMode.set(true)
         suppressInheritedMembers.set(true)
 
@@ -158,11 +177,18 @@ tasks {
                 includes.from(files("packages.md"))
 
                 jdkVersion.set(properties("javaVersion").toInt())
+                languageVersion.set(properties("kotlinVersion"))
 
-                includeNonPublic.set(true)
-                skipDeprecated.set(false)
+                documentedVisibilities.set(
+                    setOf(
+                        Visibility.PUBLIC,
+                        Visibility.PRIVATE,
+                        Visibility.PROTECTED,
+                        Visibility.INTERNAL,
+                        Visibility.PACKAGE,
+                    )
+                )
                 reportUndocumented.set(true)
-                skipEmptyPackages.set(true)
 
                 sourceLink {
                     localDirectory.set(file("src/main/kotlin"))
