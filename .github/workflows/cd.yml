@@ -1,0 +1,59 @@
+name: CD
+
+on:
+  release:
+    types: [ published ]
+  workflow_dispatch:
+
+jobs:
+  build-pages:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Randomness source code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+      - name: Checkout Randomness pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+          # Required to push updated documentation to repository
+          token: ${{ secrets.personal_access_token }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          build-root-directory: main/
+          generate-job-summary: false
+
+      - name: Extract version number
+        working-directory: main/
+        run: echo "RANDOMNESS_VERSION=v$(cat gradle.properties | grep '^version=' | sed 's/^.*=//')" >> $GITHUB_ENV
+
+      - name: Generate new documentation
+        working-directory: main/
+        run: ./gradlew dokkaHtml -Pdokka.pagesDir="${{ github.workspace }}/gh-pages/"
+
+      - name: Move new documentation into gh-pages
+        run: |
+          rm -rf gh-pages/*
+          mv main/build/dokka/html/* gh-pages/
+          rm -rf gh-pages/older/**/.git
+
+      - name: Push new documentation
+        working-directory: gh-pages/
+        run: |
+          git config --global user.name "FWDekkerBot"
+          git config --global user.email "bot@fwdekker.com"
+          git add --all
+          git commit -m "Update for ${RANDOMNESS_VERSION}"
+
+          git push origin gh-pages
