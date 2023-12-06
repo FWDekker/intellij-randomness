@@ -1,6 +1,8 @@
 # Changelog
 ## Unreleased
-(empty)
+### Changed
+* When inserting arrays at multiple carets, the number of elements per array is now independently chosen for each array.
+  ([#450](https://github.com/FWDekker/intellij-randomness/issues/450))
 
 
 ## 3.0.0 -- 2023-11-17
