@@ -11,7 +11,7 @@
     <br />
     <a href="https://github.com/FWDekker/intellij-randomness/actions/workflows/ci.yml?query=branch%3Amain"><img src="https://img.shields.io/github/actions/workflow/status/FWDekker/intellij-randomness/ci.yml?branch=master&style=for-the-badge" alt="CI status" /></a>
     <a href="https://app.codecov.io/gh/FWDekker/intellij-randomness"><img src="https://img.shields.io/codecov/c/github/FWDekker/intellij-randomness?style=for-the-badge" alt="Coverage" /></a>
-    <a href="https://fwdekker.github.io/intellij-randomness/"><img src="https://img.shields.io/badge/documentation-ready-blue?style=for-the-badge" alt="Documentation" /></a>
+    <a href="https://fwdekker.github.io/intellij-randomness/"><img src="https://img.shields.io/badge/kdoc-ready-blue?style=for-the-badge" alt="Documentation" /></a>
 </p>
 
 Rather than going to [random.org](https://www.random.org/) or making up your own random data, you can now insert random
