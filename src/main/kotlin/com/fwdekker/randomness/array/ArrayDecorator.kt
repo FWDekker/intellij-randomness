@@ -32,9 +32,19 @@ data class ArrayDecorator(
 
 
     override fun generateUndecoratedStrings(count: Int): List<String> {
-        val partsPerString = random.nextInt(minCount, maxCount + 1)
-        return generator(count * partsPerString)
-            .chunked(partsPerString) { it.joinToString(if (separatorEnabled) separator.replace("\\n", "\n") else "") }
+        val partsPerString = List(count) { random.nextInt(minCount, maxCount + 1) }
+        val parts = generator(partsPerString.sum())
+
+        return partsPerString
+            .fold(Pair(parts, emptyList<String>())) { (remainingParts, createdStrings), nextPartCount ->
+                val nextString =
+                    remainingParts
+                        .take(nextPartCount)
+                        .joinToString(if (separatorEnabled) separator.replace("\\n", "\n") else "")
+
+                Pair(remainingParts.drop(nextPartCount), createdStrings + nextString)
+            }
+            .second
     }
 
 
