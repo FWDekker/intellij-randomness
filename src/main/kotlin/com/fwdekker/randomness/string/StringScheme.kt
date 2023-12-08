@@ -19,15 +19,17 @@ import kotlin.random.asJavaRandom
  *
  * @property pattern The regex-like pattern according to which the string is generated.
  * @property isRegex `true` if and only if [pattern] should be interpreted as a regex.
- * @property removeLookAlikeSymbols Whether the symbols in [LOOK_ALIKE_CHARACTERS] should be removed.
+ * @property isNonMatching `true` if and only if non-matching values should be generated if [isRegex] is `true`.
  * @property capitalization The capitalization mode of the generated string.
+ * @property removeLookAlikeSymbols Whether the symbols in [LOOK_ALIKE_CHARACTERS] should be removed.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class StringScheme(
     var pattern: String = DEFAULT_PATTERN,
     var isRegex: Boolean = DEFAULT_IS_REGEX,
-    var removeLookAlikeSymbols: Boolean = DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS,
+    var isNonMatching: Boolean = DEFAULT_IS_NON_MATCHING,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
+    var removeLookAlikeSymbols: Boolean = DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS,
     val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name = Bundle("string.title")
@@ -50,7 +52,10 @@ data class StringScheme(
         val rawStrings =
             if (isRegex) {
                 val rgxGen = RgxGen(pattern)
-                List(count) { rgxGen.generate(random.asJavaRandom()) }
+                List(count) {
+                    if (this.isNonMatching) rgxGen.generateNotMatching(random.asJavaRandom())
+                    else rgxGen.generate(random.asJavaRandom())
+                }
             } else {
                 List(count) { pattern }
             }
@@ -73,7 +78,9 @@ data class StringScheme(
             else ->
                 @Suppress("detekt:TooGenericExceptionCaught") // Consequence of incomplete validation in RgxGen
                 try {
-                    RgxGen(pattern).generate()
+                    if (this.isNonMatching) RgxGen(pattern).generate()
+                    else RgxGen(pattern).generateNotMatching()
+
                     arrayDecorator.doValidate()
                 } catch (exception: RgxGenParseException) {
                     exception.message
@@ -117,9 +124,9 @@ data class StringScheme(
         const val DEFAULT_IS_REGEX = true
 
         /**
-         * The default value of the [removeLookAlikeSymbols] field.
+         * The default value of the [isNonMatching] field.
          */
-        const val DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS = false
+        const val DEFAULT_IS_NON_MATCHING = false
 
         /**
          * The preset values for the [capitalization] field.
@@ -135,6 +142,11 @@ data class StringScheme(
          * The default value of the [capitalization] field.
          */
         val DEFAULT_CAPITALIZATION get() = CapitalizationMode.RETAIN
+
+        /**
+         * The default value of the [removeLookAlikeSymbols] field.
+         */
+        const val DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS = false
 
         /**
          * The default value of the [arrayDecorator] field.

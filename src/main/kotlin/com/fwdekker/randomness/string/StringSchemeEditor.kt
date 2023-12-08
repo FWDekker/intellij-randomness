@@ -18,6 +18,8 @@ import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.toNullableProperty
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
+import com.intellij.ui.layout.selected
+import javax.swing.JCheckBox
 
 
 /**
@@ -38,19 +40,19 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : SchemeEditor<S
             }
 
             row("") {
+                lateinit var isRegexBox: JCheckBox
+
                 checkBox(Bundle("string.ui.value.is_regex_option"))
                     .loadMnemonic()
                     .withName("isRegex")
                     .bindSelected(scheme::isRegex)
-            }
+                    .also { isRegexBox = it.component }
 
-            row("") {
-                checkBox(Bundle("string.ui.value.remove_look_alike"))
+                checkBox(Bundle("string.ui.value.is_non_matching_option"))
                     .loadMnemonic()
-                    .withName("removeLookAlikeCharacters")
-                    .bindSelected(scheme::removeLookAlikeSymbols)
-
-                contextHelp(Bundle("string.ui.value.remove_look_alike_help", StringScheme.LOOK_ALIKE_CHARACTERS))
+                    .withName("isNonMatching")
+                    .bindSelected(scheme::isNonMatching)
+                    .enabledIf(isRegexBox.selected)
             }.bottomGap(BottomGap.SMALL)
 
             row(Bundle("string.ui.value.capitalization_option")) {
@@ -58,6 +60,15 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : SchemeEditor<S
                     .withSimpleRenderer(CapitalizationMode::toLocalizedString)
                     .withName("capitalization")
                     .bindItem(scheme::capitalization.toNullableProperty())
+            }
+
+            row {
+                checkBox(Bundle("string.ui.value.remove_look_alike"))
+                    .loadMnemonic()
+                    .withName("removeLookAlikeCharacters")
+                    .bindSelected(scheme::removeLookAlikeSymbols)
+
+                contextHelp(Bundle("string.ui.value.remove_look_alike_help", StringScheme.LOOK_ALIKE_CHARACTERS))
             }
         }
 

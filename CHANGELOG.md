@@ -1,5 +1,9 @@
 # Changelog
 ## Unreleased
+### Added
+* Added ability to generate non-matching strings.
+  ([#447](https://github.com/FWDekker/intellij-randomness/issues/447))
+
 ### Changed
 * When inserting arrays at multiple carets, the number of elements per array is now independently chosen for each array.
   ([#450](https://github.com/FWDekker/intellij-randomness/issues/450))
