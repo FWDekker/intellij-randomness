@@ -23,24 +23,32 @@ object StringSchemeTest : FunSpec({
             mapOf(
                 "false if invalid" to
                     row(StringScheme(pattern = "{}"), false),
-                "false if pattern uses quantifier" to
-                    row(StringScheme(pattern = "[u]{4}"), false),
-                "false if pattern uses grouping" to
-                    row(StringScheme(pattern = "(a|b)"), false),
                 "true if pattern is plain string, as non-regex" to
                     row(StringScheme(pattern = "text", isRegex = false), true),
-                "true if pattern is plain string, as regex" to
-                    row(StringScheme(pattern = "text", isRegex = true), true),
+                "true if pattern is plain string, as matching regex" to
+                    row(StringScheme(pattern = "text"), true),
+                "false if pattern is plain string, as non-matching regex" to
+                    row(StringScheme(pattern = "text", isNonMatching = true), false),
                 "true if pattern escapes character, as non-regex" to
                     row(StringScheme(pattern = """te\[xt""", isRegex = false), true),
-                "true if pattern escapes character, as regex" to
-                    row(StringScheme(pattern = """te\[xt""", isRegex = true), true),
+                "true if pattern escapes character, as matching regex" to
+                    row(StringScheme(pattern = """te\[xt"""), true),
+                "false if pattern escapes character, as non-matching regex" to
+                    row(StringScheme(pattern = """te\[xt""", isNonMatching = true), false),
                 "true if pattern escapes backslash, as non-regex" to
                     row(StringScheme(pattern = """te\\xt""", isRegex = false), true),
-                "true if pattern escapes backslash, as regex" to
-                    row(StringScheme(pattern = """te\\xt""", isRegex = true), true),
-                "true if pattern uses quantifier, as non-regex" to
-                    row(StringScheme(pattern = "[u]{4}", isRegex = false), true),
+                "true if pattern escapes backslash, as matching regex" to
+                    row(StringScheme(pattern = """te\\xt"""), true),
+                "false if pattern escapes backslash, as non-matching regex" to
+                    row(StringScheme(pattern = """te\\xt""", isNonMatching = true), false),
+                "false if pattern uses quantifier, as matching regex" to
+                    row(StringScheme(pattern = "[u]{4}"), false),
+                "false if pattern uses quantifier, as non-matching regex" to
+                    row(StringScheme(pattern = "[u]{4}", isNonMatching = true), false),
+                "false if pattern uses grouping, as matching regex" to
+                    row(StringScheme(pattern = "(a|b)"), false),
+                "false if pattern uses grouping, as non-matching regex" to
+                    row(StringScheme(pattern = "(a|b)", isNonMatching = true), false),
             )
         ) { (scheme, isSimple) -> scheme.isSimple() shouldBe isSimple }
     }
@@ -63,6 +71,8 @@ object StringSchemeTest : FunSpec({
                     row(StringScheme(pattern = "a[bc]d", isRegex = false), "a[bc]d"),
                 "returns reverse-regexed string" to
                     row(StringScheme(pattern = "[x]{4}"), "xxxx"),
+                "returns non-matching reverse-regexed string" to
+                    row(StringScheme(pattern = ".", isNonMatching = true), ""),
             )
         ) { (scheme, output) -> scheme.generateStrings()[0] shouldBe output }
     }
@@ -72,8 +82,10 @@ object StringSchemeTest : FunSpec({
             mapOf(
                 "succeeds for default state" to
                     row(StringScheme(), null),
-                "fails if pattern is invalid" to
+                "fails if matching pattern is invalid" to
                     row(StringScheme(pattern = "{x"), ""),
+                "fails if non-matching pattern is invalid" to
+                    row(StringScheme(pattern = "{x", isNonMatching = true), ""),
                 "fails if pattern is empty curly braces" to
                     row(StringScheme(pattern = "{}"), "string.error.empty_curly"),
                 "fails if pattern has empty curly braces" to

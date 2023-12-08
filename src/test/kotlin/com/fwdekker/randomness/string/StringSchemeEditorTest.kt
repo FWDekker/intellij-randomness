@@ -74,6 +74,13 @@ object StringSchemeEditorTest : FunSpec({
                         false,
                     )
                 },
+                "isInverseRegex" to {
+                    row(
+                        frame.checkBox("isNonMatching").isSelectedProp(),
+                        editor.scheme::isNonMatching.prop(),
+                        true,
+                    )
+                },
                 "removeLookAlikeCharacters" to {
                     row(
                         frame.checkBox("removeLookAlikeCharacters").isSelectedProp(),
