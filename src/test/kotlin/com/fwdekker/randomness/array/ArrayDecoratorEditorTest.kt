@@ -39,8 +39,12 @@ object ArrayDecoratorEditorTest : FunSpec({
     lateinit var editor: ArrayDecoratorEditor
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

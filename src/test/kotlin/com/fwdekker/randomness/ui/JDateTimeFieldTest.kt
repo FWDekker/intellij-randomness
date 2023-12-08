@@ -26,8 +26,12 @@ object JDateTimeFieldTest : FunSpec({
     lateinit var field: JDateTimeField
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

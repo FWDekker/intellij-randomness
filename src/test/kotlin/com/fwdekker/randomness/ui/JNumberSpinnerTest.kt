@@ -19,8 +19,12 @@ object JNumberSpinnerTest : FunSpec({
     tags(Tags.SWING)
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
 
@@ -62,8 +66,12 @@ object BindSpinnersTest : FunSpec({
     tags(Tags.SWING)
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
 
@@ -107,8 +115,12 @@ object JDoubleSpinnerTest : FunSpec({
     tags(Tags.SWING)
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
 
@@ -160,8 +172,12 @@ object JLongSpinnerTest : FunSpec({
     tags(Tags.SWING)
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
 
@@ -213,8 +229,12 @@ object JIntSpinnerTest : FunSpec({
     tags(Tags.SWING)
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
 

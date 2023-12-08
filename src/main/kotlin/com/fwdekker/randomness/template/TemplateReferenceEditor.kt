@@ -12,10 +12,10 @@ import com.fwdekker.randomness.ui.withName
 import com.fwdekker.randomness.ui.withSimpleRenderer
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.ColoredListCellRenderer
+import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.toNullableProperty
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import javax.swing.JList
 
 
@@ -57,7 +57,7 @@ class TemplateReferenceEditor(scheme: TemplateReference) : SchemeEditor<Template
         row {
             ArrayDecoratorEditor(scheme.arrayDecorator)
                 .also { decoratorEditors += it }
-                .let { cell(it.rootComponent).horizontalAlign(HorizontalAlign.FILL) }
+                .let { cell(it.rootComponent).align(AlignX.FILL) }
         }
     }
 

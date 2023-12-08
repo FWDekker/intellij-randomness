@@ -36,8 +36,12 @@ object PreviewPanelTest : FunSpec({
     val placeholder = Bundle("preview.placeholder")
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

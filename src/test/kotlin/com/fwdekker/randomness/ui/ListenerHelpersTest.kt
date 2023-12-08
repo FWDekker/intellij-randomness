@@ -37,8 +37,12 @@ object ListenerHelpersTest : FunSpec({
     val listener = { listenerInvoked = true }
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

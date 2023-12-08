@@ -34,8 +34,12 @@ object DateTimeSchemeEditorTest : FunSpec({
     lateinit var editor: DateTimeSchemeEditor
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

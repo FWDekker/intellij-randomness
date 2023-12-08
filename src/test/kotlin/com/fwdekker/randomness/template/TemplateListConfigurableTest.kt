@@ -34,9 +34,14 @@ object TemplateListConfigurableTest : FunSpec({
     lateinit var configurable: TemplateListConfigurable
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
         TemplateListEditor.useTestSplitter = true
+    }
+
+    afterSpec {
+        TemplateListEditor.useTestSplitter = false
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

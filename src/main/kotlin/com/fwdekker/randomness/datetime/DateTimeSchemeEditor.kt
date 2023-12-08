@@ -12,10 +12,10 @@ import com.fwdekker.randomness.ui.bindDateTimeLongValue
 import com.fwdekker.randomness.ui.toLocalDateTime
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.fwdekker.randomness.ui.withName
+import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 
 
 /**
@@ -61,7 +61,7 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : SchemeEd
         row {
             ArrayDecoratorEditor(scheme.arrayDecorator)
                 .also { decoratorEditors += it }
-                .let { cell(it.rootComponent).horizontalAlign(HorizontalAlign.FILL) }
+                .let { cell(it.rootComponent).align(AlignX.FILL) }
         }
     }
 

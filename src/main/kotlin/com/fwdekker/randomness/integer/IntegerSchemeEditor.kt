@@ -25,9 +25,9 @@ import com.fwdekker.randomness.ui.withFilter
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.fwdekker.randomness.ui.withName
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.ui.layout.and
 import com.intellij.ui.layout.selected
 import javax.swing.JCheckBox
@@ -107,13 +107,13 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEdito
         row {
             FixedLengthDecoratorEditor(scheme.fixedLengthDecorator)
                 .also { decoratorEditors += it }
-                .let { cell(it.rootComponent).horizontalAlign(HorizontalAlign.FILL) }
+                .let { cell(it.rootComponent).align(AlignX.FILL) }
         }
 
         row {
             ArrayDecoratorEditor(scheme.arrayDecorator)
                 .also { decoratorEditors += it }
-                .let { cell(it.rootComponent).horizontalAlign(HorizontalAlign.FILL) }
+                .let { cell(it.rootComponent).align(AlignX.FILL) }
         }
     }
 

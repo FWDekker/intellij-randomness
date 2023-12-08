@@ -41,8 +41,12 @@ object TemplateReferenceEditorTest : FunSpec({
     lateinit var editor: TemplateReferenceEditor
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

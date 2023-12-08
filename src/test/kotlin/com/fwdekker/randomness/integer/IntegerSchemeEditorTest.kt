@@ -36,8 +36,12 @@ object IntegerSchemeEditorTest : FunSpec({
     lateinit var editor: IntegerSchemeEditor
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

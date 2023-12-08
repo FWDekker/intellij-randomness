@@ -7,11 +7,11 @@ import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.withName
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.PRESET_AFFIX_DECORATOR_DESCRIPTORS
+import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.bind
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 
 
 /**
@@ -55,7 +55,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidSch
         row {
             ArrayDecoratorEditor(scheme.arrayDecorator)
                 .also { decoratorEditors += it }
-                .let { cell(it.rootComponent).horizontalAlign(HorizontalAlign.FILL) }
+                .let { cell(it.rootComponent).align(AlignX.FILL) }
         }
     }
 

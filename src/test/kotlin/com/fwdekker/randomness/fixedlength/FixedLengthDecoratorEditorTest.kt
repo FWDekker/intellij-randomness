@@ -34,8 +34,12 @@ object FixedLengthDecoratorEditorTest : FunSpec({
     lateinit var editor: FixedLengthDecoratorEditor
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {
