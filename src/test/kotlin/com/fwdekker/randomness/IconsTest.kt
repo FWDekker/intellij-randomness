@@ -41,8 +41,12 @@ object TypeIconTest : FunSpec({
         lateinit var image: BufferedImage
 
 
-        beforeContainer {
+        beforeSpec {
             FailOnThreadViolationRepaintManager.install()
+        }
+
+        afterSpec {
+            FailOnThreadViolationRepaintManager.uninstall()
         }
 
         beforeNonContainer {
@@ -139,8 +143,12 @@ object OverlayIconTest : FunSpec({
         lateinit var image: BufferedImage
 
 
-        beforeContainer {
+        beforeSpec {
             FailOnThreadViolationRepaintManager.install()
+        }
+
+        afterSpec {
+            FailOnThreadViolationRepaintManager.uninstall()
         }
 
         beforeNonContainer {

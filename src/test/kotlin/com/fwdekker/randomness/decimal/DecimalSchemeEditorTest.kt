@@ -34,8 +34,12 @@ object DecimalSchemeEditorTest : FunSpec({
     lateinit var editor: DecimalSchemeEditor
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

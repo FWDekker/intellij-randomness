@@ -39,8 +39,12 @@ object AffixDecoratorEditorTest : FunSpec({
     lateinit var editor: AffixDecoratorEditor
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

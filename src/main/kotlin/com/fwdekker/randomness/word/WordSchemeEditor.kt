@@ -23,11 +23,11 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.util.Disposer
+import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.toMutableProperty
 import com.intellij.ui.dsl.builder.toNullableProperty
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import java.awt.event.ItemEvent
 
 
@@ -75,7 +75,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
                 Disposer.register(this@WordSchemeEditor, factory.wrapDisposable(wordListEditor))
                 cell(wordListEditor.component)
                     .onReset { document.resetUndoHistory() }
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .withFixedHeight(UIConstants.SIZE_VERY_LARGE)
                     .bind(
                         { document.getWordList() },
@@ -103,7 +103,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
         row {
             ArrayDecoratorEditor(scheme.arrayDecorator)
                 .also { decoratorEditors += it }
-                .let { cell(it.rootComponent).horizontalAlign(HorizontalAlign.FILL) }
+                .let { cell(it.rootComponent).align(AlignX.FILL) }
         }
     }
 

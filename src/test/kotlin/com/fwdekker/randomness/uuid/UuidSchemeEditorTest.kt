@@ -34,8 +34,12 @@ object UuidSchemeEditorTest : FunSpec({
     lateinit var editor: UuidSchemeEditor
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

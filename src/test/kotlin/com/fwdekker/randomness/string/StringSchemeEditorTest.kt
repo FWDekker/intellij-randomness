@@ -35,8 +35,12 @@ object StringSchemeEditorTest : FunSpec({
     lateinit var editor: StringSchemeEditor
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

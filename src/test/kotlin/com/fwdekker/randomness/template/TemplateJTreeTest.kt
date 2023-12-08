@@ -52,8 +52,12 @@ object TemplateJTreeTest : FunSpec({
     fun List<Scheme>.names() = this.map { it.name }
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

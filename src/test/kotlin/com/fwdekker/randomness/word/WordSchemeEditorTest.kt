@@ -43,8 +43,12 @@ object WordSchemeEditorTest : FunSpec({
     lateinit var wordsEditor: EditorComponentImpl
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

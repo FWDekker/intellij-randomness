@@ -28,8 +28,12 @@ object TemplateEditorTest : FunSpec({
     lateinit var editor: TemplateEditor
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {

@@ -22,7 +22,8 @@
          1. "Color Reduction" to 64 colours
          2. "Optimize Transparency" with 2% fuzz
          3. "Lossy GIF" with compression level 30
-* Ensure documentation generates without errors, and push the documentation to the `gh-pages` branch.
+* Ensure documentation generates without errors.
+  After the release, run the `cd.yml` workflow to update the `gh-pages` branch.
 
 ## Verification
 * Run tests and static analysis one more time.

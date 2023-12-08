@@ -25,11 +25,12 @@ import com.intellij.ui.LayeredIcon
 import com.intellij.ui.RowsDnDSupport.RefinedDropSupport.Position
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.ToolbarDecorator
-import com.intellij.ui.TreeSpeedSearch
+import com.intellij.ui.TreeUIHelper
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.JBUI
 import javax.swing.JPanel
 import javax.swing.JTree
+import javax.swing.tree.TreePath
 import javax.swing.tree.TreeSelectionModel
 import kotlin.math.min
 
@@ -139,7 +140,8 @@ class TemplateJTree(
 
 
     init {
-        TreeSpeedSearch(this, true) { path -> path.path.filterIsInstance<Scheme>().joinToString { it.name } }
+        val converter = { path: TreePath -> path.path.filterIsInstance<Scheme>().joinToString { it.name } }
+        TreeUIHelper.getInstance().installTreeSpeedSearch(this, converter, true)
 
         emptyText.text = Bundle("template_list.ui.empty")
         isRootVisible = false

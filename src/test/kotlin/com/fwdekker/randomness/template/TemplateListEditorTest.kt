@@ -50,9 +50,14 @@ object TemplateListEditorTest : FunSpec({
     lateinit var editor: TemplateListEditor
 
 
-    beforeContainer {
-        FailOnThreadViolationRepaintManager.install()
+    beforeSpec {
         TemplateListEditor.useTestSplitter = true
+        FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
+        TemplateListEditor.useTestSplitter = false
     }
 
     beforeNonContainer {

@@ -41,8 +41,12 @@ object SchemeEditorTest : FunSpec({
     lateinit var editor: DummySchemeEditor
 
 
-    beforeContainer {
+    beforeSpec {
         FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {
