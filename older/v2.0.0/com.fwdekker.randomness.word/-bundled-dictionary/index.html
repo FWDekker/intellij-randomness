@@ -1,0 +1,106 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BundledDictionary - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.word</a>&nbsp;/&nbsp;<a href="./index.html">BundledDictionary</a><br>
+<br>
+<h1>BundledDictionary</h1>
+<code><span class="keyword">class </span><span class="identifier">BundledDictionary</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-dictionary/index.html"><span class="identifier">Dictionary</span></a></code>
+<p>A <code>Dictionary</code> of which the underlying file is a resource in the JAR.</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="filename.html">filename</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">filename</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>the path to the resource file</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="words.html">words</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">words</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>The words in the dictionary.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="to-string.html">toString</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">toString</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Returns a human-readable string of the dictionary's filename.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="validate.html">validate</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">validate</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Throws an <a href="../-invalid-dictionary-exception/index.html">InvalidDictionaryException</a> iff this dictionary is currently invalid.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-dictionary/is-valid.html">isValid</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isValid</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns <code>true</code> iff <a href="../-dictionary/validate.html">validate</a> does not throw an exception.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="cache.html">cache</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">cache</span><span class="symbol">: </span><a href="../../com.fwdekker.randomness/-cache/index.html"><span class="identifier">Cache</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="./index.html"><span class="identifier">BundledDictionary</span></a><span class="symbol">&gt;</span></code>
+<p>The cache of bundled dictionaries, used to improve word generation times.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-e-x-t-e-n-d-e-d_-d-i-c-t-i-o-n-a-r-y.html">EXTENDED_DICTIONARY</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">EXTENDED_DICTIONARY</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The location of an extended English dictionary.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-s-i-m-p-l-e_-d-i-c-t-i-o-n-a-r-y.html">SIMPLE_DICTIONARY</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">SIMPLE_DICTIONARY</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The location of a simple English dictionary.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

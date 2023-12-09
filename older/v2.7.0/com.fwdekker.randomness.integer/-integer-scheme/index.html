@@ -1,0 +1,246 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>IntegerScheme - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.integer</a>&nbsp;/&nbsp;<a href="./index.html">IntegerScheme</a><br>
+<br>
+<h1>IntegerScheme</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">IntegerScheme</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-scheme/index.html"><span class="identifier">Scheme</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">IntegerScheme</span></a><span class="symbol">&gt;</span></code>
+<p>Contains settings for generating random integers.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">IntegerScheme</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerScheme$<init>(kotlin.String, kotlin.Long, kotlin.Long, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.String, kotlin.String)/myName">myName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_NAME<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerScheme$<init>(kotlin.String, kotlin.Long, kotlin.Long, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.String, kotlin.String)/minValue">minValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_MIN_VALUE<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerScheme$<init>(kotlin.String, kotlin.Long, kotlin.Long, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.String, kotlin.String)/maxValue">maxValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_MAX_VALUE<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerScheme$<init>(kotlin.String, kotlin.Long, kotlin.Long, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.String, kotlin.String)/base">base</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_BASE<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerScheme$<init>(kotlin.String, kotlin.Long, kotlin.Long, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.String, kotlin.String)/groupingSeparator">groupingSeparator</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_GROUPING_SEPARATOR<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerScheme$<init>(kotlin.String, kotlin.Long, kotlin.Long, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.String, kotlin.String)/capitalization">capitalization</span><span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-capitalization-mode/index.html"><span class="identifier">CapitalizationMode</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_CAPITALIZATION<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerScheme$<init>(kotlin.String, kotlin.Long, kotlin.Long, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.String, kotlin.String)/prefix">prefix</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_PREFIX<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerScheme$<init>(kotlin.String, kotlin.Long, kotlin.Long, kotlin.Int, kotlin.String, com.fwdekker.randomness.CapitalizationMode, kotlin.String, kotlin.String)/suffix">suffix</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_SUFFIX<span class="symbol">)</span></code>
+<p>Contains settings for generating random integers.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="base.html">base</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">base</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The base the generated value should be displayed in.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="capitalization.html">capitalization</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">capitalization</span><span class="symbol">: </span><a href="../../com.fwdekker.randomness/-capitalization-mode/index.html"><span class="identifier">CapitalizationMode</span></a></code>
+<p>The capitalization mode of the generated integer, applicable for bases higher than 10.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="grouping-separator.html">groupingSeparator</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">groupingSeparator</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The character that should separate groups.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="max-value.html">maxValue</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">maxValue</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code>
+<p>The maximum value to be generated, inclusive.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="min-value.html">minValue</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">minValue</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code>
+<p>The minimum value to be generated, inclusive.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="my-name.html">myName</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">myName</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The name of the scheme.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="prefix.html">prefix</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">prefix</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The string to prepend to the generated value.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="suffix.html">suffix</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">suffix</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The string to append to the generated value.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="copy-as.html">copyAs</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">copyAs</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerScheme$copyAs(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">IntegerScheme</span></a></code>
+<p>Returns a copy of this scheme that has the given name.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="copy-from.html">copyFrom</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">copyFrom</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerScheme$copyFrom(com.fwdekker.randomness.integer.IntegerScheme)/other">other</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">IntegerScheme</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Shallowly copies the state of <a href="../../com.fwdekker.randomness/-scheme/copy-from.html#com.fwdekker.randomness.Scheme$copyFrom(com.fwdekker.randomness.Scheme.SELF)/other">other</a> into <code>this</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="safe-set-grouping-separator.html">safeSetGroupingSeparator</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">safeSetGroupingSeparator</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerScheme$safeSetGroupingSeparator(kotlin.String)/groupingSeparator">groupingSeparator</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the grouping separator safely to ensure that exactly one character is set.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-scheme/get-name.html">getName</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getName</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Same as <a href="../../com.fwdekker.randomness/-scheme/my-name.html">myName</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-d-e-c-i-m-a-l_-b-a-s-e.html">DECIMAL_BASE</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DECIMAL_BASE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The definition of decimal base.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-b-a-s-e.html">DEFAULT_BASE</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_BASE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The default value of the <a href="base.html">base</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-c-a-p-i-t-a-l-i-z-a-t-i-o-n.html">DEFAULT_CAPITALIZATION</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">DEFAULT_CAPITALIZATION</span><span class="symbol">: </span><a href="../../com.fwdekker.randomness/-capitalization-mode/index.html"><span class="identifier">CapitalizationMode</span></a></code>
+<p>The default value of the <a href="capitalization.html">capitalization</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-g-r-o-u-p-i-n-g_-s-e-p-a-r-a-t-o-r.html">DEFAULT_GROUPING_SEPARATOR</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_GROUPING_SEPARATOR</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The default value of the <a href="grouping-separator.html">groupingSeparator</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-m-a-x_-v-a-l-u-e.html">DEFAULT_MAX_VALUE</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_MAX_VALUE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code>
+<p>The default value of the <a href="max-value.html">maxValue</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-m-i-n_-v-a-l-u-e.html">DEFAULT_MIN_VALUE</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_MIN_VALUE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code>
+<p>The default value of the <a href="min-value.html">minValue</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-p-r-e-f-i-x.html">DEFAULT_PREFIX</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_PREFIX</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The default value of the <a href="prefix.html">prefix</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-s-u-f-f-i-x.html">DEFAULT_SUFFIX</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_SUFFIX</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The default value of the <a href="suffix.html">suffix</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-m-a-x_-b-a-s-e.html">MAX_BASE</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">MAX_BASE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The maximum value of the <a href="base.html">base</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-m-i-n_-b-a-s-e.html">MIN_BASE</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">MIN_BASE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The minimum value of the <a href="base.html">base</a> field.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

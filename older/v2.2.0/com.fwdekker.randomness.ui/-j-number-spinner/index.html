@@ -1,0 +1,158 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JNumberSpinner - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.ui</a>&nbsp;/&nbsp;<a href="./index.html">JNumberSpinner</a><br>
+<br>
+<h1>JNumberSpinner</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">JNumberSpinner</span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JSpinner.html"><span class="identifier">JSpinner</span></a><span class="keyword"> where </span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-number/index.html"><span class="identifier">Number</span></a><span class="symbol">, </span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html"><span class="identifier">Comparable</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>An abstract <a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JSpinner.html">JSpinner</a> for numbers that contains common logic for its subclasses.</p>
+<h3>Parameters</h3>
+<p><a name="T"></a>
+<code>T</code> - the type of number</p>
+<p><a name="value"></a>
+<code>value</code> - the default value</p>
+<p><a name="minValue"></a>
+<code>minValue</code> - the smallest number that may be represented</p>
+<p><a name="maxValue"></a>
+<code>maxValue</code> - the largest number that may be represented</p>
+<p><a name="stepSize"></a>
+<code>stepSize</code> - the default value to increment and decrement by</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">JNumberSpinner</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JNumberSpinner$<init>(com.fwdekker.randomness.ui.JNumberSpinner.T, com.fwdekker.randomness.ui.JNumberSpinner.T, com.fwdekker.randomness.ui.JNumberSpinner.T, com.fwdekker.randomness.ui.JNumberSpinner.T)/value">value</span><span class="symbol">:</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.ui.JNumberSpinner$<init>(com.fwdekker.randomness.ui.JNumberSpinner.T, com.fwdekker.randomness.ui.JNumberSpinner.T, com.fwdekker.randomness.ui.JNumberSpinner.T, com.fwdekker.randomness.ui.JNumberSpinner.T)/minValue">minValue</span><span class="symbol">:</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.ui.JNumberSpinner$<init>(com.fwdekker.randomness.ui.JNumberSpinner.T, com.fwdekker.randomness.ui.JNumberSpinner.T, com.fwdekker.randomness.ui.JNumberSpinner.T, com.fwdekker.randomness.ui.JNumberSpinner.T)/maxValue">maxValue</span><span class="symbol">:</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.ui.JNumberSpinner$<init>(com.fwdekker.randomness.ui.JNumberSpinner.T, com.fwdekker.randomness.ui.JNumberSpinner.T, com.fwdekker.randomness.ui.JNumberSpinner.T, com.fwdekker.randomness.ui.JNumberSpinner.T)/stepSize">stepSize</span><span class="symbol">:</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">)</span></code>
+<p>An abstract <a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JSpinner.html">JSpinner</a> for numbers that contains common logic for its subclasses.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="max-value.html">maxValue</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">maxValue</span><span class="symbol">: </span><a href="index.html#T"><span class="identifier">T</span></a></code>
+<p>The maximal allowed value.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="min-value.html">minValue</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">minValue</span><span class="symbol">: </span><a href="index.html#T"><span class="identifier">T</span></a></code>
+<p>The minimal allowed value.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="number-to-t.html">numberToT</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">numberToT</span><span class="symbol">: </span><span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-number/index.html"><span class="identifier">Number</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a></code>
+<p>Transforms a <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-number/index.html">Number</a> into a <a href="index.html#T">T</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get-value.html">getValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getValue</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="index.html#T"><span class="identifier">T</span></a></code>
+<p>Returns the current value of the spinner.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-value.html">setValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setValue</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.JNumberSpinner$setValue(kotlin.Any)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the value of the spinner.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="validate-value.html">validateValue</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">validateValue</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">ValidationInfo</span><span class="symbol">?</span></code>
+<p>Validates the current value.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-f-o-r-m-a-t.html">DEFAULT_FORMAT</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">DEFAULT_FORMAT</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormatSymbols.html"><span class="identifier">DecimalFormatSymbols</span></a></code>
+<p>The default number format used to display numbers.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-w-i-d-t-h.html">DEFAULT_WIDTH</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_WIDTH</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The default width of a number spinner.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-j-double-spinner/index.html">JDoubleSpinner</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">JDoubleSpinner</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">JNumberSpinner</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span></code>
+<p>A <a href="./index.html">JNumberSpinner</a> for doubles.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-j-int-spinner/index.html">JIntSpinner</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">JIntSpinner</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">JNumberSpinner</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">&gt;</span></code>
+<p>A <a href="./index.html">JNumberSpinner</a> for integers.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-j-long-spinner/index.html">JLongSpinner</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">JLongSpinner</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">JNumberSpinner</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a><span class="symbol">&gt;</span></code>
+<p>A <a href="./index.html">JNumberSpinner</a> for longs.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

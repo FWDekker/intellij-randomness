@@ -1,0 +1,109 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SymbolSetTable - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.string</a>&nbsp;/&nbsp;<a href="./index.html">SymbolSetTable</a><br>
+<br>
+<h1>SymbolSetTable</h1>
+<code><span class="keyword">class </span><span class="identifier">SymbolSetTable</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness.ui/-activity-table-model-editor/index.html"><span class="identifier">ActivityTableModelEditor</span></a><span class="symbol">&lt;</span><a href="../-symbol-set/index.html"><span class="identifier">SymbolSet</span></a><span class="symbol">&gt;</span></code>
+<p>An editable table for selecting and editing <a href="../-symbol-set/index.html">SymbolSet</a>s.</p>
+<p><strong>See Also</strong><br>
+</p><p><a href="../-string-settings-component/index.html">StringSettingsComponent</a></p>
+<p></p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">SymbolSetTable</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>An editable table for selecting and editing <a href="../-symbol-set/index.html">SymbolSet</a>s.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.ui/-activity-table-model-editor/active-data.html">activeData</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">activeData</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html"><span class="identifier">Collection</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.ui/-activity-table-model-editor/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>All data of which the checkbox is currently checked.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.ui/-activity-table-model-editor/data.html">data</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">data</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html"><span class="identifier">Collection</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.ui/-activity-table-model-editor/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>All data currently in the table.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.ui/-activity-table-model-editor/panel.html">panel</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">panel</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JPanel.html"><span class="identifier">JPanel</span></a></code>
+<p>The panel in which the table editor is present.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="create-element.html">createElement</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">createElement</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">EditableSymbolSet</span></code>
+<p>Creates a new placeholder <a href="../-symbol-set/index.html">SymbolSet</a> instance.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="do-validate.html">doValidate</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">doValidate</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.string.SymbolSetTable$doValidate(kotlin.Boolean)/excludeLookAlikeSymbols">excludeLookAlikeSymbols</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.fwdekker.randomness/-validation-info/index.html"><span class="identifier">ValidationInfo</span></a><span class="symbol">?</span></code>
+<p>Validates the symbol sets entered into this table.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.ui/-activity-table-model-editor/add-change-listener.html">addChangeListener</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">addChangeListener</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.ui.ActivityTableModelEditor$addChangeListener(kotlin.Function0((kotlin.Unit)))/listener">listener</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Adds a listener that is called whenever this table is updated.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.ui/-activity-table-model-editor/create-component.html">createComponent</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">createComponent</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JPanel.html"><span class="identifier">JPanel</span></a></code>
+<p>Creates a new <code>JPanel</code> with the table and the corresponding buttons.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

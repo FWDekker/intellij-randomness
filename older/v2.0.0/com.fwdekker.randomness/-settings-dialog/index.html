@@ -1,0 +1,166 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SettingsDialog - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness</a>&nbsp;/&nbsp;<a href="./index.html">SettingsDialog</a><br>
+<br>
+<h1>SettingsDialog</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SettingsDialog</span><span class="symbol">&lt;</span><span class="identifier">S</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-settings.html"><span class="identifier">Settings</span></a><span class="symbol">&lt;</span><span class="identifier">*</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DialogWrapper</span><span class="symbol">, </span><a href="../-settings-manager/index.html"><span class="identifier">SettingsManager</span></a><span class="symbol">&lt;</span><a href="index.html#S"><span class="identifier">S</span></a><span class="symbol">&gt;</span></code>
+<p>Superclass for settings dialogs.</p>
+<p>Subclasses <strong>MUST</strong> call <code>init</code> and <code>loadSettings</code> in their constructor.</p>
+<h3>Parameters</h3>
+<p><a name="settings"></a>
+<code>settings</code> - the settings to manage</p>
+<p><strong>Parameters</strong><br>
+</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">SettingsDialog</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.SettingsDialog$<init>(com.fwdekker.randomness.SettingsDialog.S)/settings">settings</span><span class="symbol">:</span>&nbsp;<a href="index.html#S"><span class="identifier">S</span></a><span class="symbol">)</span></code>
+<p>Superclass for settings dialogs.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="do-o-k-action.html">doOKAction</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">doOKAction</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Saves the settings and closes the dialog when the OK button is pressed.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="do-validate.html">doValidate</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">doValidate</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">ValidationInfo</span><span class="symbol">?</span></code>
+<p>Validates all input fields.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-dimension-service-key.html">getDimensionServiceKey</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getDimensionServiceKey</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Returns the key used to persist dialog dimensions.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="load-settings.html">loadSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">loadSettings</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Loads the default settings object.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="save-settings.html">saveSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">saveSettings</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Saves settings to the default settings object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-settings-manager/load-settings.html">loadSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">loadSettings</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.SettingsManager$loadSettings(com.fwdekker.randomness.SettingsManager.S)/settings">settings</span><span class="symbol">:</span>&nbsp;<a href="../-settings-manager/index.html#S"><span class="identifier">S</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Loads <code>settings</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-settings-manager/save-settings.html">saveSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">saveSettings</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.SettingsManager$saveSettings(com.fwdekker.randomness.SettingsManager.S)/settings">settings</span><span class="symbol">:</span>&nbsp;<a href="../-settings-manager/index.html#S"><span class="identifier">S</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Saves settings to <code>settings</code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.array/-array-settings-dialog/index.html">ArraySettingsDialog</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">ArraySettingsDialog</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">SettingsDialog</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.array/-array-settings/index.html"><span class="identifier">ArraySettings</span></a><span class="symbol">!</span><span class="symbol">&gt;</span></code>
+<p>Dialog for settings of random array generation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.decimal/-decimal-settings-dialog/index.html">DecimalSettingsDialog</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DecimalSettingsDialog</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">SettingsDialog</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.decimal/-decimal-settings/index.html"><span class="identifier">DecimalSettings</span></a><span class="symbol">!</span><span class="symbol">&gt;</span></code>
+<p>Dialog for settings of random decimal generation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.integer/-integer-settings-dialog/index.html">IntegerSettingsDialog</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">IntegerSettingsDialog</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">SettingsDialog</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.integer/-integer-settings/index.html"><span class="identifier">IntegerSettings</span></a><span class="symbol">!</span><span class="symbol">&gt;</span></code>
+<p>Dialog for settings of random integer generation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.string/-string-settings-dialog/index.html">StringSettingsDialog</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">StringSettingsDialog</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">SettingsDialog</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.string/-string-settings/index.html"><span class="identifier">StringSettings</span></a><span class="symbol">!</span><span class="symbol">&gt;</span></code>
+<p>Dialog for settings of random string generation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.uuid/-uuid-settings-dialog/index.html">UuidSettingsDialog</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">UuidSettingsDialog</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">SettingsDialog</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.uuid/-uuid-settings/index.html"><span class="identifier">UuidSettings</span></a><span class="symbol">!</span><span class="symbol">&gt;</span></code>
+<p>Dialog for settings of random UUID generation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.word/-word-settings-dialog/index.html">WordSettingsDialog</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">WordSettingsDialog</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">SettingsDialog</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.word/-word-settings/index.html"><span class="identifier">WordSettings</span></a><span class="symbol">!</span><span class="symbol">&gt;</span></code>
+<p>Dialog for settings of random word generation.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

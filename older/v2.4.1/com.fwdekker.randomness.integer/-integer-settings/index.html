@@ -1,0 +1,129 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>IntegerSettings - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.integer</a>&nbsp;/&nbsp;<a href="./index.html">IntegerSettings</a><br>
+<br>
+<h1>IntegerSettings</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">IntegerSettings</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-settings/index.html"><span class="identifier">Settings</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">IntegerSettings</span></a><span class="symbol">,</span>&nbsp;<a href="../-integer-scheme/index.html"><span class="identifier">IntegerScheme</span></a><span class="symbol">&gt;</span></code>
+<p>The user-configurable collection of schemes applicable to generating integers.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">IntegerSettings</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerSettings$<init>(kotlin.collections.MutableList((com.fwdekker.randomness.integer.IntegerScheme)), kotlin.String)/schemes">schemes</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../-integer-scheme/index.html"><span class="identifier">IntegerScheme</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_SCHEMES<span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerSettings$<init>(kotlin.collections.MutableList((com.fwdekker.randomness.integer.IntegerScheme)), kotlin.String)/currentSchemeName">currentSchemeName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DEFAULT_CURRENT_SCHEME_NAME<span class="symbol">)</span></code>
+<p>The user-configurable collection of schemes applicable to generating integers.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="current-scheme-name.html">currentSchemeName</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">currentSchemeName</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>the scheme that is currently active</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="schemes.html">schemes</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">schemes</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../-integer-scheme/index.html"><span class="identifier">IntegerScheme</span></a><span class="symbol">&gt;</span></code>
+<p>the schemes that the user can choose from</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-settings/current-scheme.html">currentScheme</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">var </span><span class="identifier">currentScheme</span><span class="symbol">: </span><a href="../../com.fwdekker.randomness/-settings/index.html#SCHEME"><span class="identifier">SCHEME</span></a></code>
+<p>The instance of the scheme that is currently active.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="deep-copy.html">deepCopy</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">deepCopy</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">IntegerSettings</span></a></code>
+<p>Returns a deep copy of the settings and the contained schemes.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-state.html">getState</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getState</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">IntegerSettings</span></a></code>
+<p>Returns <code>this</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="load-state.html">loadState</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">loadState</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.integer.IntegerSettings$loadState(com.fwdekker.randomness.integer.IntegerSettings)/state">state</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">IntegerSettings</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies the fields of <code>state</code> to <code>this</code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="default.html">default</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">default</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">IntegerSettings</span></a></code>
+<p>The persistent <code>IntegerSettings</code> instance.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-c-u-r-r-e-n-t_-s-c-h-e-m-e_-n-a-m-e.html">DEFAULT_CURRENT_SCHEME_NAME</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_CURRENT_SCHEME_NAME</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The default value of the <a href="current-scheme-name.html">currentSchemeName</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-s-c-h-e-m-e-s.html">DEFAULT_SCHEMES</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">DEFAULT_SCHEMES</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../-integer-scheme/index.html"><span class="identifier">IntegerScheme</span></a><span class="symbol">&gt;</span></code>
+<p>The default value of the <a href="schemes.html">schemes</a> field.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

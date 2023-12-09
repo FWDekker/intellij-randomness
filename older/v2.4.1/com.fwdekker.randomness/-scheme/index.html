@@ -1,0 +1,141 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Scheme - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness</a>&nbsp;/&nbsp;<a href="./index.html">Scheme</a><br>
+<br>
+<h1>Scheme</h1>
+<code><span class="keyword">interface </span><span class="identifier">Scheme</span><span class="symbol">&lt;</span><span class="identifier">SELF</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Scheme</span></code>
+<p>A scheme is a collection of configurable values.</p>
+<p>In a typical use case a user can quickly switch between instances of schemes of the same type to change the "preset"
+or "configuration" that is currently being used.</p>
+<h3>Parameters</h3>
+<p><a name="SELF"></a>
+<code>SELF</code> - the type of scheme that is stored; should be a self reference</p>
+<p><strong>See Also</strong><br>
+</p><p><a href="../-settings/index.html">Settings</a></p>
+<p></p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="my-name.html">myName</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">var </span><span class="identifier">myName</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The name of the scheme, used to identify it.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="copy-as.html">copyAs</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">copyAs</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.Scheme$copyAs(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html#SELF"><span class="identifier">SELF</span></a></code>
+<p>Returns a copy of this scheme that has the given name.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="copy-from.html">copyFrom</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">copyFrom</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.Scheme$copyFrom(com.fwdekker.randomness.Scheme.SELF)/other">other</span><span class="symbol">:</span>&nbsp;<a href="index.html#SELF"><span class="identifier">SELF</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Shallowly copies the state of <a href="copy-from.html#com.fwdekker.randomness.Scheme$copyFrom(com.fwdekker.randomness.Scheme.SELF)/other">other</a> into <code>this</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-name.html">getName</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getName</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Same as <a href="my-name.html">myName</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-n-a-m-e.html">DEFAULT_NAME</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_NAME</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The name of the default scheme.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.array/-array-scheme/index.html">ArrayScheme</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ArrayScheme</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Scheme</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.array/-array-scheme/index.html"><span class="identifier">ArrayScheme</span></a><span class="symbol">&gt;</span></code>
+<p>Contains settings for generating arrays of other types of random values.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.decimal/-decimal-scheme/index.html">DecimalScheme</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DecimalScheme</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Scheme</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.decimal/-decimal-scheme/index.html"><span class="identifier">DecimalScheme</span></a><span class="symbol">&gt;</span></code>
+<p>Contains settings for generating random decimals.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.integer/-integer-scheme/index.html">IntegerScheme</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">IntegerScheme</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Scheme</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.integer/-integer-scheme/index.html"><span class="identifier">IntegerScheme</span></a><span class="symbol">&gt;</span></code>
+<p>Contains settings for generating random integers.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.string/-string-scheme/index.html">StringScheme</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">StringScheme</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Scheme</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.string/-string-scheme/index.html"><span class="identifier">StringScheme</span></a><span class="symbol">&gt;</span></code>
+<p>Contains settings for generating random strings.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.uuid/-uuid-scheme/index.html">UuidScheme</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">UuidScheme</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Scheme</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.uuid/-uuid-scheme/index.html"><span class="identifier">UuidScheme</span></a><span class="symbol">&gt;</span></code>
+<p>Contains settings for generating random UUIDs.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.word/-word-scheme/index.html">WordScheme</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">WordScheme</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Scheme</span></a><span class="symbol">&lt;</span><a href="../../com.fwdekker.randomness.word/-word-scheme/index.html"><span class="identifier">WordScheme</span></a><span class="symbol">&gt;</span></code>
+<p>Contains settings for generating random words.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

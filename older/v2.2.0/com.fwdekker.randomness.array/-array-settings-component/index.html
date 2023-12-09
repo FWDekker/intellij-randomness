@@ -1,0 +1,91 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ArraySettingsComponent - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.array</a>&nbsp;/&nbsp;<a href="./index.html">ArraySettingsComponent</a><br>
+<br>
+<h1>ArraySettingsComponent</h1>
+<code><span class="keyword">class </span><span class="identifier">ArraySettingsComponent</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-settings-component/index.html"><span class="identifier">SettingsComponent</span></a><span class="symbol">&lt;</span><a href="../-array-settings/index.html"><span class="identifier">ArraySettings</span></a><span class="symbol">!</span><span class="symbol">&gt;</span></code>
+<p>Component for settings of random array generation.</p>
+<p><strong>See Also</strong><br>
+<a href="../-array-settings/index.html">ArraySettings</a><a href="../-array-settings-action/index.html">ArraySettingsAction</a></p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="do-validate.html">doValidate</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">doValidate</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">ValidationInfo</span><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-root-pane.html">getRootPane</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getRootPane</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/JPanel.html"><span class="identifier">JPanel</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="load-settings.html">loadSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">loadSettings</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.array.ArraySettingsComponent$loadSettings(com.fwdekker.randomness.array.ArraySettings)/settings">settings</span><span class="symbol">:</span>&nbsp;<a href="../-array-settings/index.html"><span class="identifier">ArraySettings</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="save-settings.html">saveSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">saveSettings</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.array.ArraySettingsComponent$saveSettings(com.fwdekker.randomness.array.ArraySettings)/settings">settings</span><span class="symbol">:</span>&nbsp;<a href="../-array-settings/index.html"><span class="identifier">ArraySettings</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-settings-component/is-modified.html">isModified</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">isModified</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code><br>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isModified</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.SettingsComponent$isModified(com.fwdekker.randomness.SettingsComponent.S)/settings">settings</span><span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-settings-component/index.html#S"><span class="identifier">S</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns true if this component contains unsaved changes.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-settings-component/load-settings.html">loadSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">loadSettings</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Loads the default settings object.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-settings-component/reset.html">reset</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">reset</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Discards unsaved changes.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness/-settings-component/save-settings.html">saveSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">saveSettings</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Saves settings to the default settings object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

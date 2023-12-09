@@ -1,0 +1,165 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DecimalSettings - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness.decimal</a>&nbsp;/&nbsp;<a href="./index.html">DecimalSettings</a><br>
+<br>
+<h1>DecimalSettings</h1>
+<code><span class="keyword">class </span><span class="identifier">DecimalSettings</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../com.fwdekker.randomness/-settings.html"><span class="identifier">Settings</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">DecimalSettings</span></a><span class="symbol">&gt;</span></code>
+<p>Contains settings for generating random decimals.</p>
+<p><strong>See Also</strong><br>
+</p><p><a href="../-decimal-insert-action/index.html">DecimalInsertAction</a></p>
+<p><a href="../-decimal-settings-action/index.html">DecimalSettingsAction</a></p>
+<p><a href="../-decimal-settings-dialog/index.html">DecimalSettingsDialog</a></p>
+<p></p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">DecimalSettings</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>Contains settings for generating random decimals.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="decimal-count.html">decimalCount</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">decimalCount</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The number of decimals to display.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="decimal-separator.html">decimalSeparator</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">decimalSeparator</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The character that should separate decimals.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="grouping-separator.html">groupingSeparator</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">groupingSeparator</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The character that should separate groups.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="max-value.html">maxValue</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">maxValue</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>The maximum value to be generated, inclusive.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="min-value.html">minValue</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">minValue</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>The minimum value to be generated, inclusive.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get-state.html">getState</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getState</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">DecimalSettings</span></a></code>
+<p>Returns <code>this</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="load-state.html">loadState</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">loadState</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.decimal.DecimalSettings$loadState(com.fwdekker.randomness.decimal.DecimalSettings)/state">state</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DecimalSettings</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies the fields of <a href="load-state.html#com.fwdekker.randomness.decimal.DecimalSettings$loadState(com.fwdekker.randomness.decimal.DecimalSettings)/state">state</a> to <code>this</code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="default.html">default</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">default</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">DecimalSettings</span></a></code>
+<p>The persistent <code>DecimalSettings</code> instance.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-d-e-c-i-m-a-l_-c-o-u-n-t.html">DEFAULT_DECIMAL_COUNT</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_DECIMAL_COUNT</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The default value of the <a href="decimal-count.html">decimalCount</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-d-e-c-i-m-a-l_-s-e-p-a-r-a-t-o-r.html">DEFAULT_DECIMAL_SEPARATOR</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_DECIMAL_SEPARATOR</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The default value of the <a href="decimal-separator.html">decimalSeparator</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-g-r-o-u-p-i-n-g_-s-e-p-a-r-a-t-o-r.html">DEFAULT_GROUPING_SEPARATOR</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_GROUPING_SEPARATOR</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The default value of the <a href="grouping-separator.html">groupingSeparator</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-m-a-x_-v-a-l-u-e.html">DEFAULT_MAX_VALUE</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_MAX_VALUE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>The default value of the <a href="max-value.html">maxValue</a> field.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-d-e-f-a-u-l-t_-m-i-n_-v-a-l-u-e.html">DEFAULT_MIN_VALUE</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">DEFAULT_MIN_VALUE</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>The default value of the <a href="min-value.html">minValue</a> field.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

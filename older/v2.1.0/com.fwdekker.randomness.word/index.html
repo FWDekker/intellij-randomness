@@ -1,0 +1,157 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>com.fwdekker.randomness.word - intellij-randomness</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<a href="../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="./index.html">com.fwdekker.randomness.word</a><br>
+<br>
+<h2>Package com.fwdekker.randomness.word</h2>
+<p>Insertion of random words.</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-bundled-dictionary/index.html">BundledDictionary</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">BundledDictionary</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-dictionary/index.html"><span class="identifier">Dictionary</span></a></code>
+<p>A <code>Dictionary</code> of which the underlying file is a resource in the JAR.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-dictionary/index.html">Dictionary</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">Dictionary</span></code>
+<p>A collection of words that may become inaccessible at any moment in time.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-user-dictionary/index.html">UserDictionary</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">UserDictionary</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-dictionary/index.html"><span class="identifier">Dictionary</span></a></code>
+<p>A <code>Dictionary</code> of which the underlying file is a regular file.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-word-group-action/index.html">WordGroupAction</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">WordGroupAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../com.fwdekker.randomness/-data-group-action/index.html"><span class="identifier">DataGroupAction</span></a></code>
+<p>All actions related to inserting words.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-word-insert-action/index.html">WordInsertAction</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">WordInsertAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../com.fwdekker.randomness/-data-insert-action/index.html"><span class="identifier">DataInsertAction</span></a></code>
+<p>Inserts random words.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-word-insert-array-action/index.html">WordInsertArrayAction</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">WordInsertArrayAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../com.fwdekker.randomness/-data-insert-array-action/index.html"><span class="identifier">DataInsertArrayAction</span></a></code>
+<p>Inserts an array-like string of words.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-word-settings/index.html">WordSettings</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">WordSettings</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../com.fwdekker.randomness/-settings/index.html"><span class="identifier">Settings</span></a><span class="symbol">&lt;</span><a href="-word-settings/index.html"><span class="identifier">WordSettings</span></a><span class="symbol">&gt;</span></code>
+<p>Contains settings for generating random words.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-word-settings-action/index.html">WordSettingsAction</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">WordSettingsAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../com.fwdekker.randomness/-settings-action/index.html"><span class="identifier">SettingsAction</span></a><span class="symbol">&lt;</span><a href="-word-settings/index.html"><span class="identifier">WordSettings</span></a><span class="symbol">&gt;</span></code>
+<p>Controller for random string generation settings.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-word-settings-component/index.html">WordSettingsComponent</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">WordSettingsComponent</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../com.fwdekker.randomness/-settings-component/index.html"><span class="identifier">SettingsComponent</span></a><span class="symbol">&lt;</span><a href="-word-settings/index.html"><span class="identifier">WordSettings</span></a><span class="symbol">!</span><span class="symbol">&gt;</span></code>
+<p>Component for settings of random word generation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-word-settings-configurable/index.html">WordSettingsConfigurable</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">WordSettingsConfigurable</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../com.fwdekker.randomness/-settings-configurable/index.html"><span class="identifier">SettingsConfigurable</span></a><span class="symbol">&lt;</span><a href="-word-settings/index.html"><span class="identifier">WordSettings</span></a><span class="symbol">&gt;</span></code>
+<p>The configurable for word settings.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Exceptions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-invalid-dictionary-exception/index.html">InvalidDictionaryException</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">InvalidDictionaryException</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/index.html"><span class="identifier">Exception</span></a></code>
+<p>Thrown when a <a href="-dictionary/index.html">Dictionary</a> is found to be invalid and cannot be used in the intended way.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Extensions for External Classes</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="kotlin.collections.-set/index.html">kotlin.collections.Set</a></p>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="add-sets.html">addSets</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span> <span class="identifier">addSets</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.word$addSets(kotlin.collections.Set((com.fwdekker.randomness.word.addSets.T)), kotlin.collections.Set((com.fwdekker.randomness.word.addSets.T)))/a">a</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="add-sets.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="com.fwdekker.randomness.word$addSets(kotlin.collections.Set((com.fwdekker.randomness.word.addSets.T)), kotlin.collections.Set((com.fwdekker.randomness.word.addSets.T)))/b">b</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="add-sets.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="add-sets.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>Combines <code>a</code> and <code>b</code> into a single <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html">Set</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="combine-dictionaries.html">combineDictionaries</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">combineDictionaries</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.word$combineDictionaries(kotlin.collections.Iterable((com.fwdekker.randomness.word.Dictionary)))/dictionaries">dictionaries</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterable/index.html"><span class="identifier">Iterable</span></a><span class="symbol">&lt;</span><a href="-dictionary/index.html"><span class="identifier">Dictionary</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>Returns a <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html">Set</a> containing all words in <code>dictionaries</code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DataGroupAction - intellij-randomness</title>
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+<a href="../../index.html">intellij-randomness</a>&nbsp;/&nbsp;<a href="../index.html">com.fwdekker.randomness</a>&nbsp;/&nbsp;<a href="./index.html">DataGroupAction</a><br>
+<br>
+<h1>DataGroupAction</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">DataGroupAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ActionGroup</span></code>
+<p>A group of actions for a particular type of random data that can be generated.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">DataGroupAction</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>A group of actions for a particular type of random data that can be generated.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="insert-action.html">insertAction</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">insertAction</span><span class="symbol">: </span><a href="../-data-insert-action/index.html"><span class="identifier">DataInsertAction</span></a></code>
+<p>The action used to insert a single datum.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="insert-array-action.html">insertArrayAction</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">insertArrayAction</span><span class="symbol">: </span><a href="../-data-insert-array-action/index.html"><span class="identifier">DataInsertArrayAction</span></a></code>
+<p>The action used to insert an array of data.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="settings-action.html">settingsAction</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">settingsAction</span><span class="symbol">: </span><a href="../-settings-action/index.html"><span class="identifier">SettingsAction</span></a><span class="symbol">&lt;</span><span class="identifier">*</span><span class="symbol">&gt;</span></code>
+<p>The action used to edit the generator settings for this data type.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="action-performed.html">actionPerformed</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">actionPerformed</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.DataGroupAction$actionPerformed(com.intellij.openapi.actionSystem.AnActionEvent)/event">event</span><span class="symbol">:</span>&nbsp;<span class="identifier">AnActionEvent</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Chooses one of the three actions to execute based on the key modifiers in <a href="action-performed.html#com.fwdekker.randomness.DataGroupAction$actionPerformed(com.intellij.openapi.actionSystem.AnActionEvent)/event">event</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="can-be-performed.html">canBePerformed</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">canBePerformed</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.DataGroupAction$canBePerformed(com.intellij.openapi.actionSystem.DataContext)/context">context</span><span class="symbol">:</span>&nbsp;<span class="identifier">DataContext</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns <code>true</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-children.html">getChildren</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getChildren</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.DataGroupAction$getChildren(com.intellij.openapi.actionSystem.AnActionEvent)/event">event</span><span class="symbol">:</span>&nbsp;<span class="identifier">AnActionEvent</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><span class="identifier">AnAction</span><span class="symbol">&gt;</span></code>
+<p>Returns the insert action, array insert action, and settings action.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="is-popup.html">isPopup</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isPopup</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns <code>true</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="update.html">update</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">update</span><span class="symbol">(</span><span class="identifier" id="com.fwdekker.randomness.DataGroupAction$update(com.intellij.openapi.actionSystem.AnActionEvent)/event">event</span><span class="symbol">:</span>&nbsp;<span class="identifier">AnActionEvent</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the title of this action.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.decimal/-decimal-group-action/index.html">DecimalGroupAction</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DecimalGroupAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DataGroupAction</span></a></code>
+<p>All actions related to inserting decimals.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.integer/-integer-group-action/index.html">IntegerGroupAction</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">IntegerGroupAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DataGroupAction</span></a></code>
+<p>All actions related to inserting integers.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.string/-string-group-action/index.html">StringGroupAction</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">StringGroupAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DataGroupAction</span></a></code>
+<p>All actions related to inserting strings.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.uuid/-uuid-group-action/index.html">UuidGroupAction</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">UuidGroupAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DataGroupAction</span></a></code>
+<p>All actions related to inserting UUIDs.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../com.fwdekker.randomness.word/-word-group-action/index.html">WordGroupAction</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">WordGroupAction</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DataGroupAction</span></a></code>
+<p>All actions related to inserting words.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
