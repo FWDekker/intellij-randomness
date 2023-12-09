@@ -1,3 +1,4 @@
+
 import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -199,3 +200,21 @@ tasks {
         }
     }
 }
+
+// TODO: Remove this workaround for https://github.com/Kotlin/dokka/issues/3398 once it's fixed
+abstract class DokkaHtmlPost : DefaultTask() {
+    private val buildDir = project.layout.buildDirectory
+
+    @TaskAction
+    fun strip() {
+        buildDir.dir("dokka/html/").get().asFile
+            .walk()
+            .filter { it.isDirectory && it.name.startsWith('.') }
+            .forEach { it.deleteRecursively() }
+
+        buildDir.dir("dokka/html/").get().asFileTree
+            .forEach { file -> file.writeText(file.readText().dropLastWhile { it == '\n' } + '\n') }
+    }
+}
+tasks.register<DokkaHtmlPost>("dokkaHtmlPost")
+tasks.dokkaHtml { finalizedBy("dokkaHtmlPost") }

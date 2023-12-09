@@ -46,7 +46,6 @@ jobs:
         run: |
           rm -rf gh-pages/*
           mv main/build/dokka/html/* gh-pages/
-          rm -rf gh-pages/older/**/.git
 
       - name: Push new documentation
         working-directory: gh-pages/
