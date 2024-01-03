@@ -76,6 +76,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEdito
 
             row {
                 checkBox(Bundle("integer.ui.format.uppercase_option"))
+                    .enabledIf(base.hasValue { it > DECIMAL_BASE })
                     .loadMnemonic()
                     .withName("isUppercase")
                     .bindSelected(scheme::isUppercase)
