@@ -129,7 +129,7 @@ data class DecimalScheme(
         /**
          * The preset values for the [decimalSeparator] field.
          */
-        val PRESET_DECIMAL_SEPARATORS = arrayOf(",", ".")
+        val PRESET_DECIMAL_SEPARATORS = listOf(",", ".")
 
         /**
          * The default value of the [decimalSeparator] field.
@@ -144,7 +144,7 @@ data class DecimalScheme(
         /**
          * The preset values for the [groupingSeparator] field.
          */
-        val PRESET_GROUPING_SEPARATORS = arrayOf(".", ",", "_")
+        val PRESET_GROUPING_SEPARATORS = listOf(".", ",", "_")
 
         /**
          * The default value of the [groupingSeparator] field.

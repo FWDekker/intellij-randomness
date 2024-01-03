@@ -1,4 +1,12 @@
 # Changelog
+## 3.2.0 -- [Unreleased]
+### Added
+* Added support for UUID versions 6, 7, and 8. ([#513](https://github.com/FWDekker/intellij-randomness/issues/513))
+
+### Fixed
+* Disabled uppercase option for integers when base is 10 or lower.
+
+
 ## 3.1.0 -- 2023-12-08
 ### Added
 * Added ability to generate non-matching strings.

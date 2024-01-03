@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
@@ -9,11 +8,10 @@ import com.fwdekker.randomness.template.TemplateReference.Companion.PRESET_AFFIX
 import com.fwdekker.randomness.template.TemplateReference.Companion.PRESET_CAPITALIZATION
 import com.fwdekker.randomness.ui.onResetThis
 import com.fwdekker.randomness.ui.withName
-import com.fwdekker.randomness.ui.withSimpleRenderer
-import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindItem
+import com.intellij.ui.dsl.builder.listCellRenderer
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.toNullableProperty
 import javax.swing.JList
@@ -41,8 +39,7 @@ class TemplateReferenceEditor(scheme: TemplateReference) : SchemeEditor<Template
             }
 
             row(Bundle("reference.ui.value.capitalization_option")) {
-                cell(ComboBox(PRESET_CAPITALIZATION))
-                    .withSimpleRenderer(CapitalizationMode::toLocalizedString)
+                comboBox(PRESET_CAPITALIZATION, listCellRenderer { it.toLocalizedString() })
                     .withName("capitalization")
                     .bindItem(scheme::capitalization.toNullableProperty())
             }

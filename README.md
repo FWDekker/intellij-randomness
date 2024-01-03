@@ -188,5 +188,7 @@ In chronological order of contribution:
   [reporting a compatibility issue with the IntelliJ EAP](https://github.com/FWDekker/intellij-randomness/issues/459)!
 * Thanks to [Vitaly Provodin](https://github.com/vprovodin) for
   [also reporting that compatibility issue](https://github.com/FWDekker/intellij-randomness/issues/460)!
+* Thanks to [Juraj Jurčo](https://github.com/JiangHongTiao) for
+  [suggesting adding support for newer UUID versions](https://github.com/FWDekker/intellij-randomness/issues/513)!
 
 If I should add, remove, or change anything here, just open an issue or email me!

@@ -114,7 +114,7 @@ object TemplateListEditorTest : FunSpec({
                     "integer" to row(IntegerScheme()) { it.spinner("minValue") },
                     "decimal" to row(DecimalScheme()) { it.spinner("minValue") },
                     "string" to row(StringScheme()) { it.textBox("pattern") },
-                    "uuid" to row(UuidScheme()) { it.radioButton("type1") },
+                    "uuid" to row(UuidScheme()) { it.comboBox("version") },
                     "word" to row(WordScheme()) { it.comboBox("presets") },
                     "date-time" to row(DateTimeScheme()) { it.textBox("minDateTime") },
                     "template reference" to row(TemplateReference()) { it.comboBox("template") },

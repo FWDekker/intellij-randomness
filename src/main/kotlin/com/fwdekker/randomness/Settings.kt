@@ -103,18 +103,16 @@ class PersistentSettings : PersistentStateComponent<Element> {
      * Silently upgrades the format of the settings contained in [element] to the format of the latest version.
      */
     private fun upgrade(element: Element): Element {
-        val elementVersion = element.getAttributeValueByName("version")?.let { Version.parse(it) }
+        val elementVersion = element.getPropertyValue("version")?.let { Version.parse(it) }
 
         when {
             elementVersion == null -> Unit
-
-            // Placeholder to show how an upgrade might work. Remove this once an actual upgrade has been added.
-            elementVersion < Version.parse("0.0.0-placeholder") ->
-                element.getContentByPath("templateList", null, "templates", null)?.getElements()
-                    ?.forEachIndexed { idx, template -> template.setAttributeValueByName("name", "Template$idx") }
+            elementVersion < Version.parse("3.0.0") -> error("Unsupported Randomness config version $elementVersion.")
+            elementVersion < Version.parse("3.2.0") ->
+                element.getSchemes().filter { it.name == "UuidScheme" }.forEach { it.renameProperty("type", "version") }
         }
 
-        element.setAttributeValueByName("version", CURRENT_VERSION)
+        element.setPropertyValue("version", CURRENT_VERSION)
         return element
     }
 
@@ -126,6 +124,6 @@ class PersistentSettings : PersistentStateComponent<Element> {
         /**
          * The currently-running version of Randomness.
          */
-        const val CURRENT_VERSION: String = "3.1.0" // Synchronize this with the version in `gradle.properties`
+        const val CURRENT_VERSION: String = "3.2.0" // Synchronize this with the version in `gradle.properties`
     }
 }

@@ -10,12 +10,11 @@ import io.kotest.data.row
 import io.kotest.datatest.withData
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.UUIDVersion
 import io.kotest.matchers.string.beLowerCase
-import io.kotest.matchers.string.beUUID
 import io.kotest.matchers.string.beUpperCase
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
+import java.util.UUID
 
 
 /**
@@ -26,12 +25,10 @@ object UuidSchemeTest : FunSpec({
 
 
     context("generateStrings") {
-        test("returns type-1 uuid") {
-            UuidScheme(type = 1).generateStrings()[0] should beUUID(version = UUIDVersion.V1, considerNilValid = false)
-        }
-
-        test("returns type-4 uuid") {
-            UuidScheme(type = 4).generateStrings()[0] should beUUID(version = UUIDVersion.V4, considerNilValid = false)
+        context("generates a UUID for all supported versions") {
+            withData(UuidScheme.SUPPORTED_VERSIONS) { version ->
+                UUID.fromString(UuidScheme(version = version).generateStrings()[0]).version() shouldBe version
+            }
         }
 
         test("returns uppercase string") {
@@ -63,8 +60,8 @@ object UuidSchemeTest : FunSpec({
             mapOf(
                 "succeeds for default state" to
                     row(UuidScheme(), null),
-                "fails for unsupported type" to
-                    row(UuidScheme(type = 14), "uuid.error.unknown_type"),
+                "fails for unsupported version" to
+                    row(UuidScheme(version = 14), "uuid.error.unknown_version"),
                 "fails if affix decorator is invalid" to
                     row(UuidScheme(affixDecorator = AffixDecorator(descriptor = """\""")), ""),
                 "fails if array decorator is invalid" to

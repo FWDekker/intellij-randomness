@@ -4,14 +4,18 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.affix.AffixDecoratorEditor
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
+import com.fwdekker.randomness.ui.isEditable
 import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.withName
 import com.fwdekker.randomness.uuid.UuidScheme.Companion.PRESET_AFFIX_DECORATOR_DESCRIPTORS
+import com.intellij.ui.ColoredListCellRenderer
+import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.dsl.builder.AlignX
-import com.intellij.ui.dsl.builder.BottomGap
-import com.intellij.ui.dsl.builder.bind
+import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.toNullableProperty
+import javax.swing.JList
 
 
 /**
@@ -23,12 +27,12 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidSch
     override val rootComponent = panel {
         group(Bundle("uuid.ui.value.header")) {
             panel {
-                buttonsGroup {
-                    row(Bundle("uuid.ui.value.type.option")) {
-                        radioButton(Bundle("uuid.ui.value.type.1"), value = 1).withName("type1")
-                        radioButton(Bundle("uuid.ui.value.type.4"), value = 4).withName("type4")
-                    }.bottomGap(BottomGap.SMALL)
-                }.bind(scheme::type)
+                row(Bundle("uuid.ui.value.version.option")) {
+                    comboBox(UuidScheme.SUPPORTED_VERSIONS, UuidVersionRenderer())
+                        .isEditable(false)
+                        .withName("version")
+                        .bindItem(scheme::version.toNullableProperty())
+                }
 
                 row {
                     checkBox(Bundle("uuid.ui.value.capitalization_option"))
@@ -62,5 +66,25 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidSch
 
     init {
         reset()
+    }
+
+
+    /**
+     * Renders a supported UUID version.
+     */
+    private class UuidVersionRenderer : ColoredListCellRenderer<Int>() {
+        override fun customizeCellRenderer(
+            list: JList<out Int>,
+            value: Int?,
+            index: Int,
+            selected: Boolean,
+            hasFocus: Boolean,
+        ) {
+            if (value == null) return
+
+            append("$value")
+            append("  ")
+            append(Bundle("uuid.ui.value.version.$value"), SimpleTextAttributes.GRAYED_ATTRIBUTES)
+        }
     }
 }

@@ -131,7 +131,7 @@ data class StringScheme(
         /**
          * The preset values for the [capitalization] field.
          */
-        val PRESET_CAPITALIZATION = arrayOf(
+        val PRESET_CAPITALIZATION = listOf(
             CapitalizationMode.RETAIN,
             CapitalizationMode.LOWER,
             CapitalizationMode.UPPER,

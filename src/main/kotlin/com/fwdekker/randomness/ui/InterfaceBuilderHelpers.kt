@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.ui
 
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.TopGap
@@ -111,15 +110,6 @@ fun <E> Cell<ComboBox<E>>.isEditable(editable: Boolean) = this.also { it.compone
  */
 fun <E> Cell<ComboBox<E>>.withFilter(filter: DocumentFilter): Cell<ComboBox<E>> {
     ((component.editor.editorComponent as? JTextComponent)?.document as? AbstractDocument)?.documentFilter = filter
-    return this
-}
-
-/**
- * Sets an item renderer on the [ComboBox] in this [Cell] that renders a label displaying the mapping of an item using
- * [toString], and returns `this`.
- */
-fun <E> Cell<ComboBox<E>>.withSimpleRenderer(toString: (E) -> String = { it.toString() }): Cell<ComboBox<E>> {
-    component.setRenderer { _, value, _, _, _ -> JBLabel(toString(value)) }
     return this
 }
 

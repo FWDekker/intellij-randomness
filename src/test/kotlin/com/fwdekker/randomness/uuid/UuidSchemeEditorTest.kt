@@ -7,8 +7,8 @@ import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.isSelectedProp
+import com.fwdekker.randomness.testhelpers.itemProp
 import com.fwdekker.randomness.testhelpers.prop
-import com.fwdekker.randomness.testhelpers.radioButtonGroupProp
 import com.fwdekker.randomness.testhelpers.textProp
 import com.fwdekker.randomness.testhelpers.valueProp
 import com.intellij.testFramework.fixtures.IdeaTestFixture
@@ -65,9 +65,9 @@ object UuidSchemeEditorTest : FunSpec({
             mapOf(
                 "type" to {
                     row(
-                        frame.radioButtonGroupProp("type", listOf(1, 4)),
-                        editor.scheme::type.prop(),
-                        1,
+                        frame.comboBox("version").itemProp(),
+                        editor.scheme::version.prop(),
+                        8,
                     )
                 },
                 "isUppercase" to {
