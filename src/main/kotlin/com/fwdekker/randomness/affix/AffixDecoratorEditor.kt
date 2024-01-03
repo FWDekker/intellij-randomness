@@ -7,7 +7,6 @@ import com.fwdekker.randomness.ui.disableMnemonic
 import com.fwdekker.randomness.ui.isEditable
 import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.withName
-import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
@@ -44,7 +43,7 @@ class AffixDecoratorEditor(
                 .bindSelected(scheme::enabled)
                 .also { enabledCheckBox = it }
 
-            cell(ComboBox(presets.toTypedArray()))
+            comboBox(presets)
                 .enabledIf(enabledIf?.and(enabledCheckBox.selected) ?: enabledCheckBox.selected)
                 .isEditable(true)
                 .withName(camelConcat(namePrefix, "affixDescriptor"))

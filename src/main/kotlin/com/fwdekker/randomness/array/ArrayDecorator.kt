@@ -88,7 +88,7 @@ data class ArrayDecorator(
         /**
          * The preset values for the [separator] field.
          */
-        val PRESET_SEPARATORS = arrayOf(", ", "; ", "\\n")
+        val PRESET_SEPARATORS = listOf(", ", "; ", "\\n")
 
         /**
          * The default value of the [separator] field.

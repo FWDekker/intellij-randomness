@@ -24,7 +24,6 @@ import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.withFilter
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.fwdekker.randomness.ui.withName
-import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
@@ -89,7 +88,7 @@ class IntegerSchemeEditor(scheme: IntegerScheme = IntegerScheme()) : SchemeEdito
                     .bindSelected(scheme::groupingSeparatorEnabled)
                     .also { groupingSeparatorEnabled = it.component }
 
-                cell(ComboBox(PRESET_GROUPING_SEPARATORS))
+                comboBox(PRESET_GROUPING_SEPARATORS)
                     .enabledIf(base.hasValue { it == DECIMAL_BASE }.and(groupingSeparatorEnabled.selected))
                     .withName("groupingSeparator")
                     .isEditable(true)

@@ -1,11 +1,9 @@
 package com.fwdekker.randomness.ui
 
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.TopGap
-import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.dsl.builder.toMutableProperty
 import com.intellij.ui.layout.ComponentPredicate
@@ -115,15 +113,6 @@ fun <E> Cell<ComboBox<E>>.withFilter(filter: DocumentFilter): Cell<ComboBox<E>> 
     return this
 }
 
-/**
- * Sets an item renderer on the [ComboBox] in this [Cell] that renders a label displaying the mapping of an item using
- * [toString], and returns `this`.
- */
-fun <E> Cell<ComboBox<E>>.withSimpleRenderer(toString: (E) -> String = { it.toString() }): Cell<ComboBox<E>> {
-    component.setRenderer { _, value, _, _, _ -> JBLabel(toString(value)) }
-    return this
-}
-
 
 /**
  * A predicate that always returns [output].
@@ -162,12 +151,6 @@ fun Cell<ComboBox<String>>.bindCurrentText(property: KMutableProperty0<String>) 
         { comboBox, value -> comboBox.item = value },
         property.toMutableProperty()
     )
-
-/**
- * Binds the value of the [ComboBox] in this [Cell] to [property], asserting that the value is not `null`.
- */
-fun <T : Any> Cell<ComboBox<T?>>.bindItemNotNull(property: KMutableProperty0<T>) =
-    bindItem({ property.get() }, { property.set(it!!) })
 
 /**
  * Binds the value of the [JIntSpinner] in this [Cell] to [property].

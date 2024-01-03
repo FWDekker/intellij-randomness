@@ -21,7 +21,6 @@ import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.withFilter
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.fwdekker.randomness.ui.withName
-import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.bindSelected
@@ -79,7 +78,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : SchemeEdito
             }
 
             row(Bundle("decimal.ui.format.decimal_separator_option")) {
-                cell(ComboBox(PRESET_DECIMAL_SEPARATORS))
+                comboBox(PRESET_DECIMAL_SEPARATORS)
                     .isEditable(true)
                     .withFilter(MinMaxLengthDocumentFilter(1, 1))
                     .withName("decimalSeparator")
@@ -95,7 +94,7 @@ class DecimalSchemeEditor(scheme: DecimalScheme = DecimalScheme()) : SchemeEdito
                     .bindSelected(scheme::groupingSeparatorEnabled)
                     .also { groupingSeparatorEnabled = it }
 
-                cell(ComboBox(PRESET_GROUPING_SEPARATORS))
+                comboBox(PRESET_GROUPING_SEPARATORS)
                     .enabledIf(groupingSeparatorEnabled.selected)
                     .isEditable(true)
                     .withFilter(MinMaxLengthDocumentFilter(1, 1))

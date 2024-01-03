@@ -152,7 +152,7 @@ data class IntegerScheme(
         /**
          * The preset values for the [groupingSeparator] descriptor.
          */
-        val PRESET_GROUPING_SEPARATORS = arrayOf(".", ",", "_")
+        val PRESET_GROUPING_SEPARATORS = listOf(".", ",", "_")
 
         /**
          * The default value of the [groupingSeparator] field.

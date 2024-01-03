@@ -17,7 +17,6 @@ import com.fwdekker.randomness.ui.isEditable
 import com.fwdekker.randomness.ui.loadMnemonic
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.fwdekker.randomness.ui.withName
-import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.bindSelected
@@ -86,7 +85,7 @@ class ArrayDecoratorEditor(
                         .bindSelected(scheme::separatorEnabled)
                         .also { separatorEnabledCheckBox = it.component }
 
-                    cell(ComboBox(PRESET_SEPARATORS))
+                    comboBox(PRESET_SEPARATORS)
                         .enabledIf(isEnabled.and(separatorEnabledCheckBox.selected))
                         .isEditable(true)
                         .withName("arraySeparator")
