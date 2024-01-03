@@ -30,7 +30,7 @@ class UuidSchemeEditor(scheme: UuidScheme = UuidScheme()) : SchemeEditor<UuidSch
                         .isEditable(false)
                         .withSimpleRenderer { Bundle("uuid.ui.value.version.$it") }
                         .withName("version")
-                        .bindItemNotNull(scheme::type)
+                        .bindItemNotNull(scheme::version)
                 }
 
                 row {

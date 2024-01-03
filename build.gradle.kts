@@ -1,4 +1,3 @@
-
 import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -201,7 +200,7 @@ tasks {
     }
 }
 
-// TODO: Remove this workaround for https://github.com/Kotlin/dokka/issues/3398 once it's fixed
+// TODO[Remove workaround]: After https://github.com/Kotlin/dokka/issues/3398 has been fixed
 abstract class DokkaHtmlPost : DefaultTask() {
     private val buildDir = project.layout.buildDirectory
 

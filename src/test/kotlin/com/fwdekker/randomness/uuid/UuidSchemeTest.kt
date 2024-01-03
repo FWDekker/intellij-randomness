@@ -27,7 +27,7 @@ object UuidSchemeTest : FunSpec({
     context("generateStrings") {
         context("generates a UUID for all supported versions") {
             withData(UuidScheme.SUPPORTED_VERSIONS) { version ->
-                UUID.fromString(UuidScheme(type = version).generateStrings()[0]).version() shouldBe version
+                UUID.fromString(UuidScheme(version = version).generateStrings()[0]).version() shouldBe version
             }
         }
 
@@ -61,7 +61,7 @@ object UuidSchemeTest : FunSpec({
                 "succeeds for default state" to
                     row(UuidScheme(), null),
                 "fails for unsupported version" to
-                    row(UuidScheme(type = 14), "uuid.error.unknown_version"),
+                    row(UuidScheme(version = 14), "uuid.error.unknown_version"),
                 "fails if affix decorator is invalid" to
                     row(UuidScheme(affixDecorator = AffixDecorator(descriptor = """\""")), ""),
                 "fails if array decorator is invalid" to

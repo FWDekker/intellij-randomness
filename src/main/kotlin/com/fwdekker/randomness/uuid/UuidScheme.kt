@@ -24,14 +24,14 @@ import kotlin.random.asJavaRandom
 /**
  * Contains settings for generating random UUIDs.
  *
- * @property type The version of UUIDs to generate.
+ * @property version The version of UUIDs to generate.
  * @property isUppercase `true` if and only if all letters are uppercase.
  * @property addDashes `true` if and only if the UUID should have dashes in it.
  * @property affixDecorator The affixation to apply to the generated values.
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class UuidScheme(
-    var type: Int = DEFAULT_VERSION,
+    var version: Int = DEFAULT_VERSION,
     var isUppercase: Boolean = DEFAULT_IS_UPPERCASE,
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
     val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
@@ -47,13 +47,13 @@ data class UuidScheme(
      */
     @Suppress("detekt:MagicNumber") // UUID versions are well-defined
     override fun generateUndecoratedStrings(count: Int): List<String> {
-        val generator = when (type) {
+        val generator = when (version) {
             1 -> Generators.timeBasedGenerator(random.nextAddress(), random.uuidTimer())
             4 -> Generators.randomBasedGenerator(random.asJavaRandom())
             6 -> Generators.timeBasedReorderedGenerator(random.nextAddress(), random.uuidTimer())
             7 -> Generators.timeBasedEpochGenerator(random.asJavaRandom(), random.uuidClock())
             8 -> FreeFormGenerator(random)
-            else -> error(Bundle("uuid.error.unknown_version", type))
+            else -> error(Bundle("uuid.error.unknown_version", version))
         }
 
         return List(count) { generator.generate().toString() }
@@ -69,7 +69,7 @@ data class UuidScheme(
 
 
     override fun doValidate() =
-        if (type !in SUPPORTED_VERSIONS) Bundle("uuid.error.unknown_version", type)
+        if (version !in SUPPORTED_VERSIONS) Bundle("uuid.error.unknown_version", version)
         else affixDecorator.doValidate() ?: arrayDecorator.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =
@@ -93,12 +93,12 @@ data class UuidScheme(
         )
 
         /**
-         * The default value of the [type] field.
+         * The default value of the [version] field.
          */
         const val DEFAULT_VERSION = 4
 
         /**
-         * The list of supported [type]s.
+         * The list of supported [version]s.
          */
         val SUPPORTED_VERSIONS = listOf(1, 4, 6, 7, 8)
 
@@ -155,6 +155,8 @@ private fun Random.uuidTimer() = UUIDTimer(asJavaRandom(), null, uuidClock())
  * Works by generating a v4 UUID and then replacing the version nibble.
  */
 private class FreeFormGenerator(random: Random) : NoArgGenerator() {
+    // TODO[Remove workaround]: After https://github.com/cowtowncoder/java-uuid-generator/issues/47 has been fixed
+
     /**
      * Generates v4 UUIDs.
      */

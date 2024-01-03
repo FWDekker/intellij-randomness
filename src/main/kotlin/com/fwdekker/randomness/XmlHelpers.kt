@@ -4,46 +4,87 @@ import org.jdom.Element
 
 
 /**
- * Returns a list of all [Element]s contained in this [Element].
+ * Adds a property with given [name] and [value].
  */
-fun Element.getElements(): List<Element> =
-    content().toList().filterIsInstance<Element>()
-
-/**
- * Returns the [Element] contained in this [Element] that has attribute `name="[name]"`, or `null` if no single such
- * [Element] exists.
- */
-fun Element.getContentByName(name: String): Element? =
-    getContent<Element> { (it as Element).getAttribute("name")?.value == name }.singleOrNull()
-
-/**
- * Returns the value of the `value` attribute of the single [Element] contained in this [Element] that has attribute
- * `name="[name]"`, or `null` if no single such [Element] exists.
- */
-fun Element.getAttributeValueByName(name: String): String? =
-    getContentByName(name)?.getAttribute("value")?.value
-
-/**
- * Sets the value of the `value` attribute of the single [Element] contained in this [Element] that has attribute
- * `name="[name]"` to [value], or does nothing if no single such [Element] exists.
- */
-fun Element.setAttributeValueByName(name: String, value: String) {
-    getContentByName(name)?.setAttribute("value", value)
+fun Element.addProperty(name: String, value: String? = null) {
+    Element("option")
+        .also {
+            it.setAttribute("name", name)
+            if (value != null) it.setAttribute("value", value)
+        }
+        .also(::addContent)
 }
 
 /**
- * Returns the single [Element] that is contained in this [Element], or `null` if this [Element] does not contain
- * exactly one [Element].
+ * Returns the single child with attribute `name="[name]"`, or `null` if there is not exactly one such child.
  */
-fun Element.getSingleContent(): Element? =
-    content.singleOrNull() as? Element
+fun Element.getProperty(name: String): Element? =
+    getMultiProperty(name).singleOrNull()
 
 /**
- * Traverses a path of [Element]s based on their [names] by monadically calling either [getContentByName] (if the name
- * is not `null`) or [getSingleContent] (if the name is `null`).
+ * Returns all children with attribute `name="[name]"`.
  */
-fun Element.getContentByPath(vararg names: String?): Element? =
+fun Element.getMultiProperty(name: String): List<Element> =
+    children.filter { it.getAttribute("name")?.value == name }
+
+/**
+ * Traverses a path of [Element]s based on their [names] by monadically either calling [getProperty] (if the name is not
+ * `null`) or taking the single child (if the name is `null`).
+ */
+fun Element.getPropertyByPath(vararg names: String?): Element? =
     names.fold(this as? Element) { acc, name ->
-        if (name == null) acc?.getSingleContent()
-        else acc?.getContentByName(name)
+        if (name == null) acc?.children?.singleOrNull()
+        else acc?.getProperty(name)
     }
+
+/**
+ * Returns the value of the `value` attribute of property [name], or `null` if the property does not exist or if the
+ * property has no value.
+ */
+fun Element.getPropertyValue(name: String): String? =
+    getProperty(name)?.getAttribute("value")?.value
+
+/**
+ * Sets the value of the `value` attribute of property [name], or adds the property if it does not exist.
+ */
+fun Element.setPropertyValue(name: String, value: String) {
+    getMultiProperty(name)
+        .also {
+            if (it.isEmpty()) addProperty(name, value)
+            else if (it.size == 1) it[0].setAttribute("value", value)
+        }
+}
+
+/**
+ * Renames the property from [oldName] to [newName].
+ *
+ * Requires that there is not already a property with [newName]. If there is no property with [oldName], nothing
+ * happens. If there are multiple properties with [oldName], they are all renamed to [newName].
+ */
+fun Element.renameProperty(oldName: String, newName: String) {
+    require(getMultiProperty(newName).isEmpty()) { "Attribute '$newName' is already in use." }
+
+    getMultiProperty(oldName).forEach { it.setAttribute("name", newName) }
+}
+
+
+/**
+ * Assuming this is the [Element] representation of a [Settings] instance, returns the [Element] of the contained
+ * [com.fwdekker.randomness.template.TemplateList], or `null` if no such [Element] could be found.
+ */
+fun Element.getTemplateList(): Element? =
+    getPropertyByPath("templateList", null)
+
+/**
+ * Assuming this is the [Element] representation of a [Settings] instance, returns the list of [Element]s of the
+ * contained [com.fwdekker.randomness.template.Template]s.
+ */
+fun Element.getTemplates(): List<Element> =
+    getPropertyByPath("templateList", null, "templates", null)?.children ?: emptyList()
+
+/**
+ * Assuming this is the [Element] representation of a [Settings] instance, returns the list of [Element]s of the
+ * contained [com.fwdekker.randomness.Scheme]s.
+ */
+fun Element.getSchemes(): List<Element> =
+    getTemplates().mapNotNull { it.getProperty("schemes") }.flatMap { it.children }

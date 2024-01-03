@@ -1,37 +1,51 @@
 package com.fwdekker.randomness
 
 import com.intellij.openapi.util.JDOMUtil
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.collections.beEmpty
+import io.kotest.matchers.collections.haveSize
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNot
 
 
 /**
  * Unit tests for extension functions in `XmlHelpersTest`.
  */
 object XmlHelpersTest : FunSpec({
-    context("getElements") {
-        test("returns all contained elements") {
-            val element = JDOMUtil.load(
-                """
-                <tag>
-                    <content1 />
-                    <content2></content2>
-                    <content3 attribute="value" />
-                    <content4 attribute="value"><tag /></content4>
-                </tag>
-                """.trimIndent()
-            )
+    context("addProperty") {
+        test("adds the property with the given name") {
+            val element = JDOMUtil.load("<tag></tag>")
+            element.getMultiProperty("needle") should beEmpty()
 
-            val elements = element.getElements()
+            element.addProperty("needle")
 
-            elements.map { it.name } shouldContainExactly listOf("content1", "content2", "content3", "content4")
+            element.getMultiProperty("needle") should haveSize(1)
+        }
+
+        test("adds the property with the given name even if it already exists") {
+            val element = JDOMUtil.load("""<tag><content name="needle" /></tag>""")
+            element.getMultiProperty("needle") should haveSize(1)
+
+            element.addProperty("needle")
+
+            element.getMultiProperty("needle") should haveSize(2)
+        }
+
+        test("adds the property with the given name and value") {
+            val element = JDOMUtil.load("<tag></tag>")
+            element.getPropertyValue("needle") should beNull()
+
+            element.addProperty("needle", "value")
+
+            element.getPropertyValue("needle") shouldBe "value"
         }
     }
 
-    context("getContentByName") {
+    context("getProperty") {
         test("returns the child with the given name") {
             val element = JDOMUtil.load(
                 """
@@ -43,7 +57,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getContentByName("needle")?.name shouldBe "content2"
+            element.getProperty("needle")?.name shouldBe "content2"
         }
 
         test("returns `null` if no children have the given name") {
@@ -57,7 +71,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getContentByName("needle")?.name should beNull()
+            element.getProperty("needle")?.name should beNull()
         }
 
         test("returns `null` if multiple children have the given name") {
@@ -72,168 +86,56 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getContentByName("needle")?.name should beNull()
+            element.getProperty("needle")?.name should beNull()
         }
     }
 
-    context("getAttributeValueByName") {
-        test("returns value attribute of the child with the given name") {
+    context("getMultiProperty") {
+        test("returns the single child with the given name") {
             val element = JDOMUtil.load(
                 """
                 <tag>
-                    <content name="wrong" value="undesired" />
-                    <content name="needle" value="value" />
-                    <content attribute="value" />
+                    <content1 name="wrong" />
+                    <content2 name="needle" />
+                    <content3 attribute="value" />
                 </tag>
                 """.trimIndent()
             )
 
-            element.getAttributeValueByName("needle") shouldBe "value"
+            element.getMultiProperty("needle").map { it.name } shouldContainExactly listOf("content2")
         }
 
         test("returns `null` if no children have the given name") {
             val element = JDOMUtil.load(
                 """
                 <tag>
-                    <content1 name="wrong" value="undesired" />
-                    <content2 name="noodle" value="valet" />
+                    <content1 name="wrong" />
+                    <content2 name="noodle" />
                     <content3 attribute="value" />
                 </tag>
                 """.trimIndent()
             )
 
-            element.getAttributeValueByName("needle") should beNull()
+            element.getMultiProperty("needle") should beEmpty()
         }
 
-        test("returns `null` if multiple children have the given name") {
+        test("returns all children that have the given name") {
             val element = JDOMUtil.load(
                 """
                 <tag>
-                    <content1 name="wrong" value="undesired" />
-                    <content2 name="needle" value="valet" />
-                    <content3 name="needle" value="voodoo" />
+                    <content1 name="wrong" />
+                    <content2 name="needle" />
+                    <content3 name="needle" />
                     <content4 attribute="value" />
                 </tag>
                 """.trimIndent()
             )
 
-            element.getAttributeValueByName("needle") should beNull()
-        }
-
-        test("returns `null` if the child does not have a value attribute") {
-            val element = JDOMUtil.load(
-                """
-                <tag>
-                    <content name="wrong" value="undesired" />
-                    <content name="needle" />
-                    <content attribute="value" />
-                </tag>
-                """.trimIndent()
-            )
-
-            element.getAttributeValueByName("needle") should beNull()
+            element.getMultiProperty("needle").map { it.name } shouldContainExactly listOf("content2", "content3")
         }
     }
 
-    context("setAttributeValueByName") {
-        test("changes the child's value to the given value") {
-            val element = JDOMUtil.load(
-                """
-                <tag>
-                    <content name="wrong" value="undesired" />
-                    <content name="needle" value="value" />
-                    <content attribute="value" />
-                </tag>
-                """.trimIndent()
-            )
-            element.getAttributeValueByName("needle") shouldBe "value"
-
-            element.setAttributeValueByName("needle", "new-value")
-
-            element.getAttributeValueByName("needle") shouldBe "new-value"
-        }
-
-        test("adds an attribute if the child does not have a value attribute") {
-            val element = JDOMUtil.load(
-                """
-                <tag>
-                    <content name="wrong" value="undesired" />
-                    <content name="needle" />
-                    <content attribute="value" />
-                </tag>
-                """.trimIndent()
-            )
-            element.getAttributeValueByName("needle") should beNull()
-
-            element.setAttributeValueByName("needle", "new-value")
-
-            element.getAttributeValueByName("needle") shouldBe "new-value"
-        }
-
-        test("does nothing if no children have the given name") {
-            val element = JDOMUtil.load(
-                """
-                <tag>
-                    <content1 name="wrong" value="undesired" />
-                    <content2 name="noodle" value="valet" />
-                    <content3 attribute="value" />
-                </tag>
-                """.trimIndent()
-            )
-
-            val copy = JDOMUtil.load(JDOMUtil.write(element, ""))
-            element.setAttributeValueByName("needle", "new-value")
-
-            JDOMUtil.write(element, "") shouldBe JDOMUtil.write(copy, "")
-        }
-
-        test("does nothing if multiple children have the given name") {
-            val element = JDOMUtil.load(
-                """
-                <tag>
-                    <content1 name="wrong" value="undesired" />
-                    <content2 name="needle" value="valet" />
-                    <content3 name="needle" value="voodoo" />
-                    <content4 attribute="value" />
-                </tag>
-                """.trimIndent()
-            )
-
-            val copy = JDOMUtil.load(JDOMUtil.write(element, ""))
-            element.setAttributeValueByName("needle", "new-value")
-
-            JDOMUtil.write(element, "") shouldBe JDOMUtil.write(copy, "")
-        }
-    }
-
-    context("getSingleContent") {
-        test("returns the singular child") {
-            val element = JDOMUtil.load("<tag><child /></tag>")
-
-            element.getSingleContent()?.name shouldBe "child"
-        }
-
-        test("returns `null` if there are no children") {
-            val element = JDOMUtil.load("<tag></tag>")
-
-            element.getSingleContent() should beNull()
-        }
-
-        test("returns `null` if there are multiple children") {
-            val element = JDOMUtil.load(
-                """
-                <tag>
-                    <content1 />
-                    <content2 />
-                </tag>
-                """.trimIndent()
-            )
-
-            element.getSingleContent() should beNull()
-        }
-    }
-
-    context("getContentByPath") {
+    context("getPropertyByPath") {
         test("returns the child with the given name") {
             val element = JDOMUtil.load(
                 """
@@ -245,13 +147,13 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getContentByPath("needle")?.name shouldBe "content2"
+            element.getPropertyByPath("needle")?.name shouldBe "content2"
         }
 
         test("returns the singular child if `null` is given") {
             val element = JDOMUtil.load("<tag><child /></tag>")
 
-            element.getContentByPath(null)?.name shouldBe "child"
+            element.getPropertyByPath(null)?.name shouldBe "child"
         }
 
         test("returns the element at the given path") {
@@ -272,7 +174,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getContentByPath("needle", null, "prong", null)?.name shouldBe "target"
+            element.getPropertyByPath("needle", null, "prong", null)?.name shouldBe "target"
         }
 
         test("returns `null` if no element matches the path") {
@@ -293,7 +195,238 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getContentByPath("wrong", null, "prong", null)?.name should beNull()
+            element.getPropertyByPath("wrong", null, "prong", null)?.name should beNull()
         }
+    }
+
+    context("getPropertyValue") {
+        test("returns value of the property with the given name") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="wrong" value="undesired" />
+                    <content name="needle" value="desired" />
+                    <content attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+
+            element.getPropertyValue("needle") shouldBe "desired"
+        }
+
+        test("returns `null` if the property does not exist") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content1 name="wrong" value="undesired" />
+                    <content2 name="noodle" value="valet" />
+                    <content3 attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+
+            element.getPropertyValue("needle") should beNull()
+        }
+
+        test("returns `null` if the property exists multiple times") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content1 name="wrong" value="undesired" />
+                    <content2 name="needle" value="valet" />
+                    <content3 name="needle" value="voodoo" />
+                    <content4 attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+
+            element.getPropertyValue("needle") should beNull()
+        }
+
+        test("returns `null` if the property has no value") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="wrong" value="undesired" />
+                    <content name="needle" />
+                    <content attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+
+            element.getPropertyValue("needle") should beNull()
+        }
+    }
+
+    context("setPropertyValue") {
+        test("adds the property if it does not exist") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="wrong" value="undesired" />
+                    <content attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+            element.getPropertyValue("needle") should beNull()
+
+            element.setPropertyValue("needle", "value")
+
+            element.getPropertyValue("needle") shouldBe "value"
+        }
+
+        test("changes the property's value") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="wrong" value="undesired" />
+                    <content name="needle" value="value" />
+                    <content attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+            element.getPropertyValue("needle") shouldBe "value"
+
+            element.setPropertyValue("needle", "new-value")
+
+            element.getPropertyValue("needle") shouldBe "new-value"
+        }
+
+        test("adds a value to the property if it does not have one") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="wrong" value="undesired" />
+                    <content name="needle" />
+                    <content attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+            element.getPropertyValue("needle") should beNull()
+
+            element.setPropertyValue("needle", "value")
+
+            element.getPropertyValue("needle") shouldBe "value"
+        }
+
+        test("does nothing if multiple children have the given name") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="wrong" value="undesired" />
+                    <content name="needle" value="valet" />
+                    <content name="needle" value="voodoo" />
+                    <content attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+
+            val copy = JDOMUtil.load(JDOMUtil.write(element, ""))
+            element.setPropertyValue("needle", "new-value")
+
+            JDOMUtil.write(element, "") shouldBe JDOMUtil.write(copy, "")
+        }
+    }
+
+    context("renameProperty") {
+        test("renames the property with the given name") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="wrong" value="undesired" />
+                    <content name="needle" value="desired" />
+                    <content attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+            element.getPropertyValue("needle") shouldBe "desired"
+            element.getPropertyValue("new-needle") should beNull()
+
+            element.renameProperty("needle", "new-needle")
+
+            element.getPropertyValue("needle") should beNull()
+            element.getPropertyValue("new-needle") shouldBe "desired"
+        }
+
+        test("renames all properties with the given name") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="wrong" value="undesired" />
+                    <content name="needle" value="desired1" />
+                    <content attribute="value" />
+                    <content name="needle" value="desired2" />
+                </tag>
+                """.trimIndent()
+            )
+            element.getMultiProperty("needle") should haveSize(2)
+            element.getMultiProperty("new-needle") should beEmpty()
+
+            element.renameProperty("needle", "new-needle")
+
+            element.getMultiProperty("needle") should beEmpty()
+            element.getMultiProperty("new-needle") should haveSize(2)
+        }
+
+        test("does nothing if no property has the given name") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="wrong" value="undesired" />
+                    <content attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+
+            val copy = JDOMUtil.load(JDOMUtil.write(element, ""))
+            element.renameProperty("needle", "new-needle")
+
+            JDOMUtil.write(element, "") shouldBe JDOMUtil.write(copy, "")
+        }
+
+        test("throws an error if the new name is already in use") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="wrong" value="undesired" />
+                    <content name="needle" value="desired1" />
+                    <content attribute="value" />
+                    <content name="new-needle" value="desired2" />
+                </tag>
+                """.trimIndent()
+            )
+
+            shouldThrow<IllegalArgumentException> { element.renameProperty("needle", "new-needle") }
+        }
+    }
+
+
+    context("getTemplateList") {
+        val settings = PersistentSettings()
+
+        val xmlUuid = settings.state.getTemplateList()?.getPropertyValue("uuid")
+        val realUuid = settings.settings.templateList.uuid
+
+        xmlUuid shouldBe realUuid
+    }
+
+    context("getTemplates") {
+        val settings = PersistentSettings()
+
+        val xmlUuids = settings.state.getTemplates().map { it.getPropertyValue("uuid") }
+        val realUuids = settings.settings.templates.map { it.uuid }
+        realUuids shouldNot beEmpty()
+
+        xmlUuids shouldContainExactly realUuids
+    }
+
+    context("getSchemes") {
+        val settings = PersistentSettings()
+
+        val xmlUuids = settings.state.getSchemes().map { it.getPropertyValue("uuid") }
+        val realUuids = settings.settings.templates.flatMap { it.schemes }.map { it.uuid }
+        realUuids shouldNot beEmpty()
+
+        xmlUuids shouldContainExactly realUuids
     }
 })

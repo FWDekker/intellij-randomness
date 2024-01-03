@@ -66,7 +66,7 @@ object UuidSchemeEditorTest : FunSpec({
                 "type" to {
                     row(
                         frame.comboBox("version").itemProp(),
-                        editor.scheme::type.prop(),
+                        editor.scheme::version.prop(),
                         8,
                     )
                 },
