@@ -1,10 +1,14 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.Scheme
+import com.intellij.ide.DataManager
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.openapi.options.ex.Settings
 import com.intellij.openapi.util.Disposer
+import java.awt.Component
 import javax.swing.JComponent
 
 
@@ -77,6 +81,12 @@ class TemplateListConfigurable : Configurable, Disposable {
 
 
     /**
+     * Explicitly selects the given scheme (based on its UUID).
+     */
+    fun selectScheme(scheme: Scheme) = editor.selectScheme(scheme)
+
+
+    /**
      * Recursively disposes this configurable's resources.
      */
     override fun disposeUIResources() = Disposer.dispose(this)
@@ -85,4 +95,19 @@ class TemplateListConfigurable : Configurable, Disposable {
      * Non-recursively disposes this configurable's resources.
      */
     override fun dispose() = Unit
+}
+
+
+/**
+ * Selects [scheme] in the currently open [TemplateListConfigurable], or does nothing if this is not possible for some
+ * reason.
+ */
+fun selectSchemeInSettings(context: Component, scheme: Scheme?) {
+    scheme ?: return
+
+    val id = "com.fwdekker.randomness.template.TemplateListConfigurable"
+    val settings = Settings.KEY.getData(DataManager.getInstance().getDataContext(context)) ?: return
+    val configurable = settings.find(id) as TemplateListConfigurable
+
+    configurable.selectScheme(scheme)
 }

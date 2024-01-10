@@ -7,7 +7,6 @@ import com.fwdekker.randomness.array.ArrayDecorator.Companion.MIN_MIN_COUNT
 import com.fwdekker.randomness.array.ArrayDecorator.Companion.PRESET_AFFIX_DECORATOR_DESCRIPTORS
 import com.fwdekker.randomness.array.ArrayDecorator.Companion.PRESET_SEPARATORS
 import com.fwdekker.randomness.ui.JIntSpinner
-import com.fwdekker.randomness.ui.LiteralPredicate
 import com.fwdekker.randomness.ui.UIConstants
 import com.fwdekker.randomness.ui.bindCurrentText
 import com.fwdekker.randomness.ui.bindIntValue
@@ -15,6 +14,7 @@ import com.fwdekker.randomness.ui.bindSpinners
 import com.fwdekker.randomness.ui.decoratedRowRange
 import com.fwdekker.randomness.ui.isEditable
 import com.fwdekker.randomness.ui.loadMnemonic
+import com.fwdekker.randomness.ui.ofConstant
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.fwdekker.randomness.ui.withName
 import com.intellij.ui.dsl.builder.BottomGap
@@ -52,7 +52,7 @@ class ArrayDecoratorEditor(
                     .withName("arrayEnabled")
                     .bindSelected(scheme::enabled)
                     .also { enabledCheckBox = it }
-                    .also { isEnabled = enabledCheckBox.selected.or(LiteralPredicate(embedded)) }
+                    .also { isEnabled = enabledCheckBox.selected.or(ComponentPredicate.ofConstant(embedded)) }
             }.visible(!embedded)
 
             decoratedRowRange(indent = !embedded) {

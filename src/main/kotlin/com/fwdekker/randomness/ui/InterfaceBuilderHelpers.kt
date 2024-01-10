@@ -115,19 +115,9 @@ fun <E> Cell<ComboBox<E>>.withFilter(filter: DocumentFilter): Cell<ComboBox<E>> 
 
 
 /**
- * A predicate that always returns [output].
+ * Returns a predicate that always returns [constant].
  */
-class LiteralPredicate(private val output: Boolean) : ComponentPredicate() {
-    /**
-     * Does nothing, because there's no need to respond to any events to determine the output of [invoke].
-     */
-    override fun addListener(listener: (Boolean) -> Unit) = Unit
-
-    /**
-     * Returns [output].
-     */
-    override fun invoke() = output
-}
+fun ComponentPredicate.Companion.ofConstant(constant: Boolean) = if (constant) TRUE else FALSE
 
 /**
  * Returns a [ComponentPredicate] that evaluates [lambda] on the value of this [JIntSpinner].
