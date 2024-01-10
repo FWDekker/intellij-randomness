@@ -1,7 +1,8 @@
 # Changelog
-## 3.2.0 -- [Unreleased]
+## 3.2.0 -- 2024-01-10
 ### Added
 * Added support for UUID versions 6, 7, and 8. ([#513](https://github.com/FWDekker/intellij-randomness/issues/513))
+* Added button to visit template's target. ([#495](https://github.com/FWDekker/intellij-randomness/issues/495))
 
 ### Fixed
 * Disabled uppercase option for integers when base is 10 or lower.
