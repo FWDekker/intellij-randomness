@@ -201,6 +201,14 @@ class TemplateListEditor(
 
 
     /**
+     * Explicitly selects the given scheme (based on its UUID).
+     */
+    fun selectScheme(scheme: Scheme) {
+        templateTree.selectedScheme = scheme
+    }
+
+
+    /**
      * Scrolls to the focused element within the [editor], registering this listener with the [focusManager], and
      * automatically disposing itself when the [editor] is disposed.
      */
