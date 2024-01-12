@@ -1,4 +1,4 @@
-<idea-plugin>
+<idea-plugin require-restart="true">
     <id>com.fwdekker.randomness</id>
     <name>Randomness</name>
     <vendor email="florine@fwdekker.com" url="https://fwdekker.com/">FWDekker</vendor>
