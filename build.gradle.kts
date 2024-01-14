@@ -49,6 +49,7 @@ dependencies {
     implementation("com.github.sisyphsu:dateparser:${properties("dateparserVersion")}")
     implementation("com.github.curious-odd-man:rgxgen:${properties("rgxgenVersion")}")
     implementation("com.vdurmont:emoji-java:${properties("emojiVersion")}")
+    implementation("org.eclipse.mylyn.github:org.eclipse.egit.github.core:${properties("githubCore")}")
     api("org.jetbrains.kotlin:kotlin-reflect")
 
     testImplementation("org.assertj:assertj-swing-junit:${properties("assertjSwingVersion")}")
@@ -85,6 +86,10 @@ tasks {
         version.set(properties("intellijVersion"))
         downloadSources.set(true)
         updateSinceUntilBuild.set(false)  // Set in `patchPluginXml`
+    }
+
+    buildSearchableOptions {
+        enabled = !project.hasProperty("build.hotswap")
     }
 
     patchPluginXml {

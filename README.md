@@ -89,9 +89,10 @@ Please also check the [contribution guidelines](.github/CONTRIBUTING.md).
 
 ### 🔨 Build/run
 ```bash
-$ gradlew runIde       # Open a sandbox IntelliJ instance running the plugin
-$ gradlew buildPlugin  # Build an installable zip of the plugin
-$ gradlew signPlugin   # Sign built plugin
+$ gradlew runIde                       # Open a sandbox IntelliJ instance running the plugin
+$ gradlew buildPlugin                  # Build an installable zip of the plugin
+$ gradlew buildPlugin -Pbuild.hotswap  # Same as above, but allow hot-swapping the plugin during development
+$ gradlew signPlugin                   # Sign built plugin
 ```
 Signing the plugin requires specific environment variables to be set to refer to appropriate key files.
 See [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html) for more information.

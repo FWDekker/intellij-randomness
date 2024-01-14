@@ -20,7 +20,7 @@ import javax.swing.KeyStroke
 /**
  * Shows a popup for all available Randomness actions.
  */
-class PopupAction : AnAction(Icons.RANDOMNESS) {
+class PopupAction : AnAction() {
     /**
      * `true` if and only if the user focused a non-viewer editor when opening this popup.
      */
