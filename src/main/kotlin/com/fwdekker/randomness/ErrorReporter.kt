@@ -2,8 +2,6 @@
 
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.GitHubReporter.Scrambler.IV
-import com.fwdekker.randomness.GitHubReporter.Scrambler.KEY
 import com.intellij.diagnostic.AbstractMessage
 import com.intellij.ide.BrowserUtil
 import com.intellij.notification.Notification
@@ -25,13 +23,14 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
-import com.intellij.util.applyIf
 import org.eclipse.egit.github.core.Issue
 import org.eclipse.egit.github.core.RepositoryId
 import org.eclipse.egit.github.core.client.GitHubClient
+import org.eclipse.egit.github.core.client.PageIterator
 import org.eclipse.egit.github.core.service.IssueService
 import java.awt.Component
 import java.io.File
+import java.net.URL
 import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
@@ -48,7 +47,7 @@ class ErrorReporter : ErrorReportSubmitter() {
     /**
      * Interacts with GitHub.
      */
-    private val github = GitHubReporter()
+    private val github by lazy { GitHubReporter() }
 
 
     /**
@@ -113,11 +112,18 @@ class ErrorReporter : ErrorReportSubmitter() {
             }
             .setIcon(Icons.RANDOMNESS)
             .setImportant(false)
-            .applyIf(report.status != FAILED) {
-                addAction(object : NotificationAction(Bundle("reporter.notify.view_in_browser")) {
-                    override fun actionPerformed(event: AnActionEvent, notification: Notification) =
-                        BrowserUtil.browse(report.url)
-                })
+            .apply {
+                if (report.status == FAILED) {
+                    addAction(object : NotificationAction(Bundle("reporter.notify.error.report_manually")) {
+                        override fun actionPerformed(event: AnActionEvent, notification: Notification) =
+                            BrowserUtil.browse(Bundle("reporter.notify.error.url"))
+                    })
+                } else {
+                    addAction(object : NotificationAction(Bundle("reporter.notify.view_in_browser")) {
+                        override fun actionPerformed(event: AnActionEvent, notification: Notification) =
+                            BrowserUtil.browse(report.url)
+                    })
+                }
             }
             .notify(null)
 }
@@ -135,7 +141,7 @@ private class GitHubReporter {
     /**
      * Service for interacting with the issues API on GitHub.
      */
-    private val issueService = IssueService(GitHubClient().also { it.setOAuth2Token(Scrambler.getToken()) })
+    private val issueService = IssueService(GitHubClient().also { it.setOAuth2Token(GitHubScrambler.getToken()) })
 
 
     /**
@@ -143,115 +149,31 @@ private class GitHubReporter {
      */
     fun report(issueData: IssueData): SubmittedReportInfo =
         try {
-            val duplicate = issueService.pageIssues(repo).flatten().firstOrNull(issueData::isDuplicateOf)
+            synchronized(this) {
+                val duplicate = issueService.pageIssues(repo).flatSequence().firstOrNull(issueData::isDuplicateOf)
 
-            val context: Issue
-            if (duplicate == null) {
-                context = issueService.createIssue(repo, issueData.asGitHubIssue())
-            } else {
-                issueService.createComment(repo, duplicate.number, issueData.body)
-                context = duplicate
-            }
+                val context: Issue
+                if (duplicate == null) {
+                    context = issueService.createIssue(repo, issueData.asGitHubIssue())
+                } else {
+                    issueService.createComment(repo, duplicate.number, issueData.body)
+                    context = duplicate
+                }
 
-            SubmittedReportInfo(
-                context.htmlUrl,
-                Bundle(
-                    if (duplicate == null) "reporter.report.new" else "reporter.report.duplicate",
+                SubmittedReportInfo(
                     context.htmlUrl,
-                    context.number,
-                ),
-                if (duplicate == null) NEW_ISSUE else DUPLICATE
-            )
+                    Bundle(
+                        if (duplicate == null) "reporter.report.new" else "reporter.report.duplicate",
+                        context.htmlUrl,
+                        context.number,
+                    ),
+                    if (duplicate == null) NEW_ISSUE else DUPLICATE
+                )
+            }
         } catch (_: Exception) {
             SubmittedReportInfo(null, Bundle("reporter.report.error"), FAILED)
         }
 
-
-    /**
-     * A GitHub authentication token that is slightly scrambled.
-     *
-     * Though the scrambling uses encryption, it is not actually stored securely, and can be obtained relatively easily
-     * by other people. Even if [KEY] and [IV] were not stored in plaintext, you would eventually have to leak the
-     * plaintext token. There is no way around this.
-     *
-     * Assume the token is public knowledge: It may be stolen and abused, and it is your responsibility to ensure that
-     * the potential for harm is minimised: Use a fine-grained access token that is limited to read/write access for a
-     * single repo. Do not use your main repo, unless you're fine with the worst case of all your issues being deleted.
-     */
-    private object Scrambler {
-        /**
-         * The resource path to the scrambled token.
-         */
-        private const val PATH = "reporter/token.bin"
-
-        /**
-         * The IV to use for (un)scrambling.
-         */
-        private const val IV = "MgKsLCT9BDbPHqrp"
-
-        /**
-         * The "private" key to use for (un)scrambling.
-         */
-        private const val KEY = "WDWde5Hwm5bXgJN2"
-
-        /**
-         * The IV specification to use for (un)scrambling.
-         */
-        private val IV_SPEC = IvParameterSpec(IV.toByteArray(charset("UTF-8")))
-
-        /**
-         * The key specification to use for (un)scrambling.
-         */
-        private val KEY_SPEC = SecretKeySpec(KEY.toByteArray(charset("UTF-8")), "AES")
-
-
-        /**
-         * Instantiates a [Cipher] for (un)scrambling a token.
-         */
-        private fun createCipher() = Cipher.getInstance("AES/CBC/PKCS5PADDING")
-
-        /**
-         * Reads the unscrambled token.
-         */
-        fun getToken(): String =
-            unscramble(String(javaClass.classLoader.getResource(PATH)!!.readBytes()))
-                .also { require(it.startsWith("github")) { "Invalid token after unscrambling." } }
-
-        /**
-         * Unscrambles the given [scrambledToken].
-         */
-        fun unscramble(scrambledToken: String): String =
-            createCipher()
-                .also { it.init(Cipher.DECRYPT_MODE, KEY_SPEC, IV_SPEC) }
-                .doFinal(Base64.getDecoder().decode(scrambledToken.toByteArray()))
-                .let { String(it).trim() }
-
-        /**
-         * Scrambles the given [token].
-         */
-        fun scramble(token: String): String =
-            createCipher()
-                .also { it.init(Cipher.ENCRYPT_MODE, KEY_SPEC, IV_SPEC) }
-                .doFinal(token.trim().toByteArray())
-                .let { String(Base64.getEncoder().encode(it)) }
-
-
-        /**
-         * Runs an interactive session to scramble a token into a file.
-         */
-        @JvmStatic
-        fun main(args: Array<String>) {
-            val target = File("token.bin")
-
-            print("Enter token to scramble: ")
-            val token = readln()
-
-            target.writeText(scramble(token))
-            require(unscramble(target.readText()) == token) { "Stored token does not match input token." }
-
-            println("Scrambled token has been stored in '${target.absolutePath}'.")
-        }
-    }
 
     /**
      * Holds constants.
@@ -266,6 +188,107 @@ private class GitHubReporter {
          * The repository to report errors in.
          */
         private const val GIT_REPO = "intellij-randomness-issues"
+
+
+        /**
+         * Returns a flattened sequence of all elements in the iterator.
+         */
+        private fun <V> PageIterator<V>.flatSequence(): Sequence<V> =
+            (this as Iterable<Collection<V>>).asSequence().flatten()
+    }
+}
+
+/**
+ * A GitHub authentication token that is slightly scrambled (and NOT SECURE).
+ *
+ * Though the scrambling uses encryption, it is not actually stored securely, and can be obtained relatively easily
+ * by others. Even if [GitHubScrambler.KEY] and [GitHubScrambler.IV] were not stored in plaintext, you would eventually
+ * have to leak the plaintext token anyway. There is no way around this.
+ *
+ * Assume the token is public knowledge: It may be stolen and abused, and it is your responsibility to ensure that
+ * the potential for harm is minimised: Use a fine-grained access token that is limited to read/write access for a
+ * single repository of a separate user. Do not use your main repo to store issues in, unless you're fine with the worst
+ * case of all your issues being deleted. Subscribe to every event in the repository so that you will notice when the
+ * token is being abused for spam.
+ *
+ * The token is retrieved from a repository, because tokens are only valid for up to one year, but users should be able
+ * to report issues even if there has not been an update for more than a year. This means the [GitHubScrambler.KEY] and
+ * [GitHubScrambler.IV] must not be refreshed between updates, as otherwise previous versions will be unable to
+ * unscramble the token.
+ */
+object GitHubScrambler {
+    /**
+     * The IV to use for (un)scrambling.
+     */
+    private const val IV = "DefinitelyGoodIV"
+
+    /**
+     * The "private" key to use for (un)scrambling.
+     */
+    private const val KEY = "GreatScrambleKey"
+
+    /**
+     * The IV specification to use for (un)scrambling.
+     */
+    private val IV_SPEC = IvParameterSpec(IV.toByteArray(charset("UTF-8")))
+
+    /**
+     * The key specification to use for (un)scrambling.
+     */
+    private val KEY_SPEC = SecretKeySpec(KEY.toByteArray(charset("UTF-8")), "AES")
+
+    /**
+     * The URL at which a newer token may be available.
+     */
+    private val URL =
+        URL("http://raw.githubusercontent.com/FWDekker/intellij-randomness/main/src/main/resources/reporter/token.bin")
+
+
+    /**
+     * Instantiates a [Cipher] for (un)scrambling a token.
+     */
+    private fun createCipher(): Cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+
+    /**
+     * Reads the unscrambled token.
+     */
+    fun getToken(): String =
+        unscramble(URL.readText())
+            .also { require(it.startsWith("github")) { "Invalid token after unscrambling." } }
+
+    /**
+     * Unscrambles the given [scrambledToken].
+     */
+    fun unscramble(scrambledToken: String): String =
+        createCipher()
+            .also { it.init(Cipher.DECRYPT_MODE, KEY_SPEC, IV_SPEC) }
+            .doFinal(Base64.getDecoder().decode(scrambledToken.toByteArray()))
+            .let { String(it).trim() }
+
+    /**
+     * Scrambles the given [token].
+     */
+    fun scramble(token: String): String =
+        createCipher()
+            .also { it.init(Cipher.ENCRYPT_MODE, KEY_SPEC, IV_SPEC) }
+            .doFinal(token.trim().toByteArray())
+            .let { String(Base64.getEncoder().encode(it)) }
+
+
+    /**
+     * Runs an interactive session to scramble a token into a file.
+     */
+    @JvmStatic
+    fun main(args: Array<String>) {
+        val target = File("token.bin")
+
+        print("Enter token to scramble: ")
+        val token = readln()
+
+        target.writeText(scramble(token))
+        require(unscramble(target.readText()) == token) { "Stored token does not match input token." }
+
+        println("Scrambled token has been stored in '${target.absolutePath}'.")
     }
 }
 
@@ -335,6 +358,7 @@ private class IssueData(
                     """.trimIndent()
             )
             .joinToString(separator = "\n\n") { section(it.first, it.second) }
+            .plus("\n\n---\n\n_This issue report was generated automatically for an anonymous user._")
 
 
     /**
@@ -359,27 +383,28 @@ private class IssueData(
      */
     companion object {
         /**
-         * Returns [this] if [this] is neither `null` nor blank, and returns the output of [then] otherwise.
-         */
-        fun String?.ifNullOrBlank(then: () -> String): String =
-            if (this.isNullOrBlank()) then() else this
-
-        /**
          * Creates a Markdown section with the given [title] and [body].
          */
-        fun section(title: String, body: String): String =
+        private fun section(title: String, body: String): String =
             "**${title.trim()}**\n${body.trim()}"
 
         /**
          * Creates a Markdown spoiler tag with the given [heading] and [body].
          */
-        fun spoiler(body: String, heading: String = "Click to show"): String =
+        private fun spoiler(body: String, heading: String = "Click to show"): String =
             "<details>\n  <summary>${heading.trim()}</summary>\n\n${body.prependIndent("  ")}\n\n</details>"
 
         /**
          * Creates a Markdown code block containing [body] and using the given [language].
          */
-        fun code(body: String, language: String = ""): String =
+        private fun code(body: String, language: String = ""): String =
             "```$language\n$body\n```"
+
+
+        /**
+         * Returns [this] if [this] is neither `null` nor blank, and returns the output of [then] otherwise.
+         */
+        private fun String?.ifNullOrBlank(then: () -> String): String =
+            if (this.isNullOrBlank()) then() else this
     }
 }
