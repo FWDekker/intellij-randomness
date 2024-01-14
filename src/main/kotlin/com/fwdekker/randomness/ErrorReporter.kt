@@ -216,7 +216,7 @@ private class GitHubReporter {
  * [GitHubScrambler.IV] must not be refreshed between updates, as otherwise previous versions will be unable to
  * unscramble the token.
  */
-object GitHubScrambler {
+private object GitHubScrambler {
     /**
      * The IV to use for (un)scrambling.
      */
