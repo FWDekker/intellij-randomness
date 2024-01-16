@@ -17,24 +17,24 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    id("org.jetbrains.kotlin.jvm") version "1.9.21"  // Use latest version, ignoring `gradle.properties`
+    id("org.jetbrains.kotlin.jvm") version "1.8.0"  // Set to latest version compatible with `pluginSinceBuild`, cf. https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library
     id("org.jetbrains.intellij") version "1.16.1"
 
     // Tests/coverage
     id("org.jetbrains.kotlinx.kover") version "0.7.5"
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.23.4"  // See also `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.23.4"  // cf. `gradle.properties`
 
     // Documentation
     id("org.jetbrains.changelog") version "2.2.0"
-    id("org.jetbrains.dokka") version "1.9.10"  // See also `buildscript { dependencies` below and `gradle.properties`
+    id("org.jetbrains.dokka") version "1.9.10"  // cf. `buildscript { dependencies` below and `gradle.properties`
 }
 
 buildscript {
     dependencies {
-        classpath("org.jetbrains.dokka:dokka-base:1.9.10")  // See also `plugins` above and `gradle.properties`
-        classpath("org.jetbrains.dokka:versioning-plugin:1.9.10")  // See also `plugins` above and `gradle.properties`
+        classpath("org.jetbrains.dokka", "dokka-base", "1.9.10")  // cf. `plugins` above and `gradle.properties`
+        classpath("org.jetbrains.dokka", "versioning-plugin", "1.9.10")  // cf. `plugins` above and `gradle.properties`
     }
 }
 
@@ -45,22 +45,22 @@ repositories {
 }
 
 dependencies {
-    implementation("com.fasterxml.uuid:java-uuid-generator:${properties("uuidGeneratorVersion")}")
-    implementation("com.github.sisyphsu:dateparser:${properties("dateparserVersion")}")
-    implementation("com.github.curious-odd-man:rgxgen:${properties("rgxgenVersion")}")
-    implementation("com.vdurmont:emoji-java:${properties("emojiVersion")}")
-    implementation("org.eclipse.mylyn.github:org.eclipse.egit.github.core:${properties("githubCore")}")
-    api("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("com.fasterxml.uuid", "java-uuid-generator", properties("uuidGeneratorVersion"))
+    implementation("com.github.sisyphsu", "dateparser", properties("dateparserVersion")) {
+        exclude(group = "org.projectlombok", module = "lombok")  // cf. https://github.com/sisyphsu/dateparser/issues/30
+    }
+    implementation("com.github.curious-odd-man", "rgxgen", properties("rgxgenVersion"))
+    implementation("org.eclipse.mylyn.github", "org.eclipse.egit.github.core", properties("githubCore"))
 
-    testImplementation("org.assertj:assertj-swing-junit:${properties("assertjSwingVersion")}")
-    testRuntimeOnly("org.junit.platform:junit-platform-runner:${properties("junitRunnerVersion")}")
-    testImplementation("org.junit.vintage:junit-vintage-engine:${properties("junitVersion")}")
-    testImplementation("io.kotest:kotest-assertions-core:${properties("kotestVersion")}")
-    testImplementation("io.kotest:kotest-framework-datatest:${properties("kotestVersion")}")
-    testImplementation("io.kotest:kotest-runner-junit5:${properties("kotestVersion")}")
+    testImplementation("org.assertj", "assertj-swing-junit", properties("assertjSwingVersion"))
+    testRuntimeOnly("org.junit.platform", "junit-platform-runner", properties("junitRunnerVersion"))
+    testImplementation("org.junit.vintage", "junit-vintage-engine", properties("junitVersion"))
+    testImplementation("io.kotest", "kotest-assertions-core", properties("kotestVersion"))
+    testImplementation("io.kotest", "kotest-framework-datatest", properties("kotestVersion"))
+    testImplementation("io.kotest", "kotest-runner-junit5", properties("kotestVersion"))
 
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${properties("detektVersion")}")
-    dokkaHtmlPlugin("org.jetbrains.dokka:versioning-plugin:${properties("dokkaVersion")}")
+    detektPlugins("io.gitlab.arturbosch.detekt", "detekt-formatting", properties("detektVersion"))
+    dokkaHtmlPlugin("org.jetbrains.dokka", "versioning-plugin", properties("dokkaVersion"))
 }
 
 
@@ -74,7 +74,7 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = properties("javaVersion")
-            apiVersion = properties("kotlinApiVersion")
+            apiVersion = properties("kotlinVersion")
             languageVersion = properties("kotlinVersion")
         }
     }

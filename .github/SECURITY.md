@@ -1,7 +1,7 @@
 # Security policy
 The security of Randomness is important to me.
 If you find a vulnerability in Randomness, please
-[report the vulnerability](https://github.com/FWDekker/mommy/security/advisories/new) as soon as possible.
+[report the vulnerability](https://github.com/FWDekker/intellij-randomness/security/advisories/new) as soon as possible.
 
 Please note that Randomness is distinct from IntelliJ and other IDEs developed by JetBrains.
 To report a vulnerability in IntelliJ or another JetBrains product, please

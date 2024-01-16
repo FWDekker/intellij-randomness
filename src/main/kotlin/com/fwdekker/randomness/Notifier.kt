@@ -8,18 +8,18 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupActivity
+import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.ui.MessageDialogBuilder
 
 
 /**
  * Displays notifications when a project is opened.
  */
-class Notifier : StartupActivity {
+internal class Notifier : ProjectActivity {
     /**
      * Shows startup notifications.
      */
-    override fun runActivity(project: Project) = showWelcomeToV3(project)
+    override suspend fun execute(project: Project) = showWelcomeToV3(project)
 
     /**
      * Shows a notification introducing the user to version 3 of Randomness.

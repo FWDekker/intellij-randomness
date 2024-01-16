@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.newEditor.SettingsDialogFactory
+import com.intellij.util.alsoIfNull
 import javax.swing.Icon
 
 
@@ -66,8 +67,10 @@ abstract class InsertAction(
         val project = event.getData(CommonDataKeys.PROJECT) ?: return
 
         configurable?.also {
-            if (!SettingsDialogFactory.getInstance().create(project, text, it, false, false).showAndGet())
-                return
+            SettingsDialogFactory.getInstance()
+                .create(project, text, it, false, false)
+                .showAndGet()
+                .alsoIfNull { return }
         }
 
         val data =
@@ -89,7 +92,7 @@ abstract class InsertAction(
                 return
             }
 
-        WriteCommandAction.runWriteCommandAction(project) {
+        WriteCommandAction.runWriteCommandAction(project, Bundle("misc.insert_command_name"), null, {
             editor.caretModel.allCarets.forEachIndexed { i, caret ->
                 val start = caret.selectionStart
                 val end = caret.selectionEnd
@@ -98,7 +101,7 @@ abstract class InsertAction(
                 editor.document.replaceString(start, end, data[i])
                 caret.setSelection(start, newEnd)
             }
-        }
+        })
     }
 
 
