@@ -1,4 +1,13 @@
 # Changelog
+## [Unreleased]
+### Changed
+* Rewrote error reporter from scratch, now ensuring all relevant data is included, and allowing non-GitHub users to report issues. ([#455](https://github.com/FWDekker/intellij-randomness/issues/455))
+* Significantly reduced plugin size by removing unnecessary dependencies. ([#526](https://github.com/FWDekker/intellij-randomness/issues/526))
+
+### Fixed
+* Various incorrect uses of the platform API. ([#526](https://github.com/FWDekker/intellij-randomness/issues/526))
+
+
 ## 3.2.0 -- 2024-01-10
 ### Added
 * Added support for UUID versions 6, 7, and 8. ([#513](https://github.com/FWDekker/intellij-randomness/issues/513))

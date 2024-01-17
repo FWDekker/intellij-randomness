@@ -77,4 +77,4 @@ open class TemplateActionLoader(
 /**
  * Constructor-less version of [TemplateActionLoader], as is required in `plugin.xml`.
  */
-class DefaultTemplateActionLoader : TemplateActionLoader()
+internal class DefaultTemplateActionLoader : TemplateActionLoader()

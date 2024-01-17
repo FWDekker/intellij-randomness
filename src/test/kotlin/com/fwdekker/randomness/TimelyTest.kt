@@ -19,7 +19,7 @@ object TimelyTest : FunSpec({
 
     test("throws an exception if the generator does not finish within time") {
         shouldThrow<DataGenerationException> { generateTimely { Thread.sleep(GENERATOR_TIMEOUT + 1000L) } }
-            .message should matchBundle("helpers.error.timed_out")
+            .message should matchBundle("misc.timed_out")
     }
 
     test("throws an exception if the generator throws an exception") {

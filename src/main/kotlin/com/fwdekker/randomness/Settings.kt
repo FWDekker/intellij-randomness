@@ -77,7 +77,7 @@ data class Settings(
     ],
     category = SettingsCategory.PLUGINS,
 )
-class PersistentSettings : PersistentStateComponent<Element> {
+internal class PersistentSettings : PersistentStateComponent<Element> {
     /**
      * The [Settings] that should be persisted.
      *

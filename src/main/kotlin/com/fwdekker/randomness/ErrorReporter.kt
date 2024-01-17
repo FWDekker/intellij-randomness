@@ -43,7 +43,7 @@ import javax.crypto.spec.SecretKeySpec
  * Heavily inspired by [Patrick Scheibe's error reporter](https://github.com/halirutan/Wolfram-Language-IntelliJ-Plugin-Archive/tree/e3dd72f9cd344d678ac892aaa7bf59abd84871e8/src/de/halirutan/mathematica/errorreporting).
  */
 @Suppress("detekt:MaxLineLength") // Necessary because of the long link in the docs above
-class ErrorReporter : ErrorReportSubmitter() {
+internal class ErrorReporter : ErrorReportSubmitter() {
     /**
      * Interacts with GitHub.
      */
@@ -150,7 +150,7 @@ private class GitHubReporter {
     fun report(issueData: IssueData): SubmittedReportInfo =
         try {
             synchronized(this) {
-                val duplicate = issueService.pageIssues(repo).flatSequence().firstOrNull(issueData::isDuplicateOf)
+                val duplicate = issueService.pageIssues(repo).flatSequence().firstOrNull { issueData.isDuplicateOf(it) }
 
                 val context: Issue
                 if (duplicate == null) {
@@ -241,7 +241,7 @@ private object GitHubScrambler {
      * The URL at which a newer token may be available.
      */
     private val URL =
-        URL("http://raw.githubusercontent.com/FWDekker/intellij-randomness/main/src/main/resources/reporter/token.bin")
+        URL("https://raw.githubusercontent.com/FWDekker/intellij-randomness/main/src/main/resources/reporter/token.bin")
 
 
     /**
@@ -340,16 +340,27 @@ private class IssueData(
      */
     val body: String =
         emptySequence<Pair<String, String>>()
-            .plus("User-supplied comments" to additionalInfo.ifNullOrBlank { "_No comments supplied._" }.trim())
+            .plus(
+                Bundle("reporter.issue.body.comments.title") to
+                    additionalInfo.ifNullOrBlank { italic(Bundle("reporter.issue.body.comments.body_empty")) }.trim()
+            )
             .plus(
                 events
                     .map { it.throwableText }
                     .filterNot { it.isBlank() }
-                    .mapIndexed { idx: Int, body: String -> "Stacktrace ${idx + 1}" to spoiler(code(body, "java")) }
+                    .mapIndexed { idx: Int, body: String ->
+                        Bundle("reporter.issue.body.stacktrace.title", idx + 1) to
+                            spoiler(code(body, "java"))
+                    }
             )
-            .plus(attachments.map { "Attachment: `${it.name}`" to spoiler(code(it.displayText)) })
             .plus(
-                "Version information" to
+                attachments.map {
+                    Bundle("reporter.issue.body.attachment.title", it.name) to
+                        spoiler(code(it.displayText))
+                }
+            )
+            .plus(
+                Bundle("reporter.issue.body.version.title") to
                     """
                     - Randomness version: ${pluginDescriptor.version ?: "_Unknown_"}
                     - IDE version: ${ApplicationInfo.getInstance().apiVersion}
@@ -358,7 +369,7 @@ private class IssueData(
                     """.trimIndent()
             )
             .joinToString(separator = "\n\n") { section(it.first, it.second) }
-            .plus("\n\n---\n\n_This issue report was generated automatically for an anonymous user._")
+            .let { italic(Bundle("reporter.issue.body.header")) + "\n\n---\n\n" + it }
 
 
     /**
@@ -383,6 +394,17 @@ private class IssueData(
      */
     companion object {
         /**
+         * Creates a Markdown code block containing [body] and using the given [language].
+         */
+        private fun code(body: String, language: String = ""): String =
+            "```$language\n$body\n```"
+
+        /**
+         * Creates an italicized piece of Markdown.
+         */
+        private fun italic(body: String) = "_${body}_"
+
+        /**
          * Creates a Markdown section with the given [title] and [body].
          */
         private fun section(title: String, body: String): String =
@@ -393,12 +415,6 @@ private class IssueData(
          */
         private fun spoiler(body: String, heading: String = "Click to show"): String =
             "<details>\n  <summary>${heading.trim()}</summary>\n\n${body.prependIndent("  ")}\n\n</details>"
-
-        /**
-         * Creates a Markdown code block containing [body] and using the given [language].
-         */
-        private fun code(body: String, language: String = ""): String =
-            "```$language\n$body\n```"
 
 
         /**

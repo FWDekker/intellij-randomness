@@ -141,7 +141,7 @@ data class StringScheme(
         /**
          * The default value of the [capitalization] field.
          */
-        val DEFAULT_CAPITALIZATION get() = CapitalizationMode.RETAIN
+        val DEFAULT_CAPITALIZATION = CapitalizationMode.RETAIN
 
         /**
          * The default value of the [removeLookAlikeSymbols] field.

@@ -28,7 +28,7 @@ object Timely {
         try {
             return executor.submit<T> { generator() }.get(GENERATOR_TIMEOUT, TimeUnit.MILLISECONDS)
         } catch (exception: TimeoutException) {
-            throw DataGenerationException(Bundle("helpers.error.timed_out"), exception)
+            throw DataGenerationException(Bundle("misc.timed_out"), exception)
         } catch (exception: ExecutionException) {
             throw DataGenerationException(exception.cause?.message ?: exception.message, exception)
         } finally {

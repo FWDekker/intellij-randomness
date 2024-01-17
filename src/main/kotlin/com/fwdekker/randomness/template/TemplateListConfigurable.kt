@@ -24,7 +24,7 @@ import javax.swing.JComponent
  *
  * @see TemplateSettingsAction
  */
-class TemplateListConfigurable : Configurable, Disposable {
+internal class TemplateListConfigurable : Configurable, Disposable {
     /**
      * The user interface for changing the settings, displayed in IntelliJ's settings window.
      */
@@ -40,7 +40,7 @@ class TemplateListConfigurable : Configurable, Disposable {
     /**
      * Returns the name of the configurable as displayed in the settings window.
      */
-    override fun getDisplayName() = "Randomness"
+    override fun getDisplayName() = Bundle("randomness")
 
     /**
      * Creates a new editor and returns the root pane of the created editor.

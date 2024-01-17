@@ -3,7 +3,6 @@ package com.fwdekker.randomness.testhelpers
 import com.fwdekker.randomness.ui.JDateTimeField
 import com.intellij.ui.dsl.builder.MutableProperty
 import org.assertj.swing.fixture.AbstractTwoStateButtonFixture
-import org.assertj.swing.fixture.FrameFixture
 import org.assertj.swing.fixture.JComboBoxFixture
 import org.assertj.swing.fixture.JSpinnerFixture
 import org.assertj.swing.fixture.JTextComponentFixture
@@ -32,16 +31,6 @@ fun <SELF, FIELD> SELF.prop(get: (SELF) -> (() -> FIELD), set: (SELF) -> ((FIELD
  */
 fun <S, T : AbstractButton> AbstractTwoStateButtonFixture<S, T>.isSelectedProp() =
     this.prop({ this.target()::isSelected }, { this.target()::setSelected })
-
-/**
- * Creates a [MutableProperty] for an entire group of [javax.swing.JRadioButton]s, such that each button's name equals
- * [name] followed by the [Any.toString] of a value in [values].
- */
-fun FrameFixture.radioButtonGroupProp(name: String, values: Collection<Any?>) =
-    MutableProperty(
-        { values.single { radioButton("$name$it").target().isSelected } },
-        { radioButton("$name$it").target().isSelected = true },
-    )
 
 /**
  * Creates a [MutableProperty] for the [javax.swing.JComboBox.getSelectedItem] field.
