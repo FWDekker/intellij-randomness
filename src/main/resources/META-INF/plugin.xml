@@ -7,8 +7,6 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <errorHandler implementation="com.fwdekker.randomness.ErrorReporter" />
-
         <!-- Persistence -->
         <applicationService serviceImplementation="com.fwdekker.randomness.PersistentSettings" />
 
@@ -18,26 +16,5 @@
                                  id="com.fwdekker.randomness.template.TemplateListConfigurable"
                                  bundle="randomness"
                                  key="randomness" />
-
-        <!-- Dynamically loads, unloads, and updates template actions -->
-        <dynamicActionConfigurationCustomizer
-            implementation="com.fwdekker.randomness.template.DefaultTemplateActionLoader" />
-
-        <!-- Manages notifications -->
-        <notificationGroup displayType="STICKY_BALLOON"
-                           id="com.fwdekker.randomness.updates"
-                           key="notifications.groups.updates.display_name"/>
-        <postStartupActivity implementation="com.fwdekker.randomness.Notifier" id="com.fwdekker.randomness.Notifier"/>
     </extensions>
-
-    <!-- Non-dynamic actions -->
-    <actions resource-bundle="randomness">
-        <action id="com.fwdekker.randomness.PopupAction" class="com.fwdekker.randomness.PopupAction"
-                icon="/icons/randomness.svg">
-            <keyboard-shortcut first-keystroke="alt R" keymap="$default" />
-            <add-to-group group-id="GenerateGroup" anchor="last" />
-            <add-to-group group-id="ToolsMenu" anchor="last" />
-            <synonym text="Random Data Generator" />
-        </action>
-    </actions>
 </idea-plugin>

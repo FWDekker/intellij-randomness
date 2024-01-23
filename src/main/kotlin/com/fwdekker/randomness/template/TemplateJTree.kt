@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
-import com.fwdekker.randomness.PopupAction
 import com.fwdekker.randomness.Scheme
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionToolbarPosition
@@ -402,11 +401,6 @@ class TemplateJTree(
             }
 
             icon = scheme.icon
-
-            if (scheme is Template) {
-                PopupAction.indexToMnemonic(currentTemplateList.templates.indexOf(scheme))
-                    ?.run { append("$this ", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES, false) }
-            }
 
             append(
                 scheme.name.ifBlank { Bundle("template.name.empty") },
