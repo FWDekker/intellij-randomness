@@ -5,19 +5,11 @@ import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.InsertAction
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.Timely.generateTimely
-import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.ui.PreviewPanel
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ShowSettingsUtil
-import com.intellij.openapi.util.Disposer
-import java.awt.BorderLayout
-import javax.swing.JPanel
 
 
 /**
@@ -111,83 +103,16 @@ class TemplateInsertAction(
     icon = template.icon?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
 ) {
     override val configurable
-        get() =
-            if (array) ArrayDecoratorConfigurable(template.arrayDecorator)
-            else null
+        get() = null
 
 
     override fun generateStrings(count: Int) =
         generateTimely {
-            val template = template.deepCopy().also { it.arrayDecorator.enabled = array }
+            val template = template.deepCopy()
 
             if (repeat) template.generateStrings().single().let { string -> List(count) { string } }
             else template.generateStrings(count)
         }
-
-
-    /**
-     * Edits the [ArrayDecorator] of a template and shows a preview.
-     *
-     * @param arrayDecorator the decorator being edited in this configurable
-     */
-    inner class ArrayDecoratorConfigurable(arrayDecorator: ArrayDecorator) : Configurable, Disposable {
-        private val editor =
-            ArrayDecoratorEditor(arrayDecorator, embedded = true)
-                .also { Disposer.register(this, it) }
-        private val previewPanel =
-            PreviewPanel { template.deepCopy(retainUuid = true).also { it.arrayDecorator.enabled = true } }
-                .also { Disposer.register(this, it) }
-
-
-        init {
-            editor.addChangeListener {
-                editor.apply()
-                previewPanel.updatePreview()
-            }
-            previewPanel.updatePreview()
-        }
-
-
-        /**
-         * Returns the component that the [editor] prefers to be focused when the editor is focused.
-         */
-        override fun getPreferredFocusedComponent() = editor.preferredFocusedComponent
-
-        /**
-         * Creates a component containing the [editor] and the [previewPanel].
-         */
-        override fun createComponent() =
-            JPanel(BorderLayout())
-                .also {
-                    it.add(editor.rootComponent, BorderLayout.NORTH)
-                    it.add(previewPanel.rootComponent, BorderLayout.SOUTH)
-                }
-
-        /**
-         * Returns `true`.
-         */
-        override fun isModified() = true
-
-        /**
-         * Saves the [editor]'s state.
-         */
-        override fun apply() = editor.apply()
-
-        /**
-         * Returns [text].
-         */
-        override fun getDisplayName() = text
-
-        /**
-         * Recursively disposes this configurable's resources.
-         */
-        override fun disposeUIResources() = Disposer.dispose(this)
-
-        /**
-         * Non-recursively disposes this configurable's resources.
-         */
-        override fun dispose() = Unit
-    }
 }
 
 /**

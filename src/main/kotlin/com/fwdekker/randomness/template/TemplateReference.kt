@@ -3,13 +3,12 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
+import com.fwdekker.randomness.DecoratorScheme
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.TypeIcon
-import com.fwdekker.randomness.affix.AffixDecorator
-import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.ui.Gray
 import com.intellij.util.xmlb.annotations.Transient
 
@@ -25,13 +24,11 @@ import com.intellij.util.xmlb.annotations.Transient
 data class TemplateReference(
     var templateUuid: String? = null,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
-    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name get() = template?.name?.let { "[$it]" } ?: Bundle("reference.title")
     override val typeIcon get() = template?.typeIcon ?: DEFAULT_ICON
     override val icon get() = OverlayedIcon(typeIcon, decorators.mapNotNull { it.icon } + OverlayIcon.REFERENCE)
-    override val decorators get() = listOf(arrayDecorator)
+    override val decorators get() = emptyList<DecoratorScheme>()
 
     /**
      * The [Template] in the [context]'s [TemplateList] that contains this [TemplateReference].
@@ -94,7 +91,7 @@ data class TemplateReference(
             templateUuid == null -> Bundle("reference.error.no_selection")
             template == null -> Bundle("reference.error.not_found")
             cycle != null -> Bundle("reference.error.recursion", "(${cycle.joinToString(" → ") { it.name }})")
-            else -> affixDecorator.doValidate() ?: arrayDecorator.doValidate()
+            else -> null
         }
     }
 
@@ -104,7 +101,7 @@ data class TemplateReference(
      * @see Scheme.deepCopy
      */
     override fun deepCopy(retainUuid: Boolean) =
-        copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid)).deepCopyTransient(retainUuid)
+        copy().deepCopyTransient(retainUuid)
 
 
     /**
@@ -137,15 +134,5 @@ data class TemplateReference(
          * The preset values for the [affixDecorator] descriptor.
          */
         val PRESET_AFFIX_DECORATOR_DESCRIPTORS = listOf("'", "\"", "`")
-
-        /**
-         * The default value of the [affixDecorator] field.
-         */
-        val DEFAULT_AFFIX_DECORATOR get() = AffixDecorator(enabled = false, descriptor = "\"")
-
-        /**
-         * The default value of the [arrayDecorator] field.
-         */
-        val DEFAULT_ARRAY_DECORATOR get() = ArrayDecorator()
     }
 }

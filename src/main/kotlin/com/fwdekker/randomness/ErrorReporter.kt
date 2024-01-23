@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION") // Required for [ErrorReportSubmitter].
-
 package com.fwdekker.randomness
 
 import com.intellij.diagnostic.AbstractMessage

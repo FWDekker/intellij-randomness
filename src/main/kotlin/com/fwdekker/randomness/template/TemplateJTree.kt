@@ -3,12 +3,6 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.PopupAction
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.datetime.DateTimeScheme
-import com.fwdekker.randomness.decimal.DecimalScheme
-import com.fwdekker.randomness.integer.IntegerScheme
-import com.fwdekker.randomness.string.StringScheme
-import com.fwdekker.randomness.uuid.UuidScheme
-import com.fwdekker.randomness.word.WordScheme
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionToolbarPosition
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -422,9 +416,6 @@ class TemplateJTree(
                     else -> SimpleTextAttributes.REGULAR_ATTRIBUTES
                 }
             )
-
-            if (scheme is StringScheme && scheme.isSimple())
-                append("  ${scheme.generateStrings()[0]}", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
         }
     }
 
@@ -707,12 +698,6 @@ class TemplateJTree(
         val POPUP_STEP_SCHEMES: List<Scheme>
             get() = listOf(
                 Template(Bundle("template.title"), mutableListOf()),
-                IntegerScheme(),
-                DecimalScheme(),
-                StringScheme(),
-                WordScheme(),
-                UuidScheme(),
-                DateTimeScheme(),
                 TemplateReference(),
             )
     }

@@ -16,8 +16,6 @@ import com.intellij.ui.dsl.builder.panel
  */
 class TemplateEditor(scheme: Template) : SchemeEditor<Template>(scheme) {
     override val rootComponent = panel {
-        onApply { scheme.arrayDecorator.enabled = false }
-
         row(Bundle("template.ui.name_option")) {
             textField()
                 .withFixedWidth(UIConstants.SIZE_LARGE)

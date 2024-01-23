@@ -2,8 +2,6 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.SchemeEditor
-import com.fwdekker.randomness.affix.AffixDecoratorEditor
-import com.fwdekker.randomness.array.ArrayDecoratorEditor
 import com.fwdekker.randomness.template.TemplateReference.Companion.PRESET_AFFIX_DECORATOR_DESCRIPTORS
 import com.fwdekker.randomness.template.TemplateReference.Companion.PRESET_CAPITALIZATION
 import com.fwdekker.randomness.ui.onResetThis
@@ -51,18 +49,6 @@ class TemplateReferenceEditor(scheme: TemplateReference) : SchemeEditor<Template
                     .withName("capitalization")
                     .bindItem(scheme::capitalization.toNullableProperty())
             }
-
-            row {
-                AffixDecoratorEditor(scheme.affixDecorator, PRESET_AFFIX_DECORATOR_DESCRIPTORS)
-                    .also { decoratorEditors += it }
-                    .let { cell(it.rootComponent) }
-            }
-        }
-
-        row {
-            ArrayDecoratorEditor(scheme.arrayDecorator)
-                .also { decoratorEditors += it }
-                .let { cell(it.rootComponent).align(AlignX.FILL) }
         }
     }
 

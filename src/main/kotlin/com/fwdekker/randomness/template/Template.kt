@@ -2,19 +2,12 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Box
 import com.fwdekker.randomness.Bundle
+import com.fwdekker.randomness.DecoratorScheme
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.TypeIcon
-import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.datetime.DateTimeScheme
-import com.fwdekker.randomness.decimal.DecimalScheme
-import com.fwdekker.randomness.integer.IntegerScheme
-import com.fwdekker.randomness.string.StringScheme
-import com.fwdekker.randomness.uuid.UuidScheme
-import com.fwdekker.randomness.word.WordScheme
 import com.intellij.ui.Gray
-import com.intellij.util.xmlb.annotations.XCollection
 import kotlin.random.Random
 
 
@@ -27,23 +20,11 @@ import kotlin.random.Random
  */
 data class Template(
     override var name: String = DEFAULT_NAME,
-    @get:XCollection(
-        elementTypes = [
-            DateTimeScheme::class,
-            DecimalScheme::class,
-            IntegerScheme::class,
-            StringScheme::class,
-            TemplateReference::class,
-            UuidScheme::class,
-            WordScheme::class,
-        ]
-    )
     val schemes: MutableList<Scheme> = DEFAULT_SCHEMES,
-    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val typeIcon
         get() = TypeIcon.combine(schemes.mapNotNull { it.typeIcon }) ?: DEFAULT_ICON
-    override val decorators get() = listOf(arrayDecorator)
+    override val decorators get() = emptyList<DecoratorScheme>()
 
     /**
      * The identifier of the action that inserts this [Template].
@@ -89,13 +70,9 @@ data class Template(
     override fun doValidate() =
         if (name.isBlank()) Bundle("template.error.no_name", Bundle("template.name.empty"))
         else schemes.firstNotNullOfOrNull { scheme -> scheme.doValidate()?.let { "${scheme.name} > $it" } }
-            ?: arrayDecorator.doValidate()
 
     override fun deepCopy(retainUuid: Boolean) =
-        copy(
-            schemes = schemes.map { it.deepCopy(retainUuid) }.toMutableList(),
-            arrayDecorator = arrayDecorator.deepCopy(retainUuid),
-        ).deepCopyTransient(retainUuid)
+        copy(schemes = schemes.map { it.deepCopy(retainUuid) }.toMutableList(),).deepCopyTransient(retainUuid)
 
 
     /**
@@ -116,10 +93,5 @@ data class Template(
          * The default value of the [schemes] field.
          */
         val DEFAULT_SCHEMES get() = mutableListOf<Scheme>()
-
-        /**
-         * The default value of the [arrayDecorator] field.
-         */
-        val DEFAULT_ARRAY_DECORATOR get() = ArrayDecorator()
     }
 }

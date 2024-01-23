@@ -30,7 +30,7 @@ import kotlin.random.Random
  * @param getScheme returns a scheme that generates previews; its random source will be changed
  */
 @Suppress("detekt:LateinitUsage") // Initialized in panel DSL
-class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
+class PreviewPanel(private val getScheme: () -> Scheme?) : Disposable {
     /**
      * The root panel containing the preview elements.
      */
@@ -87,7 +87,8 @@ class PreviewPanel(private val getScheme: () -> Scheme) : Disposable {
     @Suppress("SwallowedException") // Alternative is to add coupling to [SettingsComponent]
     fun updatePreview() {
         try {
-            previewText = generateTimely { getScheme().also { it.random = Random(seed) }.generateStrings() }.first()
+            previewText =
+                generateTimely { getScheme().also { it?.random = Random(seed) }?.generateStrings() }?.first() ?: "null"
         } catch (exception: DataGenerationException) {
             previewText = Bundle("preview.invalid", exception.message)
         } catch (exception: IllegalArgumentException) {
