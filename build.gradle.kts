@@ -109,6 +109,10 @@ tasks {
         itemPrefix.set("*")
     }
 
+    runIde {
+        jvmArgs = listOf("-XX:+UnlockDiagnosticVMOptions")
+    }
+
     signPlugin {
         if (System.getenv("CERTIFICATE_CHAIN") != null) {
             certificateChainFile.set(file(System.getenv("CERTIFICATE_CHAIN")))
