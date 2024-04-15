@@ -9,7 +9,6 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.newEditor.SettingsDialogFactory
-import com.intellij.util.alsoIfNull
 import javax.swing.Icon
 
 
@@ -70,7 +69,7 @@ abstract class InsertAction(
             SettingsDialogFactory.getInstance()
                 .create(project, text, it, false, false)
                 .showAndGet()
-                .alsoIfNull { return }
+                .also { pressedOK -> if (!pressedOK) return }
         }
 
         val data =
