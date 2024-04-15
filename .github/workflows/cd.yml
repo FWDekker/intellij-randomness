@@ -29,10 +29,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
         with:
           build-root-directory: main/
-          generate-job-summary: false
+          add-job-summary: on-failure
 
       - name: Extract version number
         working-directory: main/

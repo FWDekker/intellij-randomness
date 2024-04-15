@@ -24,13 +24,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
         with:
-          generate-job-summary: false
+          add-job-summary: on-failure
       - name: Run tests
         run: xvfb-run --auto-servernum ./gradlew check
       - name: Store coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: build/reports/kover/report.xml
@@ -46,9 +46,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
         with:
-          generate-job-summary: false
+          add-job-summary: on-failure
       - name: Run tests
         run: ./gradlew check
 
@@ -63,9 +63,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
         with:
-          generate-job-summary: false
+          add-job-summary: on-failure
       - name: Run tests
         run: ./gradlew check
 
@@ -76,11 +76,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Load coverage report
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: coverage
       - name: Upload coverage report
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           fail_ci_if_error: true
           files: report.xml
