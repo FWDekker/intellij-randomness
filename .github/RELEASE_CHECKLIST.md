@@ -4,6 +4,7 @@
 * Update [`README.md`](../README.md), [`CHANGELOG.md`](../CHANGELOG.md), and
   [`description.html`](../src/main/resources/META-INF/description.html) if necessary.
     * Make sure to preview the change notes in the IDE by loading the plugin.
+    * Make sure that even subsections with a single item use bullet points, otherwise the entry will not show in the IDE.
     * Make sure the list of acknowledgements is up-to-date.
 * Update screenshots and GIFs in `.github/img/` and on the plugin repository if necessary.
     * Set the global UI scale to 200% before recording/screenshotting to ensure high-resolution images.
