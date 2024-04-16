@@ -24,7 +24,7 @@ abstract class Scheme : State() {
      * scheme does not represent any kind of data, as is the case for [DecoratorScheme]s.
      */
     @get:Transient
-    open val typeIcon: TypeIcon? get() = null
+    open val typeIcon: TypeIcon? = null
 
     /**
      * The icon signifying this scheme in its entirety, or `null` if it does not have an icon.

@@ -26,7 +26,7 @@ data class WordScheme(
     val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name = Bundle("word.title")
-    override val typeIcon = BASE_ICON
+    override val typeIcon get() = BASE_ICON
     override val decorators get() = listOf(affixDecorator, arrayDecorator)
 
 
@@ -56,11 +56,8 @@ data class WordScheme(
         /**
          * The base icon for words.
          */
-        val BASE_ICON = TypeIcon(
-            Icons.SCHEME,
-            "cat",
-            listOf(JBColor(Color(242, 101, 34, 154), Color(242, 101, 34, 154)))
-        )
+        val BASE_ICON
+            get() = TypeIcon(Icons.SCHEME, "cat", listOf(JBColor(Color(242, 101, 34, 154), Color(242, 101, 34, 154))))
 
         /**
          * The default value of the [words] field.

@@ -33,7 +33,7 @@ data class StringScheme(
     val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name = Bundle("string.title")
-    override val typeIcon = BASE_ICON
+    override val typeIcon get() = BASE_ICON
     override val decorators get() = listOf(arrayDecorator)
 
 
@@ -51,7 +51,7 @@ data class StringScheme(
     override fun generateUndecoratedStrings(count: Int): List<String> {
         val rawStrings =
             if (isRegex) {
-                val rgxGen = RgxGen(pattern)
+                val rgxGen = RgxGen.parse(pattern)
                 List(count) {
                     if (this.isNonMatching) rgxGen.generateNotMatching(random.asJavaRandom())
                     else rgxGen.generate(random.asJavaRandom())
@@ -78,8 +78,8 @@ data class StringScheme(
             else ->
                 @Suppress("detekt:TooGenericExceptionCaught") // Consequence of incomplete validation in RgxGen
                 try {
-                    if (this.isNonMatching) RgxGen(pattern).generate()
-                    else RgxGen(pattern).generateNotMatching()
+                    if (this.isNonMatching) RgxGen.parse(pattern).generate()
+                    else RgxGen.parse(pattern).generateNotMatching()
 
                     arrayDecorator.doValidate()
                 } catch (exception: RgxGenParseException) {
@@ -107,11 +107,8 @@ data class StringScheme(
         /**
          * The base icon for strings.
          */
-        val BASE_ICON = TypeIcon(
-            Icons.SCHEME,
-            "abc",
-            listOf(JBColor(Color(244, 175, 61, 154), Color(244, 175, 61, 154)))
-        )
+        val BASE_ICON
+            get() = TypeIcon(Icons.SCHEME, "abc", listOf(JBColor(Color(244, 175, 61, 154), Color(244, 175, 61, 154))))
 
         /**
          * The default value of the [pattern] field.

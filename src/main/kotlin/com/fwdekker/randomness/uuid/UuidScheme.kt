@@ -38,7 +38,7 @@ data class UuidScheme(
     val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name = Bundle("uuid.title")
-    override val typeIcon = BASE_ICON
+    override val typeIcon get() = BASE_ICON
     override val decorators get() = listOf(affixDecorator, arrayDecorator)
 
 
@@ -86,11 +86,8 @@ data class UuidScheme(
         /**
          * The base icon for UUIDs.
          */
-        val BASE_ICON = TypeIcon(
-            Icons.SCHEME,
-            "id",
-            listOf(JBColor(Color(185, 155, 248, 154), Color(185, 155, 248, 154)))
-        )
+        val BASE_ICON
+            get() = TypeIcon(Icons.SCHEME, "id", listOf(JBColor(Color(185, 155, 248, 154), Color(185, 155, 248, 154))))
 
         /**
          * The default value of the [version] field.

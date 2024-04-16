@@ -114,7 +114,7 @@ data class TemplateReference(
         /**
          * The base icon for references when the reference is invalid.
          */
-        val DEFAULT_ICON = TypeIcon(Icons.TEMPLATE, "", listOf(Gray._110))
+        val DEFAULT_ICON get() = TypeIcon(Icons.TEMPLATE, "", listOf(Gray._110))
 
         /**
          * The preset values for the [capitalization] field.

@@ -40,7 +40,7 @@ data class IntegerScheme(
 ) : Scheme() {
     @get:Transient
     override val name = Bundle("integer.title")
-    override val typeIcon = BASE_ICON
+    override val typeIcon get() = BASE_ICON
     override val decorators get() = listOf(fixedLengthDecorator, affixDecorator, arrayDecorator)
 
 
@@ -103,11 +103,8 @@ data class IntegerScheme(
         /**
          * The base icon for integers.
          */
-        val BASE_ICON = TypeIcon(
-            Icons.SCHEME,
-            "123",
-            listOf(JBColor(Color(64, 182, 224, 154), Color(64, 182, 224, 154)))
-        )
+        val BASE_ICON
+            get() = TypeIcon(Icons.SCHEME, "123", listOf(JBColor(Color(64, 182, 224, 154), Color(64, 182, 224, 154))))
 
         /**
          * The default value of the [minValue] field.

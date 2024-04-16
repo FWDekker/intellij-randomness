@@ -53,7 +53,7 @@ internal class ErrorReporter : ErrorReportSubmitter() {
     /**
      * Returns the text that is displayed in the button to report the error.
      */
-    override fun getReportActionText(): String = Bundle("reporter.report")
+    override fun getReportActionText() = Bundle("reporter.report")
 
     /**
      * Returns the privacy notice text.
