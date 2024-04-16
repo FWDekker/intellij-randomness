@@ -1,8 +1,14 @@
 # Changelog
-## [Unreleased]
+## 3.3.0 -- 2024-04-16
+### Added
+* Added support for [character classes](https://www.regular-expressions.info/unicode.html#category) (e.g. `\p{Letter}`) in strings by updating [RgxGen](https://github.com/curious-odd-man/RgxGen) to v2.0. ([#530](https://github.com/FWDekker/intellij-randomness/issues/530))
+
 ### Changed
 * Rewrote error reporter from scratch, now ensuring all relevant data is included, and allowing non-GitHub users to report issues. ([#455](https://github.com/FWDekker/intellij-randomness/issues/455))
 * Significantly reduced plugin size by removing unnecessary dependencies. ([#526](https://github.com/FWDekker/intellij-randomness/issues/526))
+
+### Removed
+* Disabled dynamic reloading of the plugin until a stable fix can be deployed. ([#522](https://github.com/FWDekker/intellij-randomness/pull/522))
 
 ### Fixed
 * Various incorrect uses of the platform API. ([#526](https://github.com/FWDekker/intellij-randomness/issues/526))
