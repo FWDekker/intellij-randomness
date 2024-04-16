@@ -1,9 +1,12 @@
+@file:OptIn(ExperimentalKotest::class)
+
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.common.ExperimentalKotest
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContainExactly
@@ -34,10 +37,7 @@ object TypeIconTest : FunSpec({
     }
 
 
-    context("paintIcon") {
-        tags(Tags.SWING)
-
-
+    context("paintIcon").config(tags = setOf(Tags.SWING)) {
         lateinit var image: BufferedImage
 
 
@@ -136,10 +136,7 @@ object TypeIconTest : FunSpec({
  * Unit tests for [OverlayIcon].
  */
 object OverlayIconTest : FunSpec({
-    context("paintIcon") {
-        tags(Tags.SWING)
-
-
+    context("paintIcon").config(tags = setOf(Tags.SWING)) {
         lateinit var image: BufferedImage
 
 
@@ -242,10 +239,7 @@ object OverlayedIconTest : FunSpec({
     }
 
 
-    context("paintIcon") {
-        tags(Tags.SWING)
-
-
+    context("paintIcon").config(tags = setOf(Tags.SWING)) {
         lateinit var image: BufferedImage
 
 

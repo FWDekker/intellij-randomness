@@ -18,23 +18,23 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
     // Compilation
     id("org.jetbrains.kotlin.jvm") version "1.8.0"  // Set to latest version compatible with `pluginSinceBuild`, cf. https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library
-    id("org.jetbrains.intellij") version "1.16.1"
+    id("org.jetbrains.intellij") version "1.17.3"
 
     // Tests/coverage
-    id("org.jetbrains.kotlinx.kover") version "0.7.5"
+    id("org.jetbrains.kotlinx.kover") version "0.7.6"
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.23.4"  // cf. `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.23.6"  // cf. `gradle.properties`
 
     // Documentation
     id("org.jetbrains.changelog") version "2.2.0"
-    id("org.jetbrains.dokka") version "1.9.10"  // cf. `buildscript { dependencies` below and `gradle.properties`
+    id("org.jetbrains.dokka") version "1.9.20"  // cf. `buildscript { dependencies` below and `gradle.properties`
 }
 
 buildscript {
     dependencies {
-        classpath("org.jetbrains.dokka", "dokka-base", "1.9.10")  // cf. `plugins` above and `gradle.properties`
-        classpath("org.jetbrains.dokka", "versioning-plugin", "1.9.10")  // cf. `plugins` above and `gradle.properties`
+        classpath("org.jetbrains.dokka", "dokka-base", "1.9.20")  // cf. `plugins` above and `gradle.properties`
+        classpath("org.jetbrains.dokka", "versioning-plugin", "1.9.20")  // cf. `plugins` above and `gradle.properties`
     }
 }
 
@@ -45,7 +45,9 @@ repositories {
 }
 
 dependencies {
-    implementation("com.fasterxml.uuid", "java-uuid-generator", properties("uuidGeneratorVersion"))
+    implementation("com.fasterxml.uuid", "java-uuid-generator", properties("uuidGeneratorVersion")) {
+        exclude(group = "org.slf4j", module = "slf4j-api")  // Logging API is already provided by IDEA platform
+    }
     implementation("com.github.sisyphsu", "dateparser", properties("dateparserVersion")) {
         exclude(group = "org.projectlombok", module = "lombok")  // cf. https://github.com/sisyphsu/dateparser/issues/30
     }

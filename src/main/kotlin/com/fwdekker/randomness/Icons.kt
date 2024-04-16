@@ -18,57 +18,57 @@ object Icons {
     /**
      * The main icon of Randomness.
      */
-    val RANDOMNESS = IconLoader.getIcon("/icons/randomness.svg", this.javaClass.classLoader)
+    val RANDOMNESS get() = IconLoader.getIcon("/icons/randomness.svg", this.javaClass.classLoader)
 
     /**
      * The template icon for template icons.
      */
-    val TEMPLATE = IconLoader.getIcon("/icons/template.svg", this.javaClass.classLoader)
+    val TEMPLATE get() = IconLoader.getIcon("/icons/template.svg", this.javaClass.classLoader)
 
     /**
      * The template icon for scheme icons.
      */
-    val SCHEME = IconLoader.getIcon("/icons/scheme.svg", this.javaClass.classLoader)
+    val SCHEME get() = IconLoader.getIcon("/icons/scheme.svg", this.javaClass.classLoader)
 
     /**
      * An icon for settings.
      */
-    val SETTINGS = IconLoader.getIcon("/icons/settings.svg", this.javaClass.classLoader)
+    val SETTINGS get() = IconLoader.getIcon("/icons/settings.svg", this.javaClass.classLoader)
 
     /**
      * A filled-in version of [SETTINGS].
      */
-    val SETTINGS_FILLED = IconLoader.getIcon("/icons/settings-filled.svg", this.javaClass.classLoader)
+    val SETTINGS_FILLED get() = IconLoader.getIcon("/icons/settings-filled.svg", this.javaClass.classLoader)
 
     /**
      * An icon for arrays.
      */
-    val ARRAY = IconLoader.getIcon("/icons/array.svg", this.javaClass.classLoader)
+    val ARRAY get() = IconLoader.getIcon("/icons/array.svg", this.javaClass.classLoader)
 
     /**
      * A filled-in version of [ARRAY].
      */
-    val ARRAY_FILLED = IconLoader.getIcon("/icons/array-filled.svg", this.javaClass.classLoader)
+    val ARRAY_FILLED get() = IconLoader.getIcon("/icons/array-filled.svg", this.javaClass.classLoader)
 
     /**
      * An icon for references.
      */
-    val REFERENCE = IconLoader.getIcon("/icons/reference.svg", this.javaClass.classLoader)
+    val REFERENCE get() = IconLoader.getIcon("/icons/reference.svg", this.javaClass.classLoader)
 
     /**
      * A filled-in version of [REFERENCE].
      */
-    val REFERENCE_FILLED = IconLoader.getIcon("/icons/reference-filled.svg", this.javaClass.classLoader)
+    val REFERENCE_FILLED get() = IconLoader.getIcon("/icons/reference-filled.svg", this.javaClass.classLoader)
 
     /**
      * An icon for repeated insertions.
      */
-    val REPEAT = IconLoader.getIcon("/icons/repeat.svg", this.javaClass.classLoader)
+    val REPEAT get() = IconLoader.getIcon("/icons/repeat.svg", this.javaClass.classLoader)
 
     /**
      * A filled-in version of [REPEAT].
      */
-    val REPEAT_FILLED = IconLoader.getIcon("/icons/repeat-filled.svg", this.javaClass.classLoader)
+    val REPEAT_FILLED get() = IconLoader.getIcon("/icons/repeat-filled.svg", this.javaClass.classLoader)
 }
 
 
@@ -192,22 +192,22 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
         /**
          * Overlay icon for arrays.
          */
-        val ARRAY by lazy { OverlayIcon(Icons.ARRAY, Icons.ARRAY_FILLED) }
+        val ARRAY get() = OverlayIcon(Icons.ARRAY, Icons.ARRAY_FILLED)
 
         /**
          * Overlay icon for template references.
          */
-        val REFERENCE by lazy { OverlayIcon(Icons.REFERENCE, Icons.REFERENCE_FILLED) }
+        val REFERENCE get() = OverlayIcon(Icons.REFERENCE, Icons.REFERENCE_FILLED)
 
         /**
          * Overlay icon for repeated insertion.
          */
-        val REPEAT by lazy { OverlayIcon(Icons.REPEAT, Icons.REPEAT_FILLED) }
+        val REPEAT get() = OverlayIcon(Icons.REPEAT, Icons.REPEAT_FILLED)
 
         /**
          * Overlay icon for settings.
          */
-        val SETTINGS by lazy { OverlayIcon(Icons.SETTINGS, Icons.SETTINGS_FILLED) }
+        val SETTINGS get() = OverlayIcon(Icons.SETTINGS, Icons.SETTINGS_FILLED)
     }
 }
 

@@ -27,7 +27,7 @@ data class DateTimeScheme(
     val arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
     override val name = Bundle("datetime.title")
-    override val typeIcon = BASE_ICON
+    override val typeIcon get() = BASE_ICON
     override val decorators get() = listOf(arrayDecorator)
 
 
@@ -61,11 +61,8 @@ data class DateTimeScheme(
         /**
          * The base icon for date-times.
          */
-        val BASE_ICON = TypeIcon(
-            Icons.SCHEME,
-            "2:3",
-            listOf(JBColor(Color(249, 139, 158, 154), Color(249, 139, 158, 154)))
-        )
+        val BASE_ICON
+            get() = TypeIcon(Icons.SCHEME, "2:3", listOf(JBColor(Color(249, 139, 158, 154), Color(249, 139, 158, 154))))
 
         /**
          * The default value of the [minDateTime] field.

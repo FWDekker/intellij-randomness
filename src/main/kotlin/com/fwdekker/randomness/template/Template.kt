@@ -41,8 +41,7 @@ data class Template(
     val schemes: MutableList<Scheme> = DEFAULT_SCHEMES,
     val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
-    override val typeIcon
-        get() = TypeIcon.combine(schemes.mapNotNull { it.typeIcon }) ?: DEFAULT_ICON
+    override val typeIcon get() = TypeIcon.combine(schemes.mapNotNull { it.typeIcon }) ?: DEFAULT_ICON
     override val decorators get() = listOf(arrayDecorator)
 
     /**
@@ -105,7 +104,7 @@ data class Template(
         /**
          * The icon displayed when a template has no schemes.
          */
-        val DEFAULT_ICON = TypeIcon(Icons.TEMPLATE, "", listOf(Gray._110))
+        val DEFAULT_ICON get() = TypeIcon(Icons.TEMPLATE, "", listOf(Gray._110))
 
         /**
          * The default value of the [name] field.
