@@ -1,4 +1,9 @@
 # Changelog
+## [9.9.9-unreleased]
+### Fixed
+* Fixed an exception when a `StringScheme` contains a matching pattern containing `[]{1,3}`. ([#R2](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/2))
+
+
 ## 3.3.0 -- 2024-04-16
 ### Added
 * Added support for [character classes](https://www.regular-expressions.info/unicode.html#category) (e.g. `\p{Letter}`) in strings by updating [RgxGen](https://github.com/curious-odd-man/RgxGen) to v2.0. ([#530](https://github.com/FWDekker/intellij-randomness/issues/530))

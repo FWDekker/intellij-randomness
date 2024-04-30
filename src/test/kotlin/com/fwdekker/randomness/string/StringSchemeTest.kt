@@ -96,6 +96,8 @@ object StringSchemeTest : FunSpec({
                     row(StringScheme(pattern = "[]"), "string.error.empty_square"),
                 "fails if pattern has empty square braces" to
                     row(StringScheme(pattern = "a[]b"), "string.error.empty_square"),
+                "fails if pattern has empty square braces 2" to
+                    row(StringScheme(pattern = "[]{1,3}"), ""),
                 "succeeds if empty square braces are escaped" to
                     row(StringScheme(pattern = """\[]"""), null),
                 "fails if pattern has single trailing backslash" to

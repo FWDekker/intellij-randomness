@@ -78,8 +78,8 @@ data class StringScheme(
             else ->
                 @Suppress("detekt:TooGenericExceptionCaught") // Consequence of incomplete validation in RgxGen
                 try {
-                    if (this.isNonMatching) RgxGen.parse(pattern).generate()
-                    else RgxGen.parse(pattern).generateNotMatching()
+                    if (this.isNonMatching) RgxGen.parse(pattern).generateNotMatching()
+                    else RgxGen.parse(pattern).generate()
 
                     arrayDecorator.doValidate()
                 } catch (exception: RgxGenParseException) {
