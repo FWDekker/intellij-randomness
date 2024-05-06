@@ -15,6 +15,7 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldStartWith
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import java.awt.Color
@@ -214,12 +215,12 @@ object OverlayedIconTest : FunSpec({
     context("constructor") {
         test("fails if the base image is not square") {
             shouldThrow<IllegalArgumentException> { OverlayedIcon(PlainIcon(186, 132), emptyList()) }
-                .message shouldBe "Base must be square."
+                .message shouldStartWith "(Base must be square, but was"
         }
 
         test("fails if an overlay is not square") {
             shouldThrow<IllegalArgumentException> { OverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon(38, 40))) }
-                .message shouldBe "Overlays must be square."
+                .message shouldStartWith Regex("\\(Overlay [1-9] must be square, but was")
         }
 
         test("fails if overlays have different sizes") {
