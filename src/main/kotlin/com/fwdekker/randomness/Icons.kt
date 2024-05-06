@@ -219,7 +219,14 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
  */
 data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList()) : Icon {
     init {
-        require(base.iconWidth == base.iconHeight) { "Base must be square." }
+        require(base.iconWidth == base.iconHeight) {
+            Triple("Base must be square, but was ${base.iconWidth}x${base.iconHeight}.", base, overlays)
+        }
+        overlays.forEachIndexed { idx, item ->
+            require(item.iconWidth == item.iconHeight) {
+                Triple("Overlay $idx must be square, but was ${item.iconWidth}x${item.iconHeight}.", base, overlays)
+            }
+        }
         require(overlays.all { it.iconWidth == it.iconHeight }) { "Overlays must be square." }
         require(overlays.map { it.iconWidth }.toSet().size <= 1) { "All overlays must have same size." }
     }

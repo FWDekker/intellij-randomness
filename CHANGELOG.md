@@ -1,5 +1,8 @@
 # Changelog
 ## [9.9.9-unreleased]
+### Added
+* Added additional debug info for future reports relating to issue [#R1](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/1).
+
 ### Fixed
 * Fixed an exception when a `StringScheme` contains a matching pattern containing `[]{1,3}`. ([#R2](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/2))
 
