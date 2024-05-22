@@ -1,4 +1,9 @@
 # Changelog
+## [9.9.9-unreleased]
+### Added
+* Added even more debug info for future reports relating to issue [#R1](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/1).
+
+
 ## 3.3.1 -- 2024-05-06
 ### Added
 * Added additional debug info for future reports relating to issue [#R1](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/1).
