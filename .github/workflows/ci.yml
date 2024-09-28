@@ -3,11 +3,13 @@ name: CI
 on:
   push:
     paths-ignore:
+      - 'CHANGELOG.md'
       - 'README.md'
       - '.github/**.md'
       - '.github/img/**'
   pull_request:
     paths-ignore:
+      - 'CHANGELOG.md'
       - 'README.md'
       - '.github/**.md'
       - '.github/img/**'
@@ -46,7 +48,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           add-job-summary: on-failure
       - name: Run tests
@@ -63,7 +65,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           add-job-summary: on-failure
       - name: Run tests

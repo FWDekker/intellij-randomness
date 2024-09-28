@@ -20,7 +20,9 @@ jobs:
         with:
           ref: gh-pages
           path: gh-pages
-          # Required to push updated documentation to repository
+          # Required to push updated documentation to repository.
+          # If you get "Error: fatal: could not read Username for 'https://github.com': terminal prompts disabled", then
+          # the token has probably expired.
           token: ${{ secrets.personal_access_token }}
 
       - name: Set up Java
@@ -29,9 +31,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
+        working-directory: main/
         with:
-          build-root-directory: main/
           add-job-summary: on-failure
 
       - name: Extract version number

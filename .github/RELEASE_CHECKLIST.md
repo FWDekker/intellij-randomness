@@ -1,8 +1,7 @@
 # Release checklist
 ## Documentation
 * Bump the version number according to [Semantic Versioning](https://semver.org/).
-* Update [`README.md`](../README.md), [`CHANGELOG.md`](../CHANGELOG.md), and
-  [`description.html`](../src/main/resources/META-INF/description.html) if necessary.
+* Update [`README.md`](../README.md), [`CHANGELOG.md`](../CHANGELOG.md), and [`description.html`](../src/main/resources/META-INF/description.html) if necessary.
     * Make sure to preview the change notes in the IDE by loading the plugin.
     * Make sure that even subsections with a single item use bullet points, otherwise the entry will not show in the IDE.
     * Make sure the list of acknowledgements is up-to-date.
@@ -11,8 +10,7 @@
     * Use the project in `src/test/resources/screenshots/` to store code snippets in.
       Do not store `.idea/`, `.gradle`, and similar build files in this project.
     * Hide (inlay) hints and set font size to 20.
-    * Distance between bottom of "Refresh" button and top of button bar at bottom is 50 pixels, or the original
-      distance, whichever is smaller.
+    * Distance between bottom of "Refresh" button and top of button bar at bottom is 50 pixels, or the original distance, whichever is smaller.
     * On Linux, the screen can be recorded using [peek](https://github.com/phw/peek) or
       [SimpleScreenRecorder](https://www.maartenbaert.be/simplescreenrecorder/).
     * Reducing GIF size is a difficult process.
@@ -24,7 +22,8 @@
          2. "Optimize Transparency" with 2% fuzz
          3. "Lossy GIF" with compression level 30
 * Ensure documentation generates without errors.
-  After the release, run the `cd.yml` workflow to update the `gh-pages` branch.
+  After the release, the [`cd.yml` workflow](https://github.com/FWDekker/intellij-randomness/actions/workflows/cd.yml) should automatically update the `gh-pages` branch.
+  Check that the build action does not fail!
 
 ## Verification
 * Run tests and static analysis one more time.
