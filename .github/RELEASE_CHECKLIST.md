@@ -24,7 +24,9 @@
          2. "Optimize Transparency" with 2% fuzz
          3. "Lossy GIF" with compression level 30
 * Ensure documentation generates without errors.
-  After the release, run the `cd.yml` workflow to update the `gh-pages` branch.
+  After the release, the [`cd.yml` workflow](https://github.com/FWDekker/intellij-randomness/actions/workflows/cd.yml)
+  should automatically update the `gh-pages` branch.
+  Check that the build action does not fail!
 
 ## Verification
 * Run tests and static analysis one more time.

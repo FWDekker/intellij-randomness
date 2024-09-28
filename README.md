@@ -94,6 +94,7 @@ $ gradlew buildPlugin                  # Build an installable zip of the plugin
 $ gradlew buildPlugin -Pbuild.hotswap  # Same as above, but allow hot-swapping the plugin during development
 $ gradlew signPlugin                   # Sign built plugin
 ```
+
 Signing the plugin requires specific environment variables to be set to refer to appropriate key files.
 See [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html) for more information.
 
@@ -109,22 +110,34 @@ $ gradlew runPluginVerifier       # Check for compatibility issues
 
 #### 🏷️ Tagging and filtering tests
 [Kotest tests can be tagged](https://kotest.io/docs/framework/tags.html) to allow selectively running tests.
+Simply run Gradle with argument `-Pkotest.tags="X"` to run only tests tagged with tag `X`.
 The tags for Randomness are statically defined in
 [`Tags`](https://github.com/FWDekker/intellij-randomness/blob/main/src/test/kotlin/com/fwdekker/randomness/testhelpers/Tags.kt).
+If you want to debug a test, you can tag it with the `Focus` tag to ensure only those tests run.
+Alternatively, prefix the description with the string `f:`.
+Make sure you remove the tag afterwards!
 
-Tag an entire test class by adding `tags(...)` to the class definition, or tag an individual test `context` by
+You can tag an entire test class by adding `tags(...)` to the class definition, or tag an individual test `context` by
 writing `context("foo").config(tags = setOf(...)) {`.
-It is not possible to tag an individual `test` due to limitations in Kotest.
-
-To run only one `context` in some test class `X`, prefix the `context`'s name with `f:` and run with `--tests X`.
-The prefix `f:` filters out other `context`s in that test class, and `--tests X` filters out other test classes.
-Alternatively, tag the desired `context` with the `Focus` tag and run with `-Pkotest.tags="Focus"` to filter by that
-tag.
+Due to limitations in Kotest, you can only tag the outer level of `context`s;
+you cannot tag a nested `context` or an individual `test`.
+This is also true for prefixing with `f:`.
 
 ### 📚 Documentation
 ```bash
-$ gradlew dokkaHtml  # Generate documentation
+$ gradlew dokkaHtml                        # Generate documentation
+$ gradlew dokkaHtml -Pdokka.pagesDir=/foo  # Generate linked documentation
 ```
+
+Whenever a release is created on GitHub, [GitHub Actions generates new
+documentation](https://github.com/FWDekker/intellij-randomness/actions/workflows/cd.yml), after which this is deployed
+to [GitHub Pages](https://fwdekker.github.io/intellij-randomness/).
+
+Documentation pages link to each other using a version dropdown menu.
+Simply running `gradlew dokkaHtml` does not generate a dropdown menu, because Dokka is not automatically aware of all
+previous versions.
+To link the versions together, check out the `gh-branch` of this repository in a separate directory, and point
+`dokka.pagesDir` to that directory.
 
 ### 🖼 Icons
 The icons used by the plugin are found in [the file `icons.sketch`](.github/img/icons.sketch).

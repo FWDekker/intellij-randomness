@@ -13,7 +13,7 @@ supported and supplied with security patches.
 
 ## Reporting a vulnerability
 To report a vulnerability in Randomness, please use
-[GitHub's vulnerability reporting feature](https://github.com/FWDekker/mommy/security/advisories/new).
+[GitHub's vulnerability reporting feature](https://github.com/FWDekker/intellij-randomness/security/advisories/new).
 You will be contacted as soon as possible.
 You will be thanked publicly for reporting the vulnerability, unless you indicate that you prefer to be thanked
 anonymously.

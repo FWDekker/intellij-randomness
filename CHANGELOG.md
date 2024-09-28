@@ -1,10 +1,11 @@
 # Changelog
-## [9.9.9-unreleased]
+## 3.3.2 -- 2024-09-28
 ### Added
 * Added even more debug info for future reports relating to issue [#R1](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/1).
 
 ### Changed
 * Changed icon instantiation to be more in line with guidelines, hopefully fixing [#R13](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/13).
+* Updated various dependencies, especially those related to tooling.
 
 
 ## 3.3.1 -- 2024-05-06
