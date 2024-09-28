@@ -943,7 +943,7 @@ object TemplateJTreeTest : FunSpec({
             }
 
             test("resets the selected template's scheme order") {
-                currentList.templates[0].schemes.setAll(currentList.templates[0].schemes.reversed())
+                currentList.templates[0].schemes.setAll(currentList.templates[0].schemes.asReversed().toList())
                 guiRun { tree.reload() }
                 currentList.templates[0].schemes.names() shouldContainExactly listOf("Scheme1", "Scheme0")
 

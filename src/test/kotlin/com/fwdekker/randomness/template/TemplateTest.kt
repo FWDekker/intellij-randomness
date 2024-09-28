@@ -130,7 +130,7 @@ object TemplateTest : FunSpec({
                     .also { it.random = Random(1) }
                     .generateStrings()[0]
 
-                output1.split("-").reversed() shouldContainExactly output2.split("-")
+                output1.split("-").asReversed() shouldContainExactly output2.split("-")
             }
 
             test("sets the rng independent of the rng of other schemes") {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+<svg width="16" height="16" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
   <g id="reference-filled">
     <path d="M0 0L10 0L10 9L0 9L0 0Z" transform="matrix(0.70710677 0.70710677 -0.70710677 0.70710677 8 1)" id="Rectangle" fill="#D3D3D3" fill-rule="evenodd" stroke="none" />
     <path d="M0 5C0 2.23858 2.23858 0 5 0C7.76142 0 10 2.23858 10 5C10 7.76142 7.76142 10 5 10C2.23858 10 0 7.76142 0 5Z" transform="translate(5 1)" id="Ellipse-2" fill="#D3D3D3" fill-rule="evenodd" stroke="none" />

@@ -33,7 +33,7 @@
     <!-- Non-dynamic actions -->
     <actions resource-bundle="randomness">
         <action id="com.fwdekker.randomness.PopupAction" class="com.fwdekker.randomness.PopupAction"
-                icon="/icons/randomness.svg">
+                icon="com.fwdekker.randomness.Icons.RANDOMNESS">
             <keyboard-shortcut first-keystroke="alt R" keymap="$default" />
             <add-to-group group-id="GenerateGroup" anchor="last" />
             <add-to-group group-id="ToolsMenu" anchor="last" />
