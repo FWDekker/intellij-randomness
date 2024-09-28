@@ -7,8 +7,9 @@ import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.versioning.VersioningConfiguration
 import org.jetbrains.dokka.versioning.VersioningPlugin
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.net.URL
+import java.net.URI
 import java.time.Year
 
 fun properties(key: String) = project.findProperty(key).toString()
@@ -17,24 +18,24 @@ fun properties(key: String) = project.findProperty(key).toString()
 /// Plugins
 plugins {
     // Compilation
-    id("org.jetbrains.kotlin.jvm") version "1.8.0"  // Set to latest version compatible with `pluginSinceBuild`, cf. https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library
-    id("org.jetbrains.intellij") version "1.17.3"
+    id("org.jetbrains.kotlin.jvm") version "1.9.21"  // Set to latest version compatible with `pluginSinceBuild`, see also https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library
+    id("org.jetbrains.intellij.platform") version "2.1.0"
 
     // Tests/coverage
-    id("org.jetbrains.kotlinx.kover") version "0.7.6"
+    id("org.jetbrains.kotlinx.kover") version "0.8.3"
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.23.6"  // cf. `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.23.7"  // See also `gradle.properties`
 
     // Documentation
-    id("org.jetbrains.changelog") version "2.2.0"
-    id("org.jetbrains.dokka") version "1.9.20"  // cf. `buildscript { dependencies` below and `gradle.properties`
+    id("org.jetbrains.changelog") version "2.2.1"
+    id("org.jetbrains.dokka") version "1.9.20"  // See also `buildscript.dependencies` below and `gradle.properties`
 }
 
 buildscript {
     dependencies {
-        classpath("org.jetbrains.dokka", "dokka-base", "1.9.20")  // cf. `plugins` above and `gradle.properties`
-        classpath("org.jetbrains.dokka", "versioning-plugin", "1.9.20")  // cf. `plugins` above and `gradle.properties`
+        classpath("org.jetbrains.dokka", "dokka-base", "1.9.20")  // See also `plugins` above and `gradle.properties`
+        classpath("org.jetbrains.dokka", "versioning-plugin", "1.9.20")  // See also `plugins` above and `gradle.properties`
     }
 }
 
@@ -42,14 +43,17 @@ buildscript {
 /// Dependencies
 repositories {
     mavenCentral()
+    intellijPlatform { defaultRepositories() }
 }
 
 dependencies {
     implementation("com.fasterxml.uuid", "java-uuid-generator", properties("uuidGeneratorVersion")) {
-        exclude(group = "org.slf4j", module = "slf4j-api")  // Logging API is already provided by IDEA platform
+        // Logging API is already provided by IDEA platform
+        exclude(group = "org.slf4j", module = "slf4j-api")
     }
     implementation("com.github.sisyphsu", "dateparser", properties("dateparserVersion")) {
-        exclude(group = "org.projectlombok", module = "lombok")  // cf. https://github.com/sisyphsu/dateparser/issues/30
+        // TODO[Workaround]: Remove after https://github.com/sisyphsu/dateparser/issues/30 has been fixed
+        exclude(group = "org.projectlombok", module = "lombok")
     }
     implementation("com.github.curious-odd-man", "rgxgen", properties("rgxgenVersion"))
     implementation("org.eclipse.mylyn.github", "org.eclipse.egit.github.core", properties("githubCore"))
@@ -63,6 +67,16 @@ dependencies {
 
     detektPlugins("io.gitlab.arturbosch.detekt", "detekt-formatting", properties("detektVersion"))
     dokkaHtmlPlugin("org.jetbrains.dokka", "versioning-plugin", properties("dokkaVersion"))
+
+    intellijPlatform {
+        intellijIdeaCommunity(properties("intellijVersion"))
+
+        pluginVerifier()
+        zipSigner()
+        instrumentationTools()
+
+        testFramework(TestFrameworkType.Platform)
+    }
 }
 
 
@@ -75,48 +89,56 @@ tasks {
     }
     withType<KotlinCompile> {
         kotlinOptions {
+            // Transforms "1.9.20" to "1.9"
+            val kotlinApiVersion = properties("kotlinVersion").split(".").take(2).joinToString(".")
+
             jvmTarget = properties("javaVersion")
-            apiVersion = properties("kotlinVersion")
-            languageVersion = properties("kotlinVersion")
+            apiVersion = kotlinApiVersion
+            languageVersion = kotlinApiVersion
         }
     }
     withType<Detekt> {
         jvmTarget = properties("javaVersion")
     }
 
-    intellij {
-        version.set(properties("intellijVersion"))
-        downloadSources.set(true)
-        updateSinceUntilBuild.set(false)  // Set in `patchPluginXml`
-    }
+    intellijPlatform {
+        buildSearchableOptions = !project.hasProperty("build.hotswap")
 
-    buildSearchableOptions {
-        enabled = !project.hasProperty("build.hotswap")
-    }
+        pluginConfiguration {
+            description = file("src/main/resources/META-INF/description.html").readText()
+            changeNotes = provider {
+                changelog.renderItem(
+                    if (changelog.has(properties("version"))) changelog.get(properties("version"))
+                    else changelog.getUnreleased(),
+                    Changelog.OutputType.HTML
+                )
+            }
 
-    patchPluginXml {
-        changeNotes.set(provider {
-            changelog.renderItem(
-                if (changelog.has(properties("version"))) changelog.get(properties("version"))
-                else changelog.getUnreleased(),
-                Changelog.OutputType.HTML
-            )
-        })
-        pluginDescription.set(file("src/main/resources/META-INF/description.html").readText())
-        sinceBuild.set(properties("pluginSinceBuild"))
+            ideaVersion {
+                sinceBuild = properties("pluginSinceBuild")
+                untilBuild = provider { null }
+            }
+        }
+
+        signing {
+            if (System.getenv("CERTIFICATE_CHAIN") != null) {
+                certificateChainFile = file(System.getenv("CERTIFICATE_CHAIN"))
+                privateKeyFile = file(System.getenv("PRIVATE_KEY"))
+                password = System.getenv("PRIVATE_KEY_PASSWORD")
+            }
+        }
+
+        pluginVerification {
+            ides {
+                properties("pluginVerifierIdeVersions").split(",").forEach { ide(it) }
+            }
+        }
     }
 
     changelog {
-        repositoryUrl.set("https://github.com/FWDekker/intellij-randomness")
-        itemPrefix.set("*")
-    }
-
-    signPlugin {
-        if (System.getenv("CERTIFICATE_CHAIN") != null) {
-            certificateChainFile.set(file(System.getenv("CERTIFICATE_CHAIN")))
-            privateKeyFile.set(file(System.getenv("PRIVATE_KEY")))
-            password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
-        }
+        repositoryUrl = "https://github.com/FWDekker/intellij-randomness"
+        itemPrefix = "*"
+        unreleasedTerm = "9.9.9-unreleased"
     }
 
 
@@ -140,10 +162,12 @@ tasks {
         finalizedBy(koverXmlReport)
     }
 
-    koverReport {
-        defaults {
-            html { onCheck = false }
-            xml { onCheck = false }
+    kover {
+        reports {
+            total {
+                html { onCheck = false }
+                xml { onCheck = false }
+            }
         }
     }
 
@@ -154,14 +178,10 @@ tasks {
         config.setFrom(".config/detekt/.detekt.yml")
     }
 
-    runPluginVerifier {
-        ideVersions.set(properties("pluginVerifierIdeVersions").split(","))
-    }
-
 
     // Documentation
     dokkaHtml.configure {
-        notCompatibleWithConfigurationCache("cf. https://github.com/Kotlin/dokka/issues/1217")
+        notCompatibleWithConfigurationCache("See also https://github.com/Kotlin/dokka/issues/1217")
 
         pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
             customAssets = listOf(file(".config/dokka/logo-icon.svg"))
@@ -174,19 +194,19 @@ tasks {
                 olderVersionsDir = file("$pagesDir/older/")
             }
         }
-        moduleName.set("Randomness")
-        moduleVersion.set("v${properties("version")}")
-        offlineMode.set(true)
-        suppressInheritedMembers.set(true)
+        moduleName = "Randomness"
+        moduleVersion = "v${properties("version")}"
+        offlineMode = true
+        suppressInheritedMembers = true
 
         dokkaSourceSets {
             named("main") {
                 includes.from(files("packages.md"))
 
-                jdkVersion.set(properties("javaVersion").toInt())
-                languageVersion.set(properties("kotlinVersion"))
+                jdkVersion = properties("javaVersion").toInt()
+                languageVersion = properties("kotlinVersion")
 
-                documentedVisibilities.set(
+                documentedVisibilities =
                     setOf(
                         Visibility.PUBLIC,
                         Visibility.PRIVATE,
@@ -194,20 +214,19 @@ tasks {
                         Visibility.INTERNAL,
                         Visibility.PACKAGE,
                     )
-                )
-                reportUndocumented.set(true)
+                reportUndocumented = true
 
                 sourceLink {
-                    localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(URL("https://github.com/FWDekker/intellij-randomness/tree/v${properties("version")}/src/main/kotlin"))
-                    remoteLineSuffix.set("#L")
+                    localDirectory = file("src/main/kotlin")
+                    remoteUrl = URI("https://github.com/FWDekker/intellij-randomness/tree/v${properties("version")}/src/main/kotlin").toURL()
+                    remoteLineSuffix = "#L"
                 }
             }
         }
     }
 }
 
-// TODO[Remove workaround]: After https://github.com/Kotlin/dokka/issues/3398 has been fixed
+// TODO[Workaround]: Remove after https://github.com/Kotlin/dokka/issues/3398 has been fixed
 abstract class DokkaHtmlPost : DefaultTask() {
     private val buildDir = project.layout.buildDirectory
 

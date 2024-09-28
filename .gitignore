@@ -1,6 +1,7 @@
 ## Custom
 # Error reporter token
 /token.bin
+/.intellijPlatform
 
 
 ## Java

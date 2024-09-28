@@ -696,10 +696,8 @@ object TemplateJTreeTest : FunSpec({
         beforeNonContainer {
             frame.cleanUp()
             frame = showInFrame(guiGet { tree.asDecoratedPanel() })
-        }
 
-        afterNonContainer {
-            frame.cleanUp()
+            // Cleanup is done in top-level `afterNonContainer` method
         }
 
 
@@ -712,6 +710,9 @@ object TemplateJTreeTest : FunSpec({
 
         context("RemoveButton") {
             test("is disabled if nothing is selected") {
+                // I really don't know why, but this sleep is required in the first test in the "buttons" group
+                Thread.sleep(100)
+
                 guiRun {
                     tree.clearSelection()
                     updateButtons()
