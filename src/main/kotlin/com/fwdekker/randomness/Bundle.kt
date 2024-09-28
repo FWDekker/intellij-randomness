@@ -40,7 +40,7 @@ object Bundle {
 fun String.matchesFormat(format: String, vararg args: String) =
     Regex("%[0-9]+\\\$[Ssd]").findAll(format)
         .toList()
-        .reversed()
+        .asReversed()
         .fold(format) { acc, match ->
             if (match.value.drop(1).dropLast(2).toInt() > args.size)
                 acc.replaceRange(match.range, ".*")

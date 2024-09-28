@@ -3,6 +3,9 @@
 ### Added
 * Added even more debug info for future reports relating to issue [#R1](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/1).
 
+### Changed
+* Changed icon instantiation to be more in line with guidelines, hopefully fixing [#R13](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/13).
+
 
 ## 3.3.1 -- 2024-05-06
 ### Added
@@ -24,7 +27,7 @@
 * Disabled dynamic reloading of the plugin until a stable fix can be deployed. ([#522](https://github.com/FWDekker/intellij-randomness/pull/522))
 
 ### Fixed
-* Various incorrect uses of the platform API. ([#526](https://github.com/FWDekker/intellij-randomness/issues/526))
+* Fixed various incorrect uses of the platform API. ([#526](https://github.com/FWDekker/intellij-randomness/issues/526))
 
 
 ## 3.2.0 -- 2024-01-10
