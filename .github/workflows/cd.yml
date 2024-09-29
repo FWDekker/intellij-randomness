@@ -4,9 +4,24 @@ on:
   release:
     types: [ published ]
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'dry run'
+        type: boolean
+        default: true
 
 jobs:
+  pre-flight-checks:
+    if: "!(contains(github.event.head_commit.message, '[cd skip]') || contains(github.event.head_commit.message, '[skip cd]'))"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print inputs
+        run: |
+          echo "dry_run: ${{ github.event.inputs.dry_run }}"
+
   build-pages:
+    needs: [ pre-flight-checks ]
     runs-on: ubuntu-latest
 
     steps:
@@ -32,7 +47,6 @@ jobs:
           java-version: '17'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-        working-directory: main/
         with:
           add-job-summary: on-failure
 
@@ -50,6 +64,7 @@ jobs:
           mv main/build/dokka/html/* gh-pages/
 
       - name: Push new documentation
+        if: ${{ github.event.inputs.dry_run == 'false' }}
         working-directory: gh-pages/
         run: |
           git config --global user.name "FWDekkerBot"
