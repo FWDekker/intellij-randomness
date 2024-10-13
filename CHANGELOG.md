@@ -1,4 +1,9 @@
 # Changelog
+## 9.9.9-unreleased
+### Fixed
+* Fixed bug reported to also check closed issues when checking for duplicates.
+
+
 ## 3.3.2 -- 2024-09-28
 ### Added
 * Added even more debug info for future reports relating to issue [#R1](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/1).
