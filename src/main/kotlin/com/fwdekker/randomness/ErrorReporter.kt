@@ -150,7 +150,9 @@ private class GitHubReporter {
     fun report(issueData: IssueData): SubmittedReportInfo =
         try {
             synchronized(this) {
-                val duplicate = issueService.pageIssues(repo).flatSequence().firstOrNull { issueData.isDuplicateOf(it) }
+                val duplicate = issueService.pageIssues(repo, mapOf("state" to "all"))
+                    .flatSequence()
+                    .firstOrNull { issueData.isDuplicateOf(it) }
 
                 val context: Issue
                 if (duplicate == null) {
@@ -365,7 +367,6 @@ private class IssueData(
                     - Randomness version: ${pluginDescriptor.version ?: "_Unknown_"}
                     - IDE version: ${ApplicationInfo.getInstance().apiVersion}
                     - Operating system: ${SystemInfo.OS_NAME}
-                    - Java version: ${SystemInfo.JAVA_VERSION}
                     """.trimIndent()
             )
             .joinToString(separator = "\n\n") { section(it.first, it.second) }
@@ -385,8 +386,8 @@ private class IssueData(
     /**
      * Returns `true` if and only if this [IssueData] is (likely) a duplicate of the existing [Issue].
      */
-    fun isDuplicateOf(issue: Issue): Boolean =
-        issue.title.takeWhile { it != ']' } == title.takeWhile { it != ']' }
+    fun isDuplicateOf(other: Issue): Boolean =
+        this.title.takeWhile { it != ']' } == other.title.takeWhile { it != ']' }
 
 
     /**
