@@ -2,12 +2,17 @@ package com.fwdekker.randomness
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ColorUtil
+import com.intellij.ui.LayeredIcon
+import com.intellij.ui.RowIcon
+import com.intellij.ui.icons.RowIcon.Alignment
 import com.intellij.util.IconUtil
 import java.awt.Color
 import java.awt.Component
 import java.awt.Graphics
 import java.awt.image.RGBImageFilter
 import javax.swing.Icon
+import javax.swing.JLabel
+import javax.swing.SwingConstants
 import kotlin.math.atan2
 
 
@@ -91,6 +96,16 @@ object Icons {
  * @property colors The colors to give to the [base].
  */
 data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) : Icon {
+    private val icon =
+        LayeredIcon(2).apply {
+            val c = JLabel()
+            val filter = RadialColorReplacementFilter(colors, Pair(iconWidth / 2, iconHeight / 2))
+
+            setIcon(IconUtil.filterIcon(base, { filter }, c), 0)
+            setIcon(IconUtil.textToIcon(text, c, FONT_SIZE), 1, SwingConstants.CENTER)  // TODO: Dynamic font scaling
+        }
+
+
     init {
         require(colors.isNotEmpty()) { "At least one color must be defined." }
     }
@@ -107,11 +122,7 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
     override fun paintIcon(c: Component?, g: Graphics?, x: Int, y: Int) {
         if (c == null || g == null) return
 
-        val filter = RadialColorReplacementFilter(colors, Pair(iconWidth / 2, iconHeight / 2))
-        IconUtil.filterIcon(base, { filter }, c).paintIcon(c, g, x, y)
-
-        val textIcon = IconUtil.textToIcon(text, c, FONT_SIZE * iconWidth)
-        textIcon.paintIcon(c, g, x + (iconWidth - textIcon.iconWidth) / 2, y + (iconHeight - textIcon.iconHeight) / 2)
+        icon.paintIcon(c, g, x, y)
     }
 
     /**
@@ -132,7 +143,7 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
         /**
          * The scale of the text inside the icon relative to the icon's size.
          */
-        const val FONT_SIZE = 12f / 32f
+        const val FONT_SIZE = 6f
 
 
         /**
@@ -160,6 +171,15 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
  * the [base], or `null` if [base] is already a solid shape.
  */
 data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
+    private val icon =
+        LayeredIcon(2).apply {
+            val c = JLabel()
+
+            setIcon(background ?: base, 0)
+            setIcon(IconUtil.scale(base, c, 1 - 2 * MARGIN), 1, SwingConstants.CENTER)
+        }
+
+
     /**
      * Paints the overlay icon.
      *
@@ -171,10 +191,7 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
     override fun paintIcon(c: Component?, g: Graphics?, x: Int, y: Int) {
         if (c == null || g == null) return
 
-        IconUtil.filterIcon(background ?: base, { RadialColorReplacementFilter(listOf(c.background)) }, c)
-            .paintIcon(c, g, x, y)
-        IconUtil.scale(base, c, 1 - 2 * MARGIN)
-            .paintIcon(c, g, x + (MARGIN * iconWidth).toInt(), y + (MARGIN * iconHeight).toInt())
+        icon.paintIcon(c, g, x, y)
     }
 
     /**
@@ -234,6 +251,17 @@ data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList())
      */
     private var validated: Boolean = false
 
+    private val icon =
+        LayeredIcon(2).apply {
+            val c = JLabel()
+
+            val rowIcon = RowIcon(overlays.size, alignment = Alignment.BOTTOM)
+            overlays.forEachIndexed { idx, overlay -> rowIcon.setIcon(IconUtil.scale(overlay, c, .5f), idx) }
+
+            setIcon(base, 0)
+            setIcon(rowIcon, 1, SwingConstants.NORTH_WEST)
+        }
+
 
     /**
      * Returns a copy of this icon that has [icon] as an additional overlay icon.
@@ -253,15 +281,7 @@ data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList())
         if (c == null || g == null) return
 
         validate()
-
-        base.paintIcon(c, g, x, y)
-        overlays.forEachIndexed { i, overlay ->
-            val overlaySize = iconWidth.toFloat() / OVERLAYS_PER_ROW
-            val overlayX = (i % OVERLAYS_PER_ROW * overlaySize).toInt()
-            val overlayY = (i / OVERLAYS_PER_ROW * overlaySize).toInt()
-
-            IconUtil.scale(overlay, null, overlaySize / overlay.iconWidth).paintIcon(c, g, overlayX, overlayY)
-        }
+        icon.paintIcon(c, g, x, y)
     }
 
     /**
@@ -292,17 +312,6 @@ data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList())
         require(overlays.map { it.iconWidth }.toSet().size <= 1) { "All overlays must have same size." }
 
         validated = true
-    }
-
-
-    /**
-     * Holds constants.
-     */
-    companion object {
-        /**
-         * Number of overlays displayed per row.
-         */
-        const val OVERLAYS_PER_ROW = 2
     }
 }
 
