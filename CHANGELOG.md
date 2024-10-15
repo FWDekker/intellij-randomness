@@ -1,7 +1,8 @@
 # Changelog
 ## 9.9.9-unreleased
 ### Fixed
-* Fixed bug reported to also check closed issues when checking for duplicates.
+* Hopefully fix "Must be not computed before that call" bug by deferring icon validation to painting. ([#R1](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/1)) ([#R13](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/13)) ([IJPL-163887](https://youtrack.jetbrains.com/issue/IJPL-163887/))
+* Fixed bug reporter to also check closed issues when checking for duplicates.
 
 
 ## 3.3.2 -- 2024-09-28

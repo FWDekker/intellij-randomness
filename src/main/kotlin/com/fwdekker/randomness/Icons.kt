@@ -229,27 +229,10 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
  * @property overlays The various icons that are overlayed on top of [base].
  */
 data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList()) : Icon {
-    init {
-        val baseWidth = base.iconWidth
-        val baseHeight = base.iconHeight
-
-        require(baseWidth == baseHeight) {
-            Triple(
-                "Base must be square, but was ${baseWidth}x$baseHeight. " +
-                    "Repeat: ${base.iconWidth}x${base.iconHeight}. " +
-                    "Repeat: ${base.iconWidth}x${base.iconHeight}.",
-                base,
-                overlays
-            )
-        }
-        overlays.forEachIndexed { idx, item ->
-            require(item.iconWidth == item.iconHeight) {
-                Triple("Overlay $idx must be square, but was ${item.iconWidth}x${item.iconHeight}.", base, overlays)
-            }
-        }
-        require(overlays.all { it.iconWidth == it.iconHeight }) { "Overlays must be square." }
-        require(overlays.map { it.iconWidth }.toSet().size <= 1) { "All overlays must have same size." }
-    }
+    /**
+     * @see validate
+     */
+    private var validated: Boolean = false
 
 
     /**
@@ -268,6 +251,8 @@ data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList())
      */
     override fun paintIcon(c: Component?, g: Graphics?, x: Int, y: Int) {
         if (c == null || g == null) return
+
+        validate()
 
         base.paintIcon(c, g, x, y)
         overlays.forEachIndexed { i, overlay ->
@@ -288,6 +273,26 @@ data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList())
      * The height of the base icon.
      */
     override fun getIconHeight() = base.iconHeight
+
+
+    /**
+     * Lazily validates the relative sizes of the [base] and the [overlays].
+     *
+     * This code must *not* be called in the constructor; it should be deferred to some later point. Calling this in the
+     * constructor *will* cause exceptions, because the constructor is called in the constructor of various actions, and
+     * actions are constructor before UI scaling is initialized.
+     *
+     * See also https://youtrack.jetbrains.com/issue/IJPL-163887/
+     */
+    private fun validate() {
+        if (validated) return
+
+        require(base.iconWidth == base.iconHeight) { "Base must be square." }
+        require(overlays.all { it.iconWidth == it.iconHeight }) { "All overlays must be square." }
+        require(overlays.map { it.iconWidth }.toSet().size <= 1) { "All overlays must have same size." }
+
+        validated = true
+    }
 
 
     /**
