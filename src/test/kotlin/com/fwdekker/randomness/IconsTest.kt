@@ -340,16 +340,15 @@ object RadialColorReplacementFilterTest : FunSpec({
             Color(filtered, true).alpha shouldBe 12
         }
 
-        test("returns the first of four colors if a position above the center is given") {
-            val filter = RadialColorReplacementFilter(listOf(Color.RED, Color.BLUE, Color.PINK, Color.GRAY), Pair(0, 0))
+        test("arranges four colors in clockwise order starting from the top") {
+            val colors = listOf(Color.RED, Color.BLUE, Color.PINK, Color.GRAY)
+            val filter = RadialColorReplacementFilter(colors, Pair(0, 0))
 
-            filter.filterRGB(0, 12, Color.MAGENTA.rgb) shouldBe Color.RED.rgb
-        }
-
-        test("returns the second color of four colors if a position to the right of the center is given") {
-            val filter = RadialColorReplacementFilter(listOf(Color.RED, Color.BLUE, Color.PINK, Color.GRAY), Pair(0, 0))
-
-            filter.filterRGB(104, 0, Color.PINK.rgb) shouldBe Color.BLUE.rgb
+            // Uses pixel coordinates, so "up" is negative y and "down" is positive y
+            filter.filterRGB(5, -5, Color.MAGENTA.rgb) shouldBe colors[0].rgb
+            filter.filterRGB(5, 5, Color.MAGENTA.rgb) shouldBe colors[1].rgb
+            filter.filterRGB(-5, 5, Color.MAGENTA.rgb) shouldBe colors[2].rgb
+            filter.filterRGB(-5, -5, Color.MAGENTA.rgb) shouldBe colors[3].rgb
         }
 
         test("shifts the color") {

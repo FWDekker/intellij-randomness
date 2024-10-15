@@ -340,21 +340,21 @@ class RadialColorReplacementFilter(
 
 
     /**
-     * Returns [toShift] which has its alpha multiplied by that of [shiftBy].
+     * Returns [base] after multiplying its alpha by the alpha of [shiftBy].
      */
-    private fun shiftAlpha(toShift: Color, shiftBy: Color) =
-        ColorUtil.withAlpha(toShift, asFraction(toShift.alpha) * asFraction(shiftBy.alpha))
+    private fun shiftAlpha(base: Color, shiftBy: Color): Color =
+        ColorUtil.withAlpha(base, asFraction(base.alpha) * asFraction(shiftBy.alpha))
 
     /**
      * Represents a [number] in the range `[0, 256)` as a fraction of that range.
      */
-    private fun asFraction(number: Int) = number / COMPONENT_MAX.toDouble()
+    private fun asFraction(number: Int): Double = number / COMPONENT_MAX
 
     /**
      * Returns the appropriate color from [colors] for an [offset] relative to the [center].
      */
     private fun positionToColor(offset: Pair<Int, Int>): Color {
-        val angle = 2 * Math.PI - (atan2(offset.second.toDouble(), offset.first.toDouble()) + STARTING_ANGLE)
+        val angle = 2 * Math.PI + STARTING_ANGLE + atan2(offset.second.toDouble(), offset.first.toDouble())
         val index = angle / (2 * Math.PI / colors.size)
         return colors[Math.floorMod(index.toInt(), colors.size)]
     }
@@ -367,11 +367,11 @@ class RadialColorReplacementFilter(
         /**
          * Maximum value for an RGB component.
          */
-        const val COMPONENT_MAX = 255
+        const val COMPONENT_MAX: Double = 255.0
 
         /**
          * The angle in radians at which the first color should start being displayed.
          */
-        const val STARTING_ANGLE = -(3 * Math.PI / 4)
+        const val STARTING_ANGLE: Double = .25 * (2 * Math.PI)
     }
 }
