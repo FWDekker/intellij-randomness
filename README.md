@@ -98,8 +98,9 @@ $ gradlew test                    # Run tests (and collect coverage)
 $ gradlew test --tests X          # Run tests in class X (package name optional)
 $ gradlew test -Pkotest.tags="X"  # Run tests matching tag(s) X (also supports not (!), and (&), or (|))
 $ gradlew koverHtmlReport         # Create HTML coverage report for previous test run
-$ gradlew check                   # Run tests and static analysis
-$ gradlew runPluginVerifier       # Check for compatibility issues
+$ gradlew detekt                  # Run static analysis
+$ gradlew check                   # Run all tests and static analysis
+$ gradlew verifyPlugin            # Check for compatibility issues
 ```
 
 #### 🏷️ Tagging and filtering tests
