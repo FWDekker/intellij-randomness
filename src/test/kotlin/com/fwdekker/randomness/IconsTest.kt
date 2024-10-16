@@ -3,6 +3,7 @@
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.testhelpers.Tags
+import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import io.kotest.assertions.throwables.shouldThrow
@@ -15,12 +16,12 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
 import io.kotest.matchers.shouldNotBe
-import io.kotest.matchers.string.shouldStartWith
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import java.awt.Color
 import java.awt.Component
 import java.awt.Graphics
+import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import javax.swing.Icon
 import javax.swing.JLabel
@@ -212,19 +213,47 @@ object OverlayIconTest : FunSpec({
  * Unit tests for [OverlayedIcon].
  */
 object OverlayedIconTest : FunSpec({
-    context("constructor") {
+    lateinit var image: BufferedImage
+    lateinit var graphics: Graphics2D
+
+
+    beforeSpec {
+        FailOnThreadViolationRepaintManager.install()
+    }
+
+    afterSpec {
+        FailOnThreadViolationRepaintManager.uninstall()
+    }
+
+    beforeNonContainer {
+        image = BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB)
+        graphics = image.createGraphics()
+    }
+
+    afterNonContainer {
+        graphics.dispose()
+    }
+
+
+    context("deferred validation") {
         test("fails if the base image is not square") {
-            shouldThrow<IllegalArgumentException> { OverlayedIcon(PlainIcon(186, 132), emptyList()) }
-                .message shouldStartWith "(Base must be square, but was"
+            val icon = OverlayedIcon(PlainIcon(186, 132), emptyList())
+
+            shouldThrow<IllegalArgumentException> { icon.paintIcon(guiGet { JLabel() }, graphics, 0, 0) }
+                .message shouldBe "Base must be square."
         }
 
         test("fails if an overlay is not square") {
-            shouldThrow<IllegalArgumentException> { OverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon(38, 40))) }
-                .message shouldStartWith Regex("\\(Overlay [1-9] must be square, but was")
+            val icon = OverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon(38, 40)))
+
+            shouldThrow<IllegalArgumentException> { icon.paintIcon(guiGet { JLabel() }, graphics, 0, 0) }
+                .message shouldBe "All overlays must be square."
         }
 
         test("fails if overlays have different sizes") {
-            shouldThrow<IllegalArgumentException> { OverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon(34, 34))) }
+            val icon = OverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon(34, 34)))
+
+            shouldThrow<IllegalArgumentException> { icon.paintIcon(guiGet { JLabel() }, graphics, 0, 0) }
                 .message shouldBe "All overlays must have same size."
         }
     }
@@ -241,45 +270,24 @@ object OverlayedIconTest : FunSpec({
 
 
     context("paintIcon").config(tags = setOf(Tags.SWING)) {
-        lateinit var image: BufferedImage
-
-
-        beforeContainer {
-            FailOnThreadViolationRepaintManager.install()
-        }
-
-        beforeNonContainer {
-            image = BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB)
-        }
-
-
         test("paints nothing if the component is null") {
-            with(image.createGraphics()) {
-                OverlayedIcon(PlainIcon(), listOf(PlainIcon())).paintIcon(null, this, 0, 0)
-                this.dispose()
-            }
+            OverlayedIcon(PlainIcon(), listOf(PlainIcon())).paintIcon(null, graphics, 0, 0)
 
             image.getRGB(0, 0, 32, 32, null, 0, 32).forEach { it shouldBe 0 }
         }
 
         test("paints the base icon only if no overlays are specified") {
-            with(image.createGraphics()) {
-                val label = JLabel()
+            val label = guiGet { JLabel() }
 
-                OverlayedIcon(PlainIcon(color = Color.GREEN.rgb)).paintIcon(label, this, 0, 0)
-                this.dispose()
-            }
+            OverlayedIcon(PlainIcon(color = Color.GREEN.rgb)).paintIcon(label, graphics, 0, 0)
 
             image.getRGB(0, 0, 32, 32, null, 0, 32).forEach { it shouldBe Color.GREEN.rgb }
         }
 
         test("paints the overlays starting in the top-left corner") {
-            with(image.createGraphics()) {
-                val label = JLabel().also { it.background = Color.BLUE }
+            val label = guiGet { JLabel().also { it.background = Color.BLUE } }
 
-                OverlayedIcon(PlainIcon(), listOf(PlainIcon(color = Color.BLUE.rgb))).paintIcon(label, this, 0, 0)
-                this.dispose()
-            }
+            OverlayedIcon(PlainIcon(), listOf(PlainIcon(color = Color.BLUE.rgb))).paintIcon(label, graphics, 0, 0)
 
             image.getRGB(0, 0, 16, 16, null, 0, 16).forEach { it shouldBe Color.BLUE.rgb }
             image.getRGB(16, 16, 16, 16, null, 0, 16).forEach { it shouldNotBe Color.BLUE.rgb }
@@ -332,16 +340,15 @@ object RadialColorReplacementFilterTest : FunSpec({
             Color(filtered, true).alpha shouldBe 12
         }
 
-        test("returns the first of four colors if a position above the center is given") {
-            val filter = RadialColorReplacementFilter(listOf(Color.RED, Color.BLUE, Color.PINK, Color.GRAY), Pair(0, 0))
+        test("arranges four colors in clockwise order starting from the top") {
+            val colors = listOf(Color.RED, Color.BLUE, Color.PINK, Color.GRAY)
+            val filter = RadialColorReplacementFilter(colors, Pair(0, 0))
 
-            filter.filterRGB(0, 12, Color.MAGENTA.rgb) shouldBe Color.RED.rgb
-        }
-
-        test("returns the second color of four colors if a position to the right of the center is given") {
-            val filter = RadialColorReplacementFilter(listOf(Color.RED, Color.BLUE, Color.PINK, Color.GRAY), Pair(0, 0))
-
-            filter.filterRGB(104, 0, Color.PINK.rgb) shouldBe Color.BLUE.rgb
+            // Uses pixel coordinates, so "up" is negative y and "down" is positive y
+            filter.filterRGB(5, -5, Color.MAGENTA.rgb) shouldBe colors[0].rgb
+            filter.filterRGB(5, 5, Color.MAGENTA.rgb) shouldBe colors[1].rgb
+            filter.filterRGB(-5, 5, Color.MAGENTA.rgb) shouldBe colors[2].rgb
+            filter.filterRGB(-5, -5, Color.MAGENTA.rgb) shouldBe colors[3].rgb
         }
 
         test("shifts the color") {
