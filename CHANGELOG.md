@@ -1,4 +1,9 @@
 # Changelog
+### 9.9.9-unreleased
+### Changed
+* Refreshed (encrypted) bug reporter token.
+
+
 ## 3.3.3 -- 2024-10-16
 ### Changed
 * In template icons, change the order of scheme colors to be clockwise starting from the top, instead of counterclockwise starting on the right.

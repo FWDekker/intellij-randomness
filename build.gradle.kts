@@ -30,6 +30,9 @@ plugins {
     // Documentation
     id("org.jetbrains.changelog") version "2.2.1"
     id("org.jetbrains.dokka") version "1.9.20"  // See also `buildscript.dependencies` below and `gradle.properties`
+
+    // Runs GitHubScrambler
+    application
 }
 
 buildscript {
@@ -41,6 +44,8 @@ buildscript {
 
 
 /// Dependencies
+val scrambler: Configuration by configurations.creating
+
 repositories {
     mavenCentral()
     intellijPlatform { defaultRepositories() }
@@ -57,6 +62,7 @@ dependencies {
     }
     implementation("com.github.curious-odd-man", "rgxgen", properties("rgxgenVersion"))
     implementation("org.eclipse.mylyn.github", "org.eclipse.egit.github.core", properties("githubCore"))
+    scrambler("org.jetbrains.kotlin:kotlin-reflect")
 
     testImplementation("org.assertj", "assertj-swing-junit", properties("assertjSwingVersion"))
     testRuntimeOnly("org.junit.platform", "junit-platform-runner", properties("junitRunnerVersion"))
@@ -139,6 +145,16 @@ tasks {
         repositoryUrl = "https://github.com/FWDekker/intellij-randomness"
         itemPrefix = "*"
         unreleasedTerm = "9.9.9-unreleased"
+    }
+
+
+    // Runs GitHubScrambler
+    application {
+        mainClass = "com.fwdekker.randomness.GitHubScrambler"
+    }
+    named<JavaExec>("run") {
+        classpath += scrambler
+        standardInput = System.`in`
     }
 
 

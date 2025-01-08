@@ -150,10 +150,10 @@ private fun Random.uuidTimer() = UUIDTimer(asJavaRandom(), null, uuidClock())
  * Generates v8 UUIDs.
  *
  * Works by generating a v4 UUID and then replacing the version nibble.
+ *
+ * TODO\[Workaround]: Remove class after https://github.com/cowtowncoder/java-uuid-generator/issues/47 has been fixed
  */
 private class FreeFormGenerator(random: Random) : NoArgGenerator() {
-    // TODO[Workaround]: Remove after https://github.com/cowtowncoder/java-uuid-generator/issues/47 has been fixed
-
     /**
      * Generates v4 UUIDs.
      */
