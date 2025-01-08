@@ -264,7 +264,7 @@ private object GitHubScrambler {
     fun unscramble(scrambledToken: String): String =
         createCipher()
             .also { it.init(Cipher.DECRYPT_MODE, KEY_SPEC, IV_SPEC) }
-            .doFinal(Base64.getDecoder().decode(scrambledToken.toByteArray()))
+            .doFinal(Base64.getDecoder().decode(scrambledToken.trim().toByteArray()))
             .let { String(it).trim() }
 
     /**
@@ -278,11 +278,11 @@ private object GitHubScrambler {
 
 
     /**
-     * Runs an interactive session to scramble a token into a file.
+     * Runs an interactive session to scramble a token into a file. Run with `gradlew run --console=plain`.
      */
     @JvmStatic
     fun main(args: Array<String>) {
-        val target = File("token.bin")
+        val target = File("src/main/resources/reporter/token.bin")
 
         print("Enter token to scramble: ")
         val token = readln()
