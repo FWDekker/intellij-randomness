@@ -1,6 +1,7 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.affix.AffixDecorator
+import com.fwdekker.randomness.schemeSerializationTestFactory
 import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
@@ -115,4 +116,6 @@ object ArrayDecoratorTest : FunSpec({
     }
 
     include(stateDeepCopyTestFactory { ArrayDecorator() })
+
+    include(schemeSerializationTestFactory { ArrayDecorator() })
 })

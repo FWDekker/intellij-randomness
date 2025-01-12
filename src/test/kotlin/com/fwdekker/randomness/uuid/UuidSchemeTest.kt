@@ -2,6 +2,7 @@ package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.schemeSerializationTestFactory
 import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
@@ -71,4 +72,6 @@ object UuidSchemeTest : FunSpec({
     }
 
     include(stateDeepCopyTestFactory { UuidScheme() })
+
+    include(schemeSerializationTestFactory { UuidScheme() })
 })

@@ -6,6 +6,7 @@ import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.integer.IntegerScheme
+import com.fwdekker.randomness.schemeSerializationTestFactory
 import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.testhelpers.DummyScheme
@@ -165,4 +166,6 @@ object TemplateTest : FunSpec({
     }
 
     include(stateDeepCopyTestFactory { Template() })
+
+    include(schemeSerializationTestFactory { Template(schemes = mutableListOf(IntegerScheme())) })
 })

@@ -2,6 +2,7 @@ package com.fwdekker.randomness.string
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.schemeSerializationTestFactory
 import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
@@ -115,4 +116,6 @@ object StringSchemeTest : FunSpec({
     }
 
     include(stateDeepCopyTestFactory { StringScheme() })
+
+    include(schemeSerializationTestFactory { StringScheme() })
 })

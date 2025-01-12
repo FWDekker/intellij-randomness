@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.affix
 
+import com.fwdekker.randomness.schemeSerializationTestFactory
 import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
@@ -65,4 +66,6 @@ object AffixDecoratorTest : FunSpec({
     }
 
     include(stateDeepCopyTestFactory { AffixDecorator() })
+
+    include(schemeSerializationTestFactory { AffixDecorator() })
 })

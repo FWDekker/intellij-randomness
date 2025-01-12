@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.fixedlength
 
+import com.fwdekker.randomness.schemeSerializationTestFactory
 import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
@@ -59,4 +60,6 @@ object FixedLengthDecoratorTest : FunSpec({
     }
 
     include(stateDeepCopyTestFactory { FixedLengthDecorator() })
+
+    include(schemeSerializationTestFactory { FixedLengthDecorator() })
 })

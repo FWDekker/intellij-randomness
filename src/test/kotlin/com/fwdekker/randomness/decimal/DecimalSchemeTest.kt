@@ -2,6 +2,7 @@ package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.schemeSerializationTestFactory
 import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
@@ -88,6 +89,8 @@ object DecimalSchemeTest : FunSpec({
     }
 
     include(stateDeepCopyTestFactory { DecimalScheme() })
+
+    include(schemeSerializationTestFactory { DecimalScheme() })
 })
 
 

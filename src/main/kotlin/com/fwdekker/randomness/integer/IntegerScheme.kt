@@ -36,7 +36,7 @@ data class IntegerScheme(
     var groupingSeparatorEnabled: Boolean = DEFAULT_GROUPING_SEPARATOR_ENABLED,
     var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
     @OptionTag val fixedLengthDecorator: FixedLengthDecorator = DEFAULT_FIXED_LENGTH_DECORATOR,
-    @OptionTag var affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    @OptionTag val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
     @OptionTag val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     @get:Transient
