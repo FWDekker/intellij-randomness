@@ -5,6 +5,7 @@ import com.fwdekker.randomness.DecoratorScheme
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.affix.AffixDecorator
+import com.intellij.util.xmlb.annotations.OptionTag
 
 
 /**
@@ -23,7 +24,7 @@ data class ArrayDecorator(
     var maxCount: Int = DEFAULT_MAX_COUNT,
     var separatorEnabled: Boolean = DEFAULT_SEPARATOR_ENABLED,
     var separator: String = DEFAULT_SEPARATOR,
-    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    @OptionTag val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
 ) : DecoratorScheme() {
     override val name = Bundle("array.title")
     override val icon get() = if (enabled) OverlayedIcon(OverlayIcon.ARRAY) else null

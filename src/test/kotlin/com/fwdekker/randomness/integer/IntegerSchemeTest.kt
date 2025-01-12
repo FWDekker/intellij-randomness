@@ -3,6 +3,7 @@ package com.fwdekker.randomness.integer
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
+import com.fwdekker.randomness.schemeSerializationTestFactory
 import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
@@ -121,6 +122,8 @@ object IntegerSchemeTest : FunSpec({
     }
 
     include(stateDeepCopyTestFactory { IntegerScheme() })
+
+    include(schemeSerializationTestFactory { IntegerScheme() })
 })
 
 

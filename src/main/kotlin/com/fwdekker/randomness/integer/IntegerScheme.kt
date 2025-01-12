@@ -9,6 +9,7 @@ import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
 import com.intellij.ui.JBColor
+import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
 import java.text.DecimalFormat
@@ -34,9 +35,9 @@ data class IntegerScheme(
     var isUppercase: Boolean = DEFAULT_IS_UPPERCASE,
     var groupingSeparatorEnabled: Boolean = DEFAULT_GROUPING_SEPARATOR_ENABLED,
     var groupingSeparator: String = DEFAULT_GROUPING_SEPARATOR,
-    val fixedLengthDecorator: FixedLengthDecorator = DEFAULT_FIXED_LENGTH_DECORATOR,
-    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
-    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
+    @OptionTag val fixedLengthDecorator: FixedLengthDecorator = DEFAULT_FIXED_LENGTH_DECORATOR,
+    @OptionTag val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    @OptionTag val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     @get:Transient
     override val name = Bundle("integer.title")

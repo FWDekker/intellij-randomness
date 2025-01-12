@@ -1,7 +1,10 @@
 # Changelog
 ### 9.9.9-unreleased
 ### Changed
-* Refreshed (encrypted) bug reporter token.
+* Refreshed (encrypted) bug reporter token. ([#548](https://github.com/FWDekker/intellij-randomness/issues/548))
+
+### Fixed
+* Fixed specific settings resetting after IDE restart. Specifically, for any scheme, "Array", "Fixed Length", and "Surround With" would reset. ([#549](https://github.com/FWDekker/intellij-randomness/issues/549))
 
 
 ## 3.3.3 -- 2024-10-16

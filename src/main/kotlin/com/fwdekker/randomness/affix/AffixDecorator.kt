@@ -59,7 +59,7 @@ data class AffixDecorator(
         const val DEFAULT_ENABLED = false
 
         /**
-         * The minimum valid value of the [descriptor] field.
+         * The default [descriptor] of the affix.
          */
         const val DEFAULT_DESCRIPTOR = ""
     }

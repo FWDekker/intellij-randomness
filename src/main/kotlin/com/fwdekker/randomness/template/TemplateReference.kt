@@ -11,6 +11,7 @@ import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.ui.Gray
+import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Transient
 
 
@@ -25,8 +26,8 @@ import com.intellij.util.xmlb.annotations.Transient
 data class TemplateReference(
     var templateUuid: String? = null,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
-    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
+    @OptionTag val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    @OptionTag val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name get() = template?.name?.let { "[$it]" } ?: Bundle("reference.title")
     override val typeIcon get() = template?.typeIcon ?: DEFAULT_ICON

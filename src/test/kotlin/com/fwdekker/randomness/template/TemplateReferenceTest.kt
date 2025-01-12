@@ -3,6 +3,7 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.schemeSerializationTestFactory
 import com.fwdekker.randomness.setAll
 import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.DummyScheme
@@ -297,4 +298,6 @@ object TemplateReferenceTest : FunSpec({
     }
 
     include(stateDeepCopyTestFactory { TemplateReference() })
+
+    include(schemeSerializationTestFactory { TemplateReference() })
 })

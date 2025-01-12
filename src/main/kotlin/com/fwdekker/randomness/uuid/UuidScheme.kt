@@ -15,6 +15,7 @@ import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.ui.JBColor
+import com.intellij.util.xmlb.annotations.OptionTag
 import java.awt.Color
 import java.util.UUID
 import kotlin.random.Random
@@ -34,8 +35,8 @@ data class UuidScheme(
     var version: Int = DEFAULT_VERSION,
     var isUppercase: Boolean = DEFAULT_IS_UPPERCASE,
     var addDashes: Boolean = DEFAULT_ADD_DASHES,
-    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
-    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
+    @OptionTag val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    @OptionTag val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name = Bundle("uuid.title")
     override val typeIcon get() = BASE_ICON

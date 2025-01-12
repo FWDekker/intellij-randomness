@@ -7,6 +7,7 @@ import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.ui.toLocalDateTime
 import com.intellij.ui.JBColor
+import com.intellij.util.xmlb.annotations.OptionTag
 import java.awt.Color
 import java.time.Instant
 import java.time.format.DateTimeFormatter
@@ -24,7 +25,7 @@ data class DateTimeScheme(
     var minDateTime: Long = DEFAULT_MIN_DATE_TIME,
     var maxDateTime: Long = DEFAULT_MAX_DATE_TIME,
     var pattern: String = DEFAULT_PATTERN,
-    val arrayDecorator: ArrayDecorator = ArrayDecorator(),
+    @OptionTag val arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
     override val name = Bundle("datetime.title")
     override val typeIcon get() = BASE_ICON

@@ -10,6 +10,7 @@ import com.fwdekker.randomness.string.StringScheme.Companion.LOOK_ALIKE_CHARACTE
 import com.github.curiousoddman.rgxgen.RgxGen
 import com.github.curiousoddman.rgxgen.parsing.dflt.RgxGenParseException
 import com.intellij.ui.JBColor
+import com.intellij.util.xmlb.annotations.OptionTag
 import java.awt.Color
 import kotlin.random.asJavaRandom
 
@@ -30,7 +31,7 @@ data class StringScheme(
     var isNonMatching: Boolean = DEFAULT_IS_NON_MATCHING,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
     var removeLookAlikeSymbols: Boolean = DEFAULT_REMOVE_LOOK_ALIKE_SYMBOLS,
-    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
+    @OptionTag val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name = Bundle("string.title")
     override val typeIcon get() = BASE_ICON
