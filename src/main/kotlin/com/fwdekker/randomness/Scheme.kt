@@ -1,10 +1,6 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.affix.AffixDecorator
-import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
 import com.intellij.util.xmlb.annotations.Transient
-import com.intellij.util.xmlb.annotations.XCollection
 import kotlin.random.Random
 
 
@@ -39,9 +35,13 @@ abstract class Scheme : State() {
      * decorators, use [generateUndecoratedStrings]. Decorators are applied in ascending order. That is, the output of
      * the scheme is fed into the decorator at index `0`, and that output is fed into the decorator at index `1`, and so
      * on.
+     *
+     * Implementations of [Scheme] must implement the [decorators] field as a getter function, which returns a list of
+     * references to decorators. Each decorator must be stored in its own field, annotated with
+     * [com.intellij.util.xmlb.annotations.OptionTag]. This way, the deserializer knows that the field is not transient
+     * despite not being a mutable field.
      */
     @get:Transient
-    @get:XCollection(elementTypes = [AffixDecorator::class, ArrayDecorator::class, FixedLengthDecorator::class])
     abstract val decorators: List<DecoratorScheme>
 
     /**

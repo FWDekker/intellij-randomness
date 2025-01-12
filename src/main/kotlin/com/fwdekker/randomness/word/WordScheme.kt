@@ -8,6 +8,7 @@ import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.intellij.ui.JBColor
+import com.intellij.util.xmlb.annotations.OptionTag
 import java.awt.Color
 
 
@@ -22,8 +23,8 @@ import java.awt.Color
 data class WordScheme(
     var words: List<String> = DEFAULT_WORDS,
     var capitalization: CapitalizationMode = DEFAULT_CAPITALIZATION,
-    val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
-    val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
+    @OptionTag val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
+    @OptionTag val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
     override val name = Bundle("word.title")
     override val typeIcon get() = BASE_ICON
