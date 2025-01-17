@@ -1,5 +1,5 @@
 # Changelog
-### 9.9.9-unreleased
+## 3.3.4 -- 2025-01-17
 ### Changed
 * Refreshed (encrypted) bug reporter token. ([#548](https://github.com/FWDekker/intellij-randomness/issues/548))
 
