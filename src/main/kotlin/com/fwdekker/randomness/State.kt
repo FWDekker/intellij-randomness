@@ -15,6 +15,24 @@ import kotlin.random.asJavaRandom
  * field `val list: MutableList<String>`. This reflects the typical case in which the user does not change the reference
  * to the object, but changes the properties inside the object. And, more importantly, means that nested a
  * [SchemeEditor] can share a single unchanging reference to a [State] with its nested [SchemeEditor]s.
+ *
+ * Properties should be annotated with [Transient] (not [kotlin.jvm.Transient]) to ensure they are not stored. The
+ * specifics of how the annotation is applied and inherited are complicated. The following rules apply:
+ * - Immutable non-[Collection]s (e.g. `val foo: Int` or `val bar: State`) are not serialized. Serialization annotations
+ *   are ignored.
+ * - Immutable [Collection]s (e.g. `val foo: List<Int>` or `val bar: List<State>`) are not serialized, unless annotated
+ *   with a serialization annotation such as [com.intellij.util.xmlb.annotations.XCollection] or
+ *   [com.intellij.util.xmlb.annotations.OptionTag].
+ * - Mutable properties (i.e. `var`) are serialized, unless annotated with [Transient].
+ * - Do not combine [Transient] with any other serialization annotations.
+ * - To annotate a mutable property (i.e. `var`), use `@get:Transient`.
+ * - To annotate a lateinit property (i.e. `lateinit var`), use both `@field:Transient` and `@get:Transient`.
+ * - When a property overrides a property from a superclass, only the annotations in the subclass are relevant.
+ * - Since `abstract` properties must always be overridden, they should be annotated only in the subclass. Adding
+ *   additional annotations "for clarity" in a superclass should be avoided, since it is completely useless and
+ *   therefore misleading.
+ * - Since `open` properties are not always overridden, they should be annotated in the superclass and the subclass.
+ * - See also `isSerialized` in `StateReflection`.
  */
 abstract class State {
     /**
@@ -30,6 +48,7 @@ abstract class State {
      *
      * @see applyContext
      */
+    @field:Transient
     @get:Transient
     var context: Box<Settings> = Box({ Settings.DEFAULT })
         protected set

@@ -6,7 +6,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
-import io.kotest.matchers.shouldNot
+import io.kotest.matchers.shouldBe
 import java.net.URL
 
 
@@ -35,7 +35,7 @@ object PersistentSettingsTest : FunSpec({
             test("replaces `type` with `version` in all `UuidScheme`s") {
                 val xml = JDOMUtil.load(getTestConfig("/settings-upgrades/v3.1.0-v3.2.0.xml"))
                 xml.getSchemes().single().run {
-                    getProperty("type") shouldNot beNull()
+                    getPropertyValue("type") shouldBe "1"
                     getProperty("version") should beNull()
                 }
 
@@ -43,7 +43,7 @@ object PersistentSettingsTest : FunSpec({
 
                 settings.state.getSchemes().single().run {
                     getProperty("type") should beNull()
-                    getProperty("version") shouldNot beNull()
+                    getPropertyValue("version") shouldBe "1"
                 }
             }
         }

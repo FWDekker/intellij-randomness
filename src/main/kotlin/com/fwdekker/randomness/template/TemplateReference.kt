@@ -29,6 +29,7 @@ data class TemplateReference(
     @OptionTag val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
     @OptionTag val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
+    @get:Transient
     override val name get() = template?.name?.let { "[$it]" } ?: Bundle("reference.title")
     override val typeIcon get() = template?.typeIcon ?: DEFAULT_ICON
     override val icon get() = OverlayedIcon(typeIcon, decorators.mapNotNull { it.icon } + OverlayIcon.REFERENCE)
@@ -37,6 +38,7 @@ data class TemplateReference(
     /**
      * The [Template] in the [context]'s [TemplateList] that contains this [TemplateReference].
      */
+    @get:Transient
     val parent: Template
         get() = (+context).templates.single { template -> template.schemes.any { it.uuid == uuid } }
 

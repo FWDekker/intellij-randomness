@@ -3,6 +3,8 @@ package com.fwdekker.randomness
 import com.fwdekker.randomness.testhelpers.matchBundle
 import io.kotest.assertions.retry
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.row
+import io.kotest.datatest.withData
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -76,5 +78,43 @@ object CapitalizationModeTest : FunSpec({
         test("returns the associated localized string") {
             CapitalizationMode.FIRST_LETTER.toLocalizedString() should matchBundle("shared.capitalization.first_letter")
         }
+    }
+})
+
+
+/**
+ * Unit tests for capitalization-related helper functions in `CapitalizationModeKt`.
+ */
+object CapitalizationHelperTest : FunSpec({
+    context("lowerCaseFirst") {
+        withData(
+            mapOf(
+                "outputs an empty string if the input is empty" to row("", ""),
+                "does nothing if the first character is already in lowercase" to row("abcD eFgH", "abcD eFgH"),
+                "changes the first character to lowercase" to row("AbcD EfGh", "abcD EfGh"),
+            )
+        ) { (input, expected) -> input.lowerCaseFirst() shouldBe expected }
+    }
+
+    context("upperCaseFirst") {
+        withData(
+            mapOf(
+                "outputs an empty string if the input is empty" to row("", ""),
+                "does nothing if the first character is already in uppercase" to row("AbcD eFgH", "AbcD eFgH"),
+                "changes the first character to uppercase" to row("abCd eFgH", "AbCd eFgH"),
+            )
+        ) { (input, expected) -> input.upperCaseFirst() shouldBe expected }
+    }
+
+    context("camelPlus") {
+        withData(
+            mapOf(
+                "outputs an empty string if both are empty" to row("", "", ""),
+                "simply appends if the first part is empty" to row("", "fooBar", "fooBar"),
+                "simply appends if the second part is empty" to row("fooBar", "", "fooBar"),
+                "concatenates two words in camel case" to row("foo", "bar", "fooBar"),
+                "concatenates two pairs of words to camel case" to row("fooBar", "bazQux", "fooBarBazQux"),
+            )
+        ) { (first, second, expected) -> first.camelPlus(second) shouldBe expected }
     }
 })

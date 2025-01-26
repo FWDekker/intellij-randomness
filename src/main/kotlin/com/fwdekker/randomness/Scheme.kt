@@ -19,13 +19,11 @@ abstract class Scheme : State() {
      * The icon signifying the type of data represented by this scheme, ignoring its [decorators], or `null` if this
      * scheme does not represent any kind of data, as is the case for [DecoratorScheme]s.
      */
-    @get:Transient
     open val typeIcon: TypeIcon? = null
 
     /**
      * The icon signifying this scheme in its entirety, or `null` if it does not have an icon.
      */
-    @get:Transient
     open val icon: OverlayedIcon? get() = typeIcon?.let { OverlayedIcon(it, decorators.mapNotNull(Scheme::icon)) }
 
     /**
@@ -41,7 +39,6 @@ abstract class Scheme : State() {
      * [com.intellij.util.xmlb.annotations.OptionTag]. This way, the deserializer knows that the field is not transient
      * despite not being a mutable field.
      */
-    @get:Transient
     abstract val decorators: List<DecoratorScheme>
 
     /**
@@ -102,11 +99,13 @@ abstract class DecoratorScheme : Scheme() {
      * Whether this decorator is enabled, or whether any invocation of [generateStrings] should be passed directly to
      * the [generator].
      */
+    @get:Transient
     protected open val isEnabled: Boolean = true
 
     /**
      * The generating function whose output should be decorated.
      */
+    @field:Transient
     @get:Transient
     lateinit var generator: (Int) -> List<String>
 

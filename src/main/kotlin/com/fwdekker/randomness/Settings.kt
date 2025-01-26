@@ -7,9 +7,9 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.SettingsCategory
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
-import com.intellij.util.xmlb.XmlSerializer
+import com.intellij.util.xmlb.XmlSerializer.deserialize
+import com.intellij.util.xmlb.XmlSerializer.serialize
 import com.intellij.util.xmlb.annotations.OptionTag
-import com.intellij.util.xmlb.annotations.Transient
 import org.jdom.Element
 import java.lang.module.ModuleDescriptor.Version
 import com.intellij.openapi.components.State as JBState
@@ -29,7 +29,6 @@ data class Settings(
     /**
      * @see TemplateList.templates
      */
-    @get:Transient
     val templates: MutableList<Template> get() = templateList.templates
 
 
@@ -89,13 +88,13 @@ internal class PersistentSettings : PersistentStateComponent<Element> {
     /**
      * Returns the [settings] as an [Element].
      */
-    override fun getState(): Element = XmlSerializer.serialize(settings)
+    override fun getState(): Element = serialize(settings)
 
     /**
      * Deserializes [element] into a [Settings] instance, which is then stored in [settings].
      */
     override fun loadState(element: Element) {
-        settings = XmlSerializer.deserialize(upgrade(element), Settings::class.java)
+        settings = deserialize(upgrade(element), Settings::class.java)
     }
 
 

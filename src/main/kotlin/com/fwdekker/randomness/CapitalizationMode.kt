@@ -1,6 +1,5 @@
 package com.fwdekker.randomness
 
-import java.util.Locale
 import kotlin.random.Random
 
 
@@ -23,12 +22,12 @@ enum class CapitalizationMode(val transform: (String, Random) -> String) {
     /**
      * Makes all characters uppercase.
      */
-    UPPER({ string, _ -> string.uppercase(Locale.getDefault()) }),
+    UPPER({ string, _ -> string.uppercase() }),
 
     /**
      * Makes all characters lowercase.
      */
-    LOWER({ string, _ -> string.lowercase(Locale.getDefault()) }),
+    LOWER({ string, _ -> string.lowercase() }),
 
     /**
      * Makes the first letter of each word uppercase.
@@ -45,20 +44,35 @@ enum class CapitalizationMode(val transform: (String, Random) -> String) {
     /**
      * Returns the localized string name of this mode.
      */
-    fun toLocalizedString() =
-        Bundle("shared.capitalization.${toString().replace(' ', '_').lowercase(Locale.getDefault())}")
+    fun toLocalizedString() = Bundle("shared.capitalization.${toString().replace(' ', '_').lowercase()}")
 }
 
 
 /**
- * Randomly converts this character to uppercase or lowercase using [random] as a source of randomness.
+ * @see CapitalizationMode.RANDOM
  */
 private fun Char.toRandomCase(random: Random) =
-    if (random.nextBoolean()) this.lowercaseChar()
-    else this.uppercaseChar()
+    if (random.nextBoolean()) lowercaseChar()
+    else uppercaseChar()
 
 /**
- * Turns the first character uppercase while all other characters become lowercase.
+ * @see CapitalizationMode.SENTENCE
  */
-private fun String.toSentenceCase() =
-    this.lowercase(Locale.getDefault()).replaceFirstChar { it.uppercaseChar() }
+private fun String.toSentenceCase() = lowercase().replaceFirstChar { it.uppercaseChar() }
+
+/**
+ * Turns the first character lowercase while all other characters remain unchanged.
+ */
+fun String.lowerCaseFirst() = take(1).lowercase() + drop(1)
+
+/**
+ * Turns the first character uppercase while all other characters remain unchanged.
+ */
+fun String.upperCaseFirst() = take(1).uppercase() + drop(1)
+
+/**
+ * Appends [other], ensuring the resulting string is in camel case as long as [this] and [other] are also in camel case.
+ */
+fun String.camelPlus(other: String) =
+    if (this == "") other
+    else this + other.upperCaseFirst()

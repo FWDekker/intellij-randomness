@@ -10,7 +10,6 @@ import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
 import com.intellij.ui.JBColor
 import com.intellij.util.xmlb.annotations.OptionTag
-import com.intellij.util.xmlb.annotations.Transient
 import java.awt.Color
 import java.text.DecimalFormat
 
@@ -39,7 +38,6 @@ data class IntegerScheme(
     @OptionTag val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
     @OptionTag val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
-    @get:Transient
     override val name = Bundle("integer.title")
     override val typeIcon get() = BASE_ICON
     override val decorators get() = listOf(fixedLengthDecorator, affixDecorator, arrayDecorator)
