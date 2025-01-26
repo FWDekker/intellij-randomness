@@ -2,6 +2,7 @@ package com.fwdekker.randomness.affix
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.SchemeEditor
+import com.fwdekker.randomness.camelPlus
 import com.fwdekker.randomness.ui.bindCurrentText
 import com.fwdekker.randomness.ui.disableMnemonic
 import com.fwdekker.randomness.ui.isEditable
@@ -13,7 +14,6 @@ import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.selected
 import com.intellij.ui.layout.ComponentPredicate
 import com.intellij.ui.layout.and
-import java.util.Locale
 import javax.swing.JCheckBox
 
 
@@ -39,24 +39,16 @@ class AffixDecoratorEditor(
 
             checkBox(Bundle("affix.ui.option"))
                 .let { if (enableMnemonic) it.loadMnemonic() else it.disableMnemonic() }
-                .withName(camelConcat(namePrefix, "affixEnabled"))
+                .withName(namePrefix.camelPlus("affixEnabled"))
                 .bindSelected(scheme::enabled)
                 .also { enabledCheckBox = it }
 
             comboBox(presets)
                 .enabledIf(enabledIf?.and(enabledCheckBox.selected) ?: enabledCheckBox.selected)
                 .isEditable(true)
-                .withName(camelConcat(namePrefix, "affixDescriptor"))
+                .withName(namePrefix.camelPlus("affixDescriptor"))
                 .bindCurrentText(scheme::descriptor)
             contextHelp(Bundle("affix.ui.comment"))
         }.also { if (enabledIf != null) it.enabledIf(enabledIf) }
     }
 }
-
-
-/**
- * Prefixes [name] with [prefix], ensuring the resulting string is still in camelCase.
- */
-private fun camelConcat(prefix: String, name: String) =
-    if (prefix == "") name
-    else "${prefix}${name[0].uppercase(Locale.getDefault())}${name.drop(1)}"

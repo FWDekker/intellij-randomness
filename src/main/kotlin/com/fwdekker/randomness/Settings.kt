@@ -7,9 +7,9 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.SettingsCategory
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
-import com.intellij.util.xmlb.XmlSerializer
+import com.intellij.util.xmlb.XmlSerializer.deserialize
+import com.intellij.util.xmlb.XmlSerializer.serialize
 import com.intellij.util.xmlb.annotations.OptionTag
-import com.intellij.util.xmlb.annotations.Transient
 import org.jdom.Element
 import java.lang.module.ModuleDescriptor.Version
 import com.intellij.openapi.components.State as JBState
@@ -29,7 +29,6 @@ data class Settings(
     /**
      * @see TemplateList.templates
      */
-    @get:Transient
     val templates: MutableList<Template> get() = templateList.templates
 
 
@@ -89,30 +88,35 @@ internal class PersistentSettings : PersistentStateComponent<Element> {
     /**
      * Returns the [settings] as an [Element].
      */
-    override fun getState(): Element = XmlSerializer.serialize(settings)
+    override fun getState(): Element = serialize(settings)
 
     /**
      * Deserializes [element] into a [Settings] instance, which is then stored in [settings].
      */
     override fun loadState(element: Element) {
-        settings = XmlSerializer.deserialize(upgrade(element), Settings::class.java)
+        settings = deserialize(upgrade(element), Settings::class.java)
     }
 
 
     /**
-     * Silently upgrades the format of the settings contained in [element] to the format of the latest version.
+     * Upgrades the format of the settings contained in [element] to the format of the [targetVersion].
+     *
+     * @see UPGRADES
      */
-    private fun upgrade(element: Element): Element {
+    internal fun upgrade(element: Element, targetVersion: Version = Version.parse(CURRENT_VERSION)): Element {
+        require(targetVersion >= Version.parse("3.0.0")) { "Unsupported upgrade target version $targetVersion." }
+
         val elementVersion = element.getPropertyValue("version")?.let { Version.parse(it) }
+        requireNotNull(elementVersion) { "Missing version number in Randomness settings." }
+        require(elementVersion >= Version.parse("3.0.0")) { "Unsupported Randomness config version $elementVersion." }
 
-        when {
-            elementVersion == null -> Unit
-            elementVersion < Version.parse("3.0.0") -> error("Unsupported Randomness config version $elementVersion.")
-            elementVersion < Version.parse("3.2.0") ->
-                element.getSchemes().filter { it.name == "UuidScheme" }.forEach { it.renameProperty("type", "version") }
-        }
+        if (targetVersion <= elementVersion) return element
 
-        element.setPropertyValue("version", CURRENT_VERSION)
+        UPGRADES
+            .filterKeys { elementVersion < it && targetVersion >= it }
+            .forEach { (_, it) -> it(element) }
+
+        element.setPropertyValue("version", targetVersion.toString())
         return element
     }
 
@@ -124,6 +128,21 @@ internal class PersistentSettings : PersistentStateComponent<Element> {
         /**
          * The currently-running version of Randomness.
          */
-        const val CURRENT_VERSION: String = "3.3.4" // Synchronize this with the version in `gradle.properties`
+        const val CURRENT_VERSION: String = "3.3.5" // Synchronize this with the version in `gradle.properties`
+
+        /**
+         * The upgrade functions to apply to configuration [Element]s in the [upgrade] method.
+         */
+        private val UPGRADES: Map<Version, (Element) -> Unit> =
+            mapOf(
+                Version.parse("3.2.0") to
+                    { e: Element ->
+                        e.getSchemes()
+                            .filter { it.name == "UuidScheme" }
+                            .forEach { it.renameProperty("type", "version") }
+                    },
+                Version.parse("3.3.5") to
+                    { e: Element -> e.getDecorators().forEach { it.removeProperty("generator") } },
+            )
     }
 }
