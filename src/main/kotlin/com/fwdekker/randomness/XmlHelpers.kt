@@ -67,6 +67,14 @@ fun Element.renameProperty(oldName: String, newName: String) {
     getMultiProperty(oldName).forEach { it.setAttribute("name", newName) }
 }
 
+/**
+ * Removes the property with attribute `name="[name]"`.
+ */
+fun Element.removeProperty(name: String) {
+    getMultiProperty(name).forEach { children.remove(it) }
+}
+
+
 
 /**
  * Assuming this is the [Element] representation of a [Settings] instance, returns the [Element] of the contained
@@ -88,3 +96,25 @@ fun Element.getTemplates(): List<Element> =
  */
 fun Element.getSchemes(): List<Element> =
     getTemplates().mapNotNull { it.getProperty("schemes") }.flatMap { it.children }
+
+/**
+ * Assuming this is the [Element] representation of a [Settings] instance, returns the list of [Element]s of the
+ * contained [com.fwdekker.randomness.DecoratorScheme]s. Searches recursively, so also returns decorators of decorators,
+ * and so on.
+ */
+fun Element.getDecorators(): List<Element> {
+    val decorators = mutableListOf<Element>()
+
+    var schemes = getSchemes()
+    while (schemes.isNotEmpty()) {
+        val containedDecorators = schemes.flatMap { scheme ->
+            scheme.children
+                .filter { child -> child.getAttribute("name")?.value.let { it != null && it.endsWith("Decorator") } }
+                .map { it.children.single() }
+        }
+        schemes = containedDecorators
+        decorators += containedDecorators
+    }
+
+    return decorators
+}

@@ -1,15 +1,24 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.integer.IntegerScheme
+import com.fwdekker.randomness.string.StringScheme
+import com.fwdekker.randomness.template.Template
+import com.fwdekker.randomness.template.TemplateList
+import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.uuid.UuidScheme
 import com.intellij.openapi.util.JDOMUtil
+import com.intellij.util.xmlb.XmlSerializer.serialize
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.haveSize
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
+import org.jdom.Element
 
 
 /**
@@ -321,10 +330,10 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            val copy = JDOMUtil.load(JDOMUtil.write(element, ""))
+            val copy = JDOMUtil.load(JDOMUtil.write(element))
             element.setPropertyValue("needle", "new-value")
 
-            JDOMUtil.write(element, "") shouldBe JDOMUtil.write(copy, "")
+            JDOMUtil.write(element) shouldBe JDOMUtil.write(copy)
         }
     }
 
@@ -378,10 +387,10 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            val copy = JDOMUtil.load(JDOMUtil.write(element, ""))
+            val copy = JDOMUtil.load(JDOMUtil.write(element))
             element.renameProperty("needle", "new-needle")
 
-            JDOMUtil.write(element, "") shouldBe JDOMUtil.write(copy, "")
+            JDOMUtil.write(element) shouldBe JDOMUtil.write(copy)
         }
 
         test("throws an error if the new name is already in use") {
@@ -400,33 +409,116 @@ object XmlHelpersTest : FunSpec({
         }
     }
 
+    context("removeProperty") {
+        test("removes the property with the given name") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="wrong" value="undesired" />
+                    <content name="needle" value="desired" />
+                    <content attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+            element.getPropertyValue("needle") shouldBe "desired"
+            element.getPropertyValue("wrong") shouldBe "undesired"
 
-    context("getTemplateList") {
-        val settings = PersistentSettings()
+            element.removeProperty("needle")
 
-        val xmlUuid = settings.state.getTemplateList()?.getPropertyValue("uuid")
-        val realUuid = settings.settings.templateList.uuid
+            element.getProperty("needle") should beNull()
+            element.getPropertyValue("wrong") shouldBe "undesired"
+        }
 
-        xmlUuid shouldBe realUuid
+        test("removes all properties with the given name") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="needle" value="foo" />
+                    <content name="wrong" value="undesired" />
+                    <content name="needle" value="bar" />
+                    <content attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+            element.getMultiProperty("needle") should haveSize(2)
+            element.getPropertyValue("wrong") shouldBe "undesired"
+
+            element.removeProperty("needle")
+
+            element.getMultiProperty("needle") should beEmpty()
+            element.getPropertyValue("wrong") shouldBe "undesired"
+        }
+
+        test("does nothing if no property with the given name exists") {
+            val element = JDOMUtil.load(
+                """
+                <tag>
+                    <content name="wrong" value="undesired" />
+                    <content name="also_wrong" value="also_undesired" />
+                    <content attribute="value" />
+                </tag>
+                """.trimIndent()
+            )
+
+            val copy = JDOMUtil.load(JDOMUtil.write(element))
+            element.removeProperty("needle")
+
+            JDOMUtil.write(element) shouldBe JDOMUtil.write(copy)
+        }
     }
 
-    context("getTemplates") {
-        val settings = PersistentSettings()
 
-        val xmlUuids = settings.state.getTemplates().map { it.getPropertyValue("uuid") }
-        val realUuids = settings.settings.templates.map { it.uuid }
-        realUuids shouldNot beEmpty()
+    context("accessors") {
+        lateinit var settings: Settings
+        lateinit var xml: Element
 
-        xmlUuids shouldContainExactly realUuids
-    }
 
-    context("getSchemes") {
-        val settings = PersistentSettings()
+        beforeNonContainer {
+            settings = Settings(
+                templateList = TemplateList(
+                    mutableListOf(
+                        Template(name = "Foo", schemes = mutableListOf(IntegerScheme(), StringScheme())),
+                        Template(name = "Bar", schemes = mutableListOf(UuidScheme())),
+                    )
+                )
+            )
+            xml = serialize(settings)
+        }
 
-        val xmlUuids = settings.state.getSchemes().map { it.getPropertyValue("uuid") }
-        val realUuids = settings.settings.templates.flatMap { it.schemes }.map { it.uuid }
-        realUuids shouldNot beEmpty()
 
-        xmlUuids shouldContainExactly realUuids
+        test("getTemplateList") {
+            val xmlUuid = xml.getTemplateList()?.getPropertyValue("uuid")
+            val realUuid = settings.templateList.uuid
+
+            xmlUuid shouldBe realUuid
+        }
+
+        test("getTemplates") {
+            val xmlUuids = xml.getTemplates().map { it.getPropertyValue("uuid") }
+            val realUuids = settings.templates.map { it.uuid }
+            realUuids shouldNot beEmpty()
+
+            xmlUuids shouldContainExactlyInAnyOrder realUuids
+        }
+
+        test("getSchemes") {
+            val xmlUuids = xml.getSchemes().map { it.getPropertyValue("uuid") }
+            val realUuids = settings.templates.flatMap { it.schemes }.map { it.uuid }
+            realUuids shouldNot beEmpty()
+
+            xmlUuids shouldContainExactlyInAnyOrder realUuids
+        }
+
+        test("getDecorators") {
+            val xmlUuids = xml.getDecorators().map { it.getPropertyValue("uuid") }
+            val realUuids = settings.templates
+                .flatMap { it.schemes }
+                .flatMap { it.decorators }
+                .flatMap { listOf(it) + it.decorators }
+                .map { it.uuid }
+            realUuids shouldNot beEmpty()
+
+            xmlUuids shouldContainExactlyInAnyOrder realUuids
+        }
     }
 })
