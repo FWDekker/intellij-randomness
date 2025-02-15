@@ -47,7 +47,7 @@ internal class ErrorReporter : ErrorReportSubmitter() {
     /**
      * Interacts with GitHub.
      */
-    private val github by lazy { GitHubReporter() }
+    private val github = GitHubReporter()
 
 
     /**
@@ -141,7 +141,9 @@ private class GitHubReporter {
     /**
      * Service for interacting with the issues API on GitHub.
      */
-    private val issueService = IssueService(GitHubClient().also { it.setOAuth2Token(GitHubScrambler.getToken()) })
+    private val issueService by lazy {
+        IssueService(GitHubClient().also { it.setOAuth2Token(GitHubScrambler.getToken()) })
+    }
 
 
     /**

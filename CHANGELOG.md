@@ -1,4 +1,9 @@
 # Changelog
+## 3.3.6 -- 2025-02-15
+### Fixed
+* Fixed exception when submitting bug report without Internet connection. ([#R40](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/40)) ([#560](https://github.com/FWDekker/intellij-randomness/pull/560))
+
+
 ## 3.3.5 -- 2025-01-27
 ### Fixed
 * Fixed corrupted settings resulting in error messages after enabling "Array", "Fixed Length", or "Surround With" in any template or scheme. With this update, corrupted settings are patched back into a working state automatically. To prevent similar bugs in the future, unit tests have been added that automatically detect bugs resulting in corrupt settings. ([#R37](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/37)) ([#558](https://github.com/FWDekker/intellij-randomness/pull/558))
