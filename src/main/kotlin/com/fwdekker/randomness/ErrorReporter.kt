@@ -30,7 +30,7 @@ import org.eclipse.egit.github.core.client.PageIterator
 import org.eclipse.egit.github.core.service.IssueService
 import java.awt.Component
 import java.io.File
-import java.net.URL
+import java.net.URI
 import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
@@ -245,7 +245,8 @@ private object GitHubScrambler {
      * The URL at which a newer token may be available.
      */
     private val URL =
-        URL("https://raw.githubusercontent.com/FWDekker/intellij-randomness/main/src/main/resources/reporter/token.bin")
+        URI("https://raw.githubusercontent.com/FWDekker/intellij-randomness/main/src/main/resources/reporter/token.bin")
+            .toURL()
 
 
     /**

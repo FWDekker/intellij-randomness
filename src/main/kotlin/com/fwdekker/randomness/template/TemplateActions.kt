@@ -11,6 +11,7 @@ import com.fwdekker.randomness.ui.PreviewPanel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.ActionWrapperUtil
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.options.Configurable
@@ -67,7 +68,7 @@ class TemplateGroupAction(private val template: Template) :
             array = event.inputEvent?.isShiftDown ?: false,
             repeat = event.inputEvent?.isAltDown ?: false,
             settings = event.inputEvent?.isControlDown ?: false
-        ).actionPerformed(event)
+        ).let { ActionWrapperUtil.actionPerformed(event, it, this) }
 
     /**
      * Returns variant actions for the main insertion action.

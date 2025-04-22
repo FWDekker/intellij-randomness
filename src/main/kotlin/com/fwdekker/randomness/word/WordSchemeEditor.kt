@@ -23,10 +23,10 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindItem
-import com.intellij.ui.dsl.builder.listCellRenderer
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.toMutableProperty
 import com.intellij.ui.dsl.builder.toNullableProperty
+import com.intellij.ui.dsl.listCellRenderer.textListCellRenderer
 import java.awt.event.ItemEvent
 
 
@@ -42,7 +42,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
             lateinit var document: Document
 
             row(Bundle("word.ui.words.insert_option")) {
-                comboBox(listOf(PRESET_ITEM) + DefaultWordList.WORD_LISTS, listCellRenderer { it.name })
+                comboBox(listOf(PRESET_ITEM) + DefaultWordList.WORD_LISTS, textListCellRenderer { it?.name })
                     .withName("presets")
                     .also {
                         it.component.addItemListener { event ->
@@ -85,7 +85,7 @@ class WordSchemeEditor(scheme: WordScheme = WordScheme()) : SchemeEditor<WordSch
 
         group(Bundle("word.ui.format.header")) {
             row(Bundle("word.ui.format.capitalization_option")) {
-                comboBox(PRESET_CAPITALIZATION, listCellRenderer { it.toLocalizedString() })
+                comboBox(PRESET_CAPITALIZATION, textListCellRenderer { it?.toLocalizedString() })
                     .withName("capitalization")
                     .bindItem(scheme::capitalization.toNullableProperty())
             }
