@@ -1,4 +1,8 @@
 # Changelog
+## 9.9.9-unreleased
+Delete this.
+
+
 ## 3.3.6 -- 2025-02-15
 ### Fixed
 * Fixed exception when submitting bug report without Internet connection. ([#R40](https://github.com/FWDekkerBot/intellij-randomness-issues/issues/40)) ([#560](https://github.com/FWDekker/intellij-randomness/pull/560))

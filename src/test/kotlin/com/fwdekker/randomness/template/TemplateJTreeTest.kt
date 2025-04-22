@@ -827,6 +827,7 @@ object TemplateJTreeTest : FunSpec({
                 guiRun {
                     tree.expandRow(0)
                     tree.selectedScheme = currentList.templates[0].schemes[1]
+                    updateButtons()
                 }
 
                 guiRun { frame.getActionButton("Up").click() }
@@ -901,6 +902,9 @@ object TemplateJTreeTest : FunSpec({
 
                 guiRun {
                     tree.selectedScheme = template
+                    updateButtons()
+                }
+                guiRun {
                     frame.getActionButton("Reset").click()
                 }
 
@@ -909,7 +913,10 @@ object TemplateJTreeTest : FunSpec({
 
             test("resets changes to the initially selected scheme") {
                 (currentList.templates[0].schemes[0] as DummyScheme).name = "New Name"
-                guiRun { tree.reload() }
+                guiRun {
+                    tree.reload()
+                    updateButtons()
+                }
                 currentList.templates[0].schemes[0].name shouldBe "New Name"
 
                 guiRun { frame.getActionButton("Reset").click() }
@@ -919,7 +926,10 @@ object TemplateJTreeTest : FunSpec({
 
             test("resets changes to a template") {
                 currentList.templates[0].name = "New Name"
-                guiRun { tree.reload() }
+                guiRun {
+                    tree.reload()
+                    updateButtons()
+                }
                 currentList.templates[0].name shouldBe "New Name"
 
                 guiRun {
@@ -937,8 +947,9 @@ object TemplateJTreeTest : FunSpec({
 
                 guiRun {
                     tree.selectedScheme = currentList.templates[1].schemes[0]
-                    frame.getActionButton("Reset").click()
+                    updateButtons()
                 }
+                guiRun { frame.getActionButton("Reset").click() }
 
                 currentList.templates[1].schemes[0].name shouldBe "Scheme2"
             }
@@ -950,8 +961,9 @@ object TemplateJTreeTest : FunSpec({
 
                 guiRun {
                     tree.selectedScheme = currentList.templates[0]
-                    frame.getActionButton("Reset").click()
+                    updateButtons()
                 }
+                guiRun { frame.getActionButton("Reset").click() }
 
                 currentList.templates[0].schemes.names() shouldContainExactly listOf("Scheme0", "Scheme1")
             }
@@ -963,8 +975,9 @@ object TemplateJTreeTest : FunSpec({
 
                 guiRun {
                     tree.selectedScheme = currentList.templates[2]
-                    frame.getActionButton("Reset").click()
+                    updateButtons()
                 }
+                guiRun { frame.getActionButton("Reset").click() }
 
                 currentList.templates[2].schemes[0].name shouldBe "Scheme3"
             }
@@ -975,7 +988,10 @@ object TemplateJTreeTest : FunSpec({
                 currentList.templates[0].schemes[0].name shouldBe "New Name"
                 guiRun { frame.getActionButton("Reset").click() }
                 (currentList.templates[0].schemes[0] as DummyScheme).name = "New Name"
-                guiRun { tree.reload() }
+                guiRun {
+                    tree.reload()
+                    updateButtons()
+                }
                 currentList.templates[0].schemes[0].name shouldBe "New Name"
 
                 guiRun { frame.getActionButton("Reset").click() }

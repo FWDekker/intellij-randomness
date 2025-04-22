@@ -12,26 +12,26 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
 import java.time.Year
 
-fun properties(key: String) = project.findProperty(key).toString()
+fun properties(key: String): String = project.findProperty(key).toString()
 
 
 /// Plugins
 plugins {
     // Compilation
-    id("org.jetbrains.kotlin.jvm") version "1.9.21"  // Set to latest version compatible with `pluginSinceBuild`, see also https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library
-    id("org.jetbrains.intellij.platform") version "2.1.0"
+    id("org.jetbrains.kotlin.jvm") version "1.9.24"  // Set to latest version compatible with `pluginSinceBuild`, see also https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library
+    id("org.jetbrains.intellij.platform") version "2.5.0"
 
     // Tests/coverage
-    id("org.jetbrains.kotlinx.kover") version "0.8.3"
+    id("org.jetbrains.kotlinx.kover") version "0.9.1"
 
     // Static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.23.7"  // See also `gradle.properties`
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"  // See also `gradle.properties`
 
     // Documentation
     id("org.jetbrains.changelog") version "2.2.1"
     id("org.jetbrains.dokka") version "1.9.20"  // See also `buildscript.dependencies` below and `gradle.properties`
 
-    // Runs GitHubScrambler
+    // To run GitHubScrambler
     application
 }
 
@@ -79,7 +79,6 @@ dependencies {
 
         pluginVerifier()
         zipSigner()
-        instrumentationTools()
 
         testFramework(TestFrameworkType.Platform)
     }
@@ -89,13 +88,14 @@ dependencies {
 /// Configuration
 tasks {
     // Compilation
+    java.toolchain.languageVersion.set(JavaLanguageVersion.of(properties("javaVersion")))  // See also https://github.com/gradle/gradle/issues/30499
     withType<JavaCompile> {
         sourceCompatibility = properties("javaVersion")
         targetCompatibility = properties("javaVersion")
     }
     withType<KotlinCompile> {
         kotlinOptions {
-            // Transforms "1.9.20" to "1.9"
+            // Transforms e.g. "1.9.20" to "1.9"
             val kotlinApiVersion = properties("kotlinVersion").split(".").take(2).joinToString(".")
 
             jvmTarget = properties("javaVersion")
