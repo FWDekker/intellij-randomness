@@ -75,7 +75,10 @@ dependencies {
     dokkaHtmlPlugin("org.jetbrains.dokka", "versioning-plugin", properties("dokkaVersion"))
 
     intellijPlatform {
-        intellijIdeaCommunity(properties("intellijVersion"))
+        intellijIdeaCommunity(
+            properties("intellijVersion"),
+            useInstaller = !properties("intellijVersion").endsWith("EAP-SNAPSHOT"),
+        )
 
         pluginVerifier()
         zipSigner()
