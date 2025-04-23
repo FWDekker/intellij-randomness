@@ -2,8 +2,7 @@ package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.DecoratorScheme
-import com.fwdekker.randomness.OverlayIcons
-import com.fwdekker.randomness.OverlayedIcon
+import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.intellij.util.xmlb.annotations.OptionTag
 
@@ -27,7 +26,7 @@ data class ArrayDecorator(
     @OptionTag val affixDecorator: AffixDecorator = DEFAULT_AFFIX_DECORATOR,
 ) : DecoratorScheme() {
     override val name = Bundle("array.title")
-    override val icon get() = if (enabled) OverlayedIcon(OverlayIcons.ARRAY) else null
+    override val overlayIcon get() = if (enabled) OverlayIcon.ARRAY else null
     override val decorators = listOf(affixDecorator)
     override val isEnabled get() = enabled
 

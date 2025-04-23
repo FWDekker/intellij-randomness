@@ -4,18 +4,19 @@ import com.fwdekker.randomness.Icons.ARRAY
 import com.fwdekker.randomness.Icons.REFERENCE
 import com.fwdekker.randomness.Icons.REPEAT
 import com.fwdekker.randomness.Icons.SETTINGS
-import com.fwdekker.randomness.TypeIcon.Companion.combine
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.LayeredIcon
 import com.intellij.ui.RowIcon
-import com.intellij.ui.components.JBLabel
+import com.intellij.ui.SizedIcon
 import com.intellij.ui.icons.FilteredIcon
 import com.intellij.ui.icons.RgbImageFilterSupplier
 import com.intellij.ui.icons.RowIcon.Alignment
 import com.intellij.ui.icons.TextIcon
 import com.intellij.util.IconUtil
 import java.awt.Color
+import java.awt.Component
+import java.awt.image.BufferedImage
 import java.awt.image.RGBImageFilter
 import javax.swing.Icon
 import javax.swing.SwingConstants
@@ -93,68 +94,18 @@ object Icons {
     val REPEAT_FILLED = IconLoader.getIcon("/icons/repeat-filled.svg", javaClass)
 }
 
-/**
- * An overlay icon, which can be displayed on top of other icons.
- *
- * This icon is drawn as a base icon surrounded by a small margin of background color, which creates visual distance
- * between the overlay and the rest of the icon this overlay is shown in top of. The background color is determined when
- * the icon is drawn.
- *
- * @see createOverlayedIcon
- */
-object OverlayIcons {
-    /**
-     * Overlay icon for arrays.
-     */
-    @JvmField
-    val ARRAY = create(Icons.ARRAY, Icons.ARRAY_FILLED)
-
-    /**
-     * Overlay icon for template references.
-     */
-    @JvmField
-    val REFERENCE = create(Icons.REFERENCE, Icons.REFERENCE_FILLED)
-
-    /**
-     * Overlay icon for repeated insertion.
-     */
-    @JvmField
-    val REPEAT = create(Icons.REPEAT, Icons.REPEAT_FILLED)
-
-    /**
-     * Overlay icon for settings.
-     */
-    @JvmField
-    val SETTINGS = create(Icons.SETTINGS, Icons.SETTINGS_FILLED)
-
-
-    /**
-     * The margin around the base image that is filled with background color.
-     *
-     * This number is a fraction relative to the base image's size.
-     */
-    private const val MARGIN = 4f / 32
-
-    /**
-     * Creates a new overlay icon.
-     *
-     * @param base the base of the icon; must be square
-     * @param background the background shape to ensure that the small margin of background color is also applied inside
-     * the [base], or `null` if [base] is already a solid shape
-     */
-    private fun create(base: Icon, background: Icon? = null): Icon =
-        LayeredIcon(2).apply {
-            val c = JBLabel()
-            val filter = RadialColorReplacementFilter(listOf(c.background))  // TODO: Do I need this filter?
-
-            setIcon(filterIcon(background ?: base, filter), 0)
-            setIcon(IconUtil.scale(base, c, 1 - 2 * MARGIN), 1, SwingConstants.CENTER)
-        }
-}
-
 
 /**
- * Describes an [Icon], but is not itself an icon.
+ * Describes an [Icon], and can instantiate an icon, but is not itself an icon.
+ *
+ * You may think it's better to just extend the [Icon] class instead of having this class in between. However, as noted
+ * in the comments to [IJPL-163887](https://youtrack.jetbrains.com/issue/IJPL-163887/), this leads to issues with
+ * IntelliJ's built-in icon mechanisms that are responsible for loading, caching, and scaling.
+ *
+ * You may also think it's better to just create functions that return [Icon]s directly, i.e. replace this class with
+ * a function that implements only the [get] function. However, this would result in a loss of metadata. For example,
+ * with [TypeIcon], the returned [LayeredIcon] does not tell you what the original [TypeIcon.text] and [TypeIcon.colors]
+ * are, making a function such as [TypeIcon.combine] a real mess to implement.
  */
 interface IconDescriptor {
     /**
@@ -163,34 +114,31 @@ interface IconDescriptor {
     fun get(): Icon
 }
 
-
 /**
  * Describes a colored icon with some text in it.
  *
- * Does not return an [Icon] because then the fields [text] and [colors] would be lost, making a method such as
- * [combine] a big unstable mess. Does not implement [Icon] because that class should not be extended by plugins. (See
- * https://youtrack.jetbrains.com/issue/IJPL-163887/.)
- *
- * @property base the underlying icon which should be given color; must be square
- * @property text the text to display inside the [base]
- * @property colors the colors to give to the [base]
+ * @property base The underlying icon which should be given color; must be square.
+ * @property text The text to display inside the [base].
+ * @property colors The colors to give to the [base].
  */
-data class TypeIcon(
-    private val base: Icon,
-    private val text: String,
-    private val colors: List<Color>,
-) : IconDescriptor {
-    override fun get(): Icon {
+data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) : IconDescriptor {
+    init {
         require(base.iconWidth == base.iconHeight) { "Base must be square." }
         require(colors.isNotEmpty()) { "At least one color must be defined." }
+    }
 
-        val component = JBLabel()
+
+    private fun truncateWidth(icon: Icon, width: Int): Icon =
+        SizedIcon(icon, width, icon.iconHeight)
+
+    override fun get(): Icon {
+        val component = object : Component() {}
         val baseSize = base.iconWidth
         val filter = RadialColorReplacementFilter(colors, Pair(baseSize / 2, baseSize / 2))
 
         return LayeredIcon(2).apply {
             setIcon(filterIcon(base, filter), 0)
-            setIcon(TextIcon(text, component, FONT_SIZE * baseSize), 1, SwingConstants.CENTER)
+            setIcon(truncateWidth(TextIcon(text, component, FONT_SIZE * baseSize), baseSize), 1, SwingConstants.CENTER)
         }
     }
 
@@ -218,50 +166,140 @@ data class TypeIcon(
     }
 }
 
+/**
+ * An overlay icon, which can be displayed on top of other icons.
+ *
+ * The icon consists of a [base] and a [fill]. The [base] is the actually important image, and the [fill] is useful for
+ * creating some space around the [base] image. Specifically, the [fill] is the same as the [base], except with
+ * everything within the [base] shape's boundaries also being filled in. For example, if [base] is a hollow circle, then
+ * [fill] would be a filled-in circle of the same size.
+ *
+ * The [get] function simply returns the [base] and does not use the [fill] at all. Instead, the [fill] is used by
+ * [OverlayedIcon]. When this [OverlayIcon] is placed on top of some underlying image, the [OverlayedIcon] will use the
+ * [fill] to perforate the underlying image, and then place the [base] on top in the newly created empty space. When
+ * doing this, the [OverlayedIcon] will slightly scale up the [fill] relative to the [base] so that there is also a
+ * slight margin around the [base].
+ *
+ * @property base The underlying base icon; must be square.
+ * @property fill A filled-in version of the [base]; must be the exact same size as the [base].
+ */
+data class OverlayIcon(val base: Icon, val fill: Icon = base) : IconDescriptor {
+    init {
+        require(base.iconWidth == base.iconHeight) { "Base must be square." }
+        require(fill.iconWidth == base.iconWidth && fill.iconHeight == base.iconHeight) {
+            "Shadow must have same size as base."
+        }
+    }
+
+
+    override fun get(): Icon = base
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * Overlay icon for arrays.
+         */
+        val ARRAY get() = OverlayIcon(Icons.ARRAY, Icons.ARRAY_FILLED)
+
+        /**
+         * Overlay icon for template references.
+         */
+        val REFERENCE get() = OverlayIcon(Icons.REFERENCE, Icons.REFERENCE_FILLED)
+
+        /**
+         * Overlay icon for repeated insertion.
+         */
+        val REPEAT get() = OverlayIcon(Icons.REPEAT, Icons.REPEAT_FILLED)
+
+        /**
+         * Overlay icon for settings.
+         */
+        val SETTINGS get() = OverlayIcon(Icons.SETTINGS, Icons.SETTINGS_FILLED)
+    }
+}
 
 /**
- * An overlayed icon, which is a base icon with various overlays placed on top.
+ * An overlayed icon, which is a [base] icon with various [overlays] placed on top.
  *
- * @property base the underlying base icon
- * @property overlays the various icons that are overlayed on top of [base]
- * @see OverlayIcons
+ * See the documentation of [OverlayIcon] for more information on its components.
+ *
+ * @property base The underlying base icon; must be square.
+ * @property overlays The various [OverlayIcon]s that are overlayed on top of the [base].
  */
-data class OverlayedIcon(private val base: Icon, private val overlays: List<Icon> = emptyList()) : IconDescriptor {
-    override fun get(): Icon {
-        require(base.iconWidth == base.iconHeight) { "Base must be square." }
-        require(overlays.all { it.iconWidth == it.iconHeight }) { "All overlays must be square." }
+data class OverlayedIcon(val base: TypeIcon, val overlays: List<OverlayIcon> = emptyList()) : IconDescriptor {
+    init {
+        require(overlays.size <= OVERLAYS_PER_ROW) { "A maximum of $OVERLAYS_PER_ROW overlays is currently the limit." }
+    }
 
-        val component = JBLabel()
-        val targetWidth = base.iconWidth / 2
 
-        val rowIcon = RowIcon(overlays.size, alignment = Alignment.BOTTOM)
-        overlays.forEachIndexed { idx, overlay ->
-            rowIcon.setIcon(
-                if (targetWidth == overlay.iconWidth) overlay
-                else IconUtil.scale(overlay, component, targetWidth.toFloat() / overlay.iconWidth),
-                idx
-            )
+    /**
+     * Returns a new [OverlayedIcon] that has one extra [overlay].
+     */
+    fun plusOverlay(overlay: OverlayIcon): OverlayedIcon = copy(overlays = overlays + overlay)
+
+
+    /**
+     * Creates a [RowIcon] consisting of appropriately-scaled horizontally-laid-out [icons].
+     *
+     * Each (square) icon is first scaled to an [innerSize] square and then centered within an [outerSize] square. There
+     * is no additional space between the icons.
+     */
+    private fun createOverlayRow(icons: List<Icon>, outerSize: Int, innerSize: Number = outerSize): RowIcon {
+        val rowIcon = RowIcon(icons.size, alignment = Alignment.BOTTOM)
+        icons.forEachIndexed { idx, icon ->
+            val innerIcon = IconUtil.scale(icon, null, innerSize.toFloat() / icon.iconWidth)
+            val outerIcon = SizedIcon(innerIcon, outerSize, outerSize)
+
+            rowIcon.setIcon(outerIcon, idx)
         }
+        return rowIcon
+    }
+
+    override fun get(): Icon {
+        val baseIcon = base.get()
+        if (overlays.isEmpty()) return baseIcon
+
+        val overlayOuterSize = baseIcon.iconWidth / OVERLAYS_PER_ROW
+        val overlayInnerSize = (1f - 2f * MARGIN) * overlayOuterSize
+
+        val overlayBaseRowIcon = createOverlayRow(overlays.map { it.base }, overlayOuterSize, overlayInnerSize)
+        val overlayShadowRowIcon = createOverlayRow(overlays.map { it.fill }, overlayOuterSize)
 
         return LayeredIcon(2).apply {
-            setIcon(base, 0)
-            setIcon(rowIcon, 1, SwingConstants.NORTH_WEST)
+            setIcon(filterIcon(baseIcon, SubtractionFilter(overlayShadowRowIcon)), 0)
+            setIcon(overlayBaseRowIcon, 1, SwingConstants.NORTH_WEST)
         }
     }
 
 
     /**
-     * Returns a new overlayed icon that has one extra overlay.
+     * Holds constants.
      */
-    fun plusOverlay(icon: Icon): OverlayedIcon = copy(overlays = overlays + icon)
-}
+    companion object {
+        /**
+         * The number of overlays to fit in each row.
+         *
+         * The total size of each individual overlay is the [base] image's width divided by this number.
+         */
+        private const val OVERLAYS_PER_ROW = 2
 
+        /**
+         * The margin around each overlay base image.
+         *
+         * This number is a fraction relative to the total size of each overlay.
+         */
+        private const val MARGIN = 4f / 32f
+    }
+}
 
 
 /**
  * Replaces all colors with one of [colors] depending on the angle relative to [center].
  *
- * @param colors the colors that should be used, in clockwise order starting north-west
+ * @param colors the colors that should be used, in clockwise order starting north
  * @param center the center relative to which colors should be calculated; not required if only one color is given
  */
 class RadialColorReplacementFilter(
@@ -328,19 +366,50 @@ class RadialColorReplacementFilter(
 }
 
 /**
+ * Interprets the given [icon] as a mask in which non-empty pixels indicate which pixels should be removed.
+ */
+class SubtractionFilter(private val icon: Icon) : RGBImageFilter() {
+    private val mask: BufferedImage?
+
+
+    init {
+        if (icon.iconWidth <= 0 || icon.iconHeight <= 0) {
+            mask = null
+        } else {
+            @Suppress("UndesirableClassUsage") // A simple 2D image is preferred over fancy hi-DPI alternatives
+            mask = BufferedImage(icon.iconWidth, icon.iconHeight, BufferedImage.TYPE_INT_ARGB)
+            with(mask.createGraphics()) {
+                icon.paintIcon(null, this, 0, 0)
+                dispose()
+            }
+        }
+    }
+
+
+    override fun filterRGB(x: Int, y: Int, rgb: Int): Int {
+        if (mask == null || x !in 0..<mask.width || y !in 0..<mask.height) return rgb
+
+        return if (mask.getRGB(x, y) == 0) rgb
+        else 0
+    }
+}
+
+/**
  * Applies the given [filter] to the given [base].
  *
- * This method is not nice and should eventually be deprecated. However, IntelliJ's API is not ready for that yet. See
- * also https://github.com/FWDekker/intellij-randomness/issues/552.
+ * This method is not nice and should really not exist. However, IntelliJ's API is not ready for that yet. See also
+ * [#552](https://github.com/FWDekker/intellij-randomness/issues/552) and
+ * [IJPL-5285](https://youtrack.jetbrains.com/issue/IJPL-5285/).
  *
  * @see IconUtil.filterIcon
  * @see IconLoader.filterIcon
  * @see FilteredIcon
  */
-private fun filterIcon(base: Icon, filter: RGBImageFilter): FilteredIcon {
-    val supplier = object : RgbImageFilterSupplier {
-        override fun getFilter(): RGBImageFilter = filter
-    }
-
-    return FilteredIcon(base, supplier)
-}
+@Suppress("UnstableApiUsage") // No alternative, see
+private fun filterIcon(base: Icon, filter: RGBImageFilter): FilteredIcon =
+    FilteredIcon(
+        base,
+        object : RgbImageFilterSupplier {
+            override fun getFilter(): RGBImageFilter = filter
+        }
+    )

@@ -3,6 +3,7 @@ package com.fwdekker.randomness.testhelpers
 import com.fwdekker.randomness.DecoratorScheme
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.InsertAction
+import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeEditor
 import com.fwdekker.randomness.State
@@ -56,7 +57,7 @@ data class DummyDecoratorScheme(
     override val decorators: List<DecoratorScheme> = emptyList(),
 ) : DecoratorScheme() {
     override val name = "DummyDecoratorScheme"
-    override var typeIcon: TypeIcon? = null
+    override var overlayIcon: OverlayIcon? = null
     override val isEnabled get() = enabled
 
 

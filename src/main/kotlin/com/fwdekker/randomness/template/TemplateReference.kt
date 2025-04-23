@@ -4,7 +4,7 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Icons
-import com.fwdekker.randomness.OverlayIcons
+import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.TypeIcon
@@ -32,7 +32,7 @@ data class TemplateReference(
     @get:Transient
     override val name get() = template?.name?.let { "[$it]" } ?: Bundle("reference.title")
     override val typeIcon get() = template?.typeIcon ?: DEFAULT_ICON
-    override val icon get() = OverlayedIcon(typeIcon.get(), decorators.mapNotNull { it.icon?.get() } + OverlayIcons.REFERENCE)
+    override val icon get() = OverlayedIcon(typeIcon, decorators.mapNotNull { it.overlayIcon } + OverlayIcon.REFERENCE)
     override val decorators get() = listOf(arrayDecorator)
 
     /**

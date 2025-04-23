@@ -39,7 +39,7 @@ class InsertActionTest : BasePlatformTestCase() {
     override fun tearDown() {
         try {
             super.tearDown()
-        } catch (error: Error) {
+        } catch (_: Error) {
             // Swallow errors about undisposed timers
         }
     }

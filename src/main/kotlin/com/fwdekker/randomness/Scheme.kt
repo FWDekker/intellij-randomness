@@ -7,7 +7,11 @@ import kotlin.random.Random
 /**
  * A scheme is a [State] that is also a configurable random number generator.
  *
- * Schemes may use [DecoratorScheme]s to extend their functionality.
+ * Schemes may use [DecoratorScheme]s to extend their functionality in generic ways.
+ *
+ * Schemes that contain other schemes are known as [com.fwdekker.randomness.template.Template]s.
+ *
+ * Schemes can refer to each other using [com.fwdekker.randomness.template.TemplateReference]s.
  */
 abstract class Scheme : State() {
     /**
@@ -16,7 +20,7 @@ abstract class Scheme : State() {
     abstract val name: String
 
     /**
-     * The icon signifying the type of data represented by this scheme, ignoring its [decorators], or `null` if this
+     * The icon signifying the type of data represented by this scheme, ignoring its [decorators]; or `null` if this
      * scheme does not represent any kind of data, as is the case for [DecoratorScheme]s.
      */
     open val typeIcon: TypeIcon? = null
@@ -25,7 +29,7 @@ abstract class Scheme : State() {
      * The icon signifying this scheme in its entirety, or `null` if it does not have an icon.
      */
     open val icon: OverlayedIcon?
-        get() = typeIcon?.let { typeIcon -> OverlayedIcon(typeIcon.get(), decorators.mapNotNull { it.icon?.get() }) }
+        get() = typeIcon?.let { typeIcon -> OverlayedIcon(typeIcon, decorators.mapNotNull { it.overlayIcon }) }
 
     /**
      * Additional logic that determines how strings are generated.
@@ -96,6 +100,13 @@ abstract class Scheme : State() {
  */
 @Suppress("detekt:LateinitUsage") // Alternatives not feasible
 abstract class DecoratorScheme : Scheme() {
+    /**
+     * The icon signifying that a [Scheme] has been decorated with this decorator.
+     */
+    open val overlayIcon: OverlayIcon? = null
+
+    final override val icon get() = null
+
     /**
      * Whether this decorator is enabled, or whether any invocation of [generateStrings] should be passed directly to
      * the [generator].

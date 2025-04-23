@@ -31,8 +31,12 @@ import kotlin.random.asJavaRandom
  * - Since `abstract` properties must always be overridden, they should be annotated only in the subclass. Adding
  *   additional annotations "for clarity" in a superclass should be avoided, since it is completely useless and
  *   therefore misleading.
- * - Since `open` properties are not always overridden, they should be annotated in the superclass and the subclass.
- * - See also `isSerialized` in `StateReflection`.
+ * - Since `open` properties are not always overridden, if they are annotated, they should be annotated in both the
+ *   superclass and the subclass.
+ * - See also `isSerialized` in `StateReflection` in Randomness' test module.
+ *
+ * These observations are based on IntelliJ Community 2024.1. See also the bug report at
+ * [IJPL-175868](https://youtrack.jetbrains.com/issue/IJPL-175868/).
  */
 abstract class State {
     /**

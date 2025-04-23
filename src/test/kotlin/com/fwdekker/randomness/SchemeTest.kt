@@ -11,7 +11,6 @@ import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
-import java.awt.Color
 
 
 /**
@@ -51,10 +50,10 @@ object SchemeTest : FunSpec({
 
         test("adds the scheme's decorators' icons") {
             val decorator = DummyDecoratorScheme()
-            decorator.typeIcon = TypeIcon(Icons.SCHEME, "dum", listOf(Color.GRAY))
+            decorator.overlayIcon = OverlayIcon(Icons.REPEAT, Icons.REFERENCE)
             val scheme = DummyScheme(decorators = listOf(decorator))
 
-            scheme.icon?.overlays shouldContainExactly listOf(decorator.icon)
+            scheme.icon?.overlays shouldContainExactly listOf(decorator.overlayIcon)
         }
     }
 
