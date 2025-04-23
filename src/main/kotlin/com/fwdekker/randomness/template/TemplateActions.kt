@@ -109,7 +109,9 @@ class TemplateInsertAction(
         array -> Bundle("template.description.array", template.name)
         else -> Bundle("template.description.default", template.name)
     },
-    icon = template.icon?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
+    icon = template.icon
+        ?.let { if (array) it.plusOverlay(OverlayIcon.ARRAY) else it }  // TODO: Do not add if `array` decorator is already enabled
+        ?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
 ) {
     override val configurable
         get() =

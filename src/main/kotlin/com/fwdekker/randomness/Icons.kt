@@ -1,9 +1,14 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.Icons.ARRAY
+import com.fwdekker.randomness.Icons.REFERENCE
+import com.fwdekker.randomness.Icons.REPEAT
+import com.fwdekker.randomness.Icons.SETTINGS
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.LayeredIcon
 import com.intellij.ui.RowIcon
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.icons.RowIcon.Alignment
 import com.intellij.util.IconUtil
 import java.awt.Color
@@ -11,7 +16,6 @@ import java.awt.Component
 import java.awt.Graphics
 import java.awt.image.RGBImageFilter
 import javax.swing.Icon
-import javax.swing.JLabel
 import javax.swing.SwingConstants
 import kotlin.math.atan2
 
@@ -96,13 +100,13 @@ object Icons {
  * @property colors The colors to give to the [base].
  */
 data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) : Icon {
-    private val icon =
+    private val innerIcon: Icon =
         LayeredIcon(2).apply {
-            val c = JLabel()
-            val filter = RadialColorReplacementFilter(colors, Pair(iconWidth / 2, iconHeight / 2))
+            val c = JBLabel()
+            val filter = RadialColorReplacementFilter(colors, Pair(base.iconWidth / 2, base.iconHeight / 2))
 
             setIcon(IconUtil.filterIcon(base, { filter }, c), 0)
-            setIcon(IconUtil.textToIcon(text, c, FONT_SIZE), 1, SwingConstants.CENTER)  // TODO: Dynamic font scaling
+            setIcon(IconUtil.textToIcon(text, c, FONT_SIZE * iconWidth), 1, SwingConstants.CENTER)
         }
 
 
@@ -122,18 +126,18 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
     override fun paintIcon(c: Component?, g: Graphics?, x: Int, y: Int) {
         if (c == null || g == null) return
 
-        icon.paintIcon(c, g, x, y)
+        innerIcon.paintIcon(c, g, x, y)
     }
 
     /**
      * The width of the base icon.
      */
-    override fun getIconWidth() = base.iconWidth
+    override fun getIconWidth() = innerIcon.iconWidth
 
     /**
      * The height of the base icon.
      */
-    override fun getIconHeight() = base.iconHeight
+    override fun getIconHeight() = innerIcon.iconHeight
 
 
     /**
@@ -143,7 +147,7 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
         /**
          * The scale of the text inside the icon relative to the icon's size.
          */
-        const val FONT_SIZE = 6f
+        const val FONT_SIZE = 12f / 32f
 
 
         /**
@@ -171,11 +175,12 @@ data class TypeIcon(val base: Icon, val text: String, val colors: List<Color>) :
  * the [base], or `null` if [base] is already a solid shape.
  */
 data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
-    private val icon =
+    private val innerIcon =
         LayeredIcon(2).apply {
-            val c = JLabel()
+            val c = JBLabel()
+            val filter = RadialColorReplacementFilter(listOf(c.background))  // TODO: Do I need this filter?
 
-            setIcon(background ?: base, 0)
+            setIcon(IconUtil.filterIcon(background ?: base, { filter }, c), 0)
             setIcon(IconUtil.scale(base, c, 1 - 2 * MARGIN), 1, SwingConstants.CENTER)
         }
 
@@ -191,18 +196,18 @@ data class OverlayIcon(val base: Icon, val background: Icon? = null) : Icon {
     override fun paintIcon(c: Component?, g: Graphics?, x: Int, y: Int) {
         if (c == null || g == null) return
 
-        icon.paintIcon(c, g, x, y)
+        innerIcon.paintIcon(c, g, x, y)
     }
 
     /**
      * The width of the base icon.
      */
-    override fun getIconWidth() = base.iconWidth
+    override fun getIconWidth() = innerIcon.iconWidth
 
     /**
      * The height of the base icon.
      */
-    override fun getIconHeight() = base.iconHeight
+    override fun getIconHeight() = innerIcon.iconHeight
 
 
     /**
@@ -251,9 +256,9 @@ data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList())
      */
     private var validated: Boolean = false
 
-    private val icon =
+    private val innerIcon =
         LayeredIcon(2).apply {
-            val c = JLabel()
+            val c = JBLabel()
 
             val rowIcon = RowIcon(overlays.size, alignment = Alignment.BOTTOM)
             overlays.forEachIndexed { idx, overlay -> rowIcon.setIcon(IconUtil.scale(overlay, c, .5f), idx) }
@@ -281,18 +286,18 @@ data class OverlayedIcon(val base: Icon, val overlays: List<Icon> = emptyList())
         if (c == null || g == null) return
 
         validate()
-        icon.paintIcon(c, g, x, y)
+        innerIcon.paintIcon(c, g, x, y)
     }
 
     /**
      * The width of the base icon.
      */
-    override fun getIconWidth() = base.iconWidth
+    override fun getIconWidth() = innerIcon.iconWidth
 
     /**
      * The height of the base icon.
      */
-    override fun getIconHeight() = base.iconHeight
+    override fun getIconHeight() = innerIcon.iconHeight
 
 
     /**
