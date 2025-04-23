@@ -4,10 +4,10 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.fixedlength.FixedLengthDecorator
-import com.fwdekker.randomness.typeIcon
 import com.intellij.ui.JBColor
 import com.intellij.util.xmlb.annotations.OptionTag
 import java.awt.Color
@@ -103,7 +103,7 @@ data class IntegerScheme(
          * The base icon for integers.
          */
         val BASE_ICON
-            get() = typeIcon(Icons.SCHEME, "123", listOf(JBColor(Color(64, 182, 224, 154), Color(64, 182, 224, 154))))
+            get() = TypeIcon(Icons.SCHEME, "123", listOf(JBColor(Color(64, 182, 224, 154), Color(64, 182, 224, 154))))
 
         /**
          * The default value of the [minValue] field.

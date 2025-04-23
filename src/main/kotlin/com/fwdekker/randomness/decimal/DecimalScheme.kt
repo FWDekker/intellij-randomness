@@ -3,9 +3,9 @@ package com.fwdekker.randomness.decimal
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.typeIcon
 import com.intellij.ui.JBColor
 import com.intellij.util.xmlb.annotations.OptionTag
 import java.awt.Color
@@ -92,7 +92,7 @@ data class DecimalScheme(
          * The base icon for decimals.
          */
         val BASE_ICON
-            get() = typeIcon(Icons.SCHEME, "4.2", listOf(JBColor(Color(98, 181, 67, 154), Color(98, 181, 67, 154))))
+            get() = TypeIcon(Icons.SCHEME, "4.2", listOf(JBColor(Color(98, 181, 67, 154), Color(98, 181, 67, 154))))
 
         /**
          * The maximum valid difference between the [minValue] and [maxValue] fields.

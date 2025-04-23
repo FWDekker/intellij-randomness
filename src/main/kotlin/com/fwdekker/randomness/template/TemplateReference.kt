@@ -5,11 +5,11 @@ import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.DataGenerationException
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.OverlayIcons
+import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.createOverlayedIcon
-import com.fwdekker.randomness.typeIcon
 import com.intellij.ui.Gray
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Transient
@@ -32,7 +32,7 @@ data class TemplateReference(
     @get:Transient
     override val name get() = template?.name?.let { "[$it]" } ?: Bundle("reference.title")
     override val typeIcon get() = template?.typeIcon ?: DEFAULT_ICON
-    override val icon get() = createOverlayedIcon(typeIcon, decorators.mapNotNull { it.icon } + OverlayIcons.REFERENCE)
+    override val icon get() = OverlayedIcon(typeIcon.init(), decorators.mapNotNull { it.icon?.init() } + OverlayIcons.REFERENCE)
     override val decorators get() = listOf(arrayDecorator)
 
     /**
@@ -117,7 +117,7 @@ data class TemplateReference(
         /**
          * The base icon for references when the reference is invalid.
          */
-        val DEFAULT_ICON get() = typeIcon(Icons.TEMPLATE, "", listOf(Gray._110))
+        val DEFAULT_ICON get() = TypeIcon(Icons.TEMPLATE, "", listOf(Gray._110))
 
         /**
          * The preset values for the [capitalization] field.

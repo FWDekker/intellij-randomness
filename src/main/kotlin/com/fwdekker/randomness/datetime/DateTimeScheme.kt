@@ -3,8 +3,8 @@ package com.fwdekker.randomness.datetime
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.typeIcon
 import com.fwdekker.randomness.ui.toLocalDateTime
 import com.intellij.ui.JBColor
 import com.intellij.util.xmlb.annotations.OptionTag
@@ -63,7 +63,7 @@ data class DateTimeScheme(
          * The base icon for date-times.
          */
         val BASE_ICON
-            get() = typeIcon(Icons.SCHEME, "2:3", listOf(JBColor(Color(249, 139, 158, 154), Color(249, 139, 158, 154))))
+            get() = TypeIcon(Icons.SCHEME, "2:3", listOf(JBColor(Color(249, 139, 158, 154), Color(249, 139, 158, 154))))
 
         /**
          * The default value of the [minDateTime] field.

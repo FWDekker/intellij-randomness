@@ -407,7 +407,7 @@ class TemplateJTree(
                 return
             }
 
-            icon = scheme.icon
+            icon = scheme.icon?.init()
 
             if (scheme is Template) {
                 PopupAction.indexToMnemonic(currentTemplateList.templates.indexOf(scheme))
@@ -480,7 +480,7 @@ class TemplateJTree(
             /**
              * Returns [value]'s icon.
              */
-            override fun getIconFor(value: Scheme?) = value?.icon
+            override fun getIconFor(value: Scheme?) = value?.icon?.init()
 
             /**
              * Returns [value]'s name.

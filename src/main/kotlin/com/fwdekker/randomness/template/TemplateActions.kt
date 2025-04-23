@@ -7,7 +7,6 @@ import com.fwdekker.randomness.OverlayIcons
 import com.fwdekker.randomness.Timely.generateTimely
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
-import com.fwdekker.randomness.plusOverlay
 import com.fwdekker.randomness.ui.PreviewPanel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
@@ -30,7 +29,7 @@ import javax.swing.JPanel
  * @see TemplateSettingsAction
  */
 class TemplateGroupAction(private val template: Template) :
-    ActionGroup(template.name, Bundle("template.description.default", template.name), template.icon) {
+    ActionGroup(template.name, Bundle("template.description.default", template.name), template.icon?.init()) {
     /**
      * Returns the action that is appropriate for the given keyboard modifiers.
      *
@@ -113,6 +112,7 @@ class TemplateInsertAction(
     icon = template.icon
         ?.let { if (array) it.plusOverlay(OverlayIcons.ARRAY) else it }  // TODO: Do not add if `array` decorator is already enabled
         ?.let { if (repeat) it.plusOverlay(OverlayIcons.REPEAT) else it }
+        ?.init()
 ) {
     override val configurable
         get() =
@@ -206,7 +206,7 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
     if (template == null) Bundle("template.name.settings")
     else Bundle("template.name.settings_suffix", template.name),
     template?.let { Bundle("template.description.settings", it.name) },
-    template?.icon?.plusOverlay(OverlayIcons.SETTINGS) ?: Icons.SETTINGS
+    template?.icon?.plusOverlay(OverlayIcons.SETTINGS)?.init() ?: Icons.SETTINGS
 ) {
     /**
      * Opens the IntelliJ settings menu at the right location to adjust the template configurable.

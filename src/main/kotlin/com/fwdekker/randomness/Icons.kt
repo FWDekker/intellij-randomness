@@ -4,6 +4,7 @@ import com.fwdekker.randomness.Icons.ARRAY
 import com.fwdekker.randomness.Icons.REFERENCE
 import com.fwdekker.randomness.Icons.REPEAT
 import com.fwdekker.randomness.Icons.SETTINGS
+import com.fwdekker.randomness.TypeIcon.Companion.combine
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.LayeredIcon
@@ -152,91 +153,98 @@ object OverlayIcons {
 }
 
 
-/**
- * The scale of the text inside the icon relative to the icon's size.
- */
-private const val TYPE_ICON_FONT_SIZE = 12f / 32f
-
-private val typeIconTexts = hashMapOf<LayeredIcon, String>()
-private val typeIconColors = hashMapOf<LayeredIcon, List<Color>>()
 
 /**
- * Creates a colored icon with some text in it.
+ * Describes a colored icon with some text in it.
  *
- * @param base the underlying icon which should be given color; must be square
- * @param text the text to display inside the [base]
- * @param colors the colors to give to the [base]
+ * Does not return an [Icon] because then the fields [text] and [colors] would be lost, making a method such as
+ * [combine] a big unstable mess. Does not implement [Icon] because that class should not be extended by plugins. (See
+ * https://youtrack.jetbrains.com/issue/IJPL-163887/.)
+ *
+ * @property base the underlying icon which should be given color; must be square
+ * @property text the text to display inside the [base]
+ * @property colors the colors to give to the [base]
  */
-fun typeIcon(base: Icon, text: String, colors: List<Color>): LayeredIcon {
-    require(base.iconWidth == base.iconHeight) { "Base must be square." }
-    require(colors.isNotEmpty()) { "At least one color must be defined." }
+data class TypeIcon(private val base: Icon, private val text: String, private val colors: List<Color>) {
+    /**
+     * Creates the corresponding [Icon] object.
+     */
+    fun init(): Icon {
+        require(base.iconWidth == base.iconHeight) { "Base must be square." }
+        require(colors.isNotEmpty()) { "At least one color must be defined." }
 
-    val component = JBLabel()
-    val baseSize = base.iconWidth
-    val filter = RadialColorReplacementFilter(colors, Pair(baseSize / 2, baseSize / 2))
+        val component = JBLabel()
+        val baseSize = base.iconWidth
+        val filter = RadialColorReplacementFilter(colors, Pair(baseSize / 2, baseSize / 2))
 
-    return LayeredIcon(2).apply {
-        setIcon(filterIcon(base, filter), 0)
-        setIcon(TextIcon(text, component, TYPE_ICON_FONT_SIZE * baseSize), 1, SwingConstants.CENTER)
-    }.also {
-        typeIconTexts[it] = text
-        typeIconColors[it] = colors
+        return LayeredIcon(2).apply {
+            setIcon(filterIcon(base, filter), 0)
+            setIcon(TextIcon(text, component, FONT_SIZE * baseSize), 1, SwingConstants.CENTER)
+        }
+    }
+
+
+    /**
+     * Holds constants.
+     */
+    companion object {
+        /**
+         * The scale of the text inside the icon relative to the icon's size.
+         */
+        private const val FONT_SIZE = 12f / 32f
+
+
+        /**
+         * Returns a single icon that describes all given [TypeIcon]s, or `null` if [icons] is empty.
+         */
+        fun combine(icons: Collection<TypeIcon>): TypeIcon? =
+            if (icons.isEmpty()) null
+            else TypeIcon(
+                Icons.TEMPLATE,
+                icons.map { it.text }.toSet().singleOrNull() ?: "",
+                icons.flatMap { it.colors }
+            )
     }
 }
 
-/**
- * Returns a single icon that describes all given type icons, or `null` if [icons] is empty.
- */
-fun typeIconCombine(icons: Collection<LayeredIcon>): LayeredIcon? =
-    if (icons.isEmpty()) null
-    else typeIcon(
-        Icons.TEMPLATE,
-        if (icons.map { typeIconTexts[it]!! }.toSet().size == 1) typeIconTexts[icons.first()]!! else "",
-        icons.flatMap { typeIconColors[it]!! }
-    )
-
 
 /**
- * Creates an overlayed icon, which is a base icon with various overlays placed on top.
+ * An overlayed icon, which is a base icon with various overlays placed on top.
  *
  * @property base the underlying base icon
  * @property overlays the various icons that are overlayed on top of [base]
  * @see OverlayIcons
- * @see plusOverlay
  */
-fun createOverlayedIcon(base: Icon, overlays: List<Icon> = emptyList()): LayeredIcon {
-    require(base.iconWidth == base.iconHeight) { "Base must be square." }
-    require(overlays.all { it.iconWidth == it.iconHeight }) { "All overlays must be square." }
+data class OverlayedIcon(private val base: Icon, private val overlays: List<Icon> = emptyList()) {
+    fun init(): Icon {
+        require(base.iconWidth == base.iconHeight) { "Base must be square." }
+        require(overlays.all { it.iconWidth == it.iconHeight }) { "All overlays must be square." }
 
-    val component = JBLabel()
-    val targetWidth = base.iconWidth / 2
+        val component = JBLabel()
+        val targetWidth = base.iconWidth / 2
 
-    val rowIcon = RowIcon(overlays.size, alignment = Alignment.BOTTOM)
-    overlays.forEachIndexed { idx, overlay ->
-        rowIcon.setIcon(
-            if (targetWidth == overlay.iconWidth) overlay
-            else IconUtil.scale(overlay, component, targetWidth.toFloat() / overlay.iconWidth),
-            idx
-        )
+        val rowIcon = RowIcon(overlays.size, alignment = Alignment.BOTTOM)
+        overlays.forEachIndexed { idx, overlay ->
+            rowIcon.setIcon(
+                if (targetWidth == overlay.iconWidth) overlay
+                else IconUtil.scale(overlay, component, targetWidth.toFloat() / overlay.iconWidth),
+                idx
+            )
+        }
+
+        return LayeredIcon(2).apply {
+            setIcon(base, 0)
+            setIcon(rowIcon, 1, SwingConstants.NORTH_WEST)
+        }
     }
 
-    return LayeredIcon(2).apply {
-        setIcon(base, 0)
-        setIcon(rowIcon, 1, SwingConstants.NORTH_WEST)
-    }
+
+    /**
+     * Returns a new overlayed icon that has one extra overlay.
+     */
+    fun plusOverlay(icon: Icon): OverlayedIcon = copy(overlays = overlays + icon)
 }
 
-/**
- * Returns a new overlayed icon that has one extra overlay.
- *
- * @see createOverlayedIcon
- */
-fun LayeredIcon.plusOverlay(icon: Icon): LayeredIcon {
-    require(allLayers.size == 2) { "Given icon is not an overlayed icon because it does not have exactly two layers." }
-    require(allLayers[1] is RowIcon) { "Given icon is not an overlayed icon because the 2nd layer is not a `RowIcon`." }
-
-    return createOverlayedIcon(allLayers[0]!!, (allLayers[1] as RowIcon).allIcons + icon)
-}
 
 
 /**

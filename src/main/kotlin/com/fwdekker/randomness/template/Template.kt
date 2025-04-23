@@ -5,13 +5,12 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
+import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.datetime.DateTimeScheme
 import com.fwdekker.randomness.decimal.DecimalScheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.string.StringScheme
-import com.fwdekker.randomness.typeIcon
-import com.fwdekker.randomness.typeIconCombine
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.ui.Gray
@@ -43,7 +42,7 @@ data class Template(
     val schemes: MutableList<Scheme> = DEFAULT_SCHEMES,
     @OptionTag val arrayDecorator: ArrayDecorator = DEFAULT_ARRAY_DECORATOR,
 ) : Scheme() {
-    override val typeIcon get() = typeIconCombine(schemes.mapNotNull { it.typeIcon }) ?: DEFAULT_ICON
+    override val typeIcon get() = TypeIcon.combine(schemes.mapNotNull { it.typeIcon }) ?: DEFAULT_ICON
     override val decorators get() = listOf(arrayDecorator)
 
     /**
@@ -106,7 +105,7 @@ data class Template(
         /**
          * The icon displayed when a template has no schemes.
          */
-        val DEFAULT_ICON get() = typeIcon(Icons.TEMPLATE, "", listOf(Gray._110))
+        val DEFAULT_ICON get() = TypeIcon(Icons.TEMPLATE, "", listOf(Gray._110))
 
         /**
          * The default value of the [name] field.

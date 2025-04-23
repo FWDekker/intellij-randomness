@@ -86,7 +86,7 @@ class TemplateReferenceEditor(scheme: TemplateReference) : SchemeEditor<Template
             selected: Boolean,
             hasFocus: Boolean,
         ) {
-            icon = value?.icon ?: Template.DEFAULT_ICON
+            icon = value?.icon?.init() ?: Template.DEFAULT_ICON.init()
             append(value?.name ?: Bundle("template.name.unknown"))
         }
     }
