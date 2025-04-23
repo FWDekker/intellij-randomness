@@ -25,7 +25,7 @@ abstract class Scheme : State() {
      * The icon signifying this scheme in its entirety, or `null` if it does not have an icon.
      */
     open val icon: OverlayedIcon?
-        get() = typeIcon?.let { OverlayedIcon(it.init(), decorators.mapNotNull(Scheme::icon).map(OverlayedIcon::init)) }
+        get() = typeIcon?.let { typeIcon -> OverlayedIcon(typeIcon.get(), decorators.mapNotNull { it.icon?.get() }) }
 
     /**
      * Additional logic that determines how strings are generated.

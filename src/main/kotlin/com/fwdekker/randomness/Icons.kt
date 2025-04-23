@@ -153,6 +153,16 @@ object OverlayIcons {
 }
 
 
+/**
+ * Describes an [Icon], but is not itself an icon.
+ */
+interface IconDescriptor {
+    /**
+     * Creates or returns the described [Icon].
+     */
+    fun get(): Icon
+}
+
 
 /**
  * Describes a colored icon with some text in it.
@@ -165,11 +175,12 @@ object OverlayIcons {
  * @property text the text to display inside the [base]
  * @property colors the colors to give to the [base]
  */
-data class TypeIcon(private val base: Icon, private val text: String, private val colors: List<Color>) {
-    /**
-     * Creates the corresponding [Icon] object.
-     */
-    fun init(): Icon {
+data class TypeIcon(
+    private val base: Icon,
+    private val text: String,
+    private val colors: List<Color>,
+) : IconDescriptor {
+    override fun get(): Icon {
         require(base.iconWidth == base.iconHeight) { "Base must be square." }
         require(colors.isNotEmpty()) { "At least one color must be defined." }
 
@@ -215,8 +226,8 @@ data class TypeIcon(private val base: Icon, private val text: String, private va
  * @property overlays the various icons that are overlayed on top of [base]
  * @see OverlayIcons
  */
-data class OverlayedIcon(private val base: Icon, private val overlays: List<Icon> = emptyList()) {
-    fun init(): Icon {
+data class OverlayedIcon(private val base: Icon, private val overlays: List<Icon> = emptyList()) : IconDescriptor {
+    override fun get(): Icon {
         require(base.iconWidth == base.iconHeight) { "Base must be square." }
         require(overlays.all { it.iconWidth == it.iconHeight }) { "All overlays must be square." }
 

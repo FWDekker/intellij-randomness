@@ -32,7 +32,7 @@ data class TemplateReference(
     @get:Transient
     override val name get() = template?.name?.let { "[$it]" } ?: Bundle("reference.title")
     override val typeIcon get() = template?.typeIcon ?: DEFAULT_ICON
-    override val icon get() = OverlayedIcon(typeIcon.init(), decorators.mapNotNull { it.icon?.init() } + OverlayIcons.REFERENCE)
+    override val icon get() = OverlayedIcon(typeIcon.get(), decorators.mapNotNull { it.icon?.get() } + OverlayIcons.REFERENCE)
     override val decorators get() = listOf(arrayDecorator)
 
     /**
