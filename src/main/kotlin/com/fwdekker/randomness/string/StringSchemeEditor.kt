@@ -13,9 +13,9 @@ import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
-import com.intellij.ui.dsl.builder.listCellRenderer
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.toNullableProperty
+import com.intellij.ui.dsl.listCellRenderer.textListCellRenderer
 import com.intellij.ui.layout.selected
 import javax.swing.JCheckBox
 
@@ -54,7 +54,7 @@ class StringSchemeEditor(scheme: StringScheme = StringScheme()) : SchemeEditor<S
             }.bottomGap(BottomGap.SMALL)
 
             row(Bundle("string.ui.value.capitalization_option")) {
-                comboBox(PRESET_CAPITALIZATION, listCellRenderer { it.toLocalizedString() })
+                comboBox(PRESET_CAPITALIZATION, textListCellRenderer { it?.toLocalizedString() })
                     .withName("capitalization")
                     .bindItem(scheme::capitalization.toNullableProperty())
             }
