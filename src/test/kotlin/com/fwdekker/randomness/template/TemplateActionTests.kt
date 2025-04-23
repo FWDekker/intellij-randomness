@@ -11,6 +11,7 @@ import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.matchBundle
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import com.intellij.ui.LayeredIcon
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
@@ -96,14 +97,14 @@ object TemplateInsertActionTest : FunSpec({
                 val template = Template()
                 val action = TemplateInsertAction(template, repeat = false)
 
-                (action.templatePresentation.icon as OverlayedIcon).overlays shouldNotContain OverlayIcon.REPEAT
+                (action.templatePresentation.icon as LayeredIcon).overlays shouldNotContain OverlayIcon.REPEAT
             }
 
             test("adds a repeat overlay for a repeat variant") {
                 val template = Template()
                 val action = TemplateInsertAction(template, repeat = true)
 
-                (action.templatePresentation.icon as OverlayedIcon).overlays shouldContain OverlayIcon.REPEAT
+                (action.templatePresentation.icon as LayeredIcon).overlays shouldContain OverlayIcon.REPEAT
             }
         }
     }
@@ -189,7 +190,7 @@ object TemplateSettingsActionTest : FunSpec({
                 val template = Template("subject", mutableListOf(DummyScheme().also { it.typeIcon = icon }))
                 val action = TemplateSettingsAction(template)
 
-                (action.templatePresentation.icon as OverlayedIcon).base shouldBe template.typeIcon
+                (action.templatePresentation.icon as LayeredIcon).base shouldBe template.typeIcon
             }
         }
     }

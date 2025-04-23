@@ -78,13 +78,13 @@ object TypeIconTest : FunSpec({
 
     context("combine") {
         test("returns `null` if no icons are given to combine") {
-            TypeIcon.combine(emptyList()) should beNull()
+            TypeIcon.typeIconCombine(emptyList()) should beNull()
         }
 
         test("returns a template icon for a single icon") {
             val icons = listOf(TypeIcon(PlainIcon(), "text", listOf(Color.LIGHT_GRAY)))
 
-            TypeIcon.combine(icons)!!.base shouldBe Icons.TEMPLATE
+            TypeIcon.typeIconCombine(icons)!!.base shouldBe Icons.TEMPLATE
         }
 
         test("returns a template icon for multiple icons") {
@@ -95,7 +95,7 @@ object TypeIconTest : FunSpec({
                     TypeIcon(PlainIcon(), "text3", listOf(Color.MAGENTA)),
                 )
 
-            TypeIcon.combine(icons)!!.base shouldBe Icons.TEMPLATE
+            TypeIcon.typeIconCombine(icons)!!.base shouldBe Icons.TEMPLATE
         }
 
         test("retains the text if it is the same for all icons") {
@@ -106,7 +106,7 @@ object TypeIconTest : FunSpec({
                     TypeIcon(PlainIcon(), "text", listOf(Color.GREEN)),
                 )
 
-            TypeIcon.combine(icons)!!.text shouldBe "text"
+            TypeIcon.typeIconCombine(icons)!!.text shouldBe "text"
         }
 
         test("removes the text if it is not the same for all icons") {
@@ -117,7 +117,7 @@ object TypeIconTest : FunSpec({
                     TypeIcon(PlainIcon(), "text2", listOf(Color.BLUE)),
                 )
 
-            TypeIcon.combine(icons)!!.text shouldBe ""
+            TypeIcon.typeIconCombine(icons)!!.text shouldBe ""
         }
 
         test("appends the colors of the combined icons") {
@@ -128,7 +128,7 @@ object TypeIconTest : FunSpec({
                     TypeIcon(PlainIcon(), "text3", listOf(Color.PINK, Color.BLACK, Color.BLUE)),
                 )
 
-            TypeIcon.combine(icons)!!.colors shouldContainExactly
+            TypeIcon.typeIconCombine(icons)!!.colors shouldContainExactly
                 listOf(Color.BLUE, Color.WHITE, Color.RED, Color.PINK, Color.BLACK, Color.BLUE)
         }
     }
@@ -210,7 +210,7 @@ object OverlayIconTest : FunSpec({
 })
 
 /**
- * Unit tests for [OverlayedIcon].
+ * Unit tests for [createOverlayedIcon].
  */
 object OverlayedIconTest : FunSpec({
     lateinit var image: BufferedImage
@@ -237,21 +237,21 @@ object OverlayedIconTest : FunSpec({
 
     context("deferred validation") {
         test("fails if the base image is not square") {
-            val icon = OverlayedIcon(PlainIcon(186, 132), emptyList())
+            val icon = createOverlayedIcon(PlainIcon(186, 132), emptyList())
 
             shouldThrow<IllegalArgumentException> { icon.paintIcon(guiGet { JLabel() }, graphics, 0, 0) }
                 .message shouldBe "Base must be square."
         }
 
         test("fails if an overlay is not square") {
-            val icon = OverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon(38, 40)))
+            val icon = createOverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon(38, 40)))
 
             shouldThrow<IllegalArgumentException> { icon.paintIcon(guiGet { JLabel() }, graphics, 0, 0) }
                 .message shouldBe "All overlays must be square."
         }
 
         test("fails if overlays have different sizes") {
-            val icon = OverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon(34, 34)))
+            val icon = createOverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon(34, 34)))
 
             shouldThrow<IllegalArgumentException> { icon.paintIcon(guiGet { JLabel() }, graphics, 0, 0) }
                 .message shouldBe "All overlays must have same size."
@@ -262,7 +262,7 @@ object OverlayedIconTest : FunSpec({
     context("plusOverlay") {
         test("returns a copy with the given overlay added") {
             val newOverlay = PlainIcon()
-            val icon = OverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon()))
+            val icon = createOverlayedIcon(PlainIcon(), listOf(PlainIcon(), PlainIcon()))
 
             icon.plusOverlay(newOverlay).overlays.last() shouldBeSameInstanceAs newOverlay
         }
@@ -271,7 +271,7 @@ object OverlayedIconTest : FunSpec({
 
     context("paintIcon").config(tags = setOf(Tags.SWING)) {
         test("paints nothing if the component is null") {
-            OverlayedIcon(PlainIcon(), listOf(PlainIcon())).paintIcon(null, graphics, 0, 0)
+            createOverlayedIcon(PlainIcon(), listOf(PlainIcon())).paintIcon(null, graphics, 0, 0)
 
             image.getRGB(0, 0, 32, 32, null, 0, 32).forEach { it shouldBe 0 }
         }
@@ -279,7 +279,7 @@ object OverlayedIconTest : FunSpec({
         test("paints the base icon only if no overlays are specified") {
             val label = guiGet { JLabel() }
 
-            OverlayedIcon(PlainIcon(color = Color.GREEN.rgb)).paintIcon(label, graphics, 0, 0)
+            createOverlayedIcon(PlainIcon(color = Color.GREEN.rgb)).paintIcon(label, graphics, 0, 0)
 
             image.getRGB(0, 0, 32, 32, null, 0, 32).forEach { it shouldBe Color.GREEN.rgb }
         }
@@ -287,7 +287,7 @@ object OverlayedIconTest : FunSpec({
         test("paints the overlays starting in the top-left corner") {
             val label = guiGet { JLabel().also { it.background = Color.BLUE } }
 
-            OverlayedIcon(PlainIcon(), listOf(PlainIcon(color = Color.BLUE.rgb))).paintIcon(label, graphics, 0, 0)
+            createOverlayedIcon(PlainIcon(), listOf(PlainIcon(color = Color.BLUE.rgb))).paintIcon(label, graphics, 0, 0)
 
             image.getRGB(0, 0, 16, 16, null, 0, 16).forEach { it shouldBe Color.BLUE.rgb }
             image.getRGB(16, 16, 16, 16, null, 0, 16).forEach { it shouldNotBe Color.BLUE.rgb }

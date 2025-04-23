@@ -11,9 +11,9 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.affix.AffixDecorator
 import com.fwdekker.randomness.array.ArrayDecorator
+import com.fwdekker.randomness.typeIcon
 import com.intellij.ui.JBColor
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Transient
@@ -90,7 +90,7 @@ data class UuidScheme(
          * The base icon for UUIDs.
          */
         val BASE_ICON
-            get() = TypeIcon(Icons.SCHEME, "id", listOf(JBColor(Color(185, 155, 248, 154), Color(185, 155, 248, 154))))
+            get() = typeIcon(Icons.SCHEME, "id", listOf(JBColor(Color(185, 155, 248, 154), Color(185, 155, 248, 154))))
 
         /**
          * The default value of the [version] field.

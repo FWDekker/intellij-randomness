@@ -3,10 +3,11 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.InsertAction
-import com.fwdekker.randomness.OverlayIcon
+import com.fwdekker.randomness.OverlayIcons
 import com.fwdekker.randomness.Timely.generateTimely
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.array.ArrayDecoratorEditor
+import com.fwdekker.randomness.plusOverlay
 import com.fwdekker.randomness.ui.PreviewPanel
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
@@ -110,8 +111,8 @@ class TemplateInsertAction(
         else -> Bundle("template.description.default", template.name)
     },
     icon = template.icon
-        ?.let { if (array) it.plusOverlay(OverlayIcon.ARRAY) else it }  // TODO: Do not add if `array` decorator is already enabled
-        ?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
+        ?.let { if (array) it.plusOverlay(OverlayIcons.ARRAY) else it }  // TODO: Do not add if `array` decorator is already enabled
+        ?.let { if (repeat) it.plusOverlay(OverlayIcons.REPEAT) else it }
 ) {
     override val configurable
         get() =
@@ -205,7 +206,7 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
     if (template == null) Bundle("template.name.settings")
     else Bundle("template.name.settings_suffix", template.name),
     template?.let { Bundle("template.description.settings", it.name) },
-    template?.icon?.plusOverlay(OverlayIcon.SETTINGS) ?: Icons.SETTINGS
+    template?.icon?.plusOverlay(OverlayIcons.SETTINGS) ?: Icons.SETTINGS
 ) {
     /**
      * Opens the IntelliJ settings menu at the right location to adjust the template configurable.

@@ -1,5 +1,6 @@
 package com.fwdekker.randomness
 
+import com.intellij.ui.LayeredIcon
 import com.intellij.util.xmlb.annotations.Transient
 import kotlin.random.Random
 
@@ -19,12 +20,12 @@ abstract class Scheme : State() {
      * The icon signifying the type of data represented by this scheme, ignoring its [decorators], or `null` if this
      * scheme does not represent any kind of data, as is the case for [DecoratorScheme]s.
      */
-    open val typeIcon: TypeIcon? = null
+    open val typeIcon: LayeredIcon? = null
 
     /**
      * The icon signifying this scheme in its entirety, or `null` if it does not have an icon.
      */
-    open val icon: OverlayedIcon? get() = typeIcon?.let { OverlayedIcon(it, decorators.mapNotNull(Scheme::icon)) }
+    open val icon: LayeredIcon? get() = typeIcon?.let { createOverlayedIcon(it, decorators.mapNotNull(Scheme::icon)) }
 
     /**
      * Additional logic that determines how strings are generated.

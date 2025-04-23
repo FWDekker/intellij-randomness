@@ -4,9 +4,9 @@ import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
-import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.string.StringScheme.Companion.LOOK_ALIKE_CHARACTERS
+import com.fwdekker.randomness.typeIcon
 import com.github.curiousoddman.rgxgen.RgxGen
 import com.github.curiousoddman.rgxgen.parsing.dflt.RgxGenParseException
 import com.intellij.ui.JBColor
@@ -109,7 +109,7 @@ data class StringScheme(
          * The base icon for strings.
          */
         val BASE_ICON
-            get() = TypeIcon(Icons.SCHEME, "abc", listOf(JBColor(Color(244, 175, 61, 154), Color(244, 175, 61, 154))))
+            get() = typeIcon(Icons.SCHEME, "abc", listOf(JBColor(Color(244, 175, 61, 154), Color(244, 175, 61, 154))))
 
         /**
          * The default value of the [pattern] field.
