@@ -10,10 +10,11 @@ import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.getSouthColor
 import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.render
+import com.fwdekker.randomness.testhelpers.transparency
 import com.fwdekker.randomness.testhelpers.typeIcon
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import com.intellij.util.ui.ColorIcon
+import com.intellij.util.ui.EmptyIcon
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
@@ -95,13 +96,13 @@ object TemplateInsertActionTest : FunSpec({
 
         context("icon") {
             test("does not add a repeat overlay for a non-repeat variant") {
-                val scheme = DummyScheme().also { it.typeIcon = typeIcon(color = Color(0, true)) }
+                val scheme = DummyScheme().also { it.typeIcon = typeIcon(color = transparency) }
                 val template = Template(schemes = mutableListOf(scheme))
                 val action = TemplateInsertAction(template, repeat = false)
 
                 // Test if icon is fully transparent
                 val icon = action.templatePresentation.icon!!
-                icon should beSameIconAs(ColorIcon(icon.iconWidth, Color(0, true)))
+                icon should beSameIconAs(EmptyIcon.create(icon))
             }
 
             test("adds a repeat overlay for a repeat variant") {
@@ -110,7 +111,7 @@ object TemplateInsertActionTest : FunSpec({
 
                 // Test if icon is not fully transparent
                 val icon = action.templatePresentation.icon!!
-                icon shouldNot beSameIconAs(ColorIcon(icon.iconWidth, Color(0, true)))
+                icon shouldNot beSameIconAs(EmptyIcon.create(icon))
             }
         }
     }

@@ -96,11 +96,11 @@ object TemplateReferenceTest : FunSpec({
             reference.icon.overlays.single() should beSameIconAs(OverlayIcon.REFERENCE)
         }
 
-        test("appends the link overlay to its decorators' overlays") {
+        test("appends the link overlay to its own list of overlays") {
             reference.arrayDecorator.enabled = true
 
             reference.icon.overlays should haveSize(2)
-            reference.icon.overlays[0] should beSameIconAs(reference.arrayDecorator.overlayIcon)
+            reference.icon.overlays[0] should beSameIconAs(OverlayIcon.ARRAY)
             reference.icon.overlays[1] should beSameIconAs(OverlayIcon.REFERENCE)
         }
     }

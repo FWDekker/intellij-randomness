@@ -405,7 +405,7 @@ class SubtractionFilter(private val icon: Icon) : RGBImageFilter() {
  * @see IconLoader.filterIcon
  * @see FilteredIcon
  */
-@Suppress("UnstableApiUsage") // No alternative, see
+@Suppress("UnstableApiUsage") // No alternative, see JavaDoc above
 private fun filterIcon(base: Icon, filter: RGBImageFilter): FilteredIcon =
     FilteredIcon(
         base,

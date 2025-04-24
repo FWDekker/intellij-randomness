@@ -8,6 +8,11 @@ import javax.swing.Icon
 
 
 /**
+ * A very simple [ColorIcon].
+ */
+fun colorIcon(): ColorIcon = ColorIcon(32, Color.BLACK)
+
+/**
  * A very simple [TypeIcon] with only one color.
  */
 fun typeIcon(
@@ -15,6 +20,11 @@ fun typeIcon(
     color: Color = Color.BLACK,
     text: String = "",
 ): TypeIcon = TypeIcon(ColorIcon(size, color), text, listOf(color))
+
+/**
+ * Returns an invisible color.
+ */
+val transparency = Color(0, true)
 
 
 /**

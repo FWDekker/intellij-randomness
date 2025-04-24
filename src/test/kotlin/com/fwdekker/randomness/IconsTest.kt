@@ -6,6 +6,7 @@ import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beSameIconAs
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.colorIcon
 import com.fwdekker.randomness.testhelpers.getEastColor
 import com.fwdekker.randomness.testhelpers.getWestColor
 import com.fwdekker.randomness.testhelpers.render
@@ -13,6 +14,7 @@ import com.fwdekker.randomness.testhelpers.typeIcon
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.util.ui.ColorIcon
+import com.intellij.util.ui.EmptyIcon
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.ExperimentalKotest
 import io.kotest.core.spec.style.FunSpec
@@ -42,7 +44,7 @@ object TypeIconTest : FunSpec({
         }
 
         test("fails if no colors are given") {
-            shouldThrow<IllegalArgumentException> { TypeIcon(ColorIcon(32, Color.BLACK), "text", emptyList()) }
+            shouldThrow<IllegalArgumentException> { TypeIcon(colorIcon(), "text", emptyList()) }
                 .message shouldBe "At least one color must be defined."
         }
     }
@@ -71,7 +73,7 @@ object TypeIconTest : FunSpec({
 
 
         test("returns a non-empty icon") {
-            val icon = TypeIcon(ColorIcon(32, Color.BLACK), "text", listOf(Color.GRAY)).get()
+            val icon = TypeIcon(colorIcon(), "text", listOf(Color.GRAY)).get()
 
             val image = icon.render()
 
@@ -79,7 +81,7 @@ object TypeIconTest : FunSpec({
         }
 
         test("returns an icon that paints the specified colors") {
-            val icon = TypeIcon(ColorIcon(32, Color.BLACK), "", listOf(Color.RED, Color.BLUE)).get()
+            val icon = TypeIcon(colorIcon(), "", listOf(Color.RED, Color.BLUE)).get()
 
             val image = icon.render()
 
@@ -95,7 +97,7 @@ object TypeIconTest : FunSpec({
         }
 
         test("returns a template icon for a single icon") {
-            val icons = listOf(TypeIcon(ColorIcon(32, Color.BLACK), "text", listOf(Color.LIGHT_GRAY)))
+            val icons = listOf(TypeIcon(colorIcon(), "text", listOf(Color.LIGHT_GRAY)))
 
             TypeIcon.combine(icons)!!.base shouldBe Icons.TEMPLATE
         }
@@ -103,9 +105,9 @@ object TypeIconTest : FunSpec({
         test("returns a template icon for multiple icons") {
             val icons =
                 listOf(
-                    TypeIcon(ColorIcon(32, Color.BLACK), "text1", listOf(Color.GREEN)),
-                    TypeIcon(ColorIcon(32, Color.BLACK), "text2", listOf(Color.RED)),
-                    TypeIcon(ColorIcon(32, Color.BLACK), "text3", listOf(Color.MAGENTA)),
+                    TypeIcon(colorIcon(), "text1", listOf(Color.GREEN)),
+                    TypeIcon(colorIcon(), "text2", listOf(Color.RED)),
+                    TypeIcon(colorIcon(), "text3", listOf(Color.MAGENTA)),
                 )
 
             TypeIcon.combine(icons)!!.base shouldBe Icons.TEMPLATE
@@ -114,9 +116,9 @@ object TypeIconTest : FunSpec({
         test("retains the text if it is the same for all icons") {
             val icons =
                 listOf(
-                    TypeIcon(ColorIcon(32, Color.BLACK), "text", listOf(Color.PINK)),
-                    TypeIcon(ColorIcon(32, Color.BLACK), "text", listOf(Color.CYAN)),
-                    TypeIcon(ColorIcon(32, Color.BLACK), "text", listOf(Color.GREEN)),
+                    TypeIcon(colorIcon(), "text", listOf(Color.PINK)),
+                    TypeIcon(colorIcon(), "text", listOf(Color.CYAN)),
+                    TypeIcon(colorIcon(), "text", listOf(Color.GREEN)),
                 )
 
             TypeIcon.combine(icons)!!.text shouldBe "text"
@@ -125,9 +127,9 @@ object TypeIconTest : FunSpec({
         test("removes the text if it is not the same for all icons") {
             val icons =
                 listOf(
-                    TypeIcon(ColorIcon(32, Color.BLACK), "text1", listOf(Color.GRAY)),
-                    TypeIcon(ColorIcon(32, Color.BLACK), "text2", listOf(Color.ORANGE)),
-                    TypeIcon(ColorIcon(32, Color.BLACK), "text2", listOf(Color.BLUE)),
+                    TypeIcon(colorIcon(), "text1", listOf(Color.GRAY)),
+                    TypeIcon(colorIcon(), "text2", listOf(Color.ORANGE)),
+                    TypeIcon(colorIcon(), "text2", listOf(Color.BLUE)),
                 )
 
             TypeIcon.combine(icons)!!.text shouldBe ""
@@ -136,9 +138,9 @@ object TypeIconTest : FunSpec({
         test("appends the colors of the combined icons") {
             val icons =
                 listOf(
-                    TypeIcon(ColorIcon(32, Color.BLACK), "text1", listOf(Color.BLUE, Color.WHITE)),
-                    TypeIcon(ColorIcon(32, Color.BLACK), "text2", listOf(Color.RED)),
-                    TypeIcon(ColorIcon(32, Color.BLACK), "text3", listOf(Color.PINK, Color.BLACK, Color.BLUE)),
+                    TypeIcon(colorIcon(), "text1", listOf(Color.BLUE, Color.WHITE)),
+                    TypeIcon(colorIcon(), "text2", listOf(Color.RED)),
+                    TypeIcon(colorIcon(), "text3", listOf(Color.PINK, Color.BLACK, Color.BLUE)),
                 )
 
             TypeIcon.combine(icons)!!.colors shouldContainExactly
@@ -343,7 +345,7 @@ object SubtractionFilterTest : FunSpec({
         }
 
         test("returns the original color if the requested coordinate is beyond the mask's dimensions") {
-            val filter = SubtractionFilter(ColorIcon(32, Color.BLACK))
+            val filter = SubtractionFilter(colorIcon())
 
             filter.filterRGB(356, 874, 634) shouldBe 634
             filter.filterRGB(515, 482, 566) shouldBe 566
@@ -351,7 +353,7 @@ object SubtractionFilterTest : FunSpec({
         }
 
         test("returns the original color if the coordinates refer to an empty pixel in the mask") {
-            val filter = SubtractionFilter(ColorIcon(32, Color(0, true)))
+            val filter = SubtractionFilter(EmptyIcon.create(32))
 
             filter.filterRGB(5, 14, 20_179) shouldBe 20_179
             filter.filterRGB(28, 4, 45_490) shouldBe 45_490
@@ -359,7 +361,7 @@ object SubtractionFilterTest : FunSpec({
         }
 
         test("returns an empty pixel if the coordinates refer to a non-empty pixel in the mask") {
-            val filter = SubtractionFilter(ColorIcon(32, Color.BLACK))
+            val filter = SubtractionFilter(colorIcon())
 
             filter.filterRGB(21, 3, 58_419) shouldBe 0
             filter.filterRGB(22, 31, 50_969) shouldBe 0

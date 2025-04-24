@@ -42,7 +42,6 @@ fun matchBundle(key: String, vararg args: String): Matcher<String?> =
         )
     }
 
-
 /**
  * Matches [State.doValidate] against the [Bundle] entry at [key], based on [matchBundle] (without `args`).
  *
