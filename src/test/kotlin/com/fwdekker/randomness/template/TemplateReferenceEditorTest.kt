@@ -2,11 +2,11 @@ package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.Settings
-import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.testhelpers.DummyScheme
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
 import com.fwdekker.randomness.testhelpers.itemProp
@@ -104,7 +104,7 @@ object TemplateReferenceEditorTest : FunSpec({
     }
 
     include(
-        editorFieldsTestFactory(
+        editorFieldsTests(
             { editor },
             mapOf(
                 "template" to {

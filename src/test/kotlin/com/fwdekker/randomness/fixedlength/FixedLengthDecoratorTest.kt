@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.fixedlength
 
-import com.fwdekker.randomness.schemeSerializationTestFactory
-import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.Tags
+import com.fwdekker.randomness.testhelpers.schemeSerializationTestFactory
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
+import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData

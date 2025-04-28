@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.textProp
@@ -56,7 +56,7 @@ object TemplateEditorTest : FunSpec({
     }
 
     include(
-        editorFieldsTestFactory(
+        editorFieldsTests(
             { editor },
             mapOf("name" to { row(frame.textBox("templateName").textProp(), editor.scheme::name.prop(), "New Name") })
         )

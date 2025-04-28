@@ -1,14 +1,15 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.CapitalizationMode
-import com.fwdekker.randomness.editorApplyTestFactory
-import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.editorApplyTests
+import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.find
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
 import com.fwdekker.randomness.testhelpers.itemProp
 import com.fwdekker.randomness.testhelpers.matcher
 import com.fwdekker.randomness.testhelpers.prop
@@ -17,13 +18,10 @@ import com.fwdekker.randomness.testhelpers.valueProp
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.impl.EditorComponentImpl
 import com.intellij.openapi.util.Disposer
-import com.intellij.testFramework.fixtures.IdeaTestFixture
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 
@@ -32,10 +30,9 @@ import org.assertj.swing.fixture.FrameFixture
  * Unit tests for [WordSchemeEditor].
  */
 object WordSchemeEditorTest : FunSpec({
-    tags(Tags.EDITOR, Tags.IDEA_FIXTURE, Tags.SWING)
+    tags(Tags.EDITOR)
 
 
-    lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
     lateinit var scheme: WordScheme
@@ -43,18 +40,9 @@ object WordSchemeEditorTest : FunSpec({
     lateinit var wordsEditor: EditorComponentImpl
 
 
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    installEdtViolationDetection()
 
     beforeNonContainer {
-        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-        ideaFixture.setUp()
-
         scheme = WordScheme()
         editor = guiGet { WordSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
@@ -65,7 +53,6 @@ object WordSchemeEditorTest : FunSpec({
     afterNonContainer {
         frame.cleanUp()
         guiRun { Disposer.dispose(editor) }
-        ideaFixture.tearDown()
     }
 
 
@@ -156,10 +143,10 @@ object WordSchemeEditorTest : FunSpec({
     }
 
 
-    include(editorApplyTestFactory { editor })
+    include(editorApplyTests { editor })
 
     include(
-        editorFieldsTestFactory(
+        editorFieldsTests(
             { editor },
             mapOf(
                 "words" to {

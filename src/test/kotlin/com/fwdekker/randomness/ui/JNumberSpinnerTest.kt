@@ -1,14 +1,13 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import javax.swing.JSpinner
 
 
@@ -16,16 +15,7 @@ import javax.swing.JSpinner
  * Unit tests for [JNumberSpinner].
  */
 object JNumberSpinnerTest : FunSpec({
-    tags(Tags.SWING)
-
-
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    installEdtViolationDetection()
 
 
     context("constructor failures") {
@@ -63,16 +53,7 @@ object JNumberSpinnerTest : FunSpec({
  * Unit tests for [bindSpinners].
  */
 object BindSpinnersTest : FunSpec({
-    tags(Tags.SWING)
-
-
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    installEdtViolationDetection()
 
 
     context("binding") {
@@ -112,16 +93,7 @@ object BindSpinnersTest : FunSpec({
  * Unit tests for [JDoubleSpinner].
  */
 object JDoubleSpinnerTest : FunSpec({
-    tags(Tags.SWING)
-
-
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    installEdtViolationDetection()
 
 
     context("input handling") {
@@ -169,16 +141,7 @@ object JDoubleSpinnerTest : FunSpec({
  * Unit tests for [JLongSpinner].
  */
 object JLongSpinnerTest : FunSpec({
-    tags(Tags.SWING)
-
-
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    installEdtViolationDetection()
 
 
     context("input handling") {
@@ -226,16 +189,7 @@ object JLongSpinnerTest : FunSpec({
  * Unit tests for [JIntSpinner].
  */
 object JIntSpinnerTest : FunSpec({
-    tags(Tags.SWING)
-
-
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    installEdtViolationDetection()
 
 
     context("input handling") {

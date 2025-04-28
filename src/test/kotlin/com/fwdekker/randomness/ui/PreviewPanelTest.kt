@@ -2,21 +2,19 @@ package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.testhelpers.DummyScheme
-import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.find
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
 import com.fwdekker.randomness.testhelpers.matcher
+import com.fwdekker.randomness.testhelpers.setUpBareIdeaFixture
 import com.intellij.openapi.util.Disposer
-import com.intellij.testFramework.fixtures.IdeaTestFixture
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.InplaceButton
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
 
@@ -25,10 +23,6 @@ import org.assertj.swing.fixture.FrameFixture
  * Unit tests for [PreviewPanel].
  */
 object PreviewPanelTest : FunSpec({
-    tags(Tags.IDEA_FIXTURE, Tags.SWING)
-
-
-    lateinit var ideaFixture: IdeaTestFixture
     lateinit var panel: PreviewPanel
     lateinit var frame: FrameFixture
 
@@ -36,18 +30,10 @@ object PreviewPanelTest : FunSpec({
     val placeholder = Bundle("preview.placeholder")
 
 
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    installEdtViolationDetection()
+    setUpBareIdeaFixture()
 
     beforeNonContainer {
-        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-        ideaFixture.setUp()
-
         panel = guiGet { PreviewPanel { DummyScheme().also { scheme = it } } }
         frame = Containers.showInFrame(panel.rootComponent)
 
@@ -57,7 +43,6 @@ object PreviewPanelTest : FunSpec({
     afterNonContainer {
         frame.cleanUp()
         guiRun { Disposer.dispose(panel) }
-        ideaFixture.tearDown()
     }
 
 

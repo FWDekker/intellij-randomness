@@ -1,9 +1,11 @@
-package com.fwdekker.randomness
+package com.fwdekker.randomness.testhelpers
 
+import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.State
+import com.fwdekker.randomness.getProperty
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.string.StringScheme
-import com.fwdekker.randomness.testhelpers.DummyDecoratorScheme
-import com.fwdekker.randomness.testhelpers.DummyScheme
 import com.intellij.util.xmlb.XmlSerializer.serialize
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Transient
@@ -228,7 +230,7 @@ object StateReflectionTest : FunSpec({
 
 
 /**
- * A [State] that cannot [deepCopy]. Purely for tests.
+ * A [com.fwdekker.randomness.State] that cannot [deepCopy]. Purely for tests.
  */
 internal open class SimpleState : State() {
     override fun deepCopy(retainUuid: Boolean): State = error("Not implemented.")

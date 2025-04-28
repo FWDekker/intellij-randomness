@@ -1,10 +1,10 @@
 package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.testhelpers.DummySchemeEditor
-import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.panel
 import io.kotest.core.spec.style.FunSpec
@@ -12,7 +12,6 @@ import io.kotest.data.Row2
 import io.kotest.data.row
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import javax.swing.JCheckBox
 import javax.swing.JRadioButton
 import javax.swing.JSpinner
@@ -30,20 +29,11 @@ import javax.swing.tree.MutableTreeNode
  * Unit tests for extension functions in `ListenerHelpersKt`.
  */
 object ListenerHelpersTest : FunSpec({
-    tags(Tags.SWING)
-
-
     var listenerInvoked = false
     val listener = { listenerInvoked = true }
 
 
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    installEdtViolationDetection()
 
     beforeNonContainer {
         listenerInvoked = false

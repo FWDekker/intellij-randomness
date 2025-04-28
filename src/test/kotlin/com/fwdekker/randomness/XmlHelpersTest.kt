@@ -22,7 +22,7 @@ import org.jdom.Element
 
 
 /**
- * Unit tests for extension functions in `XmlHelpersTest`.
+ * Unit tests for extension functions in `XmlHelpersKt`.
  */
 object XmlHelpersTest : FunSpec({
     context("addProperty") {

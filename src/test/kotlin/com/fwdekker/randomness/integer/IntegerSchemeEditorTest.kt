@@ -1,23 +1,21 @@
 package com.fwdekker.randomness.integer
 
-import com.fwdekker.randomness.editorApplyTestFactory
-import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.editorApplyTests
+import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
 import com.fwdekker.randomness.testhelpers.isSelectedProp
 import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.requireEnabledIs
 import com.fwdekker.randomness.testhelpers.textProp
 import com.fwdekker.randomness.testhelpers.valueProp
-import com.intellij.testFramework.fixtures.IdeaTestFixture
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 
@@ -26,28 +24,18 @@ import org.assertj.swing.fixture.FrameFixture
  * Unit tests for [IntegerSchemeEditor].
  */
 object IntegerSchemeEditorTest : FunSpec({
-    tags(Tags.EDITOR, Tags.IDEA_FIXTURE, Tags.SWING)
+    tags(Tags.EDITOR)
 
 
-    lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
     lateinit var scheme: IntegerScheme
     lateinit var editor: IntegerSchemeEditor
 
 
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    installEdtViolationDetection()
 
     beforeNonContainer {
-        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-        ideaFixture.setUp()
-
         scheme = IntegerScheme()
         editor = guiGet { IntegerSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
@@ -55,7 +43,6 @@ object IntegerSchemeEditorTest : FunSpec({
 
     afterNonContainer {
         frame.cleanUp()
-        ideaFixture.tearDown()
     }
 
 
@@ -134,10 +121,10 @@ object IntegerSchemeEditorTest : FunSpec({
     }
 
 
-    include(editorApplyTestFactory { editor })
+    include(editorApplyTests { editor })
 
     include(
-        editorFieldsTestFactory(
+        editorFieldsTests(
             { editor },
             mapOf(
                 "minValue" to {

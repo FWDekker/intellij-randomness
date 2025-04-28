@@ -37,7 +37,7 @@ import org.assertj.swing.fixture.FrameFixture
 /**
  * Unit tests for [TemplateJTree].
  */
-@Suppress("detekt:LargeClass") // Would be weird to split up given that CUT is not split up either
+@Suppress("detekt:LargeClass") // Would be weird to split up given that the CUT is not split up either
 object TemplateJTreeTest : FunSpec({
     tags(Tags.IDEA_FIXTURE, Tags.SWING)
 

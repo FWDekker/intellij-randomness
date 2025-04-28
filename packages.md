@@ -34,6 +34,10 @@ Scheme for random and non-random strings.
 
 Scheme consisting of other schemes.
 
+# Package com.fwdekker.randomness.testhelpers
+
+Classes used only in testing, and tests of those classes. This package is not exposed to non-testing code.
+
 # Package com.fwdekker.randomness.ui
 
 Custom or specialized UI components.

@@ -85,7 +85,7 @@ object CapitalizationModeTest : FunSpec({
 /**
  * Unit tests for capitalization-related helper functions in `CapitalizationModeKt`.
  */
-object CapitalizationHelperTest : FunSpec({
+object CapitalizationModeKtTest : FunSpec({
     context("lowerCaseFirst") {
         withData(
             mapOf(

@@ -1,6 +1,8 @@
-package com.fwdekker.randomness
+package com.fwdekker.randomness.testhelpers
 
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.State
+import com.fwdekker.randomness.lowerCaseFirst
 import com.intellij.util.xmlb.XmlSerializer.deserialize
 import com.intellij.util.xmlb.XmlSerializer.serialize
 import io.kotest.core.spec.style.funSpec
@@ -10,7 +12,7 @@ import io.kotest.matchers.shouldNotBe
 
 
 /**
- * Tests the [State.deepCopy] method of the scheme created by [createState].
+ * Tests the [com.fwdekker.randomness.State.deepCopy] method of the scheme created by [createState].
  */
 fun <S : State> stateDeepCopyTestFactory(createState: () -> S) =
     funSpec {
@@ -46,7 +48,8 @@ fun <S : State> stateDeepCopyTestFactory(createState: () -> S) =
     }
 
 /**
- * Tests that [PersistentSettings] serializes and deserializes [S] correctly without losing user configuration.
+ * Tests that [com.fwdekker.randomness.PersistentSettings] serializes and deserializes [S] correctly without losing user
+ * configuration.
  */
 fun <S : Scheme> schemeSerializationTestFactory(createScheme: () -> S) =
     funSpec {
