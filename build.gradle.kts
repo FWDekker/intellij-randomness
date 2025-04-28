@@ -65,8 +65,6 @@ dependencies {
     scrambler("org.jetbrains.kotlin:kotlin-reflect")
 
     testImplementation("org.assertj", "assertj-swing-junit", properties("assertjSwingVersion"))
-    testRuntimeOnly("org.junit.platform", "junit-platform-runner", properties("junitRunnerVersion"))
-    testImplementation("org.junit.vintage", "junit-vintage-engine", properties("junitVersion"))
     testImplementation("io.kotest", "kotest-assertions-core", properties("kotestVersion"))
     testImplementation("io.kotest", "kotest-framework-datatest", properties("kotestVersion"))
     testImplementation("io.kotest", "kotest-runner-junit5", properties("kotestVersion"))
@@ -167,12 +165,7 @@ tasks {
         systemProperty("kotest.framework.classpath.scanning.autoscan.disable", "true")
         if (project.hasProperty("kotest.tags")) systemProperty("kotest.tags", project.findProperty("kotest.tags")!!)
 
-        useJUnitPlatform {
-            if (!project.hasProperty("kotest.tags"))
-                includeEngines("junit-vintage")
-
-            includeEngines("kotest")
-        }
+        useJUnitPlatform()
 
         testLogging {
             events = setOf(TestLogEvent.FAILED)
