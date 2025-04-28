@@ -3,6 +3,7 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.TRANSPARENCY
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beSameIconAs
@@ -10,7 +11,6 @@ import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.getSouthColor
 import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.render
-import com.fwdekker.randomness.testhelpers.transparency
 import com.fwdekker.randomness.testhelpers.typeIcon
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -96,7 +96,7 @@ object TemplateInsertActionTest : FunSpec({
 
         context("icon") {
             test("does not add a repeat overlay for a non-repeat variant") {
-                val scheme = DummyScheme().also { it.typeIcon = typeIcon(color = transparency) }
+                val scheme = DummyScheme().also { it.typeIcon = typeIcon(color = TRANSPARENCY) }
                 val template = Template(schemes = mutableListOf(scheme))
                 val action = TemplateInsertAction(template, repeat = false)
 
