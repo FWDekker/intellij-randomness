@@ -164,6 +164,7 @@ tasks {
     // Tests/coverage
     test {
         systemProperty("java.awt.headless", "false")
+        systemProperty("kotest.framework.classpath.scanning.autoscan.disable", "true")
         if (project.hasProperty("kotest.tags")) systemProperty("kotest.tags", project.findProperty("kotest.tags")!!)
 
         useJUnitPlatform {

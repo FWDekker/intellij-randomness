@@ -29,7 +29,7 @@ import javax.swing.JPanel
  * @see TemplateSettingsAction
  */
 class TemplateGroupAction(private val template: Template) :
-    ActionGroup(template.name, Bundle("template.description.default", template.name), template.icon) {
+    ActionGroup(template.name, Bundle("template.description.default", template.name), template.icon?.get()) {
     /**
      * Returns the action that is appropriate for the given keyboard modifiers.
      *
@@ -109,7 +109,10 @@ class TemplateInsertAction(
         array -> Bundle("template.description.array", template.name)
         else -> Bundle("template.description.default", template.name)
     },
-    icon = template.icon?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
+    icon = template.icon
+        ?.let { if (array) it.plusOverlay(OverlayIcon.ARRAY) else it }
+        ?.let { if (repeat) it.plusOverlay(OverlayIcon.REPEAT) else it }
+        ?.get()
 ) {
     override val configurable
         get() =
@@ -203,7 +206,7 @@ class TemplateSettingsAction(private val template: Template? = null) : AnAction(
     if (template == null) Bundle("template.name.settings")
     else Bundle("template.name.settings_suffix", template.name),
     template?.let { Bundle("template.description.settings", it.name) },
-    template?.icon?.plusOverlay(OverlayIcon.SETTINGS) ?: Icons.SETTINGS
+    template?.icon?.plusOverlay(OverlayIcon.SETTINGS)?.get() ?: Icons.SETTINGS
 ) {
     /**
      * Opens the IntelliJ settings menu at the right location to adjust the template configurable.

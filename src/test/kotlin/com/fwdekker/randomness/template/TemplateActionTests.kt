@@ -1,25 +1,28 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Icons
-import com.fwdekker.randomness.OverlayIcon
-import com.fwdekker.randomness.OverlayedIcon
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.testhelpers.DummyScheme
+import com.fwdekker.randomness.testhelpers.TRANSPARENCY
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
+import com.fwdekker.randomness.testhelpers.beSameIconAs
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.getSouthColor
 import com.fwdekker.randomness.testhelpers.matchBundle
+import com.fwdekker.randomness.testhelpers.render
+import com.fwdekker.randomness.testhelpers.typeIcon
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import com.intellij.util.ui.EmptyIcon
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
-import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactly
-import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNot
 import java.awt.Color
 
 
@@ -52,7 +55,7 @@ object TemplateGroupActionTest : FunSpec({
 
             action.templatePresentation.text shouldBe template.name
             action.templatePresentation.description shouldBe "Inserts a(n) Name at all carets."
-            action.templatePresentation.icon shouldBe template.icon
+            action.templatePresentation.icon should beSameIconAs(template.icon?.get())
         }
     }
 })
@@ -93,17 +96,22 @@ object TemplateInsertActionTest : FunSpec({
 
         context("icon") {
             test("does not add a repeat overlay for a non-repeat variant") {
-                val template = Template()
+                val scheme = DummyScheme().also { it.typeIcon = typeIcon(color = TRANSPARENCY) }
+                val template = Template(schemes = mutableListOf(scheme))
                 val action = TemplateInsertAction(template, repeat = false)
 
-                (action.templatePresentation.icon as OverlayedIcon).overlays shouldNotContain OverlayIcon.REPEAT
+                // Test if icon is fully transparent
+                val icon = action.templatePresentation.icon!!
+                icon should beSameIconAs(EmptyIcon.create(icon))
             }
 
             test("adds a repeat overlay for a repeat variant") {
                 val template = Template()
                 val action = TemplateInsertAction(template, repeat = true)
 
-                (action.templatePresentation.icon as OverlayedIcon).overlays shouldContain OverlayIcon.REPEAT
+                // Test if icon is not fully transparent
+                val icon = action.templatePresentation.icon!!
+                icon shouldNot beSameIconAs(EmptyIcon.create(icon))
             }
         }
     }
@@ -189,7 +197,8 @@ object TemplateSettingsActionTest : FunSpec({
                 val template = Template("subject", mutableListOf(DummyScheme().also { it.typeIcon = icon }))
                 val action = TemplateSettingsAction(template)
 
-                (action.templatePresentation.icon as OverlayedIcon).base shouldBe template.typeIcon
+                val image = action.templatePresentation.icon!!.render()
+                image.getSouthColor(offset = 1) shouldBe Color.GREEN
             }
         }
     }

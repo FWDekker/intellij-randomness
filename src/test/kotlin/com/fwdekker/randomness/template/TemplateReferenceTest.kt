@@ -8,6 +8,7 @@ import com.fwdekker.randomness.setAll
 import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.DummyScheme
 import com.fwdekker.randomness.testhelpers.Tags
+import com.fwdekker.randomness.testhelpers.beSameIconAs
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
@@ -15,7 +16,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
-import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.haveSize
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -79,26 +80,28 @@ object TemplateReferenceTest : FunSpec({
         test("uses the default icon with a link overlay if the template is null") {
             reference.template = null
 
-            reference.icon.base shouldBe TemplateReference.DEFAULT_ICON
-            reference.icon.overlays shouldContainExactly listOf(OverlayIcon.REFERENCE)
+            reference.icon.base should beSameIconAs(TemplateReference.DEFAULT_ICON)
+            reference.icon.overlays.single() should beSameIconAs(OverlayIcon.REFERENCE)
         }
 
         test("uses the default icon with a link overlay if the template is not in the context's template list") {
             reference.template = Template("new")
 
-            reference.icon.base shouldBe TemplateReference.DEFAULT_ICON
-            reference.icon.overlays shouldContainExactly listOf(OverlayIcon.REFERENCE)
+            reference.icon.base should beSameIconAs(TemplateReference.DEFAULT_ICON)
+            reference.icon.overlays.single() should beSameIconAs(OverlayIcon.REFERENCE)
         }
 
         test("uses the referenced template's icon with a link overlay") {
-            reference.icon.base shouldBe referencedTemplate.typeIcon
-            reference.icon.overlays shouldContainExactly listOf(OverlayIcon.REFERENCE)
+            reference.icon.base should beSameIconAs(referencedTemplate.typeIcon)
+            reference.icon.overlays.single() should beSameIconAs(OverlayIcon.REFERENCE)
         }
 
-        test("appends the link overlay to its decorators' overlays") {
+        test("appends the link overlay to its own list of overlays") {
             reference.arrayDecorator.enabled = true
 
-            reference.icon.overlays shouldContainExactly listOf(reference.arrayDecorator.icon, OverlayIcon.REFERENCE)
+            reference.icon.overlays should haveSize(2)
+            reference.icon.overlays[0] should beSameIconAs(OverlayIcon.ARRAY)
+            reference.icon.overlays[1] should beSameIconAs(OverlayIcon.REFERENCE)
         }
     }
 
