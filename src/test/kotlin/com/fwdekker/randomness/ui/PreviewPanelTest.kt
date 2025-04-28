@@ -7,9 +7,9 @@ import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.find
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
-import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
 import com.fwdekker.randomness.testhelpers.matcher
-import com.fwdekker.randomness.testhelpers.setUpBareIdeaFixture
+import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.InplaceButton
 import io.kotest.core.spec.style.FunSpec
@@ -30,8 +30,8 @@ object PreviewPanelTest : FunSpec({
     val placeholder = Bundle("preview.placeholder")
 
 
-    installEdtViolationDetection()
-    setUpBareIdeaFixture()
+    useEdtViolationDetection()
+    useBareIdeaFixture()
 
     beforeNonContainer {
         panel = guiGet { PreviewPanel { DummyScheme().also { scheme = it } } }

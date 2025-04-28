@@ -1,22 +1,20 @@
 package com.fwdekker.randomness.template
 
 import com.fwdekker.randomness.Settings
-import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
 import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.shouldContainExactly
+import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.intellij.openapi.options.ConfigurationException
-import com.intellij.testFramework.fixtures.IdeaTestFixture
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
 
@@ -25,29 +23,23 @@ import org.assertj.swing.fixture.FrameFixture
  * Unit tests for [TemplateListConfigurable].
  */
 object TemplateListConfigurableTest : FunSpec({
-    tags(Tags.IDEA_FIXTURE)
-
-
-    lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
     lateinit var configurable: TemplateListConfigurable
 
 
+    useEdtViolationDetection()
+    useBareIdeaFixture()
+
     beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
         TemplateListEditor.useTestSplitter = true
     }
 
     afterSpec {
         TemplateListEditor.useTestSplitter = false
-        FailOnThreadViolationRepaintManager.uninstall()
     }
 
     beforeNonContainer {
-        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-        ideaFixture.setUp()
-
         configurable = TemplateListConfigurable()
         frame = Containers.showInFrame(guiGet { configurable.createComponent() })
     }
@@ -55,7 +47,6 @@ object TemplateListConfigurableTest : FunSpec({
     afterNonContainer {
         frame.cleanUp()
         guiRun { configurable.disposeUIResources() }
-        ideaFixture.tearDown()
     }
 
 

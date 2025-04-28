@@ -7,10 +7,10 @@ import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.textProp
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
 
@@ -19,7 +19,7 @@ import org.assertj.swing.fixture.FrameFixture
  * Unit tests for [TemplateEditor].
  */
 object TemplateEditorTest : FunSpec({
-    tags(Tags.EDITOR, Tags.IDEA_FIXTURE, Tags.SWING)
+    tags(Tags.EDITOR)
 
 
     lateinit var frame: FrameFixture
@@ -28,13 +28,7 @@ object TemplateEditorTest : FunSpec({
     lateinit var editor: TemplateEditor
 
 
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    useEdtViolationDetection()
 
     beforeNonContainer {
         template = Template()

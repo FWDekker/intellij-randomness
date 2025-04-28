@@ -8,8 +8,8 @@ import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
-import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
-import com.fwdekker.randomness.testhelpers.setUpBareIdeaFixture
+import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.fwdekker.randomness.ui.withName
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
@@ -38,15 +38,15 @@ object SchemeEditorTest : FunSpec({
     lateinit var editor: DummySchemeEditor
 
 
-    installEdtViolationDetection()
-    setUpBareIdeaFixture()
+    useEdtViolationDetection()
+    useBareIdeaFixture()
 
     afterNonContainer {
         frame.cleanUp()
     }
 
 
-    fun registerTestEditor(createEditor: () -> DummySchemeEditor) {
+    suspend fun registerTestEditor(createEditor: () -> DummySchemeEditor) {
         editor = guiGet(createEditor)
         frame = Containers.showInFrame(editor.rootComponent)
     }

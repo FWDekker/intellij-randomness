@@ -7,11 +7,11 @@ import com.fwdekker.randomness.testhelpers.editorApplyTests
 import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
-import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
 import com.fwdekker.randomness.testhelpers.isSelectedProp
 import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.requireEnabledIs
 import com.fwdekker.randomness.testhelpers.textProp
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.fwdekker.randomness.testhelpers.valueProp
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
@@ -33,7 +33,7 @@ object IntegerSchemeEditorTest : FunSpec({
     lateinit var editor: IntegerSchemeEditor
 
 
-    installEdtViolationDetection()
+    useEdtViolationDetection()
 
     beforeNonContainer {
         scheme = IntegerScheme()

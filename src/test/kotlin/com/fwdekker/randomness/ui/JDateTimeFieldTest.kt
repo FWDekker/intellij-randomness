@@ -3,8 +3,8 @@ package com.fwdekker.randomness.ui
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
-import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
 import com.fwdekker.randomness.testhelpers.matchBundle
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.github.sisyphsu.dateparser.DateParserUtils
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -22,7 +22,7 @@ object JDateTimeFieldTest : FunSpec({
     lateinit var field: JDateTimeField
 
 
-    installEdtViolationDetection()
+    useEdtViolationDetection()
 
     beforeNonContainer {
         field = guiGet { JDateTimeField(LocalDateTime.MIN) }

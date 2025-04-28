@@ -7,10 +7,10 @@ import com.fwdekker.randomness.testhelpers.editorApplyTests
 import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
-import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
 import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.requireEnabledIs
 import com.fwdekker.randomness.testhelpers.textProp
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.intellij.ui.layout.selected
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.FunSpec
@@ -36,7 +36,7 @@ object AffixDecoratorEditorTest : FunSpec({
     lateinit var editor: AffixDecoratorEditor
 
 
-    installEdtViolationDetection()
+    useEdtViolationDetection()
 
     beforeNonContainer {
         scheme = AffixDecorator(enabled = true)

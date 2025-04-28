@@ -2,7 +2,7 @@ package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
-import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.beNull
@@ -15,7 +15,7 @@ import javax.swing.JSpinner
  * Unit tests for [JNumberSpinner].
  */
 object JNumberSpinnerTest : FunSpec({
-    installEdtViolationDetection()
+    useEdtViolationDetection()
 
 
     context("constructor failures") {
@@ -53,7 +53,7 @@ object JNumberSpinnerTest : FunSpec({
  * Unit tests for [bindSpinners].
  */
 object BindSpinnersTest : FunSpec({
-    installEdtViolationDetection()
+    useEdtViolationDetection()
 
 
     context("binding") {
@@ -93,7 +93,7 @@ object BindSpinnersTest : FunSpec({
  * Unit tests for [JDoubleSpinner].
  */
 object JDoubleSpinnerTest : FunSpec({
-    installEdtViolationDetection()
+    useEdtViolationDetection()
 
 
     context("input handling") {
@@ -141,7 +141,7 @@ object JDoubleSpinnerTest : FunSpec({
  * Unit tests for [JLongSpinner].
  */
 object JLongSpinnerTest : FunSpec({
-    installEdtViolationDetection()
+    useEdtViolationDetection()
 
 
     context("input handling") {
@@ -189,7 +189,7 @@ object JLongSpinnerTest : FunSpec({
  * Unit tests for [JIntSpinner].
  */
 object JIntSpinnerTest : FunSpec({
-    installEdtViolationDetection()
+    useEdtViolationDetection()
 
 
     context("input handling") {

@@ -15,11 +15,11 @@ import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
 import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.shouldContainExactly
+import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.fwdekker.randomness.word.WordScheme
 import com.intellij.openapi.util.Disposer
-import com.intellij.testFramework.fixtures.IdeaTestFixture
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.Row2
@@ -30,7 +30,6 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
 import io.kotest.matchers.shouldNotBe
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.AbstractComponentFixture
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
@@ -40,30 +39,27 @@ import org.assertj.swing.fixture.FrameFixture
  * Unit tests for [TemplateListEditor].
  */
 object TemplateListEditorTest : FunSpec({
-    tags(Tags.EDITOR, Tags.IDEA_FIXTURE, Tags.SWING)
+    tags(Tags.EDITOR)
 
 
-    lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
     lateinit var templateList: TemplateList
     lateinit var editor: TemplateListEditor
 
 
+    useEdtViolationDetection()
+    useBareIdeaFixture()
+
     beforeSpec {
         TemplateListEditor.useTestSplitter = true
-        FailOnThreadViolationRepaintManager.install()
     }
 
     afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
         TemplateListEditor.useTestSplitter = false
     }
 
     beforeNonContainer {
-        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-        ideaFixture.setUp()
-
         templateList =
             TemplateList(
                 mutableListOf(
@@ -80,7 +76,6 @@ object TemplateListEditorTest : FunSpec({
     afterNonContainer {
         frame.cleanUp()
         guiRun { Disposer.dispose(editor) }
-        ideaFixture.tearDown()
     }
 
 

@@ -108,8 +108,7 @@ class TemplateJTree(
         get() {
             val node = selectedNodeNotRoot ?: return null
 
-            return if (node.state is Template) node.state
-            else myModel.getParentOf(node)!!.state as Template
+            return node.state as? Template ?: myModel.getParentOf(node)!!.state as Template
         }
         set(value) {
             selectedScheme = value

@@ -6,11 +6,11 @@ import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.editorApplyTests
 import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.guiGet
-import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
 import com.fwdekker.randomness.testhelpers.isSelectedProp
 import com.fwdekker.randomness.testhelpers.itemProp
 import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.textProp
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.fwdekker.randomness.testhelpers.valueProp
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
@@ -31,7 +31,7 @@ object UuidSchemeEditorTest : FunSpec({
     lateinit var editor: UuidSchemeEditor
 
 
-    installEdtViolationDetection()
+    useEdtViolationDetection()
 
     beforeNonContainer {
         scheme = UuidScheme()

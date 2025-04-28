@@ -5,6 +5,7 @@ import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.edtTest
+import com.fwdekker.randomness.testhelpers.guiRun
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.Presentation
@@ -13,7 +14,6 @@ import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Document
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
-import com.intellij.testFramework.runInEdtAndWait
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
@@ -40,7 +40,7 @@ object InsertActionTest : FunSpec({
         myFixture.testDataPath = javaClass.classLoader.getResource("integration-project/")!!.path
         myFixture.setUp()
 
-        runInEdtAndWait {
+        guiRun {
             val file = myFixture.copyFileToProject("emptyFile.txt")
             myFixture.openFileInEditor(file)
 

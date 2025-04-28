@@ -8,8 +8,8 @@ import com.fwdekker.randomness.testhelpers.beSameIconAs
 import com.fwdekker.randomness.testhelpers.getSouthColor
 import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.render
-import com.fwdekker.randomness.testhelpers.setUpBareIdeaFixture
 import com.fwdekker.randomness.testhelpers.typeIcon
+import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
 import com.intellij.util.ui.EmptyIcon
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
@@ -26,7 +26,7 @@ import java.awt.Color
  * Unit tests for [TemplateGroupAction].
  */
 object TemplateGroupActionTest : FunSpec({
-    setUpBareIdeaFixture()
+    useBareIdeaFixture()
 
 
     context("init") {
@@ -47,6 +47,9 @@ object TemplateGroupActionTest : FunSpec({
  * Unit tests for [TemplateInsertAction].
  */
 object TemplateInsertActionTest : FunSpec({
+    useBareIdeaFixture()
+
+
     context("init") {
         context("text and description") {
             withData(
@@ -99,7 +102,6 @@ object TemplateInsertActionTest : FunSpec({
         }
     }
 
-
     context("generateStrings") {
         test("returns the generated strings") {
             val template = Template(schemes = mutableListOf(DummyScheme()))
@@ -123,7 +125,7 @@ object TemplateInsertActionTest : FunSpec({
  * Unit tests for [TemplateSettingsAction].
  */
 object TemplateSettingsActionTest : FunSpec({
-    setUpBareIdeaFixture()
+    useBareIdeaFixture()
 
 
     context("init") {

@@ -4,7 +4,6 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.setAll
 import com.fwdekker.randomness.testhelpers.DummyScheme
-import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.getActionButton
@@ -12,9 +11,10 @@ import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
 import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.shouldContainExactly
+import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.intellij.openapi.actionSystem.ActionToolbar
-import com.intellij.testFramework.fixtures.IdeaTestFixture
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import com.intellij.util.io.await
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.Row3
@@ -29,7 +29,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 import io.kotest.matchers.types.shouldNotBeSameInstanceAs
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 
@@ -39,10 +38,6 @@ import org.assertj.swing.fixture.FrameFixture
  */
 @Suppress("detekt:LargeClass") // Would be weird to split up given that the CUT is not split up either
 object TemplateJTreeTest : FunSpec({
-    tags(Tags.IDEA_FIXTURE, Tags.SWING)
-
-
-    lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
 
     lateinit var originalList: TemplateList
@@ -52,18 +47,10 @@ object TemplateJTreeTest : FunSpec({
     fun List<Scheme>.names() = this.map { it.name }
 
 
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    useEdtViolationDetection()
+    useBareIdeaFixture()
 
     beforeNonContainer {
-        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-        ideaFixture.setUp()
-
         originalList =
             TemplateList(
                 mutableListOf(
@@ -83,7 +70,6 @@ object TemplateJTreeTest : FunSpec({
 
     afterNonContainer {
         frame.cleanUp()
-        ideaFixture.tearDown()
     }
 
 
@@ -701,7 +687,8 @@ object TemplateJTreeTest : FunSpec({
         }
 
 
-        fun updateButtons() = (frame.getActionButton("Add").parent as ActionToolbar).updateActionsImmediately()
+        suspend fun updateButtons() =
+            (frame.getActionButton("Add").parent as ActionToolbar).updateActionsAsync().await()
 
 
         xtest("AddButton") {
@@ -710,9 +697,6 @@ object TemplateJTreeTest : FunSpec({
 
         context("RemoveButton") {
             test("is disabled if nothing is selected") {
-                // I really don't know why, but this sleep is required in the first test in the "buttons" group
-                Thread.sleep(100)
-
                 guiRun {
                     tree.clearSelection()
                     updateButtons()

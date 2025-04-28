@@ -4,7 +4,7 @@ import com.fwdekker.randomness.testhelpers.DummySchemeEditor
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
-import com.fwdekker.randomness.testhelpers.installEdtViolationDetection
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.panel
 import io.kotest.core.spec.style.FunSpec
@@ -33,7 +33,7 @@ object ListenerHelpersTest : FunSpec({
     val listener = { listenerInvoked = true }
 
 
-    installEdtViolationDetection()
+    useEdtViolationDetection()
 
     beforeNonContainer {
         listenerInvoked = false

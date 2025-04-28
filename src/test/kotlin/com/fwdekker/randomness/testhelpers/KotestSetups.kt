@@ -9,7 +9,7 @@ import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 /**
  * Installs the [FailOnThreadViolationRepaintManager] on this scope, and uninstalls it at the end of this scope.
  */
-fun TestConfiguration.installEdtViolationDetection() {
+fun TestConfiguration.useEdtViolationDetection() {
     tags(Tags.SWING)
 
 
@@ -25,7 +25,7 @@ fun TestConfiguration.installEdtViolationDetection() {
 /**
  * Sets up a bare [IdeaTestFixture] for each single test in this scope, and tears it down at the end of each such test.
  */
-fun TestConfiguration.setUpBareIdeaFixture() {
+fun TestConfiguration.useBareIdeaFixture() {
     tags(Tags.IDEA_FIXTURE)
 
 
