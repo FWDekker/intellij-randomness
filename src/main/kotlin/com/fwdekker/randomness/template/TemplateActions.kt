@@ -68,7 +68,7 @@ class TemplateGroupAction(private val template: Template) :
             array = event.inputEvent?.isShiftDown ?: false,
             repeat = event.inputEvent?.isAltDown ?: false,
             settings = event.inputEvent?.isControlDown ?: false
-        ).let { ActionWrapperUtil.actionPerformed(event, it, this) }
+        ).let { ActionWrapperUtil.actionPerformed(event, this, it) }
 
     /**
      * Returns variant actions for the main insertion action.
