@@ -73,7 +73,7 @@ data class DateTimeScheme(
         /**
          * The default value of the [maxDateTime] field.
          */
-        val DEFAULT_MAX_DATE_TIME: Long = Instant.parse("2030-12-31T23:59:59.00Z").toEpochMilli()
+        val DEFAULT_MAX_DATE_TIME: Long = Instant.parse("2050-12-31T23:59:59.999Z").toEpochMilli()
 
         /**
          * The default value of the [pattern] field.

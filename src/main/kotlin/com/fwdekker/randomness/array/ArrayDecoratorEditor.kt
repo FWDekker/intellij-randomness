@@ -18,10 +18,8 @@ import com.fwdekker.randomness.ui.ofConstant
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.fwdekker.randomness.ui.withName
 import com.intellij.ui.dsl.builder.BottomGap
-import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.builder.selected
 import com.intellij.ui.layout.ComponentPredicate
 import com.intellij.ui.layout.and
 import com.intellij.ui.layout.or
@@ -43,7 +41,6 @@ class ArrayDecoratorEditor(
 ) : SchemeEditor<ArrayDecorator>(scheme) {
     override val rootComponent = panel {
         decoratedRowRange(title = if (!embedded) Bundle("array.title") else null, indent = !embedded) {
-            lateinit var enabledCheckBox: Cell<JCheckBox>
             lateinit var isEnabled: ComponentPredicate
 
             row {
@@ -51,8 +48,7 @@ class ArrayDecoratorEditor(
                     .loadMnemonic()
                     .withName("arrayEnabled")
                     .bindSelected(scheme::enabled)
-                    .also { enabledCheckBox = it }
-                    .also { isEnabled = enabledCheckBox.selected.or(ComponentPredicate.ofConstant(embedded)) }
+                    .also { isEnabled = it.component.selected.or(ComponentPredicate.ofConstant(embedded)) }
             }.visible(!embedded)
 
             decoratedRowRange(indent = !embedded) {

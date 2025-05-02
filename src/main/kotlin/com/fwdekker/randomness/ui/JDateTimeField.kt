@@ -91,3 +91,22 @@ fun Long.toLocalDateTime(): LocalDateTime = LocalDateTime.ofInstant(Instant.ofEp
  * Converts this [LocalDateTime] to an epoch millisecond timestamp.
  */
 fun LocalDateTime.toEpochMilli() = toInstant(ZoneOffset.UTC).toEpochMilli()
+
+
+/**
+ * Binds two [JDateTimeField]s together, analogous to how [bindSpinners] works.
+ */
+fun bindDateTimes(minField: JDateTimeField, maxField: JDateTimeField) {
+    addChangeListenerTo(minField) {
+        val minEpoch = minField.longValue
+        val maxEpoch = maxField.longValue
+
+        if (minEpoch > maxEpoch) maxField.value = minField.value
+    }
+    addChangeListenerTo(maxField) {
+        val minEpoch = minField.longValue
+        val maxEpoch = maxField.longValue
+
+        if (maxEpoch < minEpoch) minField.value = maxField.value
+    }
+}
