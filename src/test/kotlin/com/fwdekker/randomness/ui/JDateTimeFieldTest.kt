@@ -1,16 +1,15 @@
 package com.fwdekker.randomness.ui
 
-import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
 import com.fwdekker.randomness.testhelpers.matchBundle
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.github.sisyphsu.dateparser.DateParserUtils
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import java.text.ParseException
 import java.time.LocalDateTime
 import java.time.Month
@@ -20,19 +19,10 @@ import java.time.Month
  * Unit tests for [JDateTimeField].
  */
 object JDateTimeFieldTest : FunSpec({
-    tags(Tags.SWING)
-
-
     lateinit var field: JDateTimeField
 
 
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    useEdtViolationDetection()
 
     beforeNonContainer {
         field = guiGet { JDateTimeField(LocalDateTime.MIN) }

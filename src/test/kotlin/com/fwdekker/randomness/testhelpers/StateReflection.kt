@@ -1,5 +1,9 @@
-package com.fwdekker.randomness
+package com.fwdekker.randomness.testhelpers
 
+import com.fwdekker.randomness.CapitalizationMode
+import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.State
+import com.fwdekker.randomness.getMod
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Transient
@@ -29,8 +33,8 @@ fun Collection<KParameter>?.parameterNames(): Set<String> = (this ?: emptyList()
 
 
 /**
- * Returns all of the [State]'s properties ("fields"), i.e. everything preceded by `val` or `var` in this class or any
- * of its superclasses.
+ * Returns all of the [com.fwdekker.randomness.State]'s properties ("fields"), i.e. everything preceded by `val` or
+ * `var` in this class or any of its superclasses.
  *
  * @param S the type of state containing the returned properties
  */

@@ -6,12 +6,11 @@ import com.fwdekker.randomness.testhelpers.DummyScheme
 import com.fwdekker.randomness.testhelpers.DummySchemeEditor
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.fwdekker.randomness.ui.withName
-import com.intellij.testFramework.fixtures.IdeaTestFixture
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import io.kotest.core.spec.style.FunSpec
@@ -22,7 +21,6 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.beInstanceOf
 import io.kotest.matchers.types.shouldBeSameInstanceAs
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers
 import org.assertj.swing.fixture.FrameFixture
 import java.awt.Component
@@ -33,34 +31,22 @@ import javax.swing.JCheckBox
  * Unit tests for [SchemeEditor].
  */
 object SchemeEditorTest : FunSpec({
-    tags(Tags.EDITOR, Tags.IDEA_FIXTURE, Tags.SWING)
+    tags(Tags.EDITOR)
 
 
-    lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
     lateinit var editor: DummySchemeEditor
 
 
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
-
-    beforeNonContainer {
-        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-        ideaFixture.setUp()
-    }
+    useEdtViolationDetection()
+    useBareIdeaFixture()
 
     afterNonContainer {
         frame.cleanUp()
-        ideaFixture.tearDown()
     }
 
 
-    fun registerTestEditor(createEditor: () -> DummySchemeEditor) {
+    suspend fun registerTestEditor(createEditor: () -> DummySchemeEditor) {
         editor = guiGet(createEditor)
         frame = Containers.showInFrame(editor.rootComponent)
     }

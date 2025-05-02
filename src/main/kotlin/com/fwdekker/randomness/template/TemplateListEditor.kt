@@ -136,8 +136,6 @@ class TemplateListEditor(
      *
      * If a test that depends on [TemplateListEditor] freezes for a long time or fails to initialize the UI, try
      * setting [useTestSplitter] to `true`.
-     *
-     * @return the created splitter
      */
     private fun createSplitter() =
         if (useTestSplitter) JBSplitter(false, SPLITTER_PROPORTION_KEY, DEFAULT_SPLITTER_PROPORTION)

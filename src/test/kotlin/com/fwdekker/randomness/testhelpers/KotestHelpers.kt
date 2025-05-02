@@ -4,6 +4,8 @@ import io.kotest.core.TestConfiguration
 import io.kotest.core.spec.AfterAny
 import io.kotest.core.spec.BeforeAny
 import io.kotest.core.spec.style.scopes.ContainerScope
+import io.kotest.core.spec.style.scopes.FunSpecContainerScope
+import io.kotest.core.test.TestScope
 import io.kotest.core.test.TestType
 
 
@@ -46,3 +48,14 @@ fun ContainerScope.afterNonContainer(after: AfterAny) {
             after(it)
     }
 }
+
+
+/**
+ * Like the regular `test` function, but ensures that the [block] runs in the event-dispatching thread (EDT).
+ */
+suspend fun FunSpecContainerScope.edtTest(name: String, block: suspend TestScope.() -> Unit) =
+    test(name) {
+        guiRun {
+            block()
+        }
+    }

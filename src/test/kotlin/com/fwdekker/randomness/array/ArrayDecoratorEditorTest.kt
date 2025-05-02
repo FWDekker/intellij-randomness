@@ -1,25 +1,23 @@
 package com.fwdekker.randomness.array
 
-import com.fwdekker.randomness.editorApplyTestFactory
-import com.fwdekker.randomness.editorFieldsTestFactory
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
+import com.fwdekker.randomness.testhelpers.editorApplyTests
+import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
 import com.fwdekker.randomness.testhelpers.isSelectedProp
 import com.fwdekker.randomness.testhelpers.matcher
 import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.textProp
+import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.fwdekker.randomness.testhelpers.valueProp
-import com.intellij.testFramework.fixtures.IdeaTestFixture
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.ui.TitledSeparator
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.should
-import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 import javax.swing.JCheckBox
@@ -29,28 +27,17 @@ import javax.swing.JCheckBox
  * Unit tests for [ArrayDecoratorEditor].
  */
 object ArrayDecoratorEditorTest : FunSpec({
-    tags(Tags.EDITOR, Tags.IDEA_FIXTURE, Tags.SWING)
+    tags(Tags.EDITOR)
 
 
-    lateinit var ideaFixture: IdeaTestFixture
     lateinit var frame: FrameFixture
-
     lateinit var scheme: ArrayDecorator
     lateinit var editor: ArrayDecoratorEditor
 
 
-    beforeSpec {
-        FailOnThreadViolationRepaintManager.install()
-    }
-
-    afterSpec {
-        FailOnThreadViolationRepaintManager.uninstall()
-    }
+    useEdtViolationDetection()
 
     beforeNonContainer {
-        ideaFixture = IdeaTestFixtureFactory.getFixtureFactory().createBareFixture()
-        ideaFixture.setUp()
-
         scheme = ArrayDecorator(enabled = true)
         editor = guiGet { ArrayDecoratorEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
@@ -58,7 +45,6 @@ object ArrayDecoratorEditorTest : FunSpec({
 
     afterNonContainer {
         frame.cleanUp()
-        ideaFixture.tearDown()
     }
 
 
@@ -181,10 +167,10 @@ object ArrayDecoratorEditorTest : FunSpec({
     }
 
 
-    include(editorApplyTestFactory { editor })
+    include(editorApplyTests { editor })
 
     include(
-        editorFieldsTestFactory(
+        editorFieldsTests(
             { editor },
             mapOf(
                 "enabled" to {

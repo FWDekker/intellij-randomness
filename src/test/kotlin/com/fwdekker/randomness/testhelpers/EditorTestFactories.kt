@@ -1,6 +1,7 @@
-package com.fwdekker.randomness
+package com.fwdekker.randomness.testhelpers
 
-import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.SchemeEditor
 import com.intellij.ui.dsl.builder.MutableProperty
 import io.kotest.assertions.withClue
 import io.kotest.core.factory.TestFactory
@@ -13,33 +14,34 @@ import io.kotest.matchers.shouldNotBe
 
 
 /**
- * Tests that the [editor] makes no changes by default.
+ * Returns tests verifying that the [editor] makes no changes by default.
  */
-fun editorApplyTestFactory(editor: () -> SchemeEditor<*>) = funSpec {
-    context("apply") {
-        test("makes no changes by default") {
-            val before = editor().scheme.deepCopy(retainUuid = true)
+fun editorApplyTests(editor: () -> SchemeEditor<*>) =
+    funSpec {
+        context("apply") {
+            test("makes no changes by default") {
+                val before = editor().scheme.deepCopy(retainUuid = true)
 
-            guiRun { editor().apply() }
+                guiRun { editor().apply() }
 
-            before shouldBe editor().scheme
+                before shouldBe editor().scheme
+            }
         }
     }
-}
 
 /**
- * Tests that the fields of a [SchemeEditor] are bound correctly.
+ * Returns tests verifying that the fields of a [SchemeEditor] are bound correctly.
  *
  * @param S the type of scheme in the editor
  * @param editor returns the editor to test
  * @param fields maps the fields' names to a lambda that gives a property for the field in the editor, a property for
  * the field in the scheme and a value to set into either field
  */
-fun <S : Scheme> editorFieldsTestFactory(
+fun <S : Scheme> editorFieldsTests(
     editor: () -> SchemeEditor<S>,
     fields: Map<String, () -> Row3<MutableProperty<Any?>, MutableProperty<Any?>, Any?>>,
-): TestFactory {
-    return funSpec {
+): TestFactory =
+    funSpec {
         context("bindings") {
             context("'apply' stores the editor's field in the scheme's field") {
                 withData(fields) { row ->
@@ -81,4 +83,3 @@ fun <S : Scheme> editorFieldsTestFactory(
             }
         }
     }
-}

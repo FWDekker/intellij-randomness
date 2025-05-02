@@ -3,15 +3,15 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.OverlayIcon
 import com.fwdekker.randomness.Settings
-import com.fwdekker.randomness.schemeSerializationTestFactory
 import com.fwdekker.randomness.setAll
-import com.fwdekker.randomness.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.DummyScheme
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.beSameIconAs
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.matchBundle
+import com.fwdekker.randomness.testhelpers.schemeSerializationTestFactory
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
+import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row

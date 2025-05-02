@@ -1,9 +1,11 @@
 package com.fwdekker.randomness.testhelpers
 
 import com.intellij.openapi.actionSystem.impl.ActionButton
+import com.intellij.openapi.application.EDT
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.assertj.swing.core.GenericTypeMatcher
 import org.assertj.swing.driver.ComponentDriver
-import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.AbstractComponentFixture
 import org.assertj.swing.fixture.FrameFixture
 import java.awt.Component
@@ -12,12 +14,12 @@ import java.awt.Component
 /**
  * Runs [lambda] in the GUI thread.
  */
-fun guiRun(lambda: () -> Unit) = GuiActionRunner.execute(lambda)
+suspend fun guiRun(lambda: suspend () -> Unit) = withContext(Dispatchers.EDT) { lambda() }
 
 /**
  * Runs [lambda] in the GUI thread and returns the result.
  */
-fun <T> guiGet(lambda: () -> T): T = GuiActionRunner.execute(lambda)
+suspend fun <T> guiGet(lambda: suspend () -> T): T = withContext(Dispatchers.EDT) { lambda() }
 
 
 /**
