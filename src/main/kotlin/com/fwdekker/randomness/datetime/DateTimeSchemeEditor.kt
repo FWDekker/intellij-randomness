@@ -7,9 +7,8 @@ import com.fwdekker.randomness.datetime.DateTimeScheme.Companion.DEFAULT_MAX_DAT
 import com.fwdekker.randomness.datetime.DateTimeScheme.Companion.DEFAULT_MIN_DATE_TIME
 import com.fwdekker.randomness.ui.JDateTimeField
 import com.fwdekker.randomness.ui.UIConstants
-import com.fwdekker.randomness.ui.addChangeListenerTo
-import com.fwdekker.randomness.ui.bindDateTimeLongValue
-import com.fwdekker.randomness.ui.toLocalDateTime
+import com.fwdekker.randomness.ui.bindDateTimes
+import com.fwdekker.randomness.ui.bindTimestamp
 import com.fwdekker.randomness.ui.withFixedWidth
 import com.fwdekker.randomness.ui.withName
 import com.intellij.ui.dsl.builder.AlignX
@@ -30,18 +29,18 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : SchemeEd
             lateinit var maxDateTimeField: JDateTimeField
 
             row(Bundle("datetime.ui.value.min_datetime_option")) {
-                cell(JDateTimeField(DEFAULT_MIN_DATE_TIME.toLocalDateTime()))
+                cell(JDateTimeField(DEFAULT_MIN_DATE_TIME))
                     .withFixedWidth(UIConstants.SIZE_LARGE)
                     .withName("minDateTime")
-                    .bindDateTimeLongValue(scheme::minDateTime)
+                    .bindTimestamp(scheme::minDateTime)
                     .also { minDateTimeField = it.component }
             }
 
             row(Bundle("datetime.ui.value.max_datetime_option")) {
-                cell(JDateTimeField(DEFAULT_MAX_DATE_TIME.toLocalDateTime()))
+                cell(JDateTimeField(DEFAULT_MAX_DATE_TIME))
                     .withFixedWidth(UIConstants.SIZE_LARGE)
                     .withName("maxDateTime")
-                    .bindDateTimeLongValue(scheme::maxDateTime)
+                    .bindTimestamp(scheme::maxDateTime)
                     .also { maxDateTimeField = it.component }
             }.bottomGap(BottomGap.SMALL)
 
@@ -68,24 +67,5 @@ class DateTimeSchemeEditor(scheme: DateTimeScheme = DateTimeScheme()) : SchemeEd
 
     init {
         reset()
-    }
-}
-
-
-/**
- * Binds two [JDateTimeField]s together, analogous to how [com.fwdekker.randomness.ui.bindSpinners] works.
- */
-private fun bindDateTimes(minField: JDateTimeField, maxField: JDateTimeField) {
-    addChangeListenerTo(minField) {
-        val minEpoch = minField.longValue
-        val maxEpoch = maxField.longValue
-
-        if (minEpoch > maxEpoch) maxField.value = minField.value
-    }
-    addChangeListenerTo(maxField) {
-        val minEpoch = minField.longValue
-        val maxEpoch = maxField.longValue
-
-        if (maxEpoch < minEpoch) minField.value = maxField.value
     }
 }

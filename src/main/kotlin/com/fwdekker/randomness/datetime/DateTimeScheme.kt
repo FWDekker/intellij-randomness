@@ -3,13 +3,14 @@ package com.fwdekker.randomness.datetime
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
+import com.fwdekker.randomness.Timestamp
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.ui.toLocalDateTime
+import com.fwdekker.randomness.doValidateDateTimePattern
+import com.fwdekker.randomness.nextTimestampInclusive
 import com.intellij.ui.JBColor
 import com.intellij.util.xmlb.annotations.OptionTag
 import java.awt.Color
-import java.time.Instant
 import java.time.format.DateTimeFormatter
 
 
@@ -22,8 +23,8 @@ import java.time.format.DateTimeFormatter
  * @property arrayDecorator Settings that determine whether the output should be an array of values.
  */
 data class DateTimeScheme(
-    var minDateTime: Long = DEFAULT_MIN_DATE_TIME,
-    var maxDateTime: Long = DEFAULT_MAX_DATE_TIME,
+    @OptionTag var minDateTime: Timestamp = DEFAULT_MIN_DATE_TIME,
+    @OptionTag var maxDateTime: Timestamp = DEFAULT_MAX_DATE_TIME,
     var pattern: String = DEFAULT_PATTERN,
     @OptionTag val arrayDecorator: ArrayDecorator = ArrayDecorator(),
 ) : Scheme() {
@@ -34,22 +35,15 @@ data class DateTimeScheme(
 
     override fun generateUndecoratedStrings(count: Int): List<String> {
         val formatter = DateTimeFormatter.ofPattern(pattern)
-        return List(count) { formatter.format(random.nextLong(minDateTime, maxDateTime + 1).toLocalDateTime()) }
+        return List(count) { random.nextTimestampInclusive(minDateTime, maxDateTime).format(formatter) }
     }
 
 
-    override fun doValidate(): String? {
-        val formatIsValid =
-            try {
-                DateTimeFormatter.ofPattern(pattern)
-                null
-            } catch (exception: IllegalArgumentException) {
-                exception.message
-            }
-
-        return if (minDateTime > maxDateTime) Bundle("datetime.error.min_datetime_above_max")
-        else formatIsValid
-    }
+    override fun doValidate(): String? =
+        minDateTime.doValidate()
+            ?: maxDateTime.doValidate()
+            ?: (if (maxDateTime.isBefore(minDateTime)) Bundle("datetime.error.min_datetime_above_max") else null)
+            ?: pattern.doValidateDateTimePattern()
 
     override fun deepCopy(retainUuid: Boolean) =
         copy(arrayDecorator = arrayDecorator.deepCopy(retainUuid)).deepCopyTransient(retainUuid)
@@ -68,16 +62,16 @@ data class DateTimeScheme(
         /**
          * The default value of the [minDateTime] field.
          */
-        val DEFAULT_MIN_DATE_TIME: Long = Instant.EPOCH.toEpochMilli()
+        val DEFAULT_MIN_DATE_TIME: Timestamp = Timestamp("0001-01-01 00:00:00.000")
 
         /**
          * The default value of the [maxDateTime] field.
          */
-        val DEFAULT_MAX_DATE_TIME: Long = Instant.parse("2030-12-31T23:59:59.00Z").toEpochMilli()
+        val DEFAULT_MAX_DATE_TIME: Timestamp = Timestamp("9999-12-31 23:59:59.999")
 
         /**
          * The default value of the [pattern] field.
          */
-        const val DEFAULT_PATTERN: String = "yyyy-MM-dd HH:mm:ss"
+        const val DEFAULT_PATTERN: String = "yyyy-MM-dd HH:mm:ss.SSS"
     }
 }

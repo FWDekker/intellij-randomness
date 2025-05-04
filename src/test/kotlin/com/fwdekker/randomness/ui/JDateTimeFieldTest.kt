@@ -1,18 +1,15 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.Timestamp
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
 import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
-import com.github.sisyphsu.dateparser.DateParserUtils
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
-import java.text.ParseException
-import java.time.LocalDateTime
-import java.time.Month
 
 
 /**
@@ -25,14 +22,14 @@ object JDateTimeFieldTest : FunSpec({
     useEdtViolationDetection()
 
     beforeNonContainer {
-        field = guiGet { JDateTimeField(LocalDateTime.MIN) }
+        field = guiGet { JDateTimeField() }
     }
 
 
     context("value") {
         context("get") {
             test("returns the default if no value has been set") {
-                val default = LocalDateTime.now()
+                val default = Timestamp("2034")
                 val myField = guiGet { JDateTimeField(default) }
 
                 myField.value shouldBe default
@@ -47,7 +44,7 @@ object JDateTimeFieldTest : FunSpec({
         }
 
         test("returns the value that is set to it") {
-            val dateTime = LocalDateTime.now()
+            val dateTime = Timestamp("0006-08-17 23:50:51.974")
 
             guiRun { field.value = dateTime }
 
@@ -55,69 +52,42 @@ object JDateTimeFieldTest : FunSpec({
         }
     }
 
-    context("longValue") {
-        test("get") {
-            guiRun { field.value = LocalDateTime.of(1998, Month.SEPTEMBER, 24, 15, 5, 36) }
-
-            field.longValue shouldBe 906_649_536_000L
-        }
-
-        test("set") {
-            guiRun { field.longValue = 2_625_932_560L }
-
-            field.value shouldBe LocalDateTime.of(1970, 1, 31, 9, 25, 32, 560_000_000)
-        }
-    }
-
 
     context("formatter") {
-        test("formats the value as the intended date") {
-            val dateTime = LocalDateTime.now().withNano(0)
-
-            guiRun { field.value = dateTime }
-
-            DateParserUtils.parseDateTime(field.text) shouldBe dateTime
-        }
-
-        test("interprets input dates of other formats") {
+        test("stores valid timestamps") {
             guiRun {
-                field.text = "4494-09-23"
+                field.text = "9017-07-12 05:22:05.767"
                 field.commitEdit()
             }
 
-            field.value shouldBe DateParserUtils.parseDateTime(field.text)
+            field.value.value shouldBe "9017-07-12 05:22:05.767"
         }
 
-        test("fails if the text is null") {
+        test("stores liberally interpreted timestamps") {
             guiRun {
-                shouldThrow<ParseException> {
-                    field.text = null
-                    field.commitEdit()
-                }.message should matchBundle("datetime_field.error.empty_string")
-            }
-        }
-
-        test("fails if the text is empty") {
-            guiRun {
-                shouldThrow<ParseException> {
-                    field.text = ""
-                    field.commitEdit()
-                }.message should matchBundle("datetime_field.error.empty_string")
-            }
-        }
-
-        test("clears the old value if the set text is invalid") {
-            guiRun {
-                field.text = "3598-06-25"
+                field.text = "4494-09"
                 field.commitEdit()
-
-                shouldThrow<ParseException> {
-                    field.text = null
-                    field.commitEdit()
-                }
-
-                field.text shouldBe ""
             }
+
+            field.value.value shouldBe "4494-09-01 00:00:00.000"
+        }
+
+        test("stores values that cannot be interpreted as timestamps") {
+            guiRun {
+                field.text = "How are you?"
+                field.commitEdit()
+            }
+
+            field.value.value shouldBe "How are you?"
+        }
+
+        test("interprets `null` as an empty string") {
+            guiRun {
+                field.text = null
+                field.commitEdit()
+            }
+
+            field.value.value shouldBe ""
         }
     }
 })

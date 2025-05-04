@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.Timestamp
 import com.fwdekker.randomness.testhelpers.DummySchemeEditor
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
@@ -93,7 +94,7 @@ object ListenerHelpersTest : FunSpec({
                 "JTextComponent: JDateTimeField" to
                     row(
                         { JDateTimeField() },
-                        { (it as JDateTimeField).longValue = 22_424_977L },
+                        { (it as JDateTimeField).value = Timestamp("2862-02-14 02:27:11.154") },
                     ),
                 "JTextComponent: JTextField" to
                     row(
