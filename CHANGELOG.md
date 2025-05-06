@@ -2,6 +2,10 @@
 ## 9.9.9-unreleased
 Delete this.
 
+### Changed
+* Date-time inputs are now slightly wider, to ensure the entire input is visible while typing.
+* Invalid date-time inputs are now not thrown away in favour of the old input. Instead, the invalid input is kept, and a warning is shown. This way, when you make a mistake, you can just correct it instead of having to try it again.
+
 
 ## 3.3.6 -- 2025-02-15
 ### Fixed

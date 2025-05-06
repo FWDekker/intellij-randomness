@@ -3,9 +3,9 @@ package com.fwdekker.randomness.datetime
 import com.fwdekker.randomness.Timestamp
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.schemeSerializationTestFactory
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
+import com.fwdekker.randomness.testhelpers.stateSerializationTestFactory
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
@@ -55,7 +55,7 @@ object DateTimeSchemeTest : FunSpec({
 
     include(stateDeepCopyTestFactory { DateTimeScheme() })
 
-    include(schemeSerializationTestFactory { DateTimeScheme() })
+    include(stateSerializationTestFactory { DateTimeScheme() })
 })
 
 

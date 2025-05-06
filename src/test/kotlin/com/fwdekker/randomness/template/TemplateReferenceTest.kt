@@ -9,9 +9,9 @@ import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.beSameIconAs
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.matchBundle
-import com.fwdekker.randomness.testhelpers.schemeSerializationTestFactory
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
+import com.fwdekker.randomness.testhelpers.stateSerializationTestFactory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
@@ -302,5 +302,5 @@ object TemplateReferenceTest : FunSpec({
 
     include(stateDeepCopyTestFactory { TemplateReference() })
 
-    include(schemeSerializationTestFactory { TemplateReference() })
+    include(stateSerializationTestFactory { TemplateReference() })
 })

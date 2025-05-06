@@ -31,35 +31,29 @@ import kotlin.random.Random
  */
 data class Timestamp(var value: String = "1970-01-01 00:00:00.000") : State() {
     /**
-     * If [value] is invalid, this is the error message explaining why; otherwise, if [value] is valid, this is `null`.
-     */
-    private var error: String? = null
-
-    /**
-     * The [LocalDateTime] representation of [value], or `null` if [value] is invalid.
-     */
-    var dateTime: LocalDateTime? = null
-        private set
-
-    /**
      * The epoch millisecond representation of [value], or `null` if [value] is invalid.
      */
-    var epochMilli: Long? = null
-        private set
+    val epochMilli: Long?
 
 
     init {
-        try {
-            if (value.isNotBlank()) {
-                DateParserUtils.parseDateTime(value)?.also {
-                    value = it.format(DateTimeFormatter.ofPattern(FORMAT))
-                    dateTime = it
-                    epochMilli = it.toInstant(ZoneOffset.UTC).toEpochMilli()
-                }
+        var value = value
+        var epochMilli: Long? = null
+
+        if (value.isBlank()) {
+            epochMilli = null
+        } else {
+            try {
+                val dateTime = DateParserUtils.parseDateTime(value)
+                value = dateTime.format(FORMATTER)
+                epochMilli = dateTime.toInstant(ZoneOffset.UTC).toEpochMilli()
+            } catch (_: DateTimeParseException) {
+                // Swallow
             }
-        } catch (exception: DateTimeParseException) {
-            error = exception.message
         }
+
+        this.value = value
+        this.epochMilli = epochMilli
     }
 
 
@@ -86,7 +80,9 @@ data class Timestamp(var value: String = "1970-01-01 00:00:00.000") : State() {
      *
      * Recall that a [value] is valid if [DateParserUtils] can interpret [value] as a date-time timestamp.
      */
-    override fun doValidate(): String? = error
+    override fun doValidate(): String? =
+        if (epochMilli == null) Bundle("timestamp.error.parse")
+        else null
 
     override fun deepCopy(retainUuid: Boolean): Timestamp = Timestamp(value).deepCopyTransient(retainUuid)
 
@@ -99,6 +95,11 @@ data class Timestamp(var value: String = "1970-01-01 00:00:00.000") : State() {
          * The canonical format by which [Timestamp]s are represented.
          */
         const val FORMAT = "yyyy-MM-dd HH:mm:ss.SSS"
+
+        /**
+         * Formatter for the [FORMAT].
+         */
+        val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern(FORMAT)
     }
 }
 
