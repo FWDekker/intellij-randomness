@@ -6,7 +6,6 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.Timestamp
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.doValidateDateTimePattern
 import com.fwdekker.randomness.nextTimestampInclusive
 import com.intellij.ui.JBColor
 import com.intellij.util.xmlb.annotations.OptionTag
@@ -75,3 +74,17 @@ data class DateTimeScheme(
         const val DEFAULT_PATTERN: String = "yyyy-MM-dd HH:mm:ss.SSS"
     }
 }
+
+
+/**
+ * Returns `null` if this [String] is a valid date-time pattern, or a string describing why it is invalid otherwise.
+ *
+ * @see DateTimeFormatter
+ */
+private fun String.doValidateDateTimePattern(): String? =
+    try {
+        DateTimeFormatter.ofPattern(this)
+        null
+    } catch (exception: IllegalArgumentException) {
+        exception.message
+    }

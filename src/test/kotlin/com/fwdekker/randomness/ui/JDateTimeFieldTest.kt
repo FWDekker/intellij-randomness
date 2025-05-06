@@ -91,3 +91,33 @@ object JDateTimeFieldTest : FunSpec({
         }
     }
 })
+
+/**
+ * Unit tests for [bindDateTimes].
+ */
+object BindDateTimesTest : FunSpec({
+    useEdtViolationDetection()
+
+
+    context("updating") {
+        test("updates the minimum date-time if the maximum goes below its value") {
+            val min = guiGet { JDateTimeField(Timestamp("1970-01-01 00:00:00.000")) }
+            val max = guiGet { JDateTimeField(Timestamp("1970-01-01 00:00:00.000")) }
+            bindDateTimes(min, max)
+
+            guiRun { max.value = Timestamp("0760-06-24 09:38:00.747") }
+
+            min.value shouldBe Timestamp("0760-06-24 09:38:00.747")
+        }
+
+        test("updates the maximum date-time if the minimum goes above its value") {
+            val min = guiGet { JDateTimeField(Timestamp("1970-01-01 00:00:00.000")) }
+            val max = guiGet { JDateTimeField(Timestamp("1970-01-01 00:00:00.000")) }
+            bindDateTimes(min, max)
+
+            guiRun { min.value = Timestamp("8660-05-28 06:11:32.199") }
+
+            max.value shouldBe Timestamp("8660-05-28 06:11:32.199")
+        }
+    }
+})

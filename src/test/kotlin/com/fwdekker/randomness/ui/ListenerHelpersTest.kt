@@ -5,6 +5,7 @@ import com.fwdekker.randomness.testhelpers.DummySchemeEditor
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
 import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.panel
@@ -14,6 +15,7 @@ import io.kotest.data.row
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 import javax.swing.JCheckBox
+import javax.swing.JFormattedTextField
 import javax.swing.JRadioButton
 import javax.swing.JSpinner
 import javax.swing.JTextArea
@@ -35,6 +37,7 @@ object ListenerHelpersTest : FunSpec({
 
 
     useEdtViolationDetection()
+    useBareIdeaFixture()
 
     beforeNonContainer {
         listenerInvoked = false
@@ -141,6 +144,21 @@ object ListenerHelpersTest : FunSpec({
 
             listenerInvoked shouldBe true
         }
+    }
+
+
+    test("invokes the listener when the text of a JFormattedTextField is committed") {
+        // Committing the input may result in the `AbstractFormatter` changing the `value` of the field, even though
+        // the `text` field is not changed. Therefore, this event should be listened to separately.
+
+        val component = guiGet { JFormattedTextField("old text") }
+        guiRun { component.text = "uncommitted text" }
+        addChangeListenerTo(component, listener = listener)
+
+        listenerInvoked shouldBe false
+        guiRun { component.commitEdit() }
+
+        listenerInvoked shouldBe true
     }
 })
 

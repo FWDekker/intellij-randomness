@@ -1,12 +1,15 @@
 package com.fwdekker.randomness
 
+import com.fwdekker.randomness.Timestamp.Companion.FORMATTER
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.stateSerializationTestFactory
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
+import kotlin.random.Random
 
 
 /**
@@ -140,4 +143,53 @@ object TimestampTest : FunSpec({
     include(stateDeepCopyTestFactory { Timestamp() })
 
     include(stateSerializationTestFactory { Timestamp() })
+})
+
+/**
+ * Unit tests for extension functions in `TimestampKt`.
+ */
+object TimestampKtTest : FunSpec({
+    context("nextTimestampInclusive") {
+        test("generates the only possible value when min equals max") {
+            val timestamp = Timestamp("9181-07-18 10:59:33.663")
+
+            Random.nextTimestampInclusive(timestamp, timestamp).format(FORMATTER) shouldBe timestamp.value
+        }
+
+        test("generates each value in the inclusive range") {
+            // Probability of less than 10 / 65_536 of failure
+
+            val min = Timestamp("5243-07-29 22:21:27.276")
+            val max = Timestamp("5243-07-29 22:21:27.285")
+
+            listOf(
+                Timestamp("5243-07-29 22:21:27.276"),
+                Timestamp("5243-07-29 22:21:27.277"),
+                Timestamp("5243-07-29 22:21:27.278"),
+                Timestamp("5243-07-29 22:21:27.279"),
+                Timestamp("5243-07-29 22:21:27.280"),
+                Timestamp("5243-07-29 22:21:27.281"),
+                Timestamp("5243-07-29 22:21:27.282"),
+                Timestamp("5243-07-29 22:21:27.283"),
+                Timestamp("5243-07-29 22:21:27.284"),
+                Timestamp("5243-07-29 22:21:27.285"),
+            ).forEach { target ->
+                List(128) { Random.nextTimestampInclusive(min, max).format(FORMATTER) } shouldContain target.value
+            }
+        }
+
+        test("generates values in between min and max (and probably not min or max itself)") {
+            // Probability of 512 / 123_926_552_811_472 of failure
+
+            val min = Timestamp("0672-11-17 19:45:39.080")
+            val max = Timestamp("6541-12-18 22:12:30.552")
+
+            repeat(256) {
+                val timestamp = Timestamp(Random.nextTimestampInclusive(min, max).format(FORMATTER))
+
+                min.isBefore(timestamp) shouldBe true
+                timestamp.isBefore(max) shouldBe true
+            }
+        }
+    }
 })

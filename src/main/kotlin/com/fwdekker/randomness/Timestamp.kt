@@ -105,19 +105,6 @@ data class Timestamp(var value: String = "1970-01-01 00:00:00.000") : State() {
 
 
 /**
- * Returns `null` if this [String] is a valid date-time pattern, or a string describing why it is invalid otherwise.
- *
- * @see DateTimeFormatter
- */
-fun String.doValidateDateTimePattern(): String? =
-    try {
-        DateTimeFormatter.ofPattern(this)
-        null
-    } catch (exception: IllegalArgumentException) {
-        exception.message
-    }
-
-/**
  * Returns a random [LocalDateTime] between [min] (inclusive) and [max] (inclusive).
  *
  * Despite the method's name, this method returns a [LocalDateTime] instead of a [Timestamp]. As per the documentation
