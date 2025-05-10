@@ -3,8 +3,7 @@ package com.fwdekker.randomness.ui
 import com.fwdekker.randomness.Timestamp
 import com.fwdekker.randomness.testhelpers.DummySchemeEditor
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
-import com.fwdekker.randomness.testhelpers.guiGet
-import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.ideaRunEdt
 import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
 import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.intellij.openapi.ui.ComboBox
@@ -136,11 +135,11 @@ object ListenerHelpersTest : FunSpec({
                     ),
             )
         ) { (createComponent, changeComponent): Row2<() -> Any, (Any) -> Unit> ->
-            val component = guiGet { createComponent() }
+            val component = ideaRunEdt { createComponent() }
             addChangeListenerTo(component, listener = listener)
 
             listenerInvoked shouldBe false
-            guiRun { changeComponent(component) }
+            ideaRunEdt { changeComponent(component) }
 
             listenerInvoked shouldBe true
         }
@@ -151,12 +150,12 @@ object ListenerHelpersTest : FunSpec({
         // Committing the input may result in the `AbstractFormatter` changing the `value` of the field, even though
         // the `text` field is not changed. Therefore, this event should be listened to separately.
 
-        val component = guiGet { JFormattedTextField("old text") }
-        guiRun { component.text = "uncommitted text" }
+        val component = ideaRunEdt { JFormattedTextField("old text") }
+        ideaRunEdt { component.text = "uncommitted text" }
         addChangeListenerTo(component, listener = listener)
 
         listenerInvoked shouldBe false
-        guiRun { component.commitEdit() }
+        ideaRunEdt { component.commitEdit() }
 
         listenerInvoked shouldBe true
     }

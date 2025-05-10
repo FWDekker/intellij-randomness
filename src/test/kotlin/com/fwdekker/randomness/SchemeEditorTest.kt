@@ -6,8 +6,7 @@ import com.fwdekker.randomness.testhelpers.DummyScheme
 import com.fwdekker.randomness.testhelpers.DummySchemeEditor
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
-import com.fwdekker.randomness.testhelpers.guiGet
-import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.ideaRunEdt
 import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
 import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.fwdekker.randomness.ui.withName
@@ -16,7 +15,6 @@ import com.intellij.ui.dsl.builder.panel
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
-import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.beInstanceOf
@@ -47,7 +45,7 @@ object SchemeEditorTest : FunSpec({
 
 
     suspend fun registerTestEditor(createEditor: () -> DummySchemeEditor) {
-        editor = guiGet(createEditor)
+        editor = ideaRunEdt(createEditor)
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
@@ -105,7 +103,7 @@ object SchemeEditorTest : FunSpec({
                 }
             }
 
-            editor.preferredFocusedComponent should beNull()
+            editor.preferredFocusedComponent shouldBe null
         }
     }
 
@@ -119,9 +117,9 @@ object SchemeEditorTest : FunSpec({
             }
             frame.textBox().requireText("old")
 
-            guiRun { frame.textBox().target().text = "new" }
+            ideaRunEdt { frame.textBox().target().text = "new" }
             frame.textBox().requireText("new")
-            guiRun { editor.reset() }
+            ideaRunEdt { editor.reset() }
 
             frame.textBox().requireText("old")
         }
@@ -143,9 +141,9 @@ object SchemeEditorTest : FunSpec({
             }
             frame.textBox().requireText("old")
 
-            guiRun { frame.textBox().target().text = "new" }
+            ideaRunEdt { frame.textBox().target().text = "new" }
             frame.textBox().requireText("new")
-            guiRun { editor.reset() }
+            ideaRunEdt { editor.reset() }
 
             frame.textBox().requireText("old")
         }
@@ -156,7 +154,7 @@ object SchemeEditorTest : FunSpec({
             val scheme = DummyScheme(prefix = "old")
             registerTestEditor { DummySchemeEditor(scheme) { panel { row { textField().bindText(scheme::prefix) } } } }
 
-            guiRun { frame.textBox().target().text = "new" }
+            ideaRunEdt { frame.textBox().target().text = "new" }
             editor.apply()
 
             scheme.prefix shouldBe "new"
@@ -177,7 +175,7 @@ object SchemeEditorTest : FunSpec({
                 }
             }
 
-            guiRun { frame.textBox().target().text = "new" }
+            ideaRunEdt { frame.textBox().target().text = "new" }
             editor.apply()
 
             scheme.decorators[0] shouldBeSameInstanceAs decorator
@@ -192,7 +190,7 @@ object SchemeEditorTest : FunSpec({
 
             var updateCount = 0
             editor.addChangeListener { updateCount++ }
-            guiRun { frame.textBox().target().text = "new" }
+            ideaRunEdt { frame.textBox().target().text = "new" }
 
             updateCount shouldBe 1
         }
@@ -204,7 +202,7 @@ object SchemeEditorTest : FunSpec({
 
             var updateCount = 0
             editor.addChangeListener { updateCount++ }
-            guiRun { frame.textBox().target().text = "new" }
+            ideaRunEdt { frame.textBox().target().text = "new" }
 
             updateCount shouldBeGreaterThanOrEqual 1
         }
@@ -227,7 +225,7 @@ object SchemeEditorTest : FunSpec({
 
             var updateCount = 0
             editor.addChangeListener { updateCount++ }
-            guiRun { frame.textBox().target().text = "new" }
+            ideaRunEdt { frame.textBox().target().text = "new" }
 
             updateCount shouldBeGreaterThanOrEqual 2
         }

@@ -14,7 +14,6 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
-import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
@@ -77,7 +76,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getProperty("needle")?.name should beNull()
+            element.getProperty("needle")?.name shouldBe null
         }
 
         test("returns `null` if multiple children have the given name") {
@@ -92,7 +91,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getProperty("needle")?.name should beNull()
+            element.getProperty("needle")?.name shouldBe null
         }
     }
 
@@ -201,7 +200,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getPropertyByPath("wrong", null, "prong", null)?.name should beNull()
+            element.getPropertyByPath("wrong", null, "prong", null)?.name shouldBe null
         }
     }
 
@@ -231,7 +230,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getPropertyValue("needle") should beNull()
+            element.getPropertyValue("needle") shouldBe null
         }
 
         test("returns `null` if the property exists multiple times") {
@@ -246,7 +245,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getPropertyValue("needle") should beNull()
+            element.getPropertyValue("needle") shouldBe null
         }
 
         test("returns `null` if the property has no value") {
@@ -260,7 +259,7 @@ object XmlHelpersTest : FunSpec({
                 """.trimIndent()
             )
 
-            element.getPropertyValue("needle") should beNull()
+            element.getPropertyValue("needle") shouldBe null
         }
     }
 

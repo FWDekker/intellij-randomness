@@ -2,13 +2,11 @@ package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.Timestamp
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
-import com.fwdekker.randomness.testhelpers.guiGet
-import com.fwdekker.randomness.testhelpers.guiRun
-import com.fwdekker.randomness.testhelpers.matchBundle
+import com.fwdekker.randomness.testhelpers.runEdt
+import com.fwdekker.randomness.testhelpers.shouldMatchBundle
 import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 
 
@@ -22,7 +20,7 @@ object JDateTimeFieldTest : FunSpec({
     useEdtViolationDetection()
 
     beforeNonContainer {
-        field = guiGet { JDateTimeField() }
+        field = runEdt { JDateTimeField() }
     }
 
 
@@ -30,7 +28,7 @@ object JDateTimeFieldTest : FunSpec({
         context("get") {
             test("returns the default if no value has been set") {
                 val default = Timestamp("2034")
-                val myField = guiGet { JDateTimeField(default) }
+                val myField = runEdt { JDateTimeField(default) }
 
                 myField.value shouldBe default
             }
@@ -38,15 +36,15 @@ object JDateTimeFieldTest : FunSpec({
 
         context("set") {
             test("throws an error if a non-date-time is set") {
-                shouldThrow<IllegalArgumentException> { guiRun { field.setValue("invalid") } }
-                    .message should matchBundle("datetime_field.error.invalid_type")
+                shouldThrow<IllegalArgumentException> { runEdt { field.setValue("invalid") } }
+                    .message shouldMatchBundle "datetime_field.error.invalid_type"
             }
         }
 
         test("returns the value that is set to it") {
             val dateTime = Timestamp("0006-08-17 23:50:51.974")
 
-            guiRun { field.value = dateTime }
+            runEdt { field.value = dateTime }
 
             field.value shouldBe dateTime
         }
@@ -55,7 +53,7 @@ object JDateTimeFieldTest : FunSpec({
 
     context("formatter") {
         test("stores valid timestamps") {
-            guiRun {
+            runEdt {
                 field.text = "9017-07-12 05:22:05.767"
                 field.commitEdit()
             }
@@ -64,7 +62,7 @@ object JDateTimeFieldTest : FunSpec({
         }
 
         test("stores liberally interpreted timestamps") {
-            guiRun {
+            runEdt {
                 field.text = "4494-09"
                 field.commitEdit()
             }
@@ -73,7 +71,7 @@ object JDateTimeFieldTest : FunSpec({
         }
 
         test("stores values that cannot be interpreted as timestamps") {
-            guiRun {
+            runEdt {
                 field.text = "How are you?"
                 field.commitEdit()
             }
@@ -82,7 +80,7 @@ object JDateTimeFieldTest : FunSpec({
         }
 
         test("interprets `null` as an empty string") {
-            guiRun {
+            runEdt {
                 field.text = null
                 field.commitEdit()
             }
@@ -101,21 +99,21 @@ object BindDateTimesTest : FunSpec({
 
     context("updating") {
         test("updates the minimum date-time if the maximum goes below its value") {
-            val min = guiGet { JDateTimeField(Timestamp("1970-01-01 00:00:00.000")) }
-            val max = guiGet { JDateTimeField(Timestamp("1970-01-01 00:00:00.000")) }
+            val min = runEdt { JDateTimeField(Timestamp("1970-01-01 00:00:00.000")) }
+            val max = runEdt { JDateTimeField(Timestamp("1970-01-01 00:00:00.000")) }
             bindDateTimes(min, max)
 
-            guiRun { max.value = Timestamp("0760-06-24 09:38:00.747") }
+            runEdt { max.value = Timestamp("0760-06-24 09:38:00.747") }
 
             min.value shouldBe Timestamp("0760-06-24 09:38:00.747")
         }
 
         test("updates the maximum date-time if the minimum goes above its value") {
-            val min = guiGet { JDateTimeField(Timestamp("1970-01-01 00:00:00.000")) }
-            val max = guiGet { JDateTimeField(Timestamp("1970-01-01 00:00:00.000")) }
+            val min = runEdt { JDateTimeField(Timestamp("1970-01-01 00:00:00.000")) }
+            val max = runEdt { JDateTimeField(Timestamp("1970-01-01 00:00:00.000")) }
             bindDateTimes(min, max)
 
-            guiRun { min.value = Timestamp("8660-05-28 06:11:32.199") }
+            runEdt { min.value = Timestamp("8660-05-28 06:11:32.199") }
 
             max.value shouldBe Timestamp("8660-05-28 06:11:32.199")
         }

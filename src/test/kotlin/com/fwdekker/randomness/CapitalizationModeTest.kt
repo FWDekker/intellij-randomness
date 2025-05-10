@@ -1,11 +1,10 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.testhelpers.matchBundle
+import com.fwdekker.randomness.testhelpers.shouldMatchBundle
 import io.kotest.assertions.retry
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
-import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldBeEqualIgnoringCase
@@ -76,7 +75,7 @@ object CapitalizationModeTest : FunSpec({
 
     context("toLocalizedString") {
         test("returns the associated localized string") {
-            CapitalizationMode.FIRST_LETTER.toLocalizedString() should matchBundle("shared.capitalization.first_letter")
+            CapitalizationMode.FIRST_LETTER.toLocalizedString() shouldMatchBundle "shared.capitalization.first_letter"
         }
     }
 })

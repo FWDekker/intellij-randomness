@@ -4,12 +4,12 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.afterNonContainer
-import com.fwdekker.randomness.testhelpers.beSameIconAs
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.colorIcon
 import com.fwdekker.randomness.testhelpers.getEastColor
 import com.fwdekker.randomness.testhelpers.getWestColor
 import com.fwdekker.randomness.testhelpers.render
+import com.fwdekker.randomness.testhelpers.shouldBeSameIconAs
 import com.fwdekker.randomness.testhelpers.typeIcon
 import com.intellij.testFramework.fixtures.IdeaTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -19,11 +19,9 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.common.ExperimentalKotest
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.beEmpty
-import io.kotest.matchers.collections.contain
-import io.kotest.matchers.collections.haveSize
 import io.kotest.matchers.collections.shouldContainExactly
-import io.kotest.matchers.nulls.beNull
-import io.kotest.matchers.should
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
 import io.kotest.matchers.types.shouldBeSameInstanceAs
@@ -93,7 +91,7 @@ object TypeIconTest : FunSpec({
 
     context("combine") {
         test("returns `null` if no icons are given to combine") {
-            TypeIcon.combine(emptyList()) should beNull()
+            TypeIcon.combine(emptyList()) shouldBe null
         }
 
         test("returns a template icon for a single icon") {
@@ -181,23 +179,23 @@ object OverlayedIconTest : FunSpec({
     context("plusOverlay") {
         test("does not alter the original icon") {
             val icon = OverlayedIcon(typeIcon(), listOf(OverlayIcon.ARRAY))
-            icon.overlays should haveSize(1)
+            icon.overlays shouldHaveSize 1
 
             val alteredIcon = icon.plusOverlay(OverlayIcon.SETTINGS)
 
-            icon.overlays should haveSize(1)
-            alteredIcon.overlays should haveSize(2)
+            icon.overlays shouldHaveSize 1
+            alteredIcon.overlays shouldHaveSize 2
         }
 
         test("returns a copy with the given overlay added") {
             val overlay = OverlayIcon.REPEAT
             val icon = OverlayedIcon(typeIcon(), listOf(OverlayIcon.ARRAY))
-            icon.overlays should haveSize(1)
-            icon.overlays shouldNot contain(overlay)
+            icon.overlays shouldHaveSize 1
+            icon.overlays shouldNotContain overlay
 
             val alteredIcon = icon.plusOverlay(overlay)
 
-            alteredIcon.overlays should haveSize(2)
+            alteredIcon.overlays shouldHaveSize 2
             alteredIcon.overlays.last() shouldBe overlay
         }
     }
@@ -230,7 +228,7 @@ object OverlayedIconTest : FunSpec({
 
             val overlayed = OverlayedIcon(base)
 
-            base should beSameIconAs(overlayed)
+            base shouldBeSameIconAs overlayed
         }
 
         test("returns an icon that paints the base even if overlays are specified") {
