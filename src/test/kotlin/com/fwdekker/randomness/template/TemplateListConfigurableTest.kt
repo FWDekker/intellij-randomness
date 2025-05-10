@@ -3,8 +3,7 @@ package com.fwdekker.randomness.template
 import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
-import com.fwdekker.randomness.testhelpers.guiGet
-import com.fwdekker.randomness.testhelpers.guiRun
+import com.fwdekker.randomness.testhelpers.ideaRunEdt
 import com.fwdekker.randomness.testhelpers.shouldContainExactly
 import com.fwdekker.randomness.testhelpers.shouldMatchBundle
 import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
@@ -40,25 +39,25 @@ object TemplateListConfigurableTest : FunSpec({
 
     beforeNonContainer {
         configurable = TemplateListConfigurable()
-        frame = Containers.showInFrame(guiGet { configurable.createComponent() })
+        frame = Containers.showInFrame(ideaRunEdt { configurable.createComponent() })
     }
 
     afterNonContainer {
         frame.cleanUp()
-        guiRun { configurable.disposeUIResources() }
+        ideaRunEdt { configurable.disposeUIResources() }
     }
 
 
     context("templateToSelect") {
         test("selects the template with the given UUID") {
             frame.cleanUp()
-            guiRun { configurable.disposeUIResources() }
+            ideaRunEdt { configurable.disposeUIResources() }
 
             configurable = TemplateListConfigurable()
             configurable.schemeToSelect = Settings.DEFAULT.templates[2].uuid
-            frame = Containers.showInFrame(guiGet { configurable.createComponent() })
+            frame = Containers.showInFrame(ideaRunEdt { configurable.createComponent() })
 
-            guiGet { frame.tree().target().selectionRows!! } shouldContainExactly arrayOf(4)
+            ideaRunEdt { frame.tree().target().selectionRows!! } shouldContainExactly arrayOf(4)
         }
     }
 
@@ -69,14 +68,14 @@ object TemplateListConfigurableTest : FunSpec({
         }
 
         test("returns `true` if modifications were made") {
-            guiRun { frame.textBox("templateName").target().text = "New Name" }
+            ideaRunEdt { frame.textBox("templateName").target().text = "New Name" }
 
             configurable.isModified shouldBe true
         }
 
         test("returns `true` if no modifications were made but the template list is invalid") {
             Settings.DEFAULT.templates[0].name = ""
-            guiRun { configurable.reset() }
+            ideaRunEdt { configurable.reset() }
 
             configurable.editor.isModified() shouldBe false
             configurable.isModified shouldBe true
@@ -85,14 +84,14 @@ object TemplateListConfigurableTest : FunSpec({
 
     context("apply") {
         test("throws an exception if the template list is invalid") {
-            guiRun { frame.textBox("templateName").target().text = "" }
+            ideaRunEdt { frame.textBox("templateName").target().text = "" }
 
             shouldThrow<ConfigurationException> { configurable.apply() }
                 .title shouldMatchBundle "template_list.error.failed_to_save_settings"
         }
 
         test("applies the changes") {
-            guiRun { frame.textBox("templateName").target().text = "New Name" }
+            ideaRunEdt { frame.textBox("templateName").target().text = "New Name" }
 
             configurable.apply()
 
@@ -102,11 +101,11 @@ object TemplateListConfigurableTest : FunSpec({
 
     context("reset") {
         test("resets the editor") {
-            guiRun { frame.textBox("templateName").target().text = "Changed Name" }
+            ideaRunEdt { frame.textBox("templateName").target().text = "Changed Name" }
 
-            guiRun { configurable.reset() }
+            ideaRunEdt { configurable.reset() }
 
-            guiGet { frame.textBox("templateName").target().text } shouldNotBe "Changed Name"
+            ideaRunEdt { frame.textBox("templateName").target().text } shouldNotBe "Changed Name"
         }
     }
 })

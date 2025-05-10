@@ -6,9 +6,8 @@ import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.editorApplyTests
 import com.fwdekker.randomness.testhelpers.editorFieldsTests
-import com.fwdekker.randomness.testhelpers.guiGet
-import com.fwdekker.randomness.testhelpers.guiRun
 import com.fwdekker.randomness.testhelpers.prop
+import com.fwdekker.randomness.testhelpers.runEdt
 import com.fwdekker.randomness.testhelpers.textProp
 import com.fwdekker.randomness.testhelpers.timestampProp
 import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
@@ -36,7 +35,7 @@ object DateTimeSchemeEditorTest : FunSpec({
 
     beforeNonContainer {
         scheme = DateTimeScheme()
-        editor = guiGet { DateTimeSchemeEditor(scheme) }
+        editor = runEdt { DateTimeSchemeEditor(scheme) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
@@ -47,12 +46,12 @@ object DateTimeSchemeEditorTest : FunSpec({
 
     context("input handling") {
         test("binds the minimum and maximum times") {
-            guiRun { frame.textBox("minDateTime").timestampProp().set(Timestamp("1131")) }
+            runEdt { frame.textBox("minDateTime").timestampProp().set(Timestamp("1131")) }
 
-            guiRun { frame.textBox("maxDateTime").timestampProp().set(Timestamp("0463")) }
+            runEdt { frame.textBox("maxDateTime").timestampProp().set(Timestamp("0463")) }
 
-            guiGet { frame.textBox("minDateTime").timestampProp().get() } shouldBe Timestamp("0463")
-            guiGet { frame.textBox("maxDateTime").timestampProp().get() } shouldBe Timestamp("0463")
+            runEdt { frame.textBox("minDateTime").timestampProp().get() } shouldBe Timestamp("0463")
+            runEdt { frame.textBox("maxDateTime").timestampProp().get() } shouldBe Timestamp("0463")
         }
     }
 
