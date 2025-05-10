@@ -20,17 +20,17 @@ object TimestampTest : FunSpec({
         withData(
             mapOf(
                 "returns the epoch for a complete timestamp" to
-                    row(Timestamp("1168-05-20 06:37:39.725"), -25_296_600_140_275L),
+                    row("1168-05-20 06:37:39.725", -25_296_600_140_275L),
                 "returns the epoch for an autocompleted complete timestamp" to
-                    row(Timestamp("5103-07-25"), 98_885_577_600_000L),
+                    row("5103-07-25", 98_885_577_600_000L),
                 "returns null for an empty timestamp" to
-                    row(Timestamp(""), null),
+                    row("", null),
                 "returns null for an invalid non-empty timestamp" to
-                    row(Timestamp("invalid"), null),
+                    row("invalid", null),
                 "returns null for an invalid numeric timestamp" to
-                    row(Timestamp("65789190"), null),
+                    row("65789190", null),
             )
-        ) { (timestamp, expected) -> timestamp.epochMilli shouldBe expected }
+        ) { (timestamp, expected) -> Timestamp(timestamp).epochMilli shouldBe expected }
     }
 
 
@@ -137,6 +137,22 @@ object TimestampTest : FunSpec({
                     row(Timestamp("71895819"), "timestamp.error.parse"),
             )
         ) { (timestamp, validation) -> timestamp shouldValidateAsBundle validation }
+    }
+
+
+    context("fromEpochMilli") {
+        withData(
+            mapOf(
+                "returns the timestamp for epoch 0" to
+                    row(0L, "1970-01-01 00:00:00.000"),
+                "returns the timestamp for a four-digit future year" to
+                    row(197_276_354_331_758L, "8221-06-10 03:18:51.758"),
+                "returns the timestamp for a four-digit past year" to
+                    row(-108_783_788_697L, "1966-07-21 22:16:51.303"),
+                "returns the timestamp for a five-digit future year" to
+                    row(421_949_603_579_485L, "+15341-01-18 23:12:59.485"),
+            )
+        ) { (epochMilli, expected) -> Timestamp.fromEpochMilli(epochMilli).value shouldBe expected }
     }
 
 

@@ -27,9 +27,7 @@ object SettingsTest : FunSpec({
                         "",
                     ),
             )
-        ) { (scheme, validation) ->
-            scheme shouldValidateAsBundle validation
-        }
+        ) { (scheme, validation) -> scheme shouldValidateAsBundle validation }
     }
 
     context("deepCopy") {

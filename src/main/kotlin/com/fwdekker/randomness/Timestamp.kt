@@ -100,6 +100,13 @@ data class Timestamp(var value: String = "1970-01-01 00:00:00.000") : State() {
          * Formatter for the [FORMAT].
          */
         val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern(FORMAT)
+
+
+        /**
+         * Returns a [Timestamp] that is set at the given [epochMilli].
+         */
+        fun fromEpochMilli(epochMilli: Long): Timestamp =
+            Timestamp(LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMilli), ZoneOffset.UTC).format(FORMATTER))
     }
 }
 
