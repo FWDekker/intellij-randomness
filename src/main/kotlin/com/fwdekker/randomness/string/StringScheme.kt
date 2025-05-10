@@ -6,7 +6,6 @@ import com.fwdekker.randomness.Icons
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.TypeIcon
 import com.fwdekker.randomness.array.ArrayDecorator
-import com.fwdekker.randomness.string.StringScheme.Companion.LOOK_ALIKE_CHARACTERS
 import com.github.curiousoddman.rgxgen.RgxGen
 import com.github.curiousoddman.rgxgen.parsing.dflt.RgxGenParseException
 import com.intellij.ui.JBColor

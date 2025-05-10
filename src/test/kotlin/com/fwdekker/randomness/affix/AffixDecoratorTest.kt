@@ -1,9 +1,9 @@
 package com.fwdekker.randomness.affix
 
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.schemeSerializationTestFactory
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
+import com.fwdekker.randomness.testhelpers.stateSerializationTestFactory
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
@@ -67,5 +67,5 @@ object AffixDecoratorTest : FunSpec({
 
     include(stateDeepCopyTestFactory { AffixDecorator() })
 
-    include(schemeSerializationTestFactory { AffixDecorator() })
+    include(stateSerializationTestFactory { AffixDecorator() })
 })

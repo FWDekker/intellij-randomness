@@ -7,6 +7,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.SettingsCategory
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
+import com.intellij.util.addOptionTag
 import com.intellij.util.xmlb.XmlSerializer.deserialize
 import com.intellij.util.xmlb.XmlSerializer.serialize
 import com.intellij.util.xmlb.annotations.OptionTag
@@ -128,21 +129,40 @@ internal class PersistentSettings : PersistentStateComponent<Element> {
         /**
          * The currently-running version of Randomness.
          */
-        const val CURRENT_VERSION: String = "3.3.6" // Synchronize this with the version in `gradle.properties`
+        const val CURRENT_VERSION: String = "3.3.6-dev" // Synchronize this with the version in `gradle.properties`
 
         /**
          * The upgrade functions to apply to configuration [Element]s in the [upgrade] method.
+         *
+         * Each entry in this map consists of an upgrade function that mutates an [Element] so that it is upgrades to
+         * the [Version] specified in the entry's key. That is, the key denotes the [Version] number of that entry's
+         * output, not of its input.
          */
         private val UPGRADES: Map<Version, (Element) -> Unit> =
             mapOf(
                 Version.parse("3.2.0") to
-                    { e: Element ->
-                        e.getSchemes()
+                    { settings ->
+                        settings.getSchemes()
                             .filter { it.name == "UuidScheme" }
                             .forEach { it.renameProperty("type", "version") }
                     },
                 Version.parse("3.3.5") to
-                    { e: Element -> e.getDecorators().forEach { it.removeProperty("generator") } },
+                    { settings -> settings.getDecorators().forEach { it.removeProperty("generator") } },
+                Version.parse("3.4.0") to
+                    { settings ->
+                        settings.getSchemes()
+                            .filter { it.name == "DateTimeScheme" }
+                            .forEach { scheme ->
+                                (scheme.getMultiProperty("minDateTime") + scheme.getMultiProperty("maxDateTime"))
+                                    .forEach { prop ->
+                                        val oldValue = prop.getAttributeValue("value").toLong()
+                                        prop.removeAttribute("value")
+
+                                        val newValue = Timestamp.fromEpochMilli(oldValue).value
+                                        prop.addContent(Element("Timestamp").apply { addOptionTag("value", newValue) })
+                                    }
+                            }
+                    },
             )
     }
 }

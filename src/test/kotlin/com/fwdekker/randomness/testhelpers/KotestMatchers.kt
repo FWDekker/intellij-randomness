@@ -1,16 +1,21 @@
+@file:Suppress("detekt:TooManyFunctions") // Fine for test helper classes
+
 package com.fwdekker.randomness.testhelpers
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.IconDescriptor
 import com.fwdekker.randomness.State
 import com.fwdekker.randomness.matchesFormat
+import com.intellij.openapi.util.JDOMUtil
 import io.kotest.assertions.withClue
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.MatcherResult
+import io.kotest.matchers.be
 import io.kotest.matchers.collections.beEmptyArray
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
+import org.jdom.Element
 import javax.swing.Icon
 
 
@@ -112,5 +117,20 @@ fun beSameIconAs(other: IconDescriptor?): Matcher<IconDescriptor?> =
  */
 infix fun <I : IconDescriptor?> I.shouldBeSameIconAs(other: IconDescriptor?): I {
     this should beSameIconAs(other)
+    return this
+}
+
+
+/**
+ * Matches an [Element] against [xml] to verify that they represent the same [Element].
+ */
+fun matchXml(xml: String): Matcher<Element> =
+    Matcher { element -> be(JDOMUtil.write(JDOMUtil.load(xml))).test(JDOMUtil.write(element)) }
+
+/**
+ * Infix version of [matchXml].
+ */
+infix fun Element.shouldMatchXml(xml: String): Element {
+    this should matchXml(xml)
     return this
 }

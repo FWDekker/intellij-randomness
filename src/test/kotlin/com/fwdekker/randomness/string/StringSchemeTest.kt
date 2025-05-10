@@ -3,9 +3,9 @@ package com.fwdekker.randomness.string
 import com.fwdekker.randomness.CapitalizationMode
 import com.fwdekker.randomness.array.ArrayDecorator
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.schemeSerializationTestFactory
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
+import com.fwdekker.randomness.testhelpers.stateSerializationTestFactory
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
@@ -117,5 +117,5 @@ object StringSchemeTest : FunSpec({
 
     include(stateDeepCopyTestFactory { StringScheme() })
 
-    include(schemeSerializationTestFactory { StringScheme() })
+    include(stateSerializationTestFactory { StringScheme() })
 })

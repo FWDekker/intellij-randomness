@@ -2,6 +2,13 @@
 ## 9.9.9-unreleased
 Delete this.
 
+### Changed
+* Date-time inputs are now slightly wider, to ensure the entire input is visible while typing.
+* Invalid date-time inputs are now not thrown away in favour of the old input. Instead, the invalid input is kept, and a warning is shown. This way, when you make a mistake, you can just correct it instead of having to try it again.
+
+### Fixed
+* Pressing <kbd>Enter</kbd> while writing a date-time without losing focus first now correctly saves the newly entered date-time; and validates it if required.
+
 
 ## 3.3.6 -- 2025-02-15
 ### Fixed

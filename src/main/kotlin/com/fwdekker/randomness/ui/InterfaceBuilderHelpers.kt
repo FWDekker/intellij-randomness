@@ -1,5 +1,6 @@
 package com.fwdekker.randomness.ui
 
+import com.fwdekker.randomness.Timestamp
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Panel
@@ -163,11 +164,11 @@ fun Cell<JLongSpinner>.bindLongValue(property: KMutableProperty0<Long>) =
     )
 
 /**
- * Binds the [Long] representation of the value of the [JDateTimeField] in this [Cell] to [property].
+ * Binds the [Timestamp] representation of the value of the [JDateTimeField] in this [Cell] to [property].
  */
-fun Cell<JDateTimeField>.bindDateTimeLongValue(property: KMutableProperty0<Long>) =
+fun Cell<JDateTimeField>.bindTimestamp(property: KMutableProperty0<Timestamp>) =
     bind(
-        { field -> field.longValue },
-        { field, value -> field.longValue = value },
+        { field -> field.value },
+        { field, value -> field.value = value },
         property.toMutableProperty()
     )

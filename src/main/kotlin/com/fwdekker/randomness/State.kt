@@ -18,8 +18,8 @@ import kotlin.random.asJavaRandom
  *
  * Properties should be annotated with [Transient] (not [kotlin.jvm.Transient]) to ensure they are not stored. The
  * specifics of how the annotation is applied and inherited are complicated. The following rules apply:
- * - Immutable non-[Collection]s (e.g. `val foo: Int` or `val bar: State`) are not serialized. Serialization annotations
- *   are ignored.
+ * - Immutable non-[Collection]s (e.g. `val foo: Int` or `val bar: State`) are not serialized. These properties should
+ *   not be annotated, not even "just in case" nor "for clarity".
  * - Immutable [Collection]s (e.g. `val foo: List<Int>` or `val bar: List<State>`) are not serialized, unless annotated
  *   with a serialization annotation such as [com.intellij.util.xmlb.annotations.XCollection] or
  *   [com.intellij.util.xmlb.annotations.OptionTag].
