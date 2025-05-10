@@ -15,20 +15,20 @@ import io.kotest.matchers.collections.beEmptyArray
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
+import io.kotest.matchers.shouldNot
 import org.jdom.Element
 import javax.swing.Icon
 
 
 /**
- * @see beEmptyArray
+ * Similar to [beEmptyArray], but also fails if `this` is not specifically an array of [Int]s.
  */
 fun beEmptyIntArray() = Matcher<IntArray> { self -> beEmptyArray<Int>().test(self.toTypedArray()) }
 
 /**
  * @see shouldContainExactly
  */
-infix fun IntArray.shouldContainExactly(collection: Array<Int>) =
-    this.toTypedArray() shouldContainExactly collection
+infix fun IntArray.shouldContainExactly(collection: Array<Int>) = toTypedArray() shouldContainExactly collection
 
 
 /**
@@ -46,6 +46,14 @@ fun matchBundle(key: String, vararg args: String): Matcher<String?> =
             { "string was '$string' and should not have matched format '$format'" },
         )
     }
+
+/**
+ * Infix version of [matchBundle], without additional arguments.
+ */
+infix fun <S : String?> S.shouldMatchBundle(key: String): S {
+    this should matchBundle(key)
+    return this
+}
 
 /**
  * Matches [State.doValidate] against the [Bundle] entry at [key], based on [matchBundle] (without `args`).
@@ -103,6 +111,14 @@ fun beSameIconAs(other: Icon?): Matcher<Icon?> =
  */
 infix fun <I : Icon?> I.shouldBeSameIconAs(other: Icon?): I {
     this should beSameIconAs(other)
+    return this
+}
+
+/**
+ * Negated infix version of [beSameIconAs].
+ */
+infix fun <I : Icon?> I.shouldNotBeSameIconAs(other: Icon?): I {
+    this shouldNot beSameIconAs(other)
     return this
 }
 

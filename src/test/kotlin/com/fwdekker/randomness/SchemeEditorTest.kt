@@ -16,7 +16,6 @@ import com.intellij.ui.dsl.builder.panel
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
-import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.beInstanceOf
@@ -105,7 +104,7 @@ object SchemeEditorTest : FunSpec({
                 }
             }
 
-            editor.preferredFocusedComponent should beNull()
+            editor.preferredFocusedComponent shouldBe null
         }
     }
 

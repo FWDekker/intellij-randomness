@@ -117,7 +117,7 @@ object JDoubleSpinnerTest : FunSpec({
             test("returns null if the current value is already at the minimum") {
                 val spinner = guiGet { JDoubleSpinner(-637.8, minValue = -637.8) }
 
-                spinner.previousValue should beNull()
+                spinner.previousValue shouldBe null
             }
         }
 
@@ -131,7 +131,7 @@ object JDoubleSpinnerTest : FunSpec({
             test("returns null if the current value is already at the maximum") {
                 val spinner = guiGet { JDoubleSpinner(-28.3, maxValue = -28.3) }
 
-                spinner.nextValue should beNull()
+                spinner.nextValue shouldBe null
             }
         }
     }
@@ -165,7 +165,7 @@ object JLongSpinnerTest : FunSpec({
             test("returns null if the current value is already at the minimum") {
                 val spinner = guiGet { JLongSpinner(203L, minValue = 203L) }
 
-                spinner.previousValue should beNull()
+                spinner.previousValue shouldBe null
             }
         }
 
@@ -179,7 +179,7 @@ object JLongSpinnerTest : FunSpec({
             test("returns null if the current value is already at the maximum") {
                 val spinner = guiGet { JLongSpinner(119L, maxValue = 119L) }
 
-                spinner.nextValue should beNull()
+                spinner.nextValue shouldBe null
             }
         }
     }
@@ -221,7 +221,7 @@ object JIntSpinnerTest : FunSpec({
             test("returns null if the current value is already at the minimum") {
                 val spinner = guiGet { JIntSpinner(188, minValue = 188) }
 
-                spinner.previousValue should beNull()
+                spinner.previousValue shouldBe null
             }
         }
 
@@ -235,7 +235,7 @@ object JIntSpinnerTest : FunSpec({
             test("returns null if the current value is already at the maximum") {
                 val spinner = guiGet { JIntSpinner(182, maxValue = 182) }
 
-                spinner.nextValue should beNull()
+                spinner.nextValue shouldBe null
             }
         }
     }

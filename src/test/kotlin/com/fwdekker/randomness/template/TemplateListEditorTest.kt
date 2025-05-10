@@ -13,8 +13,8 @@ import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
-import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.shouldContainExactly
+import com.fwdekker.randomness.testhelpers.shouldMatchBundle
 import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
 import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.fwdekker.randomness.uuid.UuidScheme
@@ -25,10 +25,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.Row2
 import io.kotest.data.row
 import io.kotest.datatest.withData
-import io.kotest.matchers.nulls.beNull
-import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNot
 import io.kotest.matchers.shouldNotBe
 import org.assertj.swing.fixture.AbstractComponentFixture
 import org.assertj.swing.fixture.Containers
@@ -143,14 +140,14 @@ object TemplateListEditorTest : FunSpec({
             guiRun { editor.reset() }
 
             shouldThrow<IllegalStateException> { guiRun { frame.tree().target().setSelectionRow(1) } }
-                .message should matchBundle("template_list.error.unknown_scheme_type")
+                .message shouldMatchBundle "template_list.error.unknown_scheme_type"
         }
     }
 
 
     context("doValidate") {
         test("returns `null` for the default list") {
-            guiGet { editor.doValidate() } should beNull()
+            guiGet { editor.doValidate() } shouldBe null
         }
 
         test("returns `null` if the template list is valid") {
@@ -158,7 +155,7 @@ object TemplateListEditorTest : FunSpec({
             templateList.applyContext(templateList.context)
             guiRun { editor.reset() }
 
-            guiGet { editor.doValidate() } should beNull()
+            guiGet { editor.doValidate() } shouldBe null
         }
 
         test("returns a string if the template list is invalid") {
@@ -166,7 +163,7 @@ object TemplateListEditorTest : FunSpec({
             templateList.applyContext(templateList.context)
             guiRun { editor.reset() }
 
-            guiGet { editor.doValidate() } shouldNot beNull()
+            guiGet { editor.doValidate() } shouldNotBe null
         }
     }
 

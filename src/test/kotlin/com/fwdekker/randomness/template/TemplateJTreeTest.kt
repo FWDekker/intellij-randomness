@@ -11,6 +11,7 @@ import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
 import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.shouldContainExactly
+import com.fwdekker.randomness.testhelpers.shouldMatchBundle
 import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
 import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.intellij.openapi.actionSystem.ActionToolbar
@@ -77,7 +78,7 @@ object TemplateJTreeTest : FunSpec({
         test("returns null if nothing is selected") {
             guiRun { tree.clearSelection() }
 
-            tree.selectedNodeNotRoot should beNull()
+            tree.selectedNodeNotRoot shouldBe null
         }
 
         test("returns the selected node otherwise") {
@@ -94,7 +95,7 @@ object TemplateJTreeTest : FunSpec({
             test("returns null if nothing is selected") {
                 guiRun { tree.clearSelection() }
 
-                tree.selectedScheme should beNull()
+                tree.selectedScheme shouldBe null
             }
 
             test("returns the selected scheme otherwise") {
@@ -150,7 +151,7 @@ object TemplateJTreeTest : FunSpec({
             test("returns null if nothing is selected") {
                 guiRun { tree.clearSelection() }
 
-                tree.selectedTemplate should beNull()
+                tree.selectedTemplate shouldBe null
             }
 
             test("returns the parent template if a non-template scheme is selected") {
@@ -405,7 +406,7 @@ object TemplateJTreeTest : FunSpec({
                 guiRun { tree.clearSelection() }
 
                 shouldThrow<IllegalArgumentException> { tree.addScheme(DummyScheme()) }
-                    .message should matchBundle("template_list.error.wrong_child_type")
+                    .message shouldMatchBundle "template_list.error.wrong_child_type"
             }
 
             test("inserts the scheme at the bottom of the selected template") {
@@ -469,7 +470,7 @@ object TemplateJTreeTest : FunSpec({
         test("removes the selection if there is nothing to select") {
             guiRun { repeat(3) { tree.removeScheme(currentList.templates[0]) } }
 
-            tree.selectedScheme should beNull()
+            tree.selectedScheme shouldBe null
         }
 
         test("selects the parent if the removed node had no other siblings") {

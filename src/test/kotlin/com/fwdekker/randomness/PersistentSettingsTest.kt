@@ -8,10 +8,9 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.row
 import io.kotest.datatest.withData
 import io.kotest.matchers.collections.beEmpty
-import io.kotest.matchers.nulls.beNull
-import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldStartWith
 import java.io.FileNotFoundException
 import java.lang.module.ModuleDescriptor.Version
@@ -78,36 +77,36 @@ object PersistentSettingsTest : FunSpec({
                 val stored = JDOMUtil.load(getTestConfig("/settings-upgrades/v3.1.0-v3.3.5.xml"))
                 stored.getSchemes().single().run {
                     getPropertyValue("type") shouldBe "1"
-                    getProperty("version") should beNull()
+                    getProperty("version") shouldBe null
                 }
                 stored.getDecorators() shouldNot beEmpty()
-                stored.getDecorators().forEach { it.getProperty("generator") shouldNot beNull() }
+                stored.getDecorators().forEach { it.getProperty("generator") shouldNotBe null }
 
                 val patched = settings.upgrade(stored, Version.parse("3.3.5"))
                 patched.getSchemes().single().run {
-                    getProperty("type") should beNull()
+                    getProperty("type") shouldBe null
                     getPropertyValue("version") shouldBe "1"
                 }
                 patched.getDecorators() shouldNot beEmpty()
-                patched.getDecorators().forEach { it.getProperty("generator") should beNull() }
+                patched.getDecorators().forEach { it.getProperty("generator") shouldBe null }
             }
 
             test("upgrades only up to the specified version") {
                 val stored = JDOMUtil.load(getTestConfig("/settings-upgrades/v3.1.0-v3.3.5.xml"))
                 stored.getSchemes().single().run {
                     getPropertyValue("type") shouldBe "1"
-                    getProperty("version") should beNull()
+                    getProperty("version") shouldBe null
                 }
                 stored.getDecorators() shouldNot beEmpty()
-                stored.getDecorators().forEach { it.getProperty("generator") shouldNot beNull() }
+                stored.getDecorators().forEach { it.getProperty("generator") shouldNotBe null }
 
                 val patched = settings.upgrade(stored, Version.parse("3.2.0"))
                 patched.getSchemes().single().run {
-                    getProperty("type") should beNull()
+                    getProperty("type") shouldBe null
                     getPropertyValue("version") shouldBe "1"
                 }
                 stored.getDecorators() shouldNot beEmpty()
-                stored.getDecorators().forEach { it.getProperty("generator") shouldNot beNull() }
+                stored.getDecorators().forEach { it.getProperty("generator") shouldNotBe null }
             }
         }
 

@@ -5,14 +5,13 @@ import com.fwdekker.randomness.testhelpers.afterNonContainer
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
-import com.fwdekker.randomness.testhelpers.matchBundle
 import com.fwdekker.randomness.testhelpers.shouldContainExactly
+import com.fwdekker.randomness.testhelpers.shouldMatchBundle
 import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
 import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import com.intellij.openapi.options.ConfigurationException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.assertj.swing.fixture.Containers
@@ -89,7 +88,7 @@ object TemplateListConfigurableTest : FunSpec({
             guiRun { frame.textBox("templateName").target().text = "" }
 
             shouldThrow<ConfigurationException> { configurable.apply() }
-                .title should matchBundle("template_list.error.failed_to_save_settings")
+                .title shouldMatchBundle "template_list.error.failed_to_save_settings"
         }
 
         test("applies the changes") {

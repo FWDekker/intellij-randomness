@@ -69,7 +69,7 @@ object TemplateReferenceEditorTest : FunSpec({
             reference.template = null
             guiRun { editor.reset() }
 
-            guiGet { frame.comboBox("template").itemProp().get() } should beNull()
+            guiGet { frame.comboBox("template").itemProp().get() } shouldBe null
         }
 
         test("does not load the reference's parent as a selectable option") {

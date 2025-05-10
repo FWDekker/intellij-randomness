@@ -4,11 +4,10 @@ import com.fwdekker.randomness.Timestamp
 import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.guiGet
 import com.fwdekker.randomness.testhelpers.guiRun
-import com.fwdekker.randomness.testhelpers.matchBundle
+import com.fwdekker.randomness.testhelpers.shouldMatchBundle
 import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 
 
@@ -39,7 +38,7 @@ object JDateTimeFieldTest : FunSpec({
         context("set") {
             test("throws an error if a non-date-time is set") {
                 shouldThrow<IllegalArgumentException> { guiRun { field.setValue("invalid") } }
-                    .message should matchBundle("datetime_field.error.invalid_type")
+                    .message shouldMatchBundle "datetime_field.error.invalid_type"
             }
         }
 
