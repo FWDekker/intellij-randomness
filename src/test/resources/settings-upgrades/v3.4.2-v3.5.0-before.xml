@@ -1,0 +1,70 @@
+<component name="Randomness">
+  <option name="uuid" value="2897503b-81cf-4912-99ec-cb37b05dea5b"/>
+  <option name="version" value="3.4.2"/>
+  <option name="templateList">
+    <TemplateList>
+      <option name="uuid" value="b7ecaefb-3ddf-4e3a-97f6-ab32504ee661"/>
+      <option name="templates">
+        <list>
+          <Template>
+            <option name="name" value="UUID"/>
+            <option name="schemes">
+              <UuidScheme>
+                <option name="addDashes" value="true"/>
+                <option name="uppercase" value="false"/>
+                <option name="uuid" value="b3c8827f-5fb5-4288-bdfb-7c25ecb92481"/>
+                <option name="version" value="4"/>
+                <option name="minDateTime" value="1970-01-01 00:00:00.000"/>
+                <option name="maxDateTime" value="5236-03-31 21:21:00.684"/>
+                <option name="affixDecorator">
+                  <AffixDecorator>
+                    <option name="descriptor" value="&quot;"/>
+                    <option name="enabled" value="false"/>
+                    <option name="uuid" value="4cd67dd9-ea45-4eab-abc4-8a51cc70185c"/>
+                  </AffixDecorator>
+                </option>
+                <option name="arrayDecorator">
+                  <ArrayDecorator>
+                    <option name="elementFormat" value="{val}"/>
+                    <option name="enabled" value="false"/>
+                    <option name="maxCount" value="3"/>
+                    <option name="minCount" value="3"/>
+                    <option name="separator" value=", "/>
+                    <option name="separatorEnabled" value="true"/>
+                    <option name="uuid" value="32548641-1626-4cd4-a493-4a99e27c2dc2"/>
+                    <option name="affixDecorator">
+                      <AffixDecorator>
+                        <option name="descriptor" value="[@]"/>
+                        <option name="enabled" value="true"/>
+                        <option name="uuid" value="ea960a92-fdb7-48cd-9a51-745564ae8196"/>
+                      </AffixDecorator>
+                    </option>
+                  </ArrayDecorator>
+                </option>
+              </UuidScheme>
+            </option>
+            <option name="uuid" value="24704121-dd9c-4331-b785-e925cb6d6dd3"/>
+            <option name="arrayDecorator">
+              <ArrayDecorator>
+                <option name="elementFormat" value="{val}"/>
+                <option name="enabled" value="false"/>
+                <option name="maxCount" value="3"/>
+                <option name="minCount" value="3"/>
+                <option name="separator" value=", "/>
+                <option name="separatorEnabled" value="true"/>
+                <option name="uuid" value="82cc7202-ba08-40c8-9a75-65e579e4c16e"/>
+                <option name="affixDecorator">
+                  <AffixDecorator>
+                    <option name="descriptor" value="[@]"/>
+                    <option name="enabled" value="true"/>
+                    <option name="uuid" value="c2bf6879-ba34-452b-8cee-dd4772191218"/>
+                  </AffixDecorator>
+                </option>
+              </ArrayDecorator>
+            </option>
+          </Template>
+        </list>
+      </option>
+    </TemplateList>
+  </option>
+</component>

@@ -7,13 +7,13 @@ import com.fwdekker.randomness.Timestamp
 import com.fwdekker.randomness.Timestamp.Companion.FORMATTER
 import com.fwdekker.randomness.getMod
 import com.fwdekker.randomness.integer.IntegerScheme
+import com.fwdekker.randomness.uid.NanoIdConfig
+import com.fwdekker.randomness.uid.UuidConfig
 import com.github.sisyphsu.dateparser.DateParserUtils
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Transient
 import com.intellij.util.xmlb.annotations.XCollection
-import kotlin.reflect.KCallable
 import kotlin.reflect.KMutableProperty
-import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.allSuperclasses
@@ -22,18 +22,6 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.jvmErasure
-
-
-/**
- * Maps each element to its name, or returns an empty list of `this` is `null`.
- */
-fun Collection<KCallable<*>>?.callableNames(): Set<String> = (this ?: emptyList()).map { it.name }.toSet()
-
-/**
- * Maps each element to its name, or returns an empty list of `this` is `null`.
- */
-fun Collection<KParameter>?.parameterNames(): Set<String> = (this ?: emptyList()).map { it.name!! }.toSet()
-
 
 /**
  * Returns all of the [com.fwdekker.randomness.State]'s properties ("fields"), i.e. everything preceded by `val` or
@@ -110,29 +98,38 @@ fun Any?.mutated(): Any {
         is Double -> inc()
         is String -> "foo_$this"
         is CapitalizationMode -> CapitalizationMode.entries.getMod(ordinal + 1)
-        is Timestamp ->
-            if (epochMilli == null) Timestamp("foo_$value")
-            else Timestamp(DateParserUtils.parseDateTime(value).plusSeconds(1).format(FORMATTER))
-
-        is State ->
-            properties()
-                .filter { it.isSerialized() }
-                .forEach {
-                    val newValue = it.getter.call(this).mutated()
-                    if (it is KMutableProperty<*>)
-                        it.setter.call(this, newValue)
-                }
-                .let { this }
-
-        is List<*> ->
-            if (isEmpty()) error("Cannot mutate empty list.")
-            else when (first()) {
-                is Int -> map { it.mutated() } + 0
-                is String -> map { it.mutated() } + "foo"
-                is Scheme -> map { it.mutated() } + IntegerScheme()
-                else -> error("Cannot mutate lists with elements such as `${first()}`.")
-            }
-
+        is Timestamp -> mutatedTimestamp()
+        is NanoIdConfig -> copy(size = size + 1, alphabet = "foo_$alphabet")
+        is UuidConfig -> copy(version = if (version == 4) 1 else 4, isUppercase = !isUppercase, addDashes = !addDashes)
+        is State -> mutatedState()
+        is List<*> -> mutatedList()
         else -> error("Cannot mutate value `$this`.")
+    }
+}
+
+private fun Timestamp.mutatedTimestamp(): Timestamp =
+    if (epochMilli == null) Timestamp("foo_$value")
+    else Timestamp(DateParserUtils.parseDateTime(value).plusSeconds(1).format(FORMATTER))
+
+private fun State.mutatedState(): State {
+    properties()
+        .filter { it.isSerialized() }
+        .forEach {
+            val newValue = it.getter.call(this).mutated()
+            if (it is KMutableProperty<*>) {
+                it.setter.call(this, newValue)
+            }
+        }
+    return this
+}
+
+private fun List<*>.mutatedList(): List<Any?> {
+    if (isEmpty()) error("Cannot mutate empty list.")
+
+    return when (first()) {
+        is Int -> map { it.mutated() } + 0
+        is String -> map { it.mutated() } + "foo"
+        is Scheme -> map { it.mutated() } + IntegerScheme()
+        else -> error("Cannot mutate lists with elements such as `${first()}`.")
     }
 }

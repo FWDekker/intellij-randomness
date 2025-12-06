@@ -12,6 +12,7 @@ import com.fwdekker.randomness.testhelpers.parseXml
 import com.fwdekker.randomness.testhelpers.serialize
 import com.fwdekker.randomness.testhelpers.shouldMatchXml
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
+import com.fwdekker.randomness.testhelpers.toXmlString
 import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldNotThrowAny
@@ -29,6 +30,7 @@ import io.kotest.matchers.types.shouldBeSameInstanceAs
 import java.io.FileNotFoundException
 import java.lang.module.ModuleDescriptor.Version
 import java.net.URL
+import java.util.UUID
 
 
 /**
@@ -285,12 +287,50 @@ object PersistentSettingsTest : FunSpec({
                 row("3.3.4", "3.3.5", "removes `generator` fields"),
                 row("3.3.6", "3.4.0", "patches epochs to timestamp strings"),
                 row("3.4.1", "3.4.2", "clamps timestamps in UUID settings"),
+                row("3.4.2", "3.5.0", "migrates UUID settings to new format"),
             ) { (from, to, _) ->
                 val unpatched = getTestConfig("/settings-upgrades/v$from-v$to-before.xml").parseXml()
 
                 val patched = persistent.upgrade(unpatched, Version.parse(to))
 
-                patched shouldMatchXml getTestConfig("/settings-upgrades/v$from-v$to-after.xml").readText()
+                if (from == "3.4.2" && to == "3.5.0") {
+                    fun extractUuidOptionValues(xmlText: String): Set<String> {
+                        val regex = Regex("""<option\\s+name=\\\"uuid\\\"\\s+value=\\\"([^\\\"]+)\\\"\\s*/?>""")
+                        return regex.findAll(xmlText).map { it.groupValues[1] }.toSet()
+                    }
+
+                    fun normalizeNewUuids(xmlText: String, oldUuids: Set<String>): String {
+                        val regex = Regex("""(<option\\s+name=\\\"uuid\\\"\\s+value=\\\")([^\\\"]+)(\\\"\\s*/?>)""")
+                        return regex.replace(xmlText) { match ->
+                            val uuid = match.groupValues[2]
+                            if (uuid in oldUuids) {
+                                match.value
+                            } else {
+                                match.groupValues[1] + "__NEW_UUID__" + match.groupValues[3]
+                            }
+                        }
+                    }
+
+                    val unpatchedText = getTestConfig("/settings-upgrades/v$from-v$to-before.xml").readText()
+                    val expectedText = getTestConfig("/settings-upgrades/v$from-v$to-after.xml").readText()
+                    val patchedText = patched.toXmlString()
+
+                    val beforeUuids = extractUuidOptionValues(unpatchedText)
+                    val afterUuids = extractUuidOptionValues(patchedText)
+
+                    // All UUIDs present before the migration must still exist after the migration.
+                    beforeUuids.all { it in afterUuids } shouldBe true
+
+                    // Sanity: UUIDs should be valid and unique.
+                    afterUuids.forEach { UUID.fromString(it) }
+                    afterUuids.size shouldBe afterUuids.distinct().size
+
+                    // Compare to fixture while ignoring UUID values for newly created entities.
+                    normalizeNewUuids(patchedText, beforeUuids).parseXml() shouldMatchXml
+                        normalizeNewUuids(expectedText, beforeUuids)
+                } else {
+                    patched shouldMatchXml getTestConfig("/settings-upgrades/v$from-v$to-after.xml").readText()
+                }
             }
         }
     }
