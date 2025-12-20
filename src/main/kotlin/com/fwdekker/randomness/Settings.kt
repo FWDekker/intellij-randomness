@@ -5,6 +5,7 @@ import com.fwdekker.randomness.PersistentSettings.Companion.UPGRADES
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
 import com.fwdekker.randomness.ui.ValidatorDsl.Companion.validators
+import com.fwdekker.randomness.uid.UidScheme
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.SettingsCategory
@@ -223,6 +224,91 @@ internal class PersistentSettings : PersistentStateComponent<Element> {
                                             prop.setAttribute("value", max.value)
                                     }
                             }
+                    },
+                Version.parse("3.5.0") to
+                    { settings ->
+                        // Migrate UuidScheme to UidScheme
+                        settings.getSchemes()
+                            .filter { it.name == "UuidScheme" }
+                            .forEach { scheme ->
+                                // Change scheme name from UuidScheme to UidScheme
+                                scheme.name = "UidScheme"
+
+                                // Add idTypeKey property set to "uuid"
+                                scheme.addProperty("idTypeKey", "uuid")
+
+                                // Wrap existing UUID properties into uuidConfig
+                                val uuidConfigElement = Element("UuidConfig")
+
+                                // Move UUID-specific properties to uuidConfig
+                                listOf("version", "minDateTime", "maxDateTime", "isUppercase", "addDashes")
+                                    .forEach { propName ->
+                                        scheme.getMultiProperty(propName).forEach { prop ->
+                                            scheme.children.remove(prop)
+                                            uuidConfigElement.addContent(prop.clone())
+                                        }
+                                    }
+
+                                // Add uuidConfig as a property
+                                scheme.addContent(
+                                    Element("option")
+                                        .setAttribute("name", "uuidConfig")
+                                        .addContent(uuidConfigElement)
+                                )
+
+                                // Add default nanoIdConfig
+                                val nanoIdConfigElement = Element("NanoIdConfig")
+                                scheme.addContent(
+                                    Element("option")
+                                        .setAttribute("name", "nanoIdConfig")
+                                        .addContent(nanoIdConfigElement)
+                                )
+                            }
+
+                        // Add default UUID and NanoID templates if they don't exist
+                        val templatesElement = settings.getPropertyByPath("templateList", null, "templates", null)
+                        if (templatesElement != null) {
+                            val existingTemplateNames = settings.getTemplates()
+                                .mapNotNull { it.getPropertyValue("name") }
+
+                            // Add UUID template if not present
+                            if ("UUID" !in existingTemplateNames) {
+                                val uuidScheme = UidScheme(idTypeKey = "uuid").apply {
+                                    uuid = "b3c8827f-5fb5-4288-bdfb-7c25ecb92481"
+                                    affixDecorator.uuid = "4cd67dd9-ea45-4eab-abc4-8a51cc70185c"
+                                    arrayDecorator.uuid = "32548641-1626-4cd4-a493-4a99e27c2dc2"
+                                    arrayDecorator.affixDecorator.uuid = "ea960a92-fdb7-48cd-9a51-745564ae8196"
+                                }
+                                val uuidTemplate = Template(
+                                    name = "UUID",
+                                    schemes = mutableListOf(uuidScheme),
+                                ).apply {
+                                    uuid = "24704121-dd9c-4331-b785-e925cb6d6dd3"
+                                    arrayDecorator.uuid = "82cc7202-ba08-40c8-9a75-65e579e4c16e"
+                                    arrayDecorator.affixDecorator.uuid = "c2bf6879-ba34-452b-8cee-dd4772191218"
+                                }
+                                templatesElement.addContent(serialize(uuidTemplate))
+                            }
+
+                            // Add Nano ID template if not present
+                            if ("Nano ID" !in existingTemplateNames) {
+                                val nanoIdScheme = UidScheme(idTypeKey = "nanoid").apply {
+                                    uuid = "be7704c7-51f8-4483-a9aa-6a5ae67bb904"
+                                    affixDecorator.uuid = "3e551d22-30d9-4aea-b35d-cf516f204761"
+                                    arrayDecorator.uuid = "3992cea7-29e2-4811-847d-c65496eb5d45"
+                                    arrayDecorator.affixDecorator.uuid = "3e906fb0-20b4-464f-8aed-2e28bef642c7"
+                                }
+                                val nanoIdTemplate = Template(
+                                    name = "Nano ID",
+                                    schemes = mutableListOf(nanoIdScheme),
+                                ).apply {
+                                    uuid = "500a898f-d584-4887-9c1e-afcbb2867cee"
+                                    arrayDecorator.uuid = "78299e57-6cd0-4dcb-9e63-f8c915f56a8b"
+                                    arrayDecorator.affixDecorator.uuid = "94af8a4e-818d-43d3-b0c5-4160d1ade1cf"
+                                }
+                                templatesElement.addContent(serialize(nanoIdTemplate))
+                            }
+                        }
                     }
             )
 
