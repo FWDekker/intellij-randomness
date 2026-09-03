@@ -3,14 +3,11 @@
 ### Breaking changes
 * Minimum IDE version has been increased to 2024.3. This helps avert compatibility issues with future versions. ([#TODO](https://github.com/fwdekker/intellij-randomness/issues/TODO))
 
-### Added
 ### Changed
 * Regex patterns now ignore named capturing groups instead of giving an error. Achieved by updating [RgxGen](https://github.com/curious-odd-man/RgxGen) to v3.1. ([#TODO](https://github.com/fwdekker/intellij-randomness/issues/TODO))
 
-### Deprecated
-### Removed
 ### Fixed
-### Security
+* Updated the expired token for user-submitted bug reports. If you tried reporting an error and it failed, this was probably why. ([#TODO](https://github.com/fwdekker/intellij-randomness/issues/TODO))
 
 
 ## 3.4.2 -- 2025-08-28
