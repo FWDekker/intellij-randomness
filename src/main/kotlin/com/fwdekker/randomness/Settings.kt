@@ -245,8 +245,8 @@ class ParseSettingsException(message: String? = null, cause: Throwable? = null) 
     /**
      * Returns the user's Randomness settings file as an attachment, if it can be read.
      */
-    override fun getAttachments(): Array<out Attachment?> {
-        val path = PathManager.getOptionsFile("randomness3")
+    override fun getAttachments(): Array<out Attachment> {
+        val path = PathManager.getOptionsDir().resolve("randomness3.xml").toFile()
         val contents = if (path.canRead()) path.readText() else "Settings file could not be read."
 
         return arrayOf(Attachment("randomness3.xml", contents))

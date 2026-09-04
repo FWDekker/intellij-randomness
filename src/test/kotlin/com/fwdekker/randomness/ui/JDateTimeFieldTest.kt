@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.Timestamp
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.runEdt
 import com.fwdekker.randomness.testhelpers.shouldMatchBundle
 import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
@@ -19,7 +18,7 @@ object JDateTimeFieldTest : FunSpec({
 
     useEdtViolationDetection()
 
-    beforeNonContainer {
+    beforeEach {
         field = runEdt { JDateTimeField() }
     }
 

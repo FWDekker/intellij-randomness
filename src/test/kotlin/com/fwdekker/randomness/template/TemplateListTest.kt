@@ -6,8 +6,8 @@ import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 
@@ -91,21 +91,24 @@ object TemplateListTest : FunSpec({
 
 
     context("doValidate") {
-        withData(
+        withTests(
             mapOf(
                 "succeeds for default state" to
-                    row(TemplateList(), null),
+                    tuple(TemplateList(), null),
                 "succeeds with no templates" to
-                    row(TemplateList(mutableListOf()), null),
+                    tuple(TemplateList(mutableListOf()), null),
                 "fails if multiple templates have the same name" to
-                    row(
+                    tuple(
                         TemplateList(mutableListOf(Template("same"), Template("same"))),
                         "template_list.error.duplicate_name",
                     ),
                 "fails if the single template is invalid" to
-                    row(TemplateList(mutableListOf(Template(schemes = mutableListOf(DummyScheme(valid = false))))), ""),
+                    tuple(
+                        TemplateList(mutableListOf(Template(schemes = mutableListOf(DummyScheme(valid = false))))),
+                        ""
+                    ),
                 "fails if one of multiple templates is invalid" to
-                    row(
+                    tuple(
                         TemplateList(
                             mutableListOf(
                                 Template("Valid"),

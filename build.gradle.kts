@@ -5,9 +5,9 @@ import org.jetbrains.changelog.Changelog
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.Year
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion as MyKotlinVersion // Alias to prevent "optimizing" the import away
 
 fun properties(key: String): String = project.findProperty(key).toString()
 
@@ -34,7 +34,7 @@ plugins {
 
 
 /// Dependencies
-val scrambler: Configuration by configurations.creating
+val scrambler: Configuration = configurations.create("scrambler")
 
 repositories {
     mavenCentral()
@@ -61,7 +61,7 @@ dependencies {
     dokkaHtmlPlugin(libs.dokkaVersioningPlugin)
 
     intellijPlatform {
-        intellijIdeaCommunity(libs.versions.intellij.ide.get()) {
+        intellijIdea(libs.versions.intellij.ide.get()) {
             useInstaller = !libs.versions.intellij.ide.get().endsWith("EAP-SNAPSHOT")
         }
 
@@ -93,7 +93,7 @@ tasks {
         compilerOptions {
             val kotlinApiVersion = libs.versions.kotlin.get()
                 .split(".").take(2).joinToString(".") // Transforms e.g. "2.0.21" to "2.0"
-                .let { KotlinVersion.fromVersion(it) }
+                .let { MyKotlinVersion.fromVersion(it) }
 
             jvmTarget = JvmTarget.fromTarget(libs.versions.java.get())
             apiVersion = kotlinApiVersion

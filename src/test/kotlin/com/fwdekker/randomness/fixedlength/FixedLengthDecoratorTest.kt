@@ -5,8 +5,8 @@ import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.stateSerializationTestFactory
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import io.kotest.matchers.shouldBe
 
 
@@ -18,16 +18,16 @@ object FixedLengthDecoratorTest : FunSpec({
 
 
     context("generateStrings") {
-        withData(
+        withTests(
             mapOf(
                 "returns default input if disabled" to
-                    row(FixedLengthDecorator(enabled = false, length = 1), "[i0]"),
+                    tuple(FixedLengthDecorator(enabled = false, length = 1), "[i0]"),
                 "returns shortened string" to
-                    row(FixedLengthDecorator(enabled = true, length = 3), "[i0"),
+                    tuple(FixedLengthDecorator(enabled = true, length = 3), "[i0"),
                 "returns padded string" to
-                    row(FixedLengthDecorator(enabled = true, length = 5, filler = "f"), "f[i0]"),
+                    tuple(FixedLengthDecorator(enabled = true, length = 5, filler = "f"), "f[i0]"),
                 "returns default input if correct length" to
-                    row(FixedLengthDecorator(enabled = true, length = 4), "[i0]"),
+                    tuple(FixedLengthDecorator(enabled = true, length = 4), "[i0]"),
             )
         ) { (scheme, output) ->
             scheme.generator = { count -> List(count) { "[i$it]" } }
@@ -37,22 +37,22 @@ object FixedLengthDecoratorTest : FunSpec({
     }
 
     context("doValidate") {
-        withData(
+        withTests(
             mapOf(
                 "succeeds for default state" to
-                    row(FixedLengthDecorator(), null),
+                    tuple(FixedLengthDecorator(), null),
                 "succeeds for one length" to
-                    row(FixedLengthDecorator(enabled = true, length = 1), null),
+                    tuple(FixedLengthDecorator(enabled = true, length = 1), null),
                 "fails for zero length" to
-                    row(FixedLengthDecorator(enabled = true, length = 0), "fixed_length.error.length_too_low"),
+                    tuple(FixedLengthDecorator(enabled = true, length = 0), "fixed_length.error.length_too_low"),
                 "fails for negative length" to
-                    row(FixedLengthDecorator(enabled = true, length = -4), "fixed_length.error.length_too_low"),
+                    tuple(FixedLengthDecorator(enabled = true, length = -4), "fixed_length.error.length_too_low"),
                 "fails for empty filler" to
-                    row(FixedLengthDecorator(enabled = true, filler = ""), "fixed_length.error.filler_length"),
+                    tuple(FixedLengthDecorator(enabled = true, filler = ""), "fixed_length.error.filler_length"),
                 "fails for non-char filler" to
-                    row(FixedLengthDecorator(enabled = true, filler = "long"), "fixed_length.error.filler_length"),
+                    tuple(FixedLengthDecorator(enabled = true, filler = "long"), "fixed_length.error.filler_length"),
                 "ignores invalid settings if disabled" to
-                    row(FixedLengthDecorator(enabled = false, filler = "long"), null),
+                    tuple(FixedLengthDecorator(enabled = false, filler = "long"), null),
             )
         ) { (scheme, validation) ->
             scheme.generator = { List(it) { "[in]" } }

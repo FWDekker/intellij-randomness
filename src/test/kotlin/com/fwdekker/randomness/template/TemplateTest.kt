@@ -15,8 +15,8 @@ import com.fwdekker.randomness.testhelpers.stateSerializationTestFactory
 import com.fwdekker.randomness.word.WordScheme
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
@@ -83,14 +83,14 @@ object TemplateTest : FunSpec({
 
 
     context("generateStrings") {
-        withData(
+        withTests(
             mapOf(
                 "returns an empty string if it contains no schemes" to
-                    row(Template(), ""),
+                    tuple(Template(), ""),
                 "returns the single scheme's output" to
-                    row(Template(schemes = mutableListOf(DummyScheme())), "text0"),
+                    tuple(Template(schemes = mutableListOf(DummyScheme())), "text0"),
                 "returns the concatenation of the schemes' outputs" to
-                    row(
+                    tuple(
                         Template(
                             schemes = mutableListOf(
                                 DummyScheme(prefix = "a"),
@@ -151,16 +151,16 @@ object TemplateTest : FunSpec({
     }
 
     context("doValidate") {
-        withData(
+        withTests(
             mapOf(
                 "succeeds for default state" to
-                    row(Template(), null),
+                    tuple(Template(), null),
                 "fails if name is blank" to
-                    row(Template("  "), "template.error.no_name"),
+                    tuple(Template("  "), "template.error.no_name"),
                 "fails if scheme is invalid" to
-                    row(Template("Template", mutableListOf(DummyScheme(valid = false))), ""),
+                    tuple(Template("Template", mutableListOf(DummyScheme(valid = false))), ""),
                 "fails if array decorator is invalid" to
-                    row(Template(arrayDecorator = ArrayDecorator(enabled = true, minCount = -24)), ""),
+                    tuple(Template(arrayDecorator = ArrayDecorator(enabled = true, minCount = -24)), ""),
             )
         ) { (scheme, validation) -> scheme shouldValidateAsBundle validation }
     }

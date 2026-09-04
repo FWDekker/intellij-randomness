@@ -2,12 +2,13 @@ package com.fwdekker.randomness.testhelpers
 
 import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.SchemeEditor
+import com.intellij.openapi.application.edtWriteAction
 import com.intellij.ui.dsl.builder.MutableProperty
 import io.kotest.assertions.withClue
+import io.kotest.core.Tuple3
 import io.kotest.core.factory.TestFactory
 import io.kotest.core.spec.style.funSpec
-import io.kotest.data.Row3
-import io.kotest.datatest.withData
+import io.kotest.datatest.withTests
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -22,7 +23,7 @@ fun editorApplyTests(editor: () -> SchemeEditor<*>) =
             test("makes no changes by default") {
                 val before = editor().scheme.deepCopy(retainUuid = true)
 
-                runEdt { editor().apply() }
+                edtWriteAction { editor().apply() }
 
                 before shouldBe editor().scheme
             }
@@ -39,44 +40,44 @@ fun editorApplyTests(editor: () -> SchemeEditor<*>) =
  */
 fun <S : Scheme> editorFieldsTests(
     editor: () -> SchemeEditor<S>,
-    fields: Map<String, () -> Row3<MutableProperty<Any?>, MutableProperty<Any?>, Any?>>,
+    fields: Map<String, () -> Tuple3<MutableProperty<Any?>, MutableProperty<Any?>, Any?>>,
 ): TestFactory =
     funSpec {
         context("bindings") {
             context("'apply' stores the editor's field in the scheme's field") {
-                withData(fields) { row ->
-                    val (editorProperty, schemeProperty, value) = row()
+                withTests(fields) { tuple ->
+                    val (editorProperty, schemeProperty, value) = tuple()
 
                     withClue("Pre: Scheme value should not be set value") { schemeProperty.get() shouldNotBe value }
 
-                    runEdt { editorProperty.set(value) }
-                    runEdt { editor().apply() }
+                    edtWriteAction { editorProperty.set(value) }
+                    edtWriteAction { editor().apply() }
 
                     withClue("Post: Scheme value should be set value") { schemeProperty.get() shouldBe value }
                 }
             }
 
             context("'reset' loads the scheme's field into the editor's field") {
-                withData(fields) { row ->
-                    val (editorProperty, schemeProperty, value) = row()
+                withTests(fields) { tuple ->
+                    val (editorProperty, schemeProperty, value) = tuple()
 
                     withClue("Pre: Editor value should not be set value") { editorProperty.get() shouldNotBe value }
 
                     schemeProperty.set(value)
-                    runEdt { editor().reset() }
+                    edtWriteAction { editor().reset() }
 
                     withClue("Post: Editor value should be set value") { editorProperty.get() shouldBe value }
                 }
             }
 
             context("'addChangeListener' is invoked when the editor's field is changed") {
-                withData(fields) { row ->
-                    val (editorProperty, _, value) = row()
+                withTests(fields) { tuple ->
+                    val (editorProperty, _, value) = tuple()
 
                     var invoked = 0
                     editor().addChangeListener { invoked++ }
 
-                    runEdt { editorProperty.set(value) }
+                    edtWriteAction { editorProperty.set(value) }
 
                     withClue("Listener should have been invoked") { invoked shouldBeGreaterThanOrEqual 1 }
                 }

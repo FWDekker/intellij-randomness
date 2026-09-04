@@ -1,9 +1,8 @@
 package com.fwdekker.randomness.testhelpers
 
 import com.intellij.openapi.actionSystem.impl.ActionButton
-import com.intellij.openapi.application.EDT
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.intellij.openapi.application.edtWriteAction
+import kotlinx.coroutines.runBlocking
 import org.assertj.swing.core.GenericTypeMatcher
 import org.assertj.swing.driver.ComponentDriver
 import org.assertj.swing.edt.GuiActionRunner
@@ -15,12 +14,15 @@ import java.awt.Component
 /**
  * Runs [lambda] in the GUI thread and returns the result.
  */
-fun <T> runEdt(lambda: () -> T): T = GuiActionRunner.execute(lambda)
+fun <T> runEdt(lambda: suspend () -> T): T {
+    val blockingLambda = { runBlocking { lambda() } }
+    return GuiActionRunner.execute(blockingLambda)
+}
 
 /**
- * Runs [lambda] in the IDEA fixture's GUI coroutine and returns the result.
+ * Runs [lambda] in the IDEA fixture's GUI coroutine,  and returns the result.
  */
-suspend fun <T> ideaRunEdt(lambda: suspend () -> T): T = withContext(Dispatchers.EDT) { lambda() }
+suspend fun <T> ideaWriteEdt(lambda: () -> T): T = edtWriteAction(lambda)
 
 
 /**

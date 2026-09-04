@@ -5,8 +5,8 @@ import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.stateSerializationTestFactory
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import io.kotest.matchers.shouldBe
 
 
@@ -18,20 +18,20 @@ object AffixDecoratorTest : FunSpec({
 
 
     context("generateStrings") {
-        withData(
+        withTests(
             mapOf(
                 "returns default input if disabled" to
-                    row(AffixDecorator(enabled = false, descriptor = """<@>"""), """[i0]"""),
+                    tuple(AffixDecorator(enabled = false, descriptor = """<@>"""), """[i0]"""),
                 "appends and prepends if no '@'" to
-                    row(AffixDecorator(enabled = true, descriptor = """*"""), "*[i0]*"),
+                    tuple(AffixDecorator(enabled = true, descriptor = """*"""), "*[i0]*"),
                 "replaces 'at' with input" to
-                    row(AffixDecorator(enabled = true, descriptor = "(@)"), "([i0])"),
+                    tuple(AffixDecorator(enabled = true, descriptor = "(@)"), "([i0])"),
                 "replaces multiple 'at' with input" to
-                    row(AffixDecorator(enabled = true, descriptor = "(@|@)"), "([i0]|[i0])"),
+                    tuple(AffixDecorator(enabled = true, descriptor = "(@|@)"), "([i0]|[i0])"),
                 "interprets escaped 'at' as literal" to
-                    row(AffixDecorator(enabled = true, descriptor = """(\@)"""), """(@)[i0](@)"""),
+                    tuple(AffixDecorator(enabled = true, descriptor = """(\@)"""), """(@)[i0](@)"""),
                 "interprets escaped 'backslash' as literal" to
-                    row(AffixDecorator(enabled = true, descriptor = """(\\@)"""), """(\[i0])"""),
+                    tuple(AffixDecorator(enabled = true, descriptor = """(\\@)"""), """(\[i0])"""),
             )
         ) { (scheme, output) ->
             scheme.generator = { count -> List(count) { "[i$it]" } }
@@ -41,22 +41,22 @@ object AffixDecoratorTest : FunSpec({
     }
 
     context("doValidate") {
-        withData(
+        withTests(
             mapOf(
                 "succeeds for default state" to
-                    row(AffixDecorator(), null),
+                    tuple(AffixDecorator(), null),
                 "succeeds for empty descriptor" to
-                    row(AffixDecorator(enabled = true, descriptor = ""), null),
+                    tuple(AffixDecorator(enabled = true, descriptor = ""), null),
                 "succeeds for complex descriptor" to
-                    row(AffixDecorator(enabled = true, descriptor = """\\@\@@\@\\"""), null),
+                    tuple(AffixDecorator(enabled = true, descriptor = """\\@\@@\@\\"""), null),
                 "fails descriptor has single trailing backslash" to
-                    row(AffixDecorator(enabled = true, descriptor = """\"""), "affix.error.trailing_escape"),
+                    tuple(AffixDecorator(enabled = true, descriptor = """\"""), "affix.error.trailing_escape"),
                 "succeeds if descriptor has double trailing backslash" to
-                    row(AffixDecorator(enabled = true, descriptor = """\\"""), null),
+                    tuple(AffixDecorator(enabled = true, descriptor = """\\"""), null),
                 "fails if descriptors has triple trailing backslash" to
-                    row(AffixDecorator(enabled = true, descriptor = """\\\"""), "affix.error.trailing_escape"),
+                    tuple(AffixDecorator(enabled = true, descriptor = """\\\"""), "affix.error.trailing_escape"),
                 "ignores invalid settings if disabled" to
-                    row(AffixDecorator(enabled = false, descriptor = """\"""), null),
+                    tuple(AffixDecorator(enabled = false, descriptor = """\"""), null),
             )
         ) { (scheme, validation) ->
             scheme.generator = { count -> List(count) { "[i$it]" } }

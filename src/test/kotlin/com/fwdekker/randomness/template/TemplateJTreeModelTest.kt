@@ -4,17 +4,16 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.testhelpers.DummyScheme
 import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.beEmptyIntArray
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.shouldContainExactly
 import com.fwdekker.randomness.testhelpers.shouldMatchBundle
 import com.fwdekker.randomness.ui.SimpleTreeModelListener
 import com.intellij.ui.RowsDnDSupport.RefinedDropSupport.Position
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.Tuple2
+import io.kotest.core.Tuple3
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.Row2
-import io.kotest.data.Row3
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
@@ -39,7 +38,7 @@ object TemplateJTreeModelTest : FunSpec({
     fun List<Scheme>.names() = this.map { it.name }
 
 
-    beforeNonContainer {
+    beforeEach {
         list = TemplateList(
             mutableListOf(
                 Template(
@@ -128,7 +127,7 @@ object TemplateJTreeModelTest : FunSpec({
         }
 
 
-        test("replaces uuids of schemes with the same uuid in other templates") {
+        test("replaces UUIDs of schemes with the same uuid in other templates") {
             val target = list.templates[0].schemes[0]
             val targetUuid = target.uuid
 
@@ -150,8 +149,8 @@ object TemplateJTreeModelTest : FunSpec({
             model.insertNode(model.root.children[0], scheme)
 
             lastEvent!!.treePath.lastPathComponent shouldBe model.root.children[0]
-            lastEvent!!.childIndices shouldContainExactly arrayOf(2)
-            lastEvent!!.children shouldContainExactly arrayOf(scheme)
+            lastEvent.childIndices shouldContainExactly arrayOf(2)
+            lastEvent.children shouldContainExactly arrayOf(scheme)
         }
 
         test("informs listeners of a node insertion if the root's not-only child was inserted") {
@@ -162,8 +161,8 @@ object TemplateJTreeModelTest : FunSpec({
             model.insertNode(model.root, node, index = 1)
 
             lastEvent!!.treePath.lastPathComponent shouldBe model.root
-            lastEvent!!.childIndices shouldContainExactly arrayOf(1)
-            lastEvent!!.children shouldContainExactly arrayOf(node)
+            lastEvent.childIndices shouldContainExactly arrayOf(1)
+            lastEvent.children shouldContainExactly arrayOf(node)
         }
 
         test("informs listeners of a structure change if the root's now-only child was inserted") {
@@ -177,8 +176,8 @@ object TemplateJTreeModelTest : FunSpec({
             model.insertNode(model.root, node)
 
             lastEvent!!.treePath.lastPathComponent shouldBe model.root
-            lastEvent!!.childIndices should beEmptyIntArray()
-            lastEvent!!.children shouldBe null
+            lastEvent.childIndices should beEmptyIntArray()
+            lastEvent.children shouldBe null
         }
     }
 
@@ -255,8 +254,8 @@ object TemplateJTreeModelTest : FunSpec({
             model.removeNode(node)
 
             lastEvent!!.treePath.lastPathComponent shouldBe model.root
-            lastEvent!!.childIndices shouldContainExactly arrayOf(2)
-            lastEvent!!.children shouldContainExactly arrayOf(node)
+            lastEvent.childIndices shouldContainExactly arrayOf(2)
+            lastEvent.children shouldContainExactly arrayOf(node)
         }
     }
 
@@ -273,32 +272,32 @@ object TemplateJTreeModelTest : FunSpec({
     }
 
     context("canMoveRow") {
-        beforeNonContainer {
+        beforeEach {
             model.insertNode(StateNode(list.templates[2]), StateNode(DummyScheme("Scheme3"))) // row 6
         }
 
 
-        withData(
+        withTests(
             mapOf(
-                "cannot move to itself" to row(3, 3, Position.BELOW, false),
-                "cannot move from invalid index" to row(-2, 2, Position.ABOVE, false),
-                "cannot move to invalid index" to row(1, -4, Position.BELOW, false),
-                "cannot move template into scheme" to row(3, 1, Position.INTO, false),
-                "cannot move template into template" to row(0, 5, Position.INTO, false),
-                "cannot move template below template" to row(5, 0, Position.BELOW, false),
-                "cannot move template below scheme" to row(0, 4, Position.BELOW, false),
-                "cannot move template above next template" to row(0, 3, Position.ABOVE, false),
-                "cannot move template above scheme" to row(3, 2, Position.ABOVE, false),
-                "can move middle template above first template" to row(3, 0, Position.ABOVE, true),
-                "can move middle template above last template" to row(0, 5, Position.ABOVE, true),
-                "can move middle template below last template" to row(3, 5, Position.BELOW, true),
-                "cannot move second-to-last template above last template" to row(3, 5, Position.ABOVE, false),
-                "cannot move last template below last scheme" to row(5, 6, Position.BELOW, false),
-                "cannot move scheme into scheme" to row(4, 2, Position.INTO, false),
-                "cannot move scheme above first template" to row(1, 0, Position.ABOVE, false),
-                "can move scheme into template" to row(6, 0, Position.INTO, true),
-                "can move scheme above scheme" to row(2, 1, Position.ABOVE, true),
-                "can move scheme below scheme" to row(1, 6, Position.BELOW, true),
+                "cannot move to itself" to tuple(3, 3, Position.BELOW, false),
+                "cannot move from invalid index" to tuple(-2, 2, Position.ABOVE, false),
+                "cannot move to invalid index" to tuple(1, -4, Position.BELOW, false),
+                "cannot move template into scheme" to tuple(3, 1, Position.INTO, false),
+                "cannot move template into template" to tuple(0, 5, Position.INTO, false),
+                "cannot move template below template" to tuple(5, 0, Position.BELOW, false),
+                "cannot move template below scheme" to tuple(0, 4, Position.BELOW, false),
+                "cannot move template above next template" to tuple(0, 3, Position.ABOVE, false),
+                "cannot move template above scheme" to tuple(3, 2, Position.ABOVE, false),
+                "can move middle template above first template" to tuple(3, 0, Position.ABOVE, true),
+                "can move middle template above last template" to tuple(0, 5, Position.ABOVE, true),
+                "can move middle template below last template" to tuple(3, 5, Position.BELOW, true),
+                "cannot move second-to-last template above last template" to tuple(3, 5, Position.ABOVE, false),
+                "cannot move last template below last scheme" to tuple(5, 6, Position.BELOW, false),
+                "cannot move scheme into scheme" to tuple(4, 2, Position.INTO, false),
+                "cannot move scheme above first template" to tuple(1, 0, Position.ABOVE, false),
+                "can move scheme into template" to tuple(6, 0, Position.INTO, true),
+                "can move scheme above scheme" to tuple(2, 1, Position.ABOVE, true),
+                "can move scheme below scheme" to tuple(1, 6, Position.BELOW, true),
             )
         ) { (fromIndex, toIndex, position, expected) ->
             model.canMoveRow(fromIndex, toIndex, position) shouldBe expected
@@ -428,12 +427,12 @@ object TemplateJTreeModelTest : FunSpec({
                 .message shouldMatchBundle "template_list.error.unknown_node_type"
         }
 
-        withData(
+        withTests(
             mapOf(
-                "is not in tree" to row({ StateNode(DummyScheme()) }, false),
-                "cannot have children" to row({ model.root.children[0].children[1] }, true),
-                "can have children, but has none" to row({ model.root.children[2] }, true),
-                "can have children and has children" to row({ model.root.children[0] }, false),
+                "is not in tree" to tuple({ StateNode(DummyScheme()) }, false),
+                "cannot have children" to tuple({ model.root.children[0].children[1] }, true),
+                "can have children, but has none" to tuple({ model.root.children[2] }, true),
+                "can have children and has children" to tuple({ model.root.children[0] }, false),
             )
         ) { (state, expected) -> model.isLeaf(state()) shouldBe expected }
     }
@@ -474,32 +473,32 @@ object TemplateJTreeModelTest : FunSpec({
                 .message shouldMatchBundle "template_list.error.node_not_in_tree"
         }
 
-        withData(
+        withTests(
             mapOf(
-                "cannot have children" to row({ model.root.children[0].children[1] }, 0),
-                "can have children, but has none" to row({ model.root.children[2] }, 0),
-                "can have children and has children" to row({ model.root.children[0] }, 2),
+                "cannot have children" to tuple({ model.root.children[0].children[1] }, 0),
+                "can have children, but has none" to tuple({ model.root.children[2] }, 0),
+                "can have children and has children" to tuple({ model.root.children[0] }, 2),
             )
         ) { (state, expected) -> model.getChildCount(state()) shouldBe expected }
     }
 
     context("getIndexOfChild") {
-        withData(
-            mapOf<String, Row3<() -> Any?, () -> Any?, Int>>(
+        withTests(
+            mapOf<String, Tuple3<() -> Any?, () -> Any?, Int>>(
                 "parent is not a StateNode" to
-                    row({ "parent" }, { model.root.children[0].children[0] }, -1),
+                    tuple({ "parent" }, { model.root.children[0].children[0] }, -1),
                 "child is not a StateNode" to
-                    row({ model.root.children[1] }, { "child" }, -1),
+                    tuple({ model.root.children[1] }, { "child" }, -1),
                 "parent is null" to
-                    row({ null }, { model.root.children[1].children[0] }, -1),
+                    tuple({ null }, { model.root.children[1].children[0] }, -1),
                 "child is null" to
-                    row({ model.root.children[1] }, { null }, -1),
+                    tuple({ model.root.children[1] }, { null }, -1),
                 "parent is not child's parent" to
-                    row({ model.root.children[2] }, { model.root.children[0].children[1] }, -1),
+                    tuple({ model.root.children[2] }, { model.root.children[0].children[1] }, -1),
                 "parent is child's parent" to
-                    row({ model.root.children[1] }, { model.root.children[1].children[0] }, 0),
+                    tuple({ model.root.children[1] }, { model.root.children[1].children[0] }, 0),
                 "parent matches by UUID only" to
-                    row(
+                    tuple(
                         { model.root.children[0] },
                         { StateNode(list.templates[0].schemes[1].deepCopy(retainUuid = true)) },
                         1,
@@ -514,11 +513,11 @@ object TemplateJTreeModelTest : FunSpec({
                 .message shouldMatchBundle "template_list.error.node_not_in_tree"
         }
 
-        withData(
-            mapOf<String, Row2<() -> StateNode, () -> StateNode?>>(
-                "parent of root" to row({ model.root }, { null }),
-                "parent of template" to row({ model.root.children[0] }, { model.root }),
-                "parent of scheme" to row({ model.root.children[1].children[0] }, { model.root.children[1] }),
+        withTests(
+            mapOf<String, Tuple2<() -> StateNode, () -> StateNode?>>(
+                "parent of root" to tuple({ model.root }, { null }),
+                "parent of template" to tuple({ model.root.children[0] }, { model.root }),
+                "parent of scheme" to tuple({ model.root.children[1].children[0] }, { model.root.children[1] }),
             )
         ) { (node, expected) -> model.getParentOf(node()) shouldBe expected() }
     }
@@ -529,14 +528,14 @@ object TemplateJTreeModelTest : FunSpec({
                 .message shouldMatchBundle "template_list.error.node_not_in_tree"
         }
 
-        withData(
+        withTests(
             mapOf(
                 "path to root" to
-                    row({ model.root }, { arrayOf(model.root) }),
+                    tuple({ model.root }, { arrayOf(model.root) }),
                 "path to template" to
-                    row({ model.root.children[0] }, { arrayOf(model.root, model.root.children[0]) }),
+                    tuple({ model.root.children[0] }, { arrayOf(model.root, model.root.children[0]) }),
                 "path to scheme" to
-                    row(
+                    tuple(
                         { model.root.children[1].children[0] },
                         { arrayOf(model.root, model.root.children[1], model.root.children[1].children[0]) },
                     ),
@@ -554,7 +553,7 @@ object TemplateJTreeModelTest : FunSpec({
         var lastEvent: TreeModelEvent? = null
 
 
-        beforeNonContainer {
+        beforeEach {
             nodesChangedInvoked = 0
             nodesInsertedInvoked = 0
             nodesRemovedInvoked = 0
@@ -735,11 +734,11 @@ object StateNodeTest : FunSpec({
 
 
     context("canHaveChildren") {
-        withData(
+        withTests(
             mapOf(
-                "TemplateList" to row(TemplateList(mutableListOf()), true),
-                "Template" to row(Template(), true),
-                "DummyScheme" to row(DummyScheme(), false),
+                "TemplateList" to tuple(TemplateList(mutableListOf()), true),
+                "Template" to tuple(Template(), true),
+                "DummyScheme" to tuple(DummyScheme(), false),
             )
         ) { (state, expected) -> StateNode(state).canHaveChildren shouldBe expected }
     }
@@ -822,17 +821,26 @@ object StateNodeTest : FunSpec({
 
 
     context("canHaveChild") {
-        withData(
+        withTests(
             mapOf(
-                "TemplateList/TemplateList" to row(TemplateList(mutableListOf()), TemplateList(mutableListOf()), false),
-                "TemplateList/Template" to row(TemplateList(mutableListOf()), Template(), true),
-                "TemplateList/Scheme" to row(TemplateList(mutableListOf()), DummyScheme(), false),
-                "Template/TemplateList" to row(Template(), TemplateList(mutableListOf()), false),
-                "Template/Template" to row(Template(), Template(), false),
-                "Template/Scheme" to row(Template(), DummyScheme(), true),
-                "Scheme/TemplateList" to row(DummyScheme(), TemplateList(mutableListOf()), false),
-                "Scheme/Template" to row(DummyScheme(), Template(), false),
-                "Scheme/Scheme" to row(DummyScheme(), DummyScheme(), false),
+                "TemplateList/TemplateList" to
+                    tuple(TemplateList(mutableListOf()), TemplateList(mutableListOf()), false),
+                "TemplateList/Template" to
+                    tuple(TemplateList(mutableListOf()), Template(), true),
+                "TemplateList/Scheme" to
+                    tuple(TemplateList(mutableListOf()), DummyScheme(), false),
+                "Template/TemplateList" to
+                    tuple(Template(), TemplateList(mutableListOf()), false),
+                "Template/Template" to
+                    tuple(Template(), Template(), false),
+                "Template/Scheme" to
+                    tuple(Template(), DummyScheme(), true),
+                "Scheme/TemplateList" to
+                    tuple(DummyScheme(), TemplateList(mutableListOf()), false),
+                "Scheme/Template" to
+                    tuple(DummyScheme(), Template(), false),
+                "Scheme/Scheme" to
+                    tuple(DummyScheme(), DummyScheme(), false),
             )
         ) { (parent, child, expected) -> StateNode(parent).canHaveChild(StateNode(child)) shouldBe expected }
     }

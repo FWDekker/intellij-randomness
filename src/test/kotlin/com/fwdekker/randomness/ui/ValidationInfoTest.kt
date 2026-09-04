@@ -5,7 +5,6 @@ import com.fwdekker.randomness.Scheme
 import com.fwdekker.randomness.integer.IntegerScheme
 import com.fwdekker.randomness.testhelpers.DummyScheme
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.ui.ValidatorDsl.Companion.validators
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FunSpec
@@ -110,7 +109,7 @@ object ValidatorDslTest : FunSpec({
     lateinit var scheme: IntegerScheme
 
 
-    beforeNonContainer {
+    beforeEach {
         scheme = IntegerScheme()
         scheme.arrayDecorator.enabled = true
     }

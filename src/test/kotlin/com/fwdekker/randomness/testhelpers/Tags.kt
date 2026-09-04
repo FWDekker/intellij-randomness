@@ -1,6 +1,5 @@
 package com.fwdekker.randomness.testhelpers
 
-import com.fwdekker.randomness.testhelpers.Tags.SCHEME
 import io.kotest.core.NamedTag
 
 

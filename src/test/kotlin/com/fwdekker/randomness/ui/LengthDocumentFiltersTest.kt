@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -21,7 +20,7 @@ object MaxLengthDocumentFilterTest : FunSpec({
     val getText = { document.getText(0, document.length) }
 
 
-    beforeNonContainer {
+    beforeEach {
         document = PlainDocument()
         filter = MaxLengthDocumentFilter(3)
         document.documentFilter = filter
@@ -179,7 +178,7 @@ object MinMaxLengthDocumentFilterTest : FunSpec({
     val getText = { document.getText(0, document.length) }
 
 
-    beforeNonContainer {
+    beforeEach {
         document = PlainDocument()
         filter = MinMaxLengthDocumentFilter(2, 5)
         document.documentFilter = filter

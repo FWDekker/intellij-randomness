@@ -1,8 +1,6 @@
 package com.fwdekker.randomness.array
 
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.afterNonContainer
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.editorApplyTests
 import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.isSelectedProp
@@ -10,11 +8,11 @@ import com.fwdekker.randomness.testhelpers.matcher
 import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.runEdt
 import com.fwdekker.randomness.testhelpers.textProp
-import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
+import com.fwdekker.randomness.testhelpers.useSharedBareIdeaFixture
 import com.fwdekker.randomness.testhelpers.valueProp
 import com.intellij.ui.TitledSeparator
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
+import io.kotest.core.tuple
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.should
 import org.assertj.swing.fixture.Containers.showInFrame
@@ -34,15 +32,15 @@ object ArrayDecoratorEditorTest : FunSpec({
     lateinit var editor: ArrayDecoratorEditor
 
 
-    useEdtViolationDetection()
+    useSharedBareIdeaFixture()
 
-    beforeNonContainer {
+    beforeEach {
         scheme = ArrayDecorator(enabled = true)
         editor = runEdt { ArrayDecoratorEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
     }
 
-    afterNonContainer {
+    afterEach {
         frame.cleanUp()
     }
 
@@ -114,7 +112,7 @@ object ArrayDecoratorEditorTest : FunSpec({
 
         context("separator") {
             context("embedded") {
-                beforeNonContainer {
+                beforeEach {
                     frame.cleanUp()
                     editor = runEdt { ArrayDecoratorEditor(scheme, embedded = true) }
                     frame = showInFrame(editor.rootComponent)
@@ -173,49 +171,49 @@ object ArrayDecoratorEditorTest : FunSpec({
             { editor },
             mapOf(
                 "enabled" to {
-                    row(
+                    tuple(
                         frame.checkBox("arrayEnabled").isSelectedProp(),
                         editor.scheme::enabled.prop(),
                         false,
                     )
                 },
                 "minCount" to {
-                    row(
+                    tuple(
                         frame.spinner("arrayMinCount").valueProp(),
                         editor.scheme::minCount.prop(),
                         1,
                     )
                 },
                 "maxCount" to {
-                    row(
+                    tuple(
                         frame.spinner("arrayMaxCount").valueProp(),
                         editor.scheme::maxCount.prop(),
                         483,
                     )
                 },
                 "separatorEnabled" to {
-                    row(
+                    tuple(
                         frame.checkBox("arraySeparatorEnabled").isSelectedProp(),
                         editor.scheme::separatorEnabled.prop(),
                         false,
                     )
                 },
                 "separator" to {
-                    row(
+                    tuple(
                         frame.comboBox("arraySeparator").textProp(),
                         editor.scheme::separator.prop(),
                         " - ",
                     )
                 },
                 "elementFormat" to {
-                    row(
+                    tuple(
                         frame.comboBox("arrayElementFormat").textProp(),
                         editor.scheme::elementFormat.prop(),
                         "{val}=foo",
                     )
                 },
                 "affixDecorator" to {
-                    row(
+                    tuple(
                         frame.comboBox("arrayAffixDescriptor").textProp(),
                         editor.scheme.affixDecorator::descriptor.prop(),
                         "{@}",

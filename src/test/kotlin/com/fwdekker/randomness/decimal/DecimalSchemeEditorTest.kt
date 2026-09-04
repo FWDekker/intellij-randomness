@@ -1,18 +1,16 @@
 package com.fwdekker.randomness.decimal
 
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.afterNonContainer
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.editorApplyTests
 import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.isSelectedProp
 import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.runEdt
 import com.fwdekker.randomness.testhelpers.textProp
-import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
+import com.fwdekker.randomness.testhelpers.useSharedBareIdeaFixture
 import com.fwdekker.randomness.testhelpers.valueProp
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
+import io.kotest.core.tuple
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 
@@ -30,15 +28,15 @@ object DecimalSchemeEditorTest : FunSpec({
     lateinit var editor: DecimalSchemeEditor
 
 
-    useEdtViolationDetection()
+    useSharedBareIdeaFixture()
 
-    beforeNonContainer {
+    beforeEach {
         scheme = DecimalScheme()
         editor = runEdt { DecimalSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
     }
 
-    afterNonContainer {
+    afterEach {
         frame.cleanUp()
     }
 
@@ -64,7 +62,7 @@ object DecimalSchemeEditorTest : FunSpec({
 
         context("groupingSeparator") {
             context("enforces the length filter") {
-                beforeNonContainer {
+                beforeEach {
                     runEdt { frame.checkBox("groupingSeparatorEnabled").target().isSelected = true }
                 }
 
@@ -106,63 +104,63 @@ object DecimalSchemeEditorTest : FunSpec({
             { editor },
             mapOf(
                 "minValue" to {
-                    row(
+                    tuple(
                         frame.spinner("minValue").valueProp(),
                         editor.scheme::minValue.prop(),
                         189.0,
                     )
                 },
                 "maxValue" to {
-                    row(
+                    tuple(
                         frame.spinner("maxValue").valueProp(),
                         editor.scheme::maxValue.prop(),
                         200.0,
                     )
                 },
                 "decimalCount" to {
-                    row(
+                    tuple(
                         frame.spinner("decimalCount").valueProp(),
                         editor.scheme::decimalCount.prop(),
                         4L,
                     )
                 },
                 "showTrailingZeroes" to {
-                    row(
+                    tuple(
                         frame.checkBox("showTrailingZeroes").isSelectedProp(),
                         editor.scheme::showTrailingZeroes.prop(),
                         true,
                     )
                 },
                 "decimalSeparator" to {
-                    row(
+                    tuple(
                         frame.comboBox("decimalSeparator").textProp(),
                         editor.scheme::decimalSeparator.prop(),
                         "|",
                     )
                 },
                 "groupingSeparatorEnabled" to {
-                    row(
+                    tuple(
                         frame.checkBox("groupingSeparatorEnabled").isSelectedProp(),
                         editor.scheme::groupingSeparatorEnabled.prop(),
                         true,
                     )
                 },
                 "groupingSeparator" to {
-                    row(
+                    tuple(
                         frame.comboBox("groupingSeparator").textProp(),
                         editor.scheme::groupingSeparator.prop(),
                         "/",
                     )
                 },
                 "affixDecorator" to {
-                    row(
+                    tuple(
                         frame.comboBox("affixDescriptor").textProp(),
                         editor.scheme.affixDecorator::descriptor.prop(),
                         "[@]",
                     )
                 },
                 "arrayDecorator" to {
-                    row(
+                    tuple(
                         frame.spinner("arrayMaxCount").valueProp(),
                         editor.scheme.arrayDecorator::maxCount.prop(),
                         7,

@@ -2,10 +2,9 @@ package com.fwdekker.randomness
 
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.from
 import com.fwdekker.randomness.testhelpers.serializeToXmlString
-import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
+import com.fwdekker.randomness.testhelpers.useIsolatedBareIdeaFixture
 import com.intellij.configurationStore.saveSettings
 import com.intellij.openapi.application.ApplicationManager
 import io.kotest.assertions.throwables.shouldNotThrowAny
@@ -31,9 +30,9 @@ object SettingsFileManagerTest : FunSpec({
         saveSettings(ApplicationManager.getApplication(), forceSavingAllSettings = true)
 
 
-    useBareIdeaFixture()
+    useIsolatedBareIdeaFixture()
 
-    beforeNonContainer {
+    beforeEach {
         file = tempfile("xml")
     }
 

@@ -2,8 +2,6 @@ package com.fwdekker.randomness.uuid
 
 import com.fwdekker.randomness.Timestamp
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.afterNonContainer
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.editorApplyTests
 import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.find
@@ -14,12 +12,11 @@ import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.runEdt
 import com.fwdekker.randomness.testhelpers.textProp
 import com.fwdekker.randomness.testhelpers.timestampProp
-import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
-import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
+import com.fwdekker.randomness.testhelpers.useSharedBareIdeaFixture
 import com.fwdekker.randomness.testhelpers.valueProp
 import com.fwdekker.randomness.ui.JDateTimeField
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
+import io.kotest.core.tuple
 import io.kotest.matchers.shouldBe
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
@@ -38,16 +35,15 @@ object UuidSchemeEditorTest : FunSpec({
     lateinit var editor: UuidSchemeEditor
 
 
-    useEdtViolationDetection()
-    useBareIdeaFixture()
+    useSharedBareIdeaFixture()
 
-    beforeNonContainer {
+    beforeEach {
         scheme = UuidScheme()
         editor = runEdt { UuidSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
     }
 
-    afterNonContainer {
+    afterEach {
         frame.cleanUp()
     }
 
@@ -82,49 +78,49 @@ object UuidSchemeEditorTest : FunSpec({
             { editor },
             mapOf(
                 "type" to {
-                    row(
+                    tuple(
                         frame.comboBox("version").itemProp(),
                         editor.scheme::version.prop(),
                         8,
                     )
                 },
                 "isUppercase" to {
-                    row(
+                    tuple(
                         frame.checkBox("isUppercase").isSelectedProp(),
                         editor.scheme::isUppercase.prop(),
                         true,
                     )
                 },
                 "addDashes" to {
-                    row(
+                    tuple(
                         frame.checkBox("addDashes").isSelectedProp(),
                         editor.scheme::addDashes.prop(),
                         false,
                     )
                 },
                 "minDateTime" to {
-                    row(
+                    tuple(
                         frame.textBox("minDateTime").timestampProp(),
                         editor.scheme::minDateTime.prop(),
                         Timestamp("1989-03-30 13:36:32"),
                     )
                 },
                 "maxDateTime" to {
-                    row(
+                    tuple(
                         frame.textBox("maxDateTime").timestampProp(),
                         editor.scheme::maxDateTime.prop(),
                         Timestamp("3656-11-05 20:58:41"),
                     )
                 },
                 "affixDecorator" to {
-                    row(
+                    tuple(
                         frame.comboBox("affixDescriptor").textProp(),
                         editor.scheme.affixDecorator::descriptor.prop(),
                         "[@]",
                     )
                 },
                 "arrayDecorator" to {
-                    row(
+                    tuple(
                         frame.spinner("arrayMaxCount").valueProp(),
                         editor.scheme.arrayDecorator::maxCount.prop(),
                         7,

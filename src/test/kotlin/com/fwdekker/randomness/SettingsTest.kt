@@ -1,25 +1,21 @@
-@file:OptIn(ExperimentalKotest::class)
-
 package com.fwdekker.randomness
 
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
 import com.fwdekker.randomness.template.TemplateReference
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.from
 import com.fwdekker.randomness.testhelpers.parseXml
 import com.fwdekker.randomness.testhelpers.serialize
 import com.fwdekker.randomness.testhelpers.shouldMatchXml
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
-import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
+import com.fwdekker.randomness.testhelpers.useCtxSharedBareIdeaFixture
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.common.ExperimentalKotest
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
@@ -39,12 +35,12 @@ object SettingsTest : FunSpec({
 
 
     context("doValidate") {
-        withData(
+        withTests(
             mapOf(
                 "succeeds for default state" to
-                    row(Settings(), null),
+                    tuple(Settings(), null),
                 "fails if template list is invalid" to
-                    row(
+                    tuple(
                         Settings(
                             templateList = TemplateList(mutableListOf(Template("Duplicate"), Template("Duplicate"))),
                         ),
@@ -90,14 +86,14 @@ object PersistentSettingsTest : FunSpec({
         javaClass.getResource(path) ?: throw FileNotFoundException("Could not find resource '$path'.")
 
 
-    beforeNonContainer {
+    beforeEach {
         persistent = PersistentSettings()
     }
 
 
     context("loadState") {
         context("complicated test").config(tags = setOf(Tags.SWING, Tags.IDEA_FIXTURE)) {
-            useBareIdeaFixture(addTags = false)
+            useCtxSharedBareIdeaFixture()
 
             test("does not throw an exception if the stored config's version is newer than is supported") {
                 val stored = """<component><option name="version" value="9.9.9"/></component>""".parseXml()
@@ -279,12 +275,12 @@ object PersistentSettingsTest : FunSpec({
         }
 
         context("specific upgrades") {
-            withData(
+            withTests(
                 nameFn = { "v${it.a} to v${it.b} (${it.c})" },
-                row("3.1.0", "3.2.0", "renames `type` to `version` for UUIDs"),
-                row("3.3.4", "3.3.5", "removes `generator` fields"),
-                row("3.3.6", "3.4.0", "patches epochs to timestamp strings"),
-                row("3.4.1", "3.4.2", "clamps timestamps in UUID settings"),
+                tuple("3.1.0", "3.2.0", "renames `type` to `version` for UUIDs"),
+                tuple("3.3.4", "3.3.5", "removes `generator` fields"),
+                tuple("3.3.6", "3.4.0", "patches epochs to timestamp strings"),
+                tuple("3.4.1", "3.4.2", "clamps timestamps in UUID settings"),
             ) { (from, to, _) ->
                 val unpatched = getTestConfig("/settings-upgrades/v$from-v$to-before.xml").parseXml()
 

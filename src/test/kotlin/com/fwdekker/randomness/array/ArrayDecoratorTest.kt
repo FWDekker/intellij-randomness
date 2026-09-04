@@ -6,8 +6,8 @@ import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
 import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.stateSerializationTestFactory
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import io.kotest.matchers.ints.shouldBeInRange
 import io.kotest.matchers.shouldBe
@@ -21,55 +21,55 @@ object ArrayDecoratorTest : FunSpec({
 
 
     context("generateStrings") {
-        withData(
+        withTests(
             mapOf(
                 "returns default input if disabled" to
-                    row(
+                    tuple(
                         ArrayDecorator(enabled = false, minCount = 3),
                         "<i0>",
                     ),
                 "returns a single value" to
-                    row(
+                    tuple(
                         ArrayDecorator(enabled = true, minCount = 1, maxCount = 1),
                         "[<i0>]",
                     ),
                 "returns a fixed number of values" to
-                    row(
+                    tuple(
                         ArrayDecorator(enabled = true, minCount = 3, maxCount = 3),
                         "[<i0>, <i1>, <i2>]",
                     ),
                 "returns array with multi-char separator" to
-                    row(
+                    tuple(
                         ArrayDecorator(enabled = true, separator = ";;"),
                         "[<i0>;;<i1>;;<i2>]",
                     ),
                 "retains leading whitespace in separator" to
-                    row(
+                    tuple(
                         ArrayDecorator(enabled = true, separator = ",  "),
                         "[<i0>,  <i1>,  <i2>]",
                     ),
                 "converts escaped 'n' in separator to newline" to
-                    row(
+                    tuple(
                         ArrayDecorator(enabled = true, separator = """\n"""),
                         "[<i0>\n<i1>\n<i2>]",
                     ),
                 "applies the element format to each element separately" to
-                    row(
+                    tuple(
                         ArrayDecorator(enabled = true, elementFormat = "({val})"),
                         "[(<i0>), (<i1>), (<i2>)]",
                     ),
                 "includes the element index if part of the element format" to
-                    row(
+                    tuple(
                         ArrayDecorator(enabled = true, elementFormat = "{eid}={val}"),
                         "[0=<i0>, 1=<i1>, 2=<i2>]",
                     ),
                 "ignores unknown brace-delimited keywords in the element format" to
-                    row(
+                    tuple(
                         ArrayDecorator(enabled = true, elementFormat = "{val}={foo}"),
                         "[<i0>={foo}, <i1>={foo}, <i2>={foo}]",
                     ),
                 "applies affix decorator" to
-                    row(
+                    tuple(
                         ArrayDecorator(enabled = true, affixDecorator = AffixDecorator(enabled = true, "(@)")),
                         "(<i0>, <i1>, <i2>)",
                     ),
@@ -132,20 +132,27 @@ object ArrayDecoratorTest : FunSpec({
     }
 
     context("doValidate") {
-        withData(
+        withTests(
             mapOf(
                 "succeeds for default state" to
-                    row(ArrayDecorator(), null),
+                    tuple(ArrayDecorator(), null),
                 "fails for zero min count" to
-                    row(ArrayDecorator(enabled = true, minCount = 0), "array.error.min_count_too_low"),
+                    tuple(ArrayDecorator(enabled = true, minCount = 0), "array.error.min_count_too_low"),
                 "fails for negative min count" to
-                    row(ArrayDecorator(enabled = true, minCount = -23), "array.error.min_count_too_low"),
+                    tuple(ArrayDecorator(enabled = true, minCount = -23), "array.error.min_count_too_low"),
                 "succeeds for min count equals max count" to
-                    row(ArrayDecorator(enabled = true, minCount = 368, maxCount = 368), null),
+                    tuple(ArrayDecorator(enabled = true, minCount = 368, maxCount = 368), null),
                 "fails for min count above max count" to
-                    row(ArrayDecorator(enabled = true, minCount = 14, maxCount = 2), "array.error.min_count_above_max"),
+                    tuple(
+                        ArrayDecorator(
+                            enabled = true,
+                            minCount = 14,
+                            maxCount = 2
+                        ),
+                        "array.error.min_count_above_max"
+                    ),
                 "fails if affix decorator is invalid" to
-                    row(
+                    tuple(
                         ArrayDecorator(
                             enabled = true,
                             affixDecorator = AffixDecorator(enabled = true, descriptor = """\"""),
@@ -153,9 +160,9 @@ object ArrayDecoratorTest : FunSpec({
                         ""
                     ),
                 "ignores invalid settings if disabled" to
-                    row(ArrayDecorator(enabled = false, minCount = -23), null),
+                    tuple(ArrayDecorator(enabled = false, minCount = -23), null),
                 "ignores invalid affix decorator if that decorator is disabled" to
-                    row(ArrayDecorator(affixDecorator = AffixDecorator(enabled = false, descriptor = """\""")), null),
+                    tuple(ArrayDecorator(affixDecorator = AffixDecorator(enabled = false, descriptor = """\""")), null),
             )
         ) { (scheme, validation) ->
             scheme.generator = { count -> List(count) { "<i$it>" } }

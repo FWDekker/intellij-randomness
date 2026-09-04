@@ -19,7 +19,7 @@ fun <S : State> stateDeepCopyTestFactory(createState: () -> S) =
             lateinit var state: S
 
 
-            beforeNonContainer {
+            beforeEach {
                 state = createState()
             }
 

@@ -2,8 +2,6 @@ package com.fwdekker.randomness.datetime
 
 import com.fwdekker.randomness.Timestamp
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.afterNonContainer
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.editorApplyTests
 import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.find
@@ -12,12 +10,11 @@ import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.runEdt
 import com.fwdekker.randomness.testhelpers.textProp
 import com.fwdekker.randomness.testhelpers.timestampProp
-import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
-import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
+import com.fwdekker.randomness.testhelpers.useSharedBareIdeaFixture
 import com.fwdekker.randomness.testhelpers.valueProp
 import com.fwdekker.randomness.ui.JDateTimeField
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
+import io.kotest.core.tuple
 import io.kotest.matchers.shouldBe
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
@@ -35,16 +32,15 @@ object DateTimeSchemeEditorTest : FunSpec({
     lateinit var editor: DateTimeSchemeEditor
 
 
-    useEdtViolationDetection()
-    useBareIdeaFixture()
+    useSharedBareIdeaFixture()
 
-    beforeNonContainer {
+    beforeEach {
         scheme = DateTimeScheme()
         editor = runEdt { DateTimeSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
     }
 
-    afterNonContainer {
+    afterEach {
         frame.cleanUp()
     }
 
@@ -79,28 +75,28 @@ object DateTimeSchemeEditorTest : FunSpec({
             { editor },
             mapOf(
                 "minDateTime" to {
-                    row(
+                    tuple(
                         frame.textBox("minDateTime").timestampProp(),
                         editor.scheme::minDateTime.prop(),
                         Timestamp("0379-09-20 17:27:35.767"),
                     )
                 },
                 "maxDateTime" to {
-                    row(
+                    tuple(
                         frame.textBox("maxDateTime").timestampProp(),
                         editor.scheme::maxDateTime.prop(),
                         Timestamp("8457-03-25 04:00:37.075"),
                     )
                 },
                 "pattern" to {
-                    row(
+                    tuple(
                         frame.textBox("pattern").textProp(),
                         editor.scheme::pattern.prop(),
                         "dd/MM/yyyy",
                     )
                 },
                 "arrayDecorator" to {
-                    row(
+                    tuple(
                         frame.spinner("arrayMaxCount").valueProp(),
                         editor.scheme.arrayDecorator::maxCount.prop(),
                         7,
