@@ -1,9 +1,5 @@
 package com.fwdekker.randomness
 
-import com.fwdekker.randomness.Icons.ARRAY
-import com.fwdekker.randomness.Icons.REFERENCE
-import com.fwdekker.randomness.Icons.REPEAT
-import com.fwdekker.randomness.Icons.SETTINGS
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.LayeredIcon

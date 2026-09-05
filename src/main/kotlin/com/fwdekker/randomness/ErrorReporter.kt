@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION") // Required for [ErrorReportSubmitter].
+@file:Suppress("DEPRECATION", "UnstableApiUsage") // Required for [ErrorReportSubmitter].
 
 package com.fwdekker.randomness
 

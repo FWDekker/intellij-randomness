@@ -5,7 +5,6 @@ import com.fwdekker.randomness.string.StringScheme
 import com.fwdekker.randomness.template.Template
 import com.fwdekker.randomness.template.TemplateList
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.shouldMatchXml
 import com.fwdekker.randomness.uuid.UuidScheme
 import com.intellij.openapi.util.JDOMUtil
@@ -598,7 +597,7 @@ object XmlHelpersTest : FunSpec({
         lateinit var xml: Element
 
 
-        beforeNonContainer {
+        beforeEach {
             settings = Settings(
                 templateList = TemplateList(
                     mutableListOf(

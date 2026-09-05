@@ -7,11 +7,8 @@ import com.fwdekker.randomness.testhelpers.DummySchemeEditor
 import com.fwdekker.randomness.testhelpers.DummyValidatableScheme
 import com.fwdekker.randomness.testhelpers.DummyValidatableSchemeEditor
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.afterNonContainer
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
-import com.fwdekker.randomness.testhelpers.ideaRunEdt
-import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
-import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
+import com.fwdekker.randomness.testhelpers.runEdt
+import com.fwdekker.randomness.testhelpers.useSharedBareIdeaFixture
 import com.fwdekker.randomness.ui.withName
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
@@ -40,16 +37,15 @@ object SchemeEditorTest : FunSpec({
     lateinit var editor: SchemeEditor<*>
 
 
-    useEdtViolationDetection()
-    useBareIdeaFixture()
+    useSharedBareIdeaFixture()
 
-    afterNonContainer {
+    afterEach {
         frame.cleanUp()
     }
 
 
-    suspend fun registerTestEditor(createEditor: () -> SchemeEditor<*>) {
-        editor = ideaRunEdt(createEditor)
+    fun registerTestEditor(createEditor: () -> SchemeEditor<*>) {
+        editor = runEdt(createEditor)
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
@@ -121,9 +117,9 @@ object SchemeEditorTest : FunSpec({
             }
             frame.textBox().requireText("old")
 
-            ideaRunEdt { frame.textBox().target().text = "new" }
+            runEdt { frame.textBox().target().text = "new" }
             frame.textBox().requireText("new")
-            ideaRunEdt { editor.reset() }
+            runEdt { editor.reset() }
 
             frame.textBox().requireText("old")
         }
@@ -145,9 +141,9 @@ object SchemeEditorTest : FunSpec({
             }
             frame.textBox().requireText("old")
 
-            ideaRunEdt { frame.textBox().target().text = "new" }
+            runEdt { frame.textBox().target().text = "new" }
             frame.textBox().requireText("new")
-            ideaRunEdt { editor.reset() }
+            runEdt { editor.reset() }
 
             frame.textBox().requireText("old")
         }
@@ -158,7 +154,7 @@ object SchemeEditorTest : FunSpec({
             val scheme = DummyScheme(prefix = "old")
             registerTestEditor { DummySchemeEditor(scheme) { panel { row { textField().bindText(scheme::prefix) } } } }
 
-            ideaRunEdt { frame.textBox().target().text = "new" }
+            runEdt { frame.textBox().target().text = "new" }
             editor.apply()
 
             scheme.prefix shouldBe "new"
@@ -179,7 +175,7 @@ object SchemeEditorTest : FunSpec({
                 }
             }
 
-            ideaRunEdt { frame.textBox().target().text = "new" }
+            runEdt { frame.textBox().target().text = "new" }
             editor.apply()
 
             scheme.decorators[0] shouldBeSameInstanceAs decorator
@@ -192,25 +188,25 @@ object SchemeEditorTest : FunSpec({
         lateinit var bar: JTextComponent
 
 
-        beforeNonContainer {
+        beforeEach {
             registerTestEditor { DummyValidatableSchemeEditor(DummyValidatableScheme()) }
 
-            foo = ideaRunEdt { frame.textBox("foo").target() }
-            bar = ideaRunEdt { frame.textBox("bar").target() }
+            foo = runEdt { frame.textBox("foo").target() }
+            bar = runEdt { frame.textBox("bar").target() }
         }
 
-        suspend fun revalidate() =
-            ideaRunEdt {
+        fun revalidate() =
+            runEdt {
                 editor.apply()
                 editor.doValidate()
             }
 
-        suspend fun JTextComponent.hasError(): Boolean =
-            ideaRunEdt { this.getClientProperty("JComponent.outline") } != null
+        fun JTextComponent.hasError(): Boolean =
+            runEdt { this.getClientProperty("JComponent.outline") } != null
 
 
         test("shows no errors if all fields are valid") {
-            ideaRunEdt {
+            runEdt {
                 frame.textBox("foo").target().text = "foo"
                 frame.textBox("bar").target().text = "bar"
             }
@@ -221,7 +217,7 @@ object SchemeEditorTest : FunSpec({
         }
 
         test("shows an error for the invalid field") {
-            ideaRunEdt { frame.textBox("foo").target().text = "wrong" }
+            runEdt { frame.textBox("foo").target().text = "wrong" }
 
             revalidate()
             foo.hasError() shouldBe true
@@ -229,7 +225,7 @@ object SchemeEditorTest : FunSpec({
         }
 
         test("shows an error for each invalid field") {
-            ideaRunEdt {
+            runEdt {
                 frame.textBox("foo").target().text = "wrong"
                 frame.textBox("bar").target().text = "wrong"
             }
@@ -240,17 +236,17 @@ object SchemeEditorTest : FunSpec({
         }
 
         test("stops showing an error once the field is valid again") {
-            ideaRunEdt { frame.textBox("foo").target().text = "wrong" }
+            runEdt { frame.textBox("foo").target().text = "wrong" }
             revalidate()
             foo.hasError() shouldBe true
 
-            ideaRunEdt { frame.textBox("foo").target().text = "foo" }
+            runEdt { frame.textBox("foo").target().text = "foo" }
             revalidate()
             foo.hasError() shouldBe false
         }
 
         test("stops showing an error once a field is valid again, even if other fields are still invalid") {
-            ideaRunEdt {
+            runEdt {
                 frame.textBox("foo").target().text = "wrong"
                 frame.textBox("bar").target().text = "wrong"
             }
@@ -258,14 +254,14 @@ object SchemeEditorTest : FunSpec({
             foo.hasError() shouldBe true
             bar.hasError() shouldBe true
 
-            ideaRunEdt { frame.textBox("foo").target().text = "foo" }
+            runEdt { frame.textBox("foo").target().text = "foo" }
             revalidate()
             foo.hasError() shouldBe false
             bar.hasError() shouldBe true
         }
 
         test("stops showing errors for all fields if they are all valid again") {
-            ideaRunEdt {
+            runEdt {
                 frame.textBox("foo").target().text = "wrong"
                 frame.textBox("bar").target().text = "wrong"
             }
@@ -273,7 +269,7 @@ object SchemeEditorTest : FunSpec({
             foo.hasError() shouldBe true
             bar.hasError() shouldBe true
 
-            ideaRunEdt {
+            runEdt {
                 frame.textBox("foo").target().text = "foo"
                 frame.textBox("bar").target().text = "bar"
             }
@@ -283,12 +279,12 @@ object SchemeEditorTest : FunSpec({
         }
 
         test("shows and hides error popups once fields become invalid and valid, respectively") {
-            ideaRunEdt { frame.textBox("foo").target().text = "wrong" }
+            runEdt { frame.textBox("foo").target().text = "wrong" }
             revalidate()
             foo.hasError() shouldBe true
             bar.hasError() shouldBe false
 
-            ideaRunEdt {
+            runEdt {
                 frame.textBox("foo").target().text = "foo"
                 frame.textBox("bar").target().text = "wrong"
             }
@@ -305,7 +301,7 @@ object SchemeEditorTest : FunSpec({
 
             var updateCount = 0
             editor.addChangeListener { updateCount++ }
-            ideaRunEdt { frame.textBox().target().text = "new" }
+            runEdt { frame.textBox().target().text = "new" }
 
             updateCount shouldBe 1
         }
@@ -317,7 +313,7 @@ object SchemeEditorTest : FunSpec({
 
             var updateCount = 0
             editor.addChangeListener { updateCount++ }
-            ideaRunEdt { frame.textBox().target().text = "new" }
+            runEdt { frame.textBox().target().text = "new" }
 
             updateCount shouldBeGreaterThanOrEqual 1
         }
@@ -340,7 +336,7 @@ object SchemeEditorTest : FunSpec({
 
             var updateCount = 0
             editor.addChangeListener { updateCount++ }
-            ideaRunEdt { frame.textBox().target().text = "new" }
+            runEdt { frame.textBox().target().text = "new" }
 
             updateCount shouldBeGreaterThanOrEqual 2
         }

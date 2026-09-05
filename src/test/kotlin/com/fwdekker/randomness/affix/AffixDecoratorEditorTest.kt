@@ -1,20 +1,18 @@
 package com.fwdekker.randomness.affix
 
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.afterNonContainer
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.editorApplyTests
 import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.requireEnabledIs
 import com.fwdekker.randomness.testhelpers.runEdt
 import com.fwdekker.randomness.testhelpers.textProp
-import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
+import com.fwdekker.randomness.testhelpers.useSharedBareIdeaFixture
 import com.intellij.ui.layout.selected
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.assertj.swing.fixture.Containers
@@ -35,15 +33,15 @@ object AffixDecoratorEditorTest : FunSpec({
     lateinit var editor: AffixDecoratorEditor
 
 
-    useEdtViolationDetection()
+    useSharedBareIdeaFixture()
 
-    beforeNonContainer {
+    beforeEach {
         scheme = AffixDecorator(enabled = true)
         editor = runEdt { AffixDecoratorEditor(scheme, presets = listOf("a", "b", "c")) }
         frame = Containers.showInFrame(editor.rootComponent)
     }
 
-    afterNonContainer {
+    afterEach {
         frame.cleanUp()
     }
 
@@ -86,20 +84,20 @@ object AffixDecoratorEditorTest : FunSpec({
             lateinit var toggle: JCheckBox
 
 
-            beforeNonContainer {
+            beforeEach {
                 toggle = runEdt { JCheckBox().also { it.isSelected = false } }
             }
 
 
             @Suppress("BooleanLiteralArgument") // Argument names are clear from lambda later on
-            withData(
+            withTests(
                 nameFn = { "enabledIf=${it.a}, checkboxChecked=${it.b}" },
-                row(null, false, true, false),
-                row(null, true, true, true),
-                row(false, false, false, false),
-                row(false, true, false, false),
-                row(true, false, true, false),
-                row(true, true, true, true),
+                tuple(null, false, true, false),
+                tuple(null, true, true, true),
+                tuple(false, false, false, false),
+                tuple(false, true, false, false),
+                tuple(true, false, true, false),
+                tuple(true, true, true, true),
             ) { (predicateState, checkboxState, expectedCheckboxEnabled, expectedDescriptorEnabled) ->
                 val predicate = predicateState?.let { toggle.selected }
 
@@ -126,7 +124,7 @@ object AffixDecoratorEditorTest : FunSpec({
             { editor },
             mapOf(
                 "descriptor" to {
-                    row(
+                    tuple(
                         frame.comboBox("affixDescriptor").textProp(),
                         editor.scheme::descriptor.prop(),
                         "non-preset string",

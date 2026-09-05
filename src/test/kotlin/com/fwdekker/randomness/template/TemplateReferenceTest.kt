@@ -6,7 +6,6 @@ import com.fwdekker.randomness.Settings
 import com.fwdekker.randomness.setAll
 import com.fwdekker.randomness.testhelpers.DummyScheme
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.shouldBeSameIconAs
 import com.fwdekker.randomness.testhelpers.shouldMatchBundle
 import com.fwdekker.randomness.testhelpers.shouldValidateAsBundle
@@ -14,8 +13,8 @@ import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.stateSerializationTestFactory
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -34,7 +33,7 @@ object TemplateReferenceTest : FunSpec({
     lateinit var referencedTemplate: Template
 
 
-    beforeNonContainer {
+    beforeEach {
         referencedTemplate = Template("referenced", mutableListOf(DummyScheme()))
         reference = TemplateReference(referencedTemplate.uuid)
         referencingTemplate = Template("referencing", mutableListOf(reference))
@@ -242,14 +241,14 @@ object TemplateReferenceTest : FunSpec({
 
 
     context("generateStrings") {
-        withData(
+        withTests(
             mapOf(
                 "returns the referenced template's value" to
-                    row({ reference }, "text0"),
+                    tuple({ reference }, "text0"),
                 "capitalizes output" to
-                    row({ reference.also { it.capitalization = CapitalizationMode.UPPER } }, "TEXT0"),
+                    tuple({ reference.also { it.capitalization = CapitalizationMode.UPPER } }, "TEXT0"),
                 "applies decorators in order affix, array" to
-                    row(
+                    tuple(
                         {
                             reference.also {
                                 it.affixDecorator.enabled = true
@@ -280,18 +279,18 @@ object TemplateReferenceTest : FunSpec({
     }
 
     context("doValidate") {
-        withData(
+        withTests(
             mapOf(
                 "succeeds for default state (given appropriate context)" to
-                    row({ reference }, null),
+                    tuple({ reference }, null),
                 "fails if no template is referred to" to
-                    row({ reference.also { it.template = null } }, "reference.error.no_selection"),
+                    tuple({ reference.also { it.template = null } }, "reference.error.no_selection"),
                 "fails if the referred template cannot be found" to
-                    row({ reference.also { it.applyContext(Settings()) } }, "reference.error.not_found"),
+                    tuple({ reference.also { it.applyContext(Settings()) } }, "reference.error.not_found"),
                 "fails if the reference is recursive" to
-                    row({ reference.also { it.template = referencingTemplate } }, "reference.error.recursion"),
+                    tuple({ reference.also { it.template = referencingTemplate } }, "reference.error.recursion"),
                 "fails if affix decorator is invalid" to
-                    row(
+                    tuple(
                         {
                             reference.also {
                                 it.affixDecorator.enabled = true
@@ -301,7 +300,7 @@ object TemplateReferenceTest : FunSpec({
                         ""
                     ),
                 "fails if array decorator is invalid" to
-                    row(
+                    tuple(
                         {
                             reference.also {
                                 it.arrayDecorator.enabled = true

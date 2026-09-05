@@ -8,8 +8,8 @@ import com.fwdekker.randomness.testhelpers.stateDeepCopyTestFactory
 import com.fwdekker.randomness.testhelpers.stateSerializationTestFactory
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 
@@ -22,12 +22,12 @@ object DateTimeSchemeTest : FunSpec({
 
 
     context("generateStrings") {
-        withData(
+        withTests(
             mapOf(
                 "returns date at given timestamp" to
-                    row(DateTimeScheme().withDateTime("2768-06-30 18:01:48.695"), "2768-06-30 18:01:48.695"),
+                    tuple(DateTimeScheme().withDateTime("2768-06-30 18:01:48.695"), "2768-06-30 18:01:48.695"),
                 "returns date with given format" to
-                    row(DateTimeScheme(pattern = "yyyy.MM").withDateTime("6999-03-29"), "6999.03"),
+                    tuple(DateTimeScheme(pattern = "yyyy.MM").withDateTime("6999-03-29"), "6999.03"),
             )
         ) { (scheme, output) -> scheme.generateStrings()[0] shouldBe output }
 
@@ -39,20 +39,23 @@ object DateTimeSchemeTest : FunSpec({
     }
 
     context("doValidate") {
-        withData(
+        withTests(
             mapOf(
-                "succeeds for default state" to row(DateTimeScheme(), null),
+                "succeeds for default state" to
+                    tuple(DateTimeScheme(), null),
                 "fails for invalid min date-time" to
-                    row(DateTimeScheme(minDateTime = Timestamp("invalid")), "timestamp.error.parse"),
+                    tuple(DateTimeScheme(minDateTime = Timestamp("invalid")), "timestamp.error.parse"),
                 "fails for invalid max date-time" to
-                    row(DateTimeScheme(maxDateTime = Timestamp("invalid")), "timestamp.error.parse"),
+                    tuple(DateTimeScheme(maxDateTime = Timestamp("invalid")), "timestamp.error.parse"),
                 "fails if min date-time is above max date-time" to
-                    row(
+                    tuple(
                         DateTimeScheme(minDateTime = Timestamp("4434"), maxDateTime = Timestamp("1853")),
                         "datetime.error.min_datetime_above_max",
                     ),
-                "fails if pattern is invalid" to row(DateTimeScheme(pattern = "yyyy-ffff"), ""),
-                "succeeds if invalid pattern is escaped" to row(DateTimeScheme(pattern = "yyyy-'ffff'"), null),
+                "fails if pattern is invalid" to
+                    tuple(DateTimeScheme(pattern = "yyyy-ffff"), ""),
+                "succeeds if invalid pattern is escaped" to
+                    tuple(DateTimeScheme(pattern = "yyyy-'ffff'"), null),
             )
         ) { (scheme, validation) -> scheme shouldValidateAsBundle validation }
     }

@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.word
 
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.shouldMatchBundle
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -20,7 +19,7 @@ object DefaultWordListTest : FunSpec({
     tags(Tags.PLAIN)
 
 
-    beforeNonContainer {
+    beforeEach {
         DefaultWordList.clearCache()
     }
 

@@ -2,13 +2,10 @@ package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.Bundle
 import com.fwdekker.randomness.testhelpers.DummyScheme
-import com.fwdekker.randomness.testhelpers.afterNonContainer
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.find
-import com.fwdekker.randomness.testhelpers.ideaRunEdt
 import com.fwdekker.randomness.testhelpers.matcher
-import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
-import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
+import com.fwdekker.randomness.testhelpers.runEdt
+import com.fwdekker.randomness.testhelpers.useSharedBareIdeaFixture
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.InplaceButton
 import io.kotest.core.spec.style.FunSpec
@@ -29,25 +26,24 @@ object PreviewPanelTest : FunSpec({
     val placeholder = Bundle("preview.placeholder")
 
 
-    useEdtViolationDetection()
-    useBareIdeaFixture()
+    useSharedBareIdeaFixture()
 
-    beforeNonContainer {
-        panel = ideaRunEdt { PreviewPanel { DummyScheme().also { scheme = it } } }
+    beforeEach {
+        panel = runEdt { PreviewPanel { DummyScheme().also { scheme = it } } }
         frame = Containers.showInFrame(panel.rootComponent)
 
         panel.previewText shouldBe placeholder
     }
 
-    afterNonContainer {
+    afterEach {
         frame.cleanUp()
-        ideaRunEdt { Disposer.dispose(panel) }
+        runEdt { Disposer.dispose(panel) }
     }
 
 
     context("updatePreview") {
         test("updates the label's contents") {
-            ideaRunEdt { panel.updatePreview() }
+            runEdt { panel.updatePreview() }
 
             panel.previewText shouldBe "text0"
         }
@@ -55,22 +51,22 @@ object PreviewPanelTest : FunSpec({
 
     context("seed") {
         test("reuses the old seed if the button is not pressed") {
-            ideaRunEdt { panel.updatePreview() }
+            runEdt { panel.updatePreview() }
             val oldRandom = scheme?.random
 
-            ideaRunEdt { panel.updatePreview() }
+            runEdt { panel.updatePreview() }
             val newRandom = scheme?.random
 
             newRandom?.nextInt() shouldBe oldRandom?.nextInt()
         }
 
         test("uses a new seed when the button is pressed") {
-            ideaRunEdt { panel.updatePreview() }
+            runEdt { panel.updatePreview() }
             val oldRandom = scheme?.random
 
-            ideaRunEdt { frame.find(matcher(InplaceButton::class.java)).doClick() }
+            runEdt { frame.find(matcher(InplaceButton::class.java)).doClick() }
 
-            ideaRunEdt { panel.updatePreview() }
+            runEdt { panel.updatePreview() }
             val newRandom = scheme?.random
 
             newRandom?.nextInt() shouldNotBe oldRandom?.nextInt()

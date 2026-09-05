@@ -2,16 +2,14 @@ package com.fwdekker.randomness.ui
 
 import com.fwdekker.randomness.Timestamp
 import com.fwdekker.randomness.testhelpers.DummySchemeEditor
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
-import com.fwdekker.randomness.testhelpers.ideaRunEdt
-import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
-import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
+import com.fwdekker.randomness.testhelpers.runEdt
+import com.fwdekker.randomness.testhelpers.useSharedBareIdeaFixture
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.dsl.builder.panel
+import io.kotest.core.Tuple2
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.Row2
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import io.kotest.matchers.shouldBe
 import javax.swing.JCheckBox
 import javax.swing.JFormattedTextField
@@ -35,111 +33,110 @@ object ListenerHelpersTest : FunSpec({
     val listener = { listenerInvoked = true }
 
 
-    useEdtViolationDetection()
-    useBareIdeaFixture()
+    useSharedBareIdeaFixture()
 
-    beforeNonContainer {
+    beforeEach {
         listenerInvoked = false
     }
 
 
     context("addChangeListenerTo") {
-        withData(
+        withTests(
             @Suppress("UNCHECKED_CAST") // Unavoidable
             mapOf(
                 "AbstractButton: JCheckBox: Change selection" to
-                    row(
+                    tuple(
                         { JCheckBox() },
                         { (it as JCheckBox).isSelected = true },
                     ),
                 "AbstractButton: JRadioButton: Change selection" to
-                    row(
+                    tuple(
                         { JRadioButton() },
                         { (it as JRadioButton).isSelected = true },
                     ),
                 "Document: Insert text" to
-                    row(
+                    tuple(
                         { PlainDocument() },
                         { (it as PlainDocument).insertString(0, "text", null) },
                     ),
                 "Document: Remove text" to
-                    row(
+                    tuple(
                         { PlainDocument().also { it.insertString(0, "text", null) } },
                         { (it as PlainDocument).remove(1, 2) },
                     ),
                 "Document: Replace text" to
-                    row(
+                    tuple(
                         { PlainDocument().also { it.insertString(0, "text", null) } },
                         { (it as PlainDocument).replace(2, 1, "y", null) },
                     ),
                 // [JBDocument] is excluded because setting up the correct fixtures is very difficult
                 "JComboBox: Select different item" to
-                    row(
+                    tuple(
                         { ComboBox(arrayOf("item1", "item2")) },
                         { (it as ComboBox<String>).item = "item1" },
                     ),
                 "JComboBox: While typing" to
-                    row(
+                    tuple(
                         { ComboBox(arrayOf("item1", "item2")).also { it.isEditable = true } },
                         { ((it as ComboBox<String>).editor.editorComponent as JTextComponent).text = "ite" },
                     ),
                 "JSpinner: Change value" to
-                    row(
+                    tuple(
                         { JSpinner() },
                         { (it as JSpinner).value = 5 },
                     ),
                 "JTextComponent: JTextArea" to
-                    row(
+                    tuple(
                         { JTextArea() },
                         { (it as JTextArea).text = "text" },
                     ),
                 "JTextComponent: JDateTimeField" to
-                    row(
+                    tuple(
                         { JDateTimeField() },
                         { (it as JDateTimeField).value = Timestamp("2862-02-14 02:27:11.154") },
                     ),
                 "JTextComponent: JTextField" to
-                    row(
+                    tuple(
                         { JTextField() },
                         { (it as JTextField).text = "text" },
                     ),
                 "JTextComponent: Insert text" to
-                    row(
+                    tuple(
                         { JTextField() },
                         { (it as JTextField).document.insertString(0, "text", null) },
                     ),
                 "JTextComponent: Remove text" to
-                    row(
+                    tuple(
                         { JTextField("text") },
                         { (it as JTextField).document.remove(2, 2) },
                     ),
                 "JTree: Change selection" to
-                    row(
+                    tuple(
                         { JTree() },
                         { (it as JTree).setSelectionRow(2) },
                     ),
                 "JTree: Add node" to
-                    row(
+                    tuple(
                         { JTree() },
                         { (it as JTree).model().insertNodeInto(DefaultMutableTreeNode(), it.model().root(), 0) },
                     ),
                 "JTree: Remove node" to
-                    row(
+                    tuple(
                         { JTree() },
                         { (it as JTree).model().removeNodeFromParent(it.model().root().firstChild as MutableTreeNode) },
                     ),
                 "SchemeEditor: Recursion" to
-                    row(
+                    tuple(
                         { DummySchemeEditor { panel { row { textField().withName("text") } } } },
                         { ((it as DummySchemeEditor).components.first() as JTextField).text = "text" },
                     ),
             )
-        ) { (createComponent, changeComponent): Row2<() -> Any, (Any) -> Unit> ->
-            val component = ideaRunEdt { createComponent() }
+        ) { (createComponent, changeComponent): Tuple2<() -> Any, (Any) -> Unit> ->
+            val component = runEdt { createComponent() }
             addChangeListenerTo(component, listener = listener)
 
             listenerInvoked shouldBe false
-            ideaRunEdt { changeComponent(component) }
+            runEdt { changeComponent(component) }
 
             listenerInvoked shouldBe true
         }
@@ -150,12 +147,12 @@ object ListenerHelpersTest : FunSpec({
         // Committing the input may result in the `AbstractFormatter` changing the `value` of the field, even though
         // the `text` field is not changed. Therefore, this event should be listened to separately.
 
-        val component = ideaRunEdt { JFormattedTextField("old text") }
-        ideaRunEdt { component.text = "uncommitted text" }
+        val component = runEdt { JFormattedTextField("old text") }
+        runEdt { component.text = "uncommitted text" }
         addChangeListenerTo(component, listener = listener)
 
         listenerInvoked shouldBe false
-        ideaRunEdt { component.commitEdit() }
+        runEdt { component.commitEdit() }
 
         listenerInvoked shouldBe true
     }

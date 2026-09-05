@@ -4,8 +4,8 @@ import com.fwdekker.randomness.testhelpers.Tags
 import com.fwdekker.randomness.testhelpers.shouldMatchBundle
 import io.kotest.assertions.retry
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldBeEqualIgnoringCase
@@ -90,33 +90,33 @@ object CapitalizationModeTest : FunSpec({
  */
 object CapitalizationModeKtTest : FunSpec({
     context("lowerCaseFirst") {
-        withData(
+        withTests(
             mapOf(
-                "outputs an empty string if the input is empty" to row("", ""),
-                "does nothing if the first character is already in lowercase" to row("abcD eFgH", "abcD eFgH"),
-                "changes the first character to lowercase" to row("AbcD EfGh", "abcD EfGh"),
+                "outputs an empty string if the input is empty" to tuple("", ""),
+                "does nothing if the first character is already in lowercase" to tuple("abcD eFgH", "abcD eFgH"),
+                "changes the first character to lowercase" to tuple("AbcD EfGh", "abcD EfGh"),
             )
         ) { (input, expected) -> input.lowerCaseFirst() shouldBe expected }
     }
 
     context("upperCaseFirst") {
-        withData(
+        withTests(
             mapOf(
-                "outputs an empty string if the input is empty" to row("", ""),
-                "does nothing if the first character is already in uppercase" to row("AbcD eFgH", "AbcD eFgH"),
-                "changes the first character to uppercase" to row("abCd eFgH", "AbCd eFgH"),
+                "outputs an empty string if the input is empty" to tuple("", ""),
+                "does nothing if the first character is already in uppercase" to tuple("AbcD eFgH", "AbcD eFgH"),
+                "changes the first character to uppercase" to tuple("abCd eFgH", "AbCd eFgH"),
             )
         ) { (input, expected) -> input.upperCaseFirst() shouldBe expected }
     }
 
     context("camelPlus") {
-        withData(
+        withTests(
             mapOf(
-                "outputs an empty string if both are empty" to row("", "", ""),
-                "simply appends if the first part is empty" to row("", "fooBar", "fooBar"),
-                "simply appends if the second part is empty" to row("fooBar", "", "fooBar"),
-                "concatenates two words in camel case" to row("foo", "bar", "fooBar"),
-                "concatenates two pairs of words to camel case" to row("fooBar", "bazQux", "fooBarBazQux"),
+                "outputs an empty string if both are empty" to tuple("", "", ""),
+                "simply appends if the first part is empty" to tuple("", "fooBar", "fooBar"),
+                "simply appends if the second part is empty" to tuple("fooBar", "", "fooBar"),
+                "concatenates two words in camel case" to tuple("foo", "bar", "fooBar"),
+                "concatenates two pairs of words to camel case" to tuple("fooBar", "bazQux", "fooBarBazQux"),
             )
         ) { (first, second, expected) -> first.camelPlus(second) shouldBe expected }
     }

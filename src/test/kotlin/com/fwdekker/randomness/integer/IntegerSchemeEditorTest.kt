@@ -1,8 +1,6 @@
 package com.fwdekker.randomness.integer
 
 import com.fwdekker.randomness.testhelpers.Tags
-import com.fwdekker.randomness.testhelpers.afterNonContainer
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
 import com.fwdekker.randomness.testhelpers.editorApplyTests
 import com.fwdekker.randomness.testhelpers.editorFieldsTests
 import com.fwdekker.randomness.testhelpers.isSelectedProp
@@ -10,11 +8,11 @@ import com.fwdekker.randomness.testhelpers.prop
 import com.fwdekker.randomness.testhelpers.requireEnabledIs
 import com.fwdekker.randomness.testhelpers.runEdt
 import com.fwdekker.randomness.testhelpers.textProp
-import com.fwdekker.randomness.testhelpers.useEdtViolationDetection
+import com.fwdekker.randomness.testhelpers.useSharedBareIdeaFixture
 import com.fwdekker.randomness.testhelpers.valueProp
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.row
-import io.kotest.datatest.withData
+import io.kotest.core.tuple
+import io.kotest.datatest.withTests
 import org.assertj.swing.fixture.Containers.showInFrame
 import org.assertj.swing.fixture.FrameFixture
 
@@ -32,15 +30,15 @@ object IntegerSchemeEditorTest : FunSpec({
     lateinit var editor: IntegerSchemeEditor
 
 
-    useEdtViolationDetection()
+    useSharedBareIdeaFixture()
 
-    beforeNonContainer {
+    beforeEach {
         scheme = IntegerScheme()
         editor = runEdt { IntegerSchemeEditor(scheme) }
         frame = showInFrame(editor.rootComponent)
     }
 
-    afterNonContainer {
+    afterEach {
         frame.cleanUp()
     }
 
@@ -78,7 +76,7 @@ object IntegerSchemeEditorTest : FunSpec({
 
         context("grouping separator") {
             context("enforces the length filter") {
-                beforeNonContainer {
+                beforeEach {
                     runEdt { frame.checkBox("groupingSeparatorEnabled").target().isSelected = true }
                 }
 
@@ -98,14 +96,14 @@ object IntegerSchemeEditorTest : FunSpec({
 
             context("toggles the grouping separator depending on base value and checkbox state") {
                 @Suppress("BooleanLiteralArgument") // Argument names are clear from lambda later on
-                withData(
+                withTests(
                     nameFn = { "base=${it.a}, checkBoxChecked=${it.b}" },
-                    row(8, false, false, false),
-                    row(8, true, false, false),
-                    row(10, false, true, false),
-                    row(10, true, true, true),
-                    row(12, false, false, false),
-                    row(12, true, false, false),
+                    tuple(8, false, false, false),
+                    tuple(8, true, false, false),
+                    tuple(10, false, true, false),
+                    tuple(10, true, true, true),
+                    tuple(12, false, false, false),
+                    tuple(12, true, false, false),
                 ) { (base, checkBoxChecked, expectedCheckBoxEnabled, expectedInputEnabled) ->
                     runEdt {
                         frame.spinner("base").target().value = base
@@ -127,63 +125,63 @@ object IntegerSchemeEditorTest : FunSpec({
             { editor },
             mapOf(
                 "minValue" to {
-                    row(
+                    tuple(
                         frame.spinner("minValue").valueProp(),
                         editor.scheme::minValue.prop(),
                         150L,
                     )
                 },
                 "maxValue" to {
-                    row(
+                    tuple(
                         frame.spinner("maxValue").valueProp(),
                         editor.scheme::maxValue.prop(),
                         578L,
                     )
                 },
                 "base" to {
-                    row(
+                    tuple(
                         frame.spinner("base").valueProp(),
                         editor.scheme::base.prop(),
                         14,
                     )
                 },
                 "isUppercase" to {
-                    row(
+                    tuple(
                         frame.checkBox("isUppercase").isSelectedProp(),
                         editor.scheme::isUppercase.prop(),
                         true,
                     )
                 },
                 "groupingSeparatorEnabled" to {
-                    row(
+                    tuple(
                         frame.checkBox("groupingSeparatorEnabled").isSelectedProp(),
                         editor.scheme::groupingSeparatorEnabled.prop(),
                         true,
                     )
                 },
                 "groupingSeparator" to {
-                    row(
+                    tuple(
                         frame.comboBox("groupingSeparator").textProp(),
                         editor.scheme::groupingSeparator.prop(),
                         "!",
                     )
                 },
                 "affixDecorator" to {
-                    row(
+                    tuple(
                         frame.comboBox("affixDescriptor").textProp(),
                         editor.scheme.affixDecorator::descriptor.prop(),
                         "[@]",
                     )
                 },
                 "fixedLengthDecorator" to {
-                    row(
+                    tuple(
                         frame.spinner("fixedLengthLength").valueProp(),
                         editor.scheme.fixedLengthDecorator::length.prop(),
                         9,
                     )
                 },
                 "arrayDecorator" to {
-                    row(
+                    tuple(
                         frame.spinner("arrayMaxCount").valueProp(),
                         editor.scheme.arrayDecorator::maxCount.prop(),
                         7,

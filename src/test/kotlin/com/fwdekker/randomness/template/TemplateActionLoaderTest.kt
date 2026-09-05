@@ -1,7 +1,6 @@
 package com.fwdekker.randomness.template
 
-import com.fwdekker.randomness.testhelpers.beforeNonContainer
-import com.fwdekker.randomness.testhelpers.useBareIdeaFixture
+import com.fwdekker.randomness.testhelpers.useIsolatedBareIdeaFixture
 import com.intellij.openapi.actionSystem.ActionManager
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.beEmpty
@@ -20,9 +19,9 @@ object TemplateActionLoaderTest : FunSpec({
     lateinit var loader: TemplateActionLoader
 
 
-    useBareIdeaFixture()
+    useIsolatedBareIdeaFixture()
 
-    beforeNonContainer {
+    beforeEach {
         actionManager = ActionManager.getInstance()
         templates = mutableListOf()
         loader = TemplateActionLoader { templates }

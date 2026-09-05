@@ -3,27 +3,27 @@
 #   If latest is 20xx.y, then support at least [20xx-1].[y+1].
 #   For example, if latest is 2020.3, support at least 2019.4 (aka 2020.1).
 # * If you want to test the EAP version of, say, IntelliJ 2024.3, write `243-EAP-SNAPSHOT`.
-intellij-ide = "2024.3"
+intellij-ide = "2025.3"
 # https://plugins.gradle.org/plugin/org.jetbrains.intellij.platform
-intellij-plugin = "2.7.2"
+intellij-plugin = "2.18.1"
 
 # https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html#platformVersions
 # Select Java version corresponding to the value of `intellij-ide` above.
 java = "21"
 # https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library
 # Select bundled stdlib version corresponding to the value of `intellij-ide` above.
-kotlin = "2.0.21"
+kotlin = "2.2.20"
 
 assertj-swing = "3.17.1"  # https://mvnrepository.com/artifact/org.assertj/assertj-swing-junit
-changelog = "2.4.0"  # https://plugins.gradle.org/plugin/org.jetbrains.changelog
+changelog = "2.5.0"  # https://plugins.gradle.org/plugin/org.jetbrains.changelog
 dateparser = "1.0.11"  # https://mvnrepository.com/artifact/com.github.sisyphsu/dateparser
 detekt = "1.23.8"  # https://plugins.gradle.org/plugin/io.gitlab.arturbosch.detekt
-dokka = "2.1.0"  # https://plugins.gradle.org/plugin/org.jetbrains.dokka
+dokka = "2.2.0"  # https://plugins.gradle.org/plugin/org.jetbrains.dokka
 github = "2.1.5"  # https://mvnrepository.com/artifact/org.eclipse.mylyn.github/org.eclipse.egit.github.core
-kotest = "5.9.1"  # https://mvnrepository.com/artifact/io.kotest/kotest-assertions-core-jvm
-kover = "0.9.1"  # https://plugins.gradle.org/plugin/org.jetbrains.kotlinx.kover
+kotest = "6.2.4"  # https://mvnrepository.com/artifact/io.kotest/kotest-assertions-core-jvm
+kover = "0.9.9"  # https://plugins.gradle.org/plugin/org.jetbrains.kotlinx.kover
 rgxgen = "3.1"  # https://mvnrepository.com/artifact/com.github.curious-odd-man/rgxgen
-uuidGenerator = "5.1.0"  # https://mvnrepository.com/artifact/com.fasterxml.uuid/java-uuid-generator
+uuidGenerator = "5.2.0"  # https://mvnrepository.com/artifact/com.fasterxml.uuid/java-uuid-generator
 
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
@@ -41,11 +41,10 @@ assertj-swing = { module = "org.assertj:assertj-swing-junit", version.ref = "ass
 dateparser = { module = "com.github.sisyphsu:dateparser", version.ref = "dateparser" }
 github = { module = "org.eclipse.mylyn.github:org.eclipse.egit.github.core", version.ref = "github" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
-kotest-framework-dataset = { module = "io.kotest:kotest-framework-datatest", version.ref = "kotest" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 rgxgen = { module = "com.github.curious-odd-man:rgxgen", version.ref = "rgxgen" }
 uuidGenerator = { module = "com.fasterxml.uuid:java-uuid-generator", version.ref = "uuidGenerator" }
 
 [bundles]
-kotest = ["kotest-assertions-core", "kotest-framework-dataset", "kotest-runner-junit5"]
+kotest = ["kotest-assertions-core", "kotest-runner-junit5"]
